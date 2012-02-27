@@ -1,0 +1,60 @@
+/* Model file for balls in an urn, with no observation errors. 
+ * This version uses a Uniform[1, 8] prior for the number of balls.
+ */
+
+type Ball;
+type Draw;
+type Color;
+
+random Color Color(Ball);
+random Ball BallDrawn(Draw);
+random Color ObsColor(Draw);
+
+guaranteed Color Blue, Green;
+guaranteed Draw Draw[10];
+
+#Ball {
+	~ UniformInt[1, 8]()
+};
+
+Color(b) {
+	~ TabularCPD[[0.5, 0.5]]()
+};
+
+BallDrawn(d) {
+	~ UniformChoice({Ball b})
+};
+
+ObsColor(d) {
+	if BallDrawn(d) != null then 
+		= Color(BallDrawn(d))
+};
+
+
+
+/* Answers to some queries on this model, computed by exhaustive 
+ * enumeration:
+ *
+ * * Observe 10 draws, half with ObsColor blue, half with ObsColor green
+ *   (half-half.eblog).
+ *   Posterior over number of balls:
+ *     1       0.0
+ *     2       0.13178433567297584
+ *     3       0.10969641597652977
+ *     4       0.1301112923490025
+ *     5       0.14316058365888087
+ *     6       0.1535408361439068
+ *     7       0.16218295808211666
+ *     8       0.1695235781165875
+ *
+ * * Observe 10 draws, all with the same ObsColor (all-same.eblog).
+ *   Posterior over number of balls:
+ *     1       0.4583578863614775
+ *     2       0.22962655830413864
+ *     3       0.12055676358753083
+ *     4       0.0705365374877165
+ *     5       0.045789556826297796
+ *     6       0.032213131872153786
+ *     7       0.024076165663645656
+ *     8       0.018843399897039297
+ */

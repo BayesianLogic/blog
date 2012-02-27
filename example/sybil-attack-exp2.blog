@@ -1,0 +1,73 @@
+/**
+ * Sybil attack
+ * Typically between 100 and 10,000 real people, about 90% are honest 
+ * who has one login ID. Dishonest people can have multiple logins 
+ * each. Transactions may occur between logins. If two logins are 
+ * owned by the same person, then a transaction is highly likely; 
+ * Otherwise, transaction is less likely (depending on honesty 
+ * of each login's owner). A login may recommend another after 
+ * a transaction: Logins with the same owner usually recommend 
+ * each other; Otherwise, probability of recommendation depends 
+ * on the honesty of the two owners.
+ *
+ * 2011-12-21
+ */
+
+type Person;
+type Login;
+
+origin Person Owner(Login);
+random Boolean Honest(Person);
+random Boolean Transaction(Login, Login);
+random Boolean Recommends(Login, Login);
+
+#Person ~ Poisson[10]();
+Honest(x) ~ Bernoulli[0.9]();
+#Login(Owner = x) 
+    if Honest(x) then = 1 
+    else ~ Geometric[0.8]();
+   
+Transaction(x,y)  
+    if x!=y & Owner(x) = Owner(y) then ~Bernoulli[0.9]()
+    elseif x!=y then 
+        ~TabularCPD[[0.6, 0.4], [0.1, 0.9]](Honest(Owner(x)));
+
+Recommends(x,y)  
+    if x!=y & Transaction(x,y) & Owner(x) = Owner(y) then 
+        ~Bernoulli[0.99]()
+    elseif Transaction(x,y) & Owner(x) != Owner(y) then
+             ~TabularCPD[[0.9, 0.1], 
+                        [0.1, 0.9], 
+                        [0.1, 0.9], 
+                        [0.1, 0.9]]
+                   (Honest(Owner(x)), Honest(Owner(y)));
+
+
+obs {Person p} = {Person1, Person2, Person3};
+
+obs {Login l} = {Login1, Login2, Login3, Login4, Login5};
+
+/**
+obs Honest(Person1) = false;
+obs Honest(Person2) = true;
+obs Honest(Person3) = true;
+
+obs #Login(Owner = Person1) = 3;
+obs #Login(Owner = Person2) = 1;
+obs #Login(Owner = Person3) = 1;
+*/
+
+obs Transaction(Login1, Login2) = true;
+obs Transaction(Login1, Login3) = true;
+obs Transaction(Login2, Login3) = true;
+obs Transaction(Login1, Login4) = true;
+obs Transaction(Login4, Login5) = true;
+obs Recommends(Login1, Login2) = true;
+obs Recommends(Login1, Login3) = true;
+obs Recommends(Login2, Login3) = true;
+obs Recommends(Login4, Login5) = true;
+obs Recommends(Login1, Login4) = false;
+
+Query Honest(Person1); 
+
+

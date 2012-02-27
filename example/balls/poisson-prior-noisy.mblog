@@ -1,0 +1,82 @@
+/* Model file for balls in an urn, allowing observation errors. 
+ * This version uses a Poisson prior for the number of balls.
+ */
+
+type Ball;
+type Draw;
+type Color;
+
+random Color Color(Ball);
+random Ball BallDrawn(Draw);
+random Color ObsColor(Draw);
+
+guaranteed Color Blue, Green;
+guaranteed Draw Draw[10];
+
+#Ball {
+	~ Poisson[6]()
+};
+
+Color(b) {
+	~ TabularCPD[[0.5, 0.5]]()
+};
+
+BallDrawn(d) {
+	~ UniformChoice({Ball b})
+};
+
+ObsColor(d) {
+	if BallDrawn(d) != null then  
+		~ TabularCPD[[0.8, 0.2], [0.2, 0.8]](Color(BallDrawn(d)))
+};
+
+
+/* Answers to some queries on this model, computed by exhaustive 
+ * enumeration up to 170 balls:
+ *
+ * * Observe 10 draws, half with ObsColor blue, half with ObsColor green
+ *   (half-half.eblog).
+ *   Posterior over number of balls:
+ *     1   0.002139745568962195 
+ *     2   0.03310151863806233
+ *     3   0.07632873646782333
+ *     4   0.12562450937265365
+ *     5   0.1601471608550193
+ *     6   0.16711449971667286
+ *     7   0.14785311978084398
+ *     8   0.11364519330308274 
+ *     9   0.07726239270030764 
+ *    10   0.04710567149191701
+ *    11   0.026038996463236853
+ *    12   0.013167265612779547
+ *    13   0.006136287648881201
+ *    14   0.0026519925601796905
+ *    15   0.0010686163058048234
+ *    16   4.033377124529825E-4
+ *    17   1.4317772208442887E-4
+ *    18   4.797291677039901E-5
+ *    19   1.521992902268052E-5
+ *
+ * * Observe 10 draws, all with the same ObsColor (all-same.eblog).
+ *   Posterior over number of balls:
+ *     1      0.09177292740582478
+ *     2      0.14016339845798337
+ *     3      0.16131891998093775
+ *     4      0.16076445939416187
+ *     5      0.14202524891641793
+ *     6      0.11212453481534977
+ *     7      0.0796628388727393
+ *     8      0.05129560621686968
+ *     9      0.030136603157564536
+ *    10      0.016255648133449332
+ *    11      0.008096038653346889
+ *    12      0.0037421451554203898
+ *    13      0.001612672493795187
+ *    14      6.506470130527572E-4
+ *    15      2.466811418642551E-4
+ *    16      8.818159056890898E-5
+ *    17      2.981216159723023E-5
+ *    18      9.558360010619762E-6
+ *    19      2.913680089953351E-6
+ *    20      8.4638726556674E-7
+ */
