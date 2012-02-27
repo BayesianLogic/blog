@@ -1,0 +1,14 @@
+/* Evidence file asserting that the drawn balls appeared blue on half the 
+ * draws and green on half the draws.
+ */
+
+obs ObsColor(Draw1) = Blue;
+obs ObsColor(Draw2) = Green;
+obs ObsColor(Draw3) = Blue;
+obs ObsColor(Draw4) = Green;
+obs ObsColor(Draw5) = Blue;
+obs ObsColor(Draw6) = Green;
+obs ObsColor(Draw7) = Blue;
+obs ObsColor(Draw8) = Green;
+obs ObsColor(Draw9) = Blue;
+obs ObsColor(Draw10) = Green;

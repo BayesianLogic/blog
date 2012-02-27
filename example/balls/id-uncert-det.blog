@@ -1,0 +1,46 @@
+/* File with model, evidence and queries for the "identity uncertainty" 
+ * experiment in [Milch et al, AISTATS 2005], with deterministic observations. 
+ * This model uses a Poisson(6) prior for the number of balls.  For 
+ * consistency with the paper, we use black and white for the ball colors; 
+ * black is rarer, having probability 0.3.  Three draws are observed, one 
+ * appearing black and two appearing white.
+ * The observed color is always the same as the drawn ball's true color.
+ * The query is whether those two apparently-white draws involved the same ball.
+ *
+ * Exhaustive enumeration up to 170 balls reveals that the posterior 
+ * probability that that they were same ball is 0.29527.
+ */
+
+type Ball;
+type Draw;
+type Color;
+
+random Color Color(Ball);
+random Ball BallDrawn(Draw);
+random Color ObsColor(Draw);
+
+guaranteed Color Black, White;
+guaranteed Draw Draw1, Draw2, Draw3;
+
+#Ball {
+	~ Poisson[6]()
+};
+
+Color(b) {
+	~ TabularCPD[[0.3, 0.7]]()
+};
+
+BallDrawn(d) {
+	~ UniformChoice({Ball b})
+};
+
+ObsColor(d) {
+	if BallDrawn(d) != null then 
+		= Color(BallDrawn(d))
+};
+
+obs ObsColor(Draw1) = Black;
+obs ObsColor(Draw2) = White;
+obs ObsColor(Draw3) = White;
+
+query (BallDrawn(Draw2) = BallDrawn(Draw3)); 

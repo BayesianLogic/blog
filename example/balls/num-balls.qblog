@@ -1,0 +1,4 @@
+/* Query file asking for the total number of balls in the urn.
+ */
+
+query #{Ball b};
