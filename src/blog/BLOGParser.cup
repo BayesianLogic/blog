@@ -1,0 +1,2139 @@
+/*
+ * Copyright (c) 2005, 2006, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in
+ *   the documentation and/or other materials provided with the
+ *   distribution.  
+ *
+ * * Neither the name of the University of California, Berkeley nor
+ *   the names of its contributors may be used to endorse or promote
+ *   products derived from this software without specific prior 
+ *   written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+import java_cup.runtime.*;
+import java.util.*;
+import java.io.*;
+import Jama.*;
+import common.ScannerWithLocInfo;
+import common.HashMapDiff;
+import common.LocationInFile;
+import common.Util;
+import fove.Parfactor;
+import fove.CountingTerm;
+
+action code {: 
+
+    LocationInFile getCurLocation() {
+        return new LocationInFile
+            (((ScannerWithLocInfo)parser.getScanner()).getCurFilename(),
+             ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum());
+    }
+   
+    int curr_lineno() {
+
+	return ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum();
+
+    }
+
+
+    void semantic_error( String message ){
+
+         System.err.println("\n" + curr_filename( ) + ":" + curr_lineno( ) 
+                            + " Semantic error: " + message);
+	 parser.omerrs++;
+
+    }
+
+
+    void warning( String message ){
+  
+         System.err.println("\n" + curr_filename( ) + ":" + curr_lineno( ) 
+                            + " Warning: " + message);
+
+    }
+
+
+    String curr_filename() {
+
+	return ((ScannerWithLocInfo)parser.getScanner()).getCurFilename();
+
+    }
+
+    /**
+     * Returns the class with the given name, or posts a semantic error if 
+     * the class cannot be found.  Looks first in the packages specified 
+     * by calls to the parser's addPackageToSearch method (in the order 
+     * they were added); then in the top-level package; and then in 
+     * blog.distrib, ve, and fove.
+     */
+    Class getClassWithName(String classname) {
+        for (Iterator iter = BLOGParser.extraPackages.iterator(); 
+             iter.hasNext(); ) { 
+            try {
+                String pkg = (String) iter.next();
+                return Class.forName(pkg + "." + classname);
+            } catch( ClassNotFoundException e ) {
+		  // continue loop
+            }
+        }
+
+	String[] builtInPackages = {"", "blog.distrib.", "ve.", "fove."};
+	for (int i = 0; i < builtInPackages.length; ++i) {
+            try {
+                return Class.forName(builtInPackages[i] + classname);
+            } catch (ClassNotFoundException e) {
+                // continue loop
+            }
+        }
+
+        semantic_error("Class not found: " + classname);
+	return null;
+    }
+
+    /**
+     * Returns false and prints an error message if there are any functions 
+     * with the given name that could apply to objects with the given types.
+     */
+    boolean checkOverlappingFuncs(String name, List argTypeList) {
+        Type[] argTypes = new Type[argTypeList.size()];
+        argTypeList.toArray(argTypes);
+        Collection overlapFuncs 
+            = parser.model().getOverlappingFuncs(name, argTypes);
+        if (overlapFuncs.isEmpty()) {
+            return true;
+        }
+            
+        semantic_error("Can't declare function " + name 
+                       + " with argument types " + argTypeList
+                       + " because it could apply to same objects as: ");
+        for (Iterator iter = overlapFuncs.iterator(); iter.hasNext(); ) {
+            Function o = (Function) iter.next();
+            System.err.println("\t" + o.getSig());
+        }
+        return false;
+    }
+:} 
+
+
+parser code {:
+
+
+    public int omerrs = 0;
+
+    private Model model;
+    private Evidence evidence;
+    private List queries;
+
+    public void syntax_error(Symbol cur_token) {
+
+        int lineno = action_obj.curr_lineno();
+	String filename = action_obj.curr_filename();
+        System.err.print(filename + ":" + lineno + " Parse error at or near ");
+        ParserUtilities.printToken(cur_token);
+	//System.exit(1);
+	omerrs++;
+	// if (omerrs > 0) {
+	//   System.err.println("More than 50 errors");
+	//   System.exit(1);
+	//}
+
+    }
+
+
+    public void unrecovered_syntax_error(Symbol cur_token) {
+    }
+
+    /**
+     * Sets the model that this parser will use.  If the parser encounters 
+     * declarations, then the model will be augmented to reflect these 
+     * declarations.  Otherwise, the model will be used to look up the types 
+     * and functions of the language.  You must pass in a non-null model with 
+     * this method before calling the <code>parse</code> method.  
+     */
+    public void setModel(Model model) {
+        this.model = model;
+    }
+
+    /**
+     * Returns the model that this parser is using.  
+     */
+    public Model model() {
+        return model;
+    }
+
+    /**
+     * Sets the evidence object that this parser will use.  When the parser 
+     * encounters an evidence statement, that evidence is added to this 
+     * evidence object.  Also, the evidence object is used to look up 
+     * Skolem constants.  
+     */
+    public void setEvidence(Evidence evidence) {
+        this.evidence = evidence;
+    }
+
+    /**
+     * Returns the evidence object that this parser is using (which may 
+     * be null).
+     */
+    public Evidence evidence() {
+        return evidence;
+    }
+
+    /**
+     * Sets the list to which queries (represented as Query objects) will be 
+     * appended.  
+     */
+    public void setQueries(List queries) {
+	    this.queries = queries;
+    }
+
+    /**
+     * Returns the query list that this parser is using (which may be null).
+     */
+    public List queries() {
+        return queries;
+    }
+
+    /**
+     * Returns the Function object corresponding to the given signature, or 
+     * null if no such function has been declared.  Uses the function table 
+     * in <code>model</code>, as well as the Skolem constant table in 
+     * <code>evidence</code> if <code>evidence</code> is not null.
+     */
+    public Function getFunction(String name, List argTypeList) {
+        Function f = model.getFunction(new Function.Sig(name, argTypeList));
+
+        if ((f == null) && (evidence != null)) {
+            f = evidence.getSkolemConstant(name);
+        }
+        return f;
+    }
+
+    /**
+     * Nested class that specifies a CPD with parameters and arguments.
+     */
+    public static class CPDSpec {
+	public CPDSpec(Class cls, List params, List args) {
+	    this.cls = cls;
+            this.params = params;
+            this.args = args;
+        }
+
+        public Class cls;
+        public List params; // of ArgSpec
+        public List args;   // of ArgSpec
+    }
+
+    /**
+     * Nested class that specifies a potential with parameters and arguments.
+     */
+    public static class PotentialSpec {
+        public PotentialSpec(Class cls, List params, List args) {
+            this.cls = cls;
+            this.params = (List<ArgSpec>) params;
+            this.args = (List<Term>) args;
+        }
+
+        public Class cls;
+        public List<ArgSpec> params;
+        public List<Term> args;
+    }
+
+    /**
+     * Nested class that specifies a origin function and a variable 
+     * for the generating object.  Optionally, it can also include 
+     * a type for the generating object. 
+     */
+    public static class GenObjSpec {
+        public GenObjSpec(String originFuncName, Type genObjType, 
+                          String genObjVar) {
+            this.originFuncName = originFuncName;
+            this.genObjType = genObjType;
+            this.genObjVar = genObjVar;
+        }
+
+        public String originFuncName;
+        public Type genObjType;
+        public String genObjVar; 
+    }
+
+    /**
+     * Nested class that specifies a variable name and a type.
+     */
+    public static class TypedVar {
+        public TypedVar(String var, Type type) {
+            this.var = var;
+            this.type = type;
+        }
+
+        public String var;
+        public Type type;
+    }
+
+    /**
+     * Nested class that specifies a list of logical variables and a 
+     * formula that constrains them.
+     */
+    public static class VarsWithConstraint {
+	public VarsWithConstraint() {
+            logicalVars = Collections.emptyList();
+            constraint = TrueFormula.TRUE;
+        }
+
+        public VarsWithConstraint(List typedVars) {
+            for (Iterator iter = typedVars.iterator(); iter.hasNext(); ) {
+                TypedVar tv = (TypedVar) iter.next();
+                logicalVars.add(new LogicalVar(tv.var, tv.type));
+            }
+            constraint = TrueFormula.TRUE;
+        }
+
+        public VarsWithConstraint(List typedVars, Formula constraint) {
+            for (Iterator iter = typedVars.iterator(); iter.hasNext(); ) {
+                TypedVar tv = (TypedVar) iter.next();
+                logicalVars.add(new LogicalVar(tv.var, tv.type));
+            }
+            this.constraint = constraint;
+        }
+
+        public List<LogicalVar> logicalVars = new ArrayList<LogicalVar>();
+        public Formula constraint;
+    }
+
+    /**
+     * Sets the packages that will be searched before the default packages 
+     * when looking up class names (for CPDs, etc.).  The given packages 
+     * are searched in the order they are listed.
+     *
+     * @param packages List of String objects
+     */
+    public static void setPackagesToSearch(List packages) {
+       extraPackages = new ArrayList(packages);
+    }
+
+    /**
+     * Returns true if parsing was successful; otherwise false.
+     */
+    public static boolean parseReader(Model model, Evidence evidence, 
+                                      List queries, boolean doDebugParse, 
+                          	      Reader reader, String originName, 
+                                      boolean parsingFromMessage) 
+    throws Exception {
+
+    	BLOGLexer lexer = new BLOGLexer(reader);
+    	lexer.setFilename(originName);
+
+    	if (parsingFromMessage)
+    	    System.out.println("Parsing from: " + originName);
+
+    	BLOGParser parser = new BLOGParser(lexer);
+    	parser.setModel(model);
+    	parser.setEvidence(evidence);
+    	parser.setQueries(queries);
+
+    	if (doDebugParse)
+    		parser.debug_parse();
+    	else parser.parse();
+
+    	return (parser.omerrs == 0);
+    }							  
+
+    /**
+     * Returns true if parsing was successful; otherwise false.
+     */
+    private static void parseString(ModelEvidenceQueries meq, 
+                                    String description) throws Exception {
+
+    	if (!parseReader(meq.model, meq.evidence, meq.queries, 
+                         false /* doDebugParse */, 
+                         new StringReader(description), 
+                         Util.abbreviation(description), false)) {
+            throw new IllegalArgumentException("Failed to parse string.");
+        }
+       
+    	if (!meq.evidence.checkTypesAndScope(meq.model)) {
+            throw new IllegalArgumentException
+                ("Type or scope error in evidence.");
+        }
+        if (meq.evidence.compile() > 0) {
+            throw new IllegalArgumentException("Failed to compile evidence.");
+        }
+    	for (Iterator it = meq.queries.iterator(); it.hasNext(); ) {
+           Query query = (Query) it.next();
+           if (!query.checkTypesAndScope(meq.model)) {
+               throw new IllegalArgumentException
+                   ("Type or scope error in query: " + query);
+           }
+           if (query.compile() > 0) {
+               throw new IllegalArgumentException
+                   ("Failed to compile query: " + query);
+           }
+    	}
+    }
+    
+    public static ModelEvidenceQueries parseString(String description) 
+        throws Exception {
+
+    	ModelEvidenceQueries meq = new ModelEvidenceQueries();
+    	parseString(meq, description);
+    	return meq;
+    }
+    
+    public static ModelEvidenceQueries parseString(Model model, 
+                                                   String description) 
+        throws Exception {
+
+    	ModelEvidenceQueries meq = new ModelEvidenceQueries();
+    	meq.model = model;
+    	parseString(meq, description);
+    	return meq;
+    }
+
+    static List extraPackages = Collections.EMPTY_LIST; // of String
+:}
+
+init with {:
+
+    if (model == null) {
+        throw new IllegalStateException
+            ("Must specify non-null model with setModel() method "
+             + "before using BLOGParser object to parse file.");
+    }
+
+:}
+
+/* Terminal declarations; a few have types for associated lexemes.  The
+ * token ERROR is never used in the parser; thus, it is a parse error when
+ * the lexer returns it. For the terminals' interpretations, consult with
+ * BLOGLexer.lex.  
+ */
+
+terminal ERROR;
+terminal ELSE, ELSEIF, IF, THEN, FOR;
+terminal RIGHTARROW, NEG, EQ, NEQ, TYPE, 
+	RANDOM, NONRANDOM, GENERATING, GUARANTEED, FACTOR, PARFACTOR, 
+        QUERY, OBS;
+terminal AND, OR, DISTRIB, COMMA, SEMI, COLON, DOT, 
+	TRUE, FALSE, NUMSIGN;
+terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET;
+terminal String STR_CONST, INT_CONST, DOUBLE_CONST, TIME_CONST;
+terminal String ID, CLASS_NAME;
+terminal Character CHAR_CONST;
+terminal EXISTS, FORALL;
+terminal LT, GT, LEQ, GEQ;
+
+nonterminal type_decl, rand_func_decl, rand_func_defn, origin_func_decl, 
+        non_rand_func_decl, non_rand_func_defn, dep_stmt, num_stmt, 
+	guaranteed_decl, parfactor;
+nonterminal RandomFunction dep_stmt_intro, rand_func_defn_intro;
+nonterminal POP num_stmt_intro;
+nonterminal Term term;
+nonterminal file;
+nonterminal String new_var;
+nonterminal opt_statement_lst, statement_lst, statement, declaration, 
+        evidence, query;
+nonterminal Formula formula, non_atomic_formula, non_atomic_formula_but_equality, parenformula, opt_cond;
+nonterminal AtomicFormula atomicformula;
+nonterminal NegFormula negformula;
+nonterminal ConjFormula conjformula;
+nonterminal DisjFormula disjformula;
+nonterminal ImplicFormula implicformula;
+nonterminal EqualityFormula equalityformula;
+nonterminal NegFormula inequalityformula;
+nonterminal NonRandomFunction built_in, number, boolean_built_in, 
+	non_boolean_built_in;
+nonterminal FuncAppTerm func_app_with_parens;
+nonterminal CountingTerm counting_term;
+nonterminal SymbolTerm symbol_term;
+nonterminal Type type;
+nonterminal List opt_id_lst, id_lst;
+nonterminal ArgSpec cpd_arg, value_evidence_statement_left_side;
+nonterminal ExplicitSetSpec explicit_set;
+nonterminal ImplicitSetSpec implicit_set;
+nonterminal TupleSetSpec tuple_set;
+nonterminal String class_name;
+nonterminal CardinalitySpec cardinality_spec;
+nonterminal List opt_parenthesized_gen_obj_lst, opt_gen_obj_lst, gen_obj_lst,
+        opt_parenthesized_type_lst, opt_type_lst, type_lst, 
+        opt_term_lst, term_lst, 
+        opt_braces_clause_lst, clause_lst, if_elseif_lst, 
+        opt_cpd_arg_lst, cpd_arg_lst, 
+	opt_interp_params, opt_cpd_params, opt_cpd_args, opt_factor_args, 
+        opt_new_var_lst, new_var_lst, 
+        opt_origin_func_lst, origin_func_lst, 
+        opt_parenthesized_var_type_lst, var_type_lst,
+        term_lst_lst;
+nonterminal BLOGParser.GenObjSpec gen_obj_spec;
+nonterminal BLOGParser.CPDSpec cpd;
+nonterminal BLOGParser.PotentialSpec potential;
+nonterminal Clause clause_with_cond, clause_without_cond; 
+nonterminal BLOGParser.TypedVar var_decl;
+nonterminal ExistentialFormula existentialformula;
+nonterminal UniversalFormula universalformula;
+nonterminal BLOGParser.VarsWithConstraint vars_opt_constraint;
+nonterminal List id_spec;
+nonterminal String str_const_seq;
+
+/*
+ * Precedence declarations.  The later the precedence declaration, the 
+ * higher the precedence.  
+ */
+
+precedence right RIGHTARROW;
+precedence left AND, OR;
+precedence nonassoc LT, GT, LEQ, GEQ; 
+precedence left EQ, NEG;
+/* precedence left PLUS, MINUS; */
+/* precedence left MULT, DIV; */
+
+
+/* Grammar *******************************************************************/
+
+start with file;
+
+
+/* The start nonterminal */
+file ::= opt_statement_lst
+                ;
+
+/* Represents a possibly-empty list of statements. */
+opt_statement_lst ::= /* EMPTY */
+                | statement_lst
+                ;
+
+/* Represents a non-empty list of statements terminated by semicolons. */
+statement_lst ::= statement_lst statement SEMI
+		| statement SEMI
+		| error
+		{: System.err.println( 
+			"Possible cause: forgotten semicolon" ); :}
+		;
+
+/* A statement can be a declaration, an observation (assertion of some 
+ * evidence), or a query.
+ */
+statement ::= declaration
+            | evidence 
+            | query
+            ;
+
+/* Represents a declaration, which can be:
+ *   
+ *    * a type declaration;
+ *    * a random function or generating function declaration
+ *        (Semantic checks:
+ *            - whether the return type is a declared type;
+ *            - whether the argument types have been declared (an error-check 
+ *		  propagated from the type_lst production.);
+ *    * a random function definition
+ *    * a non-random function (or constant) declaration
+ *    * a non-random function (or constant) definition, specifying the 
+ *      interpretation of the function 
+ *    * a random function dependency statement description
+ *        (Semantic checks:
+ *	      - whether the numbers of actual and declared parameters match;
+ *            - whether the function by this name has been declared.);
+ *    * a guaranteed object declaration
+ *        (Semantic checks:
+ *            - whether the type has been declared.);
+ *    * a POP number statement description
+ *        (Semantic checks:
+ *            - whether the numbers of generating functions and parameters 
+ *                match;
+ *            - whether the generating functions have been declared (an 
+ *                error-check propagated from the function_lst production);
+ *            - whether each generating function takes exactly one parameter (an
+ *                error-check propagated from the function_lst production);
+ *            - whether the only parameter of each generating function is of the
+ *                type being generated.).
+ *    * a parfactor statement
+ */   
+declaration ::= type_decl
+           | rand_func_decl
+           | rand_func_defn
+           | origin_func_decl
+           | non_rand_func_decl
+           | non_rand_func_defn
+           | dep_stmt
+           | num_stmt
+           | guaranteed_decl
+           | parfactor
+
+	   | error
+	   {: System.err.println
+			( "Possible cause: forgotten semicolon or "
+			+ "a type/random/nonrandom/guaranteed modifier." ); :}
+           ;
+
+type_decl ::= TYPE ID:typename
+	   {: if (parser.model().getType(typename) != null) {
+                  semantic_error("Type " + typename + " already exists.");
+              } else {
+                  parser.model().addType( typename ); 
+              } :} 
+           ;
+
+rand_func_decl ::= RANDOM type:retType ID:func opt_parenthesized_type_lst:tl
+	   {: if (parser.getFunction(func, tl) != null) {
+                  semantic_error("Function " + func + " has already been "
+                                 + "declared with argument types " + tl);
+              } else if ( ( (retType == null) || tl.contains(null) ) ) {
+		   semantic_error
+			( "the declaration of the function " 
+			+ func 
+			+ " has failed due to: " ); 
+	           if( retType == null ) {
+		         System.err.println( "\t- return type error;" );
+                   }
+                   if( tl.contains(null) ) {
+		         System.err.println 
+					( "\t- parameter type error(s);" );
+                   }
+              } else if (checkOverlappingFuncs(func, tl)) {
+                  Function f = new RandomFunction(func, tl, retType, null);
+	          parser.model().addFunction(f);  
+              } :}
+           ;
+
+
+rand_func_defn ::=  rand_func_defn_intro:f opt_braces_clause_lst:cl
+           {: if ((f != null) && !cl.contains(null)) {
+                  Type childType = f.getRetType();
+                  Object defaultVal = f.getDefaultValue();
+                  f.setDepModel(new DependencyModel(cl, childType, 
+                                                    defaultVal));
+              } :}
+           ;
+
+/* Beginning of a random function definition.  This is just like a random 
+ * function declaration, except that there are variable names associated 
+ * with the function arguments.  This is a separate nonterminal so the 
+ * function can be added to the model before the dependency clauses are parsed.
+ */
+rand_func_defn_intro ::= RANDOM type:ret_type ID:func 
+                         opt_parenthesized_var_type_lst:vtl
+           {: RESULT = null;
+              List argTypes = new ArrayList();
+              List argVars = new ArrayList();
+              for (Iterator iter = vtl.iterator(); iter.hasNext(); ) {
+                  BLOGParser.TypedVar tv = (BLOGParser.TypedVar) iter.next();
+                  argTypes.add(tv.type);
+                  argVars.add(tv.var);
+              }
+
+              if (parser.getFunction(func, argTypes) != null) {
+                  semantic_error("Function " + func + " has already been "
+                                 + "declared with argument types " + argTypes);
+              } else if (((ret_type == null) || argTypes.contains(null))) {
+		   semantic_error
+			( "the declaration of the function " 
+			+ func 
+			+ " has failed due to: " ); 
+	           if( ret_type == null ) {
+		         System.err.println( "\t- return type error;" );
+                   }
+                   if( argTypes.contains(null) ) {
+		         System.err.println 
+					( "\t- parameter type error(s);" );
+                   }
+              } else if (checkOverlappingFuncs(func, argTypes)) {
+                  RandomFunction f = new RandomFunction(func, argTypes, 
+                                                        ret_type, null); 
+	          parser.model().addFunction(f);  
+                  f.setArgVars(argVars);
+                  RESULT = f;
+              }
+           :}
+           ;
+
+origin_func_decl ::= GENERATING type:ret_type ID:func 
+                     LPAREN type:arg_type RPAREN
+	   {: List argTypes = Collections.singletonList(arg_type);
+              if (parser.getFunction(func, argTypes) != null) {
+                  semantic_error("Function " + func + " has already been "
+                                 + "declared with argument type " + arg_type);
+              } else if ((ret_type == null) || (arg_type == null)) {
+		  semantic_error( "the declaration of the function " 
+			         + func + " has failed due to: " ); 
+	          if( ret_type == null ) {
+		      System.err.println( "\t- return type error;" );
+                  }
+                  if( arg_type == null ) {
+                      System.err.println( "\t- parameter type error(s);" );
+                  }
+               } else if (checkOverlappingFuncs
+                              (func, Collections.singletonList(arg_type))) {
+                  OriginFunction f = new OriginFunction
+                      (func, argTypes, ret_type);
+		  parser.model().addFunction(f);
+               } :}
+           ;
+
+
+/* A nonrandom function declaration may declare a nonrandom constant or 
+ * a non-random function.  The distinction is whether there is a 
+ * parenthesized list of arguments after the function/constant name.  
+ */
+non_rand_func_decl ::= NONRANDOM type:ret_type ID:func_name
+           {: if (ret_type != null) {
+                  if (parser.getFunction(func_name, 
+                                         Collections.EMPTY_LIST) != null) {
+                      semantic_error("Function " + func_name + " has already "
+                                     + "been declared with no arguments.");
+                  }
+
+                  NonRandomFunction f = new NonRandomFunction
+                      (func_name, Collections.EMPTY_LIST, ret_type);
+                  parser.model().addFunction(f);
+               } :}
+
+           | NONRANDOM type:ret_type ID:func_name 
+                 LPAREN opt_type_lst:otl RPAREN
+           {: if ((ret_type != null) && !otl.contains(null)) {
+                  if (parser.getFunction(func_name, otl) != null) {
+                      semantic_error("Function " + func_name 
+                                     + " has already been declared "
+                                     + "with argument types " + otl);
+                  } else if (checkOverlappingFuncs(func_name, otl)) {
+                      NonRandomFunction f = new NonRandomFunction
+                          (func_name, otl, ret_type);
+                      parser.model().addFunction(f);
+                  }
+               } :}
+           ;
+
+/* A non-random function or constant definition, specifying an interpretation 
+ * for the function or constant.  The function/constant does not need to 
+ * have been declared already.  
+ */
+non_rand_func_defn ::= NONRANDOM type:ret_type ID:func_name 
+                           EQ term:value
+           {: if ((ret_type != null) && (value != null)) {
+                  NonRandomFunction c = null;
+                  Function f = parser.getFunction(func_name, 
+                                                  Collections.EMPTY_LIST);
+                  if (f == null) {
+                      // constant symbol is undeclared; declare it
+                      c = new NonRandomFunction
+                          (func_name, Collections.EMPTY_LIST, ret_type);
+                      parser.model().addFunction(c);
+                  } else {
+                      // check for consistency with declaration
+                      if (!(f instanceof NonRandomFunction)) {
+                          semantic_error(f + " was not declared as a "
+                                         + "non-random constant.");
+                          c = null;
+                      } else {
+                          c = (NonRandomFunction) f;
+                          if (ret_type != c.getRetType()) {
+                              semantic_error
+                                  ("Return type for non-random constant "
+                                   + "does not match declaration.");
+                              c = null;
+                          } else if (c.getInterpClass() != null) {
+                              semantic_error
+                                  ("Value for non-random constant " + c
+                                   + " has already been specified.");
+                              c = null;
+                          } 
+                      }
+                  }
+
+                  if (c != null) {
+                      c.setInterpretation
+                          (ConstantInterp.class, 
+                           Collections.singletonList(value));
+                  }
+              } :}
+
+           | NONRANDOM type:ret_type ID:func_name LPAREN opt_type_lst:tl 
+                 RPAREN EQ class_name:classname opt_interp_params:pl
+           {: Class cls = getClassWithName(classname);
+
+              if ((ret_type != null) && !tl.contains(null) 
+                  && !pl.contains(null) && (cls != null)) {
+                  Function f = parser.getFunction(func_name, tl);
+                  if (f == null) {
+                      // Function symbol not yet declared; declare it and 
+                      // set interpretation
+                      if (checkOverlappingFuncs(func_name, tl)) {
+                          f = new NonRandomFunction(func_name, tl, ret_type, 
+                                                    cls, pl);
+	                  parser.model().addFunction(f);
+                      }
+                  } else {
+                      // already declared
+                      if (!(f instanceof NonRandomFunction)) {
+                          semantic_error(f + " was not declared as a "
+                                         + "non-random function.");
+                      } else { 
+                          NonRandomFunction nrf = (NonRandomFunction) f;
+                          if ((ret_type != nrf.getRetType()) 
+                              || !(tl.equals
+                                   (Arrays.asList(nrf.getArgTypes())))) {
+                              semantic_error
+                                  ("Type signature for non-random function "
+                                   + "does not match declaration.");
+                          } else if (nrf.getInterpClass() != null) {
+                              semantic_error
+                                  ("Interpretation for non-random function "
+                                   + nrf + " has already been specified.");
+                          } else {
+                              nrf.setInterpretation(cls, pl);
+                          }
+                      }
+                  }
+	      } :}
+           ;
+
+dep_stmt ::= dep_stmt_intro:func opt_braces_clause_lst:cl
+	   {: if (func != null) {
+                  if (!cl.contains(null)) {
+                      Type childType = func.getRetType();
+                      Object defaultVal = func.getDefaultValue();
+                      func.setDepModel(new DependencyModel(cl, childType,
+                                                           defaultVal));
+                  }
+               }
+           :}
+           ;
+
+/* The beginning of a dependency statement, which specifies the function and 
+ * introduces variables for the function's arguments.  
+ */
+dep_stmt_intro ::= ID:func opt_parenthesized_var_type_lst:vtl
+           {: RESULT = null;
+              List argTypes = new ArrayList();
+              List argVars = new ArrayList();
+              for (Iterator iter = vtl.iterator(); iter.hasNext(); ) {
+                  BLOGParser.TypedVar tv = (BLOGParser.TypedVar) iter.next();
+                  argTypes.add(tv.type);
+                  argVars.add(tv.var);
+              }
+              
+              Function f = parser.getFunction(func, argTypes);
+              boolean correct = true;
+
+              if (f == null) {
+                  semantic_error("function " + func + " with argument types "
+                                 + argTypes + " has not been declared.");
+                  correct = false;
+              } else if (!(f instanceof RandomFunction)) {
+                  semantic_error("function " + func + " with argument types "
+                                 + argTypes + " was not declared as random.");
+                  correct = false;
+              } else if (((RandomFunction) f).hasDepModel()) {
+                  semantic_error("function " + func + " already has "
+		                 + "a dependency statement." ); 
+                  correct = false;
+              } else if (argTypes.contains(null)) {
+                  semantic_error("Dependency statement failed because of "
+                                 + "error in function's argument list.");
+                  correct = false;
+              } 
+
+              // Make sure no variable name is used twice
+              Set vars = new HashSet();
+              for (Iterator iter = argVars.iterator(); iter.hasNext(); ) {
+                  String var = (String) iter.next();
+                  if (!vars.add(var)) {
+                      semantic_error("Variable name \"" + var + "\" is used "
+                                     + "for more than one argument.");
+                      correct = false;
+                  }
+              }
+
+              if (correct) {
+                  RESULT = (RandomFunction) f;
+                  RESULT.setArgVars(argVars);
+              } :}
+
+           | ID:func LPAREN new_var_lst:vl RPAREN
+           {: RESULT = null;
+              Object f = parser.model().getRandomFunc(func, vl.size());
+              boolean correct = true;
+
+              if (f == null) {
+                  semantic_error("random function " + func + " with "
+                                 + vl.size() + " arguments has not "
+                                 + "been declared.");
+                  correct = false;
+              } else if (f == Model.MULTIPLE_FUNCTIONS) {
+                  semantic_error("dependency statement must specify argument "
+                                 + "types, because there is more than one "
+                                 + "random function called \"" + func 
+                                 + "\" with " + vl.size() + " argument(s).");
+                  correct = false;
+              } else if (((RandomFunction) f).hasDepModel()) {
+                  semantic_error("function " + func + " already has "
+		                 + "a dependency statement." ); 
+                  correct = false;
+              } else if (vl.contains(null)) {
+                  semantic_error("Dependency statement failed because of "
+                                 + "error in function's argument list.");
+                  correct = false;
+              } 
+
+              // Make sure no variable name is used twice
+              Set vars = new HashSet();
+              for (Iterator iter = vl.iterator(); iter.hasNext(); ) {
+                  String var = (String) iter.next();
+                  if (!vars.add(var)) {
+                      semantic_error("Variable name \"" + var + "\" is used "
+                                     + "for more than one argument.");
+                      correct = false;
+                  }
+              }
+
+              if (correct) {
+                  RESULT = (RandomFunction) f;
+                  RESULT.setArgVars(vl);
+              } :}
+           ;
+
+
+num_stmt ::= num_stmt_intro:pop opt_braces_clause_lst:cl
+	   {: if (pop != null) {
+                  if (!cl.contains(null)) {
+                      Type childType = BuiltInTypes.NATURAL_NUM;
+                      Object defaultVal = new Integer(0);
+                      pop.setDepModel(new DependencyModel(cl, childType, 
+                                                          defaultVal));
+                  }
+              }
+           :}
+           ;
+
+/* The beginning of a number statement, which specifies a potential 
+ * object pattern (POP) and introduces variables for the 
+ * generating objects.    
+ */
+num_stmt_intro ::= NUMSIGN type:type opt_parenthesized_gen_obj_lst:gl
+           {: RESULT = null;
+              POP pop = null;
+              boolean correct = true;
+
+              if (type.isBuiltIn()) {
+                  semantic_error
+                      ("Can't have number statement for built-in type.");
+              } else if (gl.contains(null)) {
+                  semantic_error("Number statement failed due to error in "
+                                 + "generating object list.");
+                  correct = false;
+              } else {
+                  List originFuncs = new ArrayList();
+
+                  // Make sure origin funcs exist (declaring them as 
+                  // necessary) and are not repeated
+                  for (Iterator iter = gl.iterator(); iter.hasNext(); ) {
+                      BLOGParser.GenObjSpec s
+                          = (BLOGParser.GenObjSpec) iter.next();
+                      Function g = parser.getFunction
+                          (s.originFuncName, Collections.singletonList(type));
+                      if (g == null) {
+                          if (s.genObjType == null) {
+                              semantic_error
+                                  ("Function " + s.originFuncName 
+                                   + " with argument type " + type + " has not "
+                                   + "been declared.  To declare it implicitly"
+                                   + ", you must specify the type of its "
+                                   + "return value \"" + s.genObjVar + "\".");
+                              correct = false;
+                          }
+
+                          // declare the origin function
+                          List argTps = Collections.singletonList(type);
+                          if (checkOverlappingFuncs(s.originFuncName, argTps)) {
+                              g = new OriginFunction
+                                      (s.originFuncName, argTps, s.genObjType);
+		              parser.model().addFunction(g);
+                          } else {
+                              correct = false;
+                          }
+                      } else if (!(g instanceof OriginFunction)) {
+                          semantic_error("Function " + s.originFuncName 
+                                         + " with argument type " + type 
+                                         + " has not been declared as an "
+                                         + "origin function.");
+                          correct = false;
+                      } else if ((s.genObjType != null) 
+                                 && (g.getRetType() != s.genObjType)) {
+                          semantic_error("Return type of origin function " + g
+                                         + " is " + g.getRetType() + ", which "
+                                         + "does not match return value \""
+                                         + s.genObjType + " " + s.genObjVar
+                                         + "\".");
+                          correct = false;
+                      }
+                      if (originFuncs.contains(g)) {
+                          semantic_error("Origin function " + g
+                                         + " used more than once in "
+                                         + "number statement.");
+                          correct = false;
+                      }
+                      originFuncs.add(g);
+                  }
+
+                  // Add this POP to the type, if it's not a duplicate
+                  if (correct) {
+                      pop = new POP(type, originFuncs, null);
+                      if (type.getPOPWithOriginFuncs(pop.getOriginFuncSet()) 
+                              == null) {
+                          type.addPOP(pop);
+                      } else {
+                          semantic_error("number statement " + pop 
+                                         + " uses same origin functions "
+                                         + "as earlier number statement.");
+                          correct = false;
+                      }
+                  }
+              }
+
+              // Make sure no variable name is used twice.
+              List genObjVars = new ArrayList();
+              for (Iterator iter = gl.iterator(); iter.hasNext(); ) {
+                  BLOGParser.GenObjSpec genObjSpec 
+                      = (BLOGParser.GenObjSpec) iter.next();
+                  if (genObjVars.contains(genObjSpec.genObjVar)) {
+                       semantic_error("Variable name \"" + genObjSpec.genObjVar
+                                      + "\" is used for more than one "
+                                      + "generating object.");
+                       correct = false;
+                  }
+                  genObjVars.add(genObjSpec.genObjVar);
+              }
+
+              if (correct) {
+                  pop.setGenObjVars(genObjVars);
+                  RESULT = pop;
+              } :}
+           ; 
+
+
+guaranteed_decl ::= GUARANTEED type:type id_spec:ids
+	   {: if (type == null) {
+                  semantic_error
+			( "a declaration of guaranteed objects " 
+			 + " has failed due to:" );
+	          System.err.println( "\t- type error;" );  
+              } else {
+	          Iterator iter = ids.iterator( );
+	          while( iter.hasNext( ) ){
+		      String name = ( String )iter.next( );
+                      if (parser.getFunction(name, 
+                                             Collections.EMPTY_LIST) != null) {
+                          semantic_error("Error: function \"" + name 
+                                         + "\" with no arguments "
+                                         + "has already been declared.");
+                      } else {
+                          parser.model().addEnumeratedObject(name, type);
+                      }
+                  } 
+              } :}
+           ; 
+
+parfactor ::= FACTOR potential:potspec
+           {:
+               if (potspec != null) {
+                   BLOGParser.VarsWithConstraint vc 
+                       = new BLOGParser.VarsWithConstraint();
+                   Parfactor pf = new Parfactor(vc.logicalVars, vc.constraint, 
+                                                potspec.args, 
+                                                potspec.cls, potspec.params);
+                   pf.setLocation(getCurLocation());
+                   parser.model().addParfactor(pf);
+               }
+           :}
+           | PARFACTOR vars_opt_constraint:vc DOT potential:potspec
+           {:
+               if ((vc != null) && (potspec != null)) {
+                   Parfactor pf = new Parfactor(vc.logicalVars, vc.constraint,
+                                                potspec.args, 
+                                                potspec.cls, potspec.params);
+                   pf.setLocation(getCurLocation());
+                   parser.model().addParfactor(pf);
+               }
+           :}
+           ;
+
+
+/* Represents an evidence statement, which can be:
+ *    
+ *    * a symbol evidence statement, listing observed objects of the specified 
+ *	  type subject to certain constraints 
+ *        (Semantic checks:
+ *	      - whether the type for which the evidence is presented has been 
+ *		  declared;
+ *	      - whether the formula is valid (error-check is propagated from 
+ *		  the productions for various kinds of formulas).);      
+ *    * a value evidence statement, stating the value of the specified 
+ *	  function on the specified tuple of arguments
+ *        (Semantic checks:
+ *	      - whether the numbers of the function's parameters and arguments 
+ *		  passed to it match;
+ *            - whether the function has been declared.).
+ */ 
+evidence ::= OBS implicit_set:s EQ LBRACE opt_id_lst:symbols RBRACE
+	   {: if (s != null){
+                boolean correct = true;
+              	for (Iterator iter = symbols.iterator(); iter.hasNext(); ) {
+                    String symbol = (String) iter.next();
+                    if (parser.getFunction(symbol, 
+                                           Collections.EMPTY_LIST) != null) {
+                        semantic_error("Symbol already declared: " + symbol);
+                        correct = false;
+                    }
+	        }
+
+                if (correct) {
+		    SymbolEvidenceStatement sevid 
+		        = new SymbolEvidenceStatement(s, symbols);
+	            parser.evidence().addSymbolEvidence( sevid ); 
+                    for (Iterator iter = sevid.getSkolemConstants().iterator();
+                         iter.hasNext(); ) {
+                        parser.model().addFunction((Function) iter.next());
+                    }
+                } 
+	      } :}
+
+	   | OBS value_evidence_statement_left_side:leftSide EQ cpd_arg:value 
+/*	   | OBS term:leftSide EQ term:value */
+	   {: if ((leftSide != null) && (value != null)) {
+		   parser.evidence().addValueEvidence
+                        (new ValueEvidenceStatement(leftSide, value));
+	      } :} 
+	   ;   
+
+
+/* Represents a generic query. */
+query ::= QUERY cpd_arg:as
+	   {: if (as != null) {
+                  Query q;
+                  if (as instanceof Formula) {
+                      q = new FormulaQuery((Formula) as);
+                  } else {
+                      q = new ArgSpecQuery(as);
+                  }
+                  parser.queries().add(q);
+              } :}
+	   ;
+
+
+/* Represents a list of IDs, which can be specified as an explicit listing or
+ * in the form ID[int].
+ */
+id_spec ::= id_lst:il
+	   {: RESULT = il; :}
+
+	   | ID:id LBRACKET INT_CONST:ic RBRACKET
+	   {: RESULT = new ArrayList();
+	      int num = Integer.decode(ic).intValue();
+	      for(int i = 1; i <= num; i++)
+		  RESULT.add(new String(id + i)); :}
+	   ;
+
+
+/* Represents a possibly empty list of identifiers separated by commas.
+ */
+opt_id_lst ::= /* EMPTY */
+	    {: RESULT = new ArrayList(); :}
+	    | id_lst:is
+	    {: RESULT = is; :}
+	    ;
+
+
+
+/* Represents a non-empty list of identifiers separated by commas.
+ */
+id_lst ::= id_lst:is COMMA ID:id
+	   {: is.add( id );
+	      RESULT = is; :} 
+
+	   | ID:id
+	   {: RESULT = new ArrayList( );
+	      RESULT.add( id ); :}
+	   ;
+
+/* An optional list of parameters to a non-random function interpretation, 
+ * enclosed in square brackets.  The parameters must be non-random ArgSpecs.
+ */
+opt_interp_params ::= /* EMPTY */
+           {: RESULT = Collections.EMPTY_LIST; :}
+
+           | LBRACKET opt_cpd_arg_lst:pl RBRACKET
+           {: RESULT = new ArrayList(); 
+              for (Iterator iter = pl.iterator(); iter.hasNext(); ) {
+                  ArgSpec param = (ArgSpec) iter.next();
+                  RESULT.add(param);
+              }
+           :}
+           ;
+
+
+/* Either an empty string, or a possibly empty list of type names in 
+ * parentheses.  We use a special rule for empty parentheses to avoid 
+ * a parse table conflict with other kinds of empty lists.  
+ */
+opt_parenthesized_type_lst ::= /* EMPTY */
+            {: RESULT = Collections.EMPTY_LIST; :}
+
+            | LPAREN RPAREN
+            {: RESULT = Collections.EMPTY_LIST; :}
+
+            | LPAREN type_lst:tl RPAREN
+            {: RESULT = tl; :}
+            ;
+
+/* A possibly empty list of IDs denoting type names. */
+opt_type_lst ::= /* EMPTY */
+	    {: RESULT = Collections.EMPTY_LIST; :}
+           
+	    | type_lst:tl
+	    {: RESULT = tl; :}
+	    ;
+
+/* Represents a list of IDs denoting type names. */	   
+type_lst ::= type_lst:tl COMMA type:type
+	   {: tl.add( type );
+ 	      RESULT = tl;
+           :}    
+
+	   | type:type
+	   {: RESULT = new ArrayList();
+	      RESULT.add( type ); 
+           :}
+	   ;
+
+/* 
+ * Represents a type that is built in or has already been declared.  
+ * Result is null if the identifier is not a declared type.  
+ */
+type ::= ID:typename
+           {: RESULT = parser.model().getType(typename);
+              if (RESULT == null) {
+                  RESULT = parser.model().addType(typename);
+              } :}
+	   ;
+
+/* Either an empty string, or a possibly empty list of generating object 
+ * specifications in parentheses.  Alternatively, can be the old syntax 
+ * for specifying generating objects.  
+ */
+opt_parenthesized_gen_obj_lst ::= /* EMPTY */
+           {: RESULT = Collections.EMPTY_LIST; :}
+
+           | LPAREN opt_gen_obj_lst:gl RPAREN
+           {: RESULT = gl; :}
+
+           | COLON LPAREN opt_origin_func_lst:gl RPAREN RIGHTARROW 
+               LPAREN opt_new_var_lst:vl RPAREN
+           {: RESULT = null;
+              if (gl.size() == vl.size()) {
+                  RESULT = new ArrayList();
+                  for (int i = 0; i < gl.size(); ++i) {
+                      String g = (String) gl.get(i);
+                      String v = (String) vl.get(i);
+                      RESULT.add(new BLOGParser.GenObjSpec(g, null, v));
+                  } 
+               } else {
+                  semantic_error("Number of origin functions does not "
+                                 + "match number of variables.");
+               }
+           :}
+           ;
+
+/* Represents a possibly empty list of generating object specifications. 
+ */
+opt_gen_obj_lst ::= /* EMPTY */
+           {: RESULT = Collections.EMPTY_LIST; :} 
+
+           | gen_obj_lst:gl
+	   {: RESULT = gl; :}
+	   ;
+
+/* Represents a non-empty list of generating object specifications.
+ */
+gen_obj_lst ::= gen_obj_lst:gl COMMA gen_obj_spec:g
+	   {: gl.add(g);
+	      RESULT = gl; 
+           :}
+
+           | gen_obj_spec:g		    
+	   {: RESULT = new ArrayList();
+	      RESULT.add(g);
+           :}
+	   ;
+
+/* Specifies an origin function, a variable to represent the 
+ * generating object within a number statement, and optionally a type 
+ * for that variable.  The result of this production is a 
+ * BLOGParser.GenObjSpec object.  It is never null, so we 
+ * can always extract the variable name and record an attempted variable 
+ * declaration.  This works even if the origin function is null.  
+ */
+gen_obj_spec ::= ID:func EQ ID:genObjVar
+           {: RESULT = new BLOGParser.GenObjSpec(func, null, genObjVar); :}
+
+           | ID:func EQ type:genObjType ID:genObjVar
+           {: RESULT = new BLOGParser.GenObjSpec(func, genObjType, 
+                                                 genObjVar); 
+           :}
+           ;
+
+/* A possibly empty list of origin functions.
+ */
+opt_origin_func_lst ::= /* EMPTY */
+           {: RESULT = Collections.EMPTY_LIST; :}
+
+           | origin_func_lst:gl
+           {: RESULT = gl; :}
+           ;
+
+/* A non-empty list of origin functions.
+ */
+origin_func_lst ::= origin_func_lst:gl COMMA ID:func
+           {: gl.add(func);
+              RESULT = gl;
+           :}
+
+           | ID:func
+           {: RESULT = new ArrayList();
+              RESULT.add(func);
+           :}
+           ;
+
+/* A list of newly-introduced variable symbols, possibly empty. */
+opt_new_var_lst ::= /* EMPTY */
+           {: RESULT = Collections.EMPTY_LIST; :}
+
+           | new_var_lst:nvl
+           {: RESULT = nvl; :}
+           ;
+  
+/* Represents a non-empty list of newly-introduced variable symbols. */
+new_var_lst ::= new_var_lst:nvl COMMA new_var:nv
+	   {: nvl.add( nv );
+	      RESULT = nvl; :}
+
+	   | new_var:nvar
+	   {: RESULT = new ArrayList();
+	      RESULT.add( nvar ); :}
+	   ;
+
+
+
+/* Represents a newly introduced variable.
+ */
+new_var ::= ID:id
+	   {: RESULT = id; :}
+           ;
+
+
+
+/* Represents a generic formula. */
+formula ::= atomicformula:af
+	   {: RESULT = af; :}
+
+           | non_atomic_formula:f
+           {: RESULT = f; :}
+           ;
+
+/* Represents any kind of formula other than an atomic formula.  We need 
+ * this to avoid parsing ambiguities in contexts where a term and a formula 
+ * are both allowed.
+ */
+non_atomic_formula ::= 
+           negformula:nf
+	   {: RESULT = nf; :}
+
+	   | conjformula:cf
+	   {: RESULT = cf; :}
+
+	   | disjformula:df
+	   {: RESULT = df; :}
+
+	   | implicformula:impf
+	   {: RESULT = impf; :}
+
+	   | equalityformula:ef
+	   {: RESULT = ef; :}
+
+	   | inequalityformula:ef
+	   {: RESULT = ef; :}
+
+	   | parenformula:pf
+	   {: RESULT = pf; :}
+
+	   | existentialformula:eqf
+	   {: RESULT = eqf; :}
+
+	   | universalformula:uqf
+	   {: RESULT = uqf; :}
+	   ; 
+
+/* Represents any kind of formula other than an atomic formula or equality formula.
+ * Temporarily needed for generalizing the left side of value evidence statements to cpd_arg
+ * (see value_evidence_statement_left_side).
+ */
+non_atomic_formula_but_equality ::= 
+           negformula:nf
+	   {: RESULT = nf; :}
+
+	   | conjformula:cf
+	   {: RESULT = cf; :}
+
+	   | disjformula:df
+	   {: RESULT = df; :}
+
+	   | implicformula:impf
+	   {: RESULT = impf; :}
+
+	   | inequalityformula:ef
+	   {: RESULT = ef; :}
+
+	   | parenformula:pf
+	   {: RESULT = pf; :}
+
+	   | existentialformula:eqf
+	   {: RESULT = eqf; :}
+
+	   | universalformula:uqf
+	   {: RESULT = uqf; :}
+	   ; 
+
+
+
+/* Represents an atomic formula -- a term in an appropriate context.(Propagates
+ * an error-check from the 
+ * term production.) 
+ */ 
+atomicformula ::= term:t 
+           {: if (t == null) {
+                  RESULT = null;
+              } else {
+                  RESULT = new AtomicFormula( t ); 
+	          RESULT.setLocation(getCurLocation());
+	      } :}
+	   ;
+
+
+
+/* Represents a negation of a formula. (Propagates an error-check from the 
+ * formula production.) 
+ */
+negformula ::= NEG formula:f
+	   {: if (f == null) {
+                  RESULT = null;
+              } else {
+                  RESULT = new NegFormula( f );
+	          RESULT.setLocation(getCurLocation());
+	      } :}
+	   ;
+
+
+
+/* Represents a conjunction of 2 formulas. (Propagates an error-check from the 
+ * formula production.) 
+ */
+conjformula ::= formula:f1 AND formula:f2
+	   {: if ((f1 == null) || (f2 == null)) {
+                  RESULT = null;
+              } else { 
+                  RESULT = new ConjFormula( f1, f2 );
+	          RESULT.setLocation(getCurLocation());
+	      } :}
+	   ;   
+
+
+
+/* Represents a disjunction of 2 formulas. (Propagates an error-check from the 
+ * formula production.) 
+ */
+disjformula ::= formula:f1 OR formula:f2
+	   {: if ((f1 == null) || (f2 == null)) {
+                  RESULT = null;
+              } else {
+                  RESULT = new DisjFormula( f1, f2 );
+	          RESULT.setLocation(getCurLocation());
+	      } :}
+	   ;
+
+/* Represents an implication of one formula by another. (Propagates an 
+ * error-check from the formula production.) 
+ */
+implicformula ::= formula:f1 RIGHTARROW formula:f2
+	   {: if ((f1 == null) || (f2 == null)) {
+                  RESULT = null;
+              } else {
+                  RESULT = new ImplicFormula( f1, f2 );
+	          RESULT.setLocation(getCurLocation());
+	      } :}
+	   ;
+
+
+
+/* Represents an equality test for the values of two terms.
+ */ 
+equalityformula ::= term:t1 EQ term:t2
+	   {: if ((t1 == null) || (t2 == null)) {
+		  RESULT = null; 
+              } else {
+                  RESULT = new EqualityFormula( t1, t2 );
+	          RESULT.setLocation(getCurLocation());
+              } :}
+	   ; 
+
+/* Represents an inequality test for the values of two terms.  This is 
+ * represented as the negation of an equality formula.
+ */
+inequalityformula ::= term:t1 NEQ term:t2
+	   {: if ((t1 == null) || (t2 == null)) {
+		  RESULT = null; 
+              } else {
+                  Formula eq = new EqualityFormula( t1, t2 );
+                  eq.setLocation(getCurLocation());
+                  RESULT = new NegFormula(eq);
+	          RESULT.setLocation(getCurLocation());
+              } :}
+	   ; 
+
+
+/* Represents a non-atomic formula in parentheses.  We don't allow atomic 
+ * formulas here because an atomic formula in parentheses is parsed as a 
+ * term instead.  
+ */ 
+parenformula ::= LPAREN non_atomic_formula:f RPAREN
+	   {: RESULT = f; :}
+	   ; 
+
+
+
+/**
+ * Represents an Existentially Quantified Formula.
+ */
+existentialformula ::= EXISTS var_decl:tv formula:form
+	   {: if (form == null) {
+                  RESULT = null;
+              } else {
+                  RESULT = new ExistentialFormula(tv.var, tv.type, form);
+	          RESULT.setLocation(getCurLocation());
+              }
+	   :} ;
+
+
+/**
+ * Represents an Universally Quantified Formula.
+ */
+universalformula ::= FORALL var_decl:tv formula:form
+	   {: if (form == null) {
+                  RESULT = null;
+              } else { 
+                  RESULT = new UniversalFormula(tv.var, tv.type, form);
+	          RESULT.setLocation(getCurLocation());
+              }
+	   :} ;
+
+/**
+ * Declares a variable with a specified type. 
+ */
+var_decl ::= type:type new_var:var
+           {: RESULT = new BLOGParser.TypedVar(var, type); // type may be null 
+           :}
+           ;              
+              
+
+/* Represents a term, which can be either a 0-ary function application, a 
+ * variable, a  non-0-ary function application, or a built-in constant.
+ * (Propagates an error-check from production for specific kinds of terms.) 
+ * 
+ * Result is null if the term is invalid.    
+ */   
+term ::= symbol_term:s
+	   {: RESULT = s; :}
+
+	   | func_app_with_parens:f
+	   {: RESULT = f; :} 
+
+           | counting_term:c
+           {: RESULT = c; :}
+
+	   | built_in:bi
+	   {: if (bi == null) {
+                  RESULT = null;
+              } else {
+                  RESULT = new FuncAppTerm(bi, Collections.EMPTY_LIST);
+                  RESULT.setLocation(getCurLocation());
+              } :} 
+
+           | LPAREN term:t RPAREN
+           {: RESULT = t; :}
+
+           | term:t1 LT term:t2
+           {: Term[] args = {t1, t2};
+              RESULT = new FuncAppTerm("LessThan", Arrays.asList(args));
+              RESULT.setLocation(getCurLocation());
+           :}
+
+           | term:t1 GT term:t2
+           {: Term[] args = {t1, t2};
+              RESULT = new FuncAppTerm("GreaterThan", Arrays.asList(args));
+              RESULT.setLocation(getCurLocation());
+           :}
+
+           | term:t1 LEQ term:t2
+           {: Term[] args = {t1, t2};
+              RESULT = new FuncAppTerm("LessThanOrEqual", Arrays.asList(args));
+              RESULT.setLocation(getCurLocation());
+           :}
+
+           | term:t1 GEQ term:t2
+           {: Term[] args = {t1, t2};
+              RESULT = new FuncAppTerm("GreaterThanOrEqual", 
+                                       Arrays.asList(args));
+              RESULT.setLocation(getCurLocation());
+           :}
+
+	   | LBRACKET term_lst_lst:tll RBRACKET
+           {: int rows = tll.size();
+	      int columns = ((List) tll.get(0)).size();
+              MatrixType type = (MatrixType) BuiltInTypes.getType
+                  ("R" + rows + "x" + columns + "Matrix");
+
+              List args = new ArrayList(); // of Term
+              boolean correct = true;
+	      for( int i = 0; i < rows; i++ ){    
+		  List row = (List) tll.get(i);
+		  if( row.size() != columns ){
+			semantic_error("Ill-formed matrix: row " + (i+1) 
+					+ " of the matrix has a different "
+					+ "number of elements than "
+					+ "row 1 of this matrix.");
+                        correct = false;
+		  } else {
+		      for( int j = 0; j < row.size(); j++ ){
+		          Term arg = (Term) row.get(j);
+                          if (arg == null) {
+                              correct = false;
+                          } else {
+                              args.add(arg);
+                          }
+		      }
+                  }
+	      }
+
+              if (correct) {
+                  NonRandomFunction constr = type.getConstructor();
+	          RESULT = new FuncAppTerm(constr, args);
+                  RESULT.setLocation(getCurLocation());
+              } else {
+                  RESULT = null;
+              } :}
+	   ;
+
+
+
+/* Represents a term consisting of a single identifier, which can be 
+ * a variable or a zero-ary function symbol.  The distinction is made 
+ * at compilation time.  
+ */
+symbol_term ::= ID:id
+           {: RESULT = new SymbolTerm(id);
+	      RESULT.setLocation(getCurLocation());
+           :}
+	   ;
+
+
+
+/* Represents a function application. 
+ */
+func_app_with_parens ::= ID:func LPAREN opt_term_lst:tl RPAREN
+	   {: RESULT = new FuncAppTerm(func, tl);
+	      RESULT.setLocation(getCurLocation());
+           :}
+	   ;
+
+/* Represents a counting term.
+ */
+counting_term ::= NUMSIGN LPAREN vars_opt_constraint:vc RPAREN LBRACKET 
+                  term_lst:tl RBRACKET
+           {: RESULT = null;
+              if ((vc != null) && !tl.contains(null)) {
+                  RESULT = new CountingTerm(vc.logicalVars, 
+                                            vc.constraint, 
+                                            (List<Term>) tl);
+                  RESULT.setLocation(getCurLocation());
+              }
+           :}
+           ;
+	   
+/* Represents a possibly empty list of terms. (Propagates an error-check from 
+ * the term_lst production.) 
+ */ 
+opt_term_lst ::= /* Empty */
+	   {: RESULT = Collections.EMPTY_LIST; :}
+
+	   | term_lst:tl
+	   {: RESULT = tl; :}
+	   ;
+
+
+/* Represents a nonempty list of terms. (Propagates an error-check from the 
+ * term production.) 
+ */
+term_lst ::= term_lst:tl COMMA term:t
+	   {: tl.add( t ); 
+	      RESULT = tl;
+           :}
+
+	   | term:t
+	   {: RESULT = new ArrayList( ); 
+	      RESULT.add( t ); 
+           :}
+	   ;
+
+
+
+/* Represents a Java class name specification -- either just a class name, 
+ * or a fully qualified class name with dots separating the components.
+ */
+class_name ::= ID:id
+	   {: RESULT = id; :}
+	   | CLASS_NAME:cn
+	   {: RESULT = cn; :}
+	   ;
+
+
+/* Represents built-in constants: null, booleans, vectors, numbers,and strings.
+ */
+built_in ::= boolean_built_in:bbi
+	   {: RESULT = bbi; :}
+
+	   | non_boolean_built_in:nbbi
+	   {: RESULT = nbbi; :}
+	   ;
+	   
+
+
+/* Represents a built-in boolean value. */	     
+boolean_built_in ::= TRUE
+	   {: RESULT = BuiltInFunctions.getLiteral
+                  ("true", BuiltInTypes.BOOLEAN, Boolean.TRUE);
+           :}
+
+	   | FALSE
+	   {: RESULT = BuiltInFunctions.getLiteral
+                  ("false", BuiltInTypes.BOOLEAN, Boolean.FALSE);
+           :}
+	   ;
+ 
+
+
+/* Represents non-boolean built-in constants. */
+non_boolean_built_in ::=  number:n
+	   {: RESULT = n; // already a NonRandomConstant :}
+
+	   | str_const_seq:s
+	   {: RESULT = BuiltInFunctions.getLiteral
+                  ("\"" + s + "\"", BuiltInTypes.STRING, s); 
+           :}
+
+	   | CHAR_CONST:c
+	   {: RESULT = BuiltInFunctions.getLiteral
+                  ("\'" + c + "\'", BuiltInTypes.CHARACTER, c); 
+           :}
+	   ;
+
+
+/* Represents numeric built-in constants: integers and doubles. */
+number ::= INT_CONST:ic
+	   {: Type type = (Integer.parseInt(ic) >= 0) ? 
+                  BuiltInTypes.NATURAL_NUM : BuiltInTypes.INTEGER;
+              RESULT = BuiltInFunctions.getLiteral
+                  (ic, type, new Integer(ic));
+           :}
+
+	   | DOUBLE_CONST:dc
+	   {: RESULT = BuiltInFunctions.getLiteral
+                  (dc, BuiltInTypes.REAL, new Double(dc)); 
+	   :} 
+
+	   | TIME_CONST:t
+	   {: String afterAtSign = t.substring(1);
+              RESULT = BuiltInFunctions.getLiteral
+	          (t, BuiltInTypes.TIMESTEP, 
+		   Timestep.at(Integer.parseInt(afterAtSign)));
+           :}
+	   ;
+
+
+
+/* Represents a nonempty list of matrix rows (also lists). 
+ */
+term_lst_lst ::= term_lst:tl
+	   {: RESULT = new ArrayList();
+	      RESULT.add(tl); :}
+
+           | term_lst_lst:tll SEMI term_lst:tl
+	   {: tll.add(tl);
+	      RESULT = tll; :}
+	   ;
+
+/* Non-empty sequence of string constants, which are concatenated into 
+ * one string.
+ */
+str_const_seq ::= STR_CONST:str
+           {: RESULT = str; :}
+           
+           | str_const_seq:strSoFar STR_CONST:nextStr
+           {: RESULT = strSoFar.concat(nextStr); :}
+           ;
+
+/* A non-empty list of clauses, optionally surrounded by curly braces. */
+opt_braces_clause_lst ::= clause_lst:cl
+           {: RESULT = cl; :}
+
+           | LBRACE clause_lst:cl RBRACE
+           {: RESULT = cl; :}
+           ;
+
+/* Represents a nonempty list of clauses. (Propagates an error-check from the 
+ * cpd , if_clause, opt_else_if_lst, and opt_else_clause poductions.)
+ */
+clause_lst ::= clause_without_cond:clause 
+	   {: RESULT = new ArrayList();
+              RESULT.add(clause); 
+           :}
+ 
+	   | if_elseif_lst:clauses 
+           {: RESULT = clauses; :}
+
+           | if_elseif_lst:clauses ELSE clause_without_cond:last_clause
+           {: RESULT = clauses;
+              clauses.add(last_clause);
+           :}
+	   ;
+
+
+/* An if-clause followed by some number (possibly zero) of elseif-clauses.
+ */
+if_elseif_lst ::= IF clause_with_cond:clause
+           {: RESULT = new ArrayList();
+              RESULT.add(clause);
+           :}
+
+           | if_elseif_lst:clauses ELSEIF clause_with_cond:clause
+           {: RESULT = clauses;
+              RESULT.add(clause);
+           :}
+           ;
+
+/* A clause with a condition and a CPD.  This can occur after IF or ELSEIF.
+ */
+clause_with_cond ::= formula:f THEN cpd:cpd_and_args
+	   {: if ((f == null) || (cpd_and_args == null)) {
+                  RESULT = null;
+              } else {
+                  RESULT = new Clause(f, cpd_and_args.cls, 
+                                      cpd_and_args.params, cpd_and_args.args);
+                  RESULT.setLocation(f.getLocation());
+              } :}
+	   ;
+
+/* A clause with no condition, just a CPD.  This can occur at the beginning 
+ * of a clause list when there is just one clause in the list, or after 
+ * ELSE at the end of a list.
+ */
+clause_without_cond ::= cpd:cpd_and_args
+	   {: if (cpd_and_args == null) {
+                 RESULT = null;
+              } else {
+                 RESULT = new Clause(TrueFormula.TRUE, cpd_and_args.cls, 
+			             cpd_and_args.params, cpd_and_args.args); 
+                 RESULT.setLocation(getCurLocation());
+              } :}
+	   ;
+           
+
+/* Represents a cpd with parameters in square brackets and arguments in 
+ * parentheses. (Propagates an error-check from param_lst, opt_term_lst, and 
+ * term productions.)  The result is a List with two elements: the first 
+ * is a CondProbDistrib object, and the second is a List of Terms representing 
+ * the CPD arguments.  The result is null if the CPD and/or arguments are 
+ * invalid.  
+ */
+cpd ::= EQ cpd_arg:ca
+	   {: RESULT = null;
+              if (ca != null) {
+                 List cpdArgs = Collections.singletonList(ca);
+                 RESULT = new BLOGParser.CPDSpec(EqualsCPD.class, 
+                                                 Collections.EMPTY_LIST,
+                                                 cpdArgs);
+               } :}
+
+	   | DISTRIB class_name:cpdid opt_cpd_params:pl opt_cpd_args:al
+	   {: RESULT = null;
+              if ((!pl.contains(null)) && (!al.contains(null))) {
+                  Class cls = getClassWithName(cpdid);
+                  if (cls != null) {
+                      RESULT = new BLOGParser.CPDSpec(cls, pl, al);
+                  }
+              } :}
+	   ;
+
+/*
+ * A class name with optional parameters and optional arguments, where 
+ * the arguments must be terms.
+ */
+potential ::= class_name:name opt_cpd_params:pl opt_factor_args:al
+           {: RESULT = null;
+              if ((!pl.contains(null)) & (!al.contains(null))) {
+                  Class cls = getClassWithName(name);
+                  if (cls != null) {
+                      RESULT = new BLOGParser.PotentialSpec(cls, pl, al);
+                  }
+              } :}
+           ;
+
+/* An optional list of CPD parameters in square brackets.  Each parameter 
+ * must be a non-random ArgSpec with no free variables.  
+ */
+opt_cpd_params ::= /*EMPTY */
+           {: RESULT = Collections.EMPTY_LIST; :}
+
+           | LBRACKET opt_cpd_arg_lst:pl RBRACKET
+	   {: RESULT = pl;
+           :}
+	   ;
+
+
+/* An optional list of CPD arguments, enclosed in parentheses.
+ */
+opt_cpd_args ::= /* EMPTY */
+           {: RESULT = Collections.EMPTY_LIST; :}
+
+           | LPAREN opt_cpd_arg_lst:cal RPAREN
+           {: RESULT = cal; :}
+           ;
+
+/* An optional list of terms, enclosed in parentheses.
+ */
+opt_factor_args ::= /* EMPTY */
+           {: RESULT = Collections.EMPTY_LIST; :}
+
+           | LPAREN opt_term_lst:tl RPAREN
+           {: RESULT = tl; :}
+           ;
+
+/* Represents a possibly empty list of CPD arguments. */
+opt_cpd_arg_lst ::= /*EMPTY*/
+	   {: RESULT = Collections.EMPTY_LIST; :}
+
+	   | cpd_arg_lst:cal
+	   {: RESULT = cal; :}
+	   ;
+
+
+
+/* Represents a nonempty list of cpd arguments. (Propagates an error-check from
+ * the cpd_arg production.)
+ */
+cpd_arg_lst ::= cpd_arg_lst:cal COMMA cpd_arg:ca
+	   {: cal.add( ca ); 
+	      RESULT = cal;
+           :}
+
+	   | cpd_arg:ca
+	   {: RESULT = new ArrayList( ); 
+	      RESULT.add( ca ); 
+	   :}
+	   ;
+
+
+
+/* Represents a CPD argument, which can be:
+ *
+ *    * a term (Boolean terms are treated as terms, not atomic formulas)
+ *    * a non-atomic formula;
+ *    * an implicitly specified set; 
+ *    * an explicitly specified set;
+ *    * a set of tuples.
+ */
+cpd_arg ::= term:t 
+	  {: RESULT = t; :}
+
+          | non_atomic_formula:f 
+          {: RESULT = f; :}
+
+	  | explicit_set:es
+	  {: RESULT = es; :}
+
+	  | implicit_set:is
+	  {: RESULT = is; :}
+   
+	  | tuple_set:ts
+	  {: RESULT = ts; :}
+
+          | cardinality_spec:cs
+          {: RESULT = cs; :}
+	  ;
+
+
+/* Represents the left side of a value evidence statement, which is just like a cpd_arg
+ * except that it cannot be an implicit set, or a non-parenthesized formula
+ * (an equality would be confused with the equality of the value evidence statement).
+ * It cannot be an implicit set because that created an ambiguity with symbol evidence statements.
+ * It is still not clear to me why it cannot be a non-parenthesized formula that is not an equality,
+ * as defined by non_atomic_formula_but_equality.
+ */
+value_evidence_statement_left_side ::= term:t 
+	  {: RESULT = t; :}
+
+	  | parenformula:f 
+	  {: RESULT = f; :}
+
+	  | explicit_set:es
+	  {: RESULT = es; :}
+
+	  | tuple_set:ts
+	  {: RESULT = ts; :}
+
+	  | cardinality_spec:cs
+	  {: RESULT = cs; :}
+	  ;
+
+/* Represents an explicitly specified set of Terms. */
+explicit_set ::= LBRACE opt_term_lst:otl RBRACE
+	  {: if (otl.contains(null)) {
+                 RESULT = null;
+             } else {
+                 RESULT = new ExplicitSetSpec( otl );
+	         RESULT.setLocation(getCurLocation());
+             }
+          :}
+	  ;
+
+/* Represents a set of tuples.
+ */
+tuple_set ::= LBRACE term_lst:tl FOR var_type_lst:vl 
+                  opt_cond:cond RBRACE
+	  {: List vars = new ArrayList();
+             List types = new ArrayList();
+             for (Iterator iter = vl.iterator(); iter.hasNext(); ) {
+                 BLOGParser.TypedVar tv = (BLOGParser.TypedVar) iter.next();
+                 vars.add(tv.var);
+                 types.add(tv.type);
+             }
+
+             if (tl.contains(null) || (cond == null)) {
+                 RESULT = null;
+             } else {
+                 RESULT = new TupleSetSpec(tl, types, vars, cond);
+	         RESULT.setLocation(getCurLocation());
+             }
+          :}
+	  ;
+
+
+/* Either an empty string, or a parenthesized list of the form 
+ * (<type> <var>, <type> <var>, ..., <type> <var>).  We use a special rule 
+ * for empty parentheses to avoid a parse table conflict with other kinds of 
+ * empty lists.  
+ */
+opt_parenthesized_var_type_lst ::= /* EMPTY */
+          {: RESULT = Collections.EMPTY_LIST; :}
+
+          | LPAREN RPAREN
+          {: RESULT = Collections.EMPTY_LIST; :}
+
+          | LPAREN var_type_lst:vtl RPAREN
+          {: RESULT = vtl; :}
+          ;
+
+/* Non-empty list of the form <type> <var>, <type> <var>, ..., <type> <var>.
+ */
+var_type_lst ::= var_decl:tv
+          {: RESULT = new ArrayList();
+             RESULT.add(tv);
+	  :}
+
+	  | var_type_lst:vtl COMMA var_decl:tv
+          {: RESULT = vtl;
+             vtl.add(tv);
+          :}
+	  ;
+
+
+
+/* Represents an implicit set specification. It consists of a variable, the 
+ * type of that variable, and the condition (formula) that this variable 
+ * satisfies.
+ */
+implicit_set ::= LBRACE var_decl:tv opt_cond:oc RBRACE
+	  {: if (oc == null) {
+                 RESULT = null;
+             } else {
+                 RESULT = new ImplicitSetSpec(tv.var, tv.type, oc);
+	         RESULT.setLocation(getCurLocation());
+             }
+          :}
+	  ;
+
+
+
+/* Represents an optional condition in the implicit set specification. */
+opt_cond ::= /* Empty */
+	  {: RESULT = TrueFormula.TRUE; :}
+
+	  | COLON formula:f 
+	  {: RESULT = f; :}
+	  ;	  
+
+/* Represents the cardinality of an implicit set. */
+cardinality_spec ::= NUMSIGN implicit_set:is
+          {: if (is == null) {
+                 RESULT = null;
+             } else { 
+                 RESULT = new CardinalitySpec(is); 
+	         RESULT.setLocation(getCurLocation());
+             } :}
+          ;
+
+/* A non-empty set of type-variable pairs, optionally followed by a colon 
+ * and a formula.
+ */
+vars_opt_constraint ::= var_type_lst:vtl
+          {: RESULT = null;
+             if (!vtl.contains(null)) {
+                RESULT = new BLOGParser.VarsWithConstraint(vtl);
+             }
+          :}
+          | var_type_lst:vtl COLON formula:form
+          {: RESULT = null;
+             if ((!vtl.contains(null)) && (form != null)) {
+                 RESULT = new BLOGParser.VarsWithConstraint(vtl, form);
+             }
+          :}
+          ;
