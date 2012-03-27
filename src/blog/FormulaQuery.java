@@ -43,100 +43,99 @@ import ve.Potential;
 
 public class FormulaQuery extends ArgSpecQuery {
 
-    public FormulaQuery( Formula formula ){
-	super(formula);
+	public FormulaQuery(Formula formula) {
+		super(formula);
 
-	if (Main.outputPath() != null) {
-	    outputFile = Main.filePrintStream(Main.outputPath() +
-					      "-trial" + trialNum + ".data");
-	}
-    }
-
-    public Formula formula() {
-	return (Formula) argSpec;
-    }
-
-    public void printResults(PrintStream s) {
-	s.println("Probability of " + argSpec + " is " + calculateResult());
-    }
-
-    public void logResults(int numSamples) {
-	if (outputFile != null) {
-	    outputFile.println("\t" + numSamples + "\t" + calculateResult());
-	}
-    }
-
-    public void updateStats(PartialWorld world, double weight) {
-	if (probTrue != -1) {
-	    throw new IllegalStateException
-		("Can't update states: posterior already specified.");
+		if (Main.outputPath() != null) {
+			outputFile = Main.filePrintStream(Main.outputPath() + "-trial" + trialNum
+					+ ".data");
+		}
 	}
 
-	if (((Formula) argSpec).isTrue(world)) {
-	    trueSum += weight;
-	} 
-	totalSum += weight;
-    }
-
-    public void setPosterior(Factor posterior) {
-	if (!posterior.getRandomVars().contains((BasicVar) variable)) {
-	    throw new IllegalArgumentException
-		("Query variable " + variable + " not covered by factor on "
-		 + posterior.getRandomVars());
-	}
-	if (posterior.getRandomVars().size() > 1) {
-	    throw new IllegalArgumentException
-		("Answer to query on " + variable + " should be factor on "
-		 + "that variable alone, not " + posterior.getRandomVars());
+	public Formula formula() {
+		return (Formula) argSpec;
 	}
 
-	probTrue = posterior.getPotential().getValue
-	    (Collections.singletonList(Boolean.TRUE));
-    }
-
-    public void zeroOut(){
-	double result = calculateResult();
-	runningProbSum += result;
-	runningProbSumSquares += (result * result);
-	trialNum++;
-
-	if ((outputFile != null) && (trialNum != Main.numTrials())) {
-	    outputFile = Main.filePrintStream(Main.outputPath() +
-					      "-trial" + trialNum + ".data");
+	public void printResults(PrintStream s) {
+		s.println("Probability of " + argSpec + " is " + calculateResult());
 	}
 
-	trueSum = 0;
-	totalSum = 0;
-	probTrue = -1;
-    }
-
-    private double calculateResult() {
-	if (probTrue != -1) {
-	    return probTrue;
+	public void logResults(int numSamples) {
+		if (outputFile != null) {
+			outputFile.println("\t" + numSamples + "\t" + calculateResult());
+		}
 	}
-	return trueSum / totalSum;
-    }
 
-    //CAREFUL: zeroOut() must be called before using this method
-    public void printVarianceResults(PrintStream s) {
-	double mean = runningProbSum / trialNum;
-	s.println("Mean of " + argSpec + " query results is " + mean);
-	s.println("Std dev of " + argSpec + " query results is " + 
-		  Math.sqrt(runningProbSumSquares/trialNum - (mean * mean)));
-    }
+	public void updateStats(PartialWorld world, double weight) {
+		if (probTrue != -1) {
+			throw new IllegalStateException(
+					"Can't update states: posterior already specified.");
+		}
 
-    public Histogram getHistogram() {
-    	histogram.clear();
-    	histogram.increaseWeight(Boolean.TRUE,             trueSum);
-    	histogram.increaseWeight(Boolean.FALSE, totalSum - trueSum);
-    	return histogram;
-    }
-    
-    private double trueSum = 0;
-    private double totalSum = 0;
-    private double probTrue = -1;
+		if (((Formula) argSpec).isTrue(world)) {
+			trueSum += weight;
+		}
+		totalSum += weight;
+	}
 
-    private double runningProbSum = 0;
-    private double runningProbSumSquares = 0;
-    private int trialNum = 0;
+	public void setPosterior(Factor posterior) {
+		if (!posterior.getRandomVars().contains((BasicVar) variable)) {
+			throw new IllegalArgumentException("Query variable " + variable
+					+ " not covered by factor on " + posterior.getRandomVars());
+		}
+		if (posterior.getRandomVars().size() > 1) {
+			throw new IllegalArgumentException("Answer to query on " + variable
+					+ " should be factor on " + "that variable alone, not "
+					+ posterior.getRandomVars());
+		}
+
+		probTrue = posterior.getPotential().getValue(
+				Collections.singletonList(Boolean.TRUE));
+	}
+
+	public void zeroOut() {
+		double result = calculateResult();
+		runningProbSum += result;
+		runningProbSumSquares += (result * result);
+		trialNum++;
+
+		if ((outputFile != null) && (trialNum != Main.numTrials())) {
+			outputFile = Main.filePrintStream(Main.outputPath() + "-trial" + trialNum
+					+ ".data");
+		}
+
+		trueSum = 0;
+		totalSum = 0;
+		probTrue = -1;
+	}
+
+	private double calculateResult() {
+		if (probTrue != -1) {
+			return probTrue;
+		}
+		return trueSum / totalSum;
+	}
+
+	// CAREFUL: zeroOut() must be called before using this method
+	public void printVarianceResults(PrintStream s) {
+		double mean = runningProbSum / trialNum;
+		s.println("Mean of " + argSpec + " query results is " + mean);
+		s.println("Std dev of " + argSpec + " query results is "
+				+ Math.sqrt(runningProbSumSquares / trialNum - (mean * mean)));
+	}
+
+	public Histogram getHistogram() {
+		histogram.clear();
+		histogram.increaseWeight(Boolean.TRUE, trueSum);
+		histogram.increaseWeight(Boolean.FALSE, totalSum - trueSum);
+		return histogram;
+	}
+
+	private double trueSum = 0;
+	private double totalSum = 0;
+	private double probTrue = -1;
+
+	private double runningProbSum = 0;
+	private double runningProbSumSquares = 0;
+	private int trialNum = 0;
 }

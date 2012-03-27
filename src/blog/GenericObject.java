@@ -36,45 +36,44 @@
 package blog;
 
 /**
- * Represents a generic object of some type, possibly with constraints
- * on the values of its origin functions.  Origin functions
- * can be evaluated on these objects, but other functions can't.  These 
- * objects cannot be used as an argument for any instantiated random
- * variable.  
+ * Represents a generic object of some type, possibly with constraints on the
+ * values of its origin functions. Origin functions can be evaluated on these
+ * objects, but other functions can't. These objects cannot be used as an
+ * argument for any instantiated random variable.
  */
 public class GenericObject {
-    /**
-     * Creates a new generic object of the given type, with no 
-     * constraints on its generating functions.  
-     */
-    public GenericObject(Type type) {
-	this.type = type;
-    }
+	/**
+	 * Creates a new generic object of the given type, with no constraints on its
+	 * generating functions.
+	 */
+	public GenericObject(Type type) {
+		this.type = type;
+	}
 
-    public Type getType() {
-	return type;
-    }
+	public Type getType() {
+		return type;
+	}
 
-    /**
-     * Returns null if the value of <code>g</code> on this object is 
-     * not determined.
-     */
-    public Object getOriginFuncValue(OriginFunction g) {
-	return null;
-    }
+	/**
+	 * Returns null if the value of <code>g</code> on this object is not
+	 * determined.
+	 */
+	public Object getOriginFuncValue(OriginFunction g) {
+		return null;
+	}
 
-    /**
-     * Returns true if the given object satisfies the origin function 
-     * constraints imposed by this GenericObject, in the given context.
-     */
-    public boolean isConsistentInContext(EvalContext context, Object obj) {
-	// assume it's of the correct type
-	return (obj != Model.NULL);
-    }
+	/**
+	 * Returns true if the given object satisfies the origin function constraints
+	 * imposed by this GenericObject, in the given context.
+	 */
+	public boolean isConsistentInContext(EvalContext context, Object obj) {
+		// assume it's of the correct type
+		return (obj != Model.NULL);
+	}
 
-    public String toString() {
-	return ("Generic(" + type + ")");
-    }
+	public String toString() {
+		return ("Generic(" + type + ")");
+	}
 
-    private Type type;
+	private Type type;
 }

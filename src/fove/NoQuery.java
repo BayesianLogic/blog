@@ -38,11 +38,11 @@ package fove;
 import blog.*;
 
 public class NoQuery implements ElimTester {
-    /**
-     *  Returns true of the random variables defined by the constrained term
-     *  should be eliminated (summed out).
-     */
-    public boolean shouldEliminate(Term term, Constraint constraint){
-	return true;
-    }
+	/**
+	 * Returns true of the random variables defined by the constrained term should
+	 * be eliminated (summed out).
+	 */
+	public boolean shouldEliminate(Term term, Constraint constraint) {
+		return true;
+	}
 }

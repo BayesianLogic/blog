@@ -36,72 +36,71 @@
 package common;
 
 /**
- * An object of class PrecisionRecall represents precision and recall 
- * statistics for some experiment.  
+ * An object of class PrecisionRecall represents precision and recall statistics
+ * for some experiment.
  */
 public class PrecisionRecall {
-    /**
-     * Creates a new PrecisionRecall object with the given precision and 
-     * recall.
-     */
-    public PrecisionRecall(double precision, double recall) {
-	this.precision = precision;
-	this.recall = recall;
-	computeF();
-    }
+	/**
+	 * Creates a new PrecisionRecall object with the given precision and recall.
+	 */
+	public PrecisionRecall(double precision, double recall) {
+		this.precision = precision;
+		this.recall = recall;
+		computeF();
+	}
 
-    /**
-     * Creates a new PrecisionRecall object for the given experimental 
-     * results.
-     *
-     * @param numTrue       true number of objects with some desired property
-     * @param numFound      number of objects found in this experiment
-     * @param numTrueFound  number of objects found that really have 
-     *                      the desired property
-     */
-    public PrecisionRecall(int numTrue, int numFound, int numTrueFound) {
-	precision = numTrueFound / (double) numFound;
-	recall = numTrueFound / (double) numTrue;
-	computeF();
-    }
+	/**
+	 * Creates a new PrecisionRecall object for the given experimental results.
+	 * 
+	 * @param numTrue
+	 *          true number of objects with some desired property
+	 * @param numFound
+	 *          number of objects found in this experiment
+	 * @param numTrueFound
+	 *          number of objects found that really have the desired property
+	 */
+	public PrecisionRecall(int numTrue, int numFound, int numTrueFound) {
+		precision = numTrueFound / (double) numFound;
+		recall = numTrueFound / (double) numTrue;
+		computeF();
+	}
 
-    /**
-     * Returns the precision, defined as: the number of objects found that 
-     * have a desired property, divided by the total number of objects found.
-     */
-    public double getPrecision() {
-	return precision;
-    }
+	/**
+	 * Returns the precision, defined as: the number of objects found that have a
+	 * desired property, divided by the total number of objects found.
+	 */
+	public double getPrecision() {
+		return precision;
+	}
 
-    /**
-     * Returns the recall, defined as the number of objects found that 
-     * have a desired property, divided by the total number of objects 
-     * with that property.
-     */
-    public double getRecall() {
-	return recall;
-    }
+	/**
+	 * Returns the recall, defined as the number of objects found that have a
+	 * desired property, divided by the total number of objects with that
+	 * property.
+	 */
+	public double getRecall() {
+		return recall;
+	}
 
-    /**
-     * Returns the F1 statistic, which is the harmonic mean of precision 
-     * and recall: 1/F1 = 1/P + 1/R.
-     */
-    public double getF1() {
-	return f1;
-    }
+	/**
+	 * Returns the F1 statistic, which is the harmonic mean of precision and
+	 * recall: 1/F1 = 1/P + 1/R.
+	 */
+	public double getF1() {
+		return f1;
+	}
 
-    private void computeF() {
-	// 1/F = (1/p + 1/r) / 2
-	// F = 2pr / (p + r)
-	f1 = 2 * precision * recall / (precision + recall);
-    }
+	private void computeF() {
+		// 1/F = (1/p + 1/r) / 2
+		// F = 2pr / (p + r)
+		f1 = 2 * precision * recall / (precision + recall);
+	}
 
-    public String toString() {
-	return ("precision: " + precision + ", recall: " + recall 
-		+ ", F1: " + f1);
-    }
+	public String toString() {
+		return ("precision: " + precision + ", recall: " + recall + ", F1: " + f1);
+	}
 
-    double precision;
-    double recall;
-    double f1;
+	double precision;
+	double recall;
+	double f1;
 }

@@ -42,114 +42,109 @@ import ve.Potential;
 import ve.MultiArrayPotential;
 
 /**
- * Class of operators that expand a counting formula into a list of 
- * atomic formulas, one for each possible grounding of the logical variable 
- * that the counting formula ranges over.  
+ * Class of operators that expand a counting formula into a list of atomic
+ * formulas, one for each possible grounding of the logical variable that the
+ * counting formula ranges over.
  */
 public class CountExpansion extends LiftedInfOperator {
 
-    private Set<Parfactor> parfactors;
-    private Parfactor phi;
-    private Parfactor.TermPtr countTermPtr;
-    private LogicalVar x;
+	private Set<Parfactor> parfactors;
+	private Parfactor phi;
+	private Parfactor.TermPtr countTermPtr;
+	private LogicalVar x;
 
-    private CountExpansion(Set<Parfactor> parfactors, Parfactor phi, 
-			   Parfactor.TermPtr countTermPtr, LogicalVar x) {
-	this.parfactors = parfactors;
-	this.phi = phi;
-	this.countTermPtr = countTermPtr;
-	this.x = x;
-    }
-
-    public double logCost() {
-	int curSize = phi.potential().size();
-	CountingTerm countingTerm = (CountingTerm) countTermPtr.term();
-	int numHists = countingTerm.getType().range().size();
-	
-	countingTerm.checkSingletons();
-	FuncAppTerm subTerm = countingTerm.singleSubTerm();
-	int subTermRangeSize = subTerm.getType().range().size();
-	
-	int numGroundings = countingTerm.constraint().numAllowedConstants(x);
-
-	double logCost = (Math.log(curSize) 
-			  - Math.log(numHists) 
-			  + (numGroundings * Math.log(subTermRangeSize)));
-
-	return logCost;
-    }
-
-    public void operate() {
-	parfactors.remove(phi);
-
-	CountingTerm cTerm = (CountingTerm) countTermPtr.term();
-	cTerm.checkSingletons();
-	FuncAppTerm subTerm = cTerm.singleSubTerm();
-
-	List<CountingTerm> newCountingTerms = Collections.emptyList();
-	List<FuncAppTerm> newFuncApps = new ArrayList<FuncAppTerm>();
-
-	Set<? extends Term> groundings = cTerm.constraint.allowedConstants(x);
-	Substitution subst = new Substitution();
-	for (Term c : groundings) {
-	    subst.add(x, c);
-	    FuncAppTerm newTerm = (FuncAppTerm) subTerm.getSubstResult(subst);
-	    newFuncApps.add(newTerm);
+	private CountExpansion(Set<Parfactor> parfactors, Parfactor phi,
+			Parfactor.TermPtr countTermPtr, LogicalVar x) {
+		this.parfactors = parfactors;
+		this.phi = phi;
+		this.countTermPtr = countTermPtr;
+		this.x = x;
 	}
 
-	Parfactor result = phi.expandCountInto(countTermPtr.index(), 
-					       newCountingTerms, newFuncApps);
-	parfactors.add(result);
+	public double logCost() {
+		int curSize = phi.potential().size();
+		CountingTerm countingTerm = (CountingTerm) countTermPtr.term();
+		int numHists = countingTerm.getType().range().size();
 
-	LiftedVarElim.shatter(parfactors,Collections.EMPTY_LIST);
-    }
+		countingTerm.checkSingletons();
+		FuncAppTerm subTerm = countingTerm.singleSubTerm();
+		int subTermRangeSize = subTerm.getType().range().size();
 
-    public String toString() {
-	StringBuffer buf = new StringBuffer();
-	buf.append("Expansion(");
-	buf.append(x);
-	buf.append(" in formula ");
-	buf.append(countTermPtr.index());
-	buf.append(" of ");
-	buf.append(phi);
-	buf.append(")");
-	return buf.toString();
-    }
+		int numGroundings = countingTerm.constraint().numAllowedConstants(x);
 
-    public static Collection<LiftedInfOperator> opFactory
-	(Set<Parfactor> parfactors, ElimTester query) 
-    {
-	List<LiftedInfOperator> ops = new LinkedList<LiftedInfOperator>();
+		double logCost = (Math.log(curSize) - Math.log(numHists) + (numGroundings * Math
+				.log(subTermRangeSize)));
 
-	for (Parfactor phi : parfactors) {
-	    List<? extends Term> terms = phi.dimTerms();
-	    for (int i = 0; i < terms.size(); ++i) {
-		ArgSpec term = terms.get(i);
-		if (term instanceof CountingTerm) {
-		    maybeAddOps(parfactors, phi, i, (CountingTerm) term, ops);
+		return logCost;
+	}
+
+	public void operate() {
+		parfactors.remove(phi);
+
+		CountingTerm cTerm = (CountingTerm) countTermPtr.term();
+		cTerm.checkSingletons();
+		FuncAppTerm subTerm = cTerm.singleSubTerm();
+
+		List<CountingTerm> newCountingTerms = Collections.emptyList();
+		List<FuncAppTerm> newFuncApps = new ArrayList<FuncAppTerm>();
+
+		Set<? extends Term> groundings = cTerm.constraint.allowedConstants(x);
+		Substitution subst = new Substitution();
+		for (Term c : groundings) {
+			subst.add(x, c);
+			FuncAppTerm newTerm = (FuncAppTerm) subTerm.getSubstResult(subst);
+			newFuncApps.add(newTerm);
 		}
-	    }
+
+		Parfactor result = phi.expandCountInto(countTermPtr.index(),
+				newCountingTerms, newFuncApps);
+		parfactors.add(result);
+
+		LiftedVarElim.shatter(parfactors, Collections.EMPTY_LIST);
 	}
 
-	return ops;
-    }
-
-    private static void maybeAddOps(Set<Parfactor> parfactors, 
-				    Parfactor phi, int index, 
-				    CountingTerm countingTerm, 
-				    List<LiftedInfOperator> ops) {
-	Constraint constraint = countingTerm.constraint();
-	for (LogicalVar x : countingTerm.logicalVars()) {
-	    // Make sure excluded set for x contains no logical variables.  
-	    // If it does contain logical variables, then the set of 
-	    // allowed groundings for x varies across groundings of the 
-	    // parfactor phi, so we would need to propositionalize before 
-	    // expanding.
-	    if (constraint.excluded(x).size() 
-		    == constraint.excludedConstants(x).size()) {
-		ops.add(new CountExpansion(parfactors, phi, 
-					   phi.termPtr(index), x));
-	    }
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("Expansion(");
+		buf.append(x);
+		buf.append(" in formula ");
+		buf.append(countTermPtr.index());
+		buf.append(" of ");
+		buf.append(phi);
+		buf.append(")");
+		return buf.toString();
 	}
-    }
+
+	public static Collection<LiftedInfOperator> opFactory(
+			Set<Parfactor> parfactors, ElimTester query) {
+		List<LiftedInfOperator> ops = new LinkedList<LiftedInfOperator>();
+
+		for (Parfactor phi : parfactors) {
+			List<? extends Term> terms = phi.dimTerms();
+			for (int i = 0; i < terms.size(); ++i) {
+				ArgSpec term = terms.get(i);
+				if (term instanceof CountingTerm) {
+					maybeAddOps(parfactors, phi, i, (CountingTerm) term, ops);
+				}
+			}
+		}
+
+		return ops;
+	}
+
+	private static void maybeAddOps(Set<Parfactor> parfactors, Parfactor phi,
+			int index, CountingTerm countingTerm, List<LiftedInfOperator> ops) {
+		Constraint constraint = countingTerm.constraint();
+		for (LogicalVar x : countingTerm.logicalVars()) {
+			// Make sure excluded set for x contains no logical variables.
+			// If it does contain logical variables, then the set of
+			// allowed groundings for x varies across groundings of the
+			// parfactor phi, so we would need to propositionalize before
+			// expanding.
+			if (constraint.excluded(x).size() == constraint.excludedConstants(x)
+					.size()) {
+				ops.add(new CountExpansion(parfactors, phi, phi.termPtr(index), x));
+			}
+		}
+	}
 }

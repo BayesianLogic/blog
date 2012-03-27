@@ -39,143 +39,138 @@ import java.util.*;
 import common.Util;
 
 /**
- * A random variable whose value is the value of a certain random
- * function on a certain tuple of arguments.
+ * A random variable whose value is the value of a certain random function on a
+ * certain tuple of arguments.
  */
 public class RandFuncAppVar extends VarWithDistrib {
-    /**
-     * Creates a RandFuncAppVar for the given function applied to the given 
-     * tuple of arguments.
-     */
-    public RandFuncAppVar(RandomFunction f, List args) {
-	super(args);
-	this.f = f;
-    }
-
-    /**
-     * Creates a RandFuncAppVar for the given function applied to the given 
-     * tuple of arguments.
-     */
-    public RandFuncAppVar(RandomFunction f, Object[] args) {
-	super(args);
-	this.f = f;
-    }
-
-    /**
-     * Creates a RandFuncAppVar for the given function applied to the given 
-     * tuple of arguments.  If <code>stable</code> is true, then the 
-     * caller guarantees that the given <code>args</code> array will not 
-     * be modified externally. 
-     */
-    public RandFuncAppVar(RandomFunction f, Object[] args, boolean stable) {
-	super(args, stable);
-	this.f = f;
-    }
-
-    /**
-     * Returns the function being applied in this function application 
-     * variable.
-     */
-    public final RandomFunction func() {
-	return f;
-    }
-
-    /**
-     * Returns the return type of this variable's function.
-     */
-    public Type getType() {
-	return f.getRetType();
-    }
-
-    public int getOrderingIndex() {
-	return f.getDepModel().getCreationIndex();
-    }
-
-    public DependencyModel getDepModel() {
-	return f.getDepModel();
-    }
-
-    public DependencyModel.Distrib getDistrib(EvalContext context) {
-	context.pushEvaluee(this);
-	DependencyModel depModel = f.getDepModel();
-	if (depModel == null) {
-	    Util.fatalErrorWithoutStack
-		("Can't get distribution for random variable because function " 
-		 + f.getSig() + " has no dependency statement.");
+	/**
+	 * Creates a RandFuncAppVar for the given function applied to the given tuple
+	 * of arguments.
+	 */
+	public RandFuncAppVar(RandomFunction f, List args) {
+		super(args);
+		this.f = f;
 	}
 
-	DependencyModel.Distrib distrib = depModel.getDistribWithBinding
-	    (context, f.getArgVars(), args(), Model.NULL);
-	context.popEvaluee();
-	return distrib;
-    }
+	/**
+	 * Creates a RandFuncAppVar for the given function applied to the given tuple
+	 * of arguments.
+	 */
+	public RandFuncAppVar(RandomFunction f, Object[] args) {
+		super(args);
+		this.f = f;
+	}
 
-    public FuncAppTerm getCanonicalTerm(Map logicalVarForObj) {
-	List argTerms = new ArrayList();
-	for (int i = 0; i < args.length; ++i) {
-	    Object arg = args[i];
-	    Term term = (LogicalVar) logicalVarForObj.get(arg);
-	    if (term == null) {
-		if (arg instanceof ObjectIdentifier) {
-		    throw new IllegalArgumentException
-			("No logical variable specified for object identifier "
-			 + arg);
+	/**
+	 * Creates a RandFuncAppVar for the given function applied to the given tuple
+	 * of arguments. If <code>stable</code> is true, then the caller guarantees
+	 * that the given <code>args</code> array will not be modified externally.
+	 */
+	public RandFuncAppVar(RandomFunction f, Object[] args, boolean stable) {
+		super(args, stable);
+		this.f = f;
+	}
+
+	/**
+	 * Returns the function being applied in this function application variable.
+	 */
+	public final RandomFunction func() {
+		return f;
+	}
+
+	/**
+	 * Returns the return type of this variable's function.
+	 */
+	public Type getType() {
+		return f.getRetType();
+	}
+
+	public int getOrderingIndex() {
+		return f.getDepModel().getCreationIndex();
+	}
+
+	public DependencyModel getDepModel() {
+		return f.getDepModel();
+	}
+
+	public DependencyModel.Distrib getDistrib(EvalContext context) {
+		context.pushEvaluee(this);
+		DependencyModel depModel = f.getDepModel();
+		if (depModel == null) {
+			Util.fatalErrorWithoutStack("Can't get distribution for random variable because function "
+					+ f.getSig() + " has no dependency statement.");
 		}
-		term = f.getArgTypes()[i].getCanonicalTerm(arg);
-		if (term == null) {
-		    throw new UnsupportedOperationException
-			("Can't get canonical term for object " + arg 
-			 + " of type " + f.getArgTypes()[i]);
+
+		DependencyModel.Distrib distrib = depModel.getDistribWithBinding(context,
+				f.getArgVars(), args(), Model.NULL);
+		context.popEvaluee();
+		return distrib;
+	}
+
+	public FuncAppTerm getCanonicalTerm(Map logicalVarForObj) {
+		List argTerms = new ArrayList();
+		for (int i = 0; i < args.length; ++i) {
+			Object arg = args[i];
+			Term term = (LogicalVar) logicalVarForObj.get(arg);
+			if (term == null) {
+				if (arg instanceof ObjectIdentifier) {
+					throw new IllegalArgumentException(
+							"No logical variable specified for object identifier " + arg);
+				}
+				term = f.getArgTypes()[i].getCanonicalTerm(arg);
+				if (term == null) {
+					throw new UnsupportedOperationException(
+							"Can't get canonical term for object " + arg + " of type "
+									+ f.getArgTypes()[i]);
+				}
+			}
+			argTerms.add(term);
 		}
-	    }
-	    argTerms.add(term);
-	}
-	return new FuncAppTerm(f, argTerms);
-    }
-
-    public Object clone() {
-	return new RandFuncAppVar(f, args);
-    }
-
-    /**
-     * Two RandFuncAppVar objects are equal if they have the same
-     * function and their argument arrays are equal (recall that
-     * Arrays.equals calls the <code>equals</code> method on each
-     * corresponding pair of objects in the two arrays).
-     */
-    public boolean equals(Object obj) {
-	if (obj instanceof RandFuncAppVar) {
-	    RandFuncAppVar other = (RandFuncAppVar) obj;
-	    return ((f == other.func()) 
-		    && Arrays.equals(args, other.args()));
-	}
-	return false;
-    }
-		
-    public int hashCode() {
-        int code = f.hashCode();
-        for (int i = 0; i < args.length; ++i) {
-            code ^= args[i].hashCode();
-        }
-	return code;
-    }
-
-    public String toString() {
-	if (args.length == 0) {
-	    return f.toString();
+		return new FuncAppTerm(f, argTerms);
 	}
 
-	StringBuffer buf = new StringBuffer();
-	buf.append(f);
-	buf.append("(");
-	buf.append(args[0]);
-	for (int i = 1; i < args.length; ++i) {
-	    buf.append(", ");
-	    buf.append(args[i]);
+	public Object clone() {
+		return new RandFuncAppVar(f, args);
 	}
-	buf.append(")");
-	return buf.toString();
-    }	
 
-    private RandomFunction f;
+	/**
+	 * Two RandFuncAppVar objects are equal if they have the same function and
+	 * their argument arrays are equal (recall that Arrays.equals calls the
+	 * <code>equals</code> method on each corresponding pair of objects in the two
+	 * arrays).
+	 */
+	public boolean equals(Object obj) {
+		if (obj instanceof RandFuncAppVar) {
+			RandFuncAppVar other = (RandFuncAppVar) obj;
+			return ((f == other.func()) && Arrays.equals(args, other.args()));
+		}
+		return false;
+	}
+
+	public int hashCode() {
+		int code = f.hashCode();
+		for (int i = 0; i < args.length; ++i) {
+			code ^= args[i].hashCode();
+		}
+		return code;
+	}
+
+	public String toString() {
+		if (args.length == 0) {
+			return f.toString();
+		}
+
+		StringBuffer buf = new StringBuffer();
+		buf.append(f);
+		buf.append("(");
+		buf.append(args[0]);
+		for (int i = 1; i < args.length; ++i) {
+			buf.append(", ");
+			buf.append(args[i]);
+		}
+		buf.append(")");
+		return buf.toString();
+	}
+
+	private RandomFunction f;
 }

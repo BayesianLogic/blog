@@ -39,114 +39,112 @@ import java.util.*;
 import java.io.PrintStream;
 
 /**
- * A directed graph.  
+ * A directed graph.
  */
 public interface DGraph {
-    /**
-     * An empty directed graph.
-     */
-    static final DGraph EMPTY_GRAPH = new AbstractDGraph() {
-	    public Set nodes() {
-		return Collections.EMPTY_SET;
-	    }
+	/**
+	 * An empty directed graph.
+	 */
+	static final DGraph EMPTY_GRAPH = new AbstractDGraph() {
+		public Set nodes() {
+			return Collections.EMPTY_SET;
+		}
 
-	    public Set getParents(Object v) {
-		throw new IllegalArgumentException
-		    ("Object not in graph: " + v);
-	    }
+		public Set getParents(Object v) {
+			throw new IllegalArgumentException("Object not in graph: " + v);
+		}
 
-	    public Set getChildren(Object v) {
-		throw new IllegalArgumentException
-		    ("Object not in graph: " + v);
-	    }
+		public Set getChildren(Object v) {
+			throw new IllegalArgumentException("Object not in graph: " + v);
+		}
 	};
 
-    /**
-     * Returns an unmodifiable set consisting of the nodes in this graph.
-     */
-    Set nodes();
+	/**
+	 * Returns an unmodifiable set consisting of the nodes in this graph.
+	 */
+	Set nodes();
 
-    /**
-     * Adds the given object as a node in the graph.  Has no effect if 
-     * the node was already in the graph.
-     *
-     * @return true if the node was actually added; false if it was 
-     *              already in the graph
-     */
-    boolean addNode(Object v);
+	/**
+	 * Adds the given object as a node in the graph. Has no effect if the node was
+	 * already in the graph.
+	 * 
+	 * @return true if the node was actually added; false if it was already in the
+	 *         graph
+	 */
+	boolean addNode(Object v);
 
-    /**
-     * Removes the given node from the graph, along with all the edges
-     * incident on it.  Has no effect if the node was not in the
-     * graph.
-     *
-     * @return true if the node was actually removed; false if it was 
-     *              not in the graph
-     */
-    boolean removeNode(Object v);
+	/**
+	 * Removes the given node from the graph, along with all the edges incident on
+	 * it. Has no effect if the node was not in the graph.
+	 * 
+	 * @return true if the node was actually removed; false if it was not in the
+	 *         graph
+	 */
+	boolean removeNode(Object v);
 
-    /**
-     * Adds to the graph an edge from <code>parent</code> to 
-     * <code>child</code>.  Automatically adds these nodes to the graph 
-     * if they were not already present.
-     */
-    void addEdge(Object parent, Object child);
+	/**
+	 * Adds to the graph an edge from <code>parent</code> to <code>child</code>.
+	 * Automatically adds these nodes to the graph if they were not already
+	 * present.
+	 */
+	void addEdge(Object parent, Object child);
 
-    /**
-     * Removes the edge from <code>parent</code> to <code>child</code> from 
-     * the graph.  This method has no effect if the edge was not present; it 
-     * is safe to call even if the given nodes are not in the graph.
-     */
-    void removeEdge(Object parent, Object child);
+	/**
+	 * Removes the edge from <code>parent</code> to <code>child</code> from the
+	 * graph. This method has no effect if the edge was not present; it is safe to
+	 * call even if the given nodes are not in the graph.
+	 */
+	void removeEdge(Object parent, Object child);
 
-    /**
-     * Returns an unmodifiable set consisting of the given object's parents,
-     * or null if the object is not in the graph.
-     */
-    Set getParents(Object v);
+	/**
+	 * Returns an unmodifiable set consisting of the given object's parents, or
+	 * null if the object is not in the graph.
+	 */
+	Set getParents(Object v);
 
-    /**
-     * Changes the graph so that the parent set of the given node is the 
-     * given set.  Automatically adds the child node and any parent nodes 
-     * if they were not already in the graph.
-     */
-    void setParents(Object v, Set parents);
+	/**
+	 * Changes the graph so that the parent set of the given node is the given
+	 * set. Automatically adds the child node and any parent nodes if they were
+	 * not already in the graph.
+	 */
+	void setParents(Object v, Set parents);
 
-    /**
-     * Returns an unmodifiable set consisting of the given object's children, 
-     * or null if the object is not in the graph.
-     */
-    Set getChildren(Object v);
+	/**
+	 * Returns an unmodifiable set consisting of the given object's children, or
+	 * null if the object is not in the graph.
+	 */
+	Set getChildren(Object v);
 
-    /**
-     * Returns the set of nodes in this graph that have no parents.
-     *
-     * @return unmodifiable Set of Object
-     */
-    Set getRoots();
+	/**
+	 * Returns the set of nodes in this graph that have no parents.
+	 * 
+	 * @return unmodifiable Set of Object
+	 */
+	Set getRoots();
 
-    /**
-     * Returns the set of ancestors of the given node, including the node 
-     * itself.
-     *
-     * @return unmodifiable Set of Object
-     *
-     * @throws NullPointerException if the given object is not in the graph
-     */
-    Set getAncestors(Object v);
+	/**
+	 * Returns the set of ancestors of the given node, including the node itself.
+	 * 
+	 * @return unmodifiable Set of Object
+	 * 
+	 * @throws NullPointerException
+	 *           if the given object is not in the graph
+	 */
+	Set getAncestors(Object v);
 
-    /**
-     * Returns the set of descendants of the given node, including the node 
-     * itself.
-     *
-     * @return unmodifiable Set of Object
-     *
-     * @throws NullPointerException if the given object is not in the graph
-     */
-    Set getDescendants(Object v);
+	/**
+	 * Returns the set of descendants of the given node, including the node
+	 * itself.
+	 * 
+	 * @return unmodifiable Set of Object
+	 * 
+	 * @throws NullPointerException
+	 *           if the given object is not in the graph
+	 */
+	Set getDescendants(Object v);
 
-    /**
-     * Prints a description of this graph to the given stream.
-     */
-    void print(PrintStream s);
+	/**
+	 * Prints a description of this graph to the given stream.
+	 */
+	void print(PrintStream s);
 }

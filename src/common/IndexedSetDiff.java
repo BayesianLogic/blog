@@ -38,8 +38,8 @@ package common;
 import java.util.*;
 
 /**
- * Interface for objects that implement both the IndexedSet and 
- * the SetDiff interfaces.
+ * Interface for objects that implement both the IndexedSet and the SetDiff
+ * interfaces.
  */
 public interface IndexedSetDiff extends IndexedSet, SetDiff {
 }

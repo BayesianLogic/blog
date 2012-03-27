@@ -39,31 +39,31 @@ package common;
  * Represents a file name and a line number in that file.
  */
 public class LocationInFile {
-    /**
-     * Creates a new LocationInFile object with the given file name and 
-     * line number.  Line numbers are one-based.
-     */
-    public LocationInFile(String filename, int lineNum) {
-	this.filename = filename;
-	this.lineNum = lineNum;
-    }
+	/**
+	 * Creates a new LocationInFile object with the given file name and line
+	 * number. Line numbers are one-based.
+	 */
+	public LocationInFile(String filename, int lineNum) {
+		this.filename = filename;
+		this.lineNum = lineNum;
+	}
 
-    public String getFilename() {
-	return filename;
-    }
+	public String getFilename() {
+		return filename;
+	}
 
-    public int getLineNum() {
-	return lineNum;
-    }
+	public int getLineNum() {
+		return lineNum;
+	}
 
-    /**
-     * Returns a string consisting of the file name, followed by a colon, 
-     * followed by the line number.
-     */
-    public String toString() {
-	return (filename + ":" + lineNum);
-    }
+	/**
+	 * Returns a string consisting of the file name, followed by a colon, followed
+	 * by the line number.
+	 */
+	public String toString() {
+		return (filename + ":" + lineNum);
+	}
 
-    private String filename;
-    private int lineNum;
+	private String filename;
+	private int lineNum;
 }

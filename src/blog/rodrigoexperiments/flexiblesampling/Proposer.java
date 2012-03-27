@@ -14,40 +14,42 @@ import common.Util;
 
 public class Proposer implements blog.Proposer {
 
-    public Proposer(SamplerFactory flexibleImportanceSamplerFactory) {
-	this.flexibleImportanceSamplerFactory = flexibleImportanceSamplerFactory;
-    }
-    
-    public PartialWorldDiff initialize(Evidence evidence, List queries) {
-	PartialWorld world = new DefaultPartialWorld();
-	InstantiatingEvalContext context = new EvalContext(world, Util.set(), flexibleImportanceSamplerFactory);
-	BLOGUtil.ensureDetAndSupported(queries, world);
-	BLOGUtil.ensureDetAndSupported(evidence.getEvidenceVars(), world);
-	return new PartialWorldDiff(world);
-    }
+	public Proposer(SamplerFactory flexibleImportanceSamplerFactory) {
+		this.flexibleImportanceSamplerFactory = flexibleImportanceSamplerFactory;
+	}
 
-    public double proposeNextState(PartialWorldDiff world) {
-	VarWithDistrib seedVar = (VarWithDistrib) Util.uniformSample(world.getInstantiatedVars());
-	Sampler blockSampler =
-	    flexibleImportanceSamplerFactory.make(seedVar, world, Util.set());
-	double unsamplingWeight = blockSampler.unsample().getWeight();
-	double samplingWeight = blockSampler.sample().getWeight();
-	double minimizingWeight = makeWorldMinimal(world);
-	return unsamplingWeight * samplingWeight;
-    }
+	public PartialWorldDiff initialize(Evidence evidence, List queries) {
+		PartialWorld world = new DefaultPartialWorld();
+		InstantiatingEvalContext context = new EvalContext(world, Util.set(),
+				flexibleImportanceSamplerFactory);
+		BLOGUtil.ensureDetAndSupported(queries, world);
+		BLOGUtil.ensureDetAndSupported(evidence.getEvidenceVars(), world);
+		return new PartialWorldDiff(world);
+	}
 
-    private double makeWorldMinimal(PartialWorldDiff world) {
-	// TODO Auto-generated method stub
-	return 0;
-    }
+	public double proposeNextState(PartialWorldDiff world) {
+		VarWithDistrib seedVar = (VarWithDistrib) Util.uniformSample(world
+				.getInstantiatedVars());
+		Sampler blockSampler = flexibleImportanceSamplerFactory.make(seedVar,
+				world, Util.set());
+		double unsamplingWeight = blockSampler.unsample().getWeight();
+		double samplingWeight = blockSampler.sample().getWeight();
+		double minimizingWeight = makeWorldMinimal(world);
+		return unsamplingWeight * samplingWeight;
+	}
 
-    public void printStats() {
-	// TODO Auto-generated method stub
-    }
+	private double makeWorldMinimal(PartialWorldDiff world) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    public void updateStats(boolean accepted) {
-	// TODO Auto-generated method stub
-    }
+	public void printStats() {
+		// TODO Auto-generated method stub
+	}
 
-    private SamplerFactory flexibleImportanceSamplerFactory;
+	public void updateStats(boolean accepted) {
+		// TODO Auto-generated method stub
+	}
+
+	private SamplerFactory flexibleImportanceSamplerFactory;
 }

@@ -38,22 +38,25 @@ package blog;
 import java.util.*;
 
 /**
- * Interface for objects that can extend the setup of a BLOG inference 
- * problem: that is, the model, evidence, and query list.  A SetupExtender 
- * implementation should have a constructor that takes a single argument 
- * of type java.util.Properties, containing configuration parameters.
+ * Interface for objects that can extend the setup of a BLOG inference problem:
+ * that is, the model, evidence, and query list. A SetupExtender implementation
+ * should have a constructor that takes a single argument of type
+ * java.util.Properties, containing configuration parameters.
  */
 public interface SetupExtender {
-    /**
-     * Extends the given problem setup.  This method can add to the 
-     * given model, add to the given evidence object, and append queries 
-     * to the given list of queries.  
-     *
-     * @param model       BLOG model defining the prior distribution
-     *
-     * @param evidence    evidence to condition on
-     *
-     * @param queries     modifiable List of Query objects 
-     */
-    public void extendSetup(Model model, Evidence evidence, List queries);
+	/**
+	 * Extends the given problem setup. This method can add to the given model,
+	 * add to the given evidence object, and append queries to the given list of
+	 * queries.
+	 * 
+	 * @param model
+	 *          BLOG model defining the prior distribution
+	 * 
+	 * @param evidence
+	 *          evidence to condition on
+	 * 
+	 * @param queries
+	 *          modifiable List of Query objects
+	 */
+	public void extendSetup(Model model, Evidence evidence, List queries);
 }

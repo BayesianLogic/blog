@@ -38,89 +38,90 @@ package common.cmdline;
 import java.util.*;
 
 /**
- * Option that takes Boolean values.  A Boolean option does not expect
- * any value on the command line, but it can have two long forms, one
- * indicating that the value is true and one indicating that it's
- * false.  If a Boolean option occurs more than once on a command
- * line, this class prints a warning and ignores all but the last
- * occurrence.
+ * Option that takes Boolean values. A Boolean option does not expect any value
+ * on the command line, but it can have two long forms, one indicating that the
+ * value is true and one indicating that it's false. If a Boolean option occurs
+ * more than once on a command line, this class prints a warning and ignores all
+ * but the last occurrence.
  */
 public class BooleanOption extends AbstractOption {
-    /**
-     * Creates a Boolean option and registers it with the Parser class.  
-     *
-     * @param shortForm single-character flag indicating that the value is 
-     *                  true, or null for an option with no short form
-     * 
-     * @param longForm long form indicating that the value is true, or null 
-     *                 for an option with no long form.  If a long form 
-     *                 <i>foo</i> is specified, then a second long form 
-     *                 no<i>foo</i> is also defined to indicate that the 
-     *                 option value is false.  
-     *
-     * @param def      default value to return if the option does not occur
-     *
-     * @param docStr   short (preferably less than 40 characters) 
-     *                 string specifying what happens when this option 
-     *                 is true
-     */
-    public BooleanOption(String shortForm, String longForm, boolean def, 
-			 String docStr) {
-	super(shortForm, longForm);
+	/**
+	 * Creates a Boolean option and registers it with the Parser class.
+	 * 
+	 * @param shortForm
+	 *          single-character flag indicating that the value is true, or null
+	 *          for an option with no short form
+	 * 
+	 * @param longForm
+	 *          long form indicating that the value is true, or null for an option
+	 *          with no long form. If a long form <i>foo</i> is specified, then a
+	 *          second long form no<i>foo</i> is also defined to indicate that the
+	 *          option value is false.
+	 * 
+	 * @param def
+	 *          default value to return if the option does not occur
+	 * 
+	 * @param docStr
+	 *          short (preferably less than 40 characters) string specifying what
+	 *          happens when this option is true
+	 */
+	public BooleanOption(String shortForm, String longForm, boolean def,
+			String docStr) {
+		super(shortForm, longForm);
 
-	if (longForm != null) {
-	    longForms.add("no" + longForm);
+		if (longForm != null) {
+			longForms.add("no" + longForm);
+		}
+
+		value = def;
+		this.docStr = docStr;
+
+		Parser.addOption(this);
 	}
 
-	value = def;
-	this.docStr = docStr;
-
-	Parser.addOption(this);
-    }
-
-    public boolean expectsValue() {
-	return false;
-    }
-
-    public void recordOccurrence(String form, String valueStr) {
-	super.recordOccurrence(form, valueStr);
-
-	if (form.startsWith("no")) {
-	    value = false;
-	} else {
-	    value = true;
+	public boolean expectsValue() {
+		return false;
 	}
-    }
 
-    public String getUsageString() {
-	StringBuffer buf = new StringBuffer();
-	if (!shortForms.isEmpty()) {
-	    buf.append("-" + shortForms.get(0));
-	    if (!longForms.isEmpty()) {
-		buf.append(", ");
-	    }
+	public void recordOccurrence(String form, String valueStr) {
+		super.recordOccurrence(form, valueStr);
+
+		if (form.startsWith("no")) {
+			value = false;
+		} else {
+			value = true;
+		}
 	}
-	if (!longForms.isEmpty()) {
-	    buf.append("--[no]" + longForms.get(0));
+
+	public String getUsageString() {
+		StringBuffer buf = new StringBuffer();
+		if (!shortForms.isEmpty()) {
+			buf.append("-" + shortForms.get(0));
+			if (!longForms.isEmpty()) {
+				buf.append(", ");
+			}
+		}
+		if (!longForms.isEmpty()) {
+			buf.append("--[no]" + longForms.get(0));
+		}
+
+		while (buf.length() < DOC_OFFSET) {
+			buf.append(" ");
+		}
+		buf.append(docStr);
+
+		return buf.toString();
 	}
-	
-	while (buf.length() < DOC_OFFSET) {
-	    buf.append(" ");
+
+	/**
+	 * Returns the value specified on the command line for this option, or the
+	 * default value if the option did not occur.
+	 */
+	public boolean getValue() {
+		return value;
 	}
-	buf.append(docStr);
 
-	return buf.toString();
-    }
+	private String docStr;
 
-    /**
-     * Returns the value specified on the command line for this
-     * option, or the default value if the option did not occur.
-     */
-    public boolean getValue() {
-	return value;
-    }
-
-    private String docStr;
-
-    private boolean value;
+	private boolean value;
 }

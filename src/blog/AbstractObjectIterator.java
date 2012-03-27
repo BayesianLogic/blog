@@ -38,81 +38,81 @@ package blog;
 import java.util.*;
 
 /**
- * Abstract implementation of the ObjectIterator interface.  Subclasses 
- * must implement the findNext method, and may also implement 
- * skipAfterNext.  
+ * Abstract implementation of the ObjectIterator interface. Subclasses must
+ * implement the findNext method, and may also implement skipAfterNext.
  */
 public abstract class AbstractObjectIterator implements ObjectIterator {
-    public boolean hasNext() {
-	latestObj = null; // skipIndistinguishable may not work anymore
-	if (canDetermineNext && (nextObj == null)) {
-	    nextObj = findNext();
-	}
-	return (nextObj != null);
-    }
-
-    public Object next() {
-	if (!hasNext()) {
-	    throw new NoSuchElementException();
+	public boolean hasNext() {
+		latestObj = null; // skipIndistinguishable may not work anymore
+		if (canDetermineNext && (nextObj == null)) {
+			nextObj = findNext();
+		}
+		return (nextObj != null);
 	}
 
-	latestObj = nextObj;
-	nextObj = null; // so it's not returned again
-	return latestObj;
-    }
+	public Object next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
 
-    public void remove() {
-	throw new UnsupportedOperationException
-	    ("Can't remove from ObjectIterator.");
-    }
-
-    public int skipIndistinguishable() {
-	if (latestObj == null) {
-	    throw new IllegalStateException
-		("Call to skipIndistinguishable was not immediately after "
-		 + "a call to next.");
+		latestObj = nextObj;
+		nextObj = null; // so it's not returned again
+		return latestObj;
 	}
 
-	int numSkipped = skipAfterNext();
-	latestObj = null;
-	return numSkipped;
-    }
+	public void remove() {
+		throw new UnsupportedOperationException("Can't remove from ObjectIterator.");
+	}
 
-    public boolean canDetermineNext() {
-	hasNext(); // make sure canDetermineNext field is set properly
-	return canDetermineNext;
-    }
+	public int skipIndistinguishable() {
+		if (latestObj == null) {
+			throw new IllegalStateException(
+					"Call to skipIndistinguishable was not immediately after "
+							+ "a call to next.");
+		}
 
-    /**
-     * Behaves like skipIndistinguishable, except it can assume that this 
-     * call to skipIndistinguishable comes immediately after a successful 
-     * call to <code>next</code>, with no intervening calls to 
-     * <code>findNext</code> or any other methods.  
-     *
-     * <p>This default implementation just returns zero.
-     */
-    protected int skipAfterNext() {
-	return 0;
-    }
+		int numSkipped = skipAfterNext();
+		latestObj = null;
+		return numSkipped;
+	}
 
-    /**
-     * Returns the next object to be returned by this iterator, or null if 
-     * there are no more objects.  If the next object cannot be determined, 
-     * this method sets the protected field <code>canDetermineNext</code> 
-     * to <code>false</code> and returns null.
-     *
-     * <p>This method will not be called when <code>canDetermineNext</code>
-     * is false.  However, it may be called again after it has returned null, 
-     * in which case it should just return null again.
-     */
-    protected abstract Object findNext();
+	public boolean canDetermineNext() {
+		hasNext(); // make sure canDetermineNext field is set properly
+		return canDetermineNext;
+	}
 
-    private Object nextObj = null;
-    private Object latestObj = null;
-    
-    /**
-     * Should be set to false by findNext when the next object cannot 
-     * be determined.
-     */
-    protected boolean canDetermineNext = true;
+	/**
+	 * Behaves like skipIndistinguishable, except it can assume that this call to
+	 * skipIndistinguishable comes immediately after a successful call to
+	 * <code>next</code>, with no intervening calls to <code>findNext</code> or
+	 * any other methods.
+	 * 
+	 * <p>
+	 * This default implementation just returns zero.
+	 */
+	protected int skipAfterNext() {
+		return 0;
+	}
+
+	/**
+	 * Returns the next object to be returned by this iterator, or null if there
+	 * are no more objects. If the next object cannot be determined, this method
+	 * sets the protected field <code>canDetermineNext</code> to
+	 * <code>false</code> and returns null.
+	 * 
+	 * <p>
+	 * This method will not be called when <code>canDetermineNext</code> is false.
+	 * However, it may be called again after it has returned null, in which case
+	 * it should just return null again.
+	 */
+	protected abstract Object findNext();
+
+	private Object nextObj = null;
+	private Object latestObj = null;
+
+	/**
+	 * Should be set to false by findNext when the next object cannot be
+	 * determined.
+	 */
+	protected boolean canDetermineNext = true;
 }

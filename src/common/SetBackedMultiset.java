@@ -38,114 +38,112 @@ package common;
 import java.util.*;
 
 /**
- * An unmodifiable Multiset implementation that just wraps around a 
- * Set object.
+ * An unmodifiable Multiset implementation that just wraps around a Set object.
  */
 public class SetBackedMultiset extends AbstractMultiset {
-    /**
-     * Creates a new SetBackedMultiset that will be backed by the given 
-     * set.  If the contents of the given set change, the contents of 
-     * this SetBackedMultiset will change too.
-     */
-    public SetBackedMultiset(Set s) {
-	this.s = Collections.unmodifiableSet(s);
-    }
-
-    /**
-     * Returns the number of elements in this multiset.
-     */
-    public int size() {
-	return s.size();
-    }
-
-    /**
-     * Returns the number of occurrences of the given element in this multiset.
-     */
-    public int count(Object o) {
-	return (s.contains(o) ? 1 : 0);
-    }
-	
-    /**
-     * Returns an iterator over this multiset.  If the multiset contains 
-     * n copies of an element, the iterator will return that element n times.
-     */
-    public Iterator iterator() {
-	return s.iterator();
-    }
-
-    /**
-     * Returns the set of entries in the multiset.  An entry is a pair 
-     * (e, n) where e is an element of the multiset and n is the number of 
-     * times e occurs in the multiset.  The returned set contains exactly 
-     * one entry for each distinct element e.  Thus, entrySet.size() 
-     * returns the number of distinct elements in the multiset.  
-     */
-    public Set entrySet() {
-	return entrySet;
-    }
-
-    /**
-     * Inner class representing the set of entries in this multiset.  
-     * It is just an adapter backed by the multiset's underlying set.
-     */
-    private class EntrySet extends AbstractSet {
-	public boolean contains(Object o) {
-	    if (o instanceof Multiset.Entry) {
-		Multiset.Entry entry = (Multiset.Entry) o;
-		return (s.contains(entry.getElement())
-			&& (entry.getCount() == 1));
-	    }
-	    return false;
-	}
-
-	public int size() {
-	    return s.size();
-	}
-
-	public Iterator iterator() {
-	    return new EntrySetIterator();
+	/**
+	 * Creates a new SetBackedMultiset that will be backed by the given set. If
+	 * the contents of the given set change, the contents of this
+	 * SetBackedMultiset will change too.
+	 */
+	public SetBackedMultiset(Set s) {
+		this.s = Collections.unmodifiableSet(s);
 	}
 
 	/**
-	 * Inner class that just wraps around a Set iterator and 
-	 * wraps all the elements in Multiset.Entry objects.
+	 * Returns the number of elements in this multiset.
 	 */
-	private class EntrySetIterator implements Iterator {
-	    public boolean hasNext() {
-		return setIter.hasNext();
-	    }
-
-	    public Object next() {
-		return new SetBackedMultiset.Entry(setIter.next());
-	    }
-
-	    public void remove() {
-		throw new UnsupportedOperationException();
-	    }
-
-	    private Iterator setIter = s.iterator();
+	public int size() {
+		return s.size();
 	}
-    }
 
-    /**
-     * Implementation of Multiset.Entry that always returns 1 as the count.
-     */
-    private static class Entry extends AbstractMultiset.Entry {
-	public Entry(Object o) {
-	    element = o;
+	/**
+	 * Returns the number of occurrences of the given element in this multiset.
+	 */
+	public int count(Object o) {
+		return (s.contains(o) ? 1 : 0);
 	}
-		
-	public Object getElement() {
-	    return element;
-	}
-		
-	public int getCount() {
-	    return 1;
-	}
-		
-	private Object element;
-    }
 
-    private Set s;
-    private EntrySet entrySet = new EntrySet(); // inner class backed by s
+	/**
+	 * Returns an iterator over this multiset. If the multiset contains n copies
+	 * of an element, the iterator will return that element n times.
+	 */
+	public Iterator iterator() {
+		return s.iterator();
+	}
+
+	/**
+	 * Returns the set of entries in the multiset. An entry is a pair (e, n) where
+	 * e is an element of the multiset and n is the number of times e occurs in
+	 * the multiset. The returned set contains exactly one entry for each distinct
+	 * element e. Thus, entrySet.size() returns the number of distinct elements in
+	 * the multiset.
+	 */
+	public Set entrySet() {
+		return entrySet;
+	}
+
+	/**
+	 * Inner class representing the set of entries in this multiset. It is just an
+	 * adapter backed by the multiset's underlying set.
+	 */
+	private class EntrySet extends AbstractSet {
+		public boolean contains(Object o) {
+			if (o instanceof Multiset.Entry) {
+				Multiset.Entry entry = (Multiset.Entry) o;
+				return (s.contains(entry.getElement()) && (entry.getCount() == 1));
+			}
+			return false;
+		}
+
+		public int size() {
+			return s.size();
+		}
+
+		public Iterator iterator() {
+			return new EntrySetIterator();
+		}
+
+		/**
+		 * Inner class that just wraps around a Set iterator and wraps all the
+		 * elements in Multiset.Entry objects.
+		 */
+		private class EntrySetIterator implements Iterator {
+			public boolean hasNext() {
+				return setIter.hasNext();
+			}
+
+			public Object next() {
+				return new SetBackedMultiset.Entry(setIter.next());
+			}
+
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+
+			private Iterator setIter = s.iterator();
+		}
+	}
+
+	/**
+	 * Implementation of Multiset.Entry that always returns 1 as the count.
+	 */
+	private static class Entry extends AbstractMultiset.Entry {
+		public Entry(Object o) {
+			element = o;
+		}
+
+		public Object getElement() {
+			return element;
+		}
+
+		public int getCount() {
+			return 1;
+		}
+
+		private Object element;
+	}
+
+	private Set s;
+	private EntrySet entrySet = new EntrySet(); // inner class backed by s
 }

@@ -38,86 +38,87 @@ package blog;
 import java.util.*;
 
 /**
- * Abstract class for variables that have a distribution specified by
- * the BLOG model.  This includes number variables and random function
- * application variables.
+ * Abstract class for variables that have a distribution specified by the BLOG
+ * model. This includes number variables and random function application
+ * variables.
  */
 public abstract class VarWithDistrib extends BasicVar {
-    /**
-     * Creates a new VarWithDistrib with the given tuple of arguments or 
-     * generating objects.
-     */
-    protected VarWithDistrib(Object[] args) {
-	super(args);
-    }
-
-    /**
-     * Creates a new VarWithDistrib with the given tuple of arguments or 
-     * generating objects.  If <code>stable</code> is true, then the 
-     * caller guarantees that the given <code>args</code> array will not 
-     * be modified externally.  
-     */
-    protected VarWithDistrib(Object[] args, boolean stable) {
-	super(args, stable);
-    }
-
-    /**
-     * Creates a new VarWithDistrib with the given tuple of arguments or 
-     * generating objects.
-     */
-    protected VarWithDistrib(List argList) {
-	super(argList);
-    }
-
-    /**
-     * Returns the dependency model for this variable.
-     */
-    public abstract DependencyModel getDepModel();
-
-    /**
-     * Returns the CPD and argument values in the first satisfied clause 
-     * of this variable's dependency statement in the given context.  
-     * Returns null if the partial world in this context is not complete 
-     * enough to determine the first satisfied clause and its CPD arguments. 
-     */
-    public abstract DependencyModel.Distrib getDistrib(EvalContext context);
-
-    /**
-     * same as {@link #getDistrib(EvalContext)}, with a {@link DefaultEvalContext} constructed with a given world.
-     */
-    public DependencyModel.Distrib getDistrib(PartialWorld world) {
-	return getDistrib(new DefaultEvalContext(world));
-    }
-
-    /**
-     * Returns the set of parents of this variable in the given partial 
-     * world.  The parents are those random variables which, if they changed, 
-     * could change the first satisfied clause in this variable's 
-     * dependency statement or the values of CPD arguments in that clause. 
-     * This method yields a fatal error if the partial world is not complete 
-     * enough to determine this variable's parents.  
-     *
-     * @return Set of BayesNetVar 
-     */
-    public Set getParents(PartialWorld w) {
-	ParentRecEvalContext context = new ParentRecEvalContext(w, true);
-	getDistrib(context);
-	return context.getParents();
-    }
-
-    public BasicVar getFirstUninstParent(PartialWorld w) {
-	ParentRecEvalContext context = new ParentRecEvalContext(w, false);
-	getDistrib(context);
-	return context.getLatestUninstParent();
-    }
-
-    public void ensureDetAndSupported(InstantiatingEvalContext instantiator) {
-	if (instantiator.isInstantiated(this)) {	    
-	    getDistrib(instantiator); // ensure supported
-	} else {
-	    // Calling getValue will cause the instantiator to find the 
-	    // distribution for this variable and instantiate it.
-	    instantiator.getValue(this);
+	/**
+	 * Creates a new VarWithDistrib with the given tuple of arguments or
+	 * generating objects.
+	 */
+	protected VarWithDistrib(Object[] args) {
+		super(args);
 	}
-    }
+
+	/**
+	 * Creates a new VarWithDistrib with the given tuple of arguments or
+	 * generating objects. If <code>stable</code> is true, then the caller
+	 * guarantees that the given <code>args</code> array will not be modified
+	 * externally.
+	 */
+	protected VarWithDistrib(Object[] args, boolean stable) {
+		super(args, stable);
+	}
+
+	/**
+	 * Creates a new VarWithDistrib with the given tuple of arguments or
+	 * generating objects.
+	 */
+	protected VarWithDistrib(List argList) {
+		super(argList);
+	}
+
+	/**
+	 * Returns the dependency model for this variable.
+	 */
+	public abstract DependencyModel getDepModel();
+
+	/**
+	 * Returns the CPD and argument values in the first satisfied clause of this
+	 * variable's dependency statement in the given context. Returns null if the
+	 * partial world in this context is not complete enough to determine the first
+	 * satisfied clause and its CPD arguments.
+	 */
+	public abstract DependencyModel.Distrib getDistrib(EvalContext context);
+
+	/**
+	 * same as {@link #getDistrib(EvalContext)}, with a {@link DefaultEvalContext}
+	 * constructed with a given world.
+	 */
+	public DependencyModel.Distrib getDistrib(PartialWorld world) {
+		return getDistrib(new DefaultEvalContext(world));
+	}
+
+	/**
+	 * Returns the set of parents of this variable in the given partial world. The
+	 * parents are those random variables which, if they changed, could change the
+	 * first satisfied clause in this variable's dependency statement or the
+	 * values of CPD arguments in that clause. This method yields a fatal error if
+	 * the partial world is not complete enough to determine this variable's
+	 * parents.
+	 * 
+	 * @return Set of BayesNetVar
+	 */
+	public Set getParents(PartialWorld w) {
+		ParentRecEvalContext context = new ParentRecEvalContext(w, true);
+		getDistrib(context);
+		return context.getParents();
+	}
+
+	public BasicVar getFirstUninstParent(PartialWorld w) {
+		ParentRecEvalContext context = new ParentRecEvalContext(w, false);
+		getDistrib(context);
+		return context.getLatestUninstParent();
+	}
+
+	public void ensureDetAndSupported(InstantiatingEvalContext instantiator) {
+		if (instantiator.isInstantiated(this)) {
+			getDistrib(instantiator); // ensure supported
+		} else {
+			// Calling getValue will cause the instantiator to find the
+			// distribution for this variable and instantiate it.
+			instantiator.getValue(this);
+		}
+	}
 }

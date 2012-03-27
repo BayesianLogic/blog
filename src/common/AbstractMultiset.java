@@ -40,80 +40,78 @@ import java.util.*;
 /**
  * Abstract implementation of the Multiset class.
  */
-public abstract class AbstractMultiset extends AbstractCollection 
-                                       implements Multiset {
-    /**
-     * Returns the number of occurrences of the given element in this multiset.
-     */
-    public abstract int count(Object o);
+public abstract class AbstractMultiset extends AbstractCollection implements
+		Multiset {
+	/**
+	 * Returns the number of occurrences of the given element in this multiset.
+	 */
+	public abstract int count(Object o);
 
-    /**
-     * Returns the set of entries in the multiset.  An entry is a pair 
-     * (e, n) where e is an element of the multiset and n is the number of 
-     * times e occurs in the multiset.  The returned set contains exactly 
-     * one entry for each distinct element e.  Thus, entrySet.size() 
-     * returns the number of distinct elements in the multiset.  
-     *
-     * The returned set supports element removal: removing an entry 
-     * corresponds to deleting all occurrences of the corresponding element 
-     * from the multiset.  However, the returned set does not support 
-     * the <code>add</code> or <code>addAll</code> methods.  
-     */
-    public abstract Set entrySet();
+	/**
+	 * Returns the set of entries in the multiset. An entry is a pair (e, n) where
+	 * e is an element of the multiset and n is the number of times e occurs in
+	 * the multiset. The returned set contains exactly one entry for each distinct
+	 * element e. Thus, entrySet.size() returns the number of distinct elements in
+	 * the multiset.
+	 * 
+	 * The returned set supports element removal: removing an entry corresponds to
+	 * deleting all occurrences of the corresponding element from the multiset.
+	 * However, the returned set does not support the <code>add</code> or
+	 * <code>addAll</code> methods.
+	 */
+	public abstract Set entrySet();
 
-    /**
-     * Returns true if <code>count(o)</code> returns a number greater 
-     * than zero.
-     */
-    public boolean contains(Object o) {
-	return (count(o) > 0);
-    }
-
-    /**
-     * Two multisets are equal if they have the same elements with 
-     * the same occurrence counts.
-     */
-    public boolean equals(Object o) {
-	if (o instanceof Multiset) {
-	    Multiset other = (Multiset) o;
-	    return entrySet().equals(other.entrySet());
+	/**
+	 * Returns true if <code>count(o)</code> returns a number greater than zero.
+	 */
+	public boolean contains(Object o) {
+		return (count(o) > 0);
 	}
-	return false;
-    }
-
-    public int hashCode() {
-	return entrySet().hashCode();
-    }
-
-    /**
-     * Abstract implementation of the Multiset.Entry interface.
-     */
-    public static abstract class Entry implements Multiset.Entry {
-	/**
-	 * Returns the element in this entry.
-	 */
-	public abstract Object getElement();
 
 	/**
-	 * Returns the count of this element.
+	 * Two multisets are equal if they have the same elements with the same
+	 * occurrence counts.
 	 */
-	public abstract int getCount();
-		
 	public boolean equals(Object o) {
-	    if (o instanceof Multiset.Entry) {
-		Multiset.Entry other = (Multiset.Entry) o;
-		return (other.getElement().equals(getElement())
-			&& (other.getCount() == getCount()));
-	    }
-	    return false;
+		if (o instanceof Multiset) {
+			Multiset other = (Multiset) o;
+			return entrySet().equals(other.entrySet());
+		}
+		return false;
 	}
-		
+
 	public int hashCode() {
-	    return (getElement().hashCode() ^ getCount());
+		return entrySet().hashCode();
 	}
-		
-	public String toString() {
-	    return ("(" + getElement() + ", " + getCount() + ")");
+
+	/**
+	 * Abstract implementation of the Multiset.Entry interface.
+	 */
+	public static abstract class Entry implements Multiset.Entry {
+		/**
+		 * Returns the element in this entry.
+		 */
+		public abstract Object getElement();
+
+		/**
+		 * Returns the count of this element.
+		 */
+		public abstract int getCount();
+
+		public boolean equals(Object o) {
+			if (o instanceof Multiset.Entry) {
+				Multiset.Entry other = (Multiset.Entry) o;
+				return (other.getElement().equals(getElement()) && (other.getCount() == getCount()));
+			}
+			return false;
+		}
+
+		public int hashCode() {
+			return (getElement().hashCode() ^ getCount());
+		}
+
+		public String toString() {
+			return ("(" + getElement() + ", " + getCount() + ")");
+		}
 	}
-    }
-}	
+}

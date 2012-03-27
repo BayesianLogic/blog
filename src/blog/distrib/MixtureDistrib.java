@@ -40,46 +40,44 @@ import java.util.*;
 import common.Util;
 
 /**
- * A mixture of conditional probability distributions.  The
- * distributions being mixed together can have arguments, but the
- * mixing probabilities cannot depend on the arguments.  Currently
- * this class does not have the standard constructor taking a list of
- * parameters.
+ * A mixture of conditional probability distributions. The distributions being
+ * mixed together can have arguments, but the mixing probabilities cannot depend
+ * on the arguments. Currently this class does not have the standard constructor
+ * taking a list of parameters.
  */
 public class MixtureDistrib extends AbstractCondProbDistrib {
-    /**
-     * Creates a new MixtureDistrib that combines the given 
-     * distributions according to the given probabilities.  The 
-     * arrays of distributions and probabilities must have the same length.
-     */
-    public MixtureDistrib(CondProbDistrib[] distribs, double[] probs) {
-	this.distribs = (CondProbDistrib[]) distribs.clone();
-	this.mixDistrib = new Categorical(probs);
-    }
-
-    public double getProb(List args, Object value) {
-	double prob = 0;
-	for (int i = 0; i < distribs.length; ++i) {
-	    prob += (mixDistrib.getProb(i) * distribs[i].getProb(args, value));
+	/**
+	 * Creates a new MixtureDistrib that combines the given distributions
+	 * according to the given probabilities. The arrays of distributions and
+	 * probabilities must have the same length.
+	 */
+	public MixtureDistrib(CondProbDistrib[] distribs, double[] probs) {
+		this.distribs = (CondProbDistrib[]) distribs.clone();
+		this.mixDistrib = new Categorical(probs);
 	}
-	return prob;
-    }
 
-    public double getLogProb(List args, Object value) {
-	double logProb = Double.NEGATIVE_INFINITY;
-	for (int i = 0; i < distribs.length; ++i) {
-	    logProb = Util.logSum(logProb, 
-				  (mixDistrib.getLogProb(i) 
-				   + distribs[i].getLogProb(args, value)));
+	public double getProb(List args, Object value) {
+		double prob = 0;
+		for (int i = 0; i < distribs.length; ++i) {
+			prob += (mixDistrib.getProb(i) * distribs[i].getProb(args, value));
+		}
+		return prob;
 	}
-	return logProb;
-    }
 
-    public Object sampleVal(List args, Type childType) {
-	int index = mixDistrib.sampleVal();
-	return distribs[index].sampleVal(args, childType);
-    }
+	public double getLogProb(List args, Object value) {
+		double logProb = Double.NEGATIVE_INFINITY;
+		for (int i = 0; i < distribs.length; ++i) {
+			logProb = Util.logSum(logProb,
+					(mixDistrib.getLogProb(i) + distribs[i].getLogProb(args, value)));
+		}
+		return logProb;
+	}
 
-    private CondProbDistrib[] distribs;
-    private Categorical mixDistrib;
+	public Object sampleVal(List args, Type childType) {
+		int index = mixDistrib.sampleVal();
+		return distribs[index].sampleVal(args, childType);
+	}
+
+	private CondProbDistrib[] distribs;
+	private Categorical mixDistrib;
 }

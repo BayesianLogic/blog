@@ -38,61 +38,59 @@ package blog;
 import java.util.*;
 
 /**
- * Represents a generic satisfier of some POP application.  Origin 
- * functions can be evaluated on this object, but other functions can't.  
- * This object cannot be used as an argument for any instantiated random 
- * variable.  
+ * Represents a generic satisfier of some POP application. Origin functions can
+ * be evaluated on this object, but other functions can't. This object cannot be
+ * used as an argument for any instantiated random variable.
  */
 public class GenericPOPAppSatisfier extends GenericObject {
-    /**
-     * Creates a new generic satisfier for the given POP.  
-     */
-    public GenericPOPAppSatisfier(POP pop, Object[] genObjs) {
-	super(pop.type());
-	this.pop = pop;
-	this.genObjs = genObjs;
-    }
-
-    public POP getPOP() {
-	return pop;
-    }
-
-    public Object[] getGenObjs() {
-	return genObjs;
-    }
-
-    public Object getOriginFuncValue(OriginFunction g) {
-	int index = pop.getOriginFuncIndex(g);
-	if (index == -1) {
-	    return Model.NULL;
+	/**
+	 * Creates a new generic satisfier for the given POP.
+	 */
+	public GenericPOPAppSatisfier(POP pop, Object[] genObjs) {
+		super(pop.type());
+		this.pop = pop;
+		this.genObjs = genObjs;
 	}
-	return genObjs[index];
-    }
 
-    public boolean isConsistentInContext(EvalContext context, Object obj) {
-	NumberVar objPOPApp = context.getPOPAppSatisfied(obj);
-	return ((objPOPApp != null)
-		&& (objPOPApp.pop() == pop) 
-		&& Arrays.equals(objPOPApp.args(), genObjs));
-    }
-
-    public String toString() {
-	StringBuffer buf = new StringBuffer();
-	buf.append("Generic(");
-	buf.append(pop.type());
-	buf.append(" : ");
-	for (int i = 0; i < genObjs.length; ++i) {
-	    buf.append(pop.originFuncs()[i]);
-	    buf.append(" = ");
-	    buf.append(genObjs[i]);
-	    if (i + 1 < genObjs.length) {
-		buf.append(", ");
-	    }
+	public POP getPOP() {
+		return pop;
 	}
-	buf.append(")");
-	return buf.toString();
-    }
 
-    private POP pop;
-    private Object[] genObjs;
+	public Object[] getGenObjs() {
+		return genObjs;
+	}
+
+	public Object getOriginFuncValue(OriginFunction g) {
+		int index = pop.getOriginFuncIndex(g);
+		if (index == -1) {
+			return Model.NULL;
+		}
+		return genObjs[index];
+	}
+
+	public boolean isConsistentInContext(EvalContext context, Object obj) {
+		NumberVar objPOPApp = context.getPOPAppSatisfied(obj);
+		return ((objPOPApp != null) && (objPOPApp.pop() == pop) && Arrays.equals(
+				objPOPApp.args(), genObjs));
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("Generic(");
+		buf.append(pop.type());
+		buf.append(" : ");
+		for (int i = 0; i < genObjs.length; ++i) {
+			buf.append(pop.originFuncs()[i]);
+			buf.append(" = ");
+			buf.append(genObjs[i]);
+			if (i + 1 < genObjs.length) {
+				buf.append(", ");
+			}
+		}
+		buf.append(")");
+		return buf.toString();
+	}
+
+	private POP pop;
+	private Object[] genObjs;
 }

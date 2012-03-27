@@ -41,34 +41,34 @@ import java.util.*;
  * ObjectIterator implementation that wraps around an ordinary Iterator.
  */
 public class DefaultObjectIterator implements ObjectIterator {
-    /**
-     * Creates an ObjectIterator that behaves just like the given iterator.  
-     * Its <code>canDetermineNext</code> method always returns true, and 
-     * its <code>skipIndistinguishable</code> method always returns zero.
-     */
-    public DefaultObjectIterator(Iterator iter) {
-	this.iter = iter;
-    }
-    
-    public boolean hasNext() {
-	return iter.hasNext();
-    }
-    
-    public Object next() {
-	return iter.next();
-    }
-    
-    public void remove() {
-	iter.remove();
-    }
-    
-    public int skipIndistinguishable() {
-	return 0;
-    }
+	/**
+	 * Creates an ObjectIterator that behaves just like the given iterator. Its
+	 * <code>canDetermineNext</code> method always returns true, and its
+	 * <code>skipIndistinguishable</code> method always returns zero.
+	 */
+	public DefaultObjectIterator(Iterator iter) {
+		this.iter = iter;
+	}
 
-    public boolean canDetermineNext() {
-	return true;
-    }
-    
-    private Iterator iter;
+	public boolean hasNext() {
+		return iter.hasNext();
+	}
+
+	public Object next() {
+		return iter.next();
+	}
+
+	public void remove() {
+		iter.remove();
+	}
+
+	public int skipIndistinguishable() {
+		return 0;
+	}
+
+	public boolean canDetermineNext() {
+		return true;
+	}
+
+	private Iterator iter;
 }

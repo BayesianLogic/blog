@@ -37,40 +37,40 @@ package blog;
 
 import java.util.*;
 
-
-/** EqualsCPD class is a convenience hack to represent the situation when 
- * the value of the right-hand side of a {@link Clause} depends on a function 
+/**
+ * EqualsCPD class is a convenience hack to represent the situation when the
+ * value of the right-hand side of a {@link Clause} depends on a function
  * application rather than on a CPD.
  */
 public class EqualsCPD extends DetCondProbDistrib {
-    /**
-     * An instance of EqualsCPD.
-     */
-    public static final EqualsCPD CPD = new EqualsCPD();
+	/**
+	 * An instance of EqualsCPD.
+	 */
+	public static final EqualsCPD CPD = new EqualsCPD();
 
-    /**
-     * Creates a new EqualsCPD.
-     */
-    public EqualsCPD() {
-    }
-
-    /**
-     * Creates a new EqualsCPD.  The parameters are ignored.
-     */
-    public EqualsCPD(List params) {
-    }
-
-    /**
-     * Returns the first element of the given argument tuple.
-     *
-     * @throws IllegalArgumentException if <code>args</code> is not of 
-     *                                  size 1
-     */
-    public Object getChildValue(List args) {
-	if (args.size() != 1) {
-	    throw new IllegalArgumentException
-		("Invalid arguments to EqualsCPD: " + args);
+	/**
+	 * Creates a new EqualsCPD.
+	 */
+	public EqualsCPD() {
 	}
-	return args.get(0);
-    }
+
+	/**
+	 * Creates a new EqualsCPD. The parameters are ignored.
+	 */
+	public EqualsCPD(List params) {
+	}
+
+	/**
+	 * Returns the first element of the given argument tuple.
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if <code>args</code> is not of size 1
+	 */
+	public Object getChildValue(List args) {
+		if (args.size() != 1) {
+			throw new IllegalArgumentException("Invalid arguments to EqualsCPD: "
+					+ args);
+		}
+		return args.get(0);
+	}
 }

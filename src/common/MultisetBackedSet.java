@@ -38,59 +38,58 @@ package common;
 import java.util.*;
 
 /**
- * An unmodifiable Set that is backed by a Multiset.  The elements in the 
- * set are the distinct elements of the multiset.
+ * An unmodifiable Set that is backed by a Multiset. The elements in the set are
+ * the distinct elements of the multiset.
  */
 public class MultisetBackedSet extends AbstractSet {
-    /**
-     * Creates a new MultisetBackedSet backed by the given multiset.
-     */
-    public MultisetBackedSet(Multiset s) {
-	underlying = s;
-    }
-
-    /**
-     * Returns the size of this set, which is the number of distinct 
-     * elements in the underlying multiset.
-     */
-    public int size() {
-	return underlying.entrySet().size();
-    }
-
-    /**
-     * Returns true if this set contains the given element, that is, if 
-     * the underlying multiset contains at least one occurrence of 
-     * that element.
-     */
-    public boolean contains(Object o) {
-	return underlying.contains(o);
-    }
-
-    /**
-     * Returns an iterator over the elements of this set.  This is like 
-     * calling entrySet().iterator() on the underlying multiset, except 
-     * that the objects returned by the iterator are the elements themselves, 
-     * not Multiset.Entry objects.
-     */
-    public Iterator iterator() {
-	return new WrappingIterator();
-    }
-
-    private class WrappingIterator implements Iterator {
-	public boolean hasNext() {
-	    return entryIter.hasNext();
+	/**
+	 * Creates a new MultisetBackedSet backed by the given multiset.
+	 */
+	public MultisetBackedSet(Multiset s) {
+		underlying = s;
 	}
-	
-	public Object next() {
-	    return ((Multiset.Entry) entryIter.next()).getElement();
-	}
-	
-	public void remove() {
-	    throw new UnsupportedOperationException();
-	}
-	
-	private Iterator entryIter = underlying.entrySet().iterator();
-    }
 
-    private Multiset underlying;
+	/**
+	 * Returns the size of this set, which is the number of distinct elements in
+	 * the underlying multiset.
+	 */
+	public int size() {
+		return underlying.entrySet().size();
+	}
+
+	/**
+	 * Returns true if this set contains the given element, that is, if the
+	 * underlying multiset contains at least one occurrence of that element.
+	 */
+	public boolean contains(Object o) {
+		return underlying.contains(o);
+	}
+
+	/**
+	 * Returns an iterator over the elements of this set. This is like calling
+	 * entrySet().iterator() on the underlying multiset, except that the objects
+	 * returned by the iterator are the elements themselves, not Multiset.Entry
+	 * objects.
+	 */
+	public Iterator iterator() {
+		return new WrappingIterator();
+	}
+
+	private class WrappingIterator implements Iterator {
+		public boolean hasNext() {
+			return entryIter.hasNext();
+		}
+
+		public Object next() {
+			return ((Multiset.Entry) entryIter.next()).getElement();
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+
+		private Iterator entryIter = underlying.entrySet().iterator();
+	}
+
+	private Multiset underlying;
 }

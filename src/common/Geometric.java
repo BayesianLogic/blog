@@ -39,170 +39,163 @@ import java.io.Serializable;
 import java.io.IOException;
 
 /**
- * A geometric distribution over the natural numbers 0, 1, 2,...  It has a 
- * single parameter alpha, which equals P(X >= n+1 | X >= n).  Thus an alpha 
- * close to 1 yields a relatively flat distribution, whereas an alpha close 
- * to 0 yields a distribution that decays quickly.  The distribution is 
- * defined by: P(X = n) = (1 - alpha) alpha^n
+ * A geometric distribution over the natural numbers 0, 1, 2,... It has a single
+ * parameter alpha, which equals P(X >= n+1 | X >= n). Thus an alpha close to 1
+ * yields a relatively flat distribution, whereas an alpha close to 0 yields a
+ * distribution that decays quickly. The distribution is defined by: P(X = n) =
+ * (1 - alpha) alpha^n
  */
 public class Geometric implements Serializable, IntegerDist {
-    /**
-     * Creates a geometric distribution with alpha = 0.5.  
-     */
-    public Geometric() {
-	this(0.5);
-    }
-
-    /**
-     * Creates a geometric distribution with the given alpha parameter.  
-     * Throws an IllegalArgumentException if alpha < 0 or alpha >= 1.  
-     */
-    public Geometric(double alpha) {
-	if ((alpha < 0) || (alpha >= 1)) {
-	    throw new IllegalArgumentException
-		("Illegal alpha parameter for geometric distribution.");
-	}
-		
-	this.alpha = alpha;
-	cacheParams();
-    }
-
-    /**
-     * Returns the probability of the number n.
-     */
-    public double getProb(int n) {
-	if (n < 0) {
-	    return 0;
-	}
-	return ((1 - alpha) * Math.pow(alpha, n));
-    }
-
-    /**
-     * Returns the log probability of the number n.  
-     */
-    public double getLogProb(int n) {
-	if (n < 0) {
-	    return Double.NEGATIVE_INFINITY;
-	}
-	return (logOneMinusAlpha + (n * logAlpha));
-    }
-
-    /**
-     * Returns the probability that X = n given that X <= upper.  The 
-     * conditional distribution of X given X <= upper is called a truncated 
-     * geometric distribution.  
-     * P(X = n | X <= m) = (1 - alpha) * alpha^n / (1 - alpha^(m+1))
-     */
-    public double getProbGivenUpperBound(int n, int upper) {
-	if (upper < 0) {
-	    throw new IllegalArgumentException("Conditioning on zero-"
-					       + "probability event: X = "
-					       + upper);
-	}
-	if ((n < 0) || (n > upper)) {
-	    return 0;
-	}
-	return ((1 - alpha) * Math.pow(alpha, n) 
-		/ (1 - Math.pow(alpha, upper + 1)));
-    }
-
-    /**
-     * Returns the log probability that X = n given that X <= upper.  The 
-     * conditional distribution of X given X <= upper is called a truncated 
-     * geometric distribution.  
-     * P(X = n | X <= m) = (1 - alpha) * alpha^n / (1 - alpha^(m+1))
-     */
-    public double getLogProbGivenUpperBound(int n, int upper) {
-	if (upper < 0) {
-	    throw new IllegalArgumentException("Conditioning on zero-"
-					       + "probability event: X = "
-					       + upper);
-	}
-	if ((n < 0) || (n > upper)) {
-	    return Double.NEGATIVE_INFINITY;
-	}
-	return (logOneMinusAlpha + (n * logAlpha) 
-		- Math.log(1 - Math.pow(alpha, upper + 1)));
-    }
-
-    /**
-     * Records an occurrence of the number n, for use in updating parameters.  
-     */
-    public void collectStats(int n) {
-	if (n < 0) {
-	    throw new IllegalArgumentException
-		("Geometric distribution can't generate a negative number.");
+	/**
+	 * Creates a geometric distribution with alpha = 0.5.
+	 */
+	public Geometric() {
+		this(0.5);
 	}
 
-	count++;
-	sum += n;
-    }
+	/**
+	 * Creates a geometric distribution with the given alpha parameter. Throws an
+	 * IllegalArgumentException if alpha < 0 or alpha >= 1.
+	 */
+	public Geometric(double alpha) {
+		if ((alpha < 0) || (alpha >= 1)) {
+			throw new IllegalArgumentException(
+					"Illegal alpha parameter for geometric distribution.");
+		}
 
-    /**
-     * Sets the parameter alpha to the value that maximizes the likelihood 
-     * of the numbers passed to collectStats since the last call to 
-     * updateParams.  Then clears the collected statistics, and returns the 
-     * difference between the log likelihood of the data under the new 
-     * parameters and the log likelihood under the old parameters.
-     */
-    public double updateParams() {
-	// Update parameter
-	double oldLogProb = (count * logOneMinusAlpha) + (sum * logAlpha);
-	if (count > 0) {
-	    double mean = sum / (double) count;
-	    alpha = mean / (1 + mean);
-	    cacheParams();
-	}
-	double newLogProb = (count * logOneMinusAlpha) + (sum * logAlpha);
-
-	// Clear statistics
-	count = 0;
-	sum = 0;
-
-	return (newLogProb - oldLogProb);
-    }
-
-
-    /**
-     * Generate iid samples from this distribution
-     */
-    public int sample()
-    {
-	double x = Util.random();
-	int k = 0;
-	double y = 1 - alpha;
-	double p = alpha;
-
-	while (y < x) {
-	    y += (1-alpha)*p;
-	    p *= alpha;
-	    k++;
+		this.alpha = alpha;
+		cacheParams();
 	}
 
-	return k;
+	/**
+	 * Returns the probability of the number n.
+	 */
+	public double getProb(int n) {
+		if (n < 0) {
+			return 0;
+		}
+		return ((1 - alpha) * Math.pow(alpha, n));
+	}
 
-    }
+	/**
+	 * Returns the log probability of the number n.
+	 */
+	public double getLogProb(int n) {
+		if (n < 0) {
+			return Double.NEGATIVE_INFINITY;
+		}
+		return (logOneMinusAlpha + (n * logAlpha));
+	}
 
+	/**
+	 * Returns the probability that X = n given that X <= upper. The conditional
+	 * distribution of X given X <= upper is called a truncated geometric
+	 * distribution. P(X = n | X <= m) = (1 - alpha) * alpha^n / (1 - alpha^(m+1))
+	 */
+	public double getProbGivenUpperBound(int n, int upper) {
+		if (upper < 0) {
+			throw new IllegalArgumentException("Conditioning on zero-"
+					+ "probability event: X = " + upper);
+		}
+		if ((n < 0) || (n > upper)) {
+			return 0;
+		}
+		return ((1 - alpha) * Math.pow(alpha, n) / (1 - Math.pow(alpha, upper + 1)));
+	}
 
-    /**
-     * Called when this object is read in from a stream through the 
-     * serialization API.  
-     */
-    private void readObject(java.io.ObjectInputStream in) throws IOException, 
-								 ClassNotFoundException {
-	in.defaultReadObject();
-	cacheParams();
-    }
+	/**
+	 * Returns the log probability that X = n given that X <= upper. The
+	 * conditional distribution of X given X <= upper is called a truncated
+	 * geometric distribution. P(X = n | X <= m) = (1 - alpha) * alpha^n / (1 -
+	 * alpha^(m+1))
+	 */
+	public double getLogProbGivenUpperBound(int n, int upper) {
+		if (upper < 0) {
+			throw new IllegalArgumentException("Conditioning on zero-"
+					+ "probability event: X = " + upper);
+		}
+		if ((n < 0) || (n > upper)) {
+			return Double.NEGATIVE_INFINITY;
+		}
+		return (logOneMinusAlpha + (n * logAlpha) - Math.log(1 - Math.pow(alpha,
+				upper + 1)));
+	}
 
-    void cacheParams() {
-	logAlpha = Math.log(alpha);
-	logOneMinusAlpha = Math.log(1 - alpha);
-    }
+	/**
+	 * Records an occurrence of the number n, for use in updating parameters.
+	 */
+	public void collectStats(int n) {
+		if (n < 0) {
+			throw new IllegalArgumentException(
+					"Geometric distribution can't generate a negative number.");
+		}
 
-    double alpha;
-    transient double logAlpha;
-    transient double logOneMinusAlpha;
-	
-    transient int count;
-    transient int sum;
+		count++;
+		sum += n;
+	}
+
+	/**
+	 * Sets the parameter alpha to the value that maximizes the likelihood of the
+	 * numbers passed to collectStats since the last call to updateParams. Then
+	 * clears the collected statistics, and returns the difference between the log
+	 * likelihood of the data under the new parameters and the log likelihood
+	 * under the old parameters.
+	 */
+	public double updateParams() {
+		// Update parameter
+		double oldLogProb = (count * logOneMinusAlpha) + (sum * logAlpha);
+		if (count > 0) {
+			double mean = sum / (double) count;
+			alpha = mean / (1 + mean);
+			cacheParams();
+		}
+		double newLogProb = (count * logOneMinusAlpha) + (sum * logAlpha);
+
+		// Clear statistics
+		count = 0;
+		sum = 0;
+
+		return (newLogProb - oldLogProb);
+	}
+
+	/**
+	 * Generate iid samples from this distribution
+	 */
+	public int sample() {
+		double x = Util.random();
+		int k = 0;
+		double y = 1 - alpha;
+		double p = alpha;
+
+		while (y < x) {
+			y += (1 - alpha) * p;
+			p *= alpha;
+			k++;
+		}
+
+		return k;
+
+	}
+
+	/**
+	 * Called when this object is read in from a stream through the serialization
+	 * API.
+	 */
+	private void readObject(java.io.ObjectInputStream in) throws IOException,
+			ClassNotFoundException {
+		in.defaultReadObject();
+		cacheParams();
+	}
+
+	void cacheParams() {
+		logAlpha = Math.log(alpha);
+		logOneMinusAlpha = Math.log(1 - alpha);
+	}
+
+	double alpha;
+	transient double logAlpha;
+	transient double logOneMinusAlpha;
+
+	transient int count;
+	transient int sum;
 }

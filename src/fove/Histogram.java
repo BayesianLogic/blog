@@ -41,67 +41,65 @@ import java.io.PrintStream;
 import common.Util;
 
 public class Histogram {
-    
-    public Histogram(int[] cs){
-	counts = new int[cs.length];
-	for (int i=0; i<counts.length; i++)
-	    counts[i]=cs[i];
-    }
 
-    public int numBuckets(){
-	return counts.length;
-    }
-
-    public int getCount(int bucket){
-	return counts[bucket];
-    }
-
-    /**
-     * Returns the multinomial coefficient for this histogram, given that 
-     * it has the specified total count.  (The total is provided just to 
-     * save computation.)  The multinomial coefficient for a histogram h is:
-     * <blockquote>
-     *  total! / (h[0]! * ... * h[k]!)
-     * <blockquote>
-     * where k is the number of buckets in the histogram.
-     *
-     * <p>This method returns a double because the result might overflow 
-     * an int.  
-     */
-    public double multinomialCoefficient(int total) {
-	double logDenom = 0;
-	for (int i = 0; i < counts.length; ++i) {
-	    logDenom += Util.logFactorial(counts[i]);
+	public Histogram(int[] cs) {
+		counts = new int[cs.length];
+		for (int i = 0; i < counts.length; i++)
+			counts[i] = cs[i];
 	}
-	return Math.exp(Util.logFactorial(total) - logDenom);
-    }
 
-    public String toString(){
-	return Arrays.toString(counts);
-    }
-
-    public boolean equals(Object o) {
-	if (o instanceof Histogram) {
-	    Histogram other = (Histogram) o;
-	    return Arrays.equals(counts, other.counts);
+	public int numBuckets() {
+		return counts.length;
 	}
-	return false;
-    }
 
-    public int hashCode() {
-	return Arrays.hashCode(counts);
-    }
+	public int getCount(int bucket) {
+		return counts[bucket];
+	}
 
-    private void setCount(int index, int val){
-	counts[index]=val;
-    }
+	/**
+	 * Returns the multinomial coefficient for this histogram, given that it has
+	 * the specified total count. (The total is provided just to save
+	 * computation.) The multinomial coefficient for a histogram h is:
+	 * <blockquote> total! / (h[0]! * ... * h[k]!) <blockquote> where k is the
+	 * number of buckets in the histogram.
+	 * 
+	 * <p>
+	 * This method returns a double because the result might overflow an int.
+	 */
+	public double multinomialCoefficient(int total) {
+		double logDenom = 0;
+		for (int i = 0; i < counts.length; ++i) {
+			logDenom += Util.logFactorial(counts[i]);
+		}
+		return Math.exp(Util.logFactorial(total) - logDenom);
+	}
 
-    public Histogram incBucket(int index){
-	Histogram ret = new Histogram(counts);
-	ret.setCount(index,getCount(index)+1);
-	return ret;
-    }
+	public String toString() {
+		return Arrays.toString(counts);
+	}
 
-    private int[] counts;
+	public boolean equals(Object o) {
+		if (o instanceof Histogram) {
+			Histogram other = (Histogram) o;
+			return Arrays.equals(counts, other.counts);
+		}
+		return false;
+	}
+
+	public int hashCode() {
+		return Arrays.hashCode(counts);
+	}
+
+	private void setCount(int index, int val) {
+		counts[index] = val;
+	}
+
+	public Histogram incBucket(int index) {
+		Histogram ret = new Histogram(counts);
+		ret.setCount(index, getCount(index) + 1);
+		return ret;
+	}
+
+	private int[] counts;
 
 }

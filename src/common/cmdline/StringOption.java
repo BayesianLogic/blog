@@ -38,74 +38,76 @@ package common.cmdline;
 import java.util.*;
 
 /**
- * Option that takes string values.  If a string option occurs more
- * than once on a command line, this class prints a warning and
- * ignores all but the last occurrence.
+ * Option that takes string values. If a string option occurs more than once on
+ * a command line, this class prints a warning and ignores all but the last
+ * occurrence.
  */
 public class StringOption extends AbstractOption {
-    /**
-     * Creates a string option and registers it with the Parser class.  
-     *
-     * @param shortForm single-character form of this option, or null for 
-     *                  an option with no short form
-     * 
-     * @param longForm long form of this option, or null for an option 
-     *                 with no long form.  
-     *
-     * @param def      default value to return if the option does not occur
-     *
-     * @param docStr   short (preferably less than 40 characters) 
-     *                 string specifying what happens when this option 
-     *                 is "&lt;s&gt;"
-     */
-    public StringOption(String shortForm, String longForm, String def, 
-			 String docStr) {
-	super(shortForm, longForm);
+	/**
+	 * Creates a string option and registers it with the Parser class.
+	 * 
+	 * @param shortForm
+	 *          single-character form of this option, or null for an option with
+	 *          no short form
+	 * 
+	 * @param longForm
+	 *          long form of this option, or null for an option with no long form.
+	 * 
+	 * @param def
+	 *          default value to return if the option does not occur
+	 * 
+	 * @param docStr
+	 *          short (preferably less than 40 characters) string specifying what
+	 *          happens when this option is "&lt;s&gt;"
+	 */
+	public StringOption(String shortForm, String longForm, String def,
+			String docStr) {
+		super(shortForm, longForm);
 
-	value = def;
-	this.docStr = docStr;
+		value = def;
+		this.docStr = docStr;
 
-	Parser.addOption(this);
-    }
-
-    public boolean expectsValue() {
-	return true;
-    }
-
-    public void recordOccurrence(String form, String valueStr) {
-	super.recordOccurrence(form, valueStr);
-	value = valueStr;
-    }
-
-    public String getUsageString() {
-	StringBuffer buf = new StringBuffer();
-	if (!shortForms.isEmpty()) {
-	    buf.append("-" + shortForms.get(0) + " <s>");
-	    if (!longForms.isEmpty()) {
-		buf.append(", ");
-	    }
+		Parser.addOption(this);
 	}
-	if (!longForms.isEmpty()) {
-	    buf.append("--" + longForms.get(0) + " <s>");
+
+	public boolean expectsValue() {
+		return true;
 	}
-	
-	while (buf.length() < DOC_OFFSET) {
-	    buf.append(" ");
+
+	public void recordOccurrence(String form, String valueStr) {
+		super.recordOccurrence(form, valueStr);
+		value = valueStr;
 	}
-	buf.append(docStr);
 
-	return buf.toString();
-    }
+	public String getUsageString() {
+		StringBuffer buf = new StringBuffer();
+		if (!shortForms.isEmpty()) {
+			buf.append("-" + shortForms.get(0) + " <s>");
+			if (!longForms.isEmpty()) {
+				buf.append(", ");
+			}
+		}
+		if (!longForms.isEmpty()) {
+			buf.append("--" + longForms.get(0) + " <s>");
+		}
 
-    /**
-     * Returns the value specified on the command line for this
-     * option, or the default value if the option did not occur.
-     */
-    public String getValue() {
-	return value;
-    }
+		while (buf.length() < DOC_OFFSET) {
+			buf.append(" ");
+		}
+		buf.append(docStr);
 
-    private String docStr;
+		return buf.toString();
+	}
 
-    private String value;
+	/**
+	 * Returns the value specified on the command line for this option, or the
+	 * default value if the option did not occur.
+	 */
+	public String getValue() {
+		return value;
+	}
+
+	private String docStr;
+
+	private String value;
 }

@@ -38,55 +38,54 @@ package common;
 import java.io.Serializable;
 
 /**
- * Defines, for each n, a distribution over the permutations of the sequence 
- * 0,...,n-1.  The probability of a permutation depends on how many inversions 
- * it has (see the comments in Permutation.java).  The distribution over the 
- * number of inversions is a geometric distribution, truncated at the maximum 
- * number of inversions that a permutation of 0,...,n-1 can have.  Among 
- * permutations with a given number of inversions, the distribution is 
- * uniform.  A PermutationDistrib has one parameter, the parameter alpha of 
- * the geometric distribution over the number of inversions.  One way to 
- * think about how to set this parameter is to note that the probability 
- * of getting a permutation with no inversions (namely the original sequence 
- * 0,...n-1) is 1 - alpha.  
+ * Defines, for each n, a distribution over the permutations of the sequence
+ * 0,...,n-1. The probability of a permutation depends on how many inversions it
+ * has (see the comments in Permutation.java). The distribution over the number
+ * of inversions is a geometric distribution, truncated at the maximum number of
+ * inversions that a permutation of 0,...,n-1 can have. Among permutations with
+ * a given number of inversions, the distribution is uniform. A
+ * PermutationDistrib has one parameter, the parameter alpha of the geometric
+ * distribution over the number of inversions. One way to think about how to set
+ * this parameter is to note that the probability of getting a permutation with
+ * no inversions (namely the original sequence 0,...n-1) is 1 - alpha.
  */
 public class PermutationDistrib implements Serializable {
-    /**
-     * Creates a PermutationDistrib with alpha = 0.5.
-     */
-    public PermutationDistrib() {
-	this(0.5);
-    }
+	/**
+	 * Creates a PermutationDistrib with alpha = 0.5.
+	 */
+	public PermutationDistrib() {
+		this(0.5);
+	}
 
-    /**
-     * Creates a PermutationDistrib with the given alpha parameter.
-     */
-    public PermutationDistrib(double alpha) {
-	numInversionsDistrib = new Geometric(alpha);
-    }
+	/**
+	 * Creates a PermutationDistrib with the given alpha parameter.
+	 */
+	public PermutationDistrib(double alpha) {
+		numInversionsDistrib = new Geometric(alpha);
+	}
 
-    /**
-     * Returns the probability of the given permutation.
-     */
-    public double getProb(int[] pi) {
-	int numInversions = Permutation.numInversions(pi);
-	double prob = numInversionsDistrib.getProbGivenUpperBound
-	    (numInversions, Permutation.maxInversions(pi.length));
-	prob /= Permutation.numWithKInversions(pi.length, numInversions);
-	return prob;
-    }
+	/**
+	 * Returns the probability of the given permutation.
+	 */
+	public double getProb(int[] pi) {
+		int numInversions = Permutation.numInversions(pi);
+		double prob = numInversionsDistrib.getProbGivenUpperBound(numInversions,
+				Permutation.maxInversions(pi.length));
+		prob /= Permutation.numWithKInversions(pi.length, numInversions);
+		return prob;
+	}
 
-    /**
-     * Returns the log probability of the given permutation.
-     */
-    public double getLogProb(int[] pi) {
-	int numInversions = Permutation.numInversions(pi);
-	double logprob = numInversionsDistrib.getLogProbGivenUpperBound
-	    (numInversions, Permutation.maxInversions(pi.length));
-	logprob -= Math.log(Permutation.numWithKInversions(pi.length, 
-							   numInversions));
-	return logprob;
-    }
+	/**
+	 * Returns the log probability of the given permutation.
+	 */
+	public double getLogProb(int[] pi) {
+		int numInversions = Permutation.numInversions(pi);
+		double logprob = numInversionsDistrib.getLogProbGivenUpperBound(
+				numInversions, Permutation.maxInversions(pi.length));
+		logprob -= Math.log(Permutation
+				.numWithKInversions(pi.length, numInversions));
+		return logprob;
+	}
 
-    Geometric numInversionsDistrib;
+	Geometric numInversionsDistrib;
 }

@@ -40,57 +40,56 @@ import blog.*;
 
 public class Propositionalization extends LiftedInfOperator {
 
-    private Set<Parfactor> parfactors;
-    private Parfactor phi;
-    private LogicalVar X;
+	private Set<Parfactor> parfactors;
+	private Parfactor phi;
+	private LogicalVar X;
 
-    private Propositionalization(Set<Parfactor> parfactors, Parfactor phi, 
-				 LogicalVar X) {
-	this.parfactors = parfactors;
-	this.phi = phi;
-	this.X = X;	
-    }
-
-    public double logCost() {
-	return Math.log(phi.constraint().numAllowedConstants(X)) 
-	    + Math.log(phi.potential().size());
-    }
-
-    public void operate() {
-	parfactors.remove(phi);
-
-	for (Term c : phi.constraint().allowedConstants(X)) {
-	    Substitution theta = new Substitution();
-	    theta.add(X, c); 
-	    Parfactor propped = phi.applySubstitution(theta);
-	    parfactors.add(propped);
+	private Propositionalization(Set<Parfactor> parfactors, Parfactor phi,
+			LogicalVar X) {
+		this.parfactors = parfactors;
+		this.phi = phi;
+		this.X = X;
 	}
 
-	LiftedVarElim.shatter(parfactors,Collections.EMPTY_LIST);
-    }
-
-    public String toString() {
-	StringBuffer buf = new StringBuffer();
-	buf.append("Propositionalization(");
-	buf.append(X);
-	buf.append(" in ");
-	buf.append(phi);
-	buf.append(")");
-	return buf.toString();
-    }
-
-    public static Collection<LiftedInfOperator> opFactory
-	(Set<Parfactor> parfactors, ElimTester query) 
-    {
-	LinkedList<LiftedInfOperator> ops = new LinkedList<LiftedInfOperator>();
-
-	for (Parfactor phi : parfactors) {
-	    for (LogicalVar X : phi.logicalVars()) {
-		ops.add(new Propositionalization(parfactors, phi, X));
-	    }
+	public double logCost() {
+		return Math.log(phi.constraint().numAllowedConstants(X))
+				+ Math.log(phi.potential().size());
 	}
 
-	return ops;
-    }
+	public void operate() {
+		parfactors.remove(phi);
+
+		for (Term c : phi.constraint().allowedConstants(X)) {
+			Substitution theta = new Substitution();
+			theta.add(X, c);
+			Parfactor propped = phi.applySubstitution(theta);
+			parfactors.add(propped);
+		}
+
+		LiftedVarElim.shatter(parfactors, Collections.EMPTY_LIST);
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("Propositionalization(");
+		buf.append(X);
+		buf.append(" in ");
+		buf.append(phi);
+		buf.append(")");
+		return buf.toString();
+	}
+
+	public static Collection<LiftedInfOperator> opFactory(
+			Set<Parfactor> parfactors, ElimTester query) {
+		LinkedList<LiftedInfOperator> ops = new LinkedList<LiftedInfOperator>();
+
+		for (Parfactor phi : parfactors) {
+			for (LogicalVar X : phi.logicalVars()) {
+				ops.add(new Propositionalization(parfactors, phi, X));
+			}
+		}
+
+		return ops;
+	}
 
 }

@@ -38,49 +38,49 @@ package common;
 import java.util.*;
 
 /**
- * A map that is represented as a set of changes to some underlying map.  
- * A MapDiff object can be modified, but changes to the MapDiff do not 
- * affect the underlying map unless <code>changeUnderlyingMap</code> is 
- * called.  The advantages of using a MapDiff rather than creating another 
- * Map object are:
+ * A map that is represented as a set of changes to some underlying map. A
+ * MapDiff object can be modified, but changes to the MapDiff do not affect the
+ * underlying map unless <code>changeUnderlyingMap</code> is called. The
+ * advantages of using a MapDiff rather than creating another Map object are:
  * <ul>
- * <li>We do not need to copy the underlying map, which would take time 
- *     linear in the size of the map.
- * <li>We can enumerate the changes between the new map (represented by 
- *     the MapDiff object) and the underlying map using MapDiff methods, 
- *     without doing an exhaustive comparison which would take time 
- *     linear in the size of the underlying map.
+ * <li>We do not need to copy the underlying map, which would take time linear
+ * in the size of the map.
+ * <li>We can enumerate the changes between the new map (represented by the
+ * MapDiff object) and the underlying map using MapDiff methods, without doing
+ * an exhaustive comparison which would take time linear in the size of the
+ * underlying map.
  * </ul>
- *
- * <p>A MapDiff behaves correctly if entries are placed in the
- * underlying map after the MapDiff is created.  It also behaves
- * correctly if entries are removed from the underlying map, as long
- * as those keys have not also been removed from the MapDiff (then
- * they may be double-counted).
- */ 
+ * 
+ * <p>
+ * A MapDiff behaves correctly if entries are placed in the underlying map after
+ * the MapDiff is created. It also behaves correctly if entries are removed from
+ * the underlying map, as long as those keys have not also been removed from the
+ * MapDiff (then they may be double-counted).
+ */
 public interface MapDiff extends Map {
-    /**
-     * Returns the set of keys that map to different values in this map 
-     * than in the underlying map.  This includes any keys that have values 
-     * in this map but not the underlying map, or vice versa.  
-     *
-     * <p>The returned set may or may not be kept up to date as changes 
-     * are made to this MapDiff.
-     *
-     * @return unmodifiable Set of Object
-     */
-    Set getChangedKeys();
+	/**
+	 * Returns the set of keys that map to different values in this map than in
+	 * the underlying map. This includes any keys that have values in this map but
+	 * not the underlying map, or vice versa.
+	 * 
+	 * <p>
+	 * The returned set may or may not be kept up to date as changes are made to
+	 * this MapDiff.
+	 * 
+	 * @return unmodifiable Set of Object
+	 */
+	Set getChangedKeys();
 
-    /**
-     * Changes the underlying map so it is equal to this map.
-     *
-     * @throws UnsupportedOperationException if the underlying map is 
-     *                                       not modifiable
-     */
-    void changeUnderlying();
+	/**
+	 * Changes the underlying map so it is equal to this map.
+	 * 
+	 * @throws UnsupportedOperationException
+	 *           if the underlying map is not modifiable
+	 */
+	void changeUnderlying();
 
-    /**
-     * Resets this map so it is equal to the underlying map.
-     */
-    void clearChanges();
+	/**
+	 * Resets this map so it is equal to the underlying map.
+	 */
+	void clearChanges();
 }

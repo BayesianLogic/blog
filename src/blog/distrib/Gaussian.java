@@ -44,11 +44,11 @@ import common.Util;
  */
 public class Gaussian extends UnivarGaussian {
 
-    public Gaussian(double mean, double variance){
-	super(mean, variance);
-    }
+	public Gaussian(double mean, double variance) {
+		super(mean, variance);
+	}
 
-    public Gaussian(List parameters){
-	super(parameters);
-    }
+	public Gaussian(List parameters) {
+		super(parameters);
+	}
 }

@@ -38,82 +38,82 @@ package common;
 import java.util.*;
 
 /**
- * Class for iterating over all subsets of an ordered set.  The subsets 
- * are represented by BitSet objects; in fact, the same BitSet object is 
- * used to represent each subset in turn.  Of course, using this class is 
- * only practical for iterating over the subsets of a small set, since the 
- * number of subsets of a set of size n is 2^n.
+ * Class for iterating over all subsets of an ordered set. The subsets are
+ * represented by BitSet objects; in fact, the same BitSet object is used to
+ * represent each subset in turn. Of course, using this class is only practical
+ * for iterating over the subsets of a small set, since the number of subsets of
+ * a set of size n is 2^n.
  */
 public class SubsetIterator implements Iterator {
-    /**
-     * Creates a new SubsetIterator over a set of size n.
-     */
-    public SubsetIterator(int n) {
-	this.n = n;
-	done = false;
-    }
-
-    /**
-     * Returns true if the set of size n has a subset that hasn't been 
-     * returned yet.
-     */
-    public boolean hasNext() {
-	return !done;
-    }
-
-    /**
-     * Returns a BitSet representing a subset that hasn't been returned yet.
-     * Note that this modifies the BitSet object that was returned by the 
-     * previous call to <code>next</code>, so you shouldn't rely on that 
-     * object remaining stable.  
-     */
-    public Object next() {
-	if (done) {
-	    throw new NoSuchElementException();
+	/**
+	 * Creates a new SubsetIterator over a set of size n.
+	 */
+	public SubsetIterator(int n) {
+		this.n = n;
+		done = false;
 	}
 
-	if (s == null) {
-	    s = new BitSet(n); // first call to next();
-	} else {
-	    // Treat set as number and add 1 to it.
-	    int firstZero = s.nextClearBit(0);
-	    s.set(firstZero);
-	    s.clear(0, firstZero);
+	/**
+	 * Returns true if the set of size n has a subset that hasn't been returned
+	 * yet.
+	 */
+	public boolean hasNext() {
+		return !done;
 	}
-		
-	done = (s.cardinality() == n);
-	return s;
-    }
 
-    /**
-     * Throws an exception -- removal makes no sense for this iterator.
-     */
-    public void remove() {
-	throw new UnsupportedOperationException();
-    }
-
-    int n;
-    BitSet s;
-    boolean done;
-
-    public static void main(String args[]) {
-	int size = Integer.parseInt(args[0]);
-
-	for (Iterator iter = new SubsetIterator(size); iter.hasNext(); ) {
-	    BitSet s = (BitSet) iter.next();
-
-	    System.out.print("{");
-	    boolean first = true;
-	    for (int i = 0; i < size; i++) {
-		if (s.get(i)) {
-		    if (!first) {
-			System.out.print(", ");
-		    }
-		    System.out.print(i);
-		    first = false;
+	/**
+	 * Returns a BitSet representing a subset that hasn't been returned yet. Note
+	 * that this modifies the BitSet object that was returned by the previous call
+	 * to <code>next</code>, so you shouldn't rely on that object remaining
+	 * stable.
+	 */
+	public Object next() {
+		if (done) {
+			throw new NoSuchElementException();
 		}
-	    }
-	    System.out.println("}");
+
+		if (s == null) {
+			s = new BitSet(n); // first call to next();
+		} else {
+			// Treat set as number and add 1 to it.
+			int firstZero = s.nextClearBit(0);
+			s.set(firstZero);
+			s.clear(0, firstZero);
+		}
+
+		done = (s.cardinality() == n);
+		return s;
 	}
-    }
+
+	/**
+	 * Throws an exception -- removal makes no sense for this iterator.
+	 */
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
+
+	int n;
+	BitSet s;
+	boolean done;
+
+	public static void main(String args[]) {
+		int size = Integer.parseInt(args[0]);
+
+		for (Iterator iter = new SubsetIterator(size); iter.hasNext();) {
+			BitSet s = (BitSet) iter.next();
+
+			System.out.print("{");
+			boolean first = true;
+			for (int i = 0; i < size; i++) {
+				if (s.get(i)) {
+					if (!first) {
+						System.out.print(", ");
+					}
+					System.out.print(i);
+					first = false;
+				}
+			}
+			System.out.println("}");
+		}
+	}
 }

@@ -38,55 +38,53 @@ package common;
 import java.util.*;
 
 /**
- * A HashSet class that uses weak references to its elements.  This means 
- * that if the only reference to an object is from this set, the object 
- * will be garbage-collected and removed from this set.
- *
- * The current implementation is built on WeakHashMap: it's just a map
- * where every key is mapped to Boolean.TRUE.  It would be a bit more
- * elegant (and save some memory) to write this class from scratch.
- * But it can't be built on top of an ordinary HashSet, because we
- * want to store WeakReference objects while using the
- * <code>equals</code> and <code>hashCode</code> methods of their
+ * A HashSet class that uses weak references to its elements. This means that if
+ * the only reference to an object is from this set, the object will be
+ * garbage-collected and removed from this set.
+ * 
+ * The current implementation is built on WeakHashMap: it's just a map where
+ * every key is mapped to Boolean.TRUE. It would be a bit more elegant (and save
+ * some memory) to write this class from scratch. But it can't be built on top
+ * of an ordinary HashSet, because we want to store WeakReference objects while
+ * using the <code>equals</code> and <code>hashCode</code> methods of their
  * referents.
  */
 public class WeakHashSet extends AbstractSet {
-    /**
-     * Creates a new, empty WeakHashSet.
-     */
-    public WeakHashSet() {
-    }
-
-    /**
-     * Creates a new WeakHashSet whose elements are weak references to the 
-     * elements of the given collection.
-     */
-    public WeakHashSet(Collection c) {
-	for (Iterator iter = c.iterator(); iter.hasNext(); ) {
-	    add(iter.next());
+	/**
+	 * Creates a new, empty WeakHashSet.
+	 */
+	public WeakHashSet() {
 	}
-    }
 
-    public int size() {
-	return map.size();
-    }
+	/**
+	 * Creates a new WeakHashSet whose elements are weak references to the
+	 * elements of the given collection.
+	 */
+	public WeakHashSet(Collection c) {
+		for (Iterator iter = c.iterator(); iter.hasNext();) {
+			add(iter.next());
+		}
+	}
 
-    public boolean contains(Object o) {
-	return map.containsKey(o);
-    }
+	public int size() {
+		return map.size();
+	}
 
-    public Iterator iterator() {
-	return map.keySet().iterator();
-    }
+	public boolean contains(Object o) {
+		return map.containsKey(o);
+	}
 
-    public boolean add(Object o) {
-	return (map.put(o, Boolean.TRUE) == null);
-    }
+	public Iterator iterator() {
+		return map.keySet().iterator();
+	}
 
-    public boolean remove(Object o) {
-	return (map.remove(o) != null);
-    }
+	public boolean add(Object o) {
+		return (map.put(o, Boolean.TRUE) == null);
+	}
 
-    private WeakHashMap map = new WeakHashMap();
+	public boolean remove(Object o) {
+		return (map.remove(o) != null);
+	}
+
+	private WeakHashMap map = new WeakHashMap();
 }
-	

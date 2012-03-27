@@ -38,36 +38,37 @@ package common;
 import java.util.*;
 
 /**
- * Interface for sets that are represented in terms of additions and 
- * removals relative to an underlying set.  
- *
- * <p>A SetDiff should still behave correctly if objects are added to 
- * the underlying set after the SetDiff is created, as long as the objects 
- * have not also been added to the SetDiff (then they may be double-counted).  
- * Removals from the underlying set may invalidate a SetDiff.  
+ * Interface for sets that are represented in terms of additions and removals
+ * relative to an underlying set.
+ * 
+ * <p>
+ * A SetDiff should still behave correctly if objects are added to the
+ * underlying set after the SetDiff is created, as long as the objects have not
+ * also been added to the SetDiff (then they may be double-counted). Removals
+ * from the underlying set may invalidate a SetDiff.
  */
 public interface SetDiff extends Set {
-    /**
-     * Returns the set of objects that are in this set and not in the 
-     * underlying set.
-     *
-     * @return unmodifiable Set of objects
-     */
-    Set getAdditions();
+	/**
+	 * Returns the set of objects that are in this set and not in the underlying
+	 * set.
+	 * 
+	 * @return unmodifiable Set of objects
+	 */
+	Set getAdditions();
 
-    /**
-     * Returns the set of objects that are in the underlying set but 
-     * not in this set.
-     */
-    Set getRemovals();
+	/**
+	 * Returns the set of objects that are in the underlying set but not in this
+	 * set.
+	 */
+	Set getRemovals();
 
-    /**
-     * Changes the underlying set so it's equal to this set.
-     */
-    void changeUnderlying();
+	/**
+	 * Changes the underlying set so it's equal to this set.
+	 */
+	void changeUnderlying();
 
-    /**
-     * Changes this set so it's equal to the underlying set.
-     */
-    void clearChanges();
+	/**
+	 * Changes this set so it's equal to the underlying set.
+	 */
+	void clearChanges();
 }

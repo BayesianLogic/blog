@@ -39,80 +39,75 @@ import blog.*;
 import java.util.*;
 import common.Util;
 
-/** 
- * A Negative Binomial distribution with parameters k (number of successes)
- * and p (probability of a success at a given trial).  If k is an integer, 
- * this is also called the Pascal distribution.  The distribution is defined 
- * (in discrete terms) as the number of failures before k successes.
+/**
+ * A Negative Binomial distribution with parameters k (number of successes) and
+ * p (probability of a success at a given trial). If k is an integer, this is
+ * also called the Pascal distribution. The distribution is defined (in discrete
+ * terms) as the number of failures before k successes.
  */
 public class NegativeBinomial extends AbstractCondProbDistrib {
-    /**
-     * Creates a new instance of the NegativeBinomial with
-     * parameters k and p.
-     */
-    public NegativeBinomial(List params) {
-	if (!((params.get(0) instanceof Integer) 
-	      && (params.get(1) instanceof Number))) {
-	    throw new IllegalArgumentException
-		("NegativeBinomial expects two numerical arguments "
-		 + "{k, p} where k is an Integer, p a Double. Got: " + params);
+	/**
+	 * Creates a new instance of the NegativeBinomial with parameters k and p.
+	 */
+	public NegativeBinomial(List params) {
+		if (!((params.get(0) instanceof Integer) && (params.get(1) instanceof Number))) {
+			throw new IllegalArgumentException(
+					"NegativeBinomial expects two numerical arguments "
+							+ "{k, p} where k is an Integer, p a Double. Got: " + params);
+		}
+		k = ((Integer) params.get(0)).intValue();
+		p = ((Number) params.get(1)).doubleValue();
+		gamma = new Gamma(k, (p / (1 - p)));
 	}
-	k = ((Integer)params.get(0)).intValue();
-	p = ((Number)params.get(1)).doubleValue();
-	gamma = new Gamma(k, (p / (1-p)));
-    }
 
-    /**
-     * Returns the probability of n failures under this distribution.
-     */
-    public double getProb (List args, Object value) {
-	if (!(value instanceof Integer)) {
-	    throw new IllegalArgumentException
-		("NegativeBinomial CPD defines a distribution over objects" 
-		 + " of class Integer, not " + value.getClass() + ".");
-	} 
-	int n = ((Integer)value).intValue();
-	// Return C(k+n-1, n)*p^k*(1-p)^n
-	return Math.exp(getLogProb(args, value));
-    }
-    
+	/**
+	 * Returns the probability of n failures under this distribution.
+	 */
+	public double getProb(List args, Object value) {
+		if (!(value instanceof Integer)) {
+			throw new IllegalArgumentException(
+					"NegativeBinomial CPD defines a distribution over objects"
+							+ " of class Integer, not " + value.getClass() + ".");
+		}
+		int n = ((Integer) value).intValue();
+		// Return C(k+n-1, n)*p^k*(1-p)^n
+		return Math.exp(getLogProb(args, value));
+	}
 
-    /**
-     * Returns the log of the probability of n failures in this distribution.
-     */
-    public double getLogProb (List args, Object value) {
-	if (!(value instanceof Integer)) {
-	    throw new IllegalArgumentException
-		("NegativeBinomial CPD defines a distribution over objects" 
-		 + " of class Integer, not " + value.getClass() + ".");
-	} 
-	int n = ((Integer)value).intValue();
-	// Return log (C(k+n-1, n)*p^k*(1-p)^n)
-	return (k*Math.log(p) + n*Math.log(1 - p)
-		+ Math.log(Util.factorial(n + k - 1))
-		- Math.log(Util.factorial(k - 1))
-		- Math.log(Util.factorial(n)));
-    }
-    
-    /** 
-     * Returns a double sampled according to this distribution.  Takes time
-     * O(GammaDistrib.sampleVal() + Poisson.sampleVal()). (Reference: A 
-     * Guide To Simulation, 2nd Ed. Bratley, Paul, Bennett L. Fox and Linus E.
-     * Schrage.)
-     */
-    public Object sampleVal(List args, Type childType) {
-	Double theta = (Double)gamma.sampleVal(new LinkedList(), childType);
-	LinkedList l = new LinkedList();
-	l.add(theta);
-	Poisson poisson = new Poisson(l);
-	return poisson.sampleVal(new LinkedList(), childType);
-    }
+	/**
+	 * Returns the log of the probability of n failures in this distribution.
+	 */
+	public double getLogProb(List args, Object value) {
+		if (!(value instanceof Integer)) {
+			throw new IllegalArgumentException(
+					"NegativeBinomial CPD defines a distribution over objects"
+							+ " of class Integer, not " + value.getClass() + ".");
+		}
+		int n = ((Integer) value).intValue();
+		// Return log (C(k+n-1, n)*p^k*(1-p)^n)
+		return (k * Math.log(p) + n * Math.log(1 - p)
+				+ Math.log(Util.factorial(n + k - 1)) - Math.log(Util.factorial(k - 1)) - Math
+					.log(Util.factorial(n)));
+	}
 
-    public String toString() {
-	return getClass().getName();
-    }
+	/**
+	 * Returns a double sampled according to this distribution. Takes time
+	 * O(GammaDistrib.sampleVal() + Poisson.sampleVal()). (Reference: A Guide To
+	 * Simulation, 2nd Ed. Bratley, Paul, Bennett L. Fox and Linus E. Schrage.)
+	 */
+	public Object sampleVal(List args, Type childType) {
+		Double theta = (Double) gamma.sampleVal(new LinkedList(), childType);
+		LinkedList l = new LinkedList();
+		l.add(theta);
+		Poisson poisson = new Poisson(l);
+		return poisson.sampleVal(new LinkedList(), childType);
+	}
 
-    private Gamma gamma;
-    private int k;
-    private double p;
+	public String toString() {
+		return getClass().getName();
+	}
+
+	private Gamma gamma;
+	private int k;
+	private double p;
 }

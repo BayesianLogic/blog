@@ -12,16 +12,19 @@ import blog.DependencyModel.Distrib;
 
 public class ParentsSampler extends AbstractSampler {
 
-    public ParentsSampler(VarWithDistrib seedVar, PartialWorld world, Set beingExternallyInstantiatedVars, SamplerFactory fallbackFactory) {
-	super(seedVar, world, beingExternallyInstantiatedVars, fallbackFactory);
-    }
-    
-    public static Sampler applies(VarWithDistrib seedVar, PartialWorld world, Set beingExternallyInstantiatedVars, SamplerFactory fallbackFactory) {
-	return new ParentsSampler(seedVar, world, beingExternallyInstantiatedVars, fallbackFactory);
-    }
+	public ParentsSampler(VarWithDistrib seedVar, PartialWorld world,
+			Set beingExternallyInstantiatedVars, SamplerFactory fallbackFactory) {
+		super(seedVar, world, beingExternallyInstantiatedVars, fallbackFactory);
+	}
 
-    public void sampleStory() {
-	DependencyModel.Distrib proposal = seedVar.getDistrib(context);
-	setValueStoryPoint(seedVar, proposal);
-    }
+	public static Sampler applies(VarWithDistrib seedVar, PartialWorld world,
+			Set beingExternallyInstantiatedVars, SamplerFactory fallbackFactory) {
+		return new ParentsSampler(seedVar, world, beingExternallyInstantiatedVars,
+				fallbackFactory);
+	}
+
+	public void sampleStory() {
+		DependencyModel.Distrib proposal = seedVar.getDistrib(context);
+		setValueStoryPoint(seedVar, proposal);
+	}
 }

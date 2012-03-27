@@ -39,42 +39,42 @@ import java.util.*;
 import common.Util;
 
 /**
- * Implements a Metropolis-Hastings sampler with the {@link DecayedProposer}.  
+ * Implements a Metropolis-Hastings sampler with the {@link DecayedProposer}.
  */
 public class DMHSampler extends MHSampler {
-    /**
-     * Creates a new sampler for the given BLOG model.  The properties 
-     * table specifies configuration parameters to be passed to the super 
-     * class {@link MHSampler} and the proposer {@link DecayedProposer}.
-     */
-    public DMHSampler(Model model, Properties properties) {
-	super(model, properties);
-    }
+	/**
+	 * Creates a new sampler for the given BLOG model. The properties table
+	 * specifies configuration parameters to be passed to the super class
+	 * {@link MHSampler} and the proposer {@link DecayedProposer}.
+	 */
+	public DMHSampler(Model model, Properties properties) {
+		super(model, properties);
+	}
 
-    /** Method responsible for initializing the proposer field. */
-    protected void constructProposer(Properties properties) {
-	proposer = new DecayedProposer(model, properties);
-    }
+	/** Method responsible for initializing the proposer field. */
+	protected void constructProposer(Properties properties) {
+		proposer = new DecayedProposer(model, properties);
+	}
 
-    public int getMaxRecall() {
-    	return ((DecayedProposer)proposer).getMaxRecall();
-    }
+	public int getMaxRecall() {
+		return ((DecayedProposer) proposer).getMaxRecall();
+	}
 
-    /**
-     * Adds to evidence to be considered during sampling
-     * (typically for new time steps).
-     */
-    public void add(Evidence evidence) {
-	this.evidence.addAll(evidence);
-	((DecayedProposer)proposer).add(evidence);
-    }
-    
-    /**
-     * Adds queries to the queries to be considered during sampling.
-     * (typically for new time steps).
-     */
-    public void addQueries(Collection queries) {
-	this.queries.addAll(queries);
-	((DecayedProposer)proposer).addQueries(queries);
-    }
+	/**
+	 * Adds to evidence to be considered during sampling (typically for new time
+	 * steps).
+	 */
+	public void add(Evidence evidence) {
+		this.evidence.addAll(evidence);
+		((DecayedProposer) proposer).add(evidence);
+	}
+
+	/**
+	 * Adds queries to the queries to be considered during sampling. (typically
+	 * for new time steps).
+	 */
+	public void addQueries(Collection queries) {
+		this.queries.addAll(queries);
+		((DecayedProposer) proposer).addQueries(queries);
+	}
 }

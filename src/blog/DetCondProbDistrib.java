@@ -40,31 +40,30 @@ import java.util.*;
 import common.Util;
 
 /**
- * Abstract class for deterministic conditional probability distributions.  
- * These are distributions such that for each tuple of CPD arguments, there 
- * is a child value that has probability one.
+ * Abstract class for deterministic conditional probability distributions. These
+ * are distributions such that for each tuple of CPD arguments, there is a child
+ * value that has probability one.
  */
 public abstract class DetCondProbDistrib extends AbstractCondProbDistrib {
-    /**
-     * Returns the child value that has probability one for the given 
-     * tuple of CPD arguments.
-     */
-    public abstract Object getChildValue(List args);
+	/**
+	 * Returns the child value that has probability one for the given tuple of CPD
+	 * arguments.
+	 */
+	public abstract Object getChildValue(List args);
 
-    public double getProb(List args, Object childValue) {
-	Object necessaryValue = getChildValue(args);
-	boolean eq = necessaryValue.equals(childValue);
-	/*
-	if (Util.verbose() && !eq) {
-	    System.out.println("Deterministic CPD returning probability 0.");
-	    System.out.println("Value according to CPD: " + necessaryValue);
-	    System.out.println("Actual value: " + childValue);
+	public double getProb(List args, Object childValue) {
+		Object necessaryValue = getChildValue(args);
+		boolean eq = necessaryValue.equals(childValue);
+		/*
+		 * if (Util.verbose() && !eq) {
+		 * System.out.println("Deterministic CPD returning probability 0.");
+		 * System.out.println("Value according to CPD: " + necessaryValue);
+		 * System.out.println("Actual value: " + childValue); }
+		 */
+		return (eq ? 1 : 0);
 	}
-	*/
-	return (eq ? 1 : 0);
-    }
 
-    public Object sampleVal(List args, Type childType) {
-	return getChildValue(args);
-    }
+	public Object sampleVal(List args, Type childType) {
+		return getChildValue(args);
+	}
 }

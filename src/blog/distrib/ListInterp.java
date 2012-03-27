@@ -39,95 +39,92 @@ import java.util.*;
 import blog.AbstractFunctionInterp;
 
 /**
- * An interpretation for a Boolean function symbol, specified by a list 
- * of tuples for which the function returns true.  The first parameter 
- * to ListInterp is the arity of the tuples, i.e., the number of arguments 
- * to the function.  If the arity is <i>k</i>, then the remaining parameters 
- * are interpreted in groups of <i>k</i>, as <i>k</i>-tuples for which 
- * the function returns true.  The function returns false for all other 
- * tuples.
+ * An interpretation for a Boolean function symbol, specified by a list of
+ * tuples for which the function returns true. The first parameter to ListInterp
+ * is the arity of the tuples, i.e., the number of arguments to the function. If
+ * the arity is <i>k</i>, then the remaining parameters are interpreted in
+ * groups of <i>k</i>, as <i>k</i>-tuples for which the function returns true.
+ * The function returns false for all other tuples.
  */
 public class ListInterp extends AbstractFunctionInterp {
-    /**
-     * Creates a new ListInterp object with an empty list of tuples on 
-     * which the function returns true.
-     */
-    public ListInterp(int arity) {
-	this.arity = arity;
-    }
-
-    /**
-     * Creates a new ListInterp object with a specified list of tuples 
-     * on which the function returns true.
-     *
-     * @param params List whose first element is an Integer <i>k</i>, and 
-     *               whose remaining elements are interpreted in groups 
-     *               of <i>k</i>, as tuples of function arguments.
-     */
-    public ListInterp(List params) {
-	if (params.isEmpty() || !(params.get(0) instanceof Integer)) {
-	    throw new IllegalArgumentException
-		("First parameter to ListInterp must be an integer "
-		 + "specifying the number of elements in each tuple.");
-	}
-	arity = ((Integer) params.get(0)).intValue();
-
-	if (arity <= 0) {
-	    throw new IllegalArgumentException
-		("Function specified by ListInterp must take at least 1 "
-		 + "argument, not " + arity + ".  (For zero-ary functions, "
-		 + "just use, e.g., \"nonrandom Integer C = 17;\", with no "
-		 + "parentheses after C.)");
+	/**
+	 * Creates a new ListInterp object with an empty list of tuples on which the
+	 * function returns true.
+	 */
+	public ListInterp(int arity) {
+		this.arity = arity;
 	}
 
-	if ((params.size() - 1) % arity != 0) {
-	    throw new IllegalArgumentException
-		("ListInterp initialized with arity " + arity  
-		 + ", but number of remaining parameters is not a "
-		 + "multiple of " + arity);
+	/**
+	 * Creates a new ListInterp object with a specified list of tuples on which
+	 * the function returns true.
+	 * 
+	 * @param params
+	 *          List whose first element is an Integer <i>k</i>, and whose
+	 *          remaining elements are interpreted in groups of <i>k</i>, as
+	 *          tuples of function arguments.
+	 */
+	public ListInterp(List params) {
+		if (params.isEmpty() || !(params.get(0) instanceof Integer)) {
+			throw new IllegalArgumentException(
+					"First parameter to ListInterp must be an integer "
+							+ "specifying the number of elements in each tuple.");
+		}
+		arity = ((Integer) params.get(0)).intValue();
+
+		if (arity <= 0) {
+			throw new IllegalArgumentException(
+					"Function specified by ListInterp must take at least 1 "
+							+ "argument, not " + arity + ".  (For zero-ary functions, "
+							+ "just use, e.g., \"nonrandom Integer C = 17;\", with no "
+							+ "parentheses after C.)");
+		}
+
+		if ((params.size() - 1) % arity != 0) {
+			throw new IllegalArgumentException("ListInterp initialized with arity "
+					+ arity + ", but number of remaining parameters is not a "
+					+ "multiple of " + arity);
+		}
+
+		for (int i = 1; i < params.size(); i += arity) {
+			List args = params.subList(i, i + arity);
+			// System.out.println(args);
+			tuples.add(args);
+		}
 	}
 
-	for (int i = 1; i < params.size(); i += arity) {
-	    List args = params.subList(i, i + arity);
-	    //System.out.println(args);
-	    tuples.add(args);
+	/**
+	 * Adds the given argument tuple to the list of tuples on which the function
+	 * returns true. Does nothing if the tuple is already in the list.
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if the size of <code>args</code> does not equal the arity passed
+	 *           to this object's constructor
+	 */
+	public void add(List args) {
+		if (args.size() != arity) {
+			throw new IllegalArgumentException("Extension of relation with arity "
+					+ arity + " can't include argument tuple: " + args);
+		}
+		tuples.add(args);
 	}
-    }
 
-    /**
-     * Adds the given argument tuple to the list of tuples on which the 
-     * function returns true.  Does nothing if the tuple is already 
-     * in the list.
-     *
-     * @throws IllegalArgumentException  if the size of <code>args</code> 
-     *                                   does not equal the arity passed 
-     *                                   to this object's constructor
-     */
-    public void add(List args) {
-	if (args.size() != arity) {
-	    throw new IllegalArgumentException
-		("Extension of relation with arity " + arity 
-		 + " can't include argument tuple: " + args);
+	public Object getValue(List args) {
+		if (args.size() != arity) {
+			throw new IllegalArgumentException(
+					"ListInterp expected argument tuples of arity " + arity
+							+ ", got one of arity " + args.size());
+		}
+		return Boolean.valueOf(tuples.contains(args));
 	}
-	tuples.add(args);
-    }
 
-    public Object getValue(List args) {
-	if (args.size() != arity) {
-	    throw new IllegalArgumentException
-		("ListInterp expected argument tuples of arity " + arity 
-		 + ", got one of arity " + args.size());
+	public Set getInverseTuples(Object value) {
+		if ((value instanceof Boolean) && ((Boolean) value).booleanValue()) {
+			return Collections.unmodifiableSet(tuples);
+		}
+		return null;
 	}
-	return Boolean.valueOf(tuples.contains(args));
-    }
 
-    public Set getInverseTuples(Object value) {
-	if ((value instanceof Boolean) && ((Boolean) value).booleanValue()) {
-	    return Collections.unmodifiableSet(tuples);
-	}
-	return null;
-    }
-
-    private int arity;
-    private Set tuples = new HashSet(); // of List
+	private int arity;
+	private Set tuples = new HashSet(); // of List
 }

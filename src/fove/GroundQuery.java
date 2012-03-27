@@ -40,25 +40,24 @@ import blog.*;
 
 public class GroundQuery implements ElimTester {
 
-    public GroundQuery(Collection<? extends Term> queryTerms){
-	this.queryTerms = new HashSet(queryTerms);
-    }
-
-    /**
-     *  Returns true of the random variables defined by the constrained term
-     *  should be eliminated (summed out).
-     */
-    public boolean shouldEliminate(Term term, Constraint constraint){
-
-	for (Term queryTerm : queryTerms) {
-	    if (Constraint.getOverlap(term, constraint, queryTerm, 
-				      Constraint.EMPTY) != null) {
-		return false;
-	    }
+	public GroundQuery(Collection<? extends Term> queryTerms) {
+		this.queryTerms = new HashSet(queryTerms);
 	}
-	return true;
-    }
 
-    Set<Term> queryTerms;
-    
+	/**
+	 * Returns true of the random variables defined by the constrained term should
+	 * be eliminated (summed out).
+	 */
+	public boolean shouldEliminate(Term term, Constraint constraint) {
+
+		for (Term queryTerm : queryTerms) {
+			if (Constraint.getOverlap(term, constraint, queryTerm, Constraint.EMPTY) != null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	Set<Term> queryTerms;
+
 }

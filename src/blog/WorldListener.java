@@ -38,25 +38,23 @@ package blog;
 import java.util.*;
 
 /**
- * Interface for objects that can be notified of changes to the values of 
- * random variables in a PartialWorld.
+ * Interface for objects that can be notified of changes to the values of random
+ * variables in a PartialWorld.
  */
 public interface WorldListener {
-    /**
-     * Called when the value of a basic random variable has changed.
-     * If the variable was not previously instantiated,
-     * <code>oldValue</code> is null.  If it has just been
-     * uninstantiated, then <code>newValue</code> is null.
-     */
-    void varChanged(BasicVar rv, Object oldValue, Object newValue);
+	/**
+	 * Called when the value of a basic random variable has changed. If the
+	 * variable was not previously instantiated, <code>oldValue</code> is null. If
+	 * it has just been uninstantiated, then <code>newValue</code> is null.
+	 */
+	void varChanged(BasicVar rv, Object oldValue, Object newValue);
 
-    /**
-     * Called when the assertion that a partial world makes about the 
-     * given object identifier has changed.  If the identifier was not 
-     * previously asserted to satisfy any POP application, then 
-     * <code>oldPOPApp</code> is null.  If the identifier has just been 
-     * unasserted, then <code>newPOPApp</code> is null.
-     */
-    void identifierChanged(ObjectIdentifier id, NumberVar oldPOPApp, 
-			   NumberVar newPOPApp);
+	/**
+	 * Called when the assertion that a partial world makes about the given object
+	 * identifier has changed. If the identifier was not previously asserted to
+	 * satisfy any POP application, then <code>oldPOPApp</code> is null. If the
+	 * identifier has just been unasserted, then <code>newPOPApp</code> is null.
+	 */
+	void identifierChanged(ObjectIdentifier id, NumberVar oldPOPApp,
+			NumberVar newPOPApp);
 }

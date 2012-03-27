@@ -38,62 +38,62 @@ package common;
 import java.util.*;
 
 /**
- * An extension of the Map interface that provides efficient access to
- * the pre-image of a value in the map.  The pre-image of a value y is
- * the set of keys that map to y.  
+ * An extension of the Map interface that provides efficient access to the
+ * pre-image of a value in the map. The pre-image of a value y is the set of
+ * keys that map to y.
  */
 public interface MapWithPreimages extends Map {
-    /**
-     * An empty MapWithPreimages.
-     */
-    static final MapWithPreimages EMPTY_MAP_WITH_PREIMAGES 
-	= new EmptyMapWithPreimages();
+	/**
+	 * An empty MapWithPreimages.
+	 */
+	static final MapWithPreimages EMPTY_MAP_WITH_PREIMAGES = new EmptyMapWithPreimages();
 
-    static class EmptyMapWithPreimages extends AbstractMapWithPreimages {
-	EmptyMapWithPreimages() {
-	    map = Collections.EMPTY_MAP;
-	    preimages = MultiMap.EMPTY_MULTI_MAP;
+	static class EmptyMapWithPreimages extends AbstractMapWithPreimages {
+		EmptyMapWithPreimages() {
+			map = Collections.EMPTY_MAP;
+			preimages = MultiMap.EMPTY_MULTI_MAP;
+		}
 	}
-    }
 
-    /**
-     * Returns the set of values in the map.  This method differs from 
-     * the <code>values</code> method in the <code>Map</code> interface 
-     * in that it returns a Set rather than a Collection.
-     */
-    Set valueSet();
+	/**
+	 * Returns the set of values in the map. This method differs from the
+	 * <code>values</code> method in the <code>Map</code> interface in that it
+	 * returns a Set rather than a Collection.
+	 */
+	Set valueSet();
 
-    /**
-     * Returns the set of keys that map to <code>v</code>.  If no keys 
-     * map to <code>v</code>, this is the empty set.
-     *
-     * @return an unmodifiable Set of keys
-     */
-    Set getPreimage(Object v);
+	/**
+	 * Returns the set of keys that map to <code>v</code>. If no keys map to
+	 * <code>v</code>, this is the empty set.
+	 * 
+	 * @return an unmodifiable Set of keys
+	 */
+	Set getPreimage(Object v);
 
-    /**
-     * Returns a MultiMap view of the inverse of this map.  The 
-     * MultiMap is backed by this MapWithPreimages, so it will change as 
-     * this MapWithPreimages changes.  It should be treated as unmodifiable.
-     */
-    MultiMap getPreimages();
+	/**
+	 * Returns a MultiMap view of the inverse of this map. The MultiMap is backed
+	 * by this MapWithPreimages, so it will change as this MapWithPreimages
+	 * changes. It should be treated as unmodifiable.
+	 */
+	MultiMap getPreimages();
 
-    /**
-     * Returns true if <code>k1</code> and <code>k2</code> are coreferent, 
-     * that is, they are both keys that map to the same value.
-     */
-    boolean isCorefPair(Object k1, Object k2);
+	/**
+	 * Returns true if <code>k1</code> and <code>k2</code> are coreferent, that
+	 * is, they are both keys that map to the same value.
+	 */
+	boolean isCorefPair(Object k1, Object k2);
 
-    /**
-     * Returns the number of two-element sets of objects {k1, k2} such that 
-     * isCorefPair(k1, k2) returns true.  This can be computed by summing, 
-     * over all values v in the map, the number of two-element subsets of 
-     * getPreimage(v).  The number of two-element subsets of a set of size 
-     * n is n-choose-2, or n * (n-1) / 2.  
-     *
-     * <p>Note that this is different from computing the number of
-     * <b>ordered pairs</b> (k1, k2) such that isCorefPair(k1, k2)
-     * returns true; then we wouldn't divide by 2 in the formula above.  
-     */
-    int numCorefPairs();
+	/**
+	 * Returns the number of two-element sets of objects {k1, k2} such that
+	 * isCorefPair(k1, k2) returns true. This can be computed by summing, over all
+	 * values v in the map, the number of two-element subsets of getPreimage(v).
+	 * The number of two-element subsets of a set of size n is n-choose-2, or n *
+	 * (n-1) / 2.
+	 * 
+	 * <p>
+	 * Note that this is different from computing the number of <b>ordered
+	 * pairs</b> (k1, k2) such that isCorefPair(k1, k2) returns true; then we
+	 * wouldn't divide by 2 in the formula above.
+	 */
+	int numCorefPairs();
 }

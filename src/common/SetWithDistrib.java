@@ -41,22 +41,22 @@ import java.util.*;
  * Interface for objects that represent a probability distribution over a set.
  */
 public interface SetWithDistrib {
-    /**
-     * Returns the probability of the given object under this 
-     * distribution.  Returns zero if the object is not in this set.
-     */
-    double getProb(Object o);
+	/**
+	 * Returns the probability of the given object under this distribution.
+	 * Returns zero if the object is not in this set.
+	 */
+	double getProb(Object o);
 
-    /**
-     * Returns the natural log of the probability of the given object
-     * under this distribution.  Returns Double.NEGATIVE_INFINITY if the 
-     * object is not in this set.
-     */
-    double getLogProb(Object o);
+	/**
+	 * Returns the natural log of the probability of the given object under this
+	 * distribution. Returns Double.NEGATIVE_INFINITY if the object is not in this
+	 * set.
+	 */
+	double getLogProb(Object o);
 
-    /**
-     * Returns an object sampled according to this distribution.  Returns 
-     * null if this set is empty.
-     */
-    Object sample();
+	/**
+	 * Returns an object sampled according to this distribution. Returns null if
+	 * this set is empty.
+	 */
+	Object sample();
 }

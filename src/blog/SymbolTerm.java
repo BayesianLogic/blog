@@ -40,199 +40,193 @@ import java.util.*;
 import common.Util;
 
 /**
- * A term consisting of a single symbol.  This may be either a zero-ary 
- * function application or a use of a logical variable.  SymbolTerms occur 
- * in the abstract syntax tree for a model only before checkTypesAndScope is 
- * called on the expressions in the model.  After that point, a SymbolTerm 
- * is replaced with a LogicalVar if its symbol is the name of a logical 
- * variable in the current scope; otherwise it's replaced with a 
- * zero-argument FuncAppTerm.  
- *
- * <p>If you're creating a term or formula programmatically, you should 
- * not use SymbolTerm; you should use either LogicalVar or FuncAppTerm.  
+ * A term consisting of a single symbol. This may be either a zero-ary function
+ * application or a use of a logical variable. SymbolTerms occur in the abstract
+ * syntax tree for a model only before checkTypesAndScope is called on the
+ * expressions in the model. After that point, a SymbolTerm is replaced with a
+ * LogicalVar if its symbol is the name of a logical variable in the current
+ * scope; otherwise it's replaced with a zero-argument FuncAppTerm.
+ * 
+ * <p>
+ * If you're creating a term or formula programmatically, you should not use
+ * SymbolTerm; you should use either LogicalVar or FuncAppTerm.
  */
 public class SymbolTerm extends Term {
-    /**
-     * Creates a new SymbolTerm with the given symbol.  The
-     * <code>checkTypesAndScope</code> method will determine if this
-     * is a zero-ary function or a logical variable.
-     */
-    public SymbolTerm(String symbol) {
-	name = symbol;
-    }
-    
-    /**
-     * Returns true if this SymbolTerm is an occurrence of a logical 
-     * variable.  
-     */
-    public boolean isLogicalVar() {
-	checkCompiled();
-	return (var != null);
-    }
+	/**
+	 * Creates a new SymbolTerm with the given symbol. The
+	 * <code>checkTypesAndScope</code> method will determine if this is a zero-ary
+	 * function or a logical variable.
+	 */
+	public SymbolTerm(String symbol) {
+		name = symbol;
+	}
 
-    /**
-     * Returns the logical variable used in this SymbolTerm, or null if 
-     * this is a zero-ary function application.
-     */
-    public LogicalVar getLogicalVar() {
-	checkCompiled();
-	return var;
-    }
+	/**
+	 * Returns true if this SymbolTerm is an occurrence of a logical variable.
+	 */
+	public boolean isLogicalVar() {
+		checkCompiled();
+		return (var != null);
+	}
 
-    /**
-     * Returns the zero-ary function used in this SymbolTerm, or null if 
-     * this is an occurrence of a logical variable.
-     */
-    public Function getFunc() {
-	checkCompiled();
-	return func;
-    }
+	/**
+	 * Returns the logical variable used in this SymbolTerm, or null if this is a
+	 * zero-ary function application.
+	 */
+	public LogicalVar getLogicalVar() {
+		checkCompiled();
+		return var;
+	}
 
-    public boolean checkTypesAndScope(Model model, Map scope) {
-	if ((var == null) && (func == null)) {
-	    var = (LogicalVar) scope.get(name);
-	    if (var == null) {
-		func = model.getFunction(new Function.Sig(name));
-		if (func == null) {
-		    System.err.println
-			(getLocation() + ": Symbol \"" + name 
-			 + "\" is neither a variable in the current scope "
-			 + "nor a zero-ary function.");
-		    return false;
+	/**
+	 * Returns the zero-ary function used in this SymbolTerm, or null if this is
+	 * an occurrence of a logical variable.
+	 */
+	public Function getFunc() {
+		checkCompiled();
+		return func;
+	}
+
+	public boolean checkTypesAndScope(Model model, Map scope) {
+		if ((var == null) && (func == null)) {
+			var = (LogicalVar) scope.get(name);
+			if (var == null) {
+				func = model.getFunction(new Function.Sig(name));
+				if (func == null) {
+					System.err.println(getLocation() + ": Symbol \"" + name
+							+ "\" is neither a variable in the current scope "
+							+ "nor a zero-ary function.");
+					return false;
+				}
+			}
+		} else if (var != null) {
+			if (var != scope.get(name)) {
+				System.err.println(getLocation() + ": LogicalVar " + var
+						+ " is not in scope.");
+				return false;
+			}
 		}
-	    }
-	} else if (var != null) {
-	    if (var != scope.get(name)) {
-		System.err.println
-		    (getLocation() + ": LogicalVar " + var 
-		     + " is not in scope.");
+
+		return true;
+	}
+
+	public Term getTermInScope(Model model, Map scope) {
+		Term result = null;
+		if (checkTypesAndScope(model, scope)) {
+			if (func != null) {
+				result = new FuncAppTerm(func);
+			} else {
+				result = var;
+			}
+			result.setLocation(getLocation());
+		}
+		return result;
+	}
+
+	public int compile(LinkedHashSet callStack) {
+		if (func != null) {
+			callStack.add(this);
+			int errors = func.compile(callStack);
+			callStack.remove(this);
+			return errors;
+		}
+		return 0; // no compilation necessary for logical variables
+	}
+
+	public Type getType() {
+		checkCompiled();
+		return ((var != null) ? var.getType() : func.getRetType());
+	}
+
+	public Object evaluate(EvalContext context) {
+		if (var != null) {
+			return context.getLogicalVarValue(var);
+		}
+		return func.getValueInContext(NO_ARGS, context, true);
+	}
+
+	/**
+	 * Returns the random variable that this term corresponds to. If this
+	 * SymbolTerm is a random function, then the variable returned is a BasicVar.
+	 * Otherwise, it's a DerivedVar.
+	 */
+	public BayesNetVar getVariable() {
+		if (func instanceof RandomFunction) {
+			return new RandFuncAppVar((RandomFunction) func, NO_ARGS, true);
+		}
+		return new DerivedVar(this);
+	}
+
+	public boolean containsRandomSymbol() {
+		checkCompiled();
+		return (func instanceof RandomFunction);
+	}
+
+	public Set getFreeVars() {
+		checkCompiled();
+		return ((var != null) ? Collections.singleton(var) : Collections.EMPTY_SET);
+	}
+
+	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
+		throw new UnsupportedOperationException(
+				"Can't apply substitution to SymbolTerm.  Make sure "
+						+ "checkTypesAndScope is called to eliminate SymbolTerms "
+						+ "before a substitutions is applied.");
+	}
+
+	public boolean isConstantNull() {
+		checkCompiled();
+		return (func == BuiltInFunctions.NULL);
+	}
+
+	public boolean makeOverlapSubst(Term t, Substitution theta) {
+		// this shouldn't ever get called...
 		return false;
-	    }
 	}
 
-	return true;
-    }
-
-    public Term getTermInScope(Model model, Map scope) {
-	Term result = null;
-	if (checkTypesAndScope(model, scope)) {
-	    if (func != null) {
-		result = new FuncAppTerm(func);
-	    } else {
-		result = var;
-	    }
-	    result.setLocation(getLocation());
+	public Term getCanonicalVersion() {
+		throw new UnsupportedOperationException(
+				"Can't get canonical version of SymbolTerm.  Make sure "
+						+ "checkTypesAndScope is called to eliminate SymbolTerms "
+						+ "before getCanonicalVersion is called.");
 	}
-	return result;
-    }
 
-    public int compile(LinkedHashSet callStack) {
-	if (func != null) {
-	    callStack.add(this);
-	    int errors = func.compile(callStack);
-	    callStack.remove(this);
-	    return errors;
+	public boolean equals(Object o) {
+		checkCompiled();
+		if (o instanceof SymbolTerm) {
+			SymbolTerm other = (SymbolTerm) o;
+			if (var != null) {
+				return (var == other.getLogicalVar());
+			}
+			return (func.equals(other.getFunc()));
+		}
+		return false;
 	}
-	return 0; // no compilation necessary for logical variables
-    }
 
-    public Type getType() {
-	checkCompiled();
-	return ((var != null) ? var.getType() : func.getRetType());
-    }
-
-    public Object evaluate(EvalContext context) {
-	if (var != null) {
-	    return context.getLogicalVarValue(var);
+	public int hashCode() {
+		checkCompiled();
+		return ((var != null) ? var.hashCode() : func.hashCode());
 	}
-	return func.getValueInContext(NO_ARGS, context, true);
-    }
 
-    /**
-     * Returns the random variable that this term corresponds to.  If this
-     * SymbolTerm is a random function, then the variable returned is a 
-     * BasicVar.  Otherwise, it's a DerivedVar.
-     */
-    public BayesNetVar getVariable() {
-	if (func instanceof RandomFunction) {
-	    return new RandFuncAppVar((RandomFunction) func, NO_ARGS, true);
+	public String toString() {
+		return name;
 	}
-	return new DerivedVar(this);
-    }
 
-    public boolean containsRandomSymbol() {
-	checkCompiled();
-	return (func instanceof RandomFunction);
-    }
-
-    public Set getFreeVars() {
-	checkCompiled();
-	return ((var != null) ? 
-		Collections.singleton(var) : Collections.EMPTY_SET);
-    }
-
-    public ArgSpec getSubstResult(Substitution subst, 
-				  Set<LogicalVar> boundVars) {
-	throw new UnsupportedOperationException
-	    ("Can't apply substitution to SymbolTerm.  Make sure "
-	     + "checkTypesAndScope is called to eliminate SymbolTerms "
-	     + "before a substitutions is applied.");
-    }
-
-    public boolean isConstantNull() {
-	checkCompiled();
-	return (func == BuiltInFunctions.NULL);
-    }
-
-    public boolean makeOverlapSubst(Term t, Substitution theta){
-	// this shouldn't ever get called...
-	return false;
-    }
-
-    public Term getCanonicalVersion() {
-	throw new UnsupportedOperationException
-	    ("Can't get canonical version of SymbolTerm.  Make sure "
-	     + "checkTypesAndScope is called to eliminate SymbolTerms "
-	     + "before getCanonicalVersion is called.");
-    }
-
-    public boolean equals(Object o) {
-	checkCompiled();
-	if (o instanceof SymbolTerm) {
-	    SymbolTerm other = (SymbolTerm) o;
-	    if (var != null) {
-		return (var == other.getLogicalVar());
-	    }
-	    return (func.equals(other.getFunc()));
+	private void checkCompiled() {
+		if ((func == null) && (var == null)) {
+			throw new IllegalStateException("SymbolTerm \"" + this
+					+ "\" has not been succesfully " + "compiled.");
+		}
 	}
-	return false;
-    }
 
-    public int hashCode() {
-	checkCompiled();
-	return ((var != null) ? var.hashCode() : func.hashCode());
-    }
-
-    public String toString() {
-	return name;
-    }
-
-    private void checkCompiled() {
-	if ((func == null) && (var == null)) {
-	    throw new IllegalStateException
-		("SymbolTerm \"" + this + "\" has not been succesfully "
-		 + "compiled.");
+	public ArgSpec replace(Term t, ArgSpec another) {
+		Util.fatalError("replace not supported for SymbolTerm.");
+		return null;
 	}
-    }
 
-    public ArgSpec replace(Term t, ArgSpec another) {
-	Util.fatalError("replace not supported for SymbolTerm.");
-	return null;
-    }
-    
-    private String name;
-    private Function func;
-    private LogicalVar var;
+	private String name;
+	private Function func;
+	private LogicalVar var;
 
-    private static Object[] NO_ARGS = new Object[0];
+	private static Object[] NO_ARGS = new Object[0];
 }

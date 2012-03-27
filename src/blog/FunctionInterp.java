@@ -38,44 +38,45 @@ package blog;
 import java.util.*;
 
 /**
- * Interface for classes that define the interpretation of a non-random 
- * function symbol.  An interpretation is just a function from argument 
- * tuples to values.  Implementations of this class should have a constructor 
- * that takes a List of Objects as its sole argument; these objects are 
- * parameters that define the interpretation.
+ * Interface for classes that define the interpretation of a non-random function
+ * symbol. An interpretation is just a function from argument tuples to values.
+ * Implementations of this class should have a constructor that takes a List of
+ * Objects as its sole argument; these objects are parameters that define the
+ * interpretation.
  */
 public interface FunctionInterp {
-    /**
-     * Returns the value of this function on the given tuple of arguments.  
-     * Implementations can assume that the arguments are of the expected 
-     * types and are not Model.NULL.
-     */
-    Object getValue(List args);
+	/**
+	 * Returns the value of this function on the given tuple of arguments.
+	 * Implementations can assume that the arguments are of the expected types and
+	 * are not Model.NULL.
+	 */
+	Object getValue(List args);
 
-    /**
-     * Returns the set of argument tuples that yield the given value, if 
-     * this set is finite and can be computed easily.  Otherwise returns 
-     * null.
-     *
-     * @return Set of List of objects
-     */
-    Set getInverseTuples(Object value);
+	/**
+	 * Returns the set of argument tuples that yield the given value, if this set
+	 * is finite and can be computed easily. Otherwise returns null.
+	 * 
+	 * @return Set of List of objects
+	 */
+	Set getInverseTuples(Object value);
 
-    /**
-     * Returns the set of values for argument <code>argIndex</code> that, 
-     * in combination with the given values for the other arguments, 
-     * yield the given function value.  If this set cannot be computed 
-     * straightforwardly, returns null.
-     *
-     * @param args   tuple of arguments; the entry at <code>argIndex</code> 
-     *               is ignored
-     *
-     * @param argIndex index of argument whose possible values are to 
-     *                 be returned
-     *
-     * @param argType  type of the argument at index argIndex
-     *
-     * @param value    value of this function
-     */
-    Set getInverseArgs(List args, int argIndex, Type argType, Object value);
+	/**
+	 * Returns the set of values for argument <code>argIndex</code> that, in
+	 * combination with the given values for the other arguments, yield the given
+	 * function value. If this set cannot be computed straightforwardly, returns
+	 * null.
+	 * 
+	 * @param args
+	 *          tuple of arguments; the entry at <code>argIndex</code> is ignored
+	 * 
+	 * @param argIndex
+	 *          index of argument whose possible values are to be returned
+	 * 
+	 * @param argType
+	 *          type of the argument at index argIndex
+	 * 
+	 * @param value
+	 *          value of this function
+	 */
+	Set getInverseArgs(List args, int argIndex, Type argType, Object value);
 }

@@ -39,31 +39,31 @@ package common;
 import java.util.*;
 
 /**
- * Implementation of MapWithPreimages that builds on a hash map from keys to 
- * values, augmenting it with a hash map from values to sets (preimages).  
- * This implementation does not support null keys or values.  
+ * Implementation of MapWithPreimages that builds on a hash map from keys to
+ * values, augmenting it with a hash map from values to sets (preimages). This
+ * implementation does not support null keys or values.
  */
-public class HashMapWithPreimages extends AbstractMapWithPreimages implements Cloneable {
+public class HashMapWithPreimages extends AbstractMapWithPreimages implements
+		Cloneable {
 
-    /**
-     * Creates an empty map.
-     */
-    public HashMapWithPreimages() {
-	map = new HashMap();
-	preimages = new HashMultiMap();
-    }
+	/**
+	 * Creates an empty map.
+	 */
+	public HashMapWithPreimages() {
+		map = new HashMap();
+		preimages = new HashMultiMap();
+	}
 
-    /**
-     * Creates a HashMapWithPreimages with the same mappings as the 
-     * specified map.
-     */
-    public HashMapWithPreimages(Map orig) {
-	this();
-	putAll(orig);
-    }
-    
-    public Object clone() {
-    	HashMapWithPreimages newMap = new HashMapWithPreimages(this);
-    	return newMap;
-    }
+	/**
+	 * Creates a HashMapWithPreimages with the same mappings as the specified map.
+	 */
+	public HashMapWithPreimages(Map orig) {
+		this();
+		putAll(orig);
+	}
+
+	public Object clone() {
+		HashMapWithPreimages newMap = new HashMapWithPreimages(this);
+		return newMap;
+	}
 }

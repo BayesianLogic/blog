@@ -37,161 +37,152 @@ package blog;
 
 import java.util.*;
 
-
-/** 
+/**
  * A Formula consisting of a single boolean-valued term.
- *
+ * 
  * @see blog.Term
  * @see blog.Formula
  */
 public class AtomicFormula extends Formula {
 
+	public AtomicFormula(Term sent) {
 
-    public AtomicFormula( Term sent ){
+		this.sent = sent;
 
-	this.sent = sent;
-
-    }
-
-
-    public Term getTerm( ) {
-
-	return sent;
-
-    }
-    
-
-    public Object evaluate(EvalContext context) {
-	Object value = sent.evaluate(context);
-	if (value == null) {
-	    return null;
 	}
 
-	if (!(value instanceof Boolean)) {
-	    throw new IllegalStateException
-		("Sentence " + sent + " has non-Boolean value " + value);
-	}
-	return (value.equals(Boolean.TRUE) ? Boolean.TRUE : Boolean.FALSE);
-    }
+	public Term getTerm() {
 
-    /**
-     * Returns the (basic or derived) random variable that this atomic
-     * formula corresponds to under the given assignment.  This is just 
-     * the random variable corresponding to underlying Boolean term.
-     */
-    public BayesNetVar getVariable() {
-	return sent.getVariable();
-    }
+		return sent;
 
-    /**
-     * Returns a singleton collection containing the term in this
-     * atomic formula.
-     */
-    public Collection getSubExprs() {
-	return Collections.singletonList(sent);
-    }
-
-    /**
-     * Returns true.
-     */
-    public boolean isLiteral() {
-	return true;
-    }
-
-    public List getTopLevelTerms() {
-	return Collections.singletonList(sent);
-    }
-
-    public Set getSatisfiersIfExplicit(EvalContext context, 
-				       LogicalVar subject,
-				       GenericObject genericObj) {
-	Set result = null;
-	context.assign(subject, genericObj);
-
-	// The only time we can determine the satisfiers is if this 
-	// formula can be evaluated on genericObj.
-	Boolean value = (Boolean) evaluate(context);
-	if (value != null) {
-	    result =  (value.booleanValue() == true ? 
-		       Formula.ALL_OBJECTS : Collections.EMPTY_SET);
 	}
 
-	context.unassign(subject);
-	return result;
-    }
+	public Object evaluate(EvalContext context) {
+		Object value = sent.evaluate(context);
+		if (value == null) {
+			return null;
+		}
 
-    public Set getNonSatisfiersIfExplicit(EvalContext context,
-					  LogicalVar subject, 
-					  GenericObject genericObj) {
-	Set result = null;
-	context.assign(subject, genericObj);
-
-	// The only time we can determine the non-satisfiers is if
-	// this formula can be evaluated on genericObj.
-	Boolean value = (Boolean) evaluate(context);
-	if (value != null) {
-	    result =  (value.booleanValue() == false ?
-		       Formula.ALL_OBJECTS : Collections.EMPTY_SET);
+		if (!(value instanceof Boolean)) {
+			throw new IllegalStateException("Sentence " + sent
+					+ " has non-Boolean value " + value);
+		}
+		return (value.equals(Boolean.TRUE) ? Boolean.TRUE : Boolean.FALSE);
 	}
 
-	context.unassign(subject);
-	return result;
-    }
-
-    /**
-     * Two atomic formulas are equal if their underlying terms are equal.
-     */
-    public boolean equals(Object o) {
-	if (o instanceof AtomicFormula) {
-	    AtomicFormula other = (AtomicFormula) o;
-	    return sent.equals(other.getTerm());
+	/**
+	 * Returns the (basic or derived) random variable that this atomic formula
+	 * corresponds to under the given assignment. This is just the random variable
+	 * corresponding to underlying Boolean term.
+	 */
+	public BayesNetVar getVariable() {
+		return sent.getVariable();
 	}
-	return false;
-    }
 
-    public int hashCode() {
-	return sent.hashCode();
-    }
-
-    /**
-     * Returns the string representation of the underlying term.
-     */
-    public String toString() {
-	return sent.toString();
-    }
-
-    /**
-     * Returns true if the underlying term satisfies the type/scope
-     * constraints and has a Boolean type.
-     */
-    public boolean checkTypesAndScope(Model model, Map scope) {
-	Term sentInScope = sent.getTermInScope(model, scope);
-	if (sentInScope == null) {
-	    return false;
+	/**
+	 * Returns a singleton collection containing the term in this atomic formula.
+	 */
+	public Collection getSubExprs() {
+		return Collections.singletonList(sent);
 	}
-	sent = sentInScope;
-	if (!sent.getType().isSubtypeOf(BuiltInTypes.BOOLEAN)) {
-	    System.err.println("Error: Non-Boolean term treated as "
-			       + "atomic formula: " + sent);
-	    return false;
+
+	/**
+	 * Returns true.
+	 */
+	public boolean isLiteral() {
+		return true;
 	}
-	return true;
-    }
-    
-    public ArgSpec replace(Term t, ArgSpec another) {
-	Term newSent = (Term) sent.replace(t, another);
-	if (newSent != sent)
-	    return compileAnotherIfCompiled(new AtomicFormula(newSent));
-	return this;
-    }
 
-    public ArgSpec getSubstResult(Substitution subst, 
-				  Set<LogicalVar> boundVars) {
-	return new AtomicFormula((Term) sent.getSubstResult(subst, boundVars));
-    }
+	public List getTopLevelTerms() {
+		return Collections.singletonList(sent);
+	}
 
-    /** The Term instance, assumed to be boolean-valued */
-    private Term sent;
+	public Set getSatisfiersIfExplicit(EvalContext context, LogicalVar subject,
+			GenericObject genericObj) {
+		Set result = null;
+		context.assign(subject, genericObj);
+
+		// The only time we can determine the satisfiers is if this
+		// formula can be evaluated on genericObj.
+		Boolean value = (Boolean) evaluate(context);
+		if (value != null) {
+			result = (value.booleanValue() == true ? Formula.ALL_OBJECTS
+					: Collections.EMPTY_SET);
+		}
+
+		context.unassign(subject);
+		return result;
+	}
+
+	public Set getNonSatisfiersIfExplicit(EvalContext context,
+			LogicalVar subject, GenericObject genericObj) {
+		Set result = null;
+		context.assign(subject, genericObj);
+
+		// The only time we can determine the non-satisfiers is if
+		// this formula can be evaluated on genericObj.
+		Boolean value = (Boolean) evaluate(context);
+		if (value != null) {
+			result = (value.booleanValue() == false ? Formula.ALL_OBJECTS
+					: Collections.EMPTY_SET);
+		}
+
+		context.unassign(subject);
+		return result;
+	}
+
+	/**
+	 * Two atomic formulas are equal if their underlying terms are equal.
+	 */
+	public boolean equals(Object o) {
+		if (o instanceof AtomicFormula) {
+			AtomicFormula other = (AtomicFormula) o;
+			return sent.equals(other.getTerm());
+		}
+		return false;
+	}
+
+	public int hashCode() {
+		return sent.hashCode();
+	}
+
+	/**
+	 * Returns the string representation of the underlying term.
+	 */
+	public String toString() {
+		return sent.toString();
+	}
+
+	/**
+	 * Returns true if the underlying term satisfies the type/scope constraints
+	 * and has a Boolean type.
+	 */
+	public boolean checkTypesAndScope(Model model, Map scope) {
+		Term sentInScope = sent.getTermInScope(model, scope);
+		if (sentInScope == null) {
+			return false;
+		}
+		sent = sentInScope;
+		if (!sent.getType().isSubtypeOf(BuiltInTypes.BOOLEAN)) {
+			System.err.println("Error: Non-Boolean term treated as "
+					+ "atomic formula: " + sent);
+			return false;
+		}
+		return true;
+	}
+
+	public ArgSpec replace(Term t, ArgSpec another) {
+		Term newSent = (Term) sent.replace(t, another);
+		if (newSent != sent)
+			return compileAnotherIfCompiled(new AtomicFormula(newSent));
+		return this;
+	}
+
+	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
+		return new AtomicFormula((Term) sent.getSubstResult(subst, boundVars));
+	}
+
+	/** The Term instance, assumed to be boolean-valued */
+	private Term sent;
 
 }
-

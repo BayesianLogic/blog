@@ -38,81 +38,81 @@ package common;
 import java.util.*;
 
 /**
- * A class for measuring how much time a program spends doing certain 
- * operations.  Each Timer object acts like a stopwatch that keeps track of 
- * an elapsed time.  When you call the start method, the elapsed time starts 
- * increasing; when you call the stop method, it stops.  Unlike a stopwatch, 
- * there is no "reset" method.  
- *
- * There is also a static method printAllTimers which you can call at the 
- * end of a program to get the elapsed time for every timer created during 
- * this run of the program.  
+ * A class for measuring how much time a program spends doing certain
+ * operations. Each Timer object acts like a stopwatch that keeps track of an
+ * elapsed time. When you call the start method, the elapsed time starts
+ * increasing; when you call the stop method, it stops. Unlike a stopwatch,
+ * there is no "reset" method.
+ * 
+ * There is also a static method printAllTimers which you can call at the end of
+ * a program to get the elapsed time for every timer created during this run of
+ * the program.
  */
 public class Timer {
-    /**
-     * Creates a new Timer that will not be registered to have its 
-     * its time printed by Timer.printAllTimers.
-     */
-    public Timer() {
-    }
-
-    /**
-     * Creates a new Timer with the given name, and registers it so that 
-     * its elapsed time will be printed by Timer.printAllTimers.
-     */
-    public Timer(String name) {
-	this.name = name;
-	Timer.allTimers.add(this);
-    }
-
-    /**
-     * Starts the timer.
-     */
-    public final void start() {
-	timeStarted = System.currentTimeMillis();
-    }
-
-    /**
-     * Stops the timer, and adds the time elapsed since the last call to 
-     * start() to the running total.
-     */
-    public final void stop() {
-	if (timeStarted > 0) {
-	    millisSoFar += (System.currentTimeMillis() - timeStarted);
-	    timeStarted = -1;
+	/**
+	 * Creates a new Timer that will not be registered to have its its time
+	 * printed by Timer.printAllTimers.
+	 */
+	public Timer() {
 	}
-    }
 
-    /**
-     * Returns the total elapsed time in seconds.
-     */
-    public double elapsedTime() {
-	long elapsedMillis = millisSoFar;
-	if (timeStarted > 0) {
-	    elapsedMillis += (System.currentTimeMillis() - timeStarted);
+	/**
+	 * Creates a new Timer with the given name, and registers it so that its
+	 * elapsed time will be printed by Timer.printAllTimers.
+	 */
+	public Timer(String name) {
+		this.name = name;
+		Timer.allTimers.add(this);
 	}
-	return (elapsedMillis / 1000.0);
-    }
 
-    /**
-     * Returns a string containing this Timer's name and elapsed time.
-     */
-    public String toString() {
-	return (name + ": " + elapsedTime() + " s");
-    }
-		
-    /**
-     * Prints the elapsed times for all timers created by the program.
-     */
-    public static void printAllTimers() {
-	for (Iterator iter = allTimers.iterator(); iter.hasNext(); ) {
-	    System.out.println(iter.next());
+	/**
+	 * Starts the timer.
+	 */
+	public final void start() {
+		timeStarted = System.currentTimeMillis();
 	}
-    }
 
-    String name;
-    long millisSoFar = 0;
-    long timeStarted = -1;
+	/**
+	 * Stops the timer, and adds the time elapsed since the last call to start()
+	 * to the running total.
+	 */
+	public final void stop() {
+		if (timeStarted > 0) {
+			millisSoFar += (System.currentTimeMillis() - timeStarted);
+			timeStarted = -1;
+		}
+	}
 
-    static List allTimers = new ArrayList();
+	/**
+	 * Returns the total elapsed time in seconds.
+	 */
+	public double elapsedTime() {
+		long elapsedMillis = millisSoFar;
+		if (timeStarted > 0) {
+			elapsedMillis += (System.currentTimeMillis() - timeStarted);
+		}
+		return (elapsedMillis / 1000.0);
+	}
+
+	/**
+	 * Returns a string containing this Timer's name and elapsed time.
+	 */
+	public String toString() {
+		return (name + ": " + elapsedTime() + " s");
+	}
+
+	/**
+	 * Prints the elapsed times for all timers created by the program.
+	 */
+	public static void printAllTimers() {
+		for (Iterator iter = allTimers.iterator(); iter.hasNext();) {
+			System.out.println(iter.next());
+		}
+	}
+
+	String name;
+	long millisSoFar = 0;
+	long timeStarted = -1;
+
+	static List allTimers = new ArrayList();
 }

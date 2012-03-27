@@ -39,81 +39,82 @@ import java.io.Serializable;
 import java.io.IOException;
 
 /**
- * A distribution over {true, false}.  It has one parameter, the probability 
- * of the value <code>true</code>.  
+ * A distribution over {true, false}. It has one parameter, the probability of
+ * the value <code>true</code>.
  */
 public class Bernoulli implements Serializable {
-    /**
-     * Creates a Bernoulli object with the probability of <code>true</code> 
-     * set to 0.5.
-     */
-    public Bernoulli() {
-	probTrue = 0.5;
-    }
-
-    /**
-     * Creates a Bernoulli object with the probability of <code>true</code> 
-     * set to <code>p</code>.
-     *
-     * @throws IllegalArgumentException if p < 0 or p > 1.
-     */
-    public Bernoulli(double p) {
-	probTrue = p;
-	if ((p < 0) || (p > 1)) {
-	    throw new IllegalArgumentException("Illegal probability: " + p);
+	/**
+	 * Creates a Bernoulli object with the probability of <code>true</code> set to
+	 * 0.5.
+	 */
+	public Bernoulli() {
+		probTrue = 0.5;
 	}
-    }
 
-    /**
-     * Returns the probability of the Boolean value x.
-     */
-    public double getProb(boolean x) {
-	return (x ? probTrue : (1 - probTrue));
-    }
-
-    /**
-     * Returns the log of the probability of the Boolean value x.
-     */
-    public double getLogProb(boolean x) {
-	return Math.log(getProb(x));
-    }
-
-    /**
-     * Records an occurrence of the value x, for use in updating parameters.  
-     */
-    public void collectStats(boolean x) {
-	totalCount++;
-	if (x) {
-	    numTrue++;
+	/**
+	 * Creates a Bernoulli object with the probability of <code>true</code> set to
+	 * <code>p</code>.
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if p < 0 or p > 1.
+	 */
+	public Bernoulli(double p) {
+		probTrue = p;
+		if ((p < 0) || (p > 1)) {
+			throw new IllegalArgumentException("Illegal probability: " + p);
+		}
 	}
-    }
 
-    /**
-     * Sets the parameter probTrue to the value that maximizes the likelihood 
-     * of the values passed to collectStats since the last call to 
-     * updateParams.  Then clears the collected statistics, and returns the 
-     * difference between the log likelihood of the data under the new 
-     * parameters and the log likelihood under the old parameters.
-     */
-    public double updateParams() {
-	// Update parameters
-	double oldLogProb = (numTrue * Math.log(probTrue)) +
-	    ((totalCount - numTrue) * Math.log(1 - probTrue));
-	if (totalCount > 0) {
-	    probTrue = numTrue / (double) totalCount;
+	/**
+	 * Returns the probability of the Boolean value x.
+	 */
+	public double getProb(boolean x) {
+		return (x ? probTrue : (1 - probTrue));
 	}
-	double newLogProb = (numTrue * Math.log(probTrue)) +
-	    ((totalCount - numTrue) * Math.log(1 - probTrue));
 
-	// Clear statistics
-	totalCount = 0;
-	numTrue = 0;
+	/**
+	 * Returns the log of the probability of the Boolean value x.
+	 */
+	public double getLogProb(boolean x) {
+		return Math.log(getProb(x));
+	}
 
-	return (newLogProb - oldLogProb);
-    }
+	/**
+	 * Records an occurrence of the value x, for use in updating parameters.
+	 */
+	public void collectStats(boolean x) {
+		totalCount++;
+		if (x) {
+			numTrue++;
+		}
+	}
 
-    double probTrue;
-	
-    transient int totalCount;
-    transient int numTrue;
+	/**
+	 * Sets the parameter probTrue to the value that maximizes the likelihood of
+	 * the values passed to collectStats since the last call to updateParams. Then
+	 * clears the collected statistics, and returns the difference between the log
+	 * likelihood of the data under the new parameters and the log likelihood
+	 * under the old parameters.
+	 */
+	public double updateParams() {
+		// Update parameters
+		double oldLogProb = (numTrue * Math.log(probTrue))
+				+ ((totalCount - numTrue) * Math.log(1 - probTrue));
+		if (totalCount > 0) {
+			probTrue = numTrue / (double) totalCount;
+		}
+		double newLogProb = (numTrue * Math.log(probTrue))
+				+ ((totalCount - numTrue) * Math.log(1 - probTrue));
+
+		// Clear statistics
+		totalCount = 0;
+		numTrue = 0;
+
+		return (newLogProb - oldLogProb);
+	}
+
+	double probTrue;
+
+	transient int totalCount;
+	transient int numTrue;
 }

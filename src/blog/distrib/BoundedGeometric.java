@@ -40,175 +40,174 @@ import java.util.*;
 import common.Util;
 
 /**
- * Like a geometric distribution, but with an upper bound <i>B</i>.  The 
- * value <i>B</i> gets all the probability mass that would ordinarily go 
- * to numbers greater than or equal to <i>B</i>.  The parameter alpha 
- * now denotes P(X &gt;= n+1 | X &gt;= n) only for n &lt; <i>B</i>.  
- * The distribution is defined by: 
+ * Like a geometric distribution, but with an upper bound <i>B</i>. The value
+ * <i>B</i> gets all the probability mass that would ordinarily go to numbers
+ * greater than or equal to <i>B</i>. The parameter alpha now denotes P(X &gt;=
+ * n+1 | X &gt;= n) only for n &lt; <i>B</i>. The distribution is defined by:
+ * 
  * <pre>
  *   P(X = n) = (1 - alpha) alpha^n  for n < B
  *   P(X = B) = alpha^B
  * </pre>
- * The alpha value should be given as a parameter, and the upper bound 
- * as an argument.
+ * 
+ * The alpha value should be given as a parameter, and the upper bound as an
+ * argument.
  */
 public class BoundedGeometric extends AbstractCondProbDistrib {
-    /**
-     * Creates a bounded geometric distribution with the given alpha parameter.
-     *
-     * @throws IllegalArgumentException if alpha < 0 or alpha > 1.  
-     */
-    public BoundedGeometric(List params) {
-	if (params.size() != 1) {
-	    throw new IllegalArgumentException
-		("BoundedGeometric distribution requires exactly one "
-		 + "parameter, the success probability.");
+	/**
+	 * Creates a bounded geometric distribution with the given alpha parameter.
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if alpha < 0 or alpha > 1.
+	 */
+	public BoundedGeometric(List params) {
+		if (params.size() != 1) {
+			throw new IllegalArgumentException(
+					"BoundedGeometric distribution requires exactly one "
+							+ "parameter, the success probability.");
+		}
+
+		if (!(params.get(0) instanceof Number)) {
+			throw new IllegalArgumentException(
+					"The first parameter (alpha) for the bounded geometric "
+							+ "distribution must be of " + "class Number, not "
+							+ params.get(0).getClass());
+		}
+
+		alpha = ((Number) params.get(0)).doubleValue();
+		if ((alpha < 0) || (alpha > 1)) {
+			throw new IllegalArgumentException(
+					"Illegal alpha parameter for bounded geometric " + "distribution: "
+							+ alpha);
+		}
+
+		computeLogParams();
 	}
 
-	if (!(params.get(0) instanceof Number)){
-	    throw new IllegalArgumentException 
-		("The first parameter (alpha) for the bounded geometric "
-		 + "distribution must be of "
-		 + "class Number, not " + params.get(0).getClass());
+	/**
+	 * Returns the probability of the given integer under this distribution.
+	 */
+	public double getProb(int n) {
+		if (n < 0) {
+			return 0;
+		}
+		return (1 - alpha) * Math.pow(alpha, n);
 	}
 
-        alpha = ((Number) params.get(0)).doubleValue();
-	if ((alpha < 0) || (alpha > 1)) {
-	    throw new IllegalArgumentException
-		("Illegal alpha parameter for bounded geometric "
-		 + "distribution: " + alpha);
+	/**
+	 * Returns the probability of the given value, which should be an Integer.
+	 * Expects no arguments.
+	 */
+	public double getProb(List args, Object value) {
+		int bound = processArgs(args);
+
+		if (!(value instanceof Integer)) {
+			throw new IllegalArgumentException("The value passed to the geometric "
+					+ "distribution's getProb method must be " + "of class Integer, not "
+					+ args.get(0).getClass() + ".");
+		}
+		int n = ((Integer) value).intValue();
+
+		if ((n >= 0) && (n < bound)) {
+			return (1 - alpha) * Math.pow(alpha, n);
+		}
+		if (n == bound) {
+			return Math.pow(alpha, bound);
+		}
+		return 0;
 	}
 
-	computeLogParams();
-    }
+	/**
+	 * Returns the natural log of the probability of the given integer under this
+	 * distribution.
+	 */
+	public double getLogProb(int n) {
+		if (n < 0) {
+			return Double.NEGATIVE_INFINITY;
+		}
 
-    /**
-     * Returns the probability of the given integer under this 
-     * distribution.
-     */
-    public double getProb(int n) {
-	if (n < 0) {
-	    return 0;
-	}
-	return (1 - alpha) * Math.pow(alpha, n);
-    }
-
-    /**
-     * Returns the probability of the given value, which should be an 
-     * Integer.  Expects no arguments.   
-     */
-    public double getProb(List args, Object value) {
-	int bound = processArgs(args);
-
-	if (!(value instanceof Integer)){
-	    throw new IllegalArgumentException 
-		("The value passed to the geometric "
-		 + "distribution's getProb method must be "
-		 + "of class Integer, not " + args.get(0).getClass() + ".");
-	}
-	int n = ((Integer) value).intValue();
-
-	if ((n >= 0) && (n < bound)) {
-	    return (1 - alpha) * Math.pow(alpha, n);
-	} 
-	if (n == bound) {
-	    return Math.pow(alpha, bound);
-	}
-	return 0;
-    }
-
-    /**
-     * Returns the natural log of the probability of the given integer 
-     * under this distribution.
-     */
-    public double getLogProb(int n) {
-	if (n < 0) {
-	    return Double.NEGATIVE_INFINITY;
+		// log of (1 - alpha) * (alpha ^ n)
+		return logOneMinusAlpha + (n * logAlpha);
 	}
 
-	// log of (1 - alpha) * (alpha ^ n)
-	return logOneMinusAlpha + (n * logAlpha);
-    }
+	/**
+	 * Returns the log probability of the given value, which should be an Integer.
+	 * Expects no arguments.
+	 */
+	public double getLogProb(List args, Object value) {
+		int bound = processArgs(args);
 
-    /**
-     * Returns the log probability of the given value, which should be an 
-     * Integer.  Expects no arguments.   
-     */
-    public double getLogProb(List args, Object value) {
-	int bound = processArgs(args);
+		if (!(value instanceof Integer)) {
+			throw new IllegalArgumentException("The value passed to the geometric "
+					+ "distribution's getProb method must be " + "of class Integer, not "
+					+ args.get(0).getClass() + ".");
+		}
+		int n = ((Integer) value).intValue();
 
-	if (!(value instanceof Integer)){
-	    throw new IllegalArgumentException 
-		("The value passed to the geometric "
-		 + "distribution's getProb method must be "
-		 + "of class Integer, not " + args.get(0).getClass() + ".");
-	}
-	int n = ((Integer) value).intValue();
-
-	if ((n >= 0) && (n < bound)) {
-	    // log of (1 - alpha) * (alpha ^ n)
-	    return logOneMinusAlpha + (n * logAlpha);
-	} 
-	if (n == bound) {
-	    return bound * logAlpha;
-	}
-	return Double.NEGATIVE_INFINITY;
-    }
-
-    /**
-     * Generates a sample from this distribution.  Expects no arguments.  
-     */
-    public Object sampleVal(List args, Type childType){
-	int bound = processArgs(args);
-
-	double u = Util.random();
-	double cumProb = 0;
-
-	int n = 0;
-	double p = 1; // probability that value is >= n
-	while (true) {
-	    if (n == bound) {
-		break;
-	    }
-
-	    cumProb += ((1 - alpha) * p);
-	    if (cumProb > u) {
-		break;
-	    }
-
-	    ++n;
-	    p *= alpha;
+		if ((n >= 0) && (n < bound)) {
+			// log of (1 - alpha) * (alpha ^ n)
+			return logOneMinusAlpha + (n * logAlpha);
+		}
+		if (n == bound) {
+			return bound * logAlpha;
+		}
+		return Double.NEGATIVE_INFINITY;
 	}
 
-	return new Integer(n);
-    }
+	/**
+	 * Generates a sample from this distribution. Expects no arguments.
+	 */
+	public Object sampleVal(List args, Type childType) {
+		int bound = processArgs(args);
 
-    public String toString() {
-	return getClass().getName();
-    }
+		double u = Util.random();
+		double cumProb = 0;
 
-    private void computeLogParams() {
-	logAlpha = Math.log(alpha);
-	logOneMinusAlpha = Math.log(1 - alpha);
-    }
+		int n = 0;
+		double p = 1; // probability that value is >= n
+		while (true) {
+			if (n == bound) {
+				break;
+			}
 
-    private int processArgs(List args) {
-	if ((args.size() != 1) || !(args.get(0) instanceof Integer)) {
-	    throw new IllegalArgumentException
-		("BoundedGeometric CPD takes one argument, the upper "
-		 + "bound on possible values (got: " + args + ")");
+			cumProb += ((1 - alpha) * p);
+			if (cumProb > u) {
+				break;
+			}
+
+			++n;
+			p *= alpha;
+		}
+
+		return new Integer(n);
 	}
-	
-	int bound = ((Integer) args.get(0)).intValue();
-	if (bound < 0) {
-	    throw new IllegalArgumentException
-		("Illegal upper bound for BoundedGeometric: " + bound);
+
+	public String toString() {
+		return getClass().getName();
 	}
 
-	return bound;
-    }
+	private void computeLogParams() {
+		logAlpha = Math.log(alpha);
+		logOneMinusAlpha = Math.log(1 - alpha);
+	}
 
-    private double alpha;
-    private double logAlpha;
-    private double logOneMinusAlpha;
+	private int processArgs(List args) {
+		if ((args.size() != 1) || !(args.get(0) instanceof Integer)) {
+			throw new IllegalArgumentException(
+					"BoundedGeometric CPD takes one argument, the upper "
+							+ "bound on possible values (got: " + args + ")");
+		}
+
+		int bound = ((Integer) args.get(0)).intValue();
+		if (bound < 0) {
+			throw new IllegalArgumentException(
+					"Illegal upper bound for BoundedGeometric: " + bound);
+		}
+
+		return bound;
+	}
+
+	private double alpha;
+	private double logAlpha;
+	private double logOneMinusAlpha;
 }

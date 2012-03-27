@@ -38,9 +38,9 @@ package fove;
 import blog.*;
 
 public interface ElimTester {
-    /**
-     *  Returns true if the random variables defined by the constrained term
-     *  should be eliminated (summed out).
-     */
-    public boolean shouldEliminate(Term term, Constraint constraint);
+	/**
+	 * Returns true if the random variables defined by the constrained term should
+	 * be eliminated (summed out).
+	 */
+	public boolean shouldEliminate(Term term, Constraint constraint);
 }
