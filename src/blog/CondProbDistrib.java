@@ -37,31 +37,29 @@ package blog;
 
 import java.util.*;
 
-
-/** 
- * An interface which all user-defined conditional probability
- * distributions (CPDs), as well as the {@link blog.EqualsCPD} class,
- * are expected to implement.
+/**
+ * An interface which all user-defined conditional probability distributions
+ * (CPDs), as well as the {@link blog.EqualsCPD} class, are expected to
+ * implement.
  */
 public interface CondProbDistrib {
 
-    /** 
-     * For a discrete distribution, returns the conditional probability of 
-     * <code>childValue</code> given the argument values <code>args</code>.  
-     * For a continuous distribution, returns the conditional probability 
-     * density at <code>childValue</code>.   
-     */
-    double getProb( List args, Object childValue );
+	/**
+	 * For a discrete distribution, returns the conditional probability of
+	 * <code>childValue</code> given the argument values <code>args</code>. For a
+	 * continuous distribution, returns the conditional probability density at
+	 * <code>childValue</code>.
+	 */
+	double getProb(List args, Object childValue);
 
-    /**
-     * Returns the natural log of the value returned by getProb.
-     */
-    double getLogProb(List args, Object childValue);
+	/**
+	 * Returns the natural log of the value returned by getProb.
+	 */
+	double getLogProb(List args, Object childValue);
 
-    /** 
-     * Samples a value according to this CPD given the <code> args
-     * </code>.  The object returned should be of the specified type.
-     */
-    Object sampleVal( List args, Type childType ); 
+	/**
+	 * Samples a value according to this CPD given the <code> args
+	 * </code>. The object returned should be of the specified type.
+	 */
+	Object sampleVal(List args, Type childType);
 }
-

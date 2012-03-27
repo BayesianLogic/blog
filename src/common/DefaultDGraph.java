@@ -39,149 +39,148 @@ package common;
 import java.util.*;
 
 /**
- * Default implementation of the DGraph interface.  Represents both
- * the parent set and the child set for each node (even though this is
- * redundant) so both kinds of sets can be accessed quickly.
+ * Default implementation of the DGraph interface. Represents both the parent
+ * set and the child set for each node (even though this is redundant) so both
+ * kinds of sets can be accessed quickly.
  */
 public class DefaultDGraph extends AbstractDGraph implements Cloneable {
-    /**
-     * Creates a new, empty graph.
-     */
-    public DefaultDGraph() {
-    }
-
-    /**
-     * Returns an unmodifiable set consisting of the nodes in this graph.
-     */
-    public Set nodes() {
-	return Collections.unmodifiableSet(nodeInfo.keySet());
-    }
-
-    public boolean addNode(Object v) {
-	if (nodeInfo.containsKey(v)) {
-	    return false;
-	}
-	nodeInfo.put(v, new NodeInfo());
-	return true;
-    }
-
-    public boolean removeNode(Object v) {
-	NodeInfo info = (NodeInfo) nodeInfo.remove(v);
-	if (info == null) {
-	    return false;
+	/**
+	 * Creates a new, empty graph.
+	 */
+	public DefaultDGraph() {
 	}
 
-	for (Iterator iter = info.parents.iterator(); iter.hasNext(); ) {
-	    Object parent = iter.next();
-	    NodeInfo parentInfo = (NodeInfo) nodeInfo.get(parent);
-	    if (parentInfo != null) {
-		parentInfo.children.remove(v);
-	    }
-	}
-	for (Iterator iter = info.children.iterator(); iter.hasNext(); ) {
-	    Object child = iter.next();
-	    NodeInfo childInfo = (NodeInfo) nodeInfo.get(child);
-	    if (childInfo != null) {
-		childInfo.parents.remove(v);
-	    }	    
+	/**
+	 * Returns an unmodifiable set consisting of the nodes in this graph.
+	 */
+	public Set nodes() {
+		return Collections.unmodifiableSet(nodeInfo.keySet());
 	}
 
-	return true;
-    }
-
-    public void addEdge(Object parent, Object child) {
-	NodeInfo parentInfo = ensureNodePresent(parent);
-	parentInfo.children.add(child);
-
-	NodeInfo childInfo = ensureNodePresent(child);
-	childInfo.parents.add(parent);
-    }
-
-    public void removeEdge(Object parent, Object child) {
-	NodeInfo parentInfo = (NodeInfo) nodeInfo.get(parent);
-	if (parentInfo != null) {
-	    parentInfo.children.remove(child);
-	}
-
-	NodeInfo childInfo = (NodeInfo) nodeInfo.get(child);
-	if (childInfo != null) {
-	    childInfo.parents.remove(parent);
-	}
-    }
-
-    public Set getParents(Object v) {
-	NodeInfo info = (NodeInfo) nodeInfo.get(v);
-	if (info == null) {
-	    return null;
-	}
-	return Collections.unmodifiableSet(info.parents);
-    }
-
-    public void setParents(Object v, Set newParents) {
-	NodeInfo vInfo = ensureNodePresent(v);
-	Set oldParents = vInfo.parents;
-	vInfo.parents = new HashSet(newParents);
-
-	// Remove v from child sets of old parents
-	for (Iterator iter = oldParents.iterator(); iter.hasNext(); ) {
-	    Object parent = iter.next();
-	    if (!newParents.contains(parent)) {
-		NodeInfo parentInfo = (NodeInfo) nodeInfo.get(parent);
-		if (parentInfo != null) { 
-		    parentInfo.children.remove(v);
+	public boolean addNode(Object v) {
+		if (nodeInfo.containsKey(v)) {
+			return false;
 		}
-	    }
+		nodeInfo.put(v, new NodeInfo());
+		return true;
 	}
 
-	// Add v to child sets of new parents
-	for (Iterator iter = newParents.iterator(); iter.hasNext(); ) {
-	    Object parent = iter.next();
-	    if (!oldParents.contains(parent)) {
+	public boolean removeNode(Object v) {
+		NodeInfo info = (NodeInfo) nodeInfo.remove(v);
+		if (info == null) {
+			return false;
+		}
+
+		for (Iterator iter = info.parents.iterator(); iter.hasNext();) {
+			Object parent = iter.next();
+			NodeInfo parentInfo = (NodeInfo) nodeInfo.get(parent);
+			if (parentInfo != null) {
+				parentInfo.children.remove(v);
+			}
+		}
+		for (Iterator iter = info.children.iterator(); iter.hasNext();) {
+			Object child = iter.next();
+			NodeInfo childInfo = (NodeInfo) nodeInfo.get(child);
+			if (childInfo != null) {
+				childInfo.parents.remove(v);
+			}
+		}
+
+		return true;
+	}
+
+	public void addEdge(Object parent, Object child) {
 		NodeInfo parentInfo = ensureNodePresent(parent);
-		parentInfo.children.add(v);
-	    }
-	}
-    }
+		parentInfo.children.add(child);
 
-    public Set getChildren(Object v) {
-	NodeInfo info = (NodeInfo) nodeInfo.get(v);	
-	if (info == null) {
-	    return null;
+		NodeInfo childInfo = ensureNodePresent(child);
+		childInfo.parents.add(parent);
 	}
-	return Collections.unmodifiableSet(info.children);
-    }
 
-    public Object clone() {
-	DefaultDGraph clone = new DefaultDGraph();
-	clone.nodeInfo = (Map) ((HashMap) nodeInfo).clone();
-	for (Iterator iter = clone.nodeInfo.entrySet().iterator(); 
-	     iter.hasNext(); ) {
-	    Map.Entry entry = (Map.Entry) iter.next();
-	    entry.setValue(((NodeInfo) entry.getValue()).clone());
+	public void removeEdge(Object parent, Object child) {
+		NodeInfo parentInfo = (NodeInfo) nodeInfo.get(parent);
+		if (parentInfo != null) {
+			parentInfo.children.remove(child);
+		}
+
+		NodeInfo childInfo = (NodeInfo) nodeInfo.get(child);
+		if (childInfo != null) {
+			childInfo.parents.remove(parent);
+		}
 	}
-	return clone;
-    }
 
-    private static class NodeInfo implements Cloneable {
-	Set parents = new HashSet();
-	Set children = new HashSet();
+	public Set getParents(Object v) {
+		NodeInfo info = (NodeInfo) nodeInfo.get(v);
+		if (info == null) {
+			return null;
+		}
+		return Collections.unmodifiableSet(info.parents);
+	}
+
+	public void setParents(Object v, Set newParents) {
+		NodeInfo vInfo = ensureNodePresent(v);
+		Set oldParents = vInfo.parents;
+		vInfo.parents = new HashSet(newParents);
+
+		// Remove v from child sets of old parents
+		for (Iterator iter = oldParents.iterator(); iter.hasNext();) {
+			Object parent = iter.next();
+			if (!newParents.contains(parent)) {
+				NodeInfo parentInfo = (NodeInfo) nodeInfo.get(parent);
+				if (parentInfo != null) {
+					parentInfo.children.remove(v);
+				}
+			}
+		}
+
+		// Add v to child sets of new parents
+		for (Iterator iter = newParents.iterator(); iter.hasNext();) {
+			Object parent = iter.next();
+			if (!oldParents.contains(parent)) {
+				NodeInfo parentInfo = ensureNodePresent(parent);
+				parentInfo.children.add(v);
+			}
+		}
+	}
+
+	public Set getChildren(Object v) {
+		NodeInfo info = (NodeInfo) nodeInfo.get(v);
+		if (info == null) {
+			return null;
+		}
+		return Collections.unmodifiableSet(info.children);
+	}
 
 	public Object clone() {
-	    NodeInfo clone = new NodeInfo();
-	    clone.parents = (Set) ((HashSet) parents).clone();
-	    clone.children = (Set) ((HashSet) children).clone();
-	    return clone;
+		DefaultDGraph clone = new DefaultDGraph();
+		clone.nodeInfo = (Map) ((HashMap) nodeInfo).clone();
+		for (Iterator iter = clone.nodeInfo.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry entry = (Map.Entry) iter.next();
+			entry.setValue(((NodeInfo) entry.getValue()).clone());
+		}
+		return clone;
 	}
-    }
-    
-    private NodeInfo ensureNodePresent(Object v) {
-	NodeInfo info = (NodeInfo) nodeInfo.get(v);
-	if (info == null) {
-	    info = new NodeInfo();
-	    nodeInfo.put(v, info);
-	}
-	return info;
-    }
 
-    private Map nodeInfo = new HashMap(); // from Object to NodeInfo
+	private static class NodeInfo implements Cloneable {
+		Set parents = new HashSet();
+		Set children = new HashSet();
+
+		public Object clone() {
+			NodeInfo clone = new NodeInfo();
+			clone.parents = (Set) ((HashSet) parents).clone();
+			clone.children = (Set) ((HashSet) children).clone();
+			return clone;
+		}
+	}
+
+	private NodeInfo ensureNodePresent(Object v) {
+		NodeInfo info = (NodeInfo) nodeInfo.get(v);
+		if (info == null) {
+			info = new NodeInfo();
+			nodeInfo.put(v, info);
+		}
+		return info;
+	}
+
+	private Map nodeInfo = new HashMap(); // from Object to NodeInfo
 }

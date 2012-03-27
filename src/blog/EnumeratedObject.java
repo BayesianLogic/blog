@@ -36,80 +36,77 @@
 package blog;
 
 /**
- * An EnumeratedObject represents a guaranteed object that is explicitly 
- * defined and given a name in the model file, using a statement like:
- * <blockquote>
+ * An EnumeratedObject represents a guaranteed object that is explicitly defined
+ * and given a name in the model file, using a statement like: <blockquote>
  * guaranteed <i>typename</i> <i>name1</i>, <i>name2</i>, ..., <i>nameN</i>
- * </blockquote>
- * A "name" is really a nonrandom constant symbol that refers to this 
- * object.  Other constant symbols may also refer to this object, but in 
- * presenting query results to the user, we may want to use the name that 
- * the modeler used to introduce this object in the model file.  Each 
- * EnumeratedObject of a given type also has an index, based on the order 
- * in which the objects were introduced in the model file.  
+ * </blockquote> A "name" is really a nonrandom constant symbol that refers to
+ * this object. Other constant symbols may also refer to this object, but in
+ * presenting query results to the user, we may want to use the name that the
+ * modeler used to introduce this object in the model file. Each
+ * EnumeratedObject of a given type also has an index, based on the order in
+ * which the objects were introduced in the model file.
  */
 public class EnumeratedObject implements Comparable {
-    /**
-     * Creates a new EnumeratedObject of the given type that was introduced 
-     * with the given name.
-     */
-    public EnumeratedObject(Type type, int index, NonRandomFunction constant) {
-	this.type = type;
-	this.index = index;
-	this.constant = constant;
-    }
-
-    /**
-     * Returns the non-random constant that canonically stands for this object.
-     */
-    public NonRandomFunction getConstant() {
-	return constant;
-    }
-
-    /**
-     * Returns the name used to introduce this object.
-     */
-    public String getName() {
-	return constant.getName();
-    }
-
-    /**
-     * Returns the index of this object, that is, the number i such that 
-     * i enumerated objects of this type were introduced before this 
-     * object in the model file.
-     */
-    public int getIndex() {
-	return index;
-    }
-
-    /**
-     * Returns this object's type.  
-     */
-    public Type getType() {
-	return type;
-    }
-
-    /**
-     * Returns this object's name.  
-     */
-    public String toString() {
-	return constant.getName();
-    }
-
-    /**
-     * Compares this enumerated object to another one of the same type,
-     * based on their indices.  Enumerated objects of different types are 
-     * incomparable.
-     */
-    public int compareTo(Object o) {
-	EnumeratedObject other = (EnumeratedObject) o;
-	if (type != other.getType()) {
-	    return 0;
+	/**
+	 * Creates a new EnumeratedObject of the given type that was introduced with
+	 * the given name.
+	 */
+	public EnumeratedObject(Type type, int index, NonRandomFunction constant) {
+		this.type = type;
+		this.index = index;
+		this.constant = constant;
 	}
-	return (index - other.getIndex());
-    }
 
-    private Type type;
-    private int index;
-    private NonRandomFunction constant;
+	/**
+	 * Returns the non-random constant that canonically stands for this object.
+	 */
+	public NonRandomFunction getConstant() {
+		return constant;
+	}
+
+	/**
+	 * Returns the name used to introduce this object.
+	 */
+	public String getName() {
+		return constant.getName();
+	}
+
+	/**
+	 * Returns the index of this object, that is, the number i such that i
+	 * enumerated objects of this type were introduced before this object in the
+	 * model file.
+	 */
+	public int getIndex() {
+		return index;
+	}
+
+	/**
+	 * Returns this object's type.
+	 */
+	public Type getType() {
+		return type;
+	}
+
+	/**
+	 * Returns this object's name.
+	 */
+	public String toString() {
+		return constant.getName();
+	}
+
+	/**
+	 * Compares this enumerated object to another one of the same type, based on
+	 * their indices. Enumerated objects of different types are incomparable.
+	 */
+	public int compareTo(Object o) {
+		EnumeratedObject other = (EnumeratedObject) o;
+		if (type != other.getType()) {
+			return 0;
+		}
+		return (index - other.getIndex());
+	}
+
+	private Type type;
+	private int index;
+	private NonRandomFunction constant;
 }

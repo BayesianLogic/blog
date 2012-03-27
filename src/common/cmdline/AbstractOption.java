@@ -38,107 +38,106 @@ package common.cmdline;
 import java.util.*;
 
 /**
- * Abstract implementation of the Option interface that takes care of 
- * some bookkeeping and error checking.
+ * Abstract implementation of the Option interface that takes care of some
+ * bookkeeping and error checking.
  */
 public abstract class AbstractOption implements Option {
-    /**
-     * Creates an option.   
-     *
-     * @param shortForm single-character form of the option, or null if 
-     *                  the option has no single-character form
-     * 
-     * @param longForm long form of the option, or null if the option has 
-     *                 no long form
-     *
-     * @throws IllegalArgumentException if <code>shortForm</code> is a 
-     *                                  string of length other than 1
-     *
-     * @throws IllegalArgumentException if <code>longForm</code> is an 
-     *                                  empty string
-     *
-     * @throws IllegalArgumentException if both <code>shortForm</code> 
-     *                                  and <code>longForm</code> are null
-     */
-    public AbstractOption(String shortForm, String longForm) {
-	if (shortForm != null) {
-	    if (shortForm.length() != 1) {
-		throw new IllegalArgumentException
-		    ("Invalid short form \"" + shortForm + "\".  "
-		     + "Must be single character.");
-	    }
-	    shortForms.add(new Character(shortForm.charAt(0)));
+	/**
+	 * Creates an option.
+	 * 
+	 * @param shortForm
+	 *          single-character form of the option, or null if the option has no
+	 *          single-character form
+	 * 
+	 * @param longForm
+	 *          long form of the option, or null if the option has no long form
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if <code>shortForm</code> is a string of length other than 1
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if <code>longForm</code> is an empty string
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if both <code>shortForm</code> and <code>longForm</code> are null
+	 */
+	public AbstractOption(String shortForm, String longForm) {
+		if (shortForm != null) {
+			if (shortForm.length() != 1) {
+				throw new IllegalArgumentException("Invalid short form \"" + shortForm
+						+ "\".  " + "Must be single character.");
+			}
+			shortForms.add(new Character(shortForm.charAt(0)));
+		}
+
+		if (longForm != null) {
+			if (longForm.length() == 0) {
+				throw new IllegalArgumentException(
+						"Long form of option cannot be empty string.");
+			}
+			longForms.add(longForm);
+		}
+
+		if (shortForms.isEmpty() && longForms.isEmpty()) {
+			throw new IllegalArgumentException(
+					"Can't create option with no long or short forms.");
+		}
 	}
 
-	if (longForm != null) {
-	    if (longForm.length() == 0) {
-		throw new IllegalArgumentException
-		    ("Long form of option cannot be empty string.");
-	    }
-	    longForms.add(longForm);
+	public List getShortForms() {
+		return shortForms;
 	}
 
-	if (shortForms.isEmpty() && longForms.isEmpty()) {
-	    throw new IllegalArgumentException
-		("Can't create option with no long or short forms.");
+	public List getLongForms() {
+		return longForms;
 	}
-    }
 
-    public List getShortForms() {
-	return shortForms;
-    }
-
-    public List getLongForms() {
-	return longForms;
-    }
-
-    /**
-     * This default implementation prints a warning if this option has
-     * already been occurred.  It also sets the <code>occurred</code>
-     * member variable to true.  However, it does not parse or record
-     * the value.
-     */
-    public void recordOccurrence(String form, String valueStr) {
-	if (occurred) {
-	    System.err.println("Warning: repeated occurrence of " + this 
-			       + " option.  Ignoring earlier occurrences.");
+	/**
+	 * This default implementation prints a warning if this option has already
+	 * been occurred. It also sets the <code>occurred</code> member variable to
+	 * true. However, it does not parse or record the value.
+	 */
+	public void recordOccurrence(String form, String valueStr) {
+		if (occurred) {
+			System.err.println("Warning: repeated occurrence of " + this
+					+ " option.  Ignoring earlier occurrences.");
+		}
+		occurred = true;
 	}
-	occurred = true;
-    }
 
-    /**
-     * Returns true if any form of this option occurred on the command line.
-     */
-    public boolean wasPresent() {
-	return occurred;
-    }
-
-    public String toString() {
-	if (longForms.isEmpty()) {
-	    return ("-" + shortForms.get(0).toString());
+	/**
+	 * Returns true if any form of this option occurred on the command line.
+	 */
+	public boolean wasPresent() {
+		return occurred;
 	}
-	return ("--" + (String) longForms.get(0));
-    }
 
-    /**
-     * Offset for documentation strings in usage strings.  Implementations 
-     * of <code>getUsageString</code> should pad their return values with 
-     * spaces so that the documentation string begins at this offset.
-     */
-    protected static final int DOC_OFFSET = 30;
+	public String toString() {
+		if (longForms.isEmpty()) {
+			return ("-" + shortForms.get(0).toString());
+		}
+		return ("--" + (String) longForms.get(0));
+	}
 
-    /**
-     * List of Character objects that are short forms of this option.
-     */
-    protected List shortForms = new ArrayList();
+	/**
+	 * Offset for documentation strings in usage strings. Implementations of
+	 * <code>getUsageString</code> should pad their return values with spaces so
+	 * that the documentation string begins at this offset.
+	 */
+	protected static final int DOC_OFFSET = 30;
 
-    /**
-     * List of String objects that are long forms of this option.
-     */
-    protected List longForms = new ArrayList();
+	/**
+	 * List of Character objects that are short forms of this option.
+	 */
+	protected List shortForms = new ArrayList();
 
-    /**
-     * True if recordOccurrence has already been called on this option.
-     */
-    protected boolean occurred = false;
+	/**
+	 * List of String objects that are long forms of this option.
+	 */
+	protected List longForms = new ArrayList();
+
+	/**
+	 * True if recordOccurrence has already been called on this option.
+	 */
+	protected boolean occurred = false;
 }

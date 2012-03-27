@@ -38,101 +38,100 @@ package common.cmdline;
 import java.util.*;
 
 /**
- * Option whose values are key-value pairs, represented as strings of the form 
- * <i>key</i>=<i>val</i>.  If this option occurs with a value that does not 
- * contain an equals sign, then this class prints an error message and 
- * exits the program.  This option is allowed to occur multiple times on 
- * a command line.  The key-value pairs are accumulated in a Properties 
- * object.  
+ * Option whose values are key-value pairs, represented as strings of the form
+ * <i>key</i>=<i>val</i>. If this option occurs with a value that does not
+ * contain an equals sign, then this class prints an error message and exits the
+ * program. This option is allowed to occur multiple times on a command line.
+ * The key-value pairs are accumulated in a Properties object.
  */
 public class PropertiesOption extends AbstractOption {
-    /**
-     * Creates a Properties option and registers it with the Parser
-     * class.  By convention, a Properties option has a short form
-     * that is a capital letter, and no long form (but these
-     * conventions are not enforced).
-     *
-     * @param shortForm single-character form of the option, or null for 
-     *                  an option with no short form
-     * 
-     * @param longForm long form of the option, or null for an option with 
-     *                 no long form
-     *
-     * @param defaults Properties object containing defaults for the 
-     *                 Properties object that will be returned.  If null, 
-     *                 the object returned has no defaults (i.e., it 
-     *                 contains no keys by default).  
-     *
-     * @param docStr   short (preferably less than 40 characters) 
-     *                 string specifying what this option's key-value 
-     *                 pairs influence
-     */
-    public PropertiesOption(String shortForm, String longForm, 
-			    Properties defaults, String docStr) {
-	super(shortForm, longForm);
+	/**
+	 * Creates a Properties option and registers it with the Parser class. By
+	 * convention, a Properties option has a short form that is a capital letter,
+	 * and no long form (but these conventions are not enforced).
+	 * 
+	 * @param shortForm
+	 *          single-character form of the option, or null for an option with no
+	 *          short form
+	 * 
+	 * @param longForm
+	 *          long form of the option, or null for an option with no long form
+	 * 
+	 * @param defaults
+	 *          Properties object containing defaults for the Properties object
+	 *          that will be returned. If null, the object returned has no
+	 *          defaults (i.e., it contains no keys by default).
+	 * 
+	 * @param docStr
+	 *          short (preferably less than 40 characters) string specifying what
+	 *          this option's key-value pairs influence
+	 */
+	public PropertiesOption(String shortForm, String longForm,
+			Properties defaults, String docStr) {
+		super(shortForm, longForm);
 
-	if (defaults == null) {
-	    value = new Properties();
-	} else {
-	    value = new Properties(defaults);
+		if (defaults == null) {
+			value = new Properties();
+		} else {
+			value = new Properties(defaults);
+		}
+
+		this.docStr = docStr;
+
+		Parser.addOption(this);
 	}
 
-	this.docStr = docStr;
-
-	Parser.addOption(this);
-    }
-
-    public boolean expectsValue() {
-	return true;
-    }
-
-    public void recordOccurrence(String form, String valueStr) {
-	occurred = true;
-
-	int equalsIndex = valueStr.indexOf("=");
-	if (equalsIndex == -1) {
-	    System.err.println("Invalid value for \"" + form + "\" option: "
-			       + valueStr);
-	    System.err.println("(should be of the form <key>=<value>).");
-	    System.exit(1);
+	public boolean expectsValue() {
+		return true;
 	}
-	
-	String key = valueStr.substring(0, equalsIndex);
-	String val = valueStr.substring(equalsIndex + 1);
-	value.setProperty(key, val);
-    }
 
-    public String getUsageString() {
-	StringBuffer buf = new StringBuffer();
-	if (!shortForms.isEmpty()) {
-	    buf.append("-" + shortForms.get(0) + "<key>=<value>");
-	    if (!longForms.isEmpty()) {
-		buf.append(", ");
-	    }
+	public void recordOccurrence(String form, String valueStr) {
+		occurred = true;
+
+		int equalsIndex = valueStr.indexOf("=");
+		if (equalsIndex == -1) {
+			System.err.println("Invalid value for \"" + form + "\" option: "
+					+ valueStr);
+			System.err.println("(should be of the form <key>=<value>).");
+			System.exit(1);
+		}
+
+		String key = valueStr.substring(0, equalsIndex);
+		String val = valueStr.substring(equalsIndex + 1);
+		value.setProperty(key, val);
 	}
-	if (!longForms.isEmpty()) {
-	    buf.append("--" + longForms.get(0) + " <key>=<value>");
+
+	public String getUsageString() {
+		StringBuffer buf = new StringBuffer();
+		if (!shortForms.isEmpty()) {
+			buf.append("-" + shortForms.get(0) + "<key>=<value>");
+			if (!longForms.isEmpty()) {
+				buf.append(", ");
+			}
+		}
+		if (!longForms.isEmpty()) {
+			buf.append("--" + longForms.get(0) + " <key>=<value>");
+		}
+
+		while (buf.length() < DOC_OFFSET) {
+			buf.append(" ");
+		}
+		buf.append(docStr);
+
+		return buf.toString();
 	}
-	
-	while (buf.length() < DOC_OFFSET) {
-	    buf.append(" ");
+
+	/**
+	 * Returns a Properties object containing the key-value pairs that were
+	 * specified for this option on the command line. The default entries for this
+	 * Properties object are given by the default Properties object passed to the
+	 * constructor (if any).
+	 */
+	public Properties getValue() {
+		return value;
 	}
-	buf.append(docStr);
 
-	return buf.toString();
-    }
+	private String docStr;
 
-    /**
-     * Returns a Properties object containing the key-value pairs that 
-     * were specified for this option on the command line.  The default 
-     * entries for this Properties object are given by the default 
-     * Properties object passed to the constructor (if any).  
-     */
-    public Properties getValue() {
-	return value;
-    }
-
-    private String docStr;
-
-    private Properties value;
+	private Properties value;
 }

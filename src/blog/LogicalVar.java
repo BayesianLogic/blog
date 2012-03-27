@@ -39,110 +39,109 @@ package blog;
 import java.util.*;
 
 /**
- * A logical variable.  Specifically, a single LogicalVar object is used 
- * for the introduction of a logical variable in a particular scope, and 
- * for all uses of the variable in that scope.  Unlike other terms, 
- * LogicalVar objects can be compared safely using ==.  
- *
- * <p>Note that some LogicalVar objects are not created directly by the 
- * parser, but are returned by the <code>getTermInScope</code> method on 
- * SymbolTerm.  This is because, in some contexts, the parser cannot 
- * distinguish a logical variable from a constant symbol based on local 
- * syntax alone.  
+ * A logical variable. Specifically, a single LogicalVar object is used for the
+ * introduction of a logical variable in a particular scope, and for all uses of
+ * the variable in that scope. Unlike other terms, LogicalVar objects can be
+ * compared safely using ==.
+ * 
+ * <p>
+ * Note that some LogicalVar objects are not created directly by the parser, but
+ * are returned by the <code>getTermInScope</code> method on SymbolTerm. This is
+ * because, in some contexts, the parser cannot distinguish a logical variable
+ * from a constant symbol based on local syntax alone.
  */
 public class LogicalVar extends Term {
-    /**
-     * Creates a new LogicalVar with the given name and type.
-     */
-    public LogicalVar(String name, Type type) {
-	this.name = name;
-	this.type = type;
-    }
-
-    /**
-     * Returns the name of this variable.
-     */
-    public String getName() {
-	return name;
-    }
-
-    public boolean checkTypesAndScope(Model model, Map scope) {
-	if (scope.get(name) != this) {
-	    System.err.println(getLocation() + ": LogicalVar " + name  
-			       + " is not in scope.");
-	    return false;
+	/**
+	 * Creates a new LogicalVar with the given name and type.
+	 */
+	public LogicalVar(String name, Type type) {
+		this.name = name;
+		this.type = type;
 	}
-	return true;
-    }
-	
-    public int compile(LinkedHashSet callStack) {
-	return 0; // no compilation necessary for logical variables
-    }
 
-    /**
-     * Returns the type of this variable.
-     */
-    public Type getType() {
-	return type;
-    }
-
-    public Object evaluate(EvalContext context) {
-	return context.getLogicalVarValue(this);
-    }
-
-    public BayesNetVar getVariable() {
-	return new DerivedVar(this);
-    }
-
-    public boolean containsRandomSymbol() {
-	return false;
-    }
-
-    public Set getFreeVars() {
-	return Collections.singleton(this);
-    }
-
-    public ArgSpec getSubstResult(Substitution subst, 
-				  Set<LogicalVar> boundVars) {
-	if (boundVars.contains(this)) {
-	    return this;
+	/**
+	 * Returns the name of this variable.
+	 */
+	public String getName() {
+		return name;
 	}
-	return subst.getReplacement(this);
-    }
 
-    public boolean makeOverlapSubst(Term t, Substitution theta){
-	boolean ret =  theta.makeEqual(this,t);
-	return ret;
-    }
+	public boolean checkTypesAndScope(Model model, Map scope) {
+		if (scope.get(name) != this) {
+			System.err.println(getLocation() + ": LogicalVar " + name
+					+ " is not in scope.");
+			return false;
+		}
+		return true;
+	}
 
-    public Term getCanonicalVersion() {
-	return this; // can't canonicalize because this is a free variable
-    }
+	public int compile(LinkedHashSet callStack) {
+		return 0; // no compilation necessary for logical variables
+	}
 
-    public LogicalVar makeNew() {
-	return LogicalVar.createVar(type);
-    }
+	/**
+	 * Returns the type of this variable.
+	 */
+	public Type getType() {
+		return type;
+	}
 
-    /**
-     * Returns the name of this variable.
-     */
-    public String toString() {
-	return name;
-    }
+	public Object evaluate(EvalContext context) {
+		return context.getLogicalVarValue(this);
+	}
 
-    public ArgSpec replace(Term t, ArgSpec another) {
-	if (t.equals(this))
-	    return another;
-	return this;
-    }
-    
-    public static LogicalVar createVar(Type type) {
-	counter++;
-	return new LogicalVar("$" + counter, type);
-    }
+	public BayesNetVar getVariable() {
+		return new DerivedVar(this);
+	}
 
-    private String name;
-    private Type type;
+	public boolean containsRandomSymbol() {
+		return false;
+	}
 
-    private static int counter = 0;
+	public Set getFreeVars() {
+		return Collections.singleton(this);
+	}
+
+	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
+		if (boundVars.contains(this)) {
+			return this;
+		}
+		return subst.getReplacement(this);
+	}
+
+	public boolean makeOverlapSubst(Term t, Substitution theta) {
+		boolean ret = theta.makeEqual(this, t);
+		return ret;
+	}
+
+	public Term getCanonicalVersion() {
+		return this; // can't canonicalize because this is a free variable
+	}
+
+	public LogicalVar makeNew() {
+		return LogicalVar.createVar(type);
+	}
+
+	/**
+	 * Returns the name of this variable.
+	 */
+	public String toString() {
+		return name;
+	}
+
+	public ArgSpec replace(Term t, ArgSpec another) {
+		if (t.equals(this))
+			return another;
+		return this;
+	}
+
+	public static LogicalVar createVar(Type type) {
+		counter++;
+		return new LogicalVar("$" + counter, type);
+	}
+
+	private String name;
+	private Type type;
+
+	private static int counter = 0;
 }

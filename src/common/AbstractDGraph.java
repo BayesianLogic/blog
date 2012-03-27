@@ -43,119 +43,119 @@ import java.io.PrintStream;
  */
 public abstract class AbstractDGraph implements DGraph {
 
-    /**
-     * Throws an UnsupportedOperationException.
-     */
-    public boolean addNode(Object v) {
-	throw new UnsupportedOperationException
-	    ("Tried to add node to unmodifiable graph.");
-    }
-    
-    /**
-     * Throws an UnsupportedOperationException.
-     */
-    public boolean removeNode(Object v) {
-	throw new UnsupportedOperationException
-	    ("Tried to remove node from unmodifiable graph.");
-    }
-    
-    /**
-     * Throws an UnsupportedOperationException.
-     */
-    public void addEdge(Object parent, Object child) {
-	throw new UnsupportedOperationException
-	    ("Tried to add edge to unmodifiable graph.");
-    }
-    
-    /**
-     * Throws an UnsupportedOperationException.
-     */
-    public void removeEdge(Object parent, Object child) {
-	throw new UnsupportedOperationException
-	    ("Tried to remove edge from unmodifiable graph.");
-    }
-
-    /**
-     * Implements setParents in terms of addEdge and removeEdge.
-     */
-    public void setParents(Object v, Set newParents) {
-	Set oldParents = getParents(v);
-	for (Iterator iter = oldParents.iterator(); iter.hasNext(); ) {
-	    Object parent = iter.next();
-	    if (!newParents.contains(parent)) {
-		removeEdge(parent, v);
-	    }
+	/**
+	 * Throws an UnsupportedOperationException.
+	 */
+	public boolean addNode(Object v) {
+		throw new UnsupportedOperationException(
+				"Tried to add node to unmodifiable graph.");
 	}
-	for (Iterator iter = newParents.iterator(); iter.hasNext(); ) {
-	    Object parent = iter.next();
-	    if (!oldParents.contains(parent)) {
-		addEdge(parent, v);
-	    }
-	}
-    }
-    
-    public Set getRoots() {
-	Set roots = new HashSet();
-	for (Iterator iter = nodes().iterator(); iter.hasNext(); ) {
-	    Object node = iter.next();
-	    if (getParents(node).isEmpty()) {
-		roots.add(node);
-	    }
-	}
-	return Collections.unmodifiableSet(roots);
-    }
 
-    public Set getAncestors(Object v) {
-	Set ancestors = new HashSet();
+	/**
+	 * Throws an UnsupportedOperationException.
+	 */
+	public boolean removeNode(Object v) {
+		throw new UnsupportedOperationException(
+				"Tried to remove node from unmodifiable graph.");
+	}
 
-	// Do depth-first search, adding each node to the ancestor set 
-	// the first time it is seen.
-	Stack stack = new Stack();
-	stack.push(v);
-	while (!stack.empty()) {
-	    Object u = stack.pop();
-	    Set parents = getParents(u);
-	    for (Iterator iter = parents.iterator(); iter.hasNext(); ) {
-		Object parent = iter.next();
-		if (ancestors.add(parent)) {
-		    stack.push(parent);
+	/**
+	 * Throws an UnsupportedOperationException.
+	 */
+	public void addEdge(Object parent, Object child) {
+		throw new UnsupportedOperationException(
+				"Tried to add edge to unmodifiable graph.");
+	}
+
+	/**
+	 * Throws an UnsupportedOperationException.
+	 */
+	public void removeEdge(Object parent, Object child) {
+		throw new UnsupportedOperationException(
+				"Tried to remove edge from unmodifiable graph.");
+	}
+
+	/**
+	 * Implements setParents in terms of addEdge and removeEdge.
+	 */
+	public void setParents(Object v, Set newParents) {
+		Set oldParents = getParents(v);
+		for (Iterator iter = oldParents.iterator(); iter.hasNext();) {
+			Object parent = iter.next();
+			if (!newParents.contains(parent)) {
+				removeEdge(parent, v);
+			}
 		}
-	    }
-	}
-	return ancestors;
-    }
-
-    public Set getDescendants(Object v) {
-	Set descendants = new HashSet();
-
-	// Do depth-first search, adding each node to the descendant set 
-	// the first time it is seen.
-	Stack stack = new Stack();
-	stack.push(v);
-	while (!stack.empty()) {
-	    Object u = stack.pop();
-	    Set children = getChildren(u);
-	    for (Iterator iter = children.iterator(); iter.hasNext(); ) {
-		Object child = iter.next();
-		if (descendants.add(child)) {
-		    stack.push(child);
+		for (Iterator iter = newParents.iterator(); iter.hasNext();) {
+			Object parent = iter.next();
+			if (!oldParents.contains(parent)) {
+				addEdge(parent, v);
+			}
 		}
-	    }
 	}
-	return descendants;
-    }
 
-    public void print(PrintStream s) {
-	for (Iterator nodeIter = nodes().iterator(); nodeIter.hasNext(); ) {
-	    Object node = nodeIter.next();
-	    s.println(node);
-	    
-	    for (Iterator parentIter = getParents(node).iterator(); 
-		 parentIter.hasNext(); ) {
-		s.println("\t<- " + parentIter.next());
-	    }
-	    
-	    s.println();
+	public Set getRoots() {
+		Set roots = new HashSet();
+		for (Iterator iter = nodes().iterator(); iter.hasNext();) {
+			Object node = iter.next();
+			if (getParents(node).isEmpty()) {
+				roots.add(node);
+			}
+		}
+		return Collections.unmodifiableSet(roots);
 	}
-    }
+
+	public Set getAncestors(Object v) {
+		Set ancestors = new HashSet();
+
+		// Do depth-first search, adding each node to the ancestor set
+		// the first time it is seen.
+		Stack stack = new Stack();
+		stack.push(v);
+		while (!stack.empty()) {
+			Object u = stack.pop();
+			Set parents = getParents(u);
+			for (Iterator iter = parents.iterator(); iter.hasNext();) {
+				Object parent = iter.next();
+				if (ancestors.add(parent)) {
+					stack.push(parent);
+				}
+			}
+		}
+		return ancestors;
+	}
+
+	public Set getDescendants(Object v) {
+		Set descendants = new HashSet();
+
+		// Do depth-first search, adding each node to the descendant set
+		// the first time it is seen.
+		Stack stack = new Stack();
+		stack.push(v);
+		while (!stack.empty()) {
+			Object u = stack.pop();
+			Set children = getChildren(u);
+			for (Iterator iter = children.iterator(); iter.hasNext();) {
+				Object child = iter.next();
+				if (descendants.add(child)) {
+					stack.push(child);
+				}
+			}
+		}
+		return descendants;
+	}
+
+	public void print(PrintStream s) {
+		for (Iterator nodeIter = nodes().iterator(); nodeIter.hasNext();) {
+			Object node = nodeIter.next();
+			s.println(node);
+
+			for (Iterator parentIter = getParents(node).iterator(); parentIter
+					.hasNext();) {
+				s.println("\t<- " + parentIter.next());
+			}
+
+			s.println();
+		}
+	}
 }

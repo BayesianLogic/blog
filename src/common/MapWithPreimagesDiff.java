@@ -38,36 +38,36 @@ package common;
 import java.util.*;
 
 /**
- * Represents a map with preimages as a set of differences relative to 
- * an underlying map with preimages.  Uses a HashMapDiff for the forward 
- * mapping and a HashMultiMapDiff for the reverse mapping.  
+ * Represents a map with preimages as a set of differences relative to an
+ * underlying map with preimages. Uses a HashMapDiff for the forward mapping and
+ * a HashMultiMapDiff for the reverse mapping.
  */
-public class MapWithPreimagesDiff extends AbstractMapWithPreimages 
-    implements MapDiff {
+public class MapWithPreimagesDiff extends AbstractMapWithPreimages implements
+		MapDiff {
 
-    /**
-     * Creates a MapWithPreimagesDiff with the given underlying 
-     * MapWithPreimages.  Initially, this object represents no differences 
-     * relative to the underlying map.
-     */
-    public MapWithPreimagesDiff(MapWithPreimages underlying) {
-	map = new HashMapDiff(underlying);
-	preimages = new HashMultiMapDiff(underlying.getPreimages());
-    }
+	/**
+	 * Creates a MapWithPreimagesDiff with the given underlying MapWithPreimages.
+	 * Initially, this object represents no differences relative to the underlying
+	 * map.
+	 */
+	public MapWithPreimagesDiff(MapWithPreimages underlying) {
+		map = new HashMapDiff(underlying);
+		preimages = new HashMultiMapDiff(underlying.getPreimages());
+	}
 
-    public Set getChangedKeys() {
-	return ((HashMapDiff) map).getChangedKeys();
-    }
+	public Set getChangedKeys() {
+		return ((HashMapDiff) map).getChangedKeys();
+	}
 
-    public void changeUnderlying() {
-	// Only need to change the underlying MapWithPreimages through the 
-	// MapDiff; it will update the preimages map itself.
-	((HashMapDiff) map).changeUnderlying();
-	((HashMultiMapDiff) preimages).clearChanges();
-    }
+	public void changeUnderlying() {
+		// Only need to change the underlying MapWithPreimages through the
+		// MapDiff; it will update the preimages map itself.
+		((HashMapDiff) map).changeUnderlying();
+		((HashMultiMapDiff) preimages).clearChanges();
+	}
 
-    public void clearChanges() {
-	((HashMapDiff) map).clearChanges();
-	((HashMultiMapDiff) preimages).clearChanges();
-    }
+	public void clearChanges() {
+		((HashMapDiff) map).clearChanges();
+		((HashMultiMapDiff) preimages).clearChanges();
+	}
 }

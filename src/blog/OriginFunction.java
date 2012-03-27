@@ -38,53 +38,50 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
-
-/** 
+/**
  * Represents a BLOG generating function.
  */
 public class OriginFunction extends Function {
 
-    /**
-     * @param arg_types   List of size 1.
-     */
-    public OriginFunction( String fname, List arg_types,
-			      Type ret_type ) {
+	/**
+	 * @param arg_types
+	 *          List of size 1.
+	 */
+	public OriginFunction(String fname, List arg_types, Type ret_type) {
 
-	super( fname, arg_types, ret_type );
-	if (arg_types.size() != 1) {
-	    throw new IllegalArgumentException
-		("Origin function must have exactly one argument.");
-	}
-	getArgType().addOriginFunction(this); 
-    }
-
-    /**
-     * Returns the type of this OriginFunction's sole element.
-     */
-    public Type getArgType() {
-	return getArgTypes()[0];
-    }
-
-    public Object getValueInContext(Object[] args, EvalContext context, 
-				    boolean stable) {
-	Object singleArg = args[0];
-	if (singleArg instanceof NonGuaranteedObject) {
-	    return ((NonGuaranteedObject) singleArg).getOriginFuncValue(this);
-	}
- 
-	if (singleArg instanceof ObjectIdentifier) {
-	    NumberVar nv 
-		= context.getPOPAppSatisfied((ObjectIdentifier) singleArg);
-	    return nv.getOriginFuncValue(this);
-	} 
-
-	if (singleArg instanceof GenericObject) {
-	    return ((GenericObject) singleArg).getOriginFuncValue(this);
+		super(fname, arg_types, ret_type);
+		if (arg_types.size() != 1) {
+			throw new IllegalArgumentException(
+					"Origin function must have exactly one argument.");
+		}
+		getArgType().addOriginFunction(this);
 	}
 
-	// singleArg must be a guaranteed object or Model.NULL; 
-	// all generating functions are null on it
-	return Model.NULL; 
-    }
+	/**
+	 * Returns the type of this OriginFunction's sole element.
+	 */
+	public Type getArgType() {
+		return getArgTypes()[0];
+	}
+
+	public Object getValueInContext(Object[] args, EvalContext context,
+			boolean stable) {
+		Object singleArg = args[0];
+		if (singleArg instanceof NonGuaranteedObject) {
+			return ((NonGuaranteedObject) singleArg).getOriginFuncValue(this);
+		}
+
+		if (singleArg instanceof ObjectIdentifier) {
+			NumberVar nv = context.getPOPAppSatisfied((ObjectIdentifier) singleArg);
+			return nv.getOriginFuncValue(this);
+		}
+
+		if (singleArg instanceof GenericObject) {
+			return ((GenericObject) singleArg).getOriginFuncValue(this);
+		}
+
+		// singleArg must be a guaranteed object or Model.NULL;
+		// all generating functions are null on it
+		return Model.NULL;
+	}
 }
-

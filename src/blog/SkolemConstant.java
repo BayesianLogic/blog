@@ -37,59 +37,56 @@ package blog;
 
 import java.util.*;
 
-
-/** Represents a skolem constant -- a constant introduced by symbol evidence 
- * statements. 
- *
+/**
+ * Represents a skolem constant -- a constant introduced by symbol evidence
+ * statements.
+ * 
  * @see blog.SymbolEvidenceStatement
  */
 public class SkolemConstant extends RandomFunction {
 
-    /**
-     * Creates a new SkolemConstant with the given name and return type.  
-     * The dependency model is created automatically.  
-     * 
-     * @param name             String representation of the SkolemConstant
-     *
-     * @param setSpec          specification for set of objects from which 
-     *                         this SkolemConstant's value is chosen
-     *
-     * @param predecessors     List of SkolemConstant objects that are 
-     *                         listed earlier in the same symbol evidence 
-     *                         statement
-     */
-    public SkolemConstant(String name, ImplicitSetSpec setSpec, 
-			  List predecessors){
-	super(name, Collections.EMPTY_LIST, setSpec.getType(), null);
-        
-	// Create formula that excludes objects denoted by the predecessors 
-	// from the set of eligible objects
-	LogicalVar x = setSpec.getGenericSetElt();
-	Formula cond = setSpec.getCond();
-	for (Iterator iter = predecessors.iterator(); iter.hasNext(); ) {
-	    SkolemConstant pred = (SkolemConstant) iter.next();
-	    Term predTerm = new FuncAppTerm(pred, Collections.EMPTY_LIST);
-	    Formula eq = new EqualityFormula(x, predTerm);
-	    cond = new ConjFormula(cond, new NegFormula(eq));
+	/**
+	 * Creates a new SkolemConstant with the given name and return type. The
+	 * dependency model is created automatically.
+	 * 
+	 * @param name
+	 *          String representation of the SkolemConstant
+	 * 
+	 * @param setSpec
+	 *          specification for set of objects from which this SkolemConstant's
+	 *          value is chosen
+	 * 
+	 * @param predecessors
+	 *          List of SkolemConstant objects that are listed earlier in the same
+	 *          symbol evidence statement
+	 */
+	public SkolemConstant(String name, ImplicitSetSpec setSpec, List predecessors) {
+		super(name, Collections.EMPTY_LIST, setSpec.getType(), null);
+
+		// Create formula that excludes objects denoted by the predecessors
+		// from the set of eligible objects
+		LogicalVar x = setSpec.getGenericSetElt();
+		Formula cond = setSpec.getCond();
+		for (Iterator iter = predecessors.iterator(); iter.hasNext();) {
+			SkolemConstant pred = (SkolemConstant) iter.next();
+			Term predTerm = new FuncAppTerm(pred, Collections.EMPTY_LIST);
+			Formula eq = new EqualityFormula(x, predTerm);
+			cond = new ConjFormula(cond, new NegFormula(eq));
+		}
+
+		// Create dependency model that selects uniformly from objects
+		// that satisfy this new formula
+
+		ImplicitSetSpec newSetSpec = new ImplicitSetSpec(x, cond);
+		List cpdArgs = new ArrayList();
+		cpdArgs.add(newSetSpec);
+
+		Clause clause = new Clause(TrueFormula.TRUE,
+				new blog.distrib.UniformChoice(), cpdArgs);
+		List clauseList = new ArrayList();
+		clauseList.add(clause);
+
+		setArgVars(Collections.EMPTY_LIST); // no arguments
+		setDepModel(new DependencyModel(clauseList, setSpec.getType(), Model.NULL));
 	}
-
-	// Create dependency model that selects uniformly from objects 
-	// that satisfy this new formula
-
-	ImplicitSetSpec newSetSpec = new ImplicitSetSpec(x, cond);
-	List cpdArgs = new ArrayList();
-	cpdArgs.add(newSetSpec);
-
-	Clause clause = new Clause(TrueFormula.TRUE, 
-				   new blog.distrib.UniformChoice(),
-				   cpdArgs);
-	List clauseList = new ArrayList();
-	clauseList.add(clause);
-
-	setArgVars(Collections.EMPTY_LIST); // no arguments
-	setDepModel(new DependencyModel(clauseList, setSpec.getType(), 
-					Model.NULL));
-    }
 }
-
-

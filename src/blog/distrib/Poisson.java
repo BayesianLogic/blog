@@ -41,72 +41,69 @@ import java.util.*;
 import common.Util;
 
 /**
- * A Poisson distribution with mean and variance lambda.  This is a 
- * distribution over non-negative integers.  The probability of n is 
- * exp(-lambda) lambda^n / n!.  
- *
+ * A Poisson distribution with mean and variance lambda. This is a distribution
+ * over non-negative integers. The probability of n is exp(-lambda) lambda^n /
+ * n!.
+ * 
  * This is a slightly modified version of Poisson.java in the common directory,
  * tailored to implement the CondProbDistrib interface.
  */
 public class Poisson extends AbstractCondProbDistrib implements Serializable {
-    /**
-     * Creates a new Poisson distribution with the specifies lambda parameter.
-     */
-    public Poisson(List params) {
-	if (!(params.get(0) instanceof Number)) {
-	    throw new IllegalArgumentException
-		("The first parameter to Poisson " 
-		 + "distribution must be of class Number, "
-		 + "not " + params.get(0).getClass() + ".");
+	/**
+	 * Creates a new Poisson distribution with the specifies lambda parameter.
+	 */
+	public Poisson(List params) {
+		if (!(params.get(0) instanceof Number)) {
+			throw new IllegalArgumentException("The first parameter to Poisson "
+					+ "distribution must be of class Number, " + "not "
+					+ params.get(0).getClass() + ".");
+		}
+
+		lambda = ((Number) params.get(0)).doubleValue();
 	}
 
-	lambda = ((Number)params.get(0)).doubleValue() ;
-    }
-
-    /**
-     * Returns the probability of the integer n under this distribution.   
-     */
-    public double getProb(List args, Object value) {
-	// Work in log domain to avoid overflow for large values of n
-	return Math.exp(getLogProb(args, value)); 
-    }
-
-    /**
-     * Returns the log probability of the integer n under this distribution.
-     */
-    public double getLogProb(List args, Object value) {
-	int n = ((Number)value).intValue(); 
-	return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
-    }
-
-    /**
-     * Returns an integer sampled according to this distribution.  This 
-     * implementation takes time proportional to the magnitude of the integer 
-     * returned.  I got the algorithm from Anuj Kumar's course page for 
-     * IEOR E4404 at Columbia University, specifically the file:
-     * <blockquote>
-     * http://www.columbia.edu/~ak2108/ta/summer2003/poisson1.c
-     * </blockquote>
-     */
-    public Object sampleVal(List args, Type childType) {
-	int n = 0;
-	double probOfN = Math.exp(-lambda); // start with prob of 0
-	double cumProb = probOfN;
-
-	double u = Util.random();
-	while (cumProb < u) {
-	    n++;
-	    // ratio between P(n) and P(n-1) is lambda / n
-	    probOfN *= (lambda / n);
-	    cumProb += probOfN;
+	/**
+	 * Returns the probability of the integer n under this distribution.
+	 */
+	public double getProb(List args, Object value) {
+		// Work in log domain to avoid overflow for large values of n
+		return Math.exp(getLogProb(args, value));
 	}
 
-	return new Integer(n);
-    }
+	/**
+	 * Returns the log probability of the integer n under this distribution.
+	 */
+	public double getLogProb(List args, Object value) {
+		int n = ((Number) value).intValue();
+		return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
+	}
 
-    public String toString() {
-	return getClass().getName();
-    }
+	/**
+	 * Returns an integer sampled according to this distribution. This
+	 * implementation takes time proportional to the magnitude of the integer
+	 * returned. I got the algorithm from Anuj Kumar's course page for IEOR E4404
+	 * at Columbia University, specifically the file: <blockquote>
+	 * http://www.columbia.edu/~ak2108/ta/summer2003/poisson1.c </blockquote>
+	 */
+	public Object sampleVal(List args, Type childType) {
+		int n = 0;
+		double probOfN = Math.exp(-lambda); // start with prob of 0
+		double cumProb = probOfN;
 
-    private double lambda;
+		double u = Util.random();
+		while (cumProb < u) {
+			n++;
+			// ratio between P(n) and P(n-1) is lambda / n
+			probOfN *= (lambda / n);
+			cumProb += probOfN;
+		}
+
+		return new Integer(n);
+	}
+
+	public String toString() {
+		return getClass().getName();
+	}
+
+	private double lambda;
 }

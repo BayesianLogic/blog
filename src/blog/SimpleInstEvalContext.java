@@ -39,48 +39,47 @@ import java.util.*;
 import common.Util;
 
 /**
- * Evaluation context that instantiates random variables as needed, using 
- * some very simple rules.  Number variables are set to zero.  Random 
- * function application variables are set to the first guaranteed object 
- * of their return type, or Model.NULL if the return type has no guaranteed 
- * objects.
+ * Evaluation context that instantiates random variables as needed, using some
+ * very simple rules. Number variables are set to zero. Random function
+ * application variables are set to the first guaranteed object of their return
+ * type, or Model.NULL if the return type has no guaranteed objects.
  */
 public class SimpleInstEvalContext extends ParentRecEvalContext {
-    /**
-     * Creates a new SimpleInstEvalContext using the given world.  
-     */
-    public SimpleInstEvalContext(PartialWorld world) {
-	super(world);
-    }
+	/**
+	 * Creates a new SimpleInstEvalContext using the given world.
+	 */
+	public SimpleInstEvalContext(PartialWorld world) {
+		super(world);
+	}
 
-    public boolean isInstantiated(BasicVar var) {
-	return (world.getValue(var) != null);
-    }
+	public boolean isInstantiated(BasicVar var) {
+		return (world.getValue(var) != null);
+	}
 
-    protected Object getOrComputeValue(BasicVar var) {
-	Object value = world.getValue(var);
-	if (value == null) {
-	    if (var instanceof NumberVar) {
-		value = new Integer(0);
-	    } else if (var instanceof RandFuncAppVar) {
-		Type retType = ((RandFuncAppVar) var).getType();
-		value = retType.getGuaranteedObject(0);
+	protected Object getOrComputeValue(BasicVar var) {
+		Object value = world.getValue(var);
 		if (value == null) {
-		    value = Model.NULL;
+			if (var instanceof NumberVar) {
+				value = new Integer(0);
+			} else if (var instanceof RandFuncAppVar) {
+				Type retType = ((RandFuncAppVar) var).getType();
+				value = retType.getGuaranteedObject(0);
+				if (value == null) {
+					value = Model.NULL;
+				}
+			} else {
+				throw new IllegalArgumentException("Don't know how to instantiate: "
+						+ var);
+			}
 		}
-	    } else {
-		throw new IllegalArgumentException
-		    ("Don't know how to instantiate: " + var);
-	    }
+
+		if (parents.add(var)) {
+			var.ensureStable();
+		}
+		return value;
 	}
 
-	if (parents.add(var)) {
-	    var.ensureStable();
-	}
-	return value;
-    }
-
-    // Note that we don't have to override getSatisfiers, because the 
-    // DefaultEvalContext implementation of getSatisfiers calls getValue 
-    // on the number variable.  
+	// Note that we don't have to override getSatisfiers, because the
+	// DefaultEvalContext implementation of getSatisfiers calls getValue
+	// on the number variable.
 }

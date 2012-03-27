@@ -39,27 +39,26 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Abstract class for FilteredIterator objects whose underlying iterator runs 
- * over the entry set of a map.  For each <code>entry</code> such that 
- * <code>isGoodValue(entry.getValue())</code> returns true, the 
+ * Abstract class for FilteredIterator objects whose underlying iterator runs
+ * over the entry set of a map. For each <code>entry</code> such that
+ * <code>isGoodValue(entry.getValue())</code> returns true, the
  * FilteredMapIterator returns <code>entry.getKey()</code>.
  */
 public abstract class FilteredMapIterator extends FilteredIterator {
-    /**
-     * Creates a new FilteredMapIterator on the given underlying iterator.
-     */
-    public FilteredMapIterator(Iterator underlying) {
-	super(underlying);
-    }
-
-
-    protected Object filter(int index, Object obj) {
-	Map.Entry entry = (Map.Entry) obj;
-	if (isGoodValue(entry.getValue())) {
-	    return entry.getKey();
+	/**
+	 * Creates a new FilteredMapIterator on the given underlying iterator.
+	 */
+	public FilteredMapIterator(Iterator underlying) {
+		super(underlying);
 	}
-	return null;
-    }
 
-    protected abstract boolean isGoodValue(Object val);
+	protected Object filter(int index, Object obj) {
+		Map.Entry entry = (Map.Entry) obj;
+		if (isGoodValue(entry.getValue())) {
+			return entry.getKey();
+		}
+		return null;
+	}
+
+	protected abstract boolean isGoodValue(Object val);
 }

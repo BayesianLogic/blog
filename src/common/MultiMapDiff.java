@@ -38,58 +38,60 @@ package common;
 import java.util.*;
 
 /**
- * A MultiMap that is represented as a set of changes to some underlying 
- * MultiMap.  The changes are additions and removals on the sets of objects 
- * associated with various keys.  When using a MultiMapDiff, we do not need to 
- * copy any information for keys whose associated sets do not change.  And 
- * for a keys whose set does change, we still do not need to copy all the 
- * objects that are in that set in both the underlying world and the  
- * MultiMapDiff.
+ * A MultiMap that is represented as a set of changes to some underlying
+ * MultiMap. The changes are additions and removals on the sets of objects
+ * associated with various keys. When using a MultiMapDiff, we do not need to
+ * copy any information for keys whose associated sets do not change. And for a
+ * keys whose set does change, we still do not need to copy all the objects that
+ * are in that set in both the underlying world and the MultiMapDiff.
  */
 public interface MultiMapDiff extends MultiMap {
-    /**
-     * Returns the set of keys whose associated value sets are different 
-     * in this multi-map and the underlying multi-map.  This includes keys 
-     * that were added or removed.  
-     *
-     * <p>The returned set may or may not be kept up to date as changes 
-     * are made to this MultiMapDiff.  
-     *
-     * @return unmodifiable Set of Objects
-     */
-    Set getChangedKeys();
+	/**
+	 * Returns the set of keys whose associated value sets are different in this
+	 * multi-map and the underlying multi-map. This includes keys that were added
+	 * or removed.
+	 * 
+	 * <p>
+	 * The returned set may or may not be kept up to date as changes are made to
+	 * this MultiMapDiff.
+	 * 
+	 * @return unmodifiable Set of Objects
+	 */
+	Set getChangedKeys();
 
-    /**
-     * Returns the set of values that are associated with the given key in 
-     * this multi-map and not in the underlying multi-map.  Returns an 
-     * empty set if the key is not in this multi-map.  
-     *
-     * <p>The returned set may or may not be kept up to date as changes 
-     * are made to this MultiMapDiff.  
-     *
-     * @return unmodifiable Set of Objects
-     */
-    Set getAddedValues(Object key);
+	/**
+	 * Returns the set of values that are associated with the given key in this
+	 * multi-map and not in the underlying multi-map. Returns an empty set if the
+	 * key is not in this multi-map.
+	 * 
+	 * <p>
+	 * The returned set may or may not be kept up to date as changes are made to
+	 * this MultiMapDiff.
+	 * 
+	 * @return unmodifiable Set of Objects
+	 */
+	Set getAddedValues(Object key);
 
-    /**
-     * Returns the set of values that are associated with the given key in 
-     * the underlying multi-map but not in this multi-map.  Returns an 
-     * empty set if the key is not in the underlying multi-map.
-     *
-     * <p>The returned set may or may not be kept up to date as changes 
-     * are made to this MultiMapDiff.  
-     *
-     * @return unmodifiable Set of Objects
-     */
-    Set getRemovedValues(Object key);
+	/**
+	 * Returns the set of values that are associated with the given key in the
+	 * underlying multi-map but not in this multi-map. Returns an empty set if the
+	 * key is not in the underlying multi-map.
+	 * 
+	 * <p>
+	 * The returned set may or may not be kept up to date as changes are made to
+	 * this MultiMapDiff.
+	 * 
+	 * @return unmodifiable Set of Objects
+	 */
+	Set getRemovedValues(Object key);
 
-    /**
-     * Changes the underlying multi-map to equal this multi-map.
-     */
-    void changeUnderlying();
+	/**
+	 * Changes the underlying multi-map to equal this multi-map.
+	 */
+	void changeUnderlying();
 
-    /**
-     * Resets this multi-map to be equal to the underlying multi-map.
-     */
-    void clearChanges();
+	/**
+	 * Resets this multi-map to be equal to the underlying multi-map.
+	 */
+	void clearChanges();
 }

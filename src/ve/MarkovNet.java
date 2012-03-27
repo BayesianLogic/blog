@@ -43,71 +43,72 @@ import fove.*;
 import common.TupleIterator;
 
 /**
- * A propositional Markov net.  The MN is represented as a set of random 
- * variables and a set of factors.  
- *
- * <p>Note: BasicVar objects used in the factors may not be == to any of 
- * the BasicVar objects in the MN's collection of random variables.  When 
- * comparing BasicVar objects, one should always use the equals method.  
+ * A propositional Markov net. The MN is represented as a set of random
+ * variables and a set of factors.
+ * 
+ * <p>
+ * Note: BasicVar objects used in the factors may not be == to any of the
+ * BasicVar objects in the MN's collection of random variables. When comparing
+ * BasicVar objects, one should always use the equals method.
  */
 public class MarkovNet {
-    /**
-     * Creates a new MarkovNet with no random variables and no factors.
-     */
-    public MarkovNet() {
-    }
-
-    /**
-     * Creates a new Markov net corresponding to the given BLOG model.
-     */
-    public MarkovNet(Model model) {
-	// Create a parameterized Markov net, then propositionalize it
-	ParMarkovNet parMarkovNet = new ParMarkovNet(model);
-
-	for (RandomFunction rf : parMarkovNet.getRandomFunctions()) {
-	    addRandomVarsForFunction(rf);
+	/**
+	 * Creates a new MarkovNet with no random variables and no factors.
+	 */
+	public MarkovNet() {
 	}
 
-	for (Parfactor parfactor : parMarkovNet.getParfactors()) {
-	    factors.addAll(parfactor.getFactors());
-	}
-    }
+	/**
+	 * Creates a new Markov net corresponding to the given BLOG model.
+	 */
+	public MarkovNet(Model model) {
+		// Create a parameterized Markov net, then propositionalize it
+		ParMarkovNet parMarkovNet = new ParMarkovNet(model);
 
-    /**
-     * Prints a description of this Markov net to the given stream.
-     */
-    public void print(PrintStream out) {
-	out.println("MN with random variables:");
-	for (BasicVar rv : rvs) {
-	    out.print('\t');
-	    out.println(rv);
-	}
+		for (RandomFunction rf : parMarkovNet.getRandomFunctions()) {
+			addRandomVarsForFunction(rf);
+		}
 
-	out.println();
-	out.println("Factors:");
-	out.println();
-	for (Factor factor : factors) {
-	    factor.print(out);
-	    out.println();
-	}
-    }
-
-    private void addRandomVarsForFunction(RandomFunction rf) {
-	Type[] argTypes = rf.getArgTypes();
-	List<Collection<Object>> argDomains 
-	    = new ArrayList<Collection<Object>>(argTypes.length);
-	for (int i = 0; i < argTypes.length; ++i) {
-	    argDomains.add(argTypes[i].getGuaranteedObjects());
+		for (Parfactor parfactor : parMarkovNet.getParfactors()) {
+			factors.addAll(parfactor.getFactors());
+		}
 	}
 
-	TupleIterator iter = new TupleIterator(argDomains);
-	while (iter.hasNext()) {
-	    List argValues = (List) iter.next();
-	    BasicVar rv = new RandFuncAppVar(rf, argValues);
-	    rvs.add(rv);
-	}
-    }
+	/**
+	 * Prints a description of this Markov net to the given stream.
+	 */
+	public void print(PrintStream out) {
+		out.println("MN with random variables:");
+		for (BasicVar rv : rvs) {
+			out.print('\t');
+			out.println(rv);
+		}
 
-    Collection<BasicVar> rvs = new ArrayList<BasicVar>(); 
-    Collection<Factor> factors = new ArrayList<Factor>();
+		out.println();
+		out.println("Factors:");
+		out.println();
+		for (Factor factor : factors) {
+			factor.print(out);
+			out.println();
+		}
+	}
+
+	private void addRandomVarsForFunction(RandomFunction rf) {
+		Type[] argTypes = rf.getArgTypes();
+		List<Collection<Object>> argDomains = new ArrayList<Collection<Object>>(
+				argTypes.length);
+		for (int i = 0; i < argTypes.length; ++i) {
+			argDomains.add(argTypes[i].getGuaranteedObjects());
+		}
+
+		TupleIterator iter = new TupleIterator(argDomains);
+		while (iter.hasNext()) {
+			List argValues = (List) iter.next();
+			BasicVar rv = new RandFuncAppVar(rf, argValues);
+			rvs.add(rv);
+		}
+	}
+
+	Collection<BasicVar> rvs = new ArrayList<BasicVar>();
+	Collection<Factor> factors = new ArrayList<Factor>();
 }

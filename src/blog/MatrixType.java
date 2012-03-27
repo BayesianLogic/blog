@@ -39,66 +39,59 @@ import java.util.*;
 import Jama.*;
 
 /**
- * Represents a matrix or vector type. 
+ * Represents a matrix or vector type.
  */
 public class MatrixType extends Type {
 
-    public MatrixType(String name, int rows, int columns, Type supertype) {
-	super(name, supertype, true);
-	if(rows <= 0)
-	    throw new IllegalArgumentException("Number of rows in a matrix " +
-					       "must be positive; passed " +
-					       "value: " + rows);
-	if(columns <= 0)
-	    throw new IllegalArgumentException("Number of columns in " +
-					       "a matrix " +
-					       "must be positive; passed " +
-					       "value: " + columns);
-	this.rows = rows;
-	this.columns = columns;
-    }
-
-    public int getNumRows() {
-	return rows;
-    }
-
-    public int getNumCols() {
-	return columns;
-    }
-
-    /**
-     * Returns a non-random function that takes rows*cols 
-     * real numbers as arguments, and returns a matrix of this type.  
-     * The arguments are interpreted as entries in the matrix in 
-     * row-major order.  
-     */
-    public NonRandomFunction getConstructor() {
-	if (constructor == null) {
-	    List argTypes = Collections.nCopies(rows * columns, 
-						BuiltInTypes.REAL);
-	    constructor = new NonRandomFunction("Construct" + getName(), 
-						argTypes, this, 
-						new ConstructorInterp());
+	public MatrixType(String name, int rows, int columns, Type supertype) {
+		super(name, supertype, true);
+		if (rows <= 0)
+			throw new IllegalArgumentException("Number of rows in a matrix "
+					+ "must be positive; passed " + "value: " + rows);
+		if (columns <= 0)
+			throw new IllegalArgumentException("Number of columns in " + "a matrix "
+					+ "must be positive; passed " + "value: " + columns);
+		this.rows = rows;
+		this.columns = columns;
 	}
-	return constructor;
-    }
 
-    private class ConstructorInterp extends AbstractFunctionInterp {
-	public Object getValue(List args) {
-	    double[][] entries = new double[rows][columns];
-	    int argIndex = 0;
-	    for (int i = 0; i < rows; ++i) {
-		for (int j = 0; j < columns; ++j) {
-		    entries[i][j] 
-			= ((Number) args.get(argIndex++)).doubleValue();
+	public int getNumRows() {
+		return rows;
+	}
+
+	public int getNumCols() {
+		return columns;
+	}
+
+	/**
+	 * Returns a non-random function that takes rows*cols real numbers as
+	 * arguments, and returns a matrix of this type. The arguments are interpreted
+	 * as entries in the matrix in row-major order.
+	 */
+	public NonRandomFunction getConstructor() {
+		if (constructor == null) {
+			List argTypes = Collections.nCopies(rows * columns, BuiltInTypes.REAL);
+			constructor = new NonRandomFunction("Construct" + getName(), argTypes,
+					this, new ConstructorInterp());
 		}
-	    }
-	    return new Matrix(entries, rows, columns);
+		return constructor;
 	}
-    }
 
-    private int rows;
-    private int columns;
+	private class ConstructorInterp extends AbstractFunctionInterp {
+		public Object getValue(List args) {
+			double[][] entries = new double[rows][columns];
+			int argIndex = 0;
+			for (int i = 0; i < rows; ++i) {
+				for (int j = 0; j < columns; ++j) {
+					entries[i][j] = ((Number) args.get(argIndex++)).doubleValue();
+				}
+			}
+			return new Matrix(entries, rows, columns);
+		}
+	}
 
-    private NonRandomFunction constructor;
-} 
+	private int rows;
+	private int columns;
+
+	private NonRandomFunction constructor;
+}

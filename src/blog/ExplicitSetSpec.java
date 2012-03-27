@@ -42,146 +42,143 @@ import common.HashMultiset;
 import common.UnaryProcedure;
 import common.Util;
 
-
-/** Represents an argument - set with explicit listing of its elements. The 
+/**
+ * Represents an argument - set with explicit listing of its elements. The
  * elements are assumed to be Terms.
  */
-public class ExplicitSetSpec extends ArgSpec{
+public class ExplicitSetSpec extends ArgSpec {
 
-    /**
-     * Creates a new explicit set specification.
-     *
-     * @param terms List of Term objects
-     */
-    public ExplicitSetSpec(List terms) {
+	/**
+	 * Creates a new explicit set specification.
+	 * 
+	 * @param terms
+	 *          List of Term objects
+	 */
+	public ExplicitSetSpec(List terms) {
 
-	this.terms = new ArrayList( terms );
+		this.terms = new ArrayList(terms);
 
-    }
-
-
-    public List getElts( ){
-
-	return Collections.unmodifiableList(terms);
-
-    }
-    
-    public Object evaluate(EvalContext context) {
-	Multiset values = new HashMultiset();
-	for (Iterator iter = terms.iterator(); iter.hasNext(); ) {
-	    Term term = (Term) iter.next();
-	    Object termValue = term.evaluate(context);
-	    if (termValue == null) {
-		return null;
-	    }
-	    values.add(termValue);
 	}
-	return new DefaultObjectSet(values);
-    }
 
-    public boolean containsRandomSymbol() {
-	for (Iterator iter = terms.iterator(); iter.hasNext(); ) {
-	    if (((Term) iter.next()).containsRandomSymbol()) {
-		return true;
-	    }
+	public List getElts() {
+
+		return Collections.unmodifiableList(terms);
+
 	}
-	
-	return false;
-    }
 
-    public boolean checkTypesAndScope(Model model, Map scope) {
-	boolean correct = true;
-	for (int i = 0; i < terms.size(); ++i) {
-	    Term termInScope 
-		= ((Term) terms.get(i)).getTermInScope(model, scope);
-	    if (termInScope == null) {
-		correct = false;
-	    } else {
-		terms.set(i, termInScope);
-	    }
+	public Object evaluate(EvalContext context) {
+		Multiset values = new HashMultiset();
+		for (Iterator iter = terms.iterator(); iter.hasNext();) {
+			Term term = (Term) iter.next();
+			Object termValue = term.evaluate(context);
+			if (termValue == null) {
+				return null;
+			}
+			values.add(termValue);
+		}
+		return new DefaultObjectSet(values);
 	}
-	return correct;
-    }
 
-    public Collection getSubExprs() {
-	return Collections.unmodifiableList(terms);
-    }
+	public boolean containsRandomSymbol() {
+		for (Iterator iter = terms.iterator(); iter.hasNext();) {
+			if (((Term) iter.next()).containsRandomSymbol()) {
+				return true;
+			}
+		}
 
-    public ArgSpec getSubstResult(Substitution subst, 
-				  Set<LogicalVar> boundVars) {
-	List<Term> newTerms = new ArrayList<Term>(terms.size());
-	for (Iterator iter = terms.iterator(); iter.hasNext(); ) {
-	    Term term = (Term) iter.next();
-	    newTerms.add((Term) term.getSubstResult(subst, boundVars));
+		return false;
 	}
-	return new ExplicitSetSpec(newTerms);
-    }
 
-    /**
-     * Two explicit set specifications are equal if they have the same
-     * list of terms (in the same order).  Explicit set specifications
-     * with the same terms in different orders are equivalent, but we
-     * do not consider them equal, just as we do not consider the
-     * conjunctive formula (alpha & beta) equal to (beta & alpha).
-     */
-    public boolean equals(Object o) {
-	if (o instanceof ExplicitSetSpec) {
-	    ExplicitSetSpec other = (ExplicitSetSpec) o;
-	    return terms.equals(other.getElts());
+	public boolean checkTypesAndScope(Model model, Map scope) {
+		boolean correct = true;
+		for (int i = 0; i < terms.size(); ++i) {
+			Term termInScope = ((Term) terms.get(i)).getTermInScope(model, scope);
+			if (termInScope == null) {
+				correct = false;
+			} else {
+				terms.set(i, termInScope);
+			}
+		}
+		return correct;
 	}
-	return false;
-    }
 
-    public int hashCode() {
-	return terms.hashCode();
-    }
-
-    /**
-     * Returns a string of the form {t1, ..., tK} where t1, ..., tK are 
-     * the terms in this explicit set specification.
-     */
-    public String toString() {
-	StringBuffer buf = new StringBuffer();
-	buf.append("{");
-	if (!terms.isEmpty()) {
-	    buf.append(terms.get(0));
-	    for (int i = 1; i < terms.size(); ++i) {
-		buf.append(", ");
-		buf.append(terms.get(i));
-	    }
+	public Collection getSubExprs() {
+		return Collections.unmodifiableList(terms);
 	}
-	buf.append("}");
-	return buf.toString();
-    }
-    
-    public ArgSpec find(Term t){
-	return (ArgSpec) Util.findFirstEquals(terms, t);
-    }
 
-    public void applyToTerms(UnaryProcedure procedure) {
-	for (Iterator it = terms.iterator(); it.hasNext(); ) {
-	    Term term = (Term) it.next();
-	    term.applyToTerms(procedure);
+	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
+		List<Term> newTerms = new ArrayList<Term>(terms.size());
+		for (Iterator iter = terms.iterator(); iter.hasNext();) {
+			Term term = (Term) iter.next();
+			newTerms.add((Term) term.getSubstResult(subst, boundVars));
+		}
+		return new ExplicitSetSpec(newTerms);
 	}
-    }
 
-    public ArgSpec replace(Term t, ArgSpec another) {
-	List newTerms = new LinkedList();
-	boolean replacement = false;
-	for (Iterator it = terms.iterator(); it.hasNext(); ) {
-	    Term term = (Term) it.next();
-	    Term newTerm = (Term) term.replace(t, another);
-	    replacement = replacement || newTerm != term;
-	    newTerms.add(newTerm);
+	/**
+	 * Two explicit set specifications are equal if they have the same list of
+	 * terms (in the same order). Explicit set specifications with the same terms
+	 * in different orders are equivalent, but we do not consider them equal, just
+	 * as we do not consider the conjunctive formula (alpha & beta) equal to (beta
+	 * & alpha).
+	 */
+	public boolean equals(Object o) {
+		if (o instanceof ExplicitSetSpec) {
+			ExplicitSetSpec other = (ExplicitSetSpec) o;
+			return terms.equals(other.getElts());
+		}
+		return false;
 	}
-	if (replacement)
-	    return new ExplicitSetSpec(newTerms);
-	return this;
-    }
 
-    // use List rather than Set for terms so we can print the terms in the 
-    // same order the user listed them
-    private List terms;
+	public int hashCode() {
+		return terms.hashCode();
+	}
 
+	/**
+	 * Returns a string of the form {t1, ..., tK} where t1, ..., tK are the terms
+	 * in this explicit set specification.
+	 */
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("{");
+		if (!terms.isEmpty()) {
+			buf.append(terms.get(0));
+			for (int i = 1; i < terms.size(); ++i) {
+				buf.append(", ");
+				buf.append(terms.get(i));
+			}
+		}
+		buf.append("}");
+		return buf.toString();
+	}
+
+	public ArgSpec find(Term t) {
+		return (ArgSpec) Util.findFirstEquals(terms, t);
+	}
+
+	public void applyToTerms(UnaryProcedure procedure) {
+		for (Iterator it = terms.iterator(); it.hasNext();) {
+			Term term = (Term) it.next();
+			term.applyToTerms(procedure);
+		}
+	}
+
+	public ArgSpec replace(Term t, ArgSpec another) {
+		List newTerms = new LinkedList();
+		boolean replacement = false;
+		for (Iterator it = terms.iterator(); it.hasNext();) {
+			Term term = (Term) it.next();
+			Term newTerm = (Term) term.replace(t, another);
+			replacement = replacement || newTerm != term;
+			newTerms.add(newTerm);
+		}
+		if (replacement)
+			return new ExplicitSetSpec(newTerms);
+		return this;
+	}
+
+	// use List rather than Set for terms so we can print the terms in the
+	// same order the user listed them
+	private List terms;
 
 }

@@ -43,195 +43,191 @@ import common.SetBackedMultiset;
 import common.HashMapDiff;
 import common.UnaryProcedure;
 
-/** Represents an argument - set with implicit specification of its elements. 
- * An ImplicitSetSpec consists of a type <code>type</code>, a variable 
- * <code>set_elt</code>, and a formula <code>cond</code>.  It evaluates to 
- * the set of objects <i>o</i> of type <code>type</code> such that 
- * <code>cond</code> is satisfied when <code>set_elt</code> is bound to 
- * <i>o</i>.   
+/**
+ * Represents an argument - set with implicit specification of its elements. An
+ * ImplicitSetSpec consists of a type <code>type</code>, a variable
+ * <code>set_elt</code>, and a formula <code>cond</code>. It evaluates to the
+ * set of objects <i>o</i> of type <code>type</code> such that <code>cond</code>
+ * is satisfied when <code>set_elt</code> is bound to <i>o</i>.
  */
-public class ImplicitSetSpec extends ArgSpec{
+public class ImplicitSetSpec extends ArgSpec {
 
-
-    /**
-     * @param set_elt  name of variable representing an element of the set
-     *
-     * @param type     type of objects in the set.  May be null, but then the 
-     *                 main program should exit before the compilation phase.
-     *
-     * @param cond     formula that objects in the set must satisfy
-     */
-    public ImplicitSetSpec( String set_elt, Type type, Formula cond ){
-	var = new LogicalVar(set_elt, type);
-	this.cond = cond;
-    }
-
-    public ImplicitSetSpec(LogicalVar var, Formula cond) {
-	this.var = var;
-	this.cond = cond;
-    }
-
-    public LogicalVar getGenericSetElt( ){
-
-	return var;
-
-    }
-
-  
-    public Type getType( ){
-
-	return var.getType();
-
-    }
-
-  
-    public Formula getCond( ){
-
-	return cond;
-
-    }
-
-    /**
-     * Returns the set of objects <i>o</i> of type <code>type</code>
-     * such that when <code>var</code> is bound to <i>o</i>, the formula
-     * <code>cond</code> is satisfied in <code>w</code>.  This method 
-     * yields a fatal error if <code>w</code> is not complete enough to 
-     * define this set.  
-     */
-    public Set getSatisfyingSet(PartialWorld w) {
-	return (Set) evaluate(new DefaultEvalContext(w, true));
-    }
-
-    public Object evaluate(EvalContext context) {
-	context.pushEvaluee(this);
-
-	ObjectSet set = getSatisfierSpec().elementSet(context);
-	ObjectSet result = set.getExplicitVersion();
-	//	if (Util.verbose()) {
-	//	    System.out.println("For " + this + " " + context.getAssignmentStr()
-	//			       + ", got explicit set: " + result);
-	//	}
-
-	context.popEvaluee();
-	return result;
-    }
-
-    public boolean containsRandomSymbol() {
-	return true; // the type symbol
-    }
-
-    public boolean checkTypesAndScope(Model model, Map scope) {
-	Map extendedScope = new HashMapDiff(scope);
-	extendedScope.put(var.getName(), var);
-	return cond.checkTypesAndScope(model, extendedScope); 
-    }
-
-    /**
-     * Initializes a compiled version of this set specification.
-     *
-     * @param callStack Set of objects whose compile methods are parents 
-     *                  of this method invocation.  Ordered by invocation 
-     *                  order.  Used to detect cycles.  
-     */
-    public int compile(LinkedHashSet callStack) {
-	callStack.add(this);
-	int errors = cond.compile(callStack);
-	if (errors > 0) {
-	    return errors;
+	/**
+	 * @param set_elt
+	 *          name of variable representing an element of the set
+	 * 
+	 * @param type
+	 *          type of objects in the set. May be null, but then the main program
+	 *          should exit before the compilation phase.
+	 * 
+	 * @param cond
+	 *          formula that objects in the set must satisfy
+	 */
+	public ImplicitSetSpec(String set_elt, Type type, Formula cond) {
+		var = new LogicalVar(set_elt, type);
+		this.cond = cond;
 	}
 
-	satisfierSpec = new CompiledSetSpec(var, cond);
-	callStack.remove(this);
-	return 0;
-    }
-
-    public Collection getSubExprs() {
-	return Collections.singletonList(cond);
-    }
-
-    public Set getFreeVars() {
-	Set freeVars = new HashSet(cond.getFreeVars());
-	freeVars.remove(var);
-	return Collections.unmodifiableSet(freeVars);
-    }
-
-    public ArgSpec getSubstResult(Substitution subst, 
-				  Set<LogicalVar> boundVars) {
-	boundVars = new HashSet<LogicalVar>(boundVars);
-	boundVars.add(var);
-	return new ImplicitSetSpec
-	    (var, (Formula) cond.getSubstResult(subst, boundVars));
-    }
-
-    /**
-     * Two implicit set specifications are equal if they have the same
-     * type, generic element variable, and condition.  Two implicit
-     * set specifications that differ only in the choice of generic
-     * element variable are equivalent, but we do not consider them equal, 
-     * just as we do not consider two universally quantified formulas equal 
-     * if they differ in the quantified variable.
-     */
-    public boolean equals(Object o) {
-	if (o instanceof ImplicitSetSpec) {
-	    ImplicitSetSpec other = (ImplicitSetSpec) o;
-	    return (var.equals(other.getGenericSetElt())
-		    && cond.equals(other.getCond()));
+	public ImplicitSetSpec(LogicalVar var, Formula cond) {
+		this.var = var;
+		this.cond = cond;
 	}
-	return false;
-    }
 
-    public int hashCode() {
-	return (var.hashCode() ^ cond.hashCode());
-    }
+	public LogicalVar getGenericSetElt() {
 
-    /**
-     * Returns a string of the form {Type var : cond} where Type is this 
-     * implicit set specification's type, var is the generic set element 
-     * variable, and cond is the membership condition.
-     */
-    public String toString() {
-	return ("{" + var.getType() + " " + var.getName() 
-		+ " : " + cond + "}");
-    }
+		return var;
 
-    /**
-     * Returns a compiled version of the set represented by this 
-     * ImplicitSetSpec.
-     */
-    protected CompiledSetSpec getSatisfierSpec() {
-	if (satisfierSpec == null) {
-	    compile(new LinkedHashSet());
 	}
-	return satisfierSpec;
-    }
-    
-    public ArgSpec find(Term t) {
-	if (var.equals(t))
-	    return var;
-	return cond.find(t);
-    }
-    
-    public void applyToTerms(UnaryProcedure procedure) {
-	var.applyToTerms(procedure);
-	cond.applyToTerms(procedure);
-    }
 
-    public ArgSpec replace(Term t, ArgSpec another) {
-	if (t.equals(var)) // variable is separately quantified.
-	    return this;
-	
-	Formula newCond = (Formula) cond.replace(t, another);
-	if (newCond != cond) {
-	    ImplicitSetSpec result = new ImplicitSetSpec(var, newCond);
-	    if (satisfierSpec != null)
-		result.compile(new LinkedHashSet());
-	    return result;
+	public Type getType() {
+
+		return var.getType();
+
 	}
-	return this;
-    }
 
-    private LogicalVar var;
-    private Formula cond;
+	public Formula getCond() {
 
-    private CompiledSetSpec satisfierSpec;
+		return cond;
+
+	}
+
+	/**
+	 * Returns the set of objects <i>o</i> of type <code>type</code> such that
+	 * when <code>var</code> is bound to <i>o</i>, the formula <code>cond</code>
+	 * is satisfied in <code>w</code>. This method yields a fatal error if
+	 * <code>w</code> is not complete enough to define this set.
+	 */
+	public Set getSatisfyingSet(PartialWorld w) {
+		return (Set) evaluate(new DefaultEvalContext(w, true));
+	}
+
+	public Object evaluate(EvalContext context) {
+		context.pushEvaluee(this);
+
+		ObjectSet set = getSatisfierSpec().elementSet(context);
+		ObjectSet result = set.getExplicitVersion();
+		// if (Util.verbose()) {
+		// System.out.println("For " + this + " " + context.getAssignmentStr()
+		// + ", got explicit set: " + result);
+		// }
+
+		context.popEvaluee();
+		return result;
+	}
+
+	public boolean containsRandomSymbol() {
+		return true; // the type symbol
+	}
+
+	public boolean checkTypesAndScope(Model model, Map scope) {
+		Map extendedScope = new HashMapDiff(scope);
+		extendedScope.put(var.getName(), var);
+		return cond.checkTypesAndScope(model, extendedScope);
+	}
+
+	/**
+	 * Initializes a compiled version of this set specification.
+	 * 
+	 * @param callStack
+	 *          Set of objects whose compile methods are parents of this method
+	 *          invocation. Ordered by invocation order. Used to detect cycles.
+	 */
+	public int compile(LinkedHashSet callStack) {
+		callStack.add(this);
+		int errors = cond.compile(callStack);
+		if (errors > 0) {
+			return errors;
+		}
+
+		satisfierSpec = new CompiledSetSpec(var, cond);
+		callStack.remove(this);
+		return 0;
+	}
+
+	public Collection getSubExprs() {
+		return Collections.singletonList(cond);
+	}
+
+	public Set getFreeVars() {
+		Set freeVars = new HashSet(cond.getFreeVars());
+		freeVars.remove(var);
+		return Collections.unmodifiableSet(freeVars);
+	}
+
+	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
+		boundVars = new HashSet<LogicalVar>(boundVars);
+		boundVars.add(var);
+		return new ImplicitSetSpec(var, (Formula) cond.getSubstResult(subst,
+				boundVars));
+	}
+
+	/**
+	 * Two implicit set specifications are equal if they have the same type,
+	 * generic element variable, and condition. Two implicit set specifications
+	 * that differ only in the choice of generic element variable are equivalent,
+	 * but we do not consider them equal, just as we do not consider two
+	 * universally quantified formulas equal if they differ in the quantified
+	 * variable.
+	 */
+	public boolean equals(Object o) {
+		if (o instanceof ImplicitSetSpec) {
+			ImplicitSetSpec other = (ImplicitSetSpec) o;
+			return (var.equals(other.getGenericSetElt()) && cond.equals(other
+					.getCond()));
+		}
+		return false;
+	}
+
+	public int hashCode() {
+		return (var.hashCode() ^ cond.hashCode());
+	}
+
+	/**
+	 * Returns a string of the form {Type var : cond} where Type is this implicit
+	 * set specification's type, var is the generic set element variable, and cond
+	 * is the membership condition.
+	 */
+	public String toString() {
+		return ("{" + var.getType() + " " + var.getName() + " : " + cond + "}");
+	}
+
+	/**
+	 * Returns a compiled version of the set represented by this ImplicitSetSpec.
+	 */
+	protected CompiledSetSpec getSatisfierSpec() {
+		if (satisfierSpec == null) {
+			compile(new LinkedHashSet());
+		}
+		return satisfierSpec;
+	}
+
+	public ArgSpec find(Term t) {
+		if (var.equals(t))
+			return var;
+		return cond.find(t);
+	}
+
+	public void applyToTerms(UnaryProcedure procedure) {
+		var.applyToTerms(procedure);
+		cond.applyToTerms(procedure);
+	}
+
+	public ArgSpec replace(Term t, ArgSpec another) {
+		if (t.equals(var)) // variable is separately quantified.
+			return this;
+
+		Formula newCond = (Formula) cond.replace(t, another);
+		if (newCond != cond) {
+			ImplicitSetSpec result = new ImplicitSetSpec(var, newCond);
+			if (satisfierSpec != null)
+				result.compile(new LinkedHashSet());
+			return result;
+		}
+		return this;
+	}
+
+	private LogicalVar var;
+	private Formula cond;
+
+	private CompiledSetSpec satisfierSpec;
 }

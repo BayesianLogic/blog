@@ -38,96 +38,93 @@ package blog;
 import java.util.*;
 
 /**
- * A Formula consisting of just the zero-ary logical operator "true", which 
- * is true in every world under every assignment.
+ * A Formula consisting of just the zero-ary logical operator "true", which is
+ * true in every world under every assignment.
  */
 public class TrueFormula extends Formula {
-    /**
-     * A canonical instance of TrueFormula.
-     */
-    public static final TrueFormula TRUE = new TrueFormula();
+	/**
+	 * A canonical instance of TrueFormula.
+	 */
+	public static final TrueFormula TRUE = new TrueFormula();
 
-    /**
-     * Creates a new TrueFormula.
-     */
-    public TrueFormula() {
-    }
+	/**
+	 * Creates a new TrueFormula.
+	 */
+	public TrueFormula() {
+	}
 
-    public Object evaluate(EvalContext context) {
-	return Boolean.TRUE;
-    }
+	public Object evaluate(EvalContext context) {
+		return Boolean.TRUE;
+	}
 
-    /**
-     * The standard form of the formula "true" is an empty conjunction,
-     * which is always true.
-     */
-    public Formula getStandardForm() {
-	return new ConjFormula(Collections.EMPTY_LIST);
-    }
+	/**
+	 * The standard form of the formula "true" is an empty conjunction, which is
+	 * always true.
+	 */
+	public Formula getStandardForm() {
+		return new ConjFormula(Collections.EMPTY_LIST);
+	}
 
-    /**
-     * A formula equivalent to the negation of "true" is the empty 
-     * disjunction, which is always false.
-     */
-    protected Formula getEquivToNegationInternal() {
-	return new DisjFormula(Collections.EMPTY_LIST);
-    }
+	/**
+	 * A formula equivalent to the negation of "true" is the empty disjunction,
+	 * which is always false.
+	 */
+	protected Formula getEquivToNegationInternal() {
+		return new DisjFormula(Collections.EMPTY_LIST);
+	}
 
-    /**
-     * The CNF form of TrueFormula has no conjuncts.
-     */
-    public ConjFormula getPropCNF() {
-	return new ConjFormula(Collections.EMPTY_LIST);
-    }
+	/**
+	 * The CNF form of TrueFormula has no conjuncts.
+	 */
+	public ConjFormula getPropCNF() {
+		return new ConjFormula(Collections.EMPTY_LIST);
+	}
 
-    /**
-     * The DNF form of TrueFormula has just one disjunct, which is an 
-     * empty conjunction.
-     */
-    public DisjFormula getPropDNF() {
-	return new DisjFormula(new ConjFormula(Collections.EMPTY_LIST));
-    }
+	/**
+	 * The DNF form of TrueFormula has just one disjunct, which is an empty
+	 * conjunction.
+	 */
+	public DisjFormula getPropDNF() {
+		return new DisjFormula(new ConjFormula(Collections.EMPTY_LIST));
+	}
 
-    public Set getSatisfiersIfExplicit(EvalContext context, 
-				       LogicalVar subject,
-				       GenericObject genericObj) {
-	return Formula.ALL_OBJECTS;
-    }
+	public Set getSatisfiersIfExplicit(EvalContext context, LogicalVar subject,
+			GenericObject genericObj) {
+		return Formula.ALL_OBJECTS;
+	}
 
-    public Set getNonSatisfiersIfExplicit(EvalContext context,
-					  LogicalVar subject,
-					  GenericObject genericObj) {
-	return Collections.EMPTY_SET;
-    }
+	public Set getNonSatisfiersIfExplicit(EvalContext context,
+			LogicalVar subject, GenericObject genericObj) {
+		return Collections.EMPTY_SET;
+	}
 
-    /**
-     * Any two instances of TrueFormula are equal.
-     */
-    public boolean equals(Object o) {
-	return (o instanceof TrueFormula);
-    }
+	/**
+	 * Any two instances of TrueFormula are equal.
+	 */
+	public boolean equals(Object o) {
+		return (o instanceof TrueFormula);
+	}
 
-    public int hashCode() {
-	return Boolean.TRUE.hashCode();
-    }
+	public int hashCode() {
+		return Boolean.TRUE.hashCode();
+	}
 
-    /**
-     * Returns the string "true".
-     */
-    public String toString() {
-	return "true";
-    }
+	/**
+	 * Returns the string "true".
+	 */
+	public String toString() {
+		return "true";
+	}
 
-    public boolean checkTypesAndScope(Model model, Map scope) {
-	return true;
-    }
+	public boolean checkTypesAndScope(Model model, Map scope) {
+		return true;
+	}
 
-    public ArgSpec replace(Term t, ArgSpec another) {
-	return this;
-    }
+	public ArgSpec replace(Term t, ArgSpec another) {
+		return this;
+	}
 
-    public ArgSpec getSubstResult(Substitution subst, 
-				  Set<LogicalVar> boundVars) {
-	return this;
-    }
+	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
+		return this;
+	}
 }

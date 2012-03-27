@@ -42,81 +42,80 @@ import java.io.PrintStream;
 /**
  * 
  * Represents a mapping from tuples of objects to non-negative real numbers.
- * More specifically, each Potential has an associated tuple of Type objects 
- * called its <i>dimensions</i>.  It defines values for tuples of objects 
- * in the Cartesian product of these types.  
+ * More specifically, each Potential has an associated tuple of Type objects
+ * called its <i>dimensions</i>. It defines values for tuples of objects in the
+ * Cartesian product of these types.
  */
 public interface Potential {
 
-    /**
-     * Returns the potential obtained by multiplying each entry in 
-     * this potential by the corresponding entry in the given second 
-     * potential.  
-     */
-    Potential multiply(Potential second, DimMapping second_product_map);
+	/**
+	 * Returns the potential obtained by multiplying each entry in this potential
+	 * by the corresponding entry in the given second potential.
+	 */
+	Potential multiply(Potential second, DimMapping second_product_map);
 
-    /**
-     * Returns the potential obtained by summing out the given dimensions.
-     */
-    Potential sumOut(List<Integer> sum_points);
+	/**
+	 * Returns the potential obtained by summing out the given dimensions.
+	 */
+	Potential sumOut(List<Integer> sum_points);
 
-    /**
-     * Returns the potential obtained by summing out those dimensions 
-     * <code>i</code> for which <code>sum_out_mask[i]</code> is true.
-     */
-    Potential sumOut(boolean[] sum_out_mask);
+	/**
+	 * Returns the potential obtained by summing out those dimensions
+	 * <code>i</code> for which <code>sum_out_mask[i]</code> is true.
+	 */
+	Potential sumOut(boolean[] sum_out_mask);
 
-    /**
-     * Returns the dimensions of this potential.
-     *
-     * @return unmodifiable List of Type
-     */
-    List<Type> getDims();
-	
-    /**
-     * Returns the number associated with the given tuple of arguments.
-     *
-     * @throws RuntimeException if <code>indices</code> has the wrong 
-     * length or one of the elements of <code>indices</code> is outside 
-     * the expected range.  
-     */
-    double getValue(List<?> arg_values);
-    
-    /**
-     * Sets the number associated with the given tuple of arguments.
-     *
-     * @throws RuntimeException if <code>indices</code> has the wrong 
-     * length or one of the elements of <code>indices</code> is outside 
-     * the expected range.  
-     */
-    void setValue(List<?> arg_values, double value);
+	/**
+	 * Returns the dimensions of this potential.
+	 * 
+	 * @return unmodifiable List of Type
+	 */
+	List<Type> getDims();
 
-    void setValues(double[] values);
+	/**
+	 * Returns the number associated with the given tuple of arguments.
+	 * 
+	 * @throws RuntimeException
+	 *           if <code>indices</code> has the wrong length or one of the
+	 *           elements of <code>indices</code> is outside the expected range.
+	 */
+	double getValue(List<?> arg_values);
 
-    /**
-     * Prints a human-readable representation of this potential to the 
-     * given stream.
-     */
-    void print(PrintStream out);
+	/**
+	 * Sets the number associated with the given tuple of arguments.
+	 * 
+	 * @throws RuntimeException
+	 *           if <code>indices</code> has the wrong length or one of the
+	 *           elements of <code>indices</code> is outside the expected range.
+	 */
+	void setValue(List<?> arg_values, double value);
 
-    void pow(double exp);
+	void setValues(double[] values);
 
-    void normalize();
+	/**
+	 * Prints a human-readable representation of this potential to the given
+	 * stream.
+	 */
+	void print(PrintStream out);
 
-    /**
-     * Returns true if this potential assigns weight zero to all 
-     * tuples of arguments.
-     */
-    public boolean isZero();
+	void pow(double exp);
 
-    public int size();
+	void normalize();
 
-    Potential copy();
+	/**
+	 * Returns true if this potential assigns weight zero to all tuples of
+	 * arguments.
+	 */
+	public boolean isZero();
 
-    /**
-     * Returns true if this potential has the same dimensions as the given 
-     * potential, and each pair of corresponding entries differs by no more 
-     * than Util.TOLERANCE.
-     */
-    boolean withinTol(Potential other);
+	public int size();
+
+	Potential copy();
+
+	/**
+	 * Returns true if this potential has the same dimensions as the given
+	 * potential, and each pair of corresponding entries differs by no more than
+	 * Util.TOLERANCE.
+	 */
+	boolean withinTol(Potential other);
 }

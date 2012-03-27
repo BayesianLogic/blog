@@ -40,42 +40,42 @@ import common.IndexedSet;
 import common.IndexedHashSet;
 
 /**
- * ObjectSet implementation that can be constructed using an ordinary 
- * Collection.  A DefaultObjectSet is not backed by this collection; it just 
+ * ObjectSet implementation that can be constructed using an ordinary
+ * Collection. A DefaultObjectSet is not backed by this collection; it just
  * reflects the contents of that collection at the time of construction.
  */
 public class DefaultObjectSet extends AbstractObjectSet {
-    /**
-     * Creates an ObjectSet whose contents are the same as the current 
-     * contents of the given collection.
-     */
-    public DefaultObjectSet(Collection c) {
-	this.elements = new IndexedHashSet(c);
-    }
-    
-    protected Integer sizeInternal() {
-	return new Integer(elements.size());
-    }
-    
-    protected Boolean containsInternal(Object o) {
-	return Boolean.valueOf(elements.contains(o));
-    }
-    
-    public ObjectSet getExplicitVersion() {
-	return this;
-    }
-    
-    public ObjectIterator iterator(Set externallyDistinguished) {
-	return new DefaultObjectIterator(elements.iterator());
-    }
-    
-    public Object sample(int n) {
-	return elements.get(n);
-    }
+	/**
+	 * Creates an ObjectSet whose contents are the same as the current contents of
+	 * the given collection.
+	 */
+	public DefaultObjectSet(Collection c) {
+		this.elements = new IndexedHashSet(c);
+	}
 
-    public int indexOf(Object o) {
-	return elements.indexOf(o);
-    }
-    
-    private IndexedSet elements;
+	protected Integer sizeInternal() {
+		return new Integer(elements.size());
+	}
+
+	protected Boolean containsInternal(Object o) {
+		return Boolean.valueOf(elements.contains(o));
+	}
+
+	public ObjectSet getExplicitVersion() {
+		return this;
+	}
+
+	public ObjectIterator iterator(Set externallyDistinguished) {
+		return new DefaultObjectIterator(elements.iterator());
+	}
+
+	public Object sample(int n) {
+		return elements.get(n);
+	}
+
+	public int indexOf(Object o) {
+		return elements.indexOf(o);
+	}
+
+	private IndexedSet elements;
 }

@@ -38,90 +38,90 @@ package common;
 import java.util.*;
 
 /**
- * Multiset that allows sampling, but not iteration or removals.  Uses 
- * a sorted map (from elements to integers) so the sampling is 
- * reproducible.  Null elements cannot be added.    
+ * Multiset that allows sampling, but not iteration or removals. Uses a sorted
+ * map (from elements to integers) so the sampling is reproducible. Null
+ * elements cannot be added.
  */
 public class SamplingMultiset implements SetWithDistrib {
-    /**
-     * Creates a new, empty multiset.
-     */
-    public SamplingMultiset() {
-    }
-
-    /**
-     * Increments the count for the given element.
-     */
-    public void incrementCount(Object o) {
-	Integer count = (Integer) map.get(o);
-	if (count == null) {
-	    count = new Integer(1);
-	} else {
-	    count = new Integer(count.intValue() + 1);
-	}
-	map.put(o, count);
-	++totalCount;
-    }
-
-    /**
-     * Returns the count for the given element.
-     */
-    public int getCount(Object o) {
-	if (o == null) {
-	    return 0;
+	/**
+	 * Creates a new, empty multiset.
+	 */
+	public SamplingMultiset() {
 	}
 
-	Integer count = (Integer) map.get(o);
-	if (count == null) {
-	    return 0;
-	}
-	return count.intValue();
-    }
-
-    /**
-     * Returns the total count of all elements.
-     */
-    public int totalCount() {
-	return totalCount;
-    }
-	
-    public double getProb(Object o) {
-	if (o == null) {
-	    return 0;
+	/**
+	 * Increments the count for the given element.
+	 */
+	public void incrementCount(Object o) {
+		Integer count = (Integer) map.get(o);
+		if (count == null) {
+			count = new Integer(1);
+		} else {
+			count = new Integer(count.intValue() + 1);
+		}
+		map.put(o, count);
+		++totalCount;
 	}
 
-	Integer count = (Integer) map.get(o);
-	if (count == null) {
-	    return 0;
+	/**
+	 * Returns the count for the given element.
+	 */
+	public int getCount(Object o) {
+		if (o == null) {
+			return 0;
+		}
+
+		Integer count = (Integer) map.get(o);
+		if (count == null) {
+			return 0;
+		}
+		return count.intValue();
 	}
-	return count.intValue() / (double) totalCount;
-    }
 
-    public double getLogProb(Object o) {
-	return Math.log(getProb(o));
-    }
-
-    /**
-     * Returns an object sampled uniformly from this multiset.  If the 
-     * multiset is empty, returns null.  
-     */
-    public Object sample() {
-	int remaining = Util.randInt(totalCount);
-	for (Iterator iter = map.entrySet().iterator(); iter.hasNext(); ) {
-	    Map.Entry entry = (Map.Entry) iter.next();
-	    int count = ((Integer) entry.getValue()).intValue();
-	    if (remaining < count) {
-		return entry.getKey();
-	    }
-	    remaining -= count;
+	/**
+	 * Returns the total count of all elements.
+	 */
+	public int totalCount() {
+		return totalCount;
 	}
-	return null;
-    }
 
-    public String toString() {
-	return map.toString();
-    }
+	public double getProb(Object o) {
+		if (o == null) {
+			return 0;
+		}
 
-    private Map map = new TreeMap();
-    private int totalCount = 0;
+		Integer count = (Integer) map.get(o);
+		if (count == null) {
+			return 0;
+		}
+		return count.intValue() / (double) totalCount;
+	}
+
+	public double getLogProb(Object o) {
+		return Math.log(getProb(o));
+	}
+
+	/**
+	 * Returns an object sampled uniformly from this multiset. If the multiset is
+	 * empty, returns null.
+	 */
+	public Object sample() {
+		int remaining = Util.randInt(totalCount);
+		for (Iterator iter = map.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry entry = (Map.Entry) iter.next();
+			int count = ((Integer) entry.getValue()).intValue();
+			if (remaining < count) {
+				return entry.getKey();
+			}
+			remaining -= count;
+		}
+		return null;
+	}
+
+	public String toString() {
+		return map.toString();
+	}
+
+	private Map map = new TreeMap();
+	private int totalCount = 0;
 }

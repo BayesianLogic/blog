@@ -38,93 +38,93 @@ package blog;
 import java.util.*;
 
 /**
- * A variable whose value is the POP application satisfied by a given 
- * object identifier.  The POP application is represented as a NumberVar.   
+ * A variable whose value is the POP application satisfied by a given object
+ * identifier. The POP application is represented as a NumberVar.
  */
 public class OriginVar extends AbstractBayesNetVar {
-    /**
-     * Creates a new variable representing the origin of the given 
-     * object identifier.
-     */
-    public OriginVar(ObjectIdentifier id) {
-	this.id = id;
-    }
-
-    /**
-     * Returns the identifier that this OriginVar applies to.
-     */
-    public ObjectIdentifier getIdentifier() {
-	return id;
-    }
-
-    /**
-     * Returns true if the given world is complete enough to determine 
-     * the value of this random variable.
-     */
-    public boolean isDetermined(PartialWorld w) {
-	return true;
-    }
-
-    /**
-     * Returns the value of this random variable in the given world.  
-     *
-     * @throws IllegalArgumentException if the given partial world is not 
-     *                                  complete enough to determine the 
-     *                                  value of this variable
-     */
-    public Object getValue(PartialWorld w) {
-	return w.getPOPAppSatisfied(id);
-    }
-
-    /**
-     * Returns the set of parents of this variable in the given partial 
-     * world.  The parents are those random variables which, if they changed, 
-     * could change the probability of this variable having a given value.  
-     * This method yields a fatal error if the partial world is not complete 
-     * enough to determine this variable's parents.  
-     *
-     * @return Set of BayesNetVar 
-     */
-    public Set getParents(PartialWorld w) {
-	return Collections.EMPTY_SET;
-    }
-
-    public BasicVar getFirstUninstParent(PartialWorld w) {
-	return null;
-    }
-
-    /**
-     * Ensures that the partial world underlying the given 
-     * InstantiatingEvalContext is complete enough to determine the value 
-     * of this variable and to determine its probability distribution 
-     * conditional on its parents.
-     */
-    public void ensureDetAndSupported(InstantiatingEvalContext instantiator) {
-	// do nothing
-    }
-
-    public Timestep timestep() {
-	return null;
-    }
-
-    public String toString() {
-	return ("Origin(" + id + ")");
-    }
-
-    /**
-     * Two OriginVars are equal if they are for the same object identifier.
-     */
-    public boolean equals(Object o) {
-	if (o instanceof OriginVar) {
-	    OriginVar other = (OriginVar) o;
-	    return (id == other.getIdentifier());
+	/**
+	 * Creates a new variable representing the origin of the given object
+	 * identifier.
+	 */
+	public OriginVar(ObjectIdentifier id) {
+		this.id = id;
 	}
-	return false;
-    }
 
-    public int hashCode() {
-	return id.hashCode();
-    }
+	/**
+	 * Returns the identifier that this OriginVar applies to.
+	 */
+	public ObjectIdentifier getIdentifier() {
+		return id;
+	}
 
-    private ObjectIdentifier id;
+	/**
+	 * Returns true if the given world is complete enough to determine the value
+	 * of this random variable.
+	 */
+	public boolean isDetermined(PartialWorld w) {
+		return true;
+	}
+
+	/**
+	 * Returns the value of this random variable in the given world.
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if the given partial world is not complete enough to determine
+	 *           the value of this variable
+	 */
+	public Object getValue(PartialWorld w) {
+		return w.getPOPAppSatisfied(id);
+	}
+
+	/**
+	 * Returns the set of parents of this variable in the given partial world. The
+	 * parents are those random variables which, if they changed, could change the
+	 * probability of this variable having a given value. This method yields a
+	 * fatal error if the partial world is not complete enough to determine this
+	 * variable's parents.
+	 * 
+	 * @return Set of BayesNetVar
+	 */
+	public Set getParents(PartialWorld w) {
+		return Collections.EMPTY_SET;
+	}
+
+	public BasicVar getFirstUninstParent(PartialWorld w) {
+		return null;
+	}
+
+	/**
+	 * Ensures that the partial world underlying the given
+	 * InstantiatingEvalContext is complete enough to determine the value of this
+	 * variable and to determine its probability distribution conditional on its
+	 * parents.
+	 */
+	public void ensureDetAndSupported(InstantiatingEvalContext instantiator) {
+		// do nothing
+	}
+
+	public Timestep timestep() {
+		return null;
+	}
+
+	public String toString() {
+		return ("Origin(" + id + ")");
+	}
+
+	/**
+	 * Two OriginVars are equal if they are for the same object identifier.
+	 */
+	public boolean equals(Object o) {
+		if (o instanceof OriginVar) {
+			OriginVar other = (OriginVar) o;
+			return (id == other.getIdentifier());
+		}
+		return false;
+	}
+
+	public int hashCode() {
+		return id.hashCode();
+	}
+
+	private ObjectIdentifier id;
 }

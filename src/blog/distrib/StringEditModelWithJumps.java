@@ -38,124 +38,118 @@ package blog.distrib;
 import java.util.*;
 
 /**
- * Subclass of StringEditModel that allows "jumps", that is, deletions of 
- * whole substrings of the original string (rather than just single 
- * characters).  This is an abstract class.  Subclasses must override the 
- * initJumps method to specify what jumps are allowed in a given input 
- * string, and what their probabilities are.
+ * Subclass of StringEditModel that allows "jumps", that is, deletions of whole
+ * substrings of the original string (rather than just single characters). This
+ * is an abstract class. Subclasses must override the initJumps method to
+ * specify what jumps are allowed in a given input string, and what their
+ * probabilities are.
  */
 public abstract class StringEditModelWithJumps extends StringEditModel {
 
-    public StringEditModelWithJumps() {
-    }
+	public StringEditModelWithJumps() {
+	}
 
-    public StringEditModelWithJumps(List params) {
-	super(params);
-    }
+	public StringEditModelWithJumps(List params) {
+		super(params);
+	}
 
-    protected double getProbInternal(String input, String output) {
-	arrivingJumps = new List[input.length() + 1];
-	nonJumpProb = new double[input.length() + 1];
-	Arrays.fill(nonJumpProb, 1.0);
-	initJumps(input);
+	protected double getProbInternal(String input, String output) {
+		arrivingJumps = new List[input.length() + 1];
+		nonJumpProb = new double[input.length() + 1];
+		Arrays.fill(nonJumpProb, 1.0);
+		initJumps(input);
 
-	// p[i][n] = P(at some time, scribe has written i characters and his 
-        //             finger is before character n of the input)
-	double[][] p = new double[output.length() + 1][input.length() + 1];
+		// p[i][n] = P(at some time, scribe has written i characters and his
+		// finger is before character n of the input)
+		double[][] p = new double[output.length() + 1][input.length() + 1];
 
-	p[0][0] = 1; // other entries automatically initialized to 0
-	for (int n = 0; n <= input.length(); n++) {
-	    for (int i = 0; i <= output.length(); i++) {
-		// Ways of generating i characters of output (indexed 0 
-		// through i-1) using input characters before position n
-				
-		// First way: generate i-1 characters using input before 
-		// position n-1, then generate output[i-1] using input[n-1]
-		if ((n > 0) && (i > 0)) {
-		    p[i][n] += (p[i-1][n-1] * nonJumpProb[n-1] *
-				probSubst(input, n-1, output, i-1, 
-					  output.charAt(i-1)));
+		p[0][0] = 1; // other entries automatically initialized to 0
+		for (int n = 0; n <= input.length(); n++) {
+			for (int i = 0; i <= output.length(); i++) {
+				// Ways of generating i characters of output (indexed 0
+				// through i-1) using input characters before position n
+
+				// First way: generate i-1 characters using input before
+				// position n-1, then generate output[i-1] using input[n-1]
+				if ((n > 0) && (i > 0)) {
+					p[i][n] += (p[i - 1][n - 1] * nonJumpProb[n - 1] * probSubst(input,
+							n - 1, output, i - 1, output.charAt(i - 1)));
+				}
+
+				// Second way: generate i characters using input before
+				// position n-1, then do a deletion, skipping input[n-1]
+				if (n > 0) {
+					p[i][n] += (p[i][n - 1] * nonJumpProb[n - 1] * probDelete(input,
+							n - 1, output, i));
+				}
+
+				// Third way: generate i-1 characters using input before
+				// position n, then generate output[i-1] by insertion
+				if (i > 0) {
+					p[i][n] += (p[i - 1][n] * nonJumpProb[n] * probInsert(input, n,
+							output, i - 1, output.charAt(i - 1)));
+				}
+
+				// Fourth way: generate i characters using input before
+				// position m, then do a jump from m to n
+				if (arrivingJumps[n] != null) {
+					for (Iterator iter = arrivingJumps[n].iterator(); iter.hasNext();) {
+						Jump jump = (Jump) iter.next();
+						p[i][n] += (p[i][jump.origin] * jump.prob);
+					}
+				}
+			}
 		}
 
-		// Second way: generate i characters using input before 
-		// position n-1, then do a deletion, skipping input[n-1]
-		if (n > 0) {
-		    p[i][n] += (p[i][n-1] * nonJumpProb[n-1] * 
-				probDelete(input, n-1, output, i));
+		// To generate the given output string, scribe must write it down and
+		// have his finger after the last input character, *and* decide to
+		// stop.
+		return (p[output.length()][input.length()] * probStop(input,
+				input.length(), output, output.length()));
+	}
+
+	/**
+	 * Figures out what jumps are allowed for the given input string, and calls
+	 * addJump for each one.
+	 */
+	protected abstract void initJumps(String input);
+
+	/**
+	 * Allows a jump from before character <code>origin</code> to before character
+	 * <code>dest</code>, with probability <code>prob</code>. The destination must
+	 * be greater than the origin. For any origin, the jump probabilities should
+	 * sum to something <= 1.0; the remaining probability is distributed over
+	 * non-jump moves. If you add several jumps from an origin to the same
+	 * destination, the probabilities are added together.
+	 */
+	protected void addJump(int origin, int dest, double prob) {
+		if (origin >= dest) {
+			throw new IllegalArgumentException("Origin " + origin
+					+ " greater than or equal to " + "destination " + dest + ".");
 		}
 
-		// Third way: generate i-1 characters using input before
-		// position n, then generate output[i-1] by insertion
-		if (i > 0) {
-		    p[i][n] += (p[i-1][n] * nonJumpProb[n] * 
-				probInsert(input, n, output, i-1, 
-					   output.charAt(i-1)));
+		nonJumpProb[origin] -= prob;
+		if (nonJumpProb[origin] < 0) {
+			throw new IllegalArgumentException("Sum of jump probabilities "
+					+ "from before character " + origin + " is > 1.0.");
 		}
 
-		// Fourth way: generate i characters using input before 
-		// position m, then do a jump from m to n
-		if (arrivingJumps[n] != null) {
-		    for (Iterator iter = arrivingJumps[n].iterator(); 
-			 iter.hasNext(); ) {
-			Jump jump = (Jump) iter.next();
-			p[i][n] += (p[i][jump.origin] * jump.prob);
-		    }
+		if (arrivingJumps[dest] == null) {
+			arrivingJumps[dest] = new ArrayList();
 		}
-	    }
+		arrivingJumps[dest].add(new Jump(origin, prob));
 	}
 
-	// To generate the given output string, scribe must write it down and 
-	// have his finger after the last input character, *and* decide to 
-	// stop.
-	return (p[output.length()][input.length()] * 
-		probStop(input, input.length(), output, output.length())); 
-    }
+	private static class Jump {
+		public int origin;
+		public double prob;
 
-    /**
-     * Figures out what jumps are allowed for the given input string, and 
-     * calls addJump for each one.
-     */
-    protected abstract void initJumps(String input);
-
-    /**
-     * Allows a jump from before character <code>origin</code> to before 
-     * character <code>dest</code>, with probability <code>prob</code>.  The
-     * destination must be greater than the origin.  For any origin,
-     * the jump probabilities should sum to something <= 1.0; the
-     * remaining probability is distributed over non-jump moves.  If
-     * you add several jumps from an origin to the same destination,
-     * the probabilities are added together.  
-     */
-    protected void addJump(int origin, int dest, double prob) {
-	if (origin >= dest) {
-	    throw new IllegalArgumentException("Origin " + origin 
-					       + " greater than or equal to "
-					       + "destination " + dest + ".");
+		public Jump(int origin, double prob) {
+			this.origin = origin;
+			this.prob = prob;
+		}
 	}
 
-	nonJumpProb[origin] -= prob;
-	if (nonJumpProb[origin] < 0) {
-	    throw new IllegalArgumentException("Sum of jump probabilities "
-					       + "from before character " 
-					       + origin + " is > 1.0.");
-	}
-		
-	if (arrivingJumps[dest] == null) {
-	    arrivingJumps[dest] = new ArrayList();
-	}
-	arrivingJumps[dest].add(new Jump(origin, prob));
-    }
-
-    private static class Jump {
-	public int origin;
-	public double prob;
-
-	public Jump(int origin, double prob) {
-	    this.origin = origin;
-	    this.prob = prob;
-	}
-    }
-
-    private List[] arrivingJumps; // each List contains Jump objects
-    private double[] nonJumpProb;
+	private List[] arrivingJumps; // each List contains Jump objects
+	private double[] nonJumpProb;
 }

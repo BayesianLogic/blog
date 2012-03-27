@@ -38,53 +38,51 @@ package common;
 import java.util.*;
 
 /**
- * Default implementation of the Map.Entry interface.  It stores the key and 
+ * Default implementation of the Map.Entry interface. It stores the key and
  * value in member variables, and does not support the setValue operation.
  */
 public class DefaultMapEntry implements Map.Entry {
-    public DefaultMapEntry(Object key, Object value) {
-	this.key = key;
-	this.value = value;
-    }
-
-    public DefaultMapEntry(Map.Entry entry) {
-	key = entry.getKey();
-	value = entry.getValue();
-    }
-
-    public Object getKey() {
-	return key;
-    }
-    
-    public Object getValue() {
-	return value;
-    }
-    
-    public Object setValue(Object newValue) {
-	throw new UnsupportedOperationException
-	    ("This map entry does not support setting the value.");
-    }
-
-    public boolean equals(Object o) {
-	if (o instanceof Map.Entry) {
-	    Map.Entry other = (Map.Entry) o;
-	    if (((key == null) ? 
-		 (other.getKey() == null) 
-		 : key.equals(other.getKey()))
-		&& ((value == null) ?
-		    (other.getValue() == null) 
-		    : value.equals(other.getValue()))) {
-		return true;
-	    }
+	public DefaultMapEntry(Object key, Object value) {
+		this.key = key;
+		this.value = value;
 	}
-	return false;
-    }
-    
-    public int hashCode() {
-	return (((key == null) ? 0 : key.hashCode())
-		^ ((value == null) ? 0 : value.hashCode()));
-    }
-    
-    Object key;
-    Object value;
+
+	public DefaultMapEntry(Map.Entry entry) {
+		key = entry.getKey();
+		value = entry.getValue();
+	}
+
+	public Object getKey() {
+		return key;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	public Object setValue(Object newValue) {
+		throw new UnsupportedOperationException(
+				"This map entry does not support setting the value.");
+	}
+
+	public boolean equals(Object o) {
+		if (o instanceof Map.Entry) {
+			Map.Entry other = (Map.Entry) o;
+			if (((key == null) ? (other.getKey() == null) : key
+					.equals(other.getKey()))
+					&& ((value == null) ? (other.getValue() == null) : value.equals(other
+							.getValue()))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public int hashCode() {
+		return (((key == null) ? 0 : key.hashCode()) ^ ((value == null) ? 0 : value
+				.hashCode()));
+	}
+
+	Object key;
+	Object value;
 }

@@ -38,142 +38,142 @@ package common;
 import java.util.*;
 
 /**
- * A data structure that is implemented as a linked list, but only 
- * implements the Collection interface, so it does not allow random access 
- * to elements and does not support ListIterators.  However, the iterators 
- * used in an ExtensibleLinkedList are very robust: the only thing that 
- * invalidates an iterator is if some other piece of code (other than the 
- * iterator's <code>remove</code> method) removes the last element returned 
- * by that iterator's <code>next</code> method.     
+ * A data structure that is implemented as a linked list, but only implements
+ * the Collection interface, so it does not allow random access to elements and
+ * does not support ListIterators. However, the iterators used in an
+ * ExtensibleLinkedList are very robust: the only thing that invalidates an
+ * iterator is if some other piece of code (other than the iterator's
+ * <code>remove</code> method) removes the last element returned by that
+ * iterator's <code>next</code> method.
  */
 public class ExtensibleLinkedList extends AbstractCollection {
-    /**
-     * Creates an empty list.
-     */
-    public ExtensibleLinkedList() {
-    }
-
-    /**
-     * Creates a list containing the elements of the specified collection, 
-     * in the order they are returned by the collection's iterator.
-     */
-    public ExtensibleLinkedList(Collection c) {
-	addAll(c);
-    }
-
-    public int size() {
-	return size;
-    }
-
-    public Iterator iterator() {
-	return new RobustIterator();
-    }
-
-    /**
-     * Adds the given object to the end of this list.
-     */
-    public boolean add(Object o) {
-	if (tail == null) {
-	    // adding first element to list
-	    head = new Cell(o, null, null);
-	    tail = head;
-	} else {
-	    tail.next = new Cell(o, tail, null);
-	    tail = tail.next;
-	}
-	++size;
-	return true;
-    }
-
-    private class RobustIterator implements Iterator {
-	public boolean hasNext() {
-	    if (predOfNext == null) {
-		return (head != null);
-	    }
-
-	    if (predOfNext.data == REMOVED) {
-		throw new ConcurrentModificationException
-		    ("Removed list cell that iterator was pointing to.");
-	    }
-
-	    return (predOfNext.next != null);
+	/**
+	 * Creates an empty list.
+	 */
+	public ExtensibleLinkedList() {
 	}
 
-	public Object next() {
-	    if (predOfNext == null) {
-		if (head == null) {
-		    throw new NoSuchElementException();
+	/**
+	 * Creates a list containing the elements of the specified collection, in the
+	 * order they are returned by the collection's iterator.
+	 */
+	public ExtensibleLinkedList(Collection c) {
+		addAll(c);
+	}
+
+	public int size() {
+		return size;
+	}
+
+	public Iterator iterator() {
+		return new RobustIterator();
+	}
+
+	/**
+	 * Adds the given object to the end of this list.
+	 */
+	public boolean add(Object o) {
+		if (tail == null) {
+			// adding first element to list
+			head = new Cell(o, null, null);
+			tail = head;
+		} else {
+			tail.next = new Cell(o, tail, null);
+			tail = tail.next;
 		}
-		predOfNext = head;
-	    } else {
-		if (predOfNext.data == REMOVED) {
-		    throw new ConcurrentModificationException
-			("Removed list cell that iterator was pointing to.");
+		++size;
+		return true;
+	}
+
+	private class RobustIterator implements Iterator {
+		public boolean hasNext() {
+			if (predOfNext == null) {
+				return (head != null);
+			}
+
+			if (predOfNext.data == REMOVED) {
+				throw new ConcurrentModificationException(
+						"Removed list cell that iterator was pointing to.");
+			}
+
+			return (predOfNext.next != null);
 		}
 
-		if (predOfNext.next == null) {
-		    throw new NoSuchElementException();
+		public Object next() {
+			if (predOfNext == null) {
+				if (head == null) {
+					throw new NoSuchElementException();
+				}
+				predOfNext = head;
+			} else {
+				if (predOfNext.data == REMOVED) {
+					throw new ConcurrentModificationException(
+							"Removed list cell that iterator was pointing to.");
+				}
+
+				if (predOfNext.next == null) {
+					throw new NoSuchElementException();
+				}
+
+				predOfNext = predOfNext.next;
+			}
+
+			removedLast = false;
+			return predOfNext.data; // now that predOfNext has been updated
 		}
 
-		predOfNext = predOfNext.next;
-	    }
+		public void remove() {
+			if (predOfNext == null) {
+				throw new IllegalStateException("next has not been called.");
+			}
+			if (removedLast) {
+				throw new IllegalStateException("Last item already removed.");
+			}
 
-	    removedLast = false;
-	    return predOfNext.data; // now that predOfNext has been updated
+			if (predOfNext.data == REMOVED) {
+				throw new ConcurrentModificationException(
+						"Removed list cell that iterator was pointing to.");
+			}
+
+			predOfNext.data = REMOVED;
+
+			if (predOfNext.next == null) {
+				tail = predOfNext.prev; // removing last element
+			} else {
+				predOfNext.next.prev = predOfNext.prev;
+			}
+
+			if (predOfNext.prev == null) {
+				head = predOfNext.next; // removing first element
+				predOfNext = null;
+			} else {
+				predOfNext.prev.next = predOfNext.next;
+				predOfNext = predOfNext.prev;
+			}
+
+			removedLast = true;
+			--size;
+		}
+
+		private Cell predOfNext = null; // null only at beginning
+		private boolean removedLast = false;
 	}
 
-	public void remove() {
-	    if (predOfNext == null) {
-		throw new IllegalStateException("next has not been called.");
-	    }
-	    if (removedLast) {
-		throw new IllegalStateException("Last item already removed.");
-	    }
+	private class Cell {
+		Cell(Object data, Cell prev, Cell next) {
+			this.data = data;
+			this.prev = prev;
+			this.next = next;
+		}
 
-	    if (predOfNext.data == REMOVED) {
-		throw new ConcurrentModificationException
-		    ("Removed list cell that iterator was pointing to.");
-	    }
-	    
-	    predOfNext.data = REMOVED;
-
-	    if (predOfNext.next == null) {
-		tail = predOfNext.prev; // removing last element
-	    } else {
-		predOfNext.next.prev = predOfNext.prev;
-	    }
-
-	    if (predOfNext.prev == null) {
-		head = predOfNext.next; // removing first element
-		predOfNext = null;
-	    } else {
-		predOfNext.prev.next = predOfNext.next;
-		predOfNext = predOfNext.prev;
-	    }
-
-	    removedLast = true;
-	    --size;
+		Object data;
+		Cell prev;
+		Cell next;
 	}
 
-	private Cell predOfNext = null; // null only at beginning
-	private boolean removedLast = false;
-    }
+	private int size = 0;
+	private Cell head = null;
+	private Cell tail = null;
 
-    private class Cell {
-	Cell(Object data, Cell prev, Cell next) {
-	    this.data = data;
-	    this.prev = prev;
-	    this.next = next;
-	}
-	
-	Object data;
-	Cell prev;
-	Cell next;
-    }
-
-    private int size = 0;
-    private Cell head = null;
-    private Cell tail = null;
-
-    private static final Integer REMOVED = new Integer(0);
+	private static final Integer REMOVED = new Integer(0);
 }

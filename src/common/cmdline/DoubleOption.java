@@ -38,84 +38,85 @@ package common.cmdline;
 import java.util.*;
 
 /**
- * Option that takes real values.  If this option occurs with a value
- * that is not a valid real number, this class prints an error message
- * and exits the program.  If the option occurs more than once on a
- * command line, this class prints a warning and ignores all but the
- * last occurrence.
+ * Option that takes real values. If this option occurs with a value that is not
+ * a valid real number, this class prints an error message and exits the
+ * program. If the option occurs more than once on a command line, this class
+ * prints a warning and ignores all but the last occurrence.
  */
 public class DoubleOption extends AbstractOption {
-    /**
-     * Creates a real-valued option and registers it with the Parser class.  
-     *
-     * @param shortForm single-character form of this option, or null for 
-     *                  an option with no short form
-     * 
-     * @param longForm long form of this option, or null for an option 
-     *                 with no long form.  
-     *
-     * @param def      default value to return if the option does not occur
-     *
-     * @param docStr   short (preferably less than 40 characters) 
-     *                 string specifying what happens when this option's 
-     *                 value is "&lt;x&gt;"
-     */
-    public DoubleOption(String shortForm, String longForm, double def, 
+	/**
+	 * Creates a real-valued option and registers it with the Parser class.
+	 * 
+	 * @param shortForm
+	 *          single-character form of this option, or null for an option with
+	 *          no short form
+	 * 
+	 * @param longForm
+	 *          long form of this option, or null for an option with no long form.
+	 * 
+	 * @param def
+	 *          default value to return if the option does not occur
+	 * 
+	 * @param docStr
+	 *          short (preferably less than 40 characters) string specifying what
+	 *          happens when this option's value is "&lt;x&gt;"
+	 */
+	public DoubleOption(String shortForm, String longForm, double def,
 			String docStr) {
-	super(shortForm, longForm);
+		super(shortForm, longForm);
 
-	value = def;
-	this.docStr = docStr;
+		value = def;
+		this.docStr = docStr;
 
-	Parser.addOption(this);
-    }
-
-    public boolean expectsValue() {
-	return true;
-    }
-
-    public void recordOccurrence(String form, String valueStr) {
-	super.recordOccurrence(form, valueStr);
-
-	try {
-	    value = Double.parseDouble(valueStr);
-	} catch (NumberFormatException e) {
-	    System.err.println("Invalid value for \"" + form + "\" option: "
-			       + valueStr);
-	    System.err.println("(should be a real number).");
-	    System.exit(1);
+		Parser.addOption(this);
 	}
-    }
 
-    public String getUsageString() {
-	StringBuffer buf = new StringBuffer();
-	if (!shortForms.isEmpty()) {
-	    buf.append("-" + shortForms.get(0) + " <x>");
-	    if (!longForms.isEmpty()) {
-		buf.append(", ");
-	    }
+	public boolean expectsValue() {
+		return true;
 	}
-	if (!longForms.isEmpty()) {
-	    buf.append("--" + longForms.get(0) + " <x>");
+
+	public void recordOccurrence(String form, String valueStr) {
+		super.recordOccurrence(form, valueStr);
+
+		try {
+			value = Double.parseDouble(valueStr);
+		} catch (NumberFormatException e) {
+			System.err.println("Invalid value for \"" + form + "\" option: "
+					+ valueStr);
+			System.err.println("(should be a real number).");
+			System.exit(1);
+		}
 	}
-	
-	while (buf.length() < DOC_OFFSET) {
-	    buf.append(" ");
+
+	public String getUsageString() {
+		StringBuffer buf = new StringBuffer();
+		if (!shortForms.isEmpty()) {
+			buf.append("-" + shortForms.get(0) + " <x>");
+			if (!longForms.isEmpty()) {
+				buf.append(", ");
+			}
+		}
+		if (!longForms.isEmpty()) {
+			buf.append("--" + longForms.get(0) + " <x>");
+		}
+
+		while (buf.length() < DOC_OFFSET) {
+			buf.append(" ");
+		}
+		buf.append(docStr);
+
+		return buf.toString();
 	}
-	buf.append(docStr);
 
-	return buf.toString();
-    }
+	/**
+	 * Returns the value specified on the command line for this option, or the
+	 * default value if the option did not occur.
+	 */
+	public double getValue() {
+		return value;
+	}
 
-    /**
-     * Returns the value specified on the command line for this
-     * option, or the default value if the option did not occur.
-     */
-    public double getValue() {
-	return value;
-    }
+	private String docStr;
 
-    private String docStr;
-
-    private double value;
+	private double value;
 }

@@ -38,45 +38,44 @@ package common;
 import java.util.*;
 
 /**
- * A MultiMapDiff implementation that also implements the 
- * IndexedMultiMap interface.  It is just like HashMultiMapDiff, 
- * except that it uses IndexedHashSetDiff objects rather than ordinary 
- * HashSetDiff objects.  
+ * A MultiMapDiff implementation that also implements the IndexedMultiMap
+ * interface. It is just like HashMultiMapDiff, except that it uses
+ * IndexedHashSetDiff objects rather than ordinary HashSetDiff objects.
  */
-public class IndexedMultiMapDiff extends HashMultiMapDiff 
-                                 implements IndexedMultiMap {
-    /**
-     * Creates a new IndexedMultiMapDiff with the given underlying 
-     * IndexedMultiMap.
-     */
-    public IndexedMultiMapDiff(IndexedMultiMap underlying) {
-	super(underlying);
-    }
-
-    public Object get(Object key) {
-	return new IndexedValueSet(key);
-    }
-
-    protected Set emptySet() {
-	return IndexedSet.EMPTY_INDEXED_SET;
-    }
-
-    protected SetDiff newDiff(Set orig) {
-	return new IndexedHashSetDiff((IndexedSet) orig);
-    }
-
-    protected class IndexedValueSet extends HashMultiMapDiff.ValueSet 
-                                    implements IndexedSet {
-	protected IndexedValueSet(Object key) {
-	    super(key);
+public class IndexedMultiMapDiff extends HashMultiMapDiff implements
+		IndexedMultiMap {
+	/**
+	 * Creates a new IndexedMultiMapDiff with the given underlying
+	 * IndexedMultiMap.
+	 */
+	public IndexedMultiMapDiff(IndexedMultiMap underlying) {
+		super(underlying);
 	}
 
-	public int indexOf(Object o) {
-	    return ((IndexedSet) getSetToUse()).indexOf(o);
+	public Object get(Object key) {
+		return new IndexedValueSet(key);
 	}
 
-	public Object get(int index) {
-	    return ((IndexedSet) getSetToUse()).get(index);
+	protected Set emptySet() {
+		return IndexedSet.EMPTY_INDEXED_SET;
 	}
-    }
+
+	protected SetDiff newDiff(Set orig) {
+		return new IndexedHashSetDiff((IndexedSet) orig);
+	}
+
+	protected class IndexedValueSet extends HashMultiMapDiff.ValueSet implements
+			IndexedSet {
+		protected IndexedValueSet(Object key) {
+			super(key);
+		}
+
+		public int indexOf(Object o) {
+			return ((IndexedSet) getSetToUse()).indexOf(o);
+		}
+
+		public Object get(int index) {
+			return ((IndexedSet) getSetToUse()).get(index);
+		}
+	}
 }

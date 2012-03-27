@@ -40,47 +40,45 @@ import java.util.*;
 import common.Util;
 
 /**
- * Implementation of FunctionInterp for constants (zero-ary 
- * functions).  In this case, the interpretation is specified by just 
- * a single value.
+ * Implementation of FunctionInterp for constants (zero-ary functions). In this
+ * case, the interpretation is specified by just a single value.
  */
 public class ConstantInterp extends AbstractFunctionInterp {
-    /**
-     * Expects a single parameter, namely the function value.
-     */
-    public ConstantInterp(List params) {
-	if (params.size() != 1) {
-	    throw new IllegalArgumentException
-		("ConstantInterp expects a single parameter.");
+	/**
+	 * Expects a single parameter, namely the function value.
+	 */
+	public ConstantInterp(List params) {
+		if (params.size() != 1) {
+			throw new IllegalArgumentException(
+					"ConstantInterp expects a single parameter.");
+		}
+
+		value = params.get(0);
 	}
 
-	value = params.get(0);
-    }
-
-    public Object getValue(List args) {
-	if (!args.isEmpty()) {
-	    throw new IllegalArgumentException
-		("ConstantInterp expects no arguments.");
+	public Object getValue(List args) {
+		if (!args.isEmpty()) {
+			throw new IllegalArgumentException("ConstantInterp expects no arguments.");
+		}
+		return value;
 	}
-	return value;
-    }
 
-    public Set getInverseTuples(Object v) {
-	if (value.equals(v)) {
-	    return Collections.singleton(Collections.EMPTY_LIST);
+	public Set getInverseTuples(Object v) {
+		if (value.equals(v)) {
+			return Collections.singleton(Collections.EMPTY_LIST);
+		}
+		return Collections.EMPTY_SET;
 	}
-	return Collections.EMPTY_SET;
-    }
 
-    public boolean equals(Object o) {
-	if (!(o instanceof ConstantInterp))
-	    return false;
-	return Util.equalsOrBothNull(value, ((ConstantInterp)o).value);
-    }
-    
-    public int hashCode() {
-	return value.hashCode();
-    }
-    
-    private Object value;
+	public boolean equals(Object o) {
+		if (!(o instanceof ConstantInterp))
+			return false;
+		return Util.equalsOrBothNull(value, ((ConstantInterp) o).value);
+	}
+
+	public int hashCode() {
+		return value.hashCode();
+	}
+
+	private Object value;
 }

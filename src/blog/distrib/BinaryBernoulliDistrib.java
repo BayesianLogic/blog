@@ -40,72 +40,72 @@ import java.util.*;
 import common.Util;
 
 /**
- * A distribution over {0,1}.  It takes one parameter, which is 
- * the probability of <code>true</code>.  It takes no arguments.  
+ * A distribution over {0,1}. It takes one parameter, which is the probability
+ * of <code>true</code>. It takes no arguments.
  */
 public class BinaryBernoulliDistrib extends AbstractCondProbDistrib {
- 
-    public BinaryBernoulliDistrib( List params ){
-	if (params.size() != 1) {
-	    throw new IllegalArgumentException
-		("Binary Bernoulli distribution requires exactly one parameter, " 
-		 + "not " + params.size() + ".");
-	}
-	Object param_obj = params.get(0);
-	if (!(param_obj instanceof Number)) {
-	    throw new IllegalArgumentException
-		("Parameter to Binary Bernoulli distrib must be of class Number, " 
-		 + "not " + param_obj.getClass() + ".");
-	}
-		
-	pi = ((Number) param_obj).doubleValue();
-	if ((pi < 0) || (pi > 1)) {
-	    throw new IllegalArgumentException
-		("Parameter to Binary Bernoulli must be in interval [0, 1], not " 
-		 + pi + ".");
-	}
-    }
 
-    public double getProb( List args, Object value ) {
-	if (args.size() != 0) {
-	    throw new IllegalArgumentException
-		("Binary Bernoulli distribution takes zero arguments, not "
-		 + args.size() + ".");
-	}
-	if (!(value instanceof Integer)) {
-	    throw new IllegalArgumentException
-		("Binary Bernoulli distribution is over objects of class Integer, "
-		 + "not " + value.getClass() + ".");
+	public BinaryBernoulliDistrib(List params) {
+		if (params.size() != 1) {
+			throw new IllegalArgumentException(
+					"Binary Bernoulli distribution requires exactly one parameter, "
+							+ "not " + params.size() + ".");
+		}
+		Object param_obj = params.get(0);
+		if (!(param_obj instanceof Number)) {
+			throw new IllegalArgumentException(
+					"Parameter to Binary Bernoulli distrib must be of class Number, "
+							+ "not " + param_obj.getClass() + ".");
+		}
+
+		pi = ((Number) param_obj).doubleValue();
+		if ((pi < 0) || (pi > 1)) {
+			throw new IllegalArgumentException(
+					"Parameter to Binary Bernoulli must be in interval [0, 1], not " + pi
+							+ ".");
+		}
 	}
 
-	int int_value = ((Integer) value).intValue();
+	public double getProb(List args, Object value) {
+		if (args.size() != 0) {
+			throw new IllegalArgumentException(
+					"Binary Bernoulli distribution takes zero arguments, not "
+							+ args.size() + ".");
+		}
+		if (!(value instanceof Integer)) {
+			throw new IllegalArgumentException(
+					"Binary Bernoulli distribution is over objects of class Integer, "
+							+ "not " + value.getClass() + ".");
+		}
 
-	if (!((int_value == 0) || (int_value == 1))){
-	    throw new IllegalArgumentException
-		("Binary Bernoulli distribution is over the set {0,1}; passed value: "
-		 + value.getClass() + ".");
+		int int_value = ((Integer) value).intValue();
 
+		if (!((int_value == 0) || (int_value == 1))) {
+			throw new IllegalArgumentException(
+					"Binary Bernoulli distribution is over the set {0,1}; passed value: "
+							+ value.getClass() + ".");
+
+		}
+
+		if (int_value == 1) {
+			return pi;
+		}
+		return (1 - pi);
 	}
 
-	if (int_value == 1) {
-	    return pi;
-	}
-	return (1 - pi);
-    }
+	public Object sampleVal(List args, Type childType) {
+		if (args.size() != 0) {
+			throw new IllegalArgumentException(
+					"Binary Bernoulli distribution takes zero arguments, not "
+							+ args.size() + ".");
+		}
 
-    public Object sampleVal( List args, Type childType ) {
-	if (args.size() != 0) {
-	    throw new IllegalArgumentException
-		("Binary Bernoulli distribution takes zero arguments, not "
-		 + args.size() + ".");
+		if (Util.random() < pi) {
+			return new Integer(1);
+		}
+		return new Integer(0);
 	}
 
-	if (Util.random() < pi) {
-	    return new Integer(1);
-	}
-	return new Integer(0);
-    }
+	private double pi;
 
-    private double pi;   
-   
 }

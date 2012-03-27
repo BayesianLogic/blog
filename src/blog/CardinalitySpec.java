@@ -41,105 +41,102 @@ import common.Multiset;
 import common.UnaryProcedure;
 
 /**
- * Argument specifier that refers to the size of an implicitly defined 
- * set.  
+ * Argument specifier that refers to the size of an implicitly defined set.
  */
 public class CardinalitySpec extends ArgSpec {
-    /**
-     * Creates a new CardinalitySpec that counts the elements in the 
-     * given implicitly defined set.
-     */
-    public CardinalitySpec(ImplicitSetSpec setSpec) {
-	this.setSpec = setSpec;
-    }
-
-    public ImplicitSetSpec getSetSpec() {
-	return setSpec;
-    }
-
-    public Object evaluate(EvalContext context) {
-	context.pushEvaluee(this);
-
-	// Note that we don't evaluate the underlying ImplicitSetSpec, 
-	// because that requires the elements of the set to be determined.  
-	// We only care about the size of the set.  
-	ObjectSet set = (ObjectSet) setSpec.getSatisfierSpec()
-	    .elementSet(context);
-	Integer result = null;
-	if (set.canDetermineSize()) {
-	    result = new Integer(set.size());
+	/**
+	 * Creates a new CardinalitySpec that counts the elements in the given
+	 * implicitly defined set.
+	 */
+	public CardinalitySpec(ImplicitSetSpec setSpec) {
+		this.setSpec = setSpec;
 	}
 
-	context.popEvaluee();
-	return result;
-    }
-
-    public boolean containsRandomSymbol() {
-	return true; // the type symbol
-    }
-
-    public boolean checkTypesAndScope(Model model, Map scope) {
-	return setSpec.checkTypesAndScope(model, scope);
-    }
-
-    /**
-     * Compiles the set specification in this CardinalitySpec.
-     *
-     * @param callStack Set of objects whose compile methods are parents 
-     *                  of this method invocation.  Ordered by invocation 
-     *                  order.  Used to detect cycles.  
-     */
-    public int compile(LinkedHashSet callStack) {
-	callStack.add(this);
-	int errors = setSpec.compile(callStack);
-	callStack.remove(this);
-	return errors;
-    }
-
-    public boolean isNumeric() {
-	return true;
-    }
-
-    public Collection getSubExprs() {
-	return Collections.singletonList(setSpec);
-    }
-
-    public ArgSpec getSubstResult(Substitution subst, 
-				  Set<LogicalVar> boundVars) {
-	return new CardinalitySpec
-	    ((ImplicitSetSpec) setSpec.getSubstResult(subst, boundVars));
-    }
-
-    public boolean equals(Object o) {
-	if (o instanceof CardinalitySpec) {
-	    CardinalitySpec other = (CardinalitySpec) o;
-	    return setSpec.equals(other.getSetSpec());
+	public ImplicitSetSpec getSetSpec() {
+		return setSpec;
 	}
-	return false;
-    }
 
-    public int hashCode() {
-	return setSpec.hashCode();
-    }
+	public Object evaluate(EvalContext context) {
+		context.pushEvaluee(this);
 
-    public String toString() {
-	return ("#" + setSpec);
-    }
+		// Note that we don't evaluate the underlying ImplicitSetSpec,
+		// because that requires the elements of the set to be determined.
+		// We only care about the size of the set.
+		ObjectSet set = (ObjectSet) setSpec.getSatisfierSpec().elementSet(context);
+		Integer result = null;
+		if (set.canDetermineSize()) {
+			result = new Integer(set.size());
+		}
 
-    public ArgSpec find(Term t) {
-	return setSpec.find(t);
-    }
+		context.popEvaluee();
+		return result;
+	}
 
-    public void applyToTerms(UnaryProcedure procedure) {
-	setSpec.applyToTerms(procedure);
-    }
+	public boolean containsRandomSymbol() {
+		return true; // the type symbol
+	}
 
-    public ArgSpec replace(Term t, ArgSpec another) {
-	ArgSpec newSetSpec = setSpec.replace(t, another);
-	if (newSetSpec != setSpec)
-	    return new CardinalitySpec((ImplicitSetSpec)newSetSpec);
-	return this;
-    }
+	public boolean checkTypesAndScope(Model model, Map scope) {
+		return setSpec.checkTypesAndScope(model, scope);
+	}
 
-    private ImplicitSetSpec setSpec;
+	/**
+	 * Compiles the set specification in this CardinalitySpec.
+	 * 
+	 * @param callStack
+	 *          Set of objects whose compile methods are parents of this method
+	 *          invocation. Ordered by invocation order. Used to detect cycles.
+	 */
+	public int compile(LinkedHashSet callStack) {
+		callStack.add(this);
+		int errors = setSpec.compile(callStack);
+		callStack.remove(this);
+		return errors;
+	}
+
+	public boolean isNumeric() {
+		return true;
+	}
+
+	public Collection getSubExprs() {
+		return Collections.singletonList(setSpec);
+	}
+
+	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
+		return new CardinalitySpec((ImplicitSetSpec) setSpec.getSubstResult(subst,
+				boundVars));
+	}
+
+	public boolean equals(Object o) {
+		if (o instanceof CardinalitySpec) {
+			CardinalitySpec other = (CardinalitySpec) o;
+			return setSpec.equals(other.getSetSpec());
+		}
+		return false;
+	}
+
+	public int hashCode() {
+		return setSpec.hashCode();
+	}
+
+	public String toString() {
+		return ("#" + setSpec);
+	}
+
+	public ArgSpec find(Term t) {
+		return setSpec.find(t);
+	}
+
+	public void applyToTerms(UnaryProcedure procedure) {
+		setSpec.applyToTerms(procedure);
+	}
+
+	public ArgSpec replace(Term t, ArgSpec another) {
+		ArgSpec newSetSpec = setSpec.replace(t, another);
+		if (newSetSpec != setSpec)
+			return new CardinalitySpec((ImplicitSetSpec) newSetSpec);
+		return this;
+	}
+
+	private ImplicitSetSpec setSpec;
 }

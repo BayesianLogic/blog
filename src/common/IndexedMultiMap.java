@@ -38,20 +38,19 @@ package common;
 import java.util.*;
 
 /**
- * Extension of the MultiMap interface in which the <code>get</code> 
- * returns an IndexedSet.  This interface doesn't actually have any 
- * methods; however, by implementing this interface, a class asserts that 
- * its <code>get</code> method will return IndexedSets.  
+ * Extension of the MultiMap interface in which the <code>get</code> returns an
+ * IndexedSet. This interface doesn't actually have any methods; however, by
+ * implementing this interface, a class asserts that its <code>get</code> method
+ * will return IndexedSets.
  */
 public interface IndexedMultiMap extends MultiMap {
 
-    static final IndexedMultiMap EMPTY_INDEXED_MULTI_MAP 
-	= new EmptyIndexedMultiMap();
+	static final IndexedMultiMap EMPTY_INDEXED_MULTI_MAP = new EmptyIndexedMultiMap();
 
-    static class EmptyIndexedMultiMap extends MultiMap.EmptyMultiMap
-	                                      implements IndexedMultiMap {
-	public Object get(Object key) {
-	    return IndexedSet.EMPTY_INDEXED_SET;
+	static class EmptyIndexedMultiMap extends MultiMap.EmptyMultiMap implements
+			IndexedMultiMap {
+		public Object get(Object key) {
+			return IndexedSet.EMPTY_INDEXED_SET;
+		}
 	}
-    }
 }

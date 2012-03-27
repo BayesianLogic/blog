@@ -39,58 +39,58 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Abstract class for Iterator objects that filter or transform the objects 
- * returned by an underlying iterator.  Subclasses must implement the 
- * <code>filter</code> method, which takes an object returned by the 
- * underlying iterator, and either:
+ * Abstract class for Iterator objects that filter or transform the objects
+ * returned by an underlying iterator. Subclasses must implement the
+ * <code>filter</code> method, which takes an object returned by the underlying
+ * iterator, and either:
  * <ul>
- * <li> returns null, in which case the FilteredIterator skips this object;
- * <li> returns a non-null object, which will be returned by the 
- *      FilteredIterator.
+ * <li>returns null, in which case the FilteredIterator skips this object;
+ * <li>returns a non-null object, which will be returned by the
+ * FilteredIterator.
  * </ul>
  */
 public abstract class FilteredIterator implements Iterator {
-    /**
-     * Creates a new FilteredIterator on the given underlying iterator.
-     */
-    public FilteredIterator(Iterator underlying) {
-	this.underlying = underlying;
-    }
+	/**
+	 * Creates a new FilteredIterator on the given underlying iterator.
+	 */
+	public FilteredIterator(Iterator underlying) {
+		this.underlying = underlying;
+	}
 
-    private boolean loadNextObject() {
-	if (nextObj == null) {
-	    while (underlying.hasNext()) {
-		nextObj = filter(index++, underlying.next());
-		if (nextObj != null) {
-		    return true; // found next object
+	private boolean loadNextObject() {
+		if (nextObj == null) {
+			while (underlying.hasNext()) {
+				nextObj = filter(index++, underlying.next());
+				if (nextObj != null) {
+					return true; // found next object
+				}
+			}
+			return false; // didn't find next object
 		}
-	    }
-	    return false; // didn't find next object
+		return true; // next object already loaded
 	}
-	return true; // next object already loaded
-    }
-	
-    public boolean hasNext() {
-	return loadNextObject();
-    }
-	
-    public Object next() {
-	if (!loadNextObject()) {
-	    throw new NoSuchElementException();
-	}
-		
-	Object toReturn = nextObj;
-	nextObj = null;
-	return toReturn;
-    }
-	
-    public void remove() {
-	throw new UnsupportedOperationException();
-    }
 
-    protected abstract Object filter(int index, Object obj);
-	
-    private Iterator underlying;
-    private Object nextObj;
-    int index;
+	public boolean hasNext() {
+		return loadNextObject();
+	}
+
+	public Object next() {
+		if (!loadNextObject()) {
+			throw new NoSuchElementException();
+		}
+
+		Object toReturn = nextObj;
+		nextObj = null;
+		return toReturn;
+	}
+
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
+
+	protected abstract Object filter(int index, Object obj);
+
+	private Iterator underlying;
+	private Object nextObj;
+	int index;
 }

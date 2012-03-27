@@ -40,63 +40,63 @@ import java.util.*;
 /**
  * Implementation of the IndexedMultiMap interface.
  */
-public class IndexedHashMultiMap extends HashMultiMap 
-                                 implements IndexedMultiMap {
-    /**
-     * Creates a new, empty IndexedMultiMap.
-     */
-    public IndexedHashMultiMap() {
-	super();
-    }
-
-    /**
-     * Creates a new IndexedMultiMap that is initially equal to the 
-     * given IndexedMultiMap.
-     */
-    public IndexedHashMultiMap(IndexedMultiMap orig) {
-	super(orig);
-    }
-
-    public Object get(Object key) {
-	return new IndexedValueSet(key);
-    }
-
-    protected Set emptySet() {
-	return IndexedSet.EMPTY_INDEXED_SET;
-    }
-
-    protected Set newSet() {
-	return new IndexedHashSet();
-    }
-
-    protected Set copySet(Set orig) {
-	return new IndexedHashSet(orig);
-    }
-
-    protected class IndexedValueSet extends ValueSet implements IndexedSet {
-	protected IndexedValueSet(Object key) {
-	    super(key);
+public class IndexedHashMultiMap extends HashMultiMap implements
+		IndexedMultiMap {
+	/**
+	 * Creates a new, empty IndexedMultiMap.
+	 */
+	public IndexedHashMultiMap() {
+		super();
 	}
 
-	public int indexOf(Object o) {
-	    if (set == null) {
-		set = (IndexedSet) map.get(key);
-		if (set == null) {
-		    return -1;
+	/**
+	 * Creates a new IndexedMultiMap that is initially equal to the given
+	 * IndexedMultiMap.
+	 */
+	public IndexedHashMultiMap(IndexedMultiMap orig) {
+		super(orig);
+	}
+
+	public Object get(Object key) {
+		return new IndexedValueSet(key);
+	}
+
+	protected Set emptySet() {
+		return IndexedSet.EMPTY_INDEXED_SET;
+	}
+
+	protected Set newSet() {
+		return new IndexedHashSet();
+	}
+
+	protected Set copySet(Set orig) {
+		return new IndexedHashSet(orig);
+	}
+
+	protected class IndexedValueSet extends ValueSet implements IndexedSet {
+		protected IndexedValueSet(Object key) {
+			super(key);
 		}
-	    }
-	    return ((IndexedSet) set).indexOf(o);
-	}
 
-	public Object get(int i) {
-	    if (set == null) {
-		set = (IndexedSet) map.get(key);
-		if (set == null) {
-		    // throw exception
-		    return IndexedSet.EMPTY_INDEXED_SET.get(i); 
-		} 
-	    }
-	    return ((IndexedSet) set).get(i);
+		public int indexOf(Object o) {
+			if (set == null) {
+				set = (IndexedSet) map.get(key);
+				if (set == null) {
+					return -1;
+				}
+			}
+			return ((IndexedSet) set).indexOf(o);
+		}
+
+		public Object get(int i) {
+			if (set == null) {
+				set = (IndexedSet) map.get(key);
+				if (set == null) {
+					// throw exception
+					return IndexedSet.EMPTY_INDEXED_SET.get(i);
+				}
+			}
+			return ((IndexedSet) set).get(i);
+		}
 	}
-    }
 }

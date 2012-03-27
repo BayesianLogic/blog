@@ -45,56 +45,55 @@ import common.Util;
  */
 
 public class Exponential extends AbstractCondProbDistrib {
-    /** 
-     * Creates a new Exponential with parameter lambda
-     */
-    public Exponential(List params) {
-	if (!(params.get(0) instanceof Number)) {
-	    throw new IllegalArgumentException
-		("The first parameter to Exponential " 
-		 + "must be of class Number, "
-		 + "not " + params.get(0).getClass() + ".");
+	/**
+	 * Creates a new Exponential with parameter lambda
+	 */
+	public Exponential(List params) {
+		if (!(params.get(0) instanceof Number)) {
+			throw new IllegalArgumentException("The first parameter to Exponential "
+					+ "must be of class Number, " + "not " + params.get(0).getClass()
+					+ ".");
+		}
+
+		lambda = ((Number) params.get(0)).doubleValue();
 	}
 
-	lambda = ((Number)params.get(0)).doubleValue() ;
-    }
-    
-    /**
-     * Returns the probability of x under this distribution
-     */
-    public double getProb(List args, Object value) {
-	if (!(value instanceof Number)) {
-	    throw new IllegalArgumentException
-		("The Exponential CPD is a distribution over Numbers, "
-		 + "not " + value.getClass() + ".");
-	} else {
-	    double x = ((Number)value).doubleValue();
-	    return (lambda * Math.exp((- lambda) * x));
+	/**
+	 * Returns the probability of x under this distribution
+	 */
+	public double getProb(List args, Object value) {
+		if (!(value instanceof Number)) {
+			throw new IllegalArgumentException(
+					"The Exponential CPD is a distribution over Numbers, " + "not "
+							+ value.getClass() + ".");
+		} else {
+			double x = ((Number) value).doubleValue();
+			return (lambda * Math.exp((-lambda) * x));
+		}
 	}
-    }
 
-    /**
-     * Returns the log of the probability of x under this distribution.
-     */
-    public double getLogProb(List args, Object value) {
-	if (!(value instanceof Number)) {
-	    throw new IllegalArgumentException
-		("The Exponential CPD is a distribution over Numbers, "
-		 + "not " + value.getClass() + ".");
-	} else {
-	    double x = ((Number)value).doubleValue();
-	    return (Math.log(lambda) - (lambda * x));
+	/**
+	 * Returns the log of the probability of x under this distribution.
+	 */
+	public double getLogProb(List args, Object value) {
+		if (!(value instanceof Number)) {
+			throw new IllegalArgumentException(
+					"The Exponential CPD is a distribution over Numbers, " + "not "
+							+ value.getClass() + ".");
+		} else {
+			double x = ((Number) value).doubleValue();
+			return (Math.log(lambda) - (lambda * x));
+		}
 	}
-    }
 
-    /**
-     * Returns a double sampled according to this distribution.
-     * Takes constant time.  (Reference: A Guide to Simulation, 2nd Ed.
-     * Bratley, Paul, Bennett L. Fox and Linus E. Schrage.)
-     */
-    public Object sampleVal(List args, Type childType) {
-	return new Double(-(Math.log(Util.random()) / lambda));
-    }
+	/**
+	 * Returns a double sampled according to this distribution. Takes constant
+	 * time. (Reference: A Guide to Simulation, 2nd Ed. Bratley, Paul, Bennett L.
+	 * Fox and Linus E. Schrage.)
+	 */
+	public Object sampleVal(List args, Type childType) {
+		return new Double(-(Math.log(Util.random()) / lambda));
+	}
 
-    private double lambda;
+	private double lambda;
 }

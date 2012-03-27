@@ -40,68 +40,68 @@ import blog.*;
 import common.Util;
 
 /**
- * CPD that takes a set of size one as an argument, and defines a probability 
- * distribution concentrated on the single element of that set.  If the 
- * argument set is empty, the distribution is concentrated on Model.NULL.  
- * If the set has size greater than one, the <code>getProb</code> and 
- * <code>sampleVal</code> methods throw IllegalArgumentExceptions.  
- *
- * <p>The name comes from the iota operator in logic.  
+ * CPD that takes a set of size one as an argument, and defines a probability
+ * distribution concentrated on the single element of that set. If the argument
+ * set is empty, the distribution is concentrated on Model.NULL. If the set has
+ * size greater than one, the <code>getProb</code> and <code>sampleVal</code>
+ * methods throw IllegalArgumentExceptions.
+ * 
+ * <p>
+ * The name comes from the iota operator in logic.
  */
 public class Iota extends DetCondProbDistrib {
-    /**
-     * Creates an Iota CPD.
-     */
-    public Iota() {
-    }
-
-    /**
-     * Creates an Iota CPD.  The CPD takes no parameters.
-     *
-     * @throws IllegalArgumentException if <code>params</code> is non-empty
-     */
-    public Iota(List params) {
-	if (!params.isEmpty()) {
-	    throw new IllegalArgumentException
-		("Iota CPD does not take any parameters.");
-	}
-    }
-
-    /**
-     * Takes a single argument, namely a set S.  If S is empty,
-     * returns Model.NULL.  If S has a single element, returns that
-     * element.  If S has more than one element, throws an
-     * IllegalArgumentException.
-     *
-     * @throws IllegalArgumentException if <code>args</code> contains anything 
-     *                                  other than a single argument of 
-     *                                  class Set.
-     */
-    public Object getChildValue(List args) {
-	Set s = processArgs(args); // throws exception if size > 1
-	if (s.isEmpty()) {
-	    return Model.NULL;
-	}
-	return s.iterator().next();
-    }
-
-    private Set processArgs(List args) {
-	if (args.size() != 1) {
-	    throw new IllegalArgumentException
-		("Iota CPD takes exactly one argument.");
-	}
-	if (!(args.get(0) instanceof Set)) {
-	    throw new IllegalArgumentException
-		("Iota CPD takes an argument of class Set, not one of " 
-		 + args.get(0).getClass() + ".");
+	/**
+	 * Creates an Iota CPD.
+	 */
+	public Iota() {
 	}
 
-	Set s = (Set) args.get(0);
-	if (s.size() > 1) {
-	    throw new IllegalArgumentException
-		("Set passed to Iota CPD has more than one element: " + s);
+	/**
+	 * Creates an Iota CPD. The CPD takes no parameters.
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if <code>params</code> is non-empty
+	 */
+	public Iota(List params) {
+		if (!params.isEmpty()) {
+			throw new IllegalArgumentException(
+					"Iota CPD does not take any parameters.");
+		}
 	}
 
-	return s;
-    }
+	/**
+	 * Takes a single argument, namely a set S. If S is empty, returns Model.NULL.
+	 * If S has a single element, returns that element. If S has more than one
+	 * element, throws an IllegalArgumentException.
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if <code>args</code> contains anything other than a single
+	 *           argument of class Set.
+	 */
+	public Object getChildValue(List args) {
+		Set s = processArgs(args); // throws exception if size > 1
+		if (s.isEmpty()) {
+			return Model.NULL;
+		}
+		return s.iterator().next();
+	}
+
+	private Set processArgs(List args) {
+		if (args.size() != 1) {
+			throw new IllegalArgumentException("Iota CPD takes exactly one argument.");
+		}
+		if (!(args.get(0) instanceof Set)) {
+			throw new IllegalArgumentException(
+					"Iota CPD takes an argument of class Set, not one of "
+							+ args.get(0).getClass() + ".");
+		}
+
+		Set s = (Set) args.get(0);
+		if (s.size() > 1) {
+			throw new IllegalArgumentException(
+					"Set passed to Iota CPD has more than one element: " + s);
+		}
+
+		return s;
+	}
 }

@@ -42,41 +42,40 @@ import java.lang.reflect.*;
 import blog.*;
 
 /**
- * Should be extended by the various "Lifted Inference Operations"
- * that are part of this FOVE algorithm. Note that all descendants
- * should implement a static method called opFactory, that takes a set
- * of parfactors and produces all valid operations as instantiations
- * with the type of operator on that set of parfactors.
+ * Should be extended by the various "Lifted Inference Operations" that are part
+ * of this FOVE algorithm. Note that all descendants should implement a static
+ * method called opFactory, that takes a set of parfactors and produces all
+ * valid operations as instantiations with the type of operator on that set of
+ * parfactors.
  */
 public abstract class LiftedInfOperator {
 
-    /**
-     * Returns the log of a "cost" that is proportional to the amout
-     * of time that a call to do() will take
-     */
-    public abstract double logCost();
+	/**
+	 * Returns the log of a "cost" that is proportional to the amout of time that
+	 * a call to do() will take
+	 */
+	public abstract double logCost();
 
-    /**
-     * Actually carry out the operation specified by this instance of
-     * LiftedInfOperator.  An instance stores the set of parfactors that 
-     * it's operating on, and changes that set when this method is called.
-     */
-    public abstract void operate();
+	/**
+	 * Actually carry out the operation specified by this instance of
+	 * LiftedInfOperator. An instance stores the set of parfactors that it's
+	 * operating on, and changes that set when this method is called.
+	 */
+	public abstract void operate();
 
-    /**
-     * This returns a collection of instantiated LiftedInfOperators that are
-     * valid on the given set of parfactors.
-     */
-    public static Collection<LiftedInfOperator> validOps
-	(Set<Parfactor> parfactors, ElimTester query) 
-    {
-	Set<LiftedInfOperator> ops = new LinkedHashSet<LiftedInfOperator>();
-	ops.addAll(Propositionalization.opFactory(parfactors, query));
-	ops.addAll(CountExpansion.opFactory(parfactors, query));
-	ops.addAll(Exponentiation.opFactory(parfactors, query));
-	ops.addAll(SummingOut.opFactory(parfactors, query));
-	ops.addAll(CountConversion.opFactory(parfactors, query));
-	return ops;
-    }
+	/**
+	 * This returns a collection of instantiated LiftedInfOperators that are valid
+	 * on the given set of parfactors.
+	 */
+	public static Collection<LiftedInfOperator> validOps(
+			Set<Parfactor> parfactors, ElimTester query) {
+		Set<LiftedInfOperator> ops = new LinkedHashSet<LiftedInfOperator>();
+		ops.addAll(Propositionalization.opFactory(parfactors, query));
+		ops.addAll(CountExpansion.opFactory(parfactors, query));
+		ops.addAll(Exponentiation.opFactory(parfactors, query));
+		ops.addAll(SummingOut.opFactory(parfactors, query));
+		ops.addAll(CountConversion.opFactory(parfactors, query));
+		return ops;
+	}
 
 }

@@ -6,5 +6,6 @@ import blog.PartialWorld;
 import blog.VarWithDistrib;
 
 public interface SamplerFactory {
-    public Sampler make(VarWithDistrib seedVar, PartialWorld world, Set beingExternallyInstantiatedVars);
+	public Sampler make(VarWithDistrib seedVar, PartialWorld world,
+			Set beingExternallyInstantiatedVars);
 }

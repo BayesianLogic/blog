@@ -46,44 +46,45 @@ import common.DGraph;
 import common.DefaultDGraph;
 
 /**
- * Straightforward implementation of AbstractPartialWorld.  
+ * Straightforward implementation of AbstractPartialWorld.
  */
-public class DefaultPartialWorld extends AbstractPartialWorld 
-    implements Cloneable {
+public class DefaultPartialWorld extends AbstractPartialWorld implements
+		Cloneable {
 
-    /**
-     * Creates a new DefaultPartialWorld with no instantiated variables.  
-     * This world will not use object identifiers for any types.
-     */
-    public DefaultPartialWorld() {
-	this(Collections.EMPTY_SET);
-    }
+	/**
+	 * Creates a new DefaultPartialWorld with no instantiated variables. This
+	 * world will not use object identifiers for any types.
+	 */
+	public DefaultPartialWorld() {
+		this(Collections.EMPTY_SET);
+	}
 
-    /**
-     * Creates a new DefaultPartialWorld with no instantiated variables 
-     * and no identifiers.
-     *
-     * @param idTypes Set of Type objects for types that will be represented 
-     *                with object identifiers
-     */
-    public DefaultPartialWorld(Set idTypes) {
-	super(idTypes);
-	basicVarToValue = new HashMap();
-	objToUsesAsValue = new HashMultiMap();
-	objToUsesAsArg = new HashMultiMap();
-	assertedIdToPOPApp = new HashMap();
-	popAppToAssertedIds = new IndexedHashMultiMap();
-	commIdToPOPApp = new HashMap();
-	popAppToCommIds = new IndexedHashMultiMap();
-	bayesNet = new DefaultDGraph();
-	varToUninstParent = new HashMapWithPreimages();
-	varToLogProb = new HashMap();
-	derivedVarToValue = new HashMap();
-    }
-    
-    public Object clone() {
-    	DefaultPartialWorld newWorld = new DefaultPartialWorld();
-    	cloneFields(newWorld);
-    	return newWorld;
-    }
+	/**
+	 * Creates a new DefaultPartialWorld with no instantiated variables and no
+	 * identifiers.
+	 * 
+	 * @param idTypes
+	 *          Set of Type objects for types that will be represented with object
+	 *          identifiers
+	 */
+	public DefaultPartialWorld(Set idTypes) {
+		super(idTypes);
+		basicVarToValue = new HashMap();
+		objToUsesAsValue = new HashMultiMap();
+		objToUsesAsArg = new HashMultiMap();
+		assertedIdToPOPApp = new HashMap();
+		popAppToAssertedIds = new IndexedHashMultiMap();
+		commIdToPOPApp = new HashMap();
+		popAppToCommIds = new IndexedHashMultiMap();
+		bayesNet = new DefaultDGraph();
+		varToUninstParent = new HashMapWithPreimages();
+		varToLogProb = new HashMap();
+		derivedVarToValue = new HashMap();
+	}
+
+	public Object clone() {
+		DefaultPartialWorld newWorld = new DefaultPartialWorld();
+		cloneFields(newWorld);
+		return newWorld;
+	}
 }

@@ -40,83 +40,81 @@ import blog.*;
 import common.Util;
 
 /**
- * CPD that takes a set of objects (an instance of the ObjectSet
- * interface) as an argument, and defines a uniform distribution over
- * this set.
+ * CPD that takes a set of objects (an instance of the ObjectSet interface) as
+ * an argument, and defines a uniform distribution over this set.
  */
 public class UniformChoice extends AbstractCondProbDistrib {
-    /**
-     * Creates a UniformChoice CPD.  This constructor is not used by the 
-     * parser, which looks for a constructor taking a List as an argument.  
-     * Instead, it's used when we create a UniformChoice CPD in the program.
-     */
-    public UniformChoice() {
-    }
-
-    /**
-     * Creates a UniformChoice CPD.  The CPD takes no parameters.
-     *
-     * @throws IllegalArgumentException if <code>params</code> is non-empty
-     */
-    public UniformChoice(List params) {
-	if (!params.isEmpty()) {
-	    throw new IllegalArgumentException
-		("UniformChoice CPD does not take any parameters.");
-	}
-    }
-
-    /**
-     * Takes a single argument, namely a set S.  If S is non-empty,
-     * returns 1 / |S| if <code>value</code> is in S, and otherwise 0.
-     * If S is empty, returns 1 if the value is Model.NULL, and 0
-     * otherwise.
-     *
-     * @throws IllegalArgumentException if <code>args</code> contains anything 
-     *                                  other than a single argument of 
-     *                                  class ObjectSet.
-     */
-    public double getProb(List args, Object value) {
-	ObjectSet s = processArgs(args);
-	//if (!s.contains(value)) {
-	//   System.out.println("UniformChoice: " + value + " is not in " + s);
-	    //    System.out.println("Explicit version of set is: " 
-	    //	       + new ArrayList(s));
-	//}
-	if (s.isEmpty()) {
-	    return (value == Model.NULL) ? 1 : 0;
-	}
-	return (s.contains(value) ? (1.0 / s.size()) : 0);
-    }
-
-    /**
-     * Takes a single argument, namely a finite set S.  Returns an element 
-     * of S selected uniformly at random.  If S is empty, returns Model.NULL.
-     *
-     * @throws IllegalArgumentException if <code>args</code> contains anything 
-     *                                  other than a single argument of 
-     *                                  class ObjectSet.
-     */
-    public Object sampleVal(List args, Type childType) {
-	ObjectSet s = processArgs(args);
-	if (s.isEmpty()) {
-	    return Model.NULL;
-	}
-	int n = Util.randInt(s.size());
-	return s.sample(n);
-    }
-
-    private ObjectSet processArgs(List args) {
-	if (args.size() != 1) {
-	    throw new IllegalArgumentException
-		("UniformChoice CPD takes exactly one argument.");
-	}
-	if (!(args.get(0) instanceof ObjectSet)) {
-	    throw new IllegalArgumentException
-		("UniformChoice CPD takes an argument of class ObjectSet, "
-		 + "not one of " 
-		 + args.get(0).getClass() + ".");
+	/**
+	 * Creates a UniformChoice CPD. This constructor is not used by the parser,
+	 * which looks for a constructor taking a List as an argument. Instead, it's
+	 * used when we create a UniformChoice CPD in the program.
+	 */
+	public UniformChoice() {
 	}
 
-	return (ObjectSet) args.get(0);
-    }
+	/**
+	 * Creates a UniformChoice CPD. The CPD takes no parameters.
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if <code>params</code> is non-empty
+	 */
+	public UniformChoice(List params) {
+		if (!params.isEmpty()) {
+			throw new IllegalArgumentException(
+					"UniformChoice CPD does not take any parameters.");
+		}
+	}
+
+	/**
+	 * Takes a single argument, namely a set S. If S is non-empty, returns 1 / |S|
+	 * if <code>value</code> is in S, and otherwise 0. If S is empty, returns 1 if
+	 * the value is Model.NULL, and 0 otherwise.
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if <code>args</code> contains anything other than a single
+	 *           argument of class ObjectSet.
+	 */
+	public double getProb(List args, Object value) {
+		ObjectSet s = processArgs(args);
+		// if (!s.contains(value)) {
+		// System.out.println("UniformChoice: " + value + " is not in " + s);
+		// System.out.println("Explicit version of set is: "
+		// + new ArrayList(s));
+		// }
+		if (s.isEmpty()) {
+			return (value == Model.NULL) ? 1 : 0;
+		}
+		return (s.contains(value) ? (1.0 / s.size()) : 0);
+	}
+
+	/**
+	 * Takes a single argument, namely a finite set S. Returns an element of S
+	 * selected uniformly at random. If S is empty, returns Model.NULL.
+	 * 
+	 * @throws IllegalArgumentException
+	 *           if <code>args</code> contains anything other than a single
+	 *           argument of class ObjectSet.
+	 */
+	public Object sampleVal(List args, Type childType) {
+		ObjectSet s = processArgs(args);
+		if (s.isEmpty()) {
+			return Model.NULL;
+		}
+		int n = Util.randInt(s.size());
+		return s.sample(n);
+	}
+
+	private ObjectSet processArgs(List args) {
+		if (args.size() != 1) {
+			throw new IllegalArgumentException(
+					"UniformChoice CPD takes exactly one argument.");
+		}
+		if (!(args.get(0) instanceof ObjectSet)) {
+			throw new IllegalArgumentException(
+					"UniformChoice CPD takes an argument of class ObjectSet, "
+							+ "not one of " + args.get(0).getClass() + ".");
+		}
+
+		return (ObjectSet) args.get(0);
+	}
 }

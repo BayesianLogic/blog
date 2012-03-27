@@ -38,55 +38,56 @@ package common;
 import java.util.Iterator;
 
 /**
- * A histogram that represents a partition of a set of references by showing 
- * the size of each block in the partition.  The references in a block all 
- * refer to the same underlying object, identified by an object ID.  We are 
- * interested in such histograms because the prior probability of a partition 
- * of the references depends only on this histogram, not on which particular 
- * references refer to which particular objects.  In other words, a 
- * ReferenceHistogram encapsulates the sufficient statistics for evaluating 
- * the probability of a partition.
- *
- * We will sometimes divide the set of references into two subsets, and create 
- * a ReferenceHistogram for each subset.  The same object IDs may be used 
- * in both subset histograms, defining a partition for the entire set where 
- * some of the blocks include references from both subsets.  So a 
- * ReferenceHistogram actually represents a bit more than a histogram: it 
- * specifies how to combine this histogram with other histograms.  
- *
- * Of course, a ReferenceHistogram also represents less than a partition, in 
- * that it doesn't specify <i>which</i> citations are grouped together: it 
- * just specifies the group sizes.  
+ * A histogram that represents a partition of a set of references by showing the
+ * size of each block in the partition. The references in a block all refer to
+ * the same underlying object, identified by an object ID. We are interested in
+ * such histograms because the prior probability of a partition of the
+ * references depends only on this histogram, not on which particular references
+ * refer to which particular objects. In other words, a ReferenceHistogram
+ * encapsulates the sufficient statistics for evaluating the probability of a
+ * partition.
+ * 
+ * We will sometimes divide the set of references into two subsets, and create a
+ * ReferenceHistogram for each subset. The same object IDs may be used in both
+ * subset histograms, defining a partition for the entire set where some of the
+ * blocks include references from both subsets. So a ReferenceHistogram actually
+ * represents a bit more than a histogram: it specifies how to combine this
+ * histogram with other histograms.
+ * 
+ * Of course, a ReferenceHistogram also represents less than a partition, in
+ * that it doesn't specify <i>which</i> citations are grouped together: it just
+ * specifies the group sizes.
  */
 public interface ReferenceHistogram {
-    /**
-     * A ReferenceHistogram with no citations.
-     */
-    ReferenceHistogram EMPTY_HISTOGRAM = new DefaultReferenceHistogram();
+	/**
+	 * A ReferenceHistogram with no citations.
+	 */
+	ReferenceHistogram EMPTY_HISTOGRAM = new DefaultReferenceHistogram();
 
-    /**
-     * Returns the number of objects with at least one reference.
-     */
-    int numReferencedObjects();
+	/**
+	 * Returns the number of objects with at least one reference.
+	 */
+	int numReferencedObjects();
 
-    /**
-     * Returns the total number of references in this histogram.
-     */
-    int totalReferences();
+	/**
+	 * Returns the total number of references in this histogram.
+	 */
+	int totalReferences();
 
-    /**
-     * Returns the number of references for the given object.  If the 
-     * object has no references, the method returns zero (rather than 
-     * throwing an exception or something like that).  
-     *
-     * @param obj  a Long object representing an object ID
-     */
-    int getNumReferences(Long obj);
+	/**
+	 * Returns the number of references for the given object. If the object has no
+	 * references, the method returns zero (rather than throwing an exception or
+	 * something like that).
+	 * 
+	 * @param obj
+	 *          a Long object representing an object ID
+	 */
+	int getNumReferences(Long obj);
 
-    /**
-     * Allows iteration over the objects that have at least one reference.
-     *
-     * @return an Iterator over Long objects representing object IDs
-     */
-    Iterator iterator();
+	/**
+	 * Allows iteration over the objects that have at least one reference.
+	 * 
+	 * @return an Iterator over Long objects representing object IDs
+	 */
+	Iterator iterator();
 }

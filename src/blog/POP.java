@@ -38,203 +38,202 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
-/** 
- * Represents a potential object pattern (POP), which includes the type of 
- * object to be generated and a tuple of origin functions.  
+/**
+ * Represents a potential object pattern (POP), which includes the type of
+ * object to be generated and a tuple of origin functions.
  */
-public class POP {  
-    /**
-     * Creates a new potential object pattern for the given type and the 
-     * given tuple of origin functions, with the given dependency 
-     * model.  
-     *
-     * @param type             the type of object generated
-     *
-     * @param originFuncList   List of OriginFunction objects
-     *
-     * @param numberst         dependency model for this POP
-     */
-    public POP(Type type, List originFuncList, DependencyModel numberst) {
-	this.type = type;
-	originFuncs = new OriginFunction[originFuncList.size()];
-	originFuncList.toArray(originFuncs);
-	this.numberst = numberst;
+public class POP {
+	/**
+	 * Creates a new potential object pattern for the given type and the given
+	 * tuple of origin functions, with the given dependency model.
+	 * 
+	 * @param type
+	 *          the type of object generated
+	 * 
+	 * @param originFuncList
+	 *          List of OriginFunction objects
+	 * 
+	 * @param numberst
+	 *          dependency model for this POP
+	 */
+	public POP(Type type, List originFuncList, DependencyModel numberst) {
+		this.type = type;
+		originFuncs = new OriginFunction[originFuncList.size()];
+		originFuncList.toArray(originFuncs);
+		this.numberst = numberst;
 
-        argTypes = new Type[originFuncs.length];
-	for (int i = 0; i < originFuncs.length; i++) {
-	    argTypes[i] = originFuncs[i].getRetType();
-	}
-    }
-
-
-    public final Type type() {
-	return type; 
-    }
-
-    public final OriginFunction[] originFuncs() {	
-	return originFuncs;
-    }
-
-    public Type[] getArgTypes() {
-	return argTypes;
-    }
-
-    /**
-     * Returns the logical variables that stand for the generating
-     * objects in this POP's dependency model.
-     */
-    public LogicalVar[] getGenObjVars() {
-	if (genObjVars == null) {
-	    throw new IllegalStateException
-		("Generating object variables not set for " + this);
-	}
-	return genObjVars;
-    }
-
-    /**
-     * Sets the variables that will stand for the generating objects in 
-     * this POP's dependency model.
-     *
-     * @param vars List of String objects representing the variables
-     */
-    public void setGenObjVars(List vars) {
-	genObjVars = new LogicalVar[vars.size()];
-	for (int i = 0; i < genObjVars.length; ++i) {
-	    genObjVars[i] = new LogicalVar((String) vars.get(i), argTypes[i]);
-	}
-    }
-
-    public DependencyModel getDepModel( ) {   
-
-	return numberst;
-
-    }
-
-    public void setDepModel(DependencyModel depModel) {
-	numberst = depModel;
-    }
-
-    /**
-     * Returns the index of <code>f</code> in this POP's origin function 
-     * list, or -1 if it is not in the list.
-     */
-    public int getOriginFuncIndex(OriginFunction f) {
-	for (int i = 0; i < originFuncs.length; ++i) {
-	    if (f == originFuncs[i]) {
-		return i;
-	    }
-	}
-	return -1;
-    }
-
-    /**
-     * Returns a BitSet where the ith bit is true if this POP uses the ith 
-     * origin function in the list of origin functions for its type.
-     */
-    public BitSet getOriginFuncSet() {
-	List typeOriginFuncs = type.getOriginFunctions();
-	BitSet originFuncSet = new BitSet(typeOriginFuncs.size());
-	for (int i = 0; i < typeOriginFuncs.size(); ++i) {
-	    if (getOriginFuncIndex((OriginFunction) typeOriginFuncs.get(i)) 
-		    != -1) {
-		originFuncSet.set(i);
-	    }
-	}
-	return originFuncSet;
-    }
-
-    /**
-     * Returns a basic random variable for this POP with no generating
-     * objects.
-     */
-    public NumberVar rv() {
-	Object[] originObjs = {};
-	return new NumberVar(this, originObjs, true);
-    }
-
-    /**
-     * Returns a basic random variable for this POP with the
-     * given single generating object.
-     */
-    public NumberVar rv(Object genObj) {
-	Object[] genObjs = {genObj};
-	return new NumberVar(this, genObjs, true);
-    }
-
-    /**
-     * Returns a basic random variable for this POP with the
-     * given two generating objects.
-     */
-    public NumberVar rv(Object genObj1, Object genObj2) {
-	Object[] genObjs = {genObj1, genObj2};
-	return new NumberVar(this, genObjs, true);
-    }
-
-    /**
-     * Returns a basic random variable for this POP with the
-     * given array of generating objects.
-     */
-    public NumberVar rvWithArgs(Object[] genObjs) {
-	return new NumberVar(this, genObjs);
-    }
-
-    /**
-     * Prints the number statement for this POP to the given stream.
-     */
-    public void printNumberStatement(PrintStream s) {
-	s.print("#" + type + "(");
-	if (originFuncs.length > 0) {
-	    for (int i = 0; i < originFuncs.length; ++i) {
-		s.print(originFuncs[i] + " = " + genObjVars[i]);
-		if (i + 1 < originFuncs.length) {
-		    s.print(", ");
+		argTypes = new Type[originFuncs.length];
+		for (int i = 0; i < originFuncs.length; i++) {
+			argTypes[i] = originFuncs[i].getRetType();
 		}
-	    }
-	}
-	s.println(")");
-
-	numberst.print(s); 
-    }
-
-    /**
-     * Checks types and scopes in this POP and its number statement.  
-     * Returns true if everything is correct; otherwise prints error messages 
-     * to standard error and returns false.
-     */
-    public boolean checkTypesAndScope(Model model) {
-	Map scope = new HashMap();
-	for (int i = 0; i < genObjVars.length; ++i) {
-	    scope.put(genObjVars[i].getName(), genObjVars[i]);
 	}
 
-	return numberst.checkTypesAndScope(model, scope);
-    }
-
-    /**
-     * Returns a string of the form #Type(f1, ..., fK) where Type is the 
-     * type of object generated and f1, ..., fK are the origin functions.
-     */
-    public String toString() {
-	StringBuffer buf = new StringBuffer();
-	buf.append("#");
-	buf.append(type);
-		
-	buf.append("(");
-	for (int i = 0; i < originFuncs.length; ++i) {
-	    buf.append(originFuncs[i]);
-	    if (i + 1 < originFuncs.length) {
-		buf.append(", ");
-	    }
+	public final Type type() {
+		return type;
 	}
-	buf.append(")");
 
-	return buf.toString();
-    }
+	public final OriginFunction[] originFuncs() {
+		return originFuncs;
+	}
 
-    private Type type;
-    private OriginFunction[] originFuncs; 
-    private Type[] argTypes;
-    private DependencyModel numberst;
-    private LogicalVar[] genObjVars; 
+	public Type[] getArgTypes() {
+		return argTypes;
+	}
+
+	/**
+	 * Returns the logical variables that stand for the generating objects in this
+	 * POP's dependency model.
+	 */
+	public LogicalVar[] getGenObjVars() {
+		if (genObjVars == null) {
+			throw new IllegalStateException(
+					"Generating object variables not set for " + this);
+		}
+		return genObjVars;
+	}
+
+	/**
+	 * Sets the variables that will stand for the generating objects in this POP's
+	 * dependency model.
+	 * 
+	 * @param vars
+	 *          List of String objects representing the variables
+	 */
+	public void setGenObjVars(List vars) {
+		genObjVars = new LogicalVar[vars.size()];
+		for (int i = 0; i < genObjVars.length; ++i) {
+			genObjVars[i] = new LogicalVar((String) vars.get(i), argTypes[i]);
+		}
+	}
+
+	public DependencyModel getDepModel() {
+
+		return numberst;
+
+	}
+
+	public void setDepModel(DependencyModel depModel) {
+		numberst = depModel;
+	}
+
+	/**
+	 * Returns the index of <code>f</code> in this POP's origin function list, or
+	 * -1 if it is not in the list.
+	 */
+	public int getOriginFuncIndex(OriginFunction f) {
+		for (int i = 0; i < originFuncs.length; ++i) {
+			if (f == originFuncs[i]) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Returns a BitSet where the ith bit is true if this POP uses the ith origin
+	 * function in the list of origin functions for its type.
+	 */
+	public BitSet getOriginFuncSet() {
+		List typeOriginFuncs = type.getOriginFunctions();
+		BitSet originFuncSet = new BitSet(typeOriginFuncs.size());
+		for (int i = 0; i < typeOriginFuncs.size(); ++i) {
+			if (getOriginFuncIndex((OriginFunction) typeOriginFuncs.get(i)) != -1) {
+				originFuncSet.set(i);
+			}
+		}
+		return originFuncSet;
+	}
+
+	/**
+	 * Returns a basic random variable for this POP with no generating objects.
+	 */
+	public NumberVar rv() {
+		Object[] originObjs = {};
+		return new NumberVar(this, originObjs, true);
+	}
+
+	/**
+	 * Returns a basic random variable for this POP with the given single
+	 * generating object.
+	 */
+	public NumberVar rv(Object genObj) {
+		Object[] genObjs = { genObj };
+		return new NumberVar(this, genObjs, true);
+	}
+
+	/**
+	 * Returns a basic random variable for this POP with the given two generating
+	 * objects.
+	 */
+	public NumberVar rv(Object genObj1, Object genObj2) {
+		Object[] genObjs = { genObj1, genObj2 };
+		return new NumberVar(this, genObjs, true);
+	}
+
+	/**
+	 * Returns a basic random variable for this POP with the given array of
+	 * generating objects.
+	 */
+	public NumberVar rvWithArgs(Object[] genObjs) {
+		return new NumberVar(this, genObjs);
+	}
+
+	/**
+	 * Prints the number statement for this POP to the given stream.
+	 */
+	public void printNumberStatement(PrintStream s) {
+		s.print("#" + type + "(");
+		if (originFuncs.length > 0) {
+			for (int i = 0; i < originFuncs.length; ++i) {
+				s.print(originFuncs[i] + " = " + genObjVars[i]);
+				if (i + 1 < originFuncs.length) {
+					s.print(", ");
+				}
+			}
+		}
+		s.println(")");
+
+		numberst.print(s);
+	}
+
+	/**
+	 * Checks types and scopes in this POP and its number statement. Returns true
+	 * if everything is correct; otherwise prints error messages to standard error
+	 * and returns false.
+	 */
+	public boolean checkTypesAndScope(Model model) {
+		Map scope = new HashMap();
+		for (int i = 0; i < genObjVars.length; ++i) {
+			scope.put(genObjVars[i].getName(), genObjVars[i]);
+		}
+
+		return numberst.checkTypesAndScope(model, scope);
+	}
+
+	/**
+	 * Returns a string of the form #Type(f1, ..., fK) where Type is the type of
+	 * object generated and f1, ..., fK are the origin functions.
+	 */
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("#");
+		buf.append(type);
+
+		buf.append("(");
+		for (int i = 0; i < originFuncs.length; ++i) {
+			buf.append(originFuncs[i]);
+			if (i + 1 < originFuncs.length) {
+				buf.append(", ");
+			}
+		}
+		buf.append(")");
+
+		return buf.toString();
+	}
+
+	private Type type;
+	private OriginFunction[] originFuncs;
+	private Type[] argTypes;
+	private DependencyModel numberst;
+	private LogicalVar[] genObjVars;
 }
-

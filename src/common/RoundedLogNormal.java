@@ -39,60 +39,58 @@ import java.io.Serializable;
 import java.io.IOException;
 
 /**
- * Distribution over positive integers for a random variable X = round(Y), 
- * where Y has a log normal distribution.  This means Z = log(Y) has a normal 
- * distribution.  A RoundedLogNormal has two parameters, the mean and the 
- * variance.  For consistency with Hanna's code, we use the mean of Y and the 
- * variance of Z.  
+ * Distribution over positive integers for a random variable X = round(Y), where
+ * Y has a log normal distribution. This means Z = log(Y) has a normal
+ * distribution. A RoundedLogNormal has two parameters, the mean and the
+ * variance. For consistency with Hanna's code, we use the mean of Y and the
+ * variance of Z.
  */
 public class RoundedLogNormal implements Serializable {
-    /**
-     * Creates a RoundedLogNormal distribution where Y has the given mean and 
-     * log(Y) has the given variance.
-     */
-    public RoundedLogNormal(double mean, double varianceOfLog) {
-	this.mean = mean;
-	this.varianceOfLog = varianceOfLog;
-	cacheParams();
-    }
-
-    /**
-     * Returns the log probability that X=n.  Note that X gets the value n 
-     * if Y is between n - 0.5 and n + 0.5, which means Z is between 
-     * log(n - 0.5) and log(n + 0.5).  So we should integrate the density of 
-     * Z between those two values.  To avoid computing the integral, we 
-     * approximate this by taking the density of Z at log(n) and multiplying 
-     * it by log(n + 0.5) - log(n - 0.5).  
-     */
-    public double getLogProb(int n) {
-	if (n <= 0) {
-	    return Double.NEGATIVE_INFINITY;
+	/**
+	 * Creates a RoundedLogNormal distribution where Y has the given mean and
+	 * log(Y) has the given variance.
+	 */
+	public RoundedLogNormal(double mean, double varianceOfLog) {
+		this.mean = mean;
+		this.varianceOfLog = varianceOfLog;
+		cacheParams();
 	}
 
-	double diff = Math.log(n) - meanOfLog;
-	return (logNormFactor 
-		+ Math.log(Math.log(n + 0.5) - Math.log(n - 0.5)) 
-		- (diff * diff) / (2 * varianceOfLog)); // log of density
-    }
+	/**
+	 * Returns the log probability that X=n. Note that X gets the value n if Y is
+	 * between n - 0.5 and n + 0.5, which means Z is between log(n - 0.5) and
+	 * log(n + 0.5). So we should integrate the density of Z between those two
+	 * values. To avoid computing the integral, we approximate this by taking the
+	 * density of Z at log(n) and multiplying it by log(n + 0.5) - log(n - 0.5).
+	 */
+	public double getLogProb(int n) {
+		if (n <= 0) {
+			return Double.NEGATIVE_INFINITY;
+		}
 
-    void cacheParams() {
-	meanOfLog = Math.log(mean);
-	logNormFactor = -0.5 * Math.log(2 * Math.PI * varianceOfLog);
-    }
+		double diff = Math.log(n) - meanOfLog;
+		return (logNormFactor + Math.log(Math.log(n + 0.5) - Math.log(n - 0.5)) - (diff * diff)
+				/ (2 * varianceOfLog)); // log of density
+	}
 
-    /**
-     * Called when this object is read in from a stream through the 
-     * serialization API.  
-     */
-    private void readObject(java.io.ObjectInputStream in) throws IOException, 
-								 ClassNotFoundException {
-	in.defaultReadObject();
-	cacheParams();
-    }
+	void cacheParams() {
+		meanOfLog = Math.log(mean);
+		logNormFactor = -0.5 * Math.log(2 * Math.PI * varianceOfLog);
+	}
 
-    double mean;
-    double varianceOfLog;
+	/**
+	 * Called when this object is read in from a stream through the serialization
+	 * API.
+	 */
+	private void readObject(java.io.ObjectInputStream in) throws IOException,
+			ClassNotFoundException {
+		in.defaultReadObject();
+		cacheParams();
+	}
 
-    transient double meanOfLog;
-    transient double logNormFactor;
+	double mean;
+	double varianceOfLog;
+
+	transient double meanOfLog;
+	transient double logNormFactor;
 }

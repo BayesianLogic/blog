@@ -38,44 +38,46 @@ package blog;
 import ve.Factor;
 
 /**
- * An implementation of Query that defines default implementations to
- * some methods.
+ * An implementation of Query that defines default implementations to some
+ * methods.
+ * 
  * @author Rodrigo, Brian
  */
 public abstract class AbstractQuery implements Query {
-    /**
-     * Throws an UnsupportedOperationException.
-     */
-    public void setPosterior(Factor posterior) {
-	throw new UnsupportedOperationException
-	    (this.getClass().getName() + " does not support setPosterior.");
-    }
+	/**
+	 * Throws an UnsupportedOperationException.
+	 */
+	public void setPosterior(Factor posterior) {
+		throw new UnsupportedOperationException(this.getClass().getName()
+				+ " does not support setPosterior.");
+	}
 
-    /**
-     * If a log file has been specified, prints the results so far 
-     * to that file.  
-     *
-     * <p>This default implementation does nothing.
-     *
-     * @param numSamples the number of samples taken by the inference 
-     *                   engine so far (can be set to zero for 
-     *                   non-sampling inference engines)
-     */
-    public void logResults(int numSamples) {
-    }
-    
-    /**
-     * Returns an object whose toString method yields a description of the 
-     * location where this query occurred in an input file.  
-     *
-     * <p>This default implementation returns a string indicating that
-     * this query was generated internally, rather than from an input file.  
-     */
-    public Object getLocation() {
-	return "(auto-generated)";
-    }
-    
-    public void updateStats(PartialWorld world) {
-	updateStats(world, 1.0);
-    }
+	/**
+	 * If a log file has been specified, prints the results so far to that file.
+	 * 
+	 * <p>
+	 * This default implementation does nothing.
+	 * 
+	 * @param numSamples
+	 *          the number of samples taken by the inference engine so far (can be
+	 *          set to zero for non-sampling inference engines)
+	 */
+	public void logResults(int numSamples) {
+	}
+
+	/**
+	 * Returns an object whose toString method yields a description of the
+	 * location where this query occurred in an input file.
+	 * 
+	 * <p>
+	 * This default implementation returns a string indicating that this query was
+	 * generated internally, rather than from an input file.
+	 */
+	public Object getLocation() {
+		return "(auto-generated)";
+	}
+
+	public void updateStats(PartialWorld world) {
+		updateStats(world, 1.0);
+	}
 }

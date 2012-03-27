@@ -40,121 +40,120 @@ import java.util.regex.*;
 import common.Util;
 
 /**
- * A Particle for Particle Filtering.
- * The particle is advanced as it receives evidence and queries with calls to methods {@link #take(Evidence)} and {@link #answer(Collection)}.
- * Providing evidence also reweights the particle according to it.
- * A method {@link #copy()} can be used for resampling.
+ * A Particle for Particle Filtering. The particle is advanced as it receives
+ * evidence and queries with calls to methods {@link #take(Evidence)} and
+ * {@link #answer(Collection)}. Providing evidence also reweights the particle
+ * according to it. A method {@link #copy()} can be used for resampling.
  */
 public class Particle {
 
-    /**
-     * Creates a new particle.
-     * <code>numTimeSlicesInMemory</code> indicates how many time slices need to be kept in memory.
-     * The properties table specifies configuration parameters.  
-     */
-    public Particle(Set idTypes, int numTimeSlicesInMemory, Sampler sampler) {
-	this.sampler = sampler;
-	this.numTimeSlicesInMemory = numTimeSlicesInMemory;
-	this.idTypes = idTypes;
-	curWorld = new DefaultPartialWorld(idTypes);
-	weight = 1; // all particles are created equal.
-    }
-
-    /**
-     * Takes evidence relative to some new time step,
-     * updates current world based on it,
-     * and recalculates particle weight according to its probability.
-     */
-    public void take(Evidence evidence) {
-	sampler.initialize(evidence, Util.list());
-	sampler.setBaseWorld(curWorld);
-
-//	System.out.println("Particle taking evidence.");
-//	System.out.println("Evidence: " + evidence);
-//	System.out.println("Previous world: " + curWorld);
-
-	sampler.nextSample();
-	weight = sampler.getLatestWeight();
-//	if (Double.isNaN(weight)) {
-//	    System.out.println("Particle.take: weight set to " + weight);
-//	    System.out.println("Evidence: " + evidence);
-//	    System.out.println("Updated world: " + curWorld);
-//	    System.exit(-1);
-//	}
-	
-//	System.out.println("Particle.take: weight set to " + weight);
-	curWorld = sampler.getLatestWorld();
-	
-//	System.out.println("Weight: " + weight);
-//	System.out.println("Updated world: " + curWorld);
-    }
-
-    /**
-     * Takes a collection of queries and answers them based on current world.
-     */
-    public void answer(Collection queries) {
-//	System.out.println("Particle.answer");
-	Collection queriesVars = BLOGUtil.getQueriesVars(queries);
-	BLOGUtil.ensureDetAndSupported(queriesVars, curWorld);
-	updateQueriesStats(queries);
-    }
-    
-    /**
-     * Identifies the largest time step in the current world and
-     * uninstantiates all temporal random variables with a different time step. 
-     */
-    public void uninstantiatePreviousTimeslices() {
-	DBLOGUtil.uninstantiatePreviousTimeslices(curWorld);
-    }
-
-    public void removeAllDerivedVars() {
-	BLOGUtil.removeAllDerivedVars(curWorld);
-    }
-    
-    public PartialWorld getLatestWorld() {
-	if (curWorld == null) {
-	    throw new IllegalStateException
-	    ("Particle has no latest sample.");
+	/**
+	 * Creates a new particle. <code>numTimeSlicesInMemory</code> indicates how
+	 * many time slices need to be kept in memory. The properties table specifies
+	 * configuration parameters.
+	 */
+	public Particle(Set idTypes, int numTimeSlicesInMemory, Sampler sampler) {
+		this.sampler = sampler;
+		this.numTimeSlicesInMemory = numTimeSlicesInMemory;
+		this.idTypes = idTypes;
+		curWorld = new DefaultPartialWorld(idTypes);
+		weight = 1; // all particles are created equal.
 	}
-	return curWorld;
-    }
 
-    public double getLatestWeight() {
-	return weight;
-    }
+	/**
+	 * Takes evidence relative to some new time step, updates current world based
+	 * on it, and recalculates particle weight according to its probability.
+	 */
+	public void take(Evidence evidence) {
+		sampler.initialize(evidence, Util.list());
+		sampler.setBaseWorld(curWorld);
 
-    public Particle copy() {
-	Particle copy = new Particle(idTypes, numTimeSlicesInMemory, sampler);
-	DefaultPartialWorld newWorld = (DefaultPartialWorld) ((DefaultPartialWorld)curWorld).clone();
-	copy.setWorld(newWorld);
-	copy.weight = weight;
-	return copy;
-    }
+		// System.out.println("Particle taking evidence.");
+		// System.out.println("Evidence: " + evidence);
+		// System.out.println("Previous world: " + curWorld);
 
-    protected void setWorld(PartialWorld curWorld) {
-	this.curWorld = curWorld;
-    }
+		sampler.nextSample();
+		weight = sampler.getLatestWeight();
+		// if (Double.isNaN(weight)) {
+		// System.out.println("Particle.take: weight set to " + weight);
+		// System.out.println("Evidence: " + evidence);
+		// System.out.println("Updated world: " + curWorld);
+		// System.exit(-1);
+		// }
 
-    public void updateQueriesStats(Collection queries) {
-//	System.out.println("Particle.updateQueriesStats: start");
-	if(getLatestWeight() > 0) {
-//	    System.out.println("Particle.updateQueriesStats: going over queries");
-	    for(Iterator iter = queries.iterator(); iter.hasNext(); ) {
-		Query q = (Query) iter.next();
-		q.updateStats(getLatestWorld(), getLatestWeight());
-	    }
+		// System.out.println("Particle.take: weight set to " + weight);
+		curWorld = sampler.getLatestWorld();
+
+		// System.out.println("Weight: " + weight);
+		// System.out.println("Updated world: " + curWorld);
 	}
-//	else
-//	    System.out.println("Particle.updateQueriesStats: getLatestWeight was zero.");
-    }
-    
-    public String toString() {
-	return "(" + curWorld + "," + weight + ")";
-    }
 
-    protected Set idTypes; // of Type
-    protected PartialWorld curWorld = null;
-    protected double weight;
-    public int numTimeSlicesInMemory;
-    private Sampler sampler;
+	/**
+	 * Takes a collection of queries and answers them based on current world.
+	 */
+	public void answer(Collection queries) {
+		// System.out.println("Particle.answer");
+		Collection queriesVars = BLOGUtil.getQueriesVars(queries);
+		BLOGUtil.ensureDetAndSupported(queriesVars, curWorld);
+		updateQueriesStats(queries);
+	}
+
+	/**
+	 * Identifies the largest time step in the current world and uninstantiates
+	 * all temporal random variables with a different time step.
+	 */
+	public void uninstantiatePreviousTimeslices() {
+		DBLOGUtil.uninstantiatePreviousTimeslices(curWorld);
+	}
+
+	public void removeAllDerivedVars() {
+		BLOGUtil.removeAllDerivedVars(curWorld);
+	}
+
+	public PartialWorld getLatestWorld() {
+		if (curWorld == null) {
+			throw new IllegalStateException("Particle has no latest sample.");
+		}
+		return curWorld;
+	}
+
+	public double getLatestWeight() {
+		return weight;
+	}
+
+	public Particle copy() {
+		Particle copy = new Particle(idTypes, numTimeSlicesInMemory, sampler);
+		DefaultPartialWorld newWorld = (DefaultPartialWorld) ((DefaultPartialWorld) curWorld)
+				.clone();
+		copy.setWorld(newWorld);
+		copy.weight = weight;
+		return copy;
+	}
+
+	protected void setWorld(PartialWorld curWorld) {
+		this.curWorld = curWorld;
+	}
+
+	public void updateQueriesStats(Collection queries) {
+		// System.out.println("Particle.updateQueriesStats: start");
+		if (getLatestWeight() > 0) {
+			// System.out.println("Particle.updateQueriesStats: going over queries");
+			for (Iterator iter = queries.iterator(); iter.hasNext();) {
+				Query q = (Query) iter.next();
+				q.updateStats(getLatestWorld(), getLatestWeight());
+			}
+		}
+		// else
+		// System.out.println("Particle.updateQueriesStats: getLatestWeight was zero.");
+	}
+
+	public String toString() {
+		return "(" + curWorld + "," + weight + ")";
+	}
+
+	protected Set idTypes; // of Type
+	protected PartialWorld curWorld = null;
+	protected double weight;
+	public int numTimeSlicesInMemory;
+	private Sampler sampler;
 }

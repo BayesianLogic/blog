@@ -38,19 +38,18 @@ package blog;
 import java.util.*;
 
 /**
- * Interface for objects that can be notified when a PartialWorldDiff 
- * object is saved or reverted.  
+ * Interface for objects that can be notified when a PartialWorldDiff object is
+ * saved or reverted.
  */
 public interface WorldDiffListener {
-    /**
-     * Called when the <code>save</code> method is called on the 
-     * PartialWorldDiff.
-     */
-    void notifySaved();
+	/**
+	 * Called when the <code>save</code> method is called on the PartialWorldDiff.
+	 */
+	void notifySaved();
 
-    /**
-     * Called when the <code>revert</code> method is called on the 
-     * PartialWorldDiff.
-     */
-    void notifyReverted();
+	/**
+	 * Called when the <code>revert</code> method is called on the
+	 * PartialWorldDiff.
+	 */
+	void notifyReverted();
 }

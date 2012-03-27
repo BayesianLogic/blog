@@ -36,43 +36,43 @@
 package blog;
 
 /**
- * An identifier for a non-guaranteed object in a PartialWorld.
- * An ObjectIdentifier specifies the type of the object it refers to;
- * it must refer to a non-guaranteed object, and distinct
- * ObjectIdentifiers refer to distinct BLOG objects.  Other than that,
- * an ObjectIdentifier provides no information.
- *
- * <p>Internally, ObjectIdentifiers are numbered in order of creation, and 
- * an ObjectIdentifier's number is included in its string representation.  
- * This makes debugging output reproducible across runs.
+ * An identifier for a non-guaranteed object in a PartialWorld. An
+ * ObjectIdentifier specifies the type of the object it refers to; it must refer
+ * to a non-guaranteed object, and distinct ObjectIdentifiers refer to distinct
+ * BLOG objects. Other than that, an ObjectIdentifier provides no information.
+ * 
+ * <p>
+ * Internally, ObjectIdentifiers are numbered in order of creation, and an
+ * ObjectIdentifier's number is included in its string representation. This
+ * makes debugging output reproducible across runs.
  */
 public class ObjectIdentifier implements Comparable {
-    /**
-     * Creates a new ObjectIdentifier for an object of the given type.
-     */
-    public ObjectIdentifier(Type type) {
-	this.type = type;
-	num = new Integer(ObjectIdentifier.numCreated++);
-    }
+	/**
+	 * Creates a new ObjectIdentifier for an object of the given type.
+	 */
+	public ObjectIdentifier(Type type) {
+		this.type = type;
+		num = new Integer(ObjectIdentifier.numCreated++);
+	}
 
-    public Type getType() {
-	return type;
-    }
+	public Type getType() {
+		return type;
+	}
 
-    public String toString() {
-	return (type + "#" + num);
-    }
+	public String toString() {
+		return (type + "#" + num);
+	}
 
-    public int compareTo(Object o) {
-	return num.intValue() - ((ObjectIdentifier) o).getNum().intValue();
-    }
+	public int compareTo(Object o) {
+		return num.intValue() - ((ObjectIdentifier) o).getNum().intValue();
+	}
 
-    Integer getNum() {
-	return num;
-    }
+	Integer getNum() {
+		return num;
+	}
 
-    private Type type;
-    private Integer num;
+	private Type type;
+	private Integer num;
 
-    private static int numCreated = 0;
+	private static int numCreated = 0;
 }

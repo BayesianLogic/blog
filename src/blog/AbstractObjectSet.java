@@ -38,142 +38,140 @@ package blog;
 import java.util.*;
 
 /**
- * Abstract implementation of the ObjectSet interface.  It includes 
- * protected methods <code>isEmptyInternal</code>, <code>sizeInternal</code>, 
- * and <code>containsInternal</code> that return Boolean and Integer objects 
- * rather than primitive data types.  Null return values indicate that 
- * the corresponding Set interface method should throw an 
- * IllegalStateException and the corresponding <code>canDetermine</code> 
- * method should return false.  
+ * Abstract implementation of the ObjectSet interface. It includes protected
+ * methods <code>isEmptyInternal</code>, <code>sizeInternal</code>, and
+ * <code>containsInternal</code> that return Boolean and Integer objects rather
+ * than primitive data types. Null return values indicate that the corresponding
+ * Set interface method should throw an IllegalStateException and the
+ * corresponding <code>canDetermine</code> method should return false.
  */
-public abstract class AbstractObjectSet extends AbstractSet 
-                                        implements ObjectSet {
-    public boolean isEmpty() {
-	Boolean isEmpty = isEmptyInternal();
-	if (isEmpty == null) {
-	    throw new IllegalArgumentException
-		("Underlying partial world is not complete enough to "
-		 + "determine if set is empty: " + this);
-	}
-	return isEmpty.booleanValue();
-    }
-
-    public boolean canDetermineIsEmpty() {
-	return (isEmptyInternal() != null);
-    }
-
-    public int size() {
-	Integer size = sizeInternal();
-	if (size == null) {
-	    throw new IllegalArgumentException
-		("Underlying partial world is not complete enough to "
-		 + "determine size of set: " + this);
-	}
-	return size.intValue();
-    }
-
-    public boolean canDetermineSize() {
-	return (sizeInternal() != null);
-    }
-    
-    public boolean contains(Object obj) {
-	Boolean result = containsInternal(obj);
-	if (result == null) {
-	    throw new IllegalArgumentException
-		("Underlying partial world is not complete enough to "
-		 + "determine whether " + obj + " is in set: " + this);
-	}
-	return result.booleanValue();
-    }
-
-    public boolean canDetermineContains(Object obj) {
-	return (containsInternal(obj) != null);
-    }
-
-    /**
-     * Returns the iterator obtained by calling 
-     * <code>iterator(Collections.EMPTY_SET)</code>: that is, an
-     * iterator that recognizes no externally distinguished objects.
-     */
-    public Iterator iterator() {
-	return iterator(Collections.EMPTY_SET);
-    }
-
-    public boolean canDetermineElements() {
-	return (getExplicitVersion() != null);
-    }
-    
-    /**
-     * Returns Boolean.TRUE if this set is empty, Boolean.FALSE if it is 
-     * not empty, and null if the underlying partial world is not complete 
-     * enough to determine whether the set is empty.
-     *
-     * <p>The default implementation just uses the result of sizeInternal.
-     */
-    protected Boolean isEmptyInternal() {
-	Integer n = sizeInternal();
-	if (n == null) {
-	    return null;
-	}
-	return Boolean.valueOf(n.intValue() == 0);
-    }
-
-    /**
-     * Returns the size of this set, or null if the underlying partial 
-     * world is not complete enough to determine the size.
-     */
-    protected abstract Integer sizeInternal();
-
-    /**
-     * Returns Boolean.TRUE if this set contains <code>obj</code>, 
-     * Boolean.FALSE if this set does not contain <code>obj</code>, and null 
-     * if the underlying partial world is not complete enough to make the 
-     * distinction.
-     */
-    protected abstract Boolean containsInternal(Object obj);
-
-
-    public static ObjectSet singleton(Object element) {
-	return new SingletonSet(element);
-    }
-
-    private static class SingletonSet extends AbstractObjectSet {
-	SingletonSet(Object element) {
-	    this.element = element;
+public abstract class AbstractObjectSet extends AbstractSet implements
+		ObjectSet {
+	public boolean isEmpty() {
+		Boolean isEmpty = isEmptyInternal();
+		if (isEmpty == null) {
+			throw new IllegalArgumentException(
+					"Underlying partial world is not complete enough to "
+							+ "determine if set is empty: " + this);
+		}
+		return isEmpty.booleanValue();
 	}
 
-	protected Integer sizeInternal() {
-	    return new Integer(1);
+	public boolean canDetermineIsEmpty() {
+		return (isEmptyInternal() != null);
 	}
 
-	protected Boolean containsInternal(Object o) {
-	    return Boolean.valueOf(element.equals(o));
+	public int size() {
+		Integer size = sizeInternal();
+		if (size == null) {
+			throw new IllegalArgumentException(
+					"Underlying partial world is not complete enough to "
+							+ "determine size of set: " + this);
+		}
+		return size.intValue();
 	}
 
-	public ObjectSet getExplicitVersion() {
-	    return this;
+	public boolean canDetermineSize() {
+		return (sizeInternal() != null);
 	}
 
-	public ObjectIterator iterator(Set externallyDistinguished) {
-	    return new DefaultObjectIterator
-		(Collections.singleton(element).iterator());
+	public boolean contains(Object obj) {
+		Boolean result = containsInternal(obj);
+		if (result == null) {
+			throw new IllegalArgumentException(
+					"Underlying partial world is not complete enough to "
+							+ "determine whether " + obj + " is in set: " + this);
+		}
+		return result.booleanValue();
 	}
 
-	public Object sample(int n) {
-	    if (n == 0) {
-		return element;
-	    }
-	    throw new IllegalArgumentException
-		("Can't sample element " + n + " from singleton set.");
+	public boolean canDetermineContains(Object obj) {
+		return (containsInternal(obj) != null);
 	}
 
-	public int indexOf(Object o) {
-	    if (element.equals(o)) {
-		return 0;
-	    }
-	    return -1;
+	/**
+	 * Returns the iterator obtained by calling
+	 * <code>iterator(Collections.EMPTY_SET)</code>: that is, an iterator that
+	 * recognizes no externally distinguished objects.
+	 */
+	public Iterator iterator() {
+		return iterator(Collections.EMPTY_SET);
 	}
 
-	private Object element;
-    }
+	public boolean canDetermineElements() {
+		return (getExplicitVersion() != null);
+	}
+
+	/**
+	 * Returns Boolean.TRUE if this set is empty, Boolean.FALSE if it is not
+	 * empty, and null if the underlying partial world is not complete enough to
+	 * determine whether the set is empty.
+	 * 
+	 * <p>
+	 * The default implementation just uses the result of sizeInternal.
+	 */
+	protected Boolean isEmptyInternal() {
+		Integer n = sizeInternal();
+		if (n == null) {
+			return null;
+		}
+		return Boolean.valueOf(n.intValue() == 0);
+	}
+
+	/**
+	 * Returns the size of this set, or null if the underlying partial world is
+	 * not complete enough to determine the size.
+	 */
+	protected abstract Integer sizeInternal();
+
+	/**
+	 * Returns Boolean.TRUE if this set contains <code>obj</code>, Boolean.FALSE
+	 * if this set does not contain <code>obj</code>, and null if the underlying
+	 * partial world is not complete enough to make the distinction.
+	 */
+	protected abstract Boolean containsInternal(Object obj);
+
+	public static ObjectSet singleton(Object element) {
+		return new SingletonSet(element);
+	}
+
+	private static class SingletonSet extends AbstractObjectSet {
+		SingletonSet(Object element) {
+			this.element = element;
+		}
+
+		protected Integer sizeInternal() {
+			return new Integer(1);
+		}
+
+		protected Boolean containsInternal(Object o) {
+			return Boolean.valueOf(element.equals(o));
+		}
+
+		public ObjectSet getExplicitVersion() {
+			return this;
+		}
+
+		public ObjectIterator iterator(Set externallyDistinguished) {
+			return new DefaultObjectIterator(Collections.singleton(element)
+					.iterator());
+		}
+
+		public Object sample(int n) {
+			if (n == 0) {
+				return element;
+			}
+			throw new IllegalArgumentException("Can't sample element " + n
+					+ " from singleton set.");
+		}
+
+		public int indexOf(Object o) {
+			if (element.equals(o)) {
+				return 0;
+			}
+			return -1;
+		}
+
+		private Object element;
+	}
 }
