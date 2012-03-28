@@ -1,6 +1,7 @@
 package test;
 
-import org.apache.commons.math.fraction.*;
+//import org.apache.commons.math.fraction.*;
+import org.apache.commons.math3.fraction.*;
 import java.math.*;
 
 public class ComputeUrnBall {
@@ -10,6 +11,9 @@ public class ComputeUrnBall {
 	 */
 	public static void main(String[] args) {
 		int numObs = 32;
+		if (args.length > 0) {
+			numObs = Integer.parseInt(args[0]);
+		}
 		int[] obs = new int[numObs];
 		for (int i = 0; i < obs.length;) {
 			obs[i] = 0;
@@ -79,9 +83,10 @@ public class ComputeUrnBall {
 			for (int k = 0; k <= N; k++) {
 				// * 1/ (2^N) * (N! / k! / (N-1)!)
 				// choice(N, k) * N
-				totalnum = totalnum.add(choice(N, k).multiply(
+				BigFraction tmpnk = choice(N, k);
+				totalnum = totalnum.add(tmpnk.multiply(
 						new BigFraction(N).pow(obs.length)));
-				p = computePrior(N).multiply(choice(N, k)).divide(1 << N);
+				p = computePrior(N).multiply(tmpnk).divide(1 << N);
 				BigFraction tmpres;
 				BigFraction chose0 = new BigFraction(k, N);
 				BigFraction chose1 = new BigFraction(N - k, N);
