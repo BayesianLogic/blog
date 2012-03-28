@@ -33,20 +33,36 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.distrib;
 
 import java.util.*;
 
-/**
- * Abstract implementation of the CondProbDistrib interface. It implements the
- * getLogProb method.
- */
-public abstract class AbstractCondProbDistrib implements CondProbDistrib {
-	public double getLogProb(List args, Object childValue) {
-		return Math.log(getProb(args, childValue));
-	}
+import blog.EqualsCPD;
+import blog.Type;
 
-	public String toString() {
-		return getClass().getName();
-	}
+/**
+ * An interface which all user-defined conditional probability distributions
+ * (CPDs), as well as the {@link blog.EqualsCPD} class, are expected to
+ * implement.
+ */
+public interface CondProbDistrib {
+
+	/**
+	 * For a discrete distribution, returns the conditional probability of
+	 * <code>childValue</code> given the argument values <code>args</code>. For a
+	 * continuous distribution, returns the conditional probability density at
+	 * <code>childValue</code>.
+	 */
+	double getProb(List args, Object childValue);
+
+	/**
+	 * Returns the natural log of the value returned by getProb.
+	 */
+	double getLogProb(List args, Object childValue);
+
+	/**
+	 * Samples a value according to this CPD given the <code> args
+	 * </code>. The object returned should be of the specified type.
+	 */
+	Object sampleVal(List args, Type childType);
 }

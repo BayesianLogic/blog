@@ -36,6 +36,8 @@
 package blog;
 
 import java.util.*;
+
+import blog.distrib.CondProbDistrib;
 import common.Util;
 
 /**
