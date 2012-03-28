@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--AgileJ Ltd. (http://www.agilej.com)-->
+<ajsv>
+    <diagram creationDate="2012-Mar-28 03:56" licenseGrade="evaluation" licenseeName="Cos_Mos" licenseeOrganization="ACM" style="hideAllMembers" version="1.7.7.v20120311-1127">
+        <switch switchID="howToShowDependenciesOptions" switchValue="hidden"/>
+        <class className="blog.distrib.UniformVector" project="dblog" xLocation="751" yLocation="1133"/>
+        <class className="blog.distrib.UnivarGaussian" project="dblog" xLocation="2220" yLocation="367"/>
+        <class className="blog.distrib.ListInterp" project="dblog" xLocation="1196" yLocation="100"/>
+        <class className="blog.distrib.Gaussian" project="dblog" xLocation="2363" yLocation="554"/>
+        <class className="blog.distrib.StringEditModel" project="dblog" xLocation="1465" yLocation="303"/>
+        <class className="blog.distrib.LinearGaussian" project="dblog" xLocation="679" yLocation="739"/>
+        <class className="blog.distrib.Util" project="dblog" xLocation="527" yLocation="131"/>
+        <class className="blog.distrib.Gamma" project="dblog" xLocation="100" yLocation="781"/>
+        <class className="blog.distrib.NegativeBinomial" project="dblog" xLocation="467" yLocation="941"/>
+        <class className="blog.distrib.CharDistrib" project="dblog" xLocation="1872" yLocation="726"/>
+        <class className="blog.distrib.BoundedGeometric" project="dblog" xLocation="404" yLocation="747"/>
+        <class className="blog.distrib.MultivarGaussian" project="dblog" xLocation="308" yLocation="554"/>
+        <class className="blog.distrib.Beta" project="dblog" xLocation="540" yLocation="338"/>
+        <class className="blog.distrib.Bernoulli" project="dblog" xLocation="757" yLocation="945"/>
+        <class className="blog.distrib.Categorical" project="dblog" xLocation="1430" yLocation="749"/>
+        <class className="blog.distrib.Binomial" project="dblog" xLocation="2081" yLocation="915"/>
+        <class className="blog.distrib.UniformInt" project="dblog" xLocation="2020" yLocation="632"/>
+        <class className="blog.distrib.NatNumDistribWithTail" project="dblog" xLocation="572" yLocation="558"/>
+        <class className="blog.distrib.ChooseFromArgs" project="dblog" xLocation="958" yLocation="940"/>
+        <class className="blog.distrib.TabularCPD" project="dblog" xLocation="1780" yLocation="905"/>
+        <class className="blog.distrib.MixtureDistrib" project="dblog" xLocation="1542" yLocation="910"/>
+        <class className="blog.distrib.VectorInRect" project="dblog" xLocation="760" yLocation="148"/>
+        <class className="blog.distrib.StringEditModelWithJumps" project="dblog" xLocation="1580" yLocation="64"/>
+        <class className="blog.distrib.Poisson" project="dblog" xLocation="1644" yLocation="1154"/>
+        <class className="blog.distrib.Exponential" project="dblog" xLocation="1273" yLocation="948"/>
+        <class className="blog.distrib.Geometric" project="dblog" xLocation="784" yLocation="259"/>
+        <class className="blog.distrib.RoundedLogNormal" project="dblog" xLocation="1856" yLocation="501"/>
+        <class className="blog.distrib.Iota" project="dblog" xLocation="1408" yLocation="1164"/>
+        <class className="blog.distrib.BinaryBernoulliDistrib" project="dblog" xLocation="1111" yLocation="263"/>
+        <class className="blog.distrib.UniformChoice" project="dblog" xLocation="1078" yLocation="1096"/>
+        <class className="blog.distrib.TabularInterp" project="dblog" xLocation="989" yLocation="1334"/>
+        <class className="blog.distrib.UniformReal" project="dblog" xLocation="1605" yLocation="519"/>
+        <class className="blog.AbstractCondProbDistrib" project="dblog" xLocation="1059" yLocation="476"/>
+    </diagram>
+</ajsv>
