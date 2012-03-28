@@ -38,6 +38,8 @@ package blog;
 import java.util.*;
 import java.lang.reflect.*;
 
+import blog.distrib.CondProbDistrib;
+
 /**
  * Represents a clause in dependency statements and number statements.
  * 
