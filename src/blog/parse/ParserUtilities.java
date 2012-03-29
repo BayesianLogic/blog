@@ -33,12 +33,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.parse;
 
 import java.lang.*;
 import java.util.*;
 import java.io.*;
-import java.io.PrintStream;
+
 import java_cup.runtime.Symbol;
 
 public class ParserUtilities {
