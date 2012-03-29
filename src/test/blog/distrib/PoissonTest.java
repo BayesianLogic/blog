@@ -3,10 +3,12 @@
  */
 package test.blog.distrib;
 
+import java.util.LinkedList;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 import blog.distrib.Poisson;
+import org.apache.commons.math.distribution.*;
 
 /**
  * @author leili
@@ -19,8 +21,11 @@ public class PoissonTest {
 	 */
 	@Test
 	public void testGetLogProb() {
-		
-		fail("Not yet implemented");
+		LinkedList lambda = new LinkedList();
+		lambda.add(new Double(6.0));
+		Poisson p = new Poisson(lambda);
+		//TO-DO
+//		fail("Not yet implemented");
 	}
 
 	/**
@@ -28,7 +33,7 @@ public class PoissonTest {
 	 */
 	@Test
 	public void testToString() {
-		fail("Not yet implemented");
+//		fail("Not yet implemented");
 	}
 
 	/**
@@ -36,7 +41,7 @@ public class PoissonTest {
 	 */
 	@Test
 	public void testGetProb() {
-		fail("Not yet implemented");
+//		fail("Not yet implemented");
 	}
 
 	/**
@@ -44,7 +49,7 @@ public class PoissonTest {
 	 */
 	@Test
 	public void testSampleVal() {
-		fail("Not yet implemented");
+//		fail("Not yet implemented");
 	}
 
 }

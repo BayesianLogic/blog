@@ -3,11 +3,55 @@
 // Sat Nov 12 12:54:09 PST 2011
 //----------------------------------------------------
 
-package blog;
+package blog.parse;
 
 import java_cup.runtime.*;
 import java.util.*;
 import java.io.*;
+
+import blog.ArgSpec;
+import blog.ArgSpecQuery;
+import blog.AtomicFormula;
+import blog.BuiltInFunctions;
+import blog.BuiltInTypes;
+import blog.CardinalitySpec;
+import blog.Clause;
+import blog.ConjFormula;
+import blog.ConstantInterp;
+import blog.DependencyModel;
+import blog.DisjFormula;
+import blog.EqualityFormula;
+import blog.EqualsCPD;
+import blog.Evidence;
+import blog.ExistentialFormula;
+import blog.ExplicitSetSpec;
+import blog.Formula;
+import blog.FormulaQuery;
+import blog.FuncAppTerm;
+import blog.Function;
+import blog.ImplicFormula;
+import blog.ImplicitSetSpec;
+import blog.LogicalVar;
+import blog.MatrixType;
+import blog.Model;
+import blog.ModelEvidenceQueries;
+import blog.NegFormula;
+import blog.NonRandomFunction;
+import blog.OriginFunction;
+import blog.POP;
+import blog.ParserUtilities;
+import blog.Query;
+import blog.RandomFunction;
+import blog.SymbolEvidenceStatement;
+import blog.SymbolTerm;
+import blog.Term;
+import blog.Timestep;
+import blog.TrueFormula;
+import blog.TupleSetSpec;
+import blog.Type;
+import blog.UniversalFormula;
+import blog.ValueEvidenceStatement;
+import blog.Function.Sig;
 import Jama.*;
 import common.ScannerWithLocInfo;
 import common.HashMapDiff;

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--AgileJ Ltd. (http://www.agilej.com)-->
+<ajsv>
+    <diagram creationDate="2012-Mar-29 01:17" licenseGrade="evaluation" licenseeName="Cos_Mos" licenseeOrganization="ACM" style="defaultDiagramStyle" version="1.7.7.v20120311-1127">
+        <switch switchID="howToShowDependenciesOptions" switchValue="hidden"/>
+        <class className="blog.distrib.CondProbDistrib" project="dblog" xLocation="274" yLocation="1353"/>
+        <class className="blog.EvalContext" project="dblog" xLocation="1403" yLocation="370"/>
+        <class className="blog.ObjectIdentifier" project="dblog" xLocation="181" yLocation="1608"/>
+        <class className="blog.DependencyModel" project="dblog" xLocation="100" yLocation="488"/>
+        <class className="blog.BasicVar" project="dblog" xLocation="3168" yLocation="763"/>
+        <class className="blog.DefaultEvalContext" project="dblog" xLocation="2188" yLocation="212"/>
+        <class className="blog.AfterSamplingListener" project="dblog" xLocation="656" yLocation="1638"/>
+        <class className="blog.VarWithDistrib" project="dblog" xLocation="3102" yLocation="1401"/>
+        <class className="blog.PartialWorld" project="dblog" xLocation="243" yLocation="1970"/>
+        <class className="blog.AbstractBayesNetVar" project="dblog" xLocation="3193" yLocation="491"/>
+        <class className="blog.GenericProposer" project="dblog" xLocation="1953" yLocation="1654"/>
+        <class className="blog.SymbolEvidenceLikelihoodWeighter" project="dblog" xLocation="1977" yLocation="1981"/>
+        <class className="blog.TupleSetSpecEvidenceLikelihoodWeighter" project="dblog" xLocation="2140" yLocation="2731"/>
+        <class className="blog.ClassicInstantiatingEvalContext" project="dblog" xLocation="1469" yLocation="1303"/>
+        <class className="blog.InstantiatingEvalContext" project="dblog" xLocation="1510" yLocation="1027"/>
+        <class className="blog.ParentRecEvalContext" project="dblog" xLocation="2255" yLocation="920"/>
+        <class className="blog.BayesNetVar" project="dblog" xLocation="3193" yLocation="100"/>
+    </diagram>
+</ajsv>

@@ -1,4 +1,4 @@
-package blog;
+package blog.parse;
 
 /*
  * Copyright (c) 2005, Regents of the University of California
@@ -34,6 +34,7 @@ package blog;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+import blog.BLOGTokenConstants;
 import java_cup.runtime.Symbol;
 import common.ScannerWithLocInfo;
 
