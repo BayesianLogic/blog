@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import blog.parse.BLOGParser;
+
 import common.Histogram;
 import common.Util;
 

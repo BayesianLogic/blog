@@ -2,6 +2,8 @@ package blog;
 
 import java.util.*;
 import java.io.*;
+
+import blog.parse.BLOGParser;
 import common.Histogram;
 import common.Util;
 import common.UnaryPredicate;

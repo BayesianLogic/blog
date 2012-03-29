@@ -38,6 +38,8 @@ package blog;
 import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
+
+import blog.parse.BLOGParser;
 import java_cup.runtime.Symbol;
 import common.Util;
 import common.Timer;
