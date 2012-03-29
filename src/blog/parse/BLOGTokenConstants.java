@@ -3,7 +3,7 @@
 // Sat Nov 12 12:54:09 PST 2011
 //----------------------------------------------------
 
-package blog;
+package blog.parse;
 
 /** CUP generated class containing symbol constants. */
 public class BLOGTokenConstants {

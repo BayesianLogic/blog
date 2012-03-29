@@ -39,7 +39,6 @@ import blog.NegFormula;
 import blog.NonRandomFunction;
 import blog.OriginFunction;
 import blog.POP;
-import blog.ParserUtilities;
 import blog.Query;
 import blog.RandomFunction;
 import blog.SymbolEvidenceStatement;

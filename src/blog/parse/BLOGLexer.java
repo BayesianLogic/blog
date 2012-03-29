@@ -34,7 +34,6 @@ package blog.parse;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-import blog.BLOGTokenConstants;
 import java_cup.runtime.Symbol;
 import common.ScannerWithLocInfo;
 
