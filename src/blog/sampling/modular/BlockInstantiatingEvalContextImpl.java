@@ -18,7 +18,8 @@ public class BlockInstantiatingEvalContextImpl extends
 	 */
 	public BlockInstantiatingEvalContextImpl(PartialWorld world) {
 		super(world);
-		// TODO Auto-generated constructor stub
 	}
+	
+	
 
 }
