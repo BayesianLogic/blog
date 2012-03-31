@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--AgileJ Ltd. (http://www.agilej.com)-->
 <ajsv>
-    <diagram creationDate="2012-Mar-26 04:43" licenseGrade="evaluation" licenseeName="Cos_Mos" licenseeOrganization="ACM" style="hideAllMembers" version="1.7.7.v20120311-1127">
+    <diagram creationDate="2012-Mar-28 04:39" licenseGrade="evaluation" licenseeName="Cos_Mos" licenseeOrganization="ACM" style="hideAllMembers" version="1.7.7.v20120311-1127">
         <binding bindingClassesBackgroundColor="#FF6464" bindingClassesBorderColor="#969696" bindingClassesHidden="no" bindingClassesTypeSelector="allClasses" bindingType="Classes"/>
         <switch switchID="howToShowDependenciesOptions" switchValue="hidden"/>
         <class className="blog.AbstractQuery" project="dblog" xLocation="4558" yLocation="2004"/>
         <class className="blog.NegFormula" project="dblog" xLocation="1775" yLocation="3655"/>
-        <class className="blog.EqualsCPD" project="dblog" xLocation="-684" yLocation="4169"/>
-        <class className="blog.DetCondProbDistrib" project="dblog" xLocation="-775" yLocation="3850"/>
         <class className="blog.BuiltInTypes" project="dblog" xLocation="-1072" yLocation="1412"/>
         <class className="blog.Main" project="dblog" xLocation="617" yLocation="1825"/>
         <class className="blog.ParserUtilities" project="dblog" xLocation="2571" yLocation="377"/>
@@ -33,7 +31,6 @@
         <class className="blog.CompiledSetSpec" project="dblog" xLocation="2507" yLocation="2922"/>
         <class className="blog.ModelEvidenceQueries" project="dblog" xLocation="724" yLocation="2360"/>
         <class className="blog.SymbolEvidenceStatement" project="dblog" xLocation="6139" yLocation="3361"/>
-        <class className="blog.AbstractCondProbDistrib" project="dblog" xLocation="-804" yLocation="3492"/>
         <class className="blog.Function" project="dblog" xLocation="7366" yLocation="651"/>
         <class className="blog.AbstractFunctionInterp" project="dblog" xLocation="7506" yLocation="-133"/>
         <class className="blog.BLOGUtil" project="dblog" xLocation="2369" yLocation="383"/>
@@ -108,7 +105,6 @@
         <class className="blog.AbstractEvidenceLikelihoodWeighter" project="dblog" xLocation="3083" yLocation="285"/>
         <class className="blog.AbstractObjectSet" project="dblog" xLocation="4563" yLocation="-181"/>
         <class className="blog.DisjFormula" project="dblog" xLocation="2014" yLocation="4145"/>
-        <class className="blog.CondProbDistrib" project="dblog" xLocation="-747" yLocation="3250"/>
         <class className="blog.SymbolTerm" project="dblog" xLocation="3919" yLocation="3821"/>
         <class className="blog.DefaultPartialWorld" project="dblog" xLocation="1944" yLocation="1652"/>
         <class className="blog.LikelihoodAndWeight" project="dblog" xLocation="2572" yLocation="72"/>
