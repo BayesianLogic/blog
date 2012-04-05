@@ -33,7 +33,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog.common;
+package blog.parse;
 
 import java_cup.runtime.Scanner;
 
