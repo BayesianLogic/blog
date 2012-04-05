@@ -39,6 +39,11 @@ import java.io.*;
 import java.util.*;
 import blog.*;
 import blog.common.Util;
+import blog.model.Function;
+import blog.model.Model;
+import blog.model.NonRandomFunction;
+import blog.model.Term;
+import blog.model.Type;
 import ve.*;
 
 /**

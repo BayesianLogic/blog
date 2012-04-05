@@ -33,9 +33,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
+
+import blog.AbstractFunctionInterp;
+import blog.ConstantInterp;
+import blog.FunctionInterp;
+import blog.Timestep;
 import Jama.*;
 
 /**

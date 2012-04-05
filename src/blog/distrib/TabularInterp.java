@@ -37,9 +37,9 @@ package blog.distrib;
 
 import java.util.*;
 import blog.AbstractFunctionInterp;
-import blog.Model;
 import blog.common.HashMapWithPreimages;
 import blog.common.MapWithPreimages;
+import blog.model.Model;
 
 /**
  * An interpretation for a function symbol, specified by listing argument tuples

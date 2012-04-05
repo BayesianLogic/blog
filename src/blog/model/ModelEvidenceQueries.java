@@ -1,11 +1,14 @@
 /**
  * 
  */
-package blog;
+package blog.model;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import blog.ArgSpecQuery;
+import blog.BLOGUtil;
+import blog.Evidence;
 import blog.common.Util;
 
 

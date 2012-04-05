@@ -40,6 +40,8 @@ import java.io.PrintStream;
 
 import blog.*;
 import blog.common.TupleIterator;
+import blog.model.Model;
+import blog.model.Type;
 import fove.*;
 
 /**

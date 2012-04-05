@@ -5,6 +5,7 @@ import java.util.*;
 import blog.common.TupleIterator;
 import blog.common.Util;
 import blog.distrib.Gaussian;
+import blog.model.Model;
 import static blog.BLOGUtil.*;
 
 import junit.framework.TestCase;

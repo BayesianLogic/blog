@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Properties;
 
 import blog.common.Util;
+import blog.model.Model;
 
 
 /**

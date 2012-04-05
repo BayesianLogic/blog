@@ -35,7 +35,8 @@
 
 package ve;
 
-import blog.Type;
+import blog.model.Type;
+
 import java.util.List;
 import java.io.PrintStream;
 

@@ -38,6 +38,9 @@ package blog;
 import java.util.*;
 
 import blog.common.HashMapDiff;
+import blog.model.Model;
+import blog.model.Term;
+import blog.model.Type;
 
 /**
  * Represents a universal instantiation for one variable using one expression of

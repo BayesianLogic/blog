@@ -33,12 +33,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 import java.lang.reflect.*;
 import java.io.PrintStream;
 
+import blog.ArgSpec;
+import blog.CardinalitySpec;
+import blog.ConstantInterp;
+import blog.EvalContext;
+import blog.FunctionInterp;
+import blog.GenericObject;
 import blog.common.Util;
 
 
@@ -49,7 +55,7 @@ import blog.common.Util;
  * symbol's interpretation is given by an object that implements the
  * FunctionInterp interface.
  * 
- * @see blog.Function
+ * @see blog.model.Function
  */
 public class NonRandomFunction extends Function {
 

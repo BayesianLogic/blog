@@ -39,6 +39,8 @@ import java.util.*;
 import java.lang.reflect.*;
 
 import blog.common.Util;
+import blog.model.Model;
+import blog.model.ModelEvidenceQueries;
 
 
 /**

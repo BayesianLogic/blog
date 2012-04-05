@@ -6,6 +6,8 @@ import java.io.*;
 import blog.common.Histogram;
 import blog.common.UnaryPredicate;
 import blog.common.Util;
+import blog.model.Model;
+import blog.model.ModelEvidenceQueries;
 import blog.parse.BLOGParser;
 
 import junit.framework.TestCase;

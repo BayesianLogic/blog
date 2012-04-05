@@ -39,6 +39,8 @@ import java.util.*;
 
 import blog.common.Multiset;
 import blog.common.UnaryProcedure;
+import blog.model.Model;
+import blog.model.Term;
 
 
 /**

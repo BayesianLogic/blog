@@ -33,11 +33,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.EnumeratedObject;
+import blog.FuncAppTerm;
+import blog.POP;
 import blog.common.Util;
 
 /**

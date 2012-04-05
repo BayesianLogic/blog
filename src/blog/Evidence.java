@@ -39,6 +39,8 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.common.Util;
+import blog.model.Model;
+import blog.model.Term;
 
 /**
  * Stores the information extracted from evidence file. The evidence is of 2

@@ -37,6 +37,7 @@ package blog.distrib;
 
 import blog.*;
 import blog.common.Util;
+import blog.model.Type;
 import Jama.*;
 import java.util.*;
 

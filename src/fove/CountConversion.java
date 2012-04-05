@@ -38,6 +38,8 @@ package fove;
 import java.util.*;
 import blog.*;
 import blog.common.TupleIterator;
+import blog.model.Term;
+import blog.model.Type;
 import ve.*;
 
 public class CountConversion extends LiftedInfOperator {

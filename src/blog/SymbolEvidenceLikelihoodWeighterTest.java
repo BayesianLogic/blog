@@ -7,6 +7,8 @@ import java.util.Map;
 
 import blog.common.Util;
 import blog.distrib.Gaussian;
+import blog.model.Model;
+import blog.model.Term;
 
 
 import junit.framework.TestCase;

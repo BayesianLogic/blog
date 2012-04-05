@@ -39,6 +39,10 @@ import java.util.*;
 import java.lang.reflect.*;
 
 import blog.distrib.CondProbDistrib;
+import blog.model.BuiltInTypes;
+import blog.model.Model;
+import blog.model.Term;
+import blog.model.Type;
 
 /**
  * Represents a clause in dependency statements and number statements.

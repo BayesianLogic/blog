@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import blog.model.Model;
+
 /**
  * Given a set of query templates (where "t" stands for an arbitrary time step)
  * and a model, provides instantiated queries for given time steps by request.

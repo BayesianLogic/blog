@@ -37,6 +37,9 @@ package blog;
 
 import java.util.*;
 
+import blog.model.Model;
+import blog.model.Term;
+
 /**
  * A Formula consisting of just the zero-ary logical operator "true", which is
  * true in every world under every assignment.

@@ -37,6 +37,9 @@ package blog;
 
 import java.util.*;
 
+import blog.model.Model;
+import blog.model.OriginFunction;
+
 /**
  * Represents a generic satisfier of some POP application. Origin functions can
  * be evaluated on this object, but other functions can't. This object cannot be

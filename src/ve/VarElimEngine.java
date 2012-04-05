@@ -38,6 +38,7 @@ package ve;
 import java.util.*;
 import blog.*;
 import blog.common.Util;
+import blog.model.Model;
 
 public class VarElimEngine extends InferenceEngine {
 	/**

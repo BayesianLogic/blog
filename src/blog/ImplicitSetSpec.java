@@ -43,6 +43,9 @@ import blog.common.MultisetBackedSet;
 import blog.common.SetBackedMultiset;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
+import blog.model.Model;
+import blog.model.Term;
+import blog.model.Type;
 
 /**
  * Represents an argument - set with implicit specification of its elements. An

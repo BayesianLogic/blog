@@ -35,6 +35,9 @@
 
 package blog;
 
+import blog.model.NonRandomFunction;
+import blog.model.Type;
+
 /**
  * An EnumeratedObject represents a guaranteed object that is explicitly defined
  * and given a name in the model file, using a statement like: <blockquote>
