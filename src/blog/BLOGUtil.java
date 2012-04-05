@@ -8,10 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import blog.common.Histogram;
+import blog.common.Util;
 import blog.parse.BLOGParser;
 
-import common.Histogram;
-import common.Util;
 
 /**
  * A class defining static helper methods on basic interfaces (therefore not

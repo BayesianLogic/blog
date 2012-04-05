@@ -38,9 +38,9 @@ package ve;
 import java.util.*;
 import java.io.PrintStream;
 import blog.Type;
+import blog.common.TupleIterator;
+import blog.common.Util;
 import Jama.Matrix;
-import common.Util;
-import common.TupleIterator;
 
 public class MultiArrayPotential implements Potential {
 

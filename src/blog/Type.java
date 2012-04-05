@@ -37,7 +37,8 @@ package blog;
 
 import java.util.*;
 import java.io.PrintStream;
-import common.Util;
+
+import blog.common.Util;
 
 /**
  * Represents a type in a BLOG model. Stores a set of potential object patterns

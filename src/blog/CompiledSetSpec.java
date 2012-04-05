@@ -37,10 +37,10 @@ package blog;
 
 import java.util.*;
 
+import blog.common.HashMultiMap;
+import blog.common.MultiMap;
+import blog.common.Util;
 import blog.objgen.ObjGenGraph;
-import common.Util;
-import common.MultiMap;
-import common.HashMultiMap;
 
 /**
  * Data structure that facilitates iterating over the set of objects <i>x</i>

@@ -36,8 +36,9 @@
 package blog.distrib;
 
 import blog.*;
+import blog.common.Util;
+
 import java.util.*;
-import common.Util;
 
 /**
  * A Beta distribution with shape parameters a and b, defined by f(x) =(x^(a-1)

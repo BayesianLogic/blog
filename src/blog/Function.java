@@ -36,8 +36,9 @@
 package blog;
 
 import java.util.*;
-import common.Util;
-import common.TupleIterator;
+
+import blog.common.TupleIterator;
+import blog.common.Util;
 
 /**
  * Represents a BLOG function. A function is specified by its name, return type,

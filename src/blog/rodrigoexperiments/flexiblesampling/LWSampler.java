@@ -8,8 +8,8 @@ import blog.DefaultPartialWorld;
 import blog.Model;
 import blog.PartialWorld;
 import blog.Sampler;
+import blog.common.Util;
 
-import common.Util;
 
 public class LWSampler extends Sampler {
 

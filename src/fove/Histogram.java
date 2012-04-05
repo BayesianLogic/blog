@@ -38,7 +38,8 @@ package fove;
 import java.util.*;
 import java.io.PrintStream;
 
-import common.Util;
+import blog.common.Util;
+
 
 public class Histogram {
 

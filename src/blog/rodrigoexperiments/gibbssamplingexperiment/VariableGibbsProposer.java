@@ -40,8 +40,8 @@ import blog.AbstractProposer;
 import blog.Model;
 import blog.PartialWorldDiff;
 import blog.VarWithDistrib;
+import blog.common.Util;
 
-import common.Util;
 
 /**
  * Proposer that uses {@link VariableImportanceSampler}s assumed to be Gibbs and

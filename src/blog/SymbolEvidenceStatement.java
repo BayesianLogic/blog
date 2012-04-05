@@ -37,7 +37,8 @@ package blog;
 
 import java.util.*;
 
-import common.Util;
+import blog.common.Util;
+
 
 /**
  * Represents a symbol evidence statement, which is of the form <I>{type_name

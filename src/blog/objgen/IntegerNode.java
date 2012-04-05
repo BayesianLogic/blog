@@ -12,8 +12,8 @@ import blog.EvalContext;
 import blog.ObjectIterator;
 import blog.ObjectSet;
 import blog.Term;
+import blog.common.Util;
 
-import common.Util;
 
 public class IntegerNode extends Node {
 	void addLowerBound(Term term, boolean strict) {

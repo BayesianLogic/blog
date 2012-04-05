@@ -38,8 +38,8 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.common.Util;
 import blog.distrib.CondProbDistrib;
-import common.Util;
 
 /**
  * Represents dependency statements for functions and number statements for

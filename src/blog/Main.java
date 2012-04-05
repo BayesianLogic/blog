@@ -39,11 +39,11 @@ import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
 
+import blog.common.Timer;
+import blog.common.Util;
+import blog.common.cmdline.*;
 import blog.parse.BLOGParser;
 import java_cup.runtime.Symbol;
-import common.Util;
-import common.Timer;
-import common.cmdline.*;
 
 /**
  * Main program for the BLOG (Bayesian Logic) inference engine.
@@ -246,9 +246,9 @@ public class Main {
 	private static void parseOptions(String[] args) {
 		Map specialOptions = new HashMap(); // from String to Option
 
-		common.cmdline.Parser
+		blog.common.cmdline.Parser
 				.setProgramDesc("Bayesian Logic (BLOG) inference engine");
-		common.cmdline.Parser.setUsageLine("Usage: runblog <file1> ... <fileN>");
+		blog.common.cmdline.Parser.setUsageLine("Usage: runblog <file1> ... <fileN>");
 
 		BooleanOption optRandomize = new BooleanOption("r", "randomize", false,
 				"Use clock time as random seed");
@@ -298,7 +298,7 @@ public class Main {
 		IntOption optNumMoves = new IntOption("m", "num_moves", 1,
 				"Use <m> moves per rejuvenation step (PF only)");
 
-		filenames = common.cmdline.Parser.parse(args);
+		filenames = blog.common.cmdline.Parser.parse(args);
 		if (filenames.isEmpty()) {
 			System.err.println("Error: no BLOG input files specified.");
 			Parser.printUsage(System.err);

@@ -1,9 +1,9 @@
 package blog.rodrigoexperiments.gibbssamplingexperiment;
 
 import java.util.*;
-import common.EZIterator;
 import blog.PartialWorld;
 import blog.VarWithDistrib;
+import blog.common.EZIterator;
 import blog.distrib.*;
 
 /*

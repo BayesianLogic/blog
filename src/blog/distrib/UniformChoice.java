@@ -37,7 +37,7 @@ package blog.distrib;
 
 import java.util.*;
 import blog.*;
-import common.Util;
+import blog.common.Util;
 
 /**
  * CPD that takes a set of objects (an instance of the ObjectSet interface) as

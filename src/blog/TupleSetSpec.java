@@ -37,15 +37,15 @@ package blog;
 
 import java.util.*;
 
+import blog.common.AbstractTupleIterator;
+import blog.common.HashMapDiff;
+import blog.common.HashMultiset;
+import blog.common.Multiset;
+import blog.common.UnaryFunction;
+import blog.common.UnaryProcedure;
+import blog.common.Util;
 import blog.objgen.ObjGenGraph;
 
-import common.UnaryFunction;
-import common.UnaryProcedure;
-import common.Util;
-import common.AbstractTupleIterator;
-import common.Multiset;
-import common.HashMultiset;
-import common.HashMapDiff;
 
 /**
  * Represents an argument - set consisting of implicitly specified tuples. The

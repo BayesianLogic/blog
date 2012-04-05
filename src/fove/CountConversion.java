@@ -37,8 +37,8 @@ package fove;
 
 import java.util.*;
 import blog.*;
+import blog.common.TupleIterator;
 import ve.*;
-import common.TupleIterator;
 
 public class CountConversion extends LiftedInfOperator {
 

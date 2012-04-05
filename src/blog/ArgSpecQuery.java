@@ -38,8 +38,9 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
-import common.Histogram;
-import common.UnaryFunction;
+import blog.common.Histogram;
+import blog.common.UnaryFunction;
+
 import ve.Factor;
 import ve.Potential;
 

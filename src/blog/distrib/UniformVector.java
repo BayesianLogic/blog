@@ -36,9 +36,9 @@
 package blog.distrib;
 
 import blog.*;
+import blog.common.Util;
 import Jama.*;
 import java.util.*;
-import common.Util;
 
 /**
  * The uniform distribution over n-dimensional column vectors coming from a

@@ -38,17 +38,18 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
-import common.DefaultDGraph;
-import common.HashMapWithPreimages;
-import common.Util;
-import common.MultiMap;
-import common.HashMultiMap;
-import common.IndexedSet;
-import common.IndexedMultiMap;
-import common.IndexedHashMultiMap;
-import common.MapWithPreimages;
-import common.DGraph;
-import common.Timer;
+import blog.common.DGraph;
+import blog.common.DefaultDGraph;
+import blog.common.HashMapWithPreimages;
+import blog.common.HashMultiMap;
+import blog.common.IndexedHashMultiMap;
+import blog.common.IndexedMultiMap;
+import blog.common.IndexedSet;
+import blog.common.MapWithPreimages;
+import blog.common.MultiMap;
+import blog.common.Timer;
+import blog.common.Util;
+
 
 /**
  * An implementation of the PartialWorld interface that just requires concrete

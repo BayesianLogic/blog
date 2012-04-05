@@ -2,7 +2,8 @@ package blog;
 
 import java.util.*;
 
-import common.Util;
+import blog.common.Util;
+
 
 /**
  * Proposer that uses {@link VariableImportanceSampler}s assumed to be Gibbs and

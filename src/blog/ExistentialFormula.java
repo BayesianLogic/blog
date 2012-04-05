@@ -36,7 +36,8 @@
 package blog;
 
 import java.util.*;
-import common.HashMapDiff;
+
+import blog.common.HashMapDiff;
 
 /**
  * Represents an existential instantiation for one variable satisfying an

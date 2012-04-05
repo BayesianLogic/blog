@@ -38,9 +38,9 @@ package fove;
 import java.util.*;
 
 import blog.*;
-import common.HashMapDiff; // for checkTypesAndScope
-import common.TupleIterator;
-import common.Util;
+import blog.common.HashMapDiff;
+import blog.common.TupleIterator;
+import blog.common.Util;
 
 /**
  * A term whose value is a histogram, counting the number of bindings to a set

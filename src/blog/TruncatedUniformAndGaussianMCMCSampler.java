@@ -1,7 +1,8 @@
 package blog;
 
 import java.util.*;
-import common.EZIterator;
+
+import blog.common.EZIterator;
 import blog.distrib.*;
 
 /**

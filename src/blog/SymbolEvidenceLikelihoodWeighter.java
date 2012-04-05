@@ -2,8 +2,9 @@ package blog;
 
 import java.util.*;
 
-import common.HashMultiMap;
-import common.Util;
+import blog.common.HashMultiMap;
+import blog.common.Util;
+
 
 /**
  * Samples the likelihood of evidence in a partial world, with varying weight,

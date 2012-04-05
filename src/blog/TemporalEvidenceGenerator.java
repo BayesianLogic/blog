@@ -2,11 +2,12 @@ package blog;
 
 import java.util.*;
 
-import common.EZIterator;
-import common.HashMultiset;
-import common.Multiset;
-import common.UnaryProcedure;
-import common.Util;
+import blog.common.EZIterator;
+import blog.common.HashMultiset;
+import blog.common.Multiset;
+import blog.common.UnaryProcedure;
+import blog.common.Util;
+
 
 /**
  * Extends {@link TemporalPartialWorldGenerator} in order to generate evidence

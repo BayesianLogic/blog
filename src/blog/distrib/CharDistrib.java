@@ -38,7 +38,7 @@ package blog.distrib;
 import java.util.*;
 import Jama.Matrix;
 import blog.*;
-import common.Util;
+import blog.common.Util;
 
 /**
  * A mixture between a multinomial distribution over a fixed set of characters

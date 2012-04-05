@@ -37,9 +37,10 @@ package blog;
 
 import java.util.*;
 import java.io.PrintStream;
-import common.Util;
-import common.MapWithPreimages;
-import common.HashMapWithPreimages;
+
+import blog.common.HashMapWithPreimages;
+import blog.common.MapWithPreimages;
+import blog.common.Util;
 
 /**
  * Basic implementation of the EvalContext interface. When the underlying

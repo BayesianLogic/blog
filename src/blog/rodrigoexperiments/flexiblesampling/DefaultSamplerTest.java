@@ -2,10 +2,10 @@ package blog.rodrigoexperiments.flexiblesampling;
 
 import junit.framework.TestCase;
 
-import common.Util;
 import blog.BLOGUtil;
 import blog.DefaultPartialWorld;
 import blog.Model;
+import blog.common.Util;
 import blog.rodrigoexperiments.flexiblesampling.Sampler.Sample;
 
 public class DefaultSamplerTest extends TestCase {

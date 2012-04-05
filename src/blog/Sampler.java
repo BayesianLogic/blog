@@ -38,7 +38,8 @@ package blog;
 import java.util.List;
 import java.util.Properties;
 
-import common.Util;
+import blog.common.Util;
+
 
 /**
  * An object that stochastically generates a sequence of samples, which are

@@ -39,8 +39,8 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.*;
+import blog.common.TupleIterator;
 import fove.*;
-import common.TupleIterator;
 
 /**
  * A propositional Markov net. The MN is represented as a set of random

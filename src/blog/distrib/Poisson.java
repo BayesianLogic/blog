@@ -36,9 +36,10 @@
 package blog.distrib;
 
 import blog.*;
+import blog.common.Util;
+
 import java.io.Serializable;
 import java.util.*;
-import common.Util;
 
 /**
  * A Poisson distribution with mean and variance lambda. This is a distribution

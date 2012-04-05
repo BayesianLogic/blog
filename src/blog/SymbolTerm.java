@@ -37,7 +37,8 @@ package blog;
 
 import java.util.*;
 
-import common.Util;
+import blog.common.Util;
+
 
 /**
  * A term consisting of a single symbol. This may be either a zero-ary function

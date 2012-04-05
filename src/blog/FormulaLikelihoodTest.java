@@ -4,7 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
-import common.Util;
+import blog.common.Util;
+
 
 import junit.framework.TestCase;
 

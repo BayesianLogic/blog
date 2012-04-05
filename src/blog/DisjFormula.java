@@ -37,7 +37,8 @@ package blog;
 
 import java.util.*;
 
-import common.TupleIterator;
+import blog.common.TupleIterator;
+
 
 /**
  * Represents a disjunction of expressions, each of which is a Formula.
