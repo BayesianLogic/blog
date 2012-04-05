@@ -36,7 +36,8 @@
 package blog;
 
 import java.util.*;
-import common.Util;
+
+import blog.common.Util;
 
 /**
  * A random variable whose value is the value of a certain random function on a

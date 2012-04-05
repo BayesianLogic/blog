@@ -5,8 +5,8 @@ import java.util.*;
 
 import blog.PartialWorld;
 import blog.VarWithDistrib;
+import blog.common.Util;
 
-import common.Util;
 
 /**
  * A class responsible for providing the best sampler for a seed variable, given

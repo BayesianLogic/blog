@@ -36,10 +36,11 @@
 package blog;
 
 import java.util.*;
-import common.Util;
-import common.ExtensibleLinkedList;
-import common.AddedTupleIterator;
-import common.DGraph;
+
+import blog.common.AddedTupleIterator;
+import blog.common.DGraph;
+import blog.common.ExtensibleLinkedList;
+import blog.common.Util;
 
 /**
  * PartialWorld implementation that maintains a list of uninstantiated

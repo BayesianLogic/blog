@@ -36,7 +36,8 @@
 package blog;
 
 import java.util.*;
-import common.HashMapDiff;
+
+import blog.common.HashMapDiff;
 
 /**
  * Represents a universal instantiation for one variable using one expression of

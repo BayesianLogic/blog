@@ -1,7 +1,8 @@
 package blog;
 
 import java.util.*;
-import common.Util;
+
+import blog.common.Util;
 
 public class TemporaryTest {
 	public static void main(String[] args) {

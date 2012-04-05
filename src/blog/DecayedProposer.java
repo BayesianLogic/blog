@@ -36,7 +36,8 @@
 package blog;
 
 import java.util.*;
-import common.Util;
+
+import blog.common.Util;
 
 /**
  * A DecayedProposer as defined by Bhaskara Marthi, Hanna Pasula, Stuart

@@ -37,7 +37,8 @@ package blog;
 
 import java.util.*;
 import java.util.regex.*;
-import common.Util;
+
+import blog.common.Util;
 
 /**
  * A Particle for Particle Filtering. The particle is advanced as it receives

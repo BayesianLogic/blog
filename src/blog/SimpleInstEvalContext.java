@@ -36,7 +36,8 @@
 package blog;
 
 import java.util.*;
-import common.Util;
+
+import blog.common.Util;
 
 /**
  * Evaluation context that instantiates random variables as needed, using some

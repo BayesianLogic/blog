@@ -3,10 +3,10 @@ package blog;
 import java.util.*;
 import java.io.*;
 
+import blog.common.Histogram;
+import blog.common.UnaryPredicate;
+import blog.common.Util;
 import blog.parse.BLOGParser;
-import common.Histogram;
-import common.Util;
-import common.UnaryPredicate;
 
 import junit.framework.TestCase;
 

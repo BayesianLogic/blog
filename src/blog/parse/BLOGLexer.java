@@ -34,8 +34,8 @@ package blog.parse;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+import blog.common.ScannerWithLocInfo;
 import java_cup.runtime.Symbol;
-import common.ScannerWithLocInfo;
 
 public class BLOGLexer implements ScannerWithLocInfo {
 	private final int YY_BUFFER_SIZE = 512;

@@ -3,8 +3,9 @@ package blog;
 import java.util.*;
 import java.util.regex.*;
 
-import common.Util;
-import common.UnaryProcedure;
+import blog.common.UnaryProcedure;
+import blog.common.Util;
+
 
 /**
  * Generates and increasingly augments a partial world by sampling

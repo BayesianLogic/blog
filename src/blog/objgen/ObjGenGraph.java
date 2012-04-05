@@ -55,9 +55,9 @@ import blog.OriginFunction;
 import blog.POP;
 import blog.Term;
 import blog.Type;
-import common.Util;
-import common.DGraph;
-import common.AbstractDGraph;
+import blog.common.AbstractDGraph;
+import blog.common.DGraph;
+import blog.common.Util;
 
 /**
  * An object generation graph contains nodes that represent sets of objects with

@@ -37,10 +37,11 @@ package blog;
 
 import java.util.*;
 
-import common.Multiset;
-import common.HashMultiset;
-import common.UnaryProcedure;
-import common.Util;
+import blog.common.HashMultiset;
+import blog.common.Multiset;
+import blog.common.UnaryProcedure;
+import blog.common.Util;
+
 
 /**
  * Represents an argument - set with explicit listing of its elements. The

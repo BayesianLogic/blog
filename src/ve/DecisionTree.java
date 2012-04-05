@@ -37,8 +37,8 @@ package ve;
 
 import java.util.*;
 import java.io.PrintStream;
-import common.TupleIterator;
 import blog.*;
+import blog.common.TupleIterator;
 
 /**
  * A decision tree where each interior node is labeled with a SPLIT_LABEL, edges

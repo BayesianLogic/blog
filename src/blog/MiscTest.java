@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import common.Util;
+import blog.common.Util;
+
 
 import junit.framework.TestCase;
 import static blog.BLOGUtil.*;

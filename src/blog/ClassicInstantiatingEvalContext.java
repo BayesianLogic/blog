@@ -37,8 +37,8 @@ package blog;
 
 import java.util.*;
 
+import blog.common.Util;
 import blog.distrib.CondProbDistrib;
-import common.Util;
 
 /**
  * Implementation of the EvalContext interface that instantiates new basic

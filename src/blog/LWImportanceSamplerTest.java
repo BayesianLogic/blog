@@ -4,7 +4,8 @@ import static blog.BLOGUtil.parseEvidence_NE;
 
 import java.util.*;
 
-import common.Util;
+import blog.common.Util;
+
 
 import junit.framework.TestCase;
 

@@ -4,8 +4,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import common.UnaryFunction;
-import common.Util;
+import blog.common.UnaryFunction;
+import blog.common.Util;
+
 
 /**
  * Grouping class for a model, evidence and queries, link string (see

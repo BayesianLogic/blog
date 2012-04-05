@@ -2,9 +2,10 @@ package blog;
 
 import java.util.*;
 
-import common.HashMultiMap;
-import common.MultiMap;
-import common.Util;
+import blog.common.HashMultiMap;
+import blog.common.MultiMap;
+import blog.common.Util;
+
 
 /**
  * This is a collection of methods aimed at computing the likelihood of formulas
@@ -52,7 +53,7 @@ public class FormulaLikelihood {
 		// one of them
 		// implies the negation of a conjunct of the other.
 		// Since that relation is symmetric, there is no need to test it both ways.
-		List cartesianProduct = new common.CartesianProduct(Util.list(
+		List cartesianProduct = new blog.common.CartesianProduct(Util.list(
 				conjunction.getConjuncts(), another.getConjuncts()));
 		for (Iterator it = cartesianProduct.iterator(); it.hasNext();) {
 			List pair = (List) it.next();

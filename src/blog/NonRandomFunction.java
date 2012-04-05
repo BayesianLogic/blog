@@ -39,7 +39,8 @@ import java.util.*;
 import java.lang.reflect.*;
 import java.io.PrintStream;
 
-import common.Util;
+import blog.common.Util;
+
 
 /**
  * Represents the symbol for a non-random function, whose value for the given

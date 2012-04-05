@@ -3,12 +3,12 @@ package blog;
 import java.util.*;
 import java.io.*;
 
+import blog.common.Histogram;
+import blog.common.NullaryFunction;
+import blog.common.UnaryFunction;
+import blog.common.UnaryPredicate;
+import blog.common.Util;
 import blog.parse.BLOGParser;
-import common.Histogram;
-import common.Util;
-import common.UnaryPredicate;
-import common.UnaryFunction;
-import common.NullaryFunction;
 
 import junit.framework.TestCase;
 

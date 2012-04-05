@@ -39,7 +39,7 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.*;
-import common.Util;
+import blog.common.Util;
 
 public class Constraint {
 

@@ -1,7 +1,7 @@
 package test;
 
+import blog.common.Util;
 import blog.distrib.MultivarGaussian;
-import common.Util;
 import Jama.Matrix;
 
 /**

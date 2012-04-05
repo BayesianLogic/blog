@@ -45,7 +45,7 @@ public class Util {
 			DependencyModel depModel, PartialWorld world, double mean) {
 		if (depModel.getClauseList().size() != 1)
 			return null;
-		Clause firstClause = (Clause) common.Util
+		Clause firstClause = (Clause) blog.common.Util
 				.getFirst(depModel.getClauseList());
 		DependencyModel.Distrib distrib = firstClause
 				.getDistrib(new DefaultEvalContext(world));

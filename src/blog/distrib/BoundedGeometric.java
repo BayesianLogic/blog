@@ -36,8 +36,9 @@
 package blog.distrib;
 
 import blog.*;
+import blog.common.Util;
+
 import java.util.*;
-import common.Util;
 
 /**
  * Like a geometric distribution, but with an upper bound <i>B</i>. The value

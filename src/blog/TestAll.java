@@ -16,7 +16,7 @@ public class TestAll {
 		test.addTestSuite(ParticleFilterTest.class);
 		test.addTestSuite(SymbolEvidenceLikelihoodWeighterTest.class);
 		test.addTestSuite(TupleSetSpecEvidenceLikelihoodWeighterTest.class);
-		test.addTestSuite(common.DistanceTest.class);
+		test.addTestSuite(blog.common.DistanceTest.class);
 
 		junit.textui.TestRunner.run(test);
 	}

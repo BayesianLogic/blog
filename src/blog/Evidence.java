@@ -37,7 +37,8 @@ package blog;
 
 import java.util.*;
 import java.io.PrintStream;
-import common.Util;
+
+import blog.common.Util;
 
 /**
  * Stores the information extracted from evidence file. The evidence is of 2

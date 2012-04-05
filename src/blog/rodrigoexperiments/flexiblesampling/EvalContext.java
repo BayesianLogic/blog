@@ -7,8 +7,8 @@ import blog.DefaultEvalContext;
 import blog.InstantiatingEvalContext;
 import blog.PartialWorld;
 import blog.VarWithDistrib;
+import blog.common.HashSetDiff;
 import blog.rodrigoexperiments.flexiblesampling.Sampler.Sample;
-import common.HashSetDiff;
 
 public class EvalContext extends DefaultEvalContext implements
 		InstantiatingEvalContext {

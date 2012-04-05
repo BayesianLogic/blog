@@ -1,7 +1,8 @@
 package blog;
 
 import java.util.*;
-import common.EZIterator;
+
+import blog.common.EZIterator;
 
 /**
  * Wrapper of a particle filter with knowledge of which evidence and queries to

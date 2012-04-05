@@ -51,11 +51,11 @@ import blog.Type;
 import blog.UniversalFormula;
 import blog.ValueEvidenceStatement;
 import blog.Function.Sig;
+import blog.common.HashMapDiff;
+import blog.common.LocationInFile;
+import blog.common.ScannerWithLocInfo;
+import blog.common.Util;
 import Jama.*;
-import common.ScannerWithLocInfo;
-import common.HashMapDiff;
-import common.LocationInFile;
-import common.Util;
 import fove.Parfactor;
 import fove.CountingTerm;
 

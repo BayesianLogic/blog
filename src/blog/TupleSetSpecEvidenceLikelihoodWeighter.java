@@ -2,9 +2,10 @@ package blog;
 
 import java.util.*;
 
-import common.HashMultiset;
-import common.Multiset;
-import common.Util;
+import blog.common.HashMultiset;
+import blog.common.Multiset;
+import blog.common.Util;
+
 
 /**
  * Computes likelihood of evidence stating that a set of variables is equal to a

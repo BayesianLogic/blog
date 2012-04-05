@@ -37,7 +37,7 @@ package blog.distrib;
 
 import java.util.*;
 import blog.*;
-import common.Util;
+import blog.common.Util;
 
 /**
  * Represents a probability model for output strings Y given input strings X. We
