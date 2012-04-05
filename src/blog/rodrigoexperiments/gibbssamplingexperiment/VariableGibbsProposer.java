@@ -37,10 +37,10 @@ package blog.rodrigoexperiments.gibbssamplingexperiment;
 import java.util.*;
 
 import blog.AbstractProposer;
-import blog.Model;
 import blog.PartialWorldDiff;
 import blog.VarWithDistrib;
 import blog.common.Util;
+import blog.model.Model;
 
 
 /**

@@ -37,6 +37,8 @@ package blog;
 
 import java.util.*;
 import java.io.PrintStream;
+
+import blog.model.Model;
 import ve.Factor;
 
 /**

@@ -5,6 +5,9 @@ import java.util.*;
 import blog.common.HashMultiMap;
 import blog.common.MultiMap;
 import blog.common.Util;
+import blog.model.Function;
+import blog.model.NonRandomFunction;
+import blog.model.Term;
 
 
 /**

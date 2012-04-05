@@ -37,10 +37,17 @@ package blog;
 
 import java.util.*;
 
+import blog.model.Function;
+import blog.model.Model;
+import blog.model.NonRandomFunction;
+import blog.model.OriginFunction;
+import blog.model.Term;
+import blog.model.Type;
+
 /**
  * Represents a function invocation.
  * 
- * @see blog.Term
+ * @see blog.model.Term
  */
 public class FuncAppTerm extends Term {
 	/**

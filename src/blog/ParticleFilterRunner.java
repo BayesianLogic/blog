@@ -3,6 +3,7 @@ package blog;
 import java.util.*;
 
 import blog.common.EZIterator;
+import blog.model.Model;
 
 /**
  * Wrapper of a particle filter with knowledge of which evidence and queries to

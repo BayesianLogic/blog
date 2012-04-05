@@ -38,6 +38,9 @@ package blog;
 import java.util.*;
 
 import blog.common.Util;
+import blog.model.Model;
+import blog.model.Term;
+import blog.model.Type;
 
 /**
  * A random variable whose value is the value of a certain random function on a

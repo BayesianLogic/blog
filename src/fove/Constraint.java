@@ -40,6 +40,8 @@ import java.io.PrintStream;
 
 import blog.*;
 import blog.common.Util;
+import blog.model.Term;
+import blog.model.Type;
 
 public class Constraint {
 

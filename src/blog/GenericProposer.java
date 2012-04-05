@@ -40,6 +40,7 @@ import java.util.*;
 import blog.common.HashMultiMap;
 import blog.common.MultiMap;
 import blog.common.Util;
+import blog.model.Model;
 
 /**
  * Implements a generic MCMC proposal algorithm. Each step changes the value of

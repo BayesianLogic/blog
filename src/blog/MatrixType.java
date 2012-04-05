@@ -36,6 +36,10 @@
 package blog;
 
 import java.util.*;
+
+import blog.model.BuiltInTypes;
+import blog.model.NonRandomFunction;
+import blog.model.Type;
 import Jama.*;
 
 /**

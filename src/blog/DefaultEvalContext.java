@@ -41,6 +41,7 @@ import java.io.PrintStream;
 import blog.common.HashMapWithPreimages;
 import blog.common.MapWithPreimages;
 import blog.common.Util;
+import blog.model.Type;
 
 /**
  * Basic implementation of the EvalContext interface. When the underlying

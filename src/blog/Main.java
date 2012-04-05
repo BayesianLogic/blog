@@ -42,6 +42,7 @@ import java.lang.reflect.*;
 import blog.common.Timer;
 import blog.common.Util;
 import blog.common.cmdline.*;
+import blog.model.Model;
 import blog.parse.BLOGParser;
 import java_cup.runtime.Symbol;
 

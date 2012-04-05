@@ -38,6 +38,10 @@ package blog;
 import java.lang.ref.*;
 import java.util.*;
 
+import blog.model.Model;
+import blog.model.OriginFunction;
+import blog.model.Type;
+
 /*
  * Implementation of a BLOG non-guaranteed object. A BLOG
  * non-guaranteed object is uniquely specified by a POP and associated

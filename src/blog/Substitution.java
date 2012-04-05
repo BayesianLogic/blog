@@ -37,6 +37,8 @@ package blog;
 
 import java.util.*;
 
+import blog.model.Term;
+
 /**
  * A mapping from logical variables to terms.
  */

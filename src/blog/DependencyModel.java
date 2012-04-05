@@ -40,6 +40,9 @@ import java.io.PrintStream;
 
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
+import blog.model.Model;
+import blog.model.Term;
+import blog.model.Type;
 
 /**
  * Represents dependency statements for functions and number statements for
@@ -49,7 +52,7 @@ import blog.distrib.CondProbDistrib;
  * has the default value with probability 1. The default value is Boolean.FALSE
  * for Boolean functions, null for all other functions, and Integer(0) for POPs.
  * 
- * @see blog.Function
+ * @see blog.model.Function
  * @see blog.POP
  */
 public class DependencyModel {

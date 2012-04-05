@@ -36,6 +36,7 @@
 package fove;
 
 import blog.*;
+import blog.model.Term;
 
 public class NoQuery implements ElimTester {
 	/**

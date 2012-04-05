@@ -41,6 +41,9 @@ import blog.*;
 import blog.common.HashMapDiff;
 import blog.common.TupleIterator;
 import blog.common.Util;
+import blog.model.Model;
+import blog.model.Term;
+import blog.model.Type;
 
 /**
  * A term whose value is a histogram, counting the number of bindings to a set

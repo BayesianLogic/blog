@@ -38,6 +38,7 @@ package blog.distrib;
 import java.util.*;
 import Jama.Matrix;
 import blog.*;
+import blog.model.Type;
 
 /**
  * A mixture of an explicit distribution over the first k natural numbers

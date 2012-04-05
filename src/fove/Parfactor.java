@@ -44,6 +44,10 @@ import blog.*;
 import blog.common.CartesianProduct;
 import blog.common.TupleIterator;
 import blog.common.Util;
+import blog.model.Model;
+import blog.model.NonRandomFunction;
+import blog.model.Term;
+import blog.model.Type;
 import ve.*;
 
 /**

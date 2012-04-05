@@ -37,6 +37,10 @@ package blog;
 
 import java.util.*;
 
+import blog.model.Model;
+import blog.model.Term;
+import blog.model.Type;
+
 /**
  * Represents an equality test on 2 expressions, each of which is a
  * non-boolean-valued Term.

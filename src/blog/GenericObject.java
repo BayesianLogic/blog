@@ -35,6 +35,10 @@
 
 package blog;
 
+import blog.model.Model;
+import blog.model.OriginFunction;
+import blog.model.Type;
+
 /**
  * Represents a generic object of some type, possibly with constraints on the
  * values of its origin functions. Origin functions can be evaluated on these

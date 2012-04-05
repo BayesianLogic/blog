@@ -41,6 +41,10 @@ import blog.common.AddedTupleIterator;
 import blog.common.DGraph;
 import blog.common.ExtensibleLinkedList;
 import blog.common.Util;
+import blog.model.BuiltInTypes;
+import blog.model.Function;
+import blog.model.Model;
+import blog.model.Type;
 
 /**
  * PartialWorld implementation that maintains a list of uninstantiated

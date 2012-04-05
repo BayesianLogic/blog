@@ -2,6 +2,8 @@ package blog;
 
 import java.util.Properties;
 
+import blog.model.Model;
+
 /**
  * An evidence likelihood weighting sampler that uses a chain of
  * {@link EvidenceLikelihoodWeighter}s. Currently, the chain is formed by

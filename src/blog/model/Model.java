@@ -33,14 +33,24 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 import java.util.regex.*;
 import java.io.PrintStream;
 import java.io.StringReader;
 
+import blog.DependencyModel;
+import blog.EnumeratedObject;
+import blog.Evidence;
+import blog.Main;
+import blog.NonGuaranteedObject;
+import blog.ObjectIdentifier;
+import blog.POP;
+import blog.RandomFunction;
+import blog.Timestep;
 import blog.common.Util;
+import blog.model.Function.Sig;
 
 import fove.Parfactor;
 

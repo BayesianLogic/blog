@@ -38,7 +38,7 @@ package blog.distrib;
 import java.util.*;
 
 import blog.EqualsCPD;
-import blog.Type;
+import blog.model.Type;
 
 /**
  * An interface which all user-defined conditional probability distributions

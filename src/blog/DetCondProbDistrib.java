@@ -39,6 +39,7 @@ import java.util.*;
 
 import blog.common.Util;
 import blog.distrib.AbstractCondProbDistrib;
+import blog.model.Type;
 
 
 /**

@@ -38,6 +38,11 @@ package blog;
 import java.util.*;
 
 import blog.common.Util;
+import blog.model.BuiltInFunctions;
+import blog.model.Function;
+import blog.model.Model;
+import blog.model.Term;
+import blog.model.Type;
 
 
 /**
