@@ -40,6 +40,7 @@ import java.util.*;
 import blog.common.TupleIterator;
 import blog.common.Util;
 import blog.model.ArgSpec;
+import blog.model.Formula;
 import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.Term;
@@ -47,7 +48,7 @@ import blog.model.Term;
 /**
  * Represents a conjuction of expressions, each of which is a Formula.
  * 
- * @see blog.Formula
+ * @see blog.model.Formula
  */
 public class ConjFormula extends Formula {
 

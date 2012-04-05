@@ -9,6 +9,7 @@ import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.NonRandomFunction;
 import blog.model.RandomFunction;
+import blog.model.SkolemConstant;
 import blog.model.Term;
 import blog.model.Type;
 

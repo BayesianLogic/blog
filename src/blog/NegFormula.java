@@ -38,6 +38,7 @@ package blog;
 import java.util.*;
 
 import blog.model.ArgSpec;
+import blog.model.Formula;
 import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.Term;
@@ -45,7 +46,7 @@ import blog.model.Term;
 /**
  * Represents a logical negation of an expression of type Formula.
  * 
- * @see blog.Formula
+ * @see blog.model.Formula
  */
 public class NegFormula extends Formula {
 

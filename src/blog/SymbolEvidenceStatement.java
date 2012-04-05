@@ -42,7 +42,10 @@ import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 import blog.model.ArgSpec;
+import blog.model.CardinalitySpec;
+import blog.model.ImplicitSetSpec;
 import blog.model.Model;
+import blog.model.SkolemConstant;
 import blog.model.Term;
 
 

@@ -6,6 +6,7 @@ import blog.common.HashMultiMap;
 import blog.common.MultiMap;
 import blog.common.Util;
 import blog.model.ArgSpec;
+import blog.model.Formula;
 import blog.model.Function;
 import blog.model.NonRandomFunction;
 import blog.model.Term;

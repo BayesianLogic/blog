@@ -25,6 +25,7 @@ import blog.common.UnaryFunction;
 import blog.common.UnaryPredicate;
 import blog.common.Util;
 import blog.common.Gnuplot.YSeries;
+import blog.model.ExplicitSetSpec;
 import blog.model.Model;
 import blog.model.Term;
 import static blog.common.Experiment.*;
