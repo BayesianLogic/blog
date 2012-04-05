@@ -33,17 +33,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
+import blog.CompiledSetSpec;
+import blog.EvalContext;
+import blog.ExistentialFormula;
+import blog.GenericObject;
+import blog.ObjectIterator;
+import blog.ObjectSet;
+import blog.Substitution;
 import blog.common.HashMapDiff;
-import blog.model.ArgSpec;
-import blog.model.Formula;
-import blog.model.LogicalVar;
-import blog.model.Model;
-import blog.model.Term;
-import blog.model.Type;
 
 /**
  * Represents a universal instantiation for one variable using one expression of

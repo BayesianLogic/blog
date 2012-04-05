@@ -37,7 +37,6 @@ package blog.model;
 
 import java.util.*;
 
-import blog.ConjFormula;
 import blog.EvalContext;
 import blog.FuncAppTerm;
 import blog.ObjectIterator;

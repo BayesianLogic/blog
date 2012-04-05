@@ -41,6 +41,7 @@ import blog.bn.NumberVar;
 import blog.common.HashMultiMap;
 import blog.common.MultiMap;
 import blog.common.Util;
+import blog.model.ConjFormula;
 import blog.model.Formula;
 import blog.model.LogicalVar;
 import blog.objgen.ObjGenGraph;

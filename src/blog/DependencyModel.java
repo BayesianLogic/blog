@@ -45,6 +45,7 @@ import blog.distrib.CondProbDistrib;
 import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.Term;
+import blog.model.TrueFormula;
 import blog.model.Type;
 
 /**

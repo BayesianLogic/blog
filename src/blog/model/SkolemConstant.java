@@ -38,13 +38,9 @@ package blog.model;
 import java.util.*;
 
 import blog.Clause;
-import blog.ConjFormula;
 import blog.DependencyModel;
-import blog.EqualityFormula;
 import blog.FuncAppTerm;
-import blog.NegFormula;
 import blog.SymbolEvidenceStatement;
-import blog.TrueFormula;
 
 /**
  * Represents a skolem constant -- a constant introduced by symbol evidence
