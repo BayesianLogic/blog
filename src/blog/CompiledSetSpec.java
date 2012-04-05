@@ -36,6 +36,8 @@
 package blog;
 
 import java.util.*;
+
+import blog.objgen.ObjGenGraph;
 import common.Util;
 import common.MultiMap;
 import common.HashMultiMap;
