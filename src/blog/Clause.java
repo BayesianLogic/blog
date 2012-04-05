@@ -43,6 +43,8 @@ import blog.bn.RandFuncAppVar;
 import blog.distrib.CondProbDistrib;
 import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
+import blog.model.CardinalitySpec;
+import blog.model.Formula;
 import blog.model.Model;
 import blog.model.RandomFunction;
 import blog.model.Term;

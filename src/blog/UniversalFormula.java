@@ -39,6 +39,7 @@ import java.util.*;
 
 import blog.common.HashMapDiff;
 import blog.model.ArgSpec;
+import blog.model.Formula;
 import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.Term;

@@ -33,10 +33,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
+import blog.ConjFormula;
+import blog.EvalContext;
+import blog.FuncAppTerm;
+import blog.ObjectIterator;
+import blog.Substitution;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.AbstractTupleIterator;
@@ -46,12 +51,6 @@ import blog.common.Multiset;
 import blog.common.UnaryFunction;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
-import blog.model.ArgSpec;
-import blog.model.LogicalVar;
-import blog.model.Model;
-import blog.model.RandomFunction;
-import blog.model.Term;
-import blog.model.Type;
 import blog.objgen.ObjGenGraph;
 
 

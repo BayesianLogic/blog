@@ -48,6 +48,7 @@ import blog.model.BuiltInTypes;
 import blog.model.Function;
 import blog.model.Model;
 import blog.model.RandomFunction;
+import blog.model.SkolemConstant;
 import blog.model.Type;
 
 /**

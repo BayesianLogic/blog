@@ -42,6 +42,7 @@ import blog.common.HashMapDiff;
 import blog.common.TupleIterator;
 import blog.common.Util;
 import blog.model.ArgSpec;
+import blog.model.Formula;
 import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.Term;

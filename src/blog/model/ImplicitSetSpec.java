@@ -33,21 +33,22 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
+import blog.CompiledSetSpec;
+import blog.DefaultEvalContext;
+import blog.EvalContext;
+import blog.ObjectSet;
+import blog.PartialWorld;
+import blog.Substitution;
 import blog.common.HashMapDiff;
 import blog.common.Multiset;
 import blog.common.MultisetBackedSet;
 import blog.common.SetBackedMultiset;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
-import blog.model.ArgSpec;
-import blog.model.LogicalVar;
-import blog.model.Model;
-import blog.model.Term;
-import blog.model.Type;
 
 /**
  * Represents an argument - set with implicit specification of its elements. An

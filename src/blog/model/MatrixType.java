@@ -33,13 +33,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
-import blog.model.BuiltInTypes;
-import blog.model.NonRandomFunction;
-import blog.model.Type;
+import blog.AbstractFunctionInterp;
 import Jama.*;
 
 /**

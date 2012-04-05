@@ -33,15 +33,17 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
+import blog.ConjFormula;
+import blog.DisjFormula;
+import blog.EvalContext;
+import blog.GenericObject;
+import blog.PartialWorld;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
-import blog.model.ArgSpec;
-import blog.model.LogicalVar;
-import blog.model.Term;
 
 
 /**

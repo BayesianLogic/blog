@@ -33,14 +33,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
-import blog.model.LogicalVar;
-import blog.model.Model;
-import blog.model.RandomFunction;
-import blog.model.Term;
+import blog.Clause;
+import blog.ConjFormula;
+import blog.DependencyModel;
+import blog.EqualityFormula;
+import blog.FuncAppTerm;
+import blog.NegFormula;
+import blog.SymbolEvidenceStatement;
+import blog.TrueFormula;
 
 /**
  * Represents a skolem constant -- a constant introduced by symbol evidence
