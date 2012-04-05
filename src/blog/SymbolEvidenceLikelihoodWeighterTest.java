@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+import blog.bn.BasicVar;
 import blog.common.Util;
 import blog.distrib.Gaussian;
 import blog.model.Model;

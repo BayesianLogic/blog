@@ -37,10 +37,14 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.BasicVar;
+import blog.bn.NumberVar;
+import blog.bn.RandFuncAppVar;
 import blog.common.Timer;
 import blog.common.Util;
 import blog.model.Function;
 import blog.model.Model;
+import blog.model.RandomFunction;
 import blog.model.Type;
 
 /**

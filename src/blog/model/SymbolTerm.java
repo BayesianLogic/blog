@@ -37,13 +37,12 @@ package blog.model;
 
 import java.util.*;
 
-import blog.BayesNetVar;
-import blog.DerivedVar;
 import blog.EvalContext;
 import blog.FuncAppTerm;
-import blog.RandFuncAppVar;
-import blog.RandomFunction;
 import blog.Substitution;
+import blog.bn.BayesNetVar;
+import blog.bn.DerivedVar;
+import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 
 

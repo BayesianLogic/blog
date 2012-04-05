@@ -2,6 +2,7 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.BayesNetVar;
 import blog.common.HashMultiset;
 import blog.common.Multiset;
 import blog.common.Util;

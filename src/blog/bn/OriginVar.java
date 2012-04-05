@@ -33,9 +33,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.bn;
 
 import java.util.*;
+
+import blog.InstantiatingEvalContext;
+import blog.ObjectIdentifier;
+import blog.PartialWorld;
+import blog.Timestep;
 
 /**
  * A variable whose value is the POP application satisfied by a given object

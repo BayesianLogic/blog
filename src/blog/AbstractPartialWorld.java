@@ -38,6 +38,13 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.bn.BasicVar;
+import blog.bn.BayesNetVar;
+import blog.bn.DerivedVar;
+import blog.bn.NumberVar;
+import blog.bn.OriginVar;
+import blog.bn.RandFuncAppVar;
+import blog.bn.VarWithDistrib;
 import blog.common.DGraph;
 import blog.common.DefaultDGraph;
 import blog.common.HashMapWithPreimages;
@@ -50,6 +57,7 @@ import blog.common.MultiMap;
 import blog.common.Timer;
 import blog.common.Util;
 import blog.model.Model;
+import blog.model.RandomFunction;
 
 
 /**

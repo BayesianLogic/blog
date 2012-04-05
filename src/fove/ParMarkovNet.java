@@ -42,6 +42,7 @@ import blog.*;
 import blog.model.ArgSpec;
 import blog.model.Function;
 import blog.model.Model;
+import blog.model.RandomFunction;
 import ve.*;
 
 /**

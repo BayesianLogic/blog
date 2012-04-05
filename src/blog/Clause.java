@@ -38,10 +38,13 @@ package blog;
 import java.util.*;
 import java.lang.reflect.*;
 
+import blog.bn.BasicVar;
+import blog.bn.RandFuncAppVar;
 import blog.distrib.CondProbDistrib;
 import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
 import blog.model.Model;
+import blog.model.RandomFunction;
 import blog.model.Term;
 import blog.model.Type;
 

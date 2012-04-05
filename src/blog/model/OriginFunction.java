@@ -41,8 +41,8 @@ import java.io.PrintStream;
 import blog.EvalContext;
 import blog.GenericObject;
 import blog.NonGuaranteedObject;
-import blog.NumberVar;
 import blog.ObjectIdentifier;
+import blog.bn.NumberVar;
 
 /**
  * Represents a BLOG generating function.

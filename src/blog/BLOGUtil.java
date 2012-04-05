@@ -8,6 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import blog.bn.BasicVar;
+import blog.bn.BayesNetVar;
+import blog.bn.DerivedVar;
+import blog.bn.VarWithDistrib;
 import blog.common.Histogram;
 import blog.common.Util;
 import blog.model.ArgSpec;

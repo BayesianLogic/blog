@@ -41,6 +41,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.io.PrintStream;
 
 import blog.*;
+import blog.bn.BasicVar;
 import blog.common.CartesianProduct;
 import blog.common.TupleIterator;
 import blog.common.Util;
@@ -48,6 +49,7 @@ import blog.model.ArgSpec;
 import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.NonRandomFunction;
+import blog.model.RandomFunction;
 import blog.model.Term;
 import blog.model.Type;
 import ve.*;

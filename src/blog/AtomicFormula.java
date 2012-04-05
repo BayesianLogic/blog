@@ -37,6 +37,7 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.BayesNetVar;
 import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
 import blog.model.LogicalVar;

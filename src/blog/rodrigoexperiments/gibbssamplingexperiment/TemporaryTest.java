@@ -42,7 +42,7 @@ import blog.Evidence;
 import blog.MHSampler;
 import blog.PartialWorld;
 import blog.PartialWorldDiff;
-import blog.RandFuncAppVar;
+import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 import blog.model.Model;
 

@@ -37,7 +37,7 @@ package blog.rodrigoexperiments.gibbssamplingexperiment;
 import java.util.*;
 
 import blog.PartialWorld;
-import blog.VarWithDistrib;
+import blog.bn.VarWithDistrib;
 
 /**
  * An interface for variable proposal methods specific to certain situations

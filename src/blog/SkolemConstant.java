@@ -39,6 +39,7 @@ import java.util.*;
 
 import blog.model.LogicalVar;
 import blog.model.Model;
+import blog.model.RandomFunction;
 import blog.model.Term;
 
 /**

@@ -38,6 +38,8 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.bn.BasicVar;
+import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.UnaryFunction;
 import blog.model.ArgSpec;

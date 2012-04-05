@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 import blog.PartialWorld;
-import blog.VarWithDistrib;
+import blog.bn.VarWithDistrib;
 import blog.common.Util;
 
 

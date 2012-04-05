@@ -37,6 +37,8 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.BayesNetVar;
+import blog.bn.VarWithDistrib;
 import blog.common.HashMultiMap;
 import blog.common.MultiMap;
 import blog.common.Util;

@@ -33,9 +33,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.bn;
 
 import java.util.*;
+
+import blog.ClassicInstantiatingEvalContext;
+import blog.InstantiatingEvalContext;
+import blog.PartialWorld;
+import blog.Timestep;
 
 /**
  * A random variable that serves as a node in a Bayes net (directed graphical

@@ -37,6 +37,8 @@ package ve;
 
 import java.util.*;
 import blog.*;
+import blog.bn.BasicVar;
+import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.model.Model;
 

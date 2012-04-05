@@ -37,6 +37,7 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.NumberVar;
 import blog.common.HashMultiMap;
 import blog.common.IndexedHashSet;
 import blog.common.IndexedSet;

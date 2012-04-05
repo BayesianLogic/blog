@@ -37,6 +37,8 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.BayesNetVar;
+import blog.bn.DerivedVar;
 import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.Model;

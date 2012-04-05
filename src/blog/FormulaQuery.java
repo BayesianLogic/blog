@@ -38,6 +38,7 @@ package blog;
 import java.io.PrintStream;
 import java.util.*;
 
+import blog.bn.BasicVar;
 import blog.common.Histogram;
 import ve.Factor;
 import ve.Potential;
