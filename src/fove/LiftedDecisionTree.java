@@ -43,6 +43,7 @@ import blog.bn.BasicVar;
 import blog.bn.RandFuncAppVar;
 import blog.model.ArgSpec;
 import blog.model.CardinalitySpec;
+import blog.model.ConjFormula;
 import blog.model.Formula;
 import blog.model.ImplicitSetSpec;
 import blog.model.LogicalVar;
