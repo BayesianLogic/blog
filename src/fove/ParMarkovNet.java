@@ -39,6 +39,7 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.*;
+import blog.model.ArgSpec;
 import blog.model.Function;
 import blog.model.Model;
 import ve.*;

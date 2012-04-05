@@ -38,6 +38,8 @@ package blog;
 import java.util.*;
 
 import blog.common.TupleIterator;
+import blog.model.ArgSpec;
+import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.Term;
 

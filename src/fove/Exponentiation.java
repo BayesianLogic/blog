@@ -2,6 +2,7 @@ package fove;
 
 import java.util.*;
 import blog.*;
+import blog.model.LogicalVar;
 
 public class Exponentiation extends LiftedInfOperator {
 

@@ -36,7 +36,9 @@ package blog;
 
 import java.util.*;
 
+import blog.model.ArgSpec;
 import blog.model.BuiltInFunctions;
+import blog.model.LogicalVar;
 
 /**
  * Represents a time step, and is used for DBLOG (Dynamic BLOG) to indicate

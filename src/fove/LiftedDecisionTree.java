@@ -39,6 +39,8 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.*;
+import blog.model.ArgSpec;
+import blog.model.LogicalVar;
 import blog.model.Term;
 import blog.model.Type;
 import ve.*;

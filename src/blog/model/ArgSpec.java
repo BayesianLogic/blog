@@ -33,15 +33,19 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
+import blog.BayesNetVar;
+import blog.DefaultEvalContext;
+import blog.DerivedVar;
+import blog.EvalContext;
+import blog.PartialWorld;
+import blog.Substitution;
 import blog.common.UnaryFunction;
 import blog.common.UnaryPredicate;
 import blog.common.UnaryProcedure;
-import blog.model.Model;
-import blog.model.Term;
 
 
 /**

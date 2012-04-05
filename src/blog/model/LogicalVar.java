@@ -34,13 +34,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
-import blog.model.Model;
-import blog.model.Term;
-import blog.model.Type;
+import blog.BayesNetVar;
+import blog.DerivedVar;
+import blog.EvalContext;
+import blog.Substitution;
 
 /**
  * A logical variable. Specifically, a single LogicalVar object is used for the

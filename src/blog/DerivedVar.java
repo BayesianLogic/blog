@@ -37,6 +37,8 @@ package blog;
 
 import java.util.*;
 
+import blog.model.ArgSpec;
+
 /**
  * A random variable whose value is a deterministic function of some basic
  * variables. In this default implementation, the DerivedVar's value is given by

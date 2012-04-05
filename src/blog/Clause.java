@@ -39,6 +39,7 @@ import java.util.*;
 import java.lang.reflect.*;
 
 import blog.distrib.CondProbDistrib;
+import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
 import blog.model.Model;
 import blog.model.Term;

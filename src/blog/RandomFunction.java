@@ -39,6 +39,7 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.model.Function;
+import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.Type;
 

@@ -39,6 +39,8 @@ import java.util.*;
 
 import blog.common.UnaryProcedure;
 import blog.common.Util;
+import blog.model.ArgSpec;
+import blog.model.LogicalVar;
 import blog.model.Term;
 
 
