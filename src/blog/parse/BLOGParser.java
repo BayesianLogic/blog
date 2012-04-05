@@ -25,7 +25,6 @@ import blog.Timestep;
 import blog.ValueEvidenceStatement;
 import blog.common.HashMapDiff;
 import blog.common.LocationInFile;
-import blog.common.ScannerWithLocInfo;
 import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.AtomicFormula;

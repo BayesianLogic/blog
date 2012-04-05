@@ -41,9 +41,14 @@ import java.io.PrintStream;
 import blog.*;
 import blog.common.Util;
 import blog.model.ArgSpec;
+import blog.model.ConjFormula;
+import blog.model.DisjFormula;
+import blog.model.EqualityFormula;
 import blog.model.Formula;
 import blog.model.LogicalVar;
+import blog.model.NegFormula;
 import blog.model.Term;
+import blog.model.TrueFormula;
 import blog.model.Type;
 
 public class Constraint {
