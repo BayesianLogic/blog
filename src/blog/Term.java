@@ -37,7 +37,8 @@ package blog;
 
 import java.util.*;
 
-import common.UnaryProcedure;
+import blog.common.UnaryProcedure;
+
 
 /**
  * Represents a Bayesian atom. All specific kinds of terms are expected to

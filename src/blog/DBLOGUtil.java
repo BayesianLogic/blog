@@ -11,7 +11,8 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import common.*;
+import blog.common.*;
+
 
 /**
  * A class defining static helper methods on basic interfaces (therefore not

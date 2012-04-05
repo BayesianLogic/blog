@@ -37,10 +37,11 @@ package blog;
 
 import java.util.*;
 
-import common.IndexedSet;
-import common.IndexedHashSet;
-import common.MultiMap;
-import common.HashMultiMap;
+import blog.common.HashMultiMap;
+import blog.common.IndexedHashSet;
+import blog.common.IndexedSet;
+import blog.common.MultiMap;
+
 
 /**
  * ObjectSet implementation that is composed of individual objects, plus all the

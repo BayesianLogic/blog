@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+import blog.common.Util;
 import blog.distrib.Gaussian;
 
-import common.Util;
 
 import junit.framework.TestCase;
 

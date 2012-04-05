@@ -2,28 +2,29 @@ package blog;
 
 import java.util.*;
 import java.util.regex.*;
-import common.CountedIterator;
-import common.DAEFunction;
-import common.DependencyAwareEnvironment;
-import common.Distance;
-import common.EZIterator;
-import common.GeometricSeriesIterator;
-import common.Gnuplot;
-import common.HashMapWithGetWithDefault;
-import common.IntegerArithmeticSeriesIterator;
-import common.IntegerGeometricSeriesIterator;
-import common.Multiset;
-import common.Mutable;
-import common.NullaryFunction;
-import common.RangeOperations;
-import common.UnaryFunction;
-import common.UnaryPredicate;
-import static common.RangeOperations.*;
-import common.Util;
-import common.Timer;
-import common.Gnuplot.YSeries;
-import common.Experiment;
-import static common.Experiment.*;
+
+import blog.common.CountedIterator;
+import blog.common.DAEFunction;
+import blog.common.DependencyAwareEnvironment;
+import blog.common.Distance;
+import blog.common.EZIterator;
+import blog.common.Experiment;
+import blog.common.GeometricSeriesIterator;
+import blog.common.Gnuplot;
+import blog.common.HashMapWithGetWithDefault;
+import blog.common.IntegerArithmeticSeriesIterator;
+import blog.common.IntegerGeometricSeriesIterator;
+import blog.common.Multiset;
+import blog.common.Mutable;
+import blog.common.NullaryFunction;
+import blog.common.RangeOperations;
+import blog.common.Timer;
+import blog.common.UnaryFunction;
+import blog.common.UnaryPredicate;
+import blog.common.Util;
+import blog.common.Gnuplot.YSeries;
+import static blog.common.Experiment.*;
+import static blog.common.RangeOperations.*;
 
 public class DBLOGExperiments {
 

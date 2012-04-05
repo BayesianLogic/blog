@@ -36,17 +36,18 @@
 package blog;
 
 import java.util.*;
-import common.Util;
-import common.MapDiff;
-import common.HashMapDiff;
-import common.MultiMap;
-import common.MultiMapDiff;
-import common.HashMultiMapDiff;
-import common.IndexedMultiMap;
-import common.IndexedMultiMapDiff;
-import common.MapWithPreimagesDiff;
-import common.DGraph;
-import common.ParentUpdateDGraph;
+
+import blog.common.DGraph;
+import blog.common.HashMapDiff;
+import blog.common.HashMultiMapDiff;
+import blog.common.IndexedMultiMap;
+import blog.common.IndexedMultiMapDiff;
+import blog.common.MapDiff;
+import blog.common.MapWithPreimagesDiff;
+import blog.common.MultiMap;
+import blog.common.MultiMapDiff;
+import blog.common.ParentUpdateDGraph;
+import blog.common.Util;
 
 /**
  * Represents a PartialWorld as a set of differences relative to an underlying

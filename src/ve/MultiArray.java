@@ -37,8 +37,9 @@ package ve;
 
 import java.util.*;
 import java.io.PrintStream;
-import common.Util;
-import common.TupleIterator;
+
+import blog.common.TupleIterator;
+import blog.common.Util;
 
 public class MultiArray {
 

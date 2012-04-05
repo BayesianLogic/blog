@@ -36,8 +36,9 @@
 package blog.distrib;
 
 import blog.*;
+import blog.common.Util;
+
 import java.util.*;
-import common.Util;
 
 /**
  * Gaussian (normal) distribution over real numbers. This CPD can be initialized

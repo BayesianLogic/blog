@@ -36,9 +36,10 @@
 package blog.distrib;
 
 import blog.*;
+import blog.common.Util;
+
 import java.util.*;
 import Jama.Matrix;
-import common.Util;
 
 /**
  * Distribution over a finite set of possible values numbered 0, ..., k-1,

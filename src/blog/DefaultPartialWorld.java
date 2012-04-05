@@ -37,13 +37,14 @@ package blog;
 
 import java.util.*;
 
-import common.MultiMap;
-import common.HashMultiMap;
-import common.IndexedMultiMap;
-import common.IndexedHashMultiMap;
-import common.HashMapWithPreimages;
-import common.DGraph;
-import common.DefaultDGraph;
+import blog.common.DGraph;
+import blog.common.DefaultDGraph;
+import blog.common.HashMapWithPreimages;
+import blog.common.HashMultiMap;
+import blog.common.IndexedHashMultiMap;
+import blog.common.IndexedMultiMap;
+import blog.common.MultiMap;
+
 
 /**
  * Straightforward implementation of AbstractPartialWorld.

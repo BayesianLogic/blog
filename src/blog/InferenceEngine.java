@@ -38,7 +38,8 @@ package blog;
 import java.util.*;
 import java.lang.reflect.*;
 
-import common.Util;
+import blog.common.Util;
+
 
 /**
  * Abstract class representing a BLOG inference engine. Its central method is

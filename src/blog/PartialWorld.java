@@ -38,11 +38,12 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
-import common.MultiMap;
-import common.IndexedSet;
-import common.IndexedMultiMap;
-import common.MapWithPreimages;
-import common.DGraph;
+import blog.common.DGraph;
+import blog.common.IndexedMultiMap;
+import blog.common.IndexedSet;
+import blog.common.MapWithPreimages;
+import blog.common.MultiMap;
+
 
 /**
  * A partial description of a possible world in a BLOG model. A PartialWorld

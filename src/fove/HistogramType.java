@@ -39,8 +39,8 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.*;
-import common.Util;
-import common.CartesianProduct;
+import blog.common.CartesianProduct;
+import blog.common.Util;
 
 /**
  * A family of histograms with a certain set of buckets and a specified total

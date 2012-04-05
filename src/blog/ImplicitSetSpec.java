@@ -36,12 +36,13 @@
 package blog;
 
 import java.util.*;
-import common.Util;
-import common.Multiset;
-import common.MultisetBackedSet;
-import common.SetBackedMultiset;
-import common.HashMapDiff;
-import common.UnaryProcedure;
+
+import blog.common.HashMapDiff;
+import blog.common.Multiset;
+import blog.common.MultisetBackedSet;
+import blog.common.SetBackedMultiset;
+import blog.common.UnaryProcedure;
+import blog.common.Util;
 
 /**
  * Represents an argument - set with implicit specification of its elements. An

@@ -36,8 +36,9 @@
 package blog;
 
 import java.util.*;
-import common.Util;
-import common.Timer;
+
+import blog.common.Timer;
+import blog.common.Util;
 
 /**
  * Split-merge proposal distribution for the urn-and-balls model.

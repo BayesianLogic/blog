@@ -36,8 +36,9 @@
 package blog.distrib;
 
 import blog.*;
+import blog.common.Util;
+
 import java.util.*;
-import common.Util;
 
 /**
  * A distribution over Boolean values. It is defined by one parameter, which is

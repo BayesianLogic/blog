@@ -36,8 +36,9 @@
 package blog.distrib;
 
 import blog.*;
+import blog.common.Util;
+
 import java.util.*;
-import common.Util;
 
 /**
  * A Negative Binomial distribution with parameters k (number of successes) and

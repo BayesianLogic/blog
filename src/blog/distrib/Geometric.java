@@ -36,8 +36,9 @@
 package blog.distrib;
 
 import blog.*;
+import blog.common.Util;
+
 import java.util.*;
-import common.Util;
 
 /**
  * A geometric distribution over the natural numbers 0, 1, 2,... It has a single

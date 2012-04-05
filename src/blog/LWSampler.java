@@ -36,7 +36,8 @@
 package blog;
 
 import java.util.*;
-import common.Util;
+
+import blog.common.Util;
 
 /**
  * A likelihood weighting sampler. Instantiates the context-specifically active

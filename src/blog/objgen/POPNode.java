@@ -14,9 +14,9 @@ import blog.NumberVar;
 import blog.ObjectIterator;
 import blog.ObjectSet;
 import blog.POP;
+import blog.common.TupleIterator;
+import blog.common.Util;
 
-import common.TupleIterator;
-import common.Util;
 
 /**
  * Node satisfied by the set of objects that satisfy a given potential object

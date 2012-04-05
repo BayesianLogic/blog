@@ -36,8 +36,9 @@
 package blog;
 
 import java.util.*;
-import common.IndexedSet;
-import common.IndexedHashSet;
+
+import blog.common.IndexedHashSet;
+import blog.common.IndexedSet;
 
 /**
  * ObjectSet implementation that can be constructed using an ordinary

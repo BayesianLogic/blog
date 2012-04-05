@@ -37,8 +37,9 @@ package blog;
 
 import java.util.*;
 
-import common.UnaryProcedure;
-import common.Util;
+import blog.common.UnaryProcedure;
+import blog.common.Util;
+
 
 /**
  * Formula is an abstract class from which all classes denoting particular kinds

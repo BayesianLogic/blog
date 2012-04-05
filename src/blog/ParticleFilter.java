@@ -38,8 +38,9 @@ package blog;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
-import common.Util;
-import common.UnaryFunction;
+import blog.common.UnaryFunction;
+import blog.common.Util;
+
 
 /**
  * <<<<<<< .mine A Particle Filter. It works by keeping a set of

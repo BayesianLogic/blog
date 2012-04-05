@@ -37,7 +37,8 @@ package blog;
 
 import java.util.*;
 
-import common.Util;
+import blog.common.Util;
+
 
 /**
  * Implementation of FunctionInterp for constants (zero-ary functions). In this

@@ -2,7 +2,8 @@ package blog;
 
 import java.util.*;
 
-import common.Util;
+import blog.common.Util;
+
 
 /**
  * A class providing basic Proposer functionality, including the creation of an

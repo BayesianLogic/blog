@@ -38,8 +38,8 @@ package fove;
 import java.io.*;
 import java.util.*;
 import blog.*;
+import blog.common.Util;
 import ve.*;
-import common.Util;
 
 /**
  * Performs lifted inference with counting formulas. Usable either by

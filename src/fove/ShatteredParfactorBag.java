@@ -6,8 +6,8 @@ import blog.ArgSpec;
 import blog.FuncAppTerm;
 import blog.Function;
 import blog.Term;
-import common.HashMultiMap;
-import common.MultiMap;
+import blog.common.HashMultiMap;
+import blog.common.MultiMap;
 
 /**
  * Utility class for maintaining a shattered set of parfactors.

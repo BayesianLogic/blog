@@ -37,9 +37,9 @@ package blog;
 
 import java.util.*;
 
+import blog.common.Util;
 import blog.distrib.AbstractCondProbDistrib;
 
-import common.Util;
 
 /**
  * Abstract class for deterministic conditional probability distributions. These

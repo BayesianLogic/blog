@@ -37,8 +37,9 @@ package blog;
 
 import java.util.*;
 
-import common.Multiset;
-import common.UnaryProcedure;
+import blog.common.Multiset;
+import blog.common.UnaryProcedure;
+
 
 /**
  * Argument specifier that refers to the size of an implicitly defined set.

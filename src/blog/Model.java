@@ -40,7 +40,8 @@ import java.util.regex.*;
 import java.io.PrintStream;
 import java.io.StringReader;
 
-import common.Util;
+import blog.common.Util;
+
 import fove.Parfactor;
 
 /**

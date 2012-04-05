@@ -6,7 +6,8 @@ package blog;
 import java.util.LinkedList;
 import java.util.List;
 
-import common.Util;
+import blog.common.Util;
+
 
 public class ModelEvidenceQueries {
 	public ModelEvidenceQueries() {

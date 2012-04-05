@@ -9,8 +9,8 @@ import blog.InstantiatingEvalContext;
 import blog.PartialWorld;
 import blog.PartialWorldDiff;
 import blog.VarWithDistrib;
+import blog.common.Util;
 
-import common.Util;
 
 public class Proposer implements blog.Proposer {
 

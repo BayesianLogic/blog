@@ -2,8 +2,9 @@ package blog;
 
 import java.util.*;
 
-import common.UnaryProcedure;
-import common.Util;
+import blog.common.UnaryProcedure;
+import blog.common.Util;
+
 
 /**
  * ParticleFilterRunnerOnGenerator extends {@link #ParticleFilterRunner} in

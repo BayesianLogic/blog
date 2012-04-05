@@ -2,9 +2,9 @@ package blog;
 
 import java.util.*;
 
+import blog.common.TupleIterator;
+import blog.common.Util;
 import blog.distrib.Gaussian;
-import common.TupleIterator;
-import common.Util;
 import static blog.BLOGUtil.*;
 
 import junit.framework.TestCase;

@@ -41,10 +41,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.io.PrintStream;
 
 import blog.*;
+import blog.common.CartesianProduct;
+import blog.common.TupleIterator;
+import blog.common.Util;
 import ve.*;
-import common.TupleIterator;
-import common.Util;
-import common.CartesianProduct;
 
 /**
  * A parameterized factor. TODO: make sure the terms passed into the

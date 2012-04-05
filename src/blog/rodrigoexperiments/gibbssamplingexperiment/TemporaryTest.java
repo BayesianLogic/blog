@@ -44,7 +44,7 @@ import blog.Model;
 import blog.PartialWorld;
 import blog.PartialWorldDiff;
 import blog.RandFuncAppVar;
-import common.Util;
+import blog.common.Util;
 
 public class TemporaryTest {
 	public static void main(String[] args) {

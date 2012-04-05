@@ -37,9 +37,10 @@ package blog;
 
 import java.util.*;
 
-import common.UnaryFunction;
-import common.UnaryPredicate;
-import common.UnaryProcedure;
+import blog.common.UnaryFunction;
+import blog.common.UnaryPredicate;
+import blog.common.UnaryProcedure;
+
 
 /**
  * Represents an abstract argument specification. In general, an argument can

@@ -37,7 +37,8 @@ package blog;
 
 import java.util.*;
 
-import common.Util;
+import blog.common.Util;
+
 
 /**
  * A basic random variable in a BLOG model. A BasicVar is a BayesNetVar whose

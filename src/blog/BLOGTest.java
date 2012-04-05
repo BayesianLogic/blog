@@ -1,7 +1,8 @@
 package blog;
 
 import java.util.Properties;
-import common.Util;
+
+import blog.common.Util;
 
 import junit.framework.TestCase;
 
