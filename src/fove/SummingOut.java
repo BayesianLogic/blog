@@ -38,6 +38,8 @@ package fove;
 import java.util.*;
 
 import blog.*;
+import blog.model.ArgSpec;
+import blog.model.LogicalVar;
 import blog.model.Term;
 
 /**

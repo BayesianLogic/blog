@@ -37,6 +37,7 @@ package blog;
 
 import java.util.*;
 
+import blog.model.LogicalVar;
 import blog.model.Term;
 
 /**

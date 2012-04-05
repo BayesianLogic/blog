@@ -2,10 +2,10 @@ package fove;
 
 import java.util.*;
 
-import blog.ArgSpec;
 import blog.FuncAppTerm;
 import blog.common.HashMultiMap;
 import blog.common.MultiMap;
+import blog.model.ArgSpec;
 import blog.model.Function;
 import blog.model.Term;
 

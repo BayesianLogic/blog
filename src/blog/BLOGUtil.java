@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import blog.common.Histogram;
 import blog.common.Util;
+import blog.model.ArgSpec;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.model.Term;

@@ -37,7 +37,6 @@ package blog.model;
 
 import java.util.*;
 
-import blog.ArgSpec;
 import blog.ConstantInterp;
 import blog.FuncAppTerm;
 import blog.Substitution;

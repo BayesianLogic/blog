@@ -39,7 +39,6 @@ import java.util.*;
 import java.lang.reflect.*;
 import java.io.PrintStream;
 
-import blog.ArgSpec;
 import blog.CardinalitySpec;
 import blog.ConstantInterp;
 import blog.EvalContext;

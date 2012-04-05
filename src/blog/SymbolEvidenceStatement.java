@@ -38,6 +38,7 @@ package blog;
 import java.util.*;
 
 import blog.common.Util;
+import blog.model.ArgSpec;
 import blog.model.Model;
 import blog.model.Term;
 
