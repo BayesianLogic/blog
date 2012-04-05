@@ -41,6 +41,7 @@ import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.common.Util;
 import blog.model.ArgSpec;
+import blog.model.EqualityFormula;
 import blog.model.Formula;
 import blog.model.Model;
 import blog.model.Term;

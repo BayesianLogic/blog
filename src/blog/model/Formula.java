@@ -37,8 +37,6 @@ package blog.model;
 
 import java.util.*;
 
-import blog.ConjFormula;
-import blog.DisjFormula;
 import blog.EvalContext;
 import blog.GenericObject;
 import blog.PartialWorld;
