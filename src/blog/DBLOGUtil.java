@@ -11,6 +11,8 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import blog.bn.BasicVar;
+import blog.bn.BayesNetVar;
 import blog.common.*;
 import blog.model.ArgSpec;
 import blog.model.Model;

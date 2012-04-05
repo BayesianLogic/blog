@@ -47,7 +47,6 @@ import blog.Main;
 import blog.NonGuaranteedObject;
 import blog.ObjectIdentifier;
 import blog.POP;
-import blog.RandomFunction;
 import blog.Timestep;
 import blog.common.Util;
 import blog.model.Function.Sig;

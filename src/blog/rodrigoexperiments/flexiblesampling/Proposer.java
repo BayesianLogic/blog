@@ -8,7 +8,7 @@ import blog.Evidence;
 import blog.InstantiatingEvalContext;
 import blog.PartialWorld;
 import blog.PartialWorldDiff;
-import blog.VarWithDistrib;
+import blog.bn.VarWithDistrib;
 import blog.common.Util;
 
 

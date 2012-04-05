@@ -7,8 +7,8 @@ import java.util.Set;
 
 import blog.DependencyModel;
 import blog.PartialWorld;
-import blog.VarWithDistrib;
 import blog.DependencyModel.Distrib;
+import blog.bn.VarWithDistrib;
 
 public class ParentsSampler extends AbstractSampler {
 

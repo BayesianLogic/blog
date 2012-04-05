@@ -33,10 +33,16 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.bn;
 
 import java.util.*;
 
+import blog.DefaultEvalContext;
+import blog.EvalContext;
+import blog.InstantiatingEvalContext;
+import blog.ParentRecEvalContext;
+import blog.PartialWorld;
+import blog.Timestep;
 import blog.model.ArgSpec;
 
 /**

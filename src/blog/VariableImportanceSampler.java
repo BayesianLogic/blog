@@ -2,6 +2,8 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.VarWithDistrib;
+
 /**
  * An interface for variable proposal methods specific to certain situations
  * (distributions given blanket).

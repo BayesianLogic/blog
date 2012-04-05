@@ -2,11 +2,11 @@ package blog.rodrigoexperiments.flexiblesampling;
 
 import java.util.*;
 
-import blog.BasicVar;
 import blog.DefaultEvalContext;
 import blog.InstantiatingEvalContext;
 import blog.PartialWorld;
-import blog.VarWithDistrib;
+import blog.bn.BasicVar;
+import blog.bn.VarWithDistrib;
 import blog.common.HashSetDiff;
 import blog.rodrigoexperiments.flexiblesampling.Sampler.Sample;
 

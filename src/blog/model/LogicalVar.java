@@ -38,10 +38,10 @@ package blog.model;
 
 import java.util.*;
 
-import blog.BayesNetVar;
-import blog.DerivedVar;
 import blog.EvalContext;
 import blog.Substitution;
+import blog.bn.BayesNetVar;
+import blog.bn.DerivedVar;
 
 /**
  * A logical variable. Specifically, a single LogicalVar object is used for the

@@ -38,6 +38,9 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.bn.BasicVar;
+import blog.bn.BayesNetVar;
+import blog.bn.NumberVar;
 import blog.common.HashMapWithPreimages;
 import blog.common.MapWithPreimages;
 import blog.common.Util;

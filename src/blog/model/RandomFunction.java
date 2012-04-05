@@ -33,15 +33,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 import java.io.PrintStream;
 
-import blog.model.Function;
-import blog.model.LogicalVar;
-import blog.model.Model;
-import blog.model.Type;
+import blog.DependencyModel;
+import blog.EvalContext;
+import blog.GenericObject;
+import blog.bn.RandFuncAppVar;
 
 /**
  * Represents random functions, whose value for the given tuple of arguments

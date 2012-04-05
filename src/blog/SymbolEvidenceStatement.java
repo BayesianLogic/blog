@@ -37,6 +37,9 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.BasicVar;
+import blog.bn.DerivedVar;
+import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.Model;

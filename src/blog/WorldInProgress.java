@@ -37,6 +37,9 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.NumberVar;
+import blog.bn.RandFuncAppVar;
+import blog.bn.VarWithDistrib;
 import blog.common.AddedTupleIterator;
 import blog.common.DGraph;
 import blog.common.ExtensibleLinkedList;
@@ -44,6 +47,7 @@ import blog.common.Util;
 import blog.model.BuiltInTypes;
 import blog.model.Function;
 import blog.model.Model;
+import blog.model.RandomFunction;
 import blog.model.Type;
 
 /**

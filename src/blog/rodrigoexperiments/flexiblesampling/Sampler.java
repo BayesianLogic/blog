@@ -3,7 +3,7 @@ package blog.rodrigoexperiments.flexiblesampling;
 import java.util.*;
 
 import blog.PartialWorld;
-import blog.VarWithDistrib;
+import blog.bn.VarWithDistrib;
 
 /**
  * 

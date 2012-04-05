@@ -33,10 +33,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.bn;
 
 import java.util.*;
 
+import blog.FuncAppTerm;
+import blog.PartialWorld;
+import blog.Timestep;
 import blog.common.Util;
 import blog.model.Model;
 import blog.model.Type;

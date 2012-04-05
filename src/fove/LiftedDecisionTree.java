@@ -39,8 +39,11 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.*;
+import blog.bn.BasicVar;
+import blog.bn.RandFuncAppVar;
 import blog.model.ArgSpec;
 import blog.model.LogicalVar;
+import blog.model.RandomFunction;
 import blog.model.Term;
 import blog.model.Type;
 import ve.*;

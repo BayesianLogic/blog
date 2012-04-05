@@ -37,6 +37,10 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.BasicVar;
+import blog.bn.NumberVar;
+import blog.bn.OriginVar;
+
 /**
  * Implementation of the EvalContext interface that records the basic random
  * variables used by calls to the access methods. The <code>getParents</code>

@@ -33,10 +33,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.bn;
 
 import java.util.*;
 
+import blog.DependencyModel;
+import blog.EvalContext;
+import blog.POP;
+import blog.PartialWorld;
+import blog.DependencyModel.Distrib;
 import blog.model.BuiltInTypes;
 import blog.model.Model;
 import blog.model.OriginFunction;

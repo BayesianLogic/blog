@@ -1,6 +1,9 @@
-package blog;
+package blog.bn;
 
 import java.util.Set;
+
+import blog.ClassicInstantiatingEvalContext;
+import blog.PartialWorld;
 
 public abstract class AbstractBayesNetVar implements BayesNetVar {
 

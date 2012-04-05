@@ -39,8 +39,11 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.*;
+import blog.bn.BasicVar;
+import blog.bn.RandFuncAppVar;
 import blog.common.TupleIterator;
 import blog.model.Model;
+import blog.model.RandomFunction;
 import blog.model.Type;
 import fove.*;
 
