@@ -4,6 +4,7 @@ import java.util.*;
 
 import blog.common.HashMultiMap;
 import blog.common.Util;
+import blog.model.ArgSpec;
 import blog.model.NonRandomFunction;
 import blog.model.Term;
 import blog.model.Type;

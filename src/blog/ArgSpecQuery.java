@@ -40,6 +40,7 @@ import java.io.PrintStream;
 
 import blog.common.Histogram;
 import blog.common.UnaryFunction;
+import blog.model.ArgSpec;
 import blog.model.Model;
 import blog.model.Term;
 import blog.model.Type;

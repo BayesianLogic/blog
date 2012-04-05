@@ -40,6 +40,7 @@ import java.io.PrintStream;
 
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
+import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.Term;
 import blog.model.Type;
