@@ -37,6 +37,8 @@ package blog;
 
 import java.util.*;
 
+import blog.objgen.ObjGenGraph;
+
 import common.UnaryFunction;
 import common.UnaryProcedure;
 import common.Util;
