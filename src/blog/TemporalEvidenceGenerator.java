@@ -8,6 +8,7 @@ import blog.common.Multiset;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
 import blog.model.Model;
+import blog.model.TupleSetSpec;
 
 
 /**

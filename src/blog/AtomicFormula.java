@@ -40,6 +40,7 @@ import java.util.*;
 import blog.bn.BayesNetVar;
 import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
+import blog.model.Formula;
 import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.Term;
@@ -48,7 +49,7 @@ import blog.model.Term;
  * A Formula consisting of a single boolean-valued term.
  * 
  * @see blog.model.Term
- * @see blog.Formula
+ * @see blog.model.Formula
  */
 public class AtomicFormula extends Formula {
 

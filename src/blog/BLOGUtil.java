@@ -15,6 +15,7 @@ import blog.bn.VarWithDistrib;
 import blog.common.Histogram;
 import blog.common.Util;
 import blog.model.ArgSpec;
+import blog.model.Formula;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.model.Term;

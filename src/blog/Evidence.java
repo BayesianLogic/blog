@@ -43,6 +43,7 @@ import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.Model;
+import blog.model.SkolemConstant;
 import blog.model.Term;
 
 /**
