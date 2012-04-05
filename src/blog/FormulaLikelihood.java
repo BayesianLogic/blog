@@ -6,8 +6,13 @@ import blog.common.HashMultiMap;
 import blog.common.MultiMap;
 import blog.common.Util;
 import blog.model.ArgSpec;
+import blog.model.AtomicFormula;
+import blog.model.ConjFormula;
+import blog.model.DisjFormula;
+import blog.model.EqualityFormula;
 import blog.model.Formula;
 import blog.model.Function;
+import blog.model.NegFormula;
 import blog.model.NonRandomFunction;
 import blog.model.Term;
 

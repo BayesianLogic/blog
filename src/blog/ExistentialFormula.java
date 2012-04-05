@@ -42,8 +42,10 @@ import blog.model.ArgSpec;
 import blog.model.Formula;
 import blog.model.LogicalVar;
 import blog.model.Model;
+import blog.model.NegFormula;
 import blog.model.Term;
 import blog.model.Type;
+import blog.model.UniversalFormula;
 
 /**
  * Represents an existential instantiation for one variable satisfying an
