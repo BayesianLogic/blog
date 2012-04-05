@@ -41,6 +41,8 @@ import java.io.PrintStream;
 import blog.*;
 import blog.common.CartesianProduct;
 import blog.common.Util;
+import blog.model.BuiltInTypes;
+import blog.model.Type;
 
 /**
  * A family of histograms with a certain set of buckets and a specified total

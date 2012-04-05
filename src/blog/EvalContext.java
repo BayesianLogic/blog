@@ -38,6 +38,8 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.model.Type;
+
 /**
  * Interface for objects that encapsulate a partial world and an assignment of
  * values to logical variables. To facilitate debugging, an EvalContext object

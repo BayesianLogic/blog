@@ -44,6 +44,9 @@ import blog.common.Multiset;
 import blog.common.UnaryFunction;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
+import blog.model.Model;
+import blog.model.Term;
+import blog.model.Type;
 import blog.objgen.ObjGenGraph;
 
 

@@ -37,6 +37,9 @@ package blog;
 
 import java.util.*;
 
+import blog.model.Model;
+import blog.model.Term;
+
 /**
  * An implication formula alpha -> beta. It is true if alpha is false or beta is
  * true.

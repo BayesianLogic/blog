@@ -39,6 +39,8 @@ import java.util.*;
 
 import blog.common.TupleIterator;
 import blog.common.Util;
+import blog.model.Model;
+import blog.model.Term;
 
 /**
  * Represents a conjuction of expressions, each of which is a Formula.

@@ -5,10 +5,10 @@ import java.util.Set;
 
 import blog.BLOGUtil;
 import blog.DefaultPartialWorld;
-import blog.Model;
 import blog.PartialWorld;
 import blog.Sampler;
 import blog.common.Util;
+import blog.model.Model;
 
 
 public class LWSampler extends Sampler {

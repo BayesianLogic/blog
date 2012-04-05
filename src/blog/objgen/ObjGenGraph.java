@@ -40,24 +40,24 @@ import java.util.*;
 import blog.AbstractObjectIterator;
 import blog.ArgSpec;
 import blog.AtomicFormula;
-import blog.BuiltInFunctions;
-import blog.BuiltInTypes;
 import blog.EqualityFormula;
 import blog.EvalContext;
 import blog.Formula;
 import blog.FuncAppTerm;
-import blog.Function;
 import blog.LogicalVar;
-import blog.Model;
 import blog.NegFormula;
 import blog.ObjectIterator;
-import blog.OriginFunction;
 import blog.POP;
-import blog.Term;
-import blog.Type;
 import blog.common.AbstractDGraph;
 import blog.common.DGraph;
 import blog.common.Util;
+import blog.model.BuiltInFunctions;
+import blog.model.BuiltInTypes;
+import blog.model.Function;
+import blog.model.Model;
+import blog.model.OriginFunction;
+import blog.model.Term;
+import blog.model.Type;
 
 /**
  * An object generation graph contains nodes that represent sets of objects with

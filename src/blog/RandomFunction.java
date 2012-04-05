@@ -38,11 +38,15 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.model.Function;
+import blog.model.Model;
+import blog.model.Type;
+
 /**
  * Represents random functions, whose value for the given tuple of arguments
  * changes from world to world.
  * 
- * @see blog.Function
+ * @see blog.model.Function
  */
 public class RandomFunction extends Function {
 

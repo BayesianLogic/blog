@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import blog.BuiltInTypes;
 import blog.DefaultObjectIterator;
 import blog.EvalContext;
 import blog.ObjectIterator;
 import blog.ObjectSet;
-import blog.Type;
+import blog.model.BuiltInTypes;
+import blog.model.Type;
 
 public class GuaranteedNode extends Node {
 	GuaranteedNode(Type type) {

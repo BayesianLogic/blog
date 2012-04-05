@@ -38,6 +38,7 @@ package blog.distrib;
 import java.util.*;
 import blog.*;
 import blog.common.Util;
+import blog.model.Model;
 
 /**
  * CPD that takes a set of size one as an argument, and defines a probability

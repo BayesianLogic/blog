@@ -8,7 +8,7 @@ import blog.AbstractObjectSet;
 import blog.EvalContext;
 import blog.ObjectIterator;
 import blog.ObjectSet;
-import blog.Term;
+import blog.model.Term;
 
 /**
  * Node satisfied only by the denotation of the given term.

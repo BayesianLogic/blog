@@ -37,6 +37,8 @@ package blog;
 
 import java.util.*;
 
+import blog.model.Type;
+
 /**
  * Abstract implementation of FunctionInterp including a getInverseTuples method
  * that always returns null.

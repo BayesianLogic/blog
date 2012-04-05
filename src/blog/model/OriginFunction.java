@@ -33,10 +33,16 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 import java.io.PrintStream;
+
+import blog.EvalContext;
+import blog.GenericObject;
+import blog.NonGuaranteedObject;
+import blog.NumberVar;
+import blog.ObjectIdentifier;
 
 /**
  * Represents a BLOG generating function.

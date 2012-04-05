@@ -5,6 +5,7 @@ import static blog.BLOGUtil.parseEvidence_NE;
 import java.util.*;
 
 import blog.common.Util;
+import blog.model.ModelEvidenceQueries;
 
 
 import junit.framework.TestCase;

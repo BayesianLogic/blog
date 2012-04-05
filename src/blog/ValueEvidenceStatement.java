@@ -38,6 +38,9 @@ package blog;
 import java.util.*;
 
 import blog.common.Util;
+import blog.model.Model;
+import blog.model.Term;
+import blog.model.Type;
 
 /**
  * Represents a statement that a certain term has a certain value. Such a

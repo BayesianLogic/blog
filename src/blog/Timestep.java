@@ -36,6 +36,8 @@ package blog;
 
 import java.util.*;
 
+import blog.model.BuiltInFunctions;
+
 /**
  * Represents a time step, and is used for DBLOG (Dynamic BLOG) to indicate
  * temporal random variables.

@@ -37,10 +37,14 @@ package blog;
 
 import java.util.*;
 
+import blog.model.BuiltInTypes;
+import blog.model.Model;
+import blog.model.Term;
+
 /**
  * A Formula consisting of a single boolean-valued term.
  * 
- * @see blog.Term
+ * @see blog.model.Term
  * @see blog.Formula
  */
 public class AtomicFormula extends Formula {

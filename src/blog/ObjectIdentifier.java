@@ -35,6 +35,8 @@
 
 package blog;
 
+import blog.model.Type;
+
 /**
  * An identifier for a non-guaranteed object in a PartialWorld. An
  * ObjectIdentifier specifies the type of the object it refers to; it must refer

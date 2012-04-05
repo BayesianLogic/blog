@@ -39,6 +39,7 @@ import java.util.*;
 
 import blog.common.Timer;
 import blog.common.Util;
+import blog.model.Model;
 
 import java.lang.reflect.Constructor;
 

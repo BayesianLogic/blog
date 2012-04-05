@@ -37,6 +37,7 @@ package blog.distrib;
 
 import java.util.*;
 import blog.*;
+import blog.model.Type;
 
 /**
  * Distribution over positive integers for a random variable X = round(Y), where

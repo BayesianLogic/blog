@@ -23,6 +23,8 @@ import blog.common.UnaryFunction;
 import blog.common.UnaryPredicate;
 import blog.common.Util;
 import blog.common.Gnuplot.YSeries;
+import blog.model.Model;
+import blog.model.Term;
 import static blog.common.Experiment.*;
 import static blog.common.RangeOperations.*;
 

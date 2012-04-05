@@ -38,6 +38,7 @@ package fove;
 import java.util.*;
 import blog.*;
 import blog.common.CartesianProduct;
+import blog.model.Term;
 import ve.Potential;
 import ve.MultiArrayPotential;
 

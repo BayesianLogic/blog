@@ -12,6 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import blog.common.*;
+import blog.model.Model;
+import blog.model.NonRandomFunction;
 
 
 /**

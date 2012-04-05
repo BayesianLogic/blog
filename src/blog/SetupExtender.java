@@ -37,6 +37,8 @@ package blog;
 
 import java.util.*;
 
+import blog.model.Model;
+
 /**
  * Interface for objects that can extend the setup of a BLOG inference problem:
  * that is, the model, evidence, and query list. A SetupExtender implementation

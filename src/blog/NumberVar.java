@@ -37,6 +37,11 @@ package blog;
 
 import java.util.*;
 
+import blog.model.BuiltInTypes;
+import blog.model.Model;
+import blog.model.OriginFunction;
+import blog.model.Type;
+
 /**
  * A number random variable. It consists of a potential object pattern (POP) and
  * a tuple of generating objects. Its value in a given world is the number of

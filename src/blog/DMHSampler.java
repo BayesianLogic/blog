@@ -38,6 +38,7 @@ package blog;
 import java.util.*;
 
 import blog.common.Util;
+import blog.model.Model;
 
 /**
  * Implements a Metropolis-Hastings sampler with the {@link DecayedProposer}.

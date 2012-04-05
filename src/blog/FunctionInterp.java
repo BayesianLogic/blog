@@ -37,6 +37,8 @@ package blog;
 
 import java.util.*;
 
+import blog.model.Type;
+
 /**
  * Interface for classes that define the interpretation of a non-random function
  * symbol. An interpretation is just a function from argument tuples to values.

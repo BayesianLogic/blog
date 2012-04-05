@@ -38,6 +38,7 @@ package fove;
 import java.util.*;
 
 import blog.*;
+import blog.model.Term;
 
 /**
  * Operation that sums all the random variables covered by a particular term,

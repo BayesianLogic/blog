@@ -39,6 +39,7 @@ import java.util.*;
 import Jama.Matrix;
 import blog.*;
 import blog.common.Util;
+import blog.model.Type;
 
 /**
  * CPD that takes a sequence of probabilities as parameters, and uses those

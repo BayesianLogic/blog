@@ -38,6 +38,7 @@ package blog;
 import java.util.*;
 
 import blog.common.Util;
+import blog.model.Model;
 
 /**
  * Generates a partial world by sampling basic random variables in an order that

@@ -33,10 +33,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 import java.util.regex.*;
+
+import blog.FuncAppTerm;
+import blog.MatrixType;
+import blog.Timestep;
 
 /**
  * Class with static methods and variables for dealing with the built-in types

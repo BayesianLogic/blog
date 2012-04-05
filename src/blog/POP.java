@@ -38,6 +38,10 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.model.Model;
+import blog.model.OriginFunction;
+import blog.model.Type;
+
 /**
  * Represents a potential object pattern (POP), which includes the type of
  * object to be generated and a tuple of origin functions.

@@ -4,10 +4,10 @@ import java.util.*;
 
 import blog.ArgSpec;
 import blog.FuncAppTerm;
-import blog.Function;
-import blog.Term;
 import blog.common.HashMultiMap;
 import blog.common.MultiMap;
+import blog.model.Function;
+import blog.model.Term;
 
 /**
  * Utility class for maintaining a shattered set of parfactors.

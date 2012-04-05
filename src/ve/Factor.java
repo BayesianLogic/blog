@@ -39,8 +39,8 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.BasicVar;
-import blog.Type;
 import blog.PartialWorld;
+import blog.model.Type;
 
 /**
  * A potential defined on a list of random variables. A Factor differs from a

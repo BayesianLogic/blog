@@ -40,11 +40,11 @@ import blog.BLOGUtil;
 import blog.DefaultPartialWorld;
 import blog.Evidence;
 import blog.MHSampler;
-import blog.Model;
 import blog.PartialWorld;
 import blog.PartialWorldDiff;
 import blog.RandFuncAppVar;
 import blog.common.Util;
+import blog.model.Model;
 
 public class TemporaryTest {
 	public static void main(String[] args) {

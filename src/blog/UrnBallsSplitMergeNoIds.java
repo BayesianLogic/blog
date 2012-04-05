@@ -38,6 +38,9 @@ package blog;
 import java.util.*;
 
 import blog.common.Util;
+import blog.model.Function;
+import blog.model.Model;
+import blog.model.Type;
 
 /**
  * Split-merge proposal distribution for the urn and balls scenario that doesn't

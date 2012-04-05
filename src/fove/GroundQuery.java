@@ -37,6 +37,7 @@ package fove;
 
 import java.util.*;
 import blog.*;
+import blog.model.Term;
 
 public class GroundQuery implements ElimTester {
 
