@@ -37,6 +37,7 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.NumberVar;
 import blog.model.Model;
 import blog.model.OriginFunction;
 

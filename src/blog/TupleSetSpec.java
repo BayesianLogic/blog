@@ -37,6 +37,8 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.BayesNetVar;
+import blog.bn.RandFuncAppVar;
 import blog.common.AbstractTupleIterator;
 import blog.common.HashMapDiff;
 import blog.common.HashMultiset;
@@ -47,6 +49,7 @@ import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.LogicalVar;
 import blog.model.Model;
+import blog.model.RandomFunction;
 import blog.model.Term;
 import blog.model.Type;
 import blog.objgen.ObjGenGraph;

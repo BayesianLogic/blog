@@ -1,5 +1,7 @@
 package blog;
 
+import blog.bn.BasicVar;
+
 /**
  * An {@link EvalContext} that instantiates variables as needed, and therefore
  * allows the user to ask whether a variable is yet instantiated or not.

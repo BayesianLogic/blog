@@ -3,6 +3,8 @@ package blog;
 import java.util.*;
 import java.util.regex.*;
 
+import blog.bn.BayesNetVar;
+import blog.bn.RandFuncAppVar;
 import blog.common.CountedIterator;
 import blog.common.DAEFunction;
 import blog.common.DependencyAwareEnvironment;

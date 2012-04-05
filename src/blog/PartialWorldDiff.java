@@ -37,6 +37,9 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.BasicVar;
+import blog.bn.DerivedVar;
+import blog.bn.NumberVar;
 import blog.common.DGraph;
 import blog.common.HashMapDiff;
 import blog.common.HashMultiMapDiff;

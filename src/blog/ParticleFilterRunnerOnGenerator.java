@@ -2,6 +2,7 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.BayesNetVar;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
 import blog.model.Model;

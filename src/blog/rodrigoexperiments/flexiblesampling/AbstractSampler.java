@@ -4,8 +4,8 @@ import java.util.*;
 
 import blog.DependencyModel;
 import blog.PartialWorld;
-import blog.VarWithDistrib;
 import blog.DependencyModel.Distrib;
+import blog.bn.VarWithDistrib;
 
 public abstract class AbstractSampler implements Sampler {
 

@@ -38,8 +38,8 @@ package ve;
 import java.util.*;
 import java.io.PrintStream;
 
-import blog.BasicVar;
 import blog.PartialWorld;
+import blog.bn.BasicVar;
 import blog.model.Type;
 
 /**

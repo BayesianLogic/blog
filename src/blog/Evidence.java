@@ -38,6 +38,8 @@ package blog;
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.bn.BayesNetVar;
+import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.Model;

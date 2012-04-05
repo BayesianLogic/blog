@@ -37,6 +37,9 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.BasicVar;
+import blog.bn.NumberVar;
+
 /**
  * Interface for objects that can be notified of changes to the values of random
  * variables in a PartialWorld.

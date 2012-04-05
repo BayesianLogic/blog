@@ -2,6 +2,7 @@ package blog;
 
 import java.util.*;
 
+import blog.bn.BasicVar;
 import blog.common.Util;
 import blog.model.Model;
 

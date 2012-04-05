@@ -3,6 +3,8 @@ package blog.distrib;
 import java.util.*;
 
 import blog.*;
+import blog.bn.BayesNetVar;
+import blog.bn.VarWithDistrib;
 
 public class Util {
 
