@@ -83,9 +83,6 @@ import java_cup.runtime.*;
     case YYINITIAL:
     /* nothing special to do in the initial state */
       break;
-    case PAREN_COMMENT:
-      return new Symbol(BLOGTokenConstants.ERROR, 
-                        "File ended before comment was terminated.");
     case STR_LIT:
     case CHAR_LIT:
       return new Symbol(BLOGTokenConstants.ERROR, 
@@ -106,9 +103,19 @@ Digit = [0-9]
 
 Identifier = {Alpha}({Alpha}|{Digit}|_)*
 
-IntegerConstant = {Digit}+
+IntegerLiteral = {Digit}+
+
+FLit1    = [0-9]+ \. [0-9]* 
+FLit2    = \. [0-9]+ 
+FLit3    = [0-9]+ 
+Exponent = [eE] [+-]? [0-9]+
+DoubleLiteral = ({FLit1}|{FLit2}|{FLit3}) {Exponent}?
+
+TimeLiteral = @{Digit}+
 
 LineTerminator	= \n|\r|\r\n
+
+InputCharacter = [^\r\n]
 
 Whitespace	= [ \f\t\n\r]
 
@@ -118,27 +125,105 @@ ZERO_TO_THREE   = [0123]
 
 HEX_DIGIT       = [0123456789abcdefABCDEF]
 
-%state LINE_COMMENT, PAREN_COMMENT, STR_LIT, CHAR_LIT
+/* comments */
+TraditionalComment = "/*" [^*] ~"*/" | "/*" "*"+ "/"
+EndOfLineComment = "//" {InputCharacter}* {LineTerminator}?
+DocumentationComment = "/*" "*"+ [^/*] ~"*/"
+Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
+
+%state STR_LIT, CHAR_LIT
 
 %%
 
 <YYINITIAL>{
+\" { yybegin (STR_LIT); }
+\' { yybegin (CHAR_LIT); }
+
+/* keywords */
+[Tt][Yy][Pp][Ee] { return new Symbol(BLOGTokenConstants.TYPE); }
+[Rr][Aa][Nn][Dd][Oo][Mm] { return new Symbol(BLOGTokenConstants.RANDOM); }
+[Nn][Oo][Nn][Rr][Aa][Nn][Dd][Oo][Mm] { return new Symbol(BLOGTokenConstants.NONRANDOM); }
+[Ff][Ii][Xx][Ee][Dd] { return new Symbol(BLOGTokenConstants.NONRANDOM); }			   
+[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Ii][Nn][Gg] { return new Symbol(BLOGTokenConstants.GENERATING); }
+[Oo][Rr][Ii][Gg][Ii][Nn] { return new Symbol(BLOGTokenConstants.GENERATING); }
+[Gg][Uu][Aa][Rr][Aa][Nn][Tt][Ee][Ee][Dd] { return new Symbol(BLOGTokenConstants.GUARANTEED); }
+[Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt] { return new Symbol(BLOGTokenConstants.GUARANTEED); }
+[Ff][Aa][Cc][Tt][Oo][Rr] { return new Symbol(BLOGTokenConstants.FACTOR); }
+[Pp][Aa][Rr][Ff][Aa][Cc][Tt][Oo][Rr] { return new Symbol(BLOGTokenConstants.PARFACTOR); }
+[Tt][Hh][Ee][Nn]     { return new Symbol(BLOGTokenConstants.THEN); }
+[Ee][Ll][Ss][Ee]  	{ return new Symbol(BLOGTokenConstants.ELSE); }
+[Ff][Oo][Rr]         { return new Symbol(BLOGTokenConstants.FOR); }
+[Ee][Ll][Ss][Ee][Ii][Ff]  { return 
+				       new Symbol(BLOGTokenConstants.ELSEIF); }
+[Ii][Ff]  		{ return new Symbol(BLOGTokenConstants.IF); }
+[Qq][Uu][Ee][Rr][Yy]	{ return new Symbol(BLOGTokenConstants.QUERY);}
+[Oo][Bb][Ss]         { return new Symbol(BLOGTokenConstants.OBS);}
+[Pp][Aa][Rr][Aa][Mm] { return new Symbol(BLOGTokenConstants.PARAM);}
+[Ee][Xx][Ii][Ss][Tt][Ss] { /* existential quantifier */
+	return new Symbol(BLOGTokenConstants.EXISTS); }
+[Ff][Oo][Rr][Aa][Ll][Ll] { /* universal quantifier */
+	return new Symbol(BLOGTokenConstants.FORALL); }
+	
+
+/* literals */
+"true"	{ return new Symbol(BLOGTokenConstants.TRUE); }
+"false"   { return new Symbol(BLOGTokenConstants.FALSE); }
+"null" {return new Symbol(BLOGTokenConstants.NULL); }
+{DoubleLiteral} { return 
+				    new Symbol(BLOGTokenConstants.DOUBLE_CONST,
+					                           new Double(yytext())); }
+{IntegerLiteral}  { /* Integers */
+                       return new Symbol(BLOGTokenConstants.INT_CONST,
+					                           new Integer(yytext())); }
+{TimeLiteral} { return new Symbol(BLOGTokenConstants.TIME_CONST, 
+				       yytext()); }
+
+/* operators */
+"+"     { return new Symbol(BLOGTokenConstants.PLUS); }
+"-"     { return new Symbol(BLOGTokenConstants.MINUS); }
+"*"     { return new Symbol(BLOGTokenConstants.MULT); }
+"/"     { return new Symbol(BLOGTokenConstants.DIV); }
+"%"     { return new Symbol(BLOGTokenConstants.MOD); }
+"<"     { return new Symbol(BLOGTokenConstants.LT); }
+">"     { return new Symbol(BLOGTokenConstants.GT); }
+"<="    { return new Symbol(BLOGTokenConstants.LEQ); }
+">="    { return new Symbol(BLOGTokenConstants.GEQ); }
+"=="		{ return new Symbol(BLOGTokenConstants.EQ); }
+"!="    { return new Symbol(BLOGTokenConstants.NEQ); }
+"&"			{ return new Symbol(BLOGTokenConstants.AND); }
+"|"     { return new Symbol(BLOGTokenConstants.OR); }
+"!"			{ return new Symbol(BLOGTokenConstants.NEG); }
+"->"		{ return new Symbol(BLOGTokenConstants.RIGHTARROW);}
+"="			{ return new Symbol(BLOGTokenConstants.ASSIGN); }
+"~"			{ return new Symbol(BLOGTokenConstants.DISTRIB); }
+"#"     { return new Symbol(BLOGTokenConstants.NUMSIGN); }
+
+/* seperator */
+"("			{ return new Symbol(BLOGTokenConstants.LPAREN); }
+")"			{ return new Symbol(BLOGTokenConstants.RPAREN); }
+"}"			{ return new Symbol(BLOGTokenConstants.RBRACE); }
+"{"			{ return new Symbol(BLOGTokenConstants.LBRACE); }
+"["			{ return new Symbol(BLOGTokenConstants.LBRACKET); }
+"]"			{ return new Symbol(BLOGTokenConstants.RBRACKET); }
+"<"     { return new Symbol(BLOGTokenConstants.LANGLE); }
+">"     { return new Symbol(BLOGTokenConstants.RANGLE); }
+";"			{ return new Symbol(BLOGTokenConstants.SEMI); }
+":"			{ return new Symbol(BLOGTokenConstants.COLON);}
+"."     { return new Symbol(BLOGTokenConstants.DOT); }
+","			{ return new Symbol(BLOGTokenConstants.COMMA);}
+
+
+ /* comments */
+{Comment} { /* ignore */ }
+
 {Whitespace} { /* Do nothing */}
 
-"/*" { yybegin(PAREN_COMMENT); }
+{Identifier} {return new Symbol(BLOGTokenConstants.ID, yytext()); }
+
+[A-Za-z][A-Za-z0-9_]*([.][A-Za-z][A-Za-z0-9_]*)* {
+        return new Symbol(BLOGTokenConstants.CLASS_NAME, yytext()); }
 }
 
-<PAREN_COMMENT>"*/" { yybegin(YYINITIAL); }
-<PAREN_COMMENT>{LineTerminator} { /* do nothing */ }
-<PAREN_COMMENT>. { /* do nothing */}
-
-
-<YYINITIAL>"//" {yybegin(LINE_COMMENT); }
-<LINE_COMMENT>{LineTerminator} { yybegin(YYINITIAL); } 
-<LINE_COMMENT>. {}
-
-
-<YYINITIAL>\" { yybegin (STR_LIT); }
 <STR_LIT>\" { /* closing double-quote not matched by \" rule below */
        Symbol s =   new Symbol(BLOGTokenConstants.STR_CONST, 
 			       string_buf.toString());
@@ -146,7 +231,6 @@ HEX_DIGIT       = [0123456789abcdefABCDEF]
        yybegin(YYINITIAL);
        return s;}
 
-<YYINITIAL>\' { yybegin (CHAR_LIT); }
 <CHAR_LIT>\' { /* closing single-quote not matched by \' rule below */
        Symbol s;
        if (string_buf.length() == 1) {
@@ -197,102 +281,8 @@ HEX_DIGIT       = [0123456789abcdefABCDEF]
        string_buf.append(yytext()); }
 
 
-<YYINITIAL>-?[0-9]*[.][0-9]+ { return 
-				    new Symbol(BLOGTokenConstants.DOUBLE_CONST,
-					                           yytext()); }
-<YYINITIAL>-?[0-9]+([.][0-9]+)?[Ee][+-]?[0-9]+ { return 
-				    new Symbol(BLOGTokenConstants.DOUBLE_CONST,
-					                           yytext()); }
-<YYINITIAL>-?[.][0-9]+[Ee][+-]?[0-9]+ { return 
-				    new Symbol(BLOGTokenConstants.DOUBLE_CONST,
-					                           yytext()); }
-
-<YYINITIAL>[0-9]+  { /* Integers */
-                       return new Symbol(BLOGTokenConstants.INT_CONST,
-					                           yytext()); }
-
-<YYINITIAL>@[0-9]+ { return new Symbol(BLOGTokenConstants.TIME_CONST, 
-				       yytext()); }
-
-<YYINITIAL>[Tt][Yy][Pp][Ee]     { return new Symbol(BLOGTokenConstants.TYPE); }
-<YYINITIAL>[Rr][Aa][Nn][Dd][Oo][Mm] { return 
-				   new Symbol(BLOGTokenConstants.RANDOM); }
-<YYINITIAL>[Nn][Oo][Nn][Rr][Aa][Nn][Dd][Oo][Mm] { return 
-				   new Symbol(BLOGTokenConstants.NONRANDOM); }
-<YYINITIAL>[Ff][Ii][Xx][Ee][Dd] { return 
-				   new Symbol(BLOGTokenConstants.NONRANDOM); }			   
-<YYINITIAL>[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Ii][Nn][Gg] { return 
-				   new Symbol(BLOGTokenConstants.GENERATING); }
-<YYINITIAL>[Oo][Rr][Ii][Gg][Ii][Nn] { return 
-                                   new Symbol(BLOGTokenConstants.GENERATING); }
-<YYINITIAL>[Gg][Uu][Aa][Rr][Aa][Nn][Tt][Ee][Ee][Dd] { return 
-				   new Symbol(BLOGTokenConstants.GUARANTEED); }
-<YYINITIAL>[Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt] { return 
-				   new Symbol(BLOGTokenConstants.GUARANTEED); }
-<YYINITIAL>[Ff][Aa][Cc][Tt][Oo][Rr] { return 
-                                   new Symbol(BLOGTokenConstants.FACTOR); }
-<YYINITIAL>[Pp][Aa][Rr][Ff][Aa][Cc][Tt][Oo][Rr] { return
-				   new Symbol(BLOGTokenConstants.PARFACTOR); }
-
-<YYINITIAL>[Tt][Hh][Ee][Nn]     { return new Symbol(BLOGTokenConstants.THEN); }
-<YYINITIAL>[Ee][Ll][Ss][Ee]  	{ return new Symbol(BLOGTokenConstants.ELSE); }
-<YYINITIAL>[Ff][Oo][Rr]         { return new Symbol(BLOGTokenConstants.FOR); }
-<YYINITIAL>[Ff][Aa][Ll][Ss][Ee]   { return new Symbol(BLOGTokenConstants.FALSE); }
-
-<YYINITIAL>[Ee][Ll][Ss][Ee][Ii][Ff]  { return 
-				       new Symbol(BLOGTokenConstants.ELSEIF); }
-<YYINITIAL>[Ii][Ff]  		{ return new Symbol(BLOGTokenConstants.IF); }
-
-<YYINITIAL>t[Rr][Uu][Ee]	{ return new Symbol(BLOGTokenConstants.TRUE); }
-<YYINITIAL>[Qq][Uu][Ee][Rr][Yy]	{ return new Symbol(BLOGTokenConstants.QUERY);}
-<YYINITIAL>[Oo][Bb][Ss]         { return new Symbol(BLOGTokenConstants.OBS);}
-<YYINITIAL>"=="			{ return new Symbol(BLOGTokenConstants.EQ); }
-<YYINITIAL>"="			{ return new Symbol(BLOGTokenConstants.ASSIGN); }
-<YYINITIAL>"!="                 { return new Symbol(BLOGTokenConstants.NEQ); }
-<YYINITIAL>"&"			{ return new Symbol(BLOGTokenConstants.AND); }
-<YYINITIAL>"|"                  { return new Symbol(BLOGTokenConstants.OR); }
-<YYINITIAL>"~"			{ return 
-				    new Symbol(BLOGTokenConstants.DISTRIB); }
-<YYINITIAL>"!"			{ return new Symbol(BLOGTokenConstants.NEG); }
-<YYINITIAL>","			{ return new Symbol(BLOGTokenConstants.COMMA);}
-<YYINITIAL>"->"			{ return 
-				    new Symbol(BLOGTokenConstants.RIGHTARROW);}
-<YYINITIAL>";"			{ return new Symbol(BLOGTokenConstants.SEMI); }
-<YYINITIAL>":"			{ return new Symbol(BLOGTokenConstants.COLON);}
-<YYINITIAL>"."                  { return new Symbol(BLOGTokenConstants.DOT); }
-<YYINITIAL>"("			{ return 
-				    new Symbol(BLOGTokenConstants.LPAREN); }
-<YYINITIAL>")"			{ return 
-				    new Symbol(BLOGTokenConstants.RPAREN); }
-<YYINITIAL>"}"			{ return 
-				    new Symbol(BLOGTokenConstants.RBRACE); }
-<YYINITIAL>"{"			{ return 
-				    new Symbol(BLOGTokenConstants.LBRACE); }
-<YYINITIAL>"["			{ return 
-				    new Symbol(BLOGTokenConstants.LBRACKET); }
-<YYINITIAL>"]"			{ return 
-				    new Symbol(BLOGTokenConstants.RBRACKET); }
-<YYINITIAL>"#"                  { return 
-                                    new Symbol(BLOGTokenConstants.NUMSIGN); } 
-<YYINITIAL>"<"                  { return new Symbol(BLOGTokenConstants.LT); }
-<YYINITIAL>">"                  { return new Symbol(BLOGTokenConstants.GT); }
-<YYINITIAL>"<="                 { return new Symbol(BLOGTokenConstants.LEQ); }
-<YYINITIAL>">="                 { return new Symbol(BLOGTokenConstants.GEQ); }
-<YYINITIAL>"+"                 { return new Symbol(BLOGTokenConstants.PLUS); }
-<YYINITIAL>"-"                 { return new Symbol(BLOGTokenConstants.MINUS); }
-
-<YYINITIAL>[Ee][Xx][Ii][Ss][Tt][Ss] { /* existential quantifier */
-	return new Symbol(BLOGTokenConstants.EXISTS); }
-<YYINITIAL>[Ff][Oo][Rr][Aa][Ll][Ll] { /* universal quantifier */
-	return new Symbol(BLOGTokenConstants.FORALL); }
-<YYINITIAL>[A-Za-z][A-Za-z0-9_]*  {
-        return new Symbol(BLOGTokenConstants.ID, yytext()); }
-<YYINITIAL>[A-Za-z][A-Za-z0-9_]*([.][A-Za-z][A-Za-z0-9_]*)* {
-        return new Symbol(BLOGTokenConstants.CLASS_NAME, yytext()); }
 <YYINITIAL>.                     { return new Symbol(BLOGTokenConstants.ERROR, 
                                           yytext()); }
-
-
 .             { /*
                     *  This should be the very last rule and will match
                     *  everything not matched by other lexical rules.
