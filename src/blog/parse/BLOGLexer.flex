@@ -67,8 +67,15 @@ import java_cup.runtime.*;
   public String getCurFilename() {
     return filename;
   }
+  
+  private Symbol symbol(int type) {
+    return new BLOGSymbol(type, yyline+1, yycolumn+1);
+  }
 
-    
+  private Symbol symbol(int type, Object value) {
+    return new BLOGSymbol(type, yyline+1, yycolumn+1, value);
+  }
+
 %}
 
 
@@ -85,7 +92,7 @@ import java_cup.runtime.*;
       break;
     case STR_LIT:
     case CHAR_LIT:
-      return new Symbol(BLOGTokenConstants.ERROR, 
+      return symbol(BLOGTokenConstants.ERROR, 
                         "File ended before string or character literal "
                         + "was terminated.");
 
@@ -93,7 +100,7 @@ import java_cup.runtime.*;
   /* Reinitialize everything before signaling EOF */
   string_buf = new StringBuffer();
   yybegin(YYINITIAL);
-  return new Symbol(BLOGTokenConstants.EOF);
+  return symbol(BLOGTokenConstants.EOF);
 %eofval}
 
 
@@ -140,77 +147,73 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 \' { yybegin (CHAR_LIT); }
 
 /* keywords */
-[Tt][Yy][Pp][Ee] { return new Symbol(BLOGTokenConstants.TYPE); }
-[Rr][Aa][Nn][Dd][Oo][Mm] { return new Symbol(BLOGTokenConstants.RANDOM); }
-[Nn][Oo][Nn][Rr][Aa][Nn][Dd][Oo][Mm] { return new Symbol(BLOGTokenConstants.NONRANDOM); }
-[Ff][Ii][Xx][Ee][Dd] { return new Symbol(BLOGTokenConstants.NONRANDOM); }			   
-[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Ii][Nn][Gg] { return new Symbol(BLOGTokenConstants.GENERATING); }
-[Oo][Rr][Ii][Gg][Ii][Nn] { return new Symbol(BLOGTokenConstants.GENERATING); }
-[Gg][Uu][Aa][Rr][Aa][Nn][Tt][Ee][Ee][Dd] { return new Symbol(BLOGTokenConstants.GUARANTEED); }
-[Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt] { return new Symbol(BLOGTokenConstants.GUARANTEED); }
-[Ff][Aa][Cc][Tt][Oo][Rr] { return new Symbol(BLOGTokenConstants.FACTOR); }
-[Pp][Aa][Rr][Ff][Aa][Cc][Tt][Oo][Rr] { return new Symbol(BLOGTokenConstants.PARFACTOR); }
-[Tt][Hh][Ee][Nn]     { return new Symbol(BLOGTokenConstants.THEN); }
-[Ee][Ll][Ss][Ee]  	{ return new Symbol(BLOGTokenConstants.ELSE); }
-[Ff][Oo][Rr]         { return new Symbol(BLOGTokenConstants.FOR); }
-[Ee][Ll][Ss][Ee][Ii][Ff]  { return 
-				       new Symbol(BLOGTokenConstants.ELSEIF); }
-[Ii][Ff]  		{ return new Symbol(BLOGTokenConstants.IF); }
-[Qq][Uu][Ee][Rr][Yy]	{ return new Symbol(BLOGTokenConstants.QUERY);}
-[Oo][Bb][Ss]         { return new Symbol(BLOGTokenConstants.OBS);}
-[Pp][Aa][Rr][Aa][Mm] { return new Symbol(BLOGTokenConstants.PARAM);}
+[Tt][Yy][Pp][Ee] { return symbol(BLOGTokenConstants.TYPE); }
+[Rr][Aa][Nn][Dd][Oo][Mm] { return symbol(BLOGTokenConstants.RANDOM); }
+[Nn][Oo][Nn][Rr][Aa][Nn][Dd][Oo][Mm] { return symbol(BLOGTokenConstants.NONRANDOM); }
+[Ff][Ii][Xx][Ee][Dd] { return symbol(BLOGTokenConstants.NONRANDOM); }			   
+[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Ii][Nn][Gg] { return symbol(BLOGTokenConstants.GENERATING); }
+[Oo][Rr][Ii][Gg][Ii][Nn] { return symbol(BLOGTokenConstants.GENERATING); }
+[Gg][Uu][Aa][Rr][Aa][Nn][Tt][Ee][Ee][Dd] { return symbol(BLOGTokenConstants.GUARANTEED); }
+[Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt] { return symbol(BLOGTokenConstants.GUARANTEED); }
+[Ff][Aa][Cc][Tt][Oo][Rr] { return symbol(BLOGTokenConstants.FACTOR); }
+[Pp][Aa][Rr][Ff][Aa][Cc][Tt][Oo][Rr] { return symbol(BLOGTokenConstants.PARFACTOR); }
+[Tt][Hh][Ee][Nn]     { return symbol(BLOGTokenConstants.THEN); }
+[Ee][Ll][Ss][Ee]  	{ return symbol(BLOGTokenConstants.ELSE); }
+[Ff][Oo][Rr]         { return symbol(BLOGTokenConstants.FOR); }
+[Ee][Ll][Ss][Ee][Ii][Ff]  { return symbol(BLOGTokenConstants.ELSEIF); }
+[Ii][Ff]  		{ return symbol(BLOGTokenConstants.IF); }
+[Qq][Uu][Ee][Rr][Yy]	{ return symbol(BLOGTokenConstants.QUERY);}
+[Oo][Bb][Ss]         { return symbol(BLOGTokenConstants.OBS);}
+[Pp][Aa][Rr][Aa][Mm] { return symbol(BLOGTokenConstants.PARAM);}
 [Ee][Xx][Ii][Ss][Tt][Ss] { /* existential quantifier */
-	return new Symbol(BLOGTokenConstants.EXISTS); }
+	return symbol(BLOGTokenConstants.EXISTS); }
 [Ff][Oo][Rr][Aa][Ll][Ll] { /* universal quantifier */
-	return new Symbol(BLOGTokenConstants.FORALL); }
+	return symbol(BLOGTokenConstants.FORALL); }
 	
 
 /* literals */
-"true"	{ return new Symbol(BLOGTokenConstants.TRUE); }
-"false"   { return new Symbol(BLOGTokenConstants.FALSE); }
-"null" {return new Symbol(BLOGTokenConstants.NULL); }
+"true"	{ return symbol(BLOGTokenConstants.TRUE, new Boolean(true)); }
+"false"   { return symbol(BLOGTokenConstants.FALSE, new Boolean(false)); }
+"null" {return symbol(BLOGTokenConstants.NULL); }
 {DoubleLiteral} { return 
-				    new Symbol(BLOGTokenConstants.DOUBLE_CONST,
-					                           new Double(yytext())); }
+		 symbol(BLOGTokenConstants.DOUBLE_CONST, new Double(yytext())); }
 {IntegerLiteral}  { /* Integers */
-                       return new Symbol(BLOGTokenConstants.INT_CONST,
-					                           new Integer(yytext())); }
-{TimeLiteral} { return new Symbol(BLOGTokenConstants.TIME_CONST, 
-				       yytext()); }
+     return symbol(BLOGTokenConstants.INT_CONST, new Integer(yytext())); }
+{TimeLiteral} { return symbol(BLOGTokenConstants.TIME_CONST, new Integer(yytext())); }
 
 /* operators */
-"+"     { return new Symbol(BLOGTokenConstants.PLUS); }
-"-"     { return new Symbol(BLOGTokenConstants.MINUS); }
-"*"     { return new Symbol(BLOGTokenConstants.MULT); }
-"/"     { return new Symbol(BLOGTokenConstants.DIV); }
-"%"     { return new Symbol(BLOGTokenConstants.MOD); }
-"<"     { return new Symbol(BLOGTokenConstants.LT); }
-">"     { return new Symbol(BLOGTokenConstants.GT); }
-"<="    { return new Symbol(BLOGTokenConstants.LEQ); }
-">="    { return new Symbol(BLOGTokenConstants.GEQ); }
-"=="		{ return new Symbol(BLOGTokenConstants.EQ); }
-"!="    { return new Symbol(BLOGTokenConstants.NEQ); }
-"&"			{ return new Symbol(BLOGTokenConstants.AND); }
-"|"     { return new Symbol(BLOGTokenConstants.OR); }
-"!"			{ return new Symbol(BLOGTokenConstants.NEG); }
-"->"		{ return new Symbol(BLOGTokenConstants.RIGHTARROW);}
-"="			{ return new Symbol(BLOGTokenConstants.ASSIGN); }
-"~"			{ return new Symbol(BLOGTokenConstants.DISTRIB); }
-"#"     { return new Symbol(BLOGTokenConstants.NUMSIGN); }
+"+"     { return symbol(BLOGTokenConstants.PLUS); }
+"-"     { return symbol(BLOGTokenConstants.MINUS); }
+"*"     { return symbol(BLOGTokenConstants.MULT); }
+"/"     { return symbol(BLOGTokenConstants.DIV); }
+"%"     { return symbol(BLOGTokenConstants.MOD); }
+"<"     { return symbol(BLOGTokenConstants.LT); }
+">"     { return symbol(BLOGTokenConstants.GT); }
+"<="    { return symbol(BLOGTokenConstants.LEQ); }
+">="    { return symbol(BLOGTokenConstants.GEQ); }
+"=="		{ return symbol(BLOGTokenConstants.EQ); }
+"!="    { return symbol(BLOGTokenConstants.NEQ); }
+"&"			{ return symbol(BLOGTokenConstants.AND); }
+"|"     { return symbol(BLOGTokenConstants.OR); }
+"!"			{ return symbol(BLOGTokenConstants.NEG); }
+"->"		{ return symbol(BLOGTokenConstants.RIGHTARROW);}
+"="			{ return symbol(BLOGTokenConstants.ASSIGN); }
+"~"			{ return symbol(BLOGTokenConstants.DISTRIB); }
+"#"     { return symbol(BLOGTokenConstants.NUMSIGN); }
 
 /* seperator */
-"("			{ return new Symbol(BLOGTokenConstants.LPAREN); }
-")"			{ return new Symbol(BLOGTokenConstants.RPAREN); }
-"}"			{ return new Symbol(BLOGTokenConstants.RBRACE); }
-"{"			{ return new Symbol(BLOGTokenConstants.LBRACE); }
-"["			{ return new Symbol(BLOGTokenConstants.LBRACKET); }
-"]"			{ return new Symbol(BLOGTokenConstants.RBRACKET); }
-"<"     { return new Symbol(BLOGTokenConstants.LANGLE); }
-">"     { return new Symbol(BLOGTokenConstants.RANGLE); }
-";"			{ return new Symbol(BLOGTokenConstants.SEMI); }
-":"			{ return new Symbol(BLOGTokenConstants.COLON);}
-"."     { return new Symbol(BLOGTokenConstants.DOT); }
-","			{ return new Symbol(BLOGTokenConstants.COMMA);}
+"("			{ return symbol(BLOGTokenConstants.LPAREN); }
+")"			{ return symbol(BLOGTokenConstants.RPAREN); }
+"}"			{ return symbol(BLOGTokenConstants.RBRACE); }
+"{"			{ return symbol(BLOGTokenConstants.LBRACE); }
+"["			{ return symbol(BLOGTokenConstants.LBRACKET); }
+"]"			{ return symbol(BLOGTokenConstants.RBRACKET); }
+"<"     { return symbol(BLOGTokenConstants.LANGLE); }
+">"     { return symbol(BLOGTokenConstants.RANGLE); }
+";"			{ return symbol(BLOGTokenConstants.SEMI); }
+":"			{ return symbol(BLOGTokenConstants.COLON);}
+"."     { return symbol(BLOGTokenConstants.DOT); }
+","			{ return symbol(BLOGTokenConstants.COMMA);}
 
 
  /* comments */
@@ -218,26 +221,26 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 
 {Whitespace} { /* Do nothing */}
 
-{Identifier} {return new Symbol(BLOGTokenConstants.ID, yytext()); }
+{Identifier} {return symbol(BLOGTokenConstants.ID, yytext()); }
 
 [A-Za-z][A-Za-z0-9_]*([.][A-Za-z][A-Za-z0-9_]*)* {
-        return new Symbol(BLOGTokenConstants.CLASS_NAME, yytext()); }
+        return symbol(BLOGTokenConstants.CLASS_NAME, yytext()); }
 }
 
 <STR_LIT>\" { /* closing double-quote not matched by \" rule below */
-       Symbol s =   new Symbol(BLOGTokenConstants.STR_CONST, 
+       BLOGSymbol s =   symbol(BLOGTokenConstants.STR_CONST, 
 			       string_buf.toString());
        string_buf = new StringBuffer(); /* reinitialize the buffer */
        yybegin(YYINITIAL);
        return s;}
 
 <CHAR_LIT>\' { /* closing single-quote not matched by \' rule below */
-       Symbol s;
+       BLOGSymbol s;
        if (string_buf.length() == 1) {
-	   s = new Symbol(BLOGTokenConstants.CHAR_CONST, 
+	   s = symbol(BLOGTokenConstants.CHAR_CONST, 
                           new Character(string_buf.charAt(0)));
        } else {
-	   s = new Symbol(BLOGTokenConstants.ERROR, 
+	   s = symbol(BLOGTokenConstants.ERROR, 
                           "Character literal must contain exactly one "
                           + "character");
        } 
@@ -269,19 +272,19 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
        string_buf.append((char) code); }
 
 <STR_LIT,CHAR_LIT>\\.  { 
-       return new Symbol(BLOGTokenConstants.ERROR, 
+       return symbol(BLOGTokenConstants.ERROR, 
                          "Unrecognized escape character: \'" 
                          + yytext() + "\'"); }
 
 <STR_LIT,CHAR_LIT>{LineTerminator}  { 
-       return new Symbol(BLOGTokenConstants.ERROR, 
+       return symbol(BLOGTokenConstants.ERROR, 
                          "Line terminator in string or character literal."); }
 
 <STR_LIT,CHAR_LIT>. { /* Char in quotes, not matched by any rule above */
        string_buf.append(yytext()); }
 
 
-<YYINITIAL>.                     { return new Symbol(BLOGTokenConstants.ERROR, 
+<YYINITIAL>.                     { return symbol(BLOGTokenConstants.ERROR, 
                                           yytext()); }
 .             { /*
                     *  This should be the very last rule and will match
