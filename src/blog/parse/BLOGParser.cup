@@ -37,10 +37,11 @@ import java_cup.runtime.*;
 import java.util.*;
 import java.io.*;
 import Jama.*;
-import common.ScannerWithLocInfo;
-import common.HashMapDiff;
-import common.LocationInFile;
-import common.Util;
+import blog.*;
+import blog.common.HashMapDiff;
+import blog.common.LocationInFile;
+import blog.common.Util;
+import blog.model.*;
 import fove.Parfactor;
 import fove.CountingTerm;
 
