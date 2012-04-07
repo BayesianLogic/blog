@@ -140,280 +140,32 @@ action code {:
 
 
 parser code {:
+  private Model model;
+  private Evidence evidence;
+  private List queries;
+
+  /**
+  * Sets the model that this parser will use.  If the parser encounters 
+  * declarations, then the model will be augmented to reflect these 
+  * declarations.  Otherwise, the model will be used to look up the types 
+  * and functions of the language.  You must pass in a non-null model with 
+  * this method before calling the <code>parse</code> method.  
+  */
+  public void setModel(Model model) {
+    this.model = model;
+  }
+  
+  /**
+    * Returns the model that this parser is using.  
+    */
+  public Model getModel() {
+    return model;
+  }  
 
 
-    public int omerrs = 0;
+  
+  
 
-    private Model model;
-    private Evidence evidence;
-    private List queries;
-
-    public void syntax_error(Symbol cur_token) {
-
-        int lineno = action_obj.curr_lineno();
-	String filename = action_obj.curr_filename();
-        System.err.print(filename + ":" + lineno + " Parse error at or near ");
-        ParserUtilities.printToken(cur_token);
-	//System.exit(1);
-	omerrs++;
-	// if (omerrs > 0) {
-	//   System.err.println("More than 50 errors");
-	//   System.exit(1);
-	//}
-
-    }
-
-
-    public void unrecovered_syntax_error(Symbol cur_token) {
-    }
-
-    /**
-     * Sets the model that this parser will use.  If the parser encounters 
-     * declarations, then the model will be augmented to reflect these 
-     * declarations.  Otherwise, the model will be used to look up the types 
-     * and functions of the language.  You must pass in a non-null model with 
-     * this method before calling the <code>parse</code> method.  
-     */
-    public void setModel(Model model) {
-        this.model = model;
-    }
-
-    /**
-     * Returns the model that this parser is using.  
-     */
-    public Model model() {
-        return model;
-    }
-
-    /**
-     * Sets the evidence object that this parser will use.  When the parser 
-     * encounters an evidence statement, that evidence is added to this 
-     * evidence object.  Also, the evidence object is used to look up 
-     * Skolem constants.  
-     */
-    public void setEvidence(Evidence evidence) {
-        this.evidence = evidence;
-    }
-
-    /**
-     * Returns the evidence object that this parser is using (which may 
-     * be null).
-     */
-    public Evidence evidence() {
-        return evidence;
-    }
-
-    /**
-     * Sets the list to which queries (represented as Query objects) will be 
-     * appended.  
-     */
-    public void setQueries(List queries) {
-	    this.queries = queries;
-    }
-
-    /**
-     * Returns the query list that this parser is using (which may be null).
-     */
-    public List queries() {
-        return queries;
-    }
-
-    /**
-     * Returns the Function object corresponding to the given signature, or 
-     * null if no such function has been declared.  Uses the function table 
-     * in <code>model</code>, as well as the Skolem constant table in 
-     * <code>evidence</code> if <code>evidence</code> is not null.
-     */
-    public Function getFunction(String name, List argTypeList) {
-        Function f = model.getFunction(new Function.Sig(name, argTypeList));
-
-        if ((f == null) && (evidence != null)) {
-            f = evidence.getSkolemConstant(name);
-        }
-        return f;
-    }
-
-    /**
-     * Nested class that specifies a CPD with parameters and arguments.
-     */
-    public static class CPDSpec {
-	public CPDSpec(Class cls, List params, List args) {
-	    this.cls = cls;
-            this.params = params;
-            this.args = args;
-        }
-
-        public Class cls;
-        public List params; // of ArgSpec
-        public List args;   // of ArgSpec
-    }
-
-    /**
-     * Nested class that specifies a potential with parameters and arguments.
-     */
-    public static class PotentialSpec {
-        public PotentialSpec(Class cls, List params, List args) {
-            this.cls = cls;
-            this.params = (List<ArgSpec>) params;
-            this.args = (List<Term>) args;
-        }
-
-        public Class cls;
-        public List<ArgSpec> params;
-        public List<Term> args;
-    }
-
-    /**
-     * Nested class that specifies a origin function and a variable 
-     * for the generating object.  Optionally, it can also include 
-     * a type for the generating object. 
-     */
-    public static class GenObjSpec {
-        public GenObjSpec(String originFuncName, Type genObjType, 
-                          String genObjVar) {
-            this.originFuncName = originFuncName;
-            this.genObjType = genObjType;
-            this.genObjVar = genObjVar;
-        }
-
-        public String originFuncName;
-        public Type genObjType;
-        public String genObjVar; 
-    }
-
-    /**
-     * Nested class that specifies a variable name and a type.
-     */
-    public static class TypedVar {
-        public TypedVar(String var, Type type) {
-            this.var = var;
-            this.type = type;
-        }
-
-        public String var;
-        public Type type;
-    }
-
-    /**
-     * Nested class that specifies a list of logical variables and a 
-     * formula that constrains them.
-     */
-    public static class VarsWithConstraint {
-	public VarsWithConstraint() {
-            logicalVars = Collections.emptyList();
-            constraint = TrueFormula.TRUE;
-        }
-
-        public VarsWithConstraint(List typedVars) {
-            for (Iterator iter = typedVars.iterator(); iter.hasNext(); ) {
-                TypedVar tv = (TypedVar) iter.next();
-                logicalVars.add(new LogicalVar(tv.var, tv.type));
-            }
-            constraint = TrueFormula.TRUE;
-        }
-
-        public VarsWithConstraint(List typedVars, Formula constraint) {
-            for (Iterator iter = typedVars.iterator(); iter.hasNext(); ) {
-                TypedVar tv = (TypedVar) iter.next();
-                logicalVars.add(new LogicalVar(tv.var, tv.type));
-            }
-            this.constraint = constraint;
-        }
-
-        public List<LogicalVar> logicalVars = new ArrayList<LogicalVar>();
-        public Formula constraint;
-    }
-
-    /**
-     * Sets the packages that will be searched before the default packages 
-     * when looking up class names (for CPDs, etc.).  The given packages 
-     * are searched in the order they are listed.
-     *
-     * @param packages List of String objects
-     */
-    public static void setPackagesToSearch(List packages) {
-       extraPackages = new ArrayList(packages);
-    }
-
-    /**
-     * Returns true if parsing was successful; otherwise false.
-     */
-    public static boolean parseReader(Model model, Evidence evidence, 
-                                      List queries, boolean doDebugParse, 
-                          	      Reader reader, String originName, 
-                                      boolean parsingFromMessage) 
-    throws Exception {
-
-    	BLOGLexer lexer = new BLOGLexer(reader);
-    	lexer.setFilename(originName);
-
-    	if (parsingFromMessage)
-    	    System.out.println("Parsing from: " + originName);
-
-    	BLOGParser parser = new BLOGParser(lexer);
-    	parser.setModel(model);
-    	parser.setEvidence(evidence);
-    	parser.setQueries(queries);
-
-    	if (doDebugParse)
-    		parser.debug_parse();
-    	else parser.parse();
-
-    	return (parser.omerrs == 0);
-    }							  
-
-    /**
-     * Returns true if parsing was successful; otherwise false.
-     */
-    private static void parseString(ModelEvidenceQueries meq, 
-                                    String description) throws Exception {
-
-    	if (!parseReader(meq.model, meq.evidence, meq.queries, 
-                         false /* doDebugParse */, 
-                         new StringReader(description), 
-                         Util.abbreviation(description), false)) {
-            throw new IllegalArgumentException("Failed to parse string.");
-        }
-       
-    	if (!meq.evidence.checkTypesAndScope(meq.model)) {
-            throw new IllegalArgumentException
-                ("Type or scope error in evidence.");
-        }
-        if (meq.evidence.compile() > 0) {
-            throw new IllegalArgumentException("Failed to compile evidence.");
-        }
-    	for (Iterator it = meq.queries.iterator(); it.hasNext(); ) {
-           Query query = (Query) it.next();
-           if (!query.checkTypesAndScope(meq.model)) {
-               throw new IllegalArgumentException
-                   ("Type or scope error in query: " + query);
-           }
-           if (query.compile() > 0) {
-               throw new IllegalArgumentException
-                   ("Failed to compile query: " + query);
-           }
-    	}
-    }
-    
-    public static ModelEvidenceQueries parseString(String description) 
-        throws Exception {
-
-    	ModelEvidenceQueries meq = new ModelEvidenceQueries();
-    	parseString(meq, description);
-    	return meq;
-    }
-    
-    public static ModelEvidenceQueries parseString(Model model, 
-                                                   String description) 
-        throws Exception {
-
-    	ModelEvidenceQueries meq = new ModelEvidenceQueries();
-    	meq.model = model;
-    	parseString(meq, description);
-    	return meq;
-    }
-
-    static List extraPackages = Collections.EMPTY_LIST; // of String
 :}
 
 init with {:
@@ -434,17 +186,24 @@ init with {:
 
 terminal ERROR;
 terminal ELSE, ELSEIF, IF, THEN, FOR;
-terminal RIGHTARROW, NEG, EQ, NEQ, TYPE, 
-	RANDOM, NONRANDOM, GENERATING, GUARANTEED, FACTOR, PARFACTOR, 
-        QUERY, OBS;
-terminal AND, OR, DISTRIB, COMMA, SEMI, COLON, DOT, 
-	TRUE, FALSE, NUMSIGN;
-terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET;
-terminal String STR_CONST, INT_CONST, DOUBLE_CONST, TIME_CONST;
-terminal String ID, CLASS_NAME;
-terminal Character CHAR_CONST;
+terminal TYPE, RANDOM, NONRANDOM, GENERATING, GUARANTEED, FACTOR, PARFACTOR, 
+        QUERY, OBS, PARAM;
 terminal EXISTS, FORALL;
-terminal LT, GT, LEQ, GEQ;
+terminal NULL;
+terminal java.lang.Number INT_LITERAL, DOUBLE_LITERAL, TIME_LITERAL;
+terminal java.lang.Boolean TRUE, FALSE;
+terminal java.lang.Character CHARACTER_LITERAL;
+terminal java.lang.String STRING_LITERAL;
+terminal java.lang.String IDENTIFIER; 
+terminal PLUS, MINUS, MULT, DIV, MOD; 
+terminal LT, GT, LEQ, GEQ; // relational_expression
+terminal EQEQ, NEQ;
+terminal EQ;
+terminal DISTRIB;
+terminal NOT, AND, OR; 
+terminal COMMA, SEMI, COLON, DOT, NUMSIGN, RIGHTARROW;
+terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET;
+terminal String ID, CLASS_NAME;
 
 nonterminal type_decl, rand_func_decl, rand_func_defn, origin_func_decl, 
         non_rand_func_decl, non_rand_func_defn, dep_stmt, num_stmt, 
@@ -452,7 +211,7 @@ nonterminal type_decl, rand_func_decl, rand_func_defn, origin_func_decl,
 nonterminal RandomFunction dep_stmt_intro, rand_func_defn_intro;
 nonterminal POP num_stmt_intro;
 nonterminal Term term;
-nonterminal file;
+nonterminal program;
 nonterminal String new_var;
 nonterminal opt_statement_lst, statement_lst, statement, declaration, 
         evidence, query;
@@ -503,21 +262,24 @@ nonterminal String str_const_seq;
  * higher the precedence.  
  */
 
+precedence left ELSE;
+precedence nonassoc ASSIGN, DISTRIB;
 precedence right RIGHTARROW;
 precedence left AND, OR;
-precedence nonassoc LT, GT, LEQ, GEQ; 
-precedence left EQ, NEG;
-/* precedence left PLUS, MINUS; */
-/* precedence left MULT, DIV; */
+precedence left NOT;
+precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ; 
+precedence left PLUS, MINUS; 
+precedence left MULT, DIV, MOD; 
+precedence left LBRACKET;
 
 
 /* Grammar *******************************************************************/
 
-start with file;
+start with program;
 
 
 /* The start nonterminal */
-file ::= opt_statement_lst
+program ::= opt_statement_lst
                 ;
 
 /* Represents a possibly-empty list of statements. */
@@ -1149,7 +911,7 @@ query ::= QUERY cpd_arg:as
 id_spec ::= id_lst:il
 	   {: RESULT = il; :}
 
-	   | ID:id LBRACKET INT_CONST:ic RBRACKET
+	   | ID:id LBRACKET INT_LITERAL:ic RBRACKET
 	   {: RESULT = new ArrayList();
 	      int num = Integer.decode(ic).intValue();
 	      for(int i = 1; i <= num; i++)
@@ -1445,7 +1207,7 @@ atomicformula ::= term:t
 /* Represents a negation of a formula. (Propagates an error-check from the 
  * formula production.) 
  */
-negformula ::= NEG formula:f
+negformula ::= NOT formula:f
 	   {: if (f == null) {
                   RESULT = null;
               } else {
@@ -1761,7 +1523,7 @@ non_boolean_built_in ::=  number:n
                   ("\"" + s + "\"", BuiltInTypes.STRING, s); 
            :}
 
-	   | CHAR_CONST:c
+	   | CHAR_LITERAL:c
 	   {: RESULT = BuiltInFunctions.getLiteral
                   ("\'" + c + "\'", BuiltInTypes.CHARACTER, c); 
            :}
@@ -1769,19 +1531,19 @@ non_boolean_built_in ::=  number:n
 
 
 /* Represents numeric built-in constants: integers and doubles. */
-number ::= INT_CONST:ic
+number ::= INT_LITERAL:ic
 	   {: Type type = (Integer.parseInt(ic) >= 0) ? 
                   BuiltInTypes.NATURAL_NUM : BuiltInTypes.INTEGER;
               RESULT = BuiltInFunctions.getLiteral
                   (ic, type, new Integer(ic));
            :}
 
-	   | DOUBLE_CONST:dc
+	   | DOUBLE_LITERAL:dc
 	   {: RESULT = BuiltInFunctions.getLiteral
                   (dc, BuiltInTypes.REAL, new Double(dc)); 
 	   :} 
 
-	   | TIME_CONST:t
+	   | TIME_LITERAL:t
 	   {: String afterAtSign = t.substring(1);
               RESULT = BuiltInFunctions.getLiteral
 	          (t, BuiltInTypes.TIMESTEP, 
@@ -1805,10 +1567,10 @@ term_lst_lst ::= term_lst:tl
 /* Non-empty sequence of string constants, which are concatenated into 
  * one string.
  */
-str_const_seq ::= STR_CONST:str
+str_const_seq ::= STRING_LITERAL:str
            {: RESULT = str; :}
            
-           | str_const_seq:strSoFar STR_CONST:nextStr
+           | str_const_seq:strSoFar STRING_LITERAL:nextStr
            {: RESULT = strSoFar.concat(nextStr); :}
            ;
 
