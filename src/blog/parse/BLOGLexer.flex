@@ -176,10 +176,10 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 "false"   { return symbol(BLOGTokenConstants.FALSE, new Boolean(false)); }
 "null" {return symbol(BLOGTokenConstants.NULL); }
 {DoubleLiteral} { return 
-		 symbol(BLOGTokenConstants.DOUBLE_CONST, new Double(yytext())); }
+		 symbol(BLOGTokenConstants.DOUBLE_LITERAL, new Double(yytext())); }
 {IntegerLiteral}  { /* Integers */
-     return symbol(BLOGTokenConstants.INT_CONST, new Integer(yytext())); }
-{TimeLiteral} { return symbol(BLOGTokenConstants.TIME_CONST, new Integer(yytext())); }
+     return symbol(BLOGTokenConstants.INT_LITERAL, new Integer(yytext())); }
+{TimeLiteral} { return symbol(BLOGTokenConstants.TIME_LITERAL, new Integer(yytext())); }
 
 /* operators */
 "+"     { return symbol(BLOGTokenConstants.PLUS); }
@@ -191,13 +191,13 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 ">"     { return symbol(BLOGTokenConstants.GT); }
 "<="    { return symbol(BLOGTokenConstants.LEQ); }
 ">="    { return symbol(BLOGTokenConstants.GEQ); }
-"=="		{ return symbol(BLOGTokenConstants.EQ); }
+"=="		{ return symbol(BLOGTokenConstants.EQEQ); }
 "!="    { return symbol(BLOGTokenConstants.NEQ); }
 "&"			{ return symbol(BLOGTokenConstants.AND); }
 "|"     { return symbol(BLOGTokenConstants.OR); }
-"!"			{ return symbol(BLOGTokenConstants.NEG); }
+"!"			{ return symbol(BLOGTokenConstants.NOT); }
 "->"		{ return symbol(BLOGTokenConstants.RIGHTARROW);}
-"="			{ return symbol(BLOGTokenConstants.ASSIGN); }
+"="			{ return symbol(BLOGTokenConstants.EQ); }
 "~"			{ return symbol(BLOGTokenConstants.DISTRIB); }
 "#"     { return symbol(BLOGTokenConstants.NUMSIGN); }
 
@@ -208,8 +208,6 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 "{"			{ return symbol(BLOGTokenConstants.LBRACE); }
 "["			{ return symbol(BLOGTokenConstants.LBRACKET); }
 "]"			{ return symbol(BLOGTokenConstants.RBRACKET); }
-"<"     { return symbol(BLOGTokenConstants.LANGLE); }
-">"     { return symbol(BLOGTokenConstants.RANGLE); }
 ";"			{ return symbol(BLOGTokenConstants.SEMI); }
 ":"			{ return symbol(BLOGTokenConstants.COLON);}
 "."     { return symbol(BLOGTokenConstants.DOT); }
@@ -228,7 +226,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 }
 
 <STR_LIT>\" { /* closing double-quote not matched by \" rule below */
-       BLOGSymbol s =   symbol(BLOGTokenConstants.STR_CONST, 
+       BLOGSymbol s =   symbol(BLOGTokenConstants.STRING_LITERAL, 
 			       string_buf.toString());
        string_buf = new StringBuffer(); /* reinitialize the buffer */
        yybegin(YYINITIAL);
@@ -237,7 +235,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 <CHAR_LIT>\' { /* closing single-quote not matched by \' rule below */
        BLOGSymbol s;
        if (string_buf.length() == 1) {
-	   s = symbol(BLOGTokenConstants.CHAR_CONST, 
+	   s = symbol(BLOGTokenConstants.CHAR_LITERAL, 
                           new Character(string_buf.charAt(0)));
        } else {
 	   s = symbol(BLOGTokenConstants.ERROR, 
