@@ -38,6 +38,7 @@ import java.util.*;
 import java.io.*;
 import Jama.*;
 import blog.*;
+import blog.absyn.*;
 import blog.common.HashMapDiff;
 import blog.common.LocationInFile;
 import blog.common.Util;
@@ -140,31 +141,33 @@ action code {:
 
 
 parser code {:
-  private Model model;
-  private Evidence evidence;
+  private Stmt parseResult; //variable to store the final parsing result
+  
+  public Stmt getParseResult() {
+    return parseResult;
+  }
+
+  private Model model;
+  private Evidence evidence;
   private List queries;
 
-  /**
-  * Sets the model that this parser will use.  If the parser encounters 
-  * declarations, then the model will be augmented to reflect these 
-  * declarations.  Otherwise, the model will be used to look up the types 
-  * and functions of the language.  You must pass in a non-null model with 
-  * this method before calling the <code>parse</code> method.  
+  /**
+  * Sets the model that this parser will use.  If the parser encounters 
+  * declarations, then the model will be augmented to reflect these 
+  * declarations.  Otherwise, the model will be used to look up the types 
+  * and functions of the language.  You must pass in a non-null model with 
+  * this method before calling the <code>parse</code> method.  
   */
-  public void setModel(Model model) {
-    this.model = model;
+  public void setModel(Model model) {
+    this.model = model;
   }
   
-  /**
-    * Returns the model that this parser is using.  
+  /**
+    * Returns the model that this parser is using.  
     */
-  public Model getModel() {
-    return model;
-  }  
-
-
-  
-  
+  public Model getModel() {
+    return model;
+  }
 
 :}
 
@@ -279,32 +282,32 @@ start with program;
 
 
 /* The start nonterminal */
-program ::= opt_statement_lst
+program ::= opt_statement_lst : e {: parseResult = e;  :}
                 ;
 
 /* Represents a possibly-empty list of statements. */
-opt_statement_lst ::= /* EMPTY */
-                | statement_lst
+opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
+                | statement_lst : e {: RESULT = e; :}
                 ;
 
 /* Represents a non-empty list of statements terminated by semicolons. */
-statement_lst ::= statement_lst statement SEMI
-		| statement SEMI
+statement_lst ::= statement:e statement_lst:slst {: RESULT = new StmtList(e, slst); :} 
+		| statement {: RESULT = new StmtList(e, null); :} 
 		| error
 		{: System.err.println( 
-			"Possible cause: forgotten semicolon" ); :}
+			"Possible cause: forgotten semicolon" ); 
+			RESULT = null; :}
 		;
 
 /* A statement can be a declaration, an observation (assertion of some 
  * evidence), or a query.
  */
-statement ::= declaration
-            | evidence 
-            | query
+statement ::= declaration_stmt : e {: RESULT = e; :}
+            | evidence_stmt : e {: RESULT = e; :}
+            | query_stmt : e {: RESULT = e; :}
             ;
 
 /* Represents a declaration, which can be:
- *   
  *    * a type declaration;
  *    * a random function or generating function declaration
  *        (Semantic checks:
@@ -332,25 +335,26 @@ statement ::= declaration
  *                error-check propagated from the function_lst production);
  *            - whether the only parameter of each generating function is of the
  *                type being generated.).
- *    * a parfactor statement
+ *    * a parfactor statement // not used in current blog
  */   
-declaration ::= type_decl
-           | rand_func_decl
-           | rand_func_defn
-           | origin_func_decl
-           | non_rand_func_decl
-           | non_rand_func_defn
-           | dep_stmt
-           | num_stmt
-           | guaranteed_decl
-           | parfactor
-
+declaration_stmt ::= type_decl : e {: RESULT = e; :}
+           | rand_func_decl : e {: RESULT = e; :}
+           | rand_func_defn : e {: RESULT = e; :}
+           | origin_func_decl : e {: RESULT = e; :}
+           | non_rand_func_decl : e {: RESULT = e; :}
+           | non_rand_func_defn : e {: RESULT = e; :}
+           | dep_stmt : e {: RESULT = e; :}
+           | num_stmt : e {: RESULT = e; :}
+           | guaranteed_decl : e {: RESULT = e; :}
+		   | parameter_decl : e {: RESULT = e; :}
+           | parfactor : e {: RESULT = e; :}
 	   | error
 	   {: System.err.println
 			( "Possible cause: forgotten semicolon or "
-			+ "a type/random/nonrandom/guaranteed modifier." ); :}
+			+ "a type/random/nonrandom/guaranteed modifier." ); RESULT = null; :}
            ;
-
+###########Lei Li stops here##########################
+		   
 type_decl ::= TYPE ID:typename
 	   {: if (parser.model().getType(typename) != null) {
                   semantic_error("Type " + typename + " already exists.");
