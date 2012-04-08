@@ -1,3 +1,3 @@
 package blog.absyn;
-import Symbol.Symbol;
-abstract public class Dec extends Absyn {}
+
+abstract public class Dec extends Stmt {}

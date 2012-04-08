@@ -1,11 +1,18 @@
 package blog.absyn;
-import Symbol.Symbol;
+
+import blog.symbol.Symbol;
+
 public class FunctionDec extends Dec {
-   public Symbol name;
-   public FieldList params;
-   public NameTy result;  /* optional */
-   public Stmt body;
-   public FunctionDec next;
-   public FunctionDec(int p, Symbol n, FieldList a, NameTy r, Stmt b, FunctionDec x)
-			       {pos=p; name=n; params=a; result=r; body=b; next=x;}
+	public Symbol name;
+	public FieldList params;
+	public Ty result;
+	public Expr body;
+
+	public FunctionDec(int p, Symbol n, FieldList a, Ty r, Expr b) {
+		pos = p;
+		name = n;
+		params = a;
+		result = r;
+		body = b;
+	}
 }

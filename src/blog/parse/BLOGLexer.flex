@@ -149,8 +149,8 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 /* keywords */
 [Tt][Yy][Pp][Ee] { return symbol(BLOGTokenConstants.TYPE); }
 [Rr][Aa][Nn][Dd][Oo][Mm] { return symbol(BLOGTokenConstants.RANDOM); }
-[Nn][Oo][Nn][Rr][Aa][Nn][Dd][Oo][Mm] { return symbol(BLOGTokenConstants.NONRANDOM); }
-[Ff][Ii][Xx][Ee][Dd] { return symbol(BLOGTokenConstants.NONRANDOM); }			   
+[Nn][Oo][Nn][Rr][Aa][Nn][Dd][Oo][Mm] { return symbol(BLOGTokenConstants.FIXED); }
+[Ff][Ii][Xx][Ee][Dd] { return symbol(BLOGTokenConstants.FIXED); }			   
 [Gg][Ee][Nn][Ee][Rr][Aa][Tt][Ii][Nn][Gg] { return symbol(BLOGTokenConstants.GENERATING); }
 [Oo][Rr][Ii][Gg][Ii][Nn] { return symbol(BLOGTokenConstants.GENERATING); }
 [Gg][Uu][Aa][Rr][Aa][Nn][Tt][Ee][Ee][Dd] { return symbol(BLOGTokenConstants.GUARANTEED); }
