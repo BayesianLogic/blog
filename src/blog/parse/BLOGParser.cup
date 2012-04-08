@@ -354,8 +354,8 @@ array_type ::= ID : typename  dims : d
     {: RESULT = new ArrayTy(typenameleft, sym(typename), d); :}
     ;
 
-dims ::= LBRACKET RBRACKET {: RESULT = 1; :}
-    | LBRACKET RBRACKET dims : d {: RESULT = d + 1; :}
+dims ::= LBRACE RBRACE {: RESULT = 1; :}
+    | LBRACE RBRACE dims : d {: RESULT = d + 1; :}
     ;
 
 /* A possibly empty list of IDs denoting type names. */
