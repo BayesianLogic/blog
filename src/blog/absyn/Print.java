@@ -85,11 +85,11 @@ public class Print {
     say("NilExp()");
   }
 
-  void prExp(IntExp e, int d) {
+  void prExp(IntExpr e, int d) {
     say("IntExp("); say(e.value); say(")");
   }
 
-  void prExp(StringExp e, int d) {
+  void prExp(StringExpr e, int d) {
     say("StringExp("); say(e.value); say(")");
   }
 
@@ -160,8 +160,8 @@ public class Print {
     if (e instanceof OpExp) prExp((OpExp)e, d);
     else if (e instanceof VarExp) prExp((VarExp) e, d);
     else if (e instanceof NilExp) prExp((NilExp) e, d);
-    else if (e instanceof IntExp) prExp((IntExp) e, d);
-    else if (e instanceof StringExp) prExp((StringExp) e, d);
+    else if (e instanceof IntExpr) prExp((IntExpr) e, d);
+    else if (e instanceof StringExpr) prExp((StringExpr) e, d);
     else if (e instanceof CallExp) prExp((CallExp) e, d);
     else if (e instanceof RecordExp) prExp((RecordExp) e, d);
     else if (e instanceof SeqExp) prExp((SeqExp) e, d);
