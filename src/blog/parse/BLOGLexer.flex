@@ -118,7 +118,7 @@ FLit3    = [0-9]+
 Exponent = [eE] [+-]? [0-9]+
 DoubleLiteral = ({FLit1}|{FLit2}|{FLit3}) {Exponent}?
 
-TimeLiteral = @{Digit}+
+TimeLiteral = [@]{Digit}+
 
 LineTerminator	= \n|\r|\r\n
 
@@ -151,8 +151,8 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Rr][Aa][Nn][Dd][Oo][Mm] { return symbol(BLOGTokenConstants.RANDOM); }
 [Nn][Oo][Nn][Rr][Aa][Nn][Dd][Oo][Mm] { return symbol(BLOGTokenConstants.FIXED); }
 [Ff][Ii][Xx][Ee][Dd] { return symbol(BLOGTokenConstants.FIXED); }			   
-[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Ii][Nn][Gg] { return symbol(BLOGTokenConstants.GENERATING); }
-[Oo][Rr][Ii][Gg][Ii][Nn] { return symbol(BLOGTokenConstants.GENERATING); }
+[Gg][Ee][Nn][Ee][Rr][Aa][Tt][Ii][Nn][Gg] { return symbol(BLOGTokenConstants.ORIGIN); }
+[Oo][Rr][Ii][Gg][Ii][Nn] { return symbol(BLOGTokenConstants.ORIGIN); }
 [Gg][Uu][Aa][Rr][Aa][Nn][Tt][Ee][Ee][Dd] { return symbol(BLOGTokenConstants.GUARANTEED); }
 [Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt] { return symbol(BLOGTokenConstants.GUARANTEED); }
 [Ff][Aa][Cc][Tt][Oo][Rr] { return symbol(BLOGTokenConstants.FACTOR); }
@@ -196,10 +196,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 "&"			{ return symbol(BLOGTokenConstants.AND); }
 "|"     { return symbol(BLOGTokenConstants.OR); }
 "!"			{ return symbol(BLOGTokenConstants.NOT); }
-"->"		{ return symbol(BLOGTokenConstants.RIGHTARROW);}
-"="			{ return symbol(BLOGTokenConstants.EQ); }
-"~"			{ return symbol(BLOGTokenConstants.DISTRIB); }
-"#"     { return symbol(BLOGTokenConstants.NUMSIGN); }
+
 
 /* seperator */
 "("			{ return symbol(BLOGTokenConstants.LPAREN); }
@@ -212,7 +209,10 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 ":"			{ return symbol(BLOGTokenConstants.COLON);}
 "."     { return symbol(BLOGTokenConstants.DOT); }
 ","			{ return symbol(BLOGTokenConstants.COMMA);}
-
+"->"		{ return symbol(BLOGTokenConstants.RIGHTARROW);}
+"="			{ return symbol(BLOGTokenConstants.EQ); }
+"~"			{ return symbol(BLOGTokenConstants.DISTRIB); }
+"#"     { return symbol(BLOGTokenConstants.NUMSIGN); }
 
  /* comments */
 {Comment} { /* ignore */ }

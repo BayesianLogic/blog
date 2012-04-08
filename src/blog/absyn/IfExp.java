@@ -1,6 +1,6 @@
 package blog.absyn;
-import Symbol.Symbol;
-public class IfExp extends Stmt {
+import blog.symbol.Symbol;
+public class IfExp extends Expr {
    public Stmt test;
    public Stmt thenclause;
    public Stmt elseclause; /* optional */

@@ -171,7 +171,7 @@ init with {:
 
 terminal ERROR;
 terminal ELSE, ELSEIF, IF, THEN, FOR;
-terminal TYPE, RANDOM, FIXED, GENERATING, GUARANTEED, FACTOR, PARFACTOR, 
+terminal TYPE, RANDOM, FIXED, ORIGIN, GUARANTEED, FACTOR, PARFACTOR, 
         QUERY, OBS, PARAM;
 terminal EXISTS, FORALL;
 terminal NULL;
@@ -382,52 +382,176 @@ type_lst ::= type:ty COMMA type_lst:tl
  * a non-random function.  The distinction is whether there is a 
  * parenthesized list of arguments after the function/constant name.  
  */
-fixed_func_decl ::= FIXED type:ret_type ID:fname opt_parenthesized_type_lst:otl
+fixed_func_decl ::= FIXED type:ret_type ID:fname opt_parenthesized_type_lst:otl EQ expression:ex
            {: 
-             RESULT = new FixedFuncDec(fnameleft, sym(fname), otl, ret_type);
+             RESULT = new FixedFuncDec(fnameleft, sym(fname), otl, ret_type, ex);
            :}
            ;
 
-
+/**
+ * random function declaration
+ */
 rand_func_decl ::= RANDOM type:ret_type ID:fname opt_parenthesized_type_lst:otl
 	   {: 
 	     RESULT = new RandomFuncDec(fnameleft, sym(fname), otl, ret_type);
 	   :}
        ;
 
-
+/**
+ * origin function declaration
+ */
 origin_func_decl ::= ORIGIN type:ret_type ID:fname 
                      LPAREN type:arg_type RPAREN
-	   {: List argTypes = Collections.singletonList(arg_type);
-              if (parser.getFunction(func, argTypes) != null) {
-                  semantic_error("Function " + func + " has already been "
-                                 + "declared with argument type " + arg_type);
-              } else if ((ret_type == null) || (arg_type == null)) {
-		  semantic_error( "the declaration of the function " 
-			         + func + " has failed due to: " ); 
-	          if( ret_type == null ) {
-		      System.err.println( "\t- return type error;" );
-                  }
-                  if( arg_type == null ) {
-                      System.err.println( "\t- parameter type error(s);" );
-                  }
-               } else if (checkOverlappingFuncs
-                              (func, Collections.singletonList(arg_type))) {
-                  OriginFunction f = new OriginFunction
-                      (func, argTypes, ret_type);
-		  parser.model().addFunction(f);
-               } :}
-           ;
+	   {: RESULT = new OriginFuncDec(fnameleft, sym(fname), new FieldList(arg_type.pos, null, arg_type, null), ret_type); :}
+       ;
 
-     
-   
+
+/* Represents a term, which can be either a 0-ary function application, a 
+ * variable, a  non-0-ary function application, or a built-in constant.
+ * (Propagates an error-check from production for specific kinds of terms.) 
+ * 
+ * Result is null if the term is invalid.    
+ */
+ 
+
+expression ::= operation_expr:e  {: RESULT = e; :}
+    | literal:e  {: RESULT = e; :}
+    | function_call:e 
+    ;
+    
+literal ::= STRING_LITERAL:e 
+    {: RESULT = new StringExpr(eleft, e.intern()); :}
+  | INT_LITERAL:e
+    {: RESULT = new IntExpr(eleft, e.intValue()); :}
+  | DOUBLE_LITERAL:e
+    {: RESULT = new DoubleExpr(eleft, e.doubleValue()); :}
+  | TIME_LITERAL:e
+    {: RESULT = new TimeExpr(eleft, e.intValue()); :}
+  ;
+    
+operation_expr ::= expression:e1 PLUS expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.PLUS, e2); :}
+  | expression:e1 MINUS expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.MINUS, e2); :}
+  | expression:e1 MULT expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.MULT, e2); :}
+  | expression:e1 DIV expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.DIV, e2); :}
+  | expression:e1 MOD expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.MOD, e2); :}
+  | expression:e1 LT expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.LT, e2); :}
+  | expression:e1 GT expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.GT, e2); :}
+  | expression:e1 LEQ expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.LEQ, e2); :}
+  | expression:e1 GEQ expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.GEQ, e2); :}
+  | expression:e1 EQEQ expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.EQ, e2); :} 
+  | expression:e1 NEQ expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.NEQ, e2); :}
+  | expression:e1 AND expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.AND, e2); :}
+  | expression:e1 OR expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.OR, e2); :}
+  | expression:e1 NOT expression:e2 
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.NOT, e2); :}    
+  ;
+
+function_call ::= 
+
+/***** leili stops here ********/
+
+symbol_term:s
+	   {: RESULT = s; :}
+
+	   | func_app_with_parens:f
+	   {: RESULT = f; :} 
+
+           | counting_term:c
+           {: RESULT = c; :}
+
+	   | built_in:bi
+	   {: if (bi == null) {
+                  RESULT = null;
+              } else {
+                  RESULT = new FuncAppTerm(bi, Collections.EMPTY_LIST);
+                  RESULT.setLocation(getCurLocation());
+              } :} 
+
+           | LPAREN term:t RPAREN
+           {: RESULT = t; :}
+
+           | term:t1 LT term:t2
+           {: Term[] args = {t1, t2};
+              RESULT = new FuncAppTerm("LessThan", Arrays.asList(args));
+              RESULT.setLocation(getCurLocation());
+           :}
+
+           | term:t1 GT term:t2
+           {: Term[] args = {t1, t2};
+              RESULT = new FuncAppTerm("GreaterThan", Arrays.asList(args));
+              RESULT.setLocation(getCurLocation());
+           :}
+
+           | term:t1 LEQ term:t2
+           {: Term[] args = {t1, t2};
+              RESULT = new FuncAppTerm("LessThanOrEqual", Arrays.asList(args));
+              RESULT.setLocation(getCurLocation());
+           :}
+
+           | term:t1 GEQ term:t2
+           {: Term[] args = {t1, t2};
+              RESULT = new FuncAppTerm("GreaterThanOrEqual", 
+                                       Arrays.asList(args));
+              RESULT.setLocation(getCurLocation());
+           :}
+
+	   | LBRACKET term_lst_lst:tll RBRACKET
+           {: int rows = tll.size();
+	      int columns = ((List) tll.get(0)).size();
+              MatrixType type = (MatrixType) BuiltInTypes.getType
+                  ("R" + rows + "x" + columns + "Matrix");
+
+              List args = new ArrayList(); // of Term
+              boolean correct = true;
+	      for( int i = 0; i < rows; i++ ){    
+		  List row = (List) tll.get(i);
+		  if( row.size() != columns ){
+			semantic_error("Ill-formed matrix: row " + (i+1) 
+					+ " of the matrix has a different "
+					+ "number of elements than "
+					+ "row 1 of this matrix.");
+                        correct = false;
+		  } else {
+		      for( int j = 0; j < row.size(); j++ ){
+		          Term arg = (Term) row.get(j);
+                          if (arg == null) {
+                              correct = false;
+                          } else {
+                              args.add(arg);
+                          }
+		      }
+                  }
+	      }
+
+              if (correct) {
+                  NonRandomFunction constr = type.getConstructor();
+	          RESULT = new FuncAppTerm(constr, args);
+                  RESULT.setLocation(getCurLocation());
+              } else {
+                  RESULT = null;
+              } :}
+	   ;
+
+
 
 /* Beginning of a random function definition.  This is just like a random 
  * function declaration, except that there are variable names associated 
  * with the function arguments.  This is a separate nonterminal so the 
  * function can be added to the model before the dependency clauses are parsed.
  */
-
 rand_func_defn ::=  rand_func_defn_intro:f opt_braces_clause_lst:cl
            {: if ((f != null) && !cl.contains(null)) {
                   Type childType = f.getRetType();
@@ -436,7 +560,6 @@ rand_func_defn ::=  rand_func_defn_intro:f opt_braces_clause_lst:cl
                                                     defaultVal));
               } :}
            ;
-
 
 rand_func_defn_intro ::= RANDOM type:ret_type ID:func 
                          opt_parenthesized_var_type_lst:vtl
@@ -478,89 +601,7 @@ rand_func_defn_intro ::= RANDOM type:ret_type ID:func
 
 
 
-/* A non-random function or constant definition, specifying an interpretation 
- * for the function or constant.  The function/constant does not need to 
- * have been declared already.  
- */
-non_rand_func_defn ::= NONRANDOM type:ret_type ID:func_name 
-                           EQ term:value
-           {: if ((ret_type != null) && (value != null)) {
-                  NonRandomFunction c = null;
-                  Function f = parser.getFunction(func_name, 
-                                                  Collections.EMPTY_LIST);
-                  if (f == null) {
-                      // constant symbol is undeclared; declare it
-                      c = new NonRandomFunction
-                          (func_name, Collections.EMPTY_LIST, ret_type);
-                      parser.model().addFunction(c);
-                  } else {
-                      // check for consistency with declaration
-                      if (!(f instanceof NonRandomFunction)) {
-                          semantic_error(f + " was not declared as a "
-                                         + "non-random constant.");
-                          c = null;
-                      } else {
-                          c = (NonRandomFunction) f;
-                          if (ret_type != c.getRetType()) {
-                              semantic_error
-                                  ("Return type for non-random constant "
-                                   + "does not match declaration.");
-                              c = null;
-                          } else if (c.getInterpClass() != null) {
-                              semantic_error
-                                  ("Value for non-random constant " + c
-                                   + " has already been specified.");
-                              c = null;
-                          } 
-                      }
-                  }
 
-                  if (c != null) {
-                      c.setInterpretation
-                          (ConstantInterp.class, 
-                           Collections.singletonList(value));
-                  }
-              } :}
-
-           | NONRANDOM type:ret_type ID:func_name LPAREN opt_type_lst:tl 
-                 RPAREN EQ class_name:classname opt_interp_params:pl
-           {: Class cls = getClassWithName(classname);
-
-              if ((ret_type != null) && !tl.contains(null) 
-                  && !pl.contains(null) && (cls != null)) {
-                  Function f = parser.getFunction(func_name, tl);
-                  if (f == null) {
-                      // Function symbol not yet declared; declare it and 
-                      // set interpretation
-                      if (checkOverlappingFuncs(func_name, tl)) {
-                          f = new NonRandomFunction(func_name, tl, ret_type, 
-                                                    cls, pl);
-	                  parser.model().addFunction(f);
-                      }
-                  } else {
-                      // already declared
-                      if (!(f instanceof NonRandomFunction)) {
-                          semantic_error(f + " was not declared as a "
-                                         + "non-random function.");
-                      } else { 
-                          NonRandomFunction nrf = (NonRandomFunction) f;
-                          if ((ret_type != nrf.getRetType()) 
-                              || !(tl.equals
-                                   (Arrays.asList(nrf.getArgTypes())))) {
-                              semantic_error
-                                  ("Type signature for non-random function "
-                                   + "does not match declaration.");
-                          } else if (nrf.getInterpClass() != null) {
-                              semantic_error
-                                  ("Interpretation for non-random function "
-                                   + nrf + " has already been specified.");
-                          } else {
-                              nrf.setInterpretation(cls, pl);
-                          }
-                      }
-                  }
-	      } :}
-           ;
 
 dep_stmt ::= dep_stmt_intro:func opt_braces_clause_lst:cl
 	   {: if (func != null) {
