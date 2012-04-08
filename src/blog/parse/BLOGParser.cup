@@ -48,6 +48,10 @@ import fove.CountingTerm;
 
 action code {: 
 
+  static symbol.Symbol sym(String s) {
+	         return symbol.Symbol.symbol(s);
+  }
+
     LocationInFile getCurLocation() {
         return new LocationInFile
             (((ScannerWithLocInfo)parser.getScanner()).getCurFilename(),
@@ -147,28 +151,6 @@ parser code {:
     return parseResult;
   }
 
-  private Model model;
-  private Evidence evidence;
-  private List queries;
-
-  /**
-  * Sets the model that this parser will use.  If the parser encounters 
-  * declarations, then the model will be augmented to reflect these 
-  * declarations.  Otherwise, the model will be used to look up the types 
-  * and functions of the language.  You must pass in a non-null model with 
-  * this method before calling the <code>parse</code> method.  
-  */
-  public void setModel(Model model) {
-    this.model = model;
-  }
-  
-  /**
-    * Returns the model that this parser is using.  
-    */
-  public Model getModel() {
-    return model;
-  }
-
 :}
 
 init with {:
@@ -189,7 +171,7 @@ init with {:
 
 terminal ERROR;
 terminal ELSE, ELSEIF, IF, THEN, FOR;
-terminal TYPE, RANDOM, NONRANDOM, GENERATING, GUARANTEED, FACTOR, PARFACTOR, 
+terminal TYPE, RANDOM, FIXED, GENERATING, GUARANTEED, FACTOR, PARFACTOR, 
         QUERY, OBS, PARAM;
 terminal EXISTS, FORALL;
 terminal NULL;
@@ -309,6 +291,7 @@ statement ::= declaration_stmt : e {: RESULT = e; :}
 
 /* Represents a declaration, which can be:
  *    * a type declaration;
+ *    * a paramemeter declaration;
  *    * a random function or generating function declaration
  *        (Semantic checks:
  *            - whether the return type is a declared type;
@@ -353,38 +336,97 @@ declaration_stmt ::= type_decl : e {: RESULT = e; :}
 			( "Possible cause: forgotten semicolon or "
 			+ "a type/random/nonrandom/guaranteed modifier." ); RESULT = null; :}
            ;
-###########Lei Li stops here##########################
 		   
 type_decl ::= TYPE ID:typename
-	   {: if (parser.model().getType(typename) != null) {
-                  semantic_error("Type " + typename + " already exists.");
-              } else {
-                  parser.model().addType( typename ); 
-              } :} 
+	   {: RESULT = new TypeDec(typenameleft, sym(typename)); :} 
+       ;
+
+
+/* 
+ * Represents a type that is built in or has already been declared.  
+ * can also be an array  
+ */
+type ::= ID:typename {: RESULT = new NameTy(typenameleft, sym(typename)); :}
+    | array_type : at {: RESULT = at; :}
+	   ;
+       
+array_type ::= ID : typename  dims : d
+    {: RESULT = new ArrayTy(typenameleft, sym(typename), d); :}
+    ;
+
+dims ::= LBRACKET RBRACKET {: RESULT = 1; :}
+    | LBRACKET RBRACKET dims : d {: RESULT = d + 1; :}
+    ;
+
+/* A possibly empty list of IDs denoting type names. */
+opt_parenthesized_type_lst ::= /* EMPTY */
+	    {: RESULT = null; :}
+	    | LPAREN RPAREN          
+	    {: RESULT = null; :}
+	    | LPAREN type_lst:tl RPAREN
+	    {: RESULT = tl; :}
+	    ;
+
+/* Represents a list of IDs denoting type names. */	   
+type_lst ::= type:ty COMMA type_lst:tl  
+	   {: 
+ 	      RESULT = new FieldList(ty.pos, null, ty, tl);
+       :}    
+	   | type:ty
+	   {: 
+	     RESULT = new FieldList(ty.pos, null, ty, null); 
+       :}
+	   ;
+
+/* A nonrandom function declaration may declare a nonrandom constant or 
+ * a non-random function.  The distinction is whether there is a 
+ * parenthesized list of arguments after the function/constant name.  
+ */
+fixed_func_decl ::= FIXED type:ret_type ID:fname opt_parenthesized_type_lst:otl
+           {: 
+             RESULT = new FixedFuncDec(fnameleft, sym(fname), otl, ret_type);
+           :}
            ;
 
-rand_func_decl ::= RANDOM type:retType ID:func opt_parenthesized_type_lst:tl
-	   {: if (parser.getFunction(func, tl) != null) {
+
+rand_func_decl ::= RANDOM type:ret_type ID:fname opt_parenthesized_type_lst:otl
+	   {: 
+	     RESULT = new RandomFuncDec(fnameleft, sym(fname), otl, ret_type);
+	   :}
+       ;
+
+
+origin_func_decl ::= ORIGIN type:ret_type ID:fname 
+                     LPAREN type:arg_type RPAREN
+	   {: List argTypes = Collections.singletonList(arg_type);
+              if (parser.getFunction(func, argTypes) != null) {
                   semantic_error("Function " + func + " has already been "
-                                 + "declared with argument types " + tl);
-              } else if ( ( (retType == null) || tl.contains(null) ) ) {
-		   semantic_error
-			( "the declaration of the function " 
-			+ func 
-			+ " has failed due to: " ); 
-	           if( retType == null ) {
-		         System.err.println( "\t- return type error;" );
-                   }
-                   if( tl.contains(null) ) {
-		         System.err.println 
-					( "\t- parameter type error(s);" );
-                   }
-              } else if (checkOverlappingFuncs(func, tl)) {
-                  Function f = new RandomFunction(func, tl, retType, null);
-	          parser.model().addFunction(f);  
-              } :}
+                                 + "declared with argument type " + arg_type);
+              } else if ((ret_type == null) || (arg_type == null)) {
+		  semantic_error( "the declaration of the function " 
+			         + func + " has failed due to: " ); 
+	          if( ret_type == null ) {
+		      System.err.println( "\t- return type error;" );
+                  }
+                  if( arg_type == null ) {
+                      System.err.println( "\t- parameter type error(s);" );
+                  }
+               } else if (checkOverlappingFuncs
+                              (func, Collections.singletonList(arg_type))) {
+                  OriginFunction f = new OriginFunction
+                      (func, argTypes, ret_type);
+		  parser.model().addFunction(f);
+               } :}
            ;
 
+     
+   
+
+/* Beginning of a random function definition.  This is just like a random 
+ * function declaration, except that there are variable names associated 
+ * with the function arguments.  This is a separate nonterminal so the 
+ * function can be added to the model before the dependency clauses are parsed.
+ */
 
 rand_func_defn ::=  rand_func_defn_intro:f opt_braces_clause_lst:cl
            {: if ((f != null) && !cl.contains(null)) {
@@ -395,11 +437,7 @@ rand_func_defn ::=  rand_func_defn_intro:f opt_braces_clause_lst:cl
               } :}
            ;
 
-/* Beginning of a random function definition.  This is just like a random 
- * function declaration, except that there are variable names associated 
- * with the function arguments.  This is a separate nonterminal so the 
- * function can be added to the model before the dependency clauses are parsed.
- */
+
 rand_func_defn_intro ::= RANDOM type:ret_type ID:func 
                          opt_parenthesized_var_type_lst:vtl
            {: RESULT = null;
@@ -436,61 +474,9 @@ rand_func_defn_intro ::= RANDOM type:ret_type ID:func
            :}
            ;
 
-origin_func_decl ::= GENERATING type:ret_type ID:func 
-                     LPAREN type:arg_type RPAREN
-	   {: List argTypes = Collections.singletonList(arg_type);
-              if (parser.getFunction(func, argTypes) != null) {
-                  semantic_error("Function " + func + " has already been "
-                                 + "declared with argument type " + arg_type);
-              } else if ((ret_type == null) || (arg_type == null)) {
-		  semantic_error( "the declaration of the function " 
-			         + func + " has failed due to: " ); 
-	          if( ret_type == null ) {
-		      System.err.println( "\t- return type error;" );
-                  }
-                  if( arg_type == null ) {
-                      System.err.println( "\t- parameter type error(s);" );
-                  }
-               } else if (checkOverlappingFuncs
-                              (func, Collections.singletonList(arg_type))) {
-                  OriginFunction f = new OriginFunction
-                      (func, argTypes, ret_type);
-		  parser.model().addFunction(f);
-               } :}
-           ;
 
 
-/* A nonrandom function declaration may declare a nonrandom constant or 
- * a non-random function.  The distinction is whether there is a 
- * parenthesized list of arguments after the function/constant name.  
- */
-non_rand_func_decl ::= NONRANDOM type:ret_type ID:func_name
-           {: if (ret_type != null) {
-                  if (parser.getFunction(func_name, 
-                                         Collections.EMPTY_LIST) != null) {
-                      semantic_error("Function " + func_name + " has already "
-                                     + "been declared with no arguments.");
-                  }
 
-                  NonRandomFunction f = new NonRandomFunction
-                      (func_name, Collections.EMPTY_LIST, ret_type);
-                  parser.model().addFunction(f);
-               } :}
-
-           | NONRANDOM type:ret_type ID:func_name 
-                 LPAREN opt_type_lst:otl RPAREN
-           {: if ((ret_type != null) && !otl.contains(null)) {
-                  if (parser.getFunction(func_name, otl) != null) {
-                      semantic_error("Function " + func_name 
-                                     + " has already been declared "
-                                     + "with argument types " + otl);
-                  } else if (checkOverlappingFuncs(func_name, otl)) {
-                      NonRandomFunction f = new NonRandomFunction
-                          (func_name, otl, ret_type);
-                      parser.model().addFunction(f);
-                  }
-               } :}
-           ;
 
 /* A non-random function or constant definition, specifying an interpretation 
  * for the function or constant.  The function/constant does not need to 
@@ -611,6 +597,7 @@ dep_stmt_intro ::= ID:func opt_parenthesized_var_type_lst:vtl
               } else if (!(f instanceof RandomFunction)) {
                   semantic_error("function " + func + " with argument types "
                                  + argTypes + " was not declared as random.");
+
                   correct = false;
               } else if (((RandomFunction) f).hasDepModel()) {
                   semantic_error("function " + func + " already has "
@@ -974,36 +961,9 @@ opt_parenthesized_type_lst ::= /* EMPTY */
             {: RESULT = tl; :}
             ;
 
-/* A possibly empty list of IDs denoting type names. */
-opt_type_lst ::= /* EMPTY */
-	    {: RESULT = Collections.EMPTY_LIST; :}
-           
-	    | type_lst:tl
-	    {: RESULT = tl; :}
-	    ;
 
-/* Represents a list of IDs denoting type names. */	   
-type_lst ::= type_lst:tl COMMA type:type
-	   {: tl.add( type );
- 	      RESULT = tl;
-           :}    
 
-	   | type:type
-	   {: RESULT = new ArrayList();
-	      RESULT.add( type ); 
-           :}
-	   ;
 
-/* 
- * Represents a type that is built in or has already been declared.  
- * Result is null if the identifier is not a declared type.  
- */
-type ::= ID:typename
-           {: RESULT = parser.model().getType(typename);
-              if (RESULT == null) {
-                  RESULT = parser.model().addType(typename);
-              } :}
-	   ;
 
 /* Either an empty string, or a possibly empty list of generating object 
  * specifications in parentheses.  Alternatively, can be the old syntax 
