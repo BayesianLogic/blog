@@ -418,6 +418,7 @@ expression ::= operation_expr:e  {: RESULT = e; :}
     | literal:e  {: RESULT = e; :}
     | function_call:e {: RESULT = e; :}
     | list_construct_expression:e {: RESULT = e; :}
+	| map_construct_expression:e {: RESULT = e; :}
     ;
     
 literal ::= STRING_LITERAL:e 
@@ -428,6 +429,8 @@ literal ::= STRING_LITERAL:e
     {: RESULT = new DoubleExpr(eleft, e.doubleValue()); :}
   | TIME_LITERAL:e
     {: RESULT = new TimeExpr(eleft, e.intValue()); :}
+  | NULL:e
+    {: RESULT = new NullExpr(eleft); :}
   ;
     
 operation_expr ::= expression:e1 PLUS expression:e2 
@@ -481,8 +484,19 @@ expression_list ::= expression:e COMMA expression_list:elst
   
 list_construct_expression ::= LBRACKET opt_expression_list:e RBRACKET
     {: RESULT = new ListInitExpr(eleft, e); :}
+  | LBRACKET semi_colon_separated_expression_list:e RBRACKET
+    {: RESULT = new ListInitExpr(eleft, e); :}
   ;
 
+semi_colon_separated_expression_list ::= 
+    expression_list:e SEMI semi_colon_separated_expression_list:elst
+    {: RESULT = new ExprList(e, elst); :}
+  | expression_list:e SEMI expression_list:e2
+    {: RESULT = new ExprList(e, new ExprList(e2, null)); :}
+  ;
+
+map_construct_expression ::= 
+  
 /***** leili stops here ********/
 
 symbol_term:s
