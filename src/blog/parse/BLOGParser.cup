@@ -354,8 +354,8 @@ array_type ::= ID : typename  dims : d
     {: RESULT = new ArrayTy(typenameleft, sym(typename), d); :}
     ;
 
-dims ::= LBRACE RBRACE {: RESULT = 1; :}
-    | LBRACE RBRACE dims : d {: RESULT = d + 1; :}
+dims ::= LBRACKET RBRACKET {: RESULT = 1; :}
+    | LBRACKET RBRACKET dims : d {: RESULT = d + 1; :}
     ;
 
 /* A possibly empty list of IDs denoting type names. */
@@ -416,7 +416,8 @@ origin_func_decl ::= ORIGIN type:ret_type ID:fname
 
 expression ::= operation_expr:e  {: RESULT = e; :}
     | literal:e  {: RESULT = e; :}
-    | function_call:e 
+    | function_call:e {: RESULT = e; :}
+    | list_construct_expression:e {: RESULT = e; :}
     ;
     
 literal ::= STRING_LITERAL:e 
@@ -456,10 +457,31 @@ operation_expr ::= expression:e1 PLUS expression:e2
   | expression:e1 OR expression:e2 
     {: RESULT = new OpExpr(e1left, e1, OpExpr.OR, e2); :}
   | expression:e1 NOT expression:e2 
-    {: RESULT = new OpExpr(e1left, e1, OpExpr.NOT, e2); :}    
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.NOT, e2); :}
+  | expression:e1 LBRACKET expression:e2 RBRACKET
+    {: RESULT = new OpExpr(e1left, e1, OpExpr.SUB, e2); :}
   ;
 
-function_call ::= 
+function_call ::= ID:id LPAREN opt_expression_list:e RPAREN
+    {: RESULT = new FuncCallExpr(idleft, sym(id), e); :}
+  | ID:id 
+    {: RESULT = new FuncCallExpr(idleft, sym(id), null); :}
+  ;
+
+
+opt_expression_list ::= expression_list:e {: RESULT = e; :}
+  | {: RESULT = null; :}
+  ;
+
+expression_list ::= expression:e COMMA expression_list:elst
+    {: RESULT = new ExprList(e, elst); :}
+  | expression:e
+    {: RESULT = new ExprList(e, null); :}
+  ;
+  
+list_construct_expression ::= LBRACKET opt_expression_list:e RBRACKET
+    {: RESULT = new ListInitExpr(eleft, e); :}
+  ;
 
 /***** leili stops here ********/
 

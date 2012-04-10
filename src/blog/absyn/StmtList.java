@@ -1,6 +1,6 @@
 package blog.absyn;
 
-public class StmtList {
+public class StmtList extends Absyn {
 	public Stmt head;
 	public StmtList tail;
 
