@@ -93,7 +93,7 @@ public class Print {
     say("StringExp("); say(e.value); say(")");
   }
 
-  void prExp(CallExp e, int d) {
+  void prExp(FuncCallExp e, int d) {
     say("CallExp("); say(e.func.toString()); sayln(",");
     prExplist(e.args, d+1); say(")");
   }
@@ -148,7 +148,7 @@ public class Print {
     prExp(e.body, d+1); say(")");
   }
 
-  void prExp(ArrayExp e, int d) {
+  void prExp(ListInitExpr e, int d) {
     say("ArrayExp("); say(e.typ.toString()); sayln(",");
     prExp(e.size, d+1); sayln(",");
     prExp(e.init, d+1); say(")");
@@ -162,7 +162,7 @@ public class Print {
     else if (e instanceof NilExp) prExp((NilExp) e, d);
     else if (e instanceof IntExpr) prExp((IntExpr) e, d);
     else if (e instanceof StringExpr) prExp((StringExpr) e, d);
-    else if (e instanceof CallExp) prExp((CallExp) e, d);
+    else if (e instanceof FuncCallExp) prExp((FuncCallExp) e, d);
     else if (e instanceof RecordExp) prExp((RecordExp) e, d);
     else if (e instanceof SeqExp) prExp((SeqExp) e, d);
     else if (e instanceof AssignExp) prExp((AssignExp) e, d);
@@ -171,7 +171,7 @@ public class Print {
     else if (e instanceof ForExp) prExp((ForExp) e, d);
     else if (e instanceof BreakExp) prExp((BreakExp) e, d);
     else if (e instanceof LetExp) prExp((LetExp) e, d);
-    else if (e instanceof ArrayExp) prExp((ArrayExp) e, d);
+    else if (e instanceof ListInitExpr) prExp((ListInitExpr) e, d);
     else throw new Error("Print.prExp");
   }
 
