@@ -249,7 +249,7 @@ public class Print {
       indent(d+1); say(f.typ.toString()); sayln(",");
       indent(d+1); say(f.escape);
       sayln(",");
-      prFieldlist(f.tail, d+1);
+      prFieldlist(f.next, d+1);
     }
     say(")");
   }
