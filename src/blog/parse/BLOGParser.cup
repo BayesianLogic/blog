@@ -523,7 +523,7 @@ expression_pair_list ::=
     {: RESULT = ExprTupleList(e1, e2, null); :}
   ;
   
-distribution_declaration ::=
+distribution_declaration ::= DISTRIBUTION ID:id 
 /***** leili stops here ********/
 
 symbol_term:s
