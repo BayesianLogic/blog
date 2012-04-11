@@ -12,7 +12,7 @@ public class TestUrnBall {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) {	
 		StringBuilder sb = new StringBuilder();
 		int numObs = 32;
 		try {
