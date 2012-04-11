@@ -338,25 +338,31 @@ declaration_stmt ::= type_decl : e {: RESULT = e; :}
            ;
 		   
 type_decl ::= TYPE ID:typename
-	   {: RESULT = new TypeDec(typenameleft, sym(typename)); :} 
-       ;
+    {: RESULT = new TypeDec(typenameleft, sym(typename)); :} 
+  ;
 
 
 /* 
  * Represents a type that is built in or has already been declared.  
  * can also be an array  
  */
-type ::= ID:typename {: RESULT = new NameTy(typenameleft, sym(typename)); :}
-    | array_type : at {: RESULT = at; :}
-	   ;
+type ::= ID:typename 
+    {: RESULT = new NameTy(typenameleft, sym(typename)); :}
+  | array_type : at {: RESULT = at; :}
+  | map_type:e {: RESULT = e; :}
+  ;
        
 array_type ::= ID : typename  dims : d
     {: RESULT = new ArrayTy(typenameleft, sym(typename), d); :}
-    ;
+  ;
 
 dims ::= LBRACKET RBRACKET {: RESULT = 1; :}
-    | LBRACKET RBRACKET dims : d {: RESULT = d + 1; :}
-    ;
+  | LBRACKET RBRACKET dims : d {: RESULT = d + 1; :}
+  ;
+  
+map_type ::= MAP LT type:t1 COMMA type:t2 GT 
+    {: RESULT = new MapTy(t1left, t1, t2); :}
+  ;
 
 /* A possibly empty list of IDs denoting type names. */
 opt_parenthesized_type_lst ::= /* EMPTY */
@@ -495,7 +501,16 @@ semi_colon_separated_expression_list ::=
     {: RESULT = new ExprList(e, new ExprList(e2, null)); :}
   ;
 
-map_construct_expression ::= 
+map_construct_expression ::= LBRACE expression_pair_list:e RBRACE
+    {: RESULT = new MapInitExpr(eleft, e); :}
+  ;
+  
+expression_pair_list ::= 
+    expression:e1 RIGHTARROW expression:e2 COMMA expression_pair_list:e3
+    {: RESULT = ExprTupleList(e1, e2, e3); :}
+  | expression:e1 RIGHTARROW expression:e2
+    {: RESULT = ExprTupleList(e1, e2, null); :}
+  ;
   
 /***** leili stops here ********/
 

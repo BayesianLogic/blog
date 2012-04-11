@@ -169,6 +169,8 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 	return symbol(BLOGTokenConstants.EXISTS); }
 [Ff][Oo][Rr][Aa][Ll][Ll] { /* universal quantifier */
 	return symbol(BLOGTokenConstants.FORALL); }
+[Mm][Aa][Pp] { return symbol(BLOGTokenConstants.MAP); }
+
 	
 
 /* literals */
