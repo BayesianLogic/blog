@@ -353,6 +353,7 @@ type ::= ID:typename
   ;
        
 array_type ::= ID : typename  dims : d
+    /* only allow nametype as array */
     {: RESULT = new ArrayTy(typenameleft, sym(typename), d); :}
   ;
 
@@ -373,22 +374,33 @@ opt_parenthesized_type_lst ::= /* EMPTY */
 	    {: RESULT = tl; :}
 	    ;
 
-/* Represents a list of IDs denoting type names. */	   
 type_lst ::= type:ty COMMA type_lst:tl  
-	   {: 
- 	      RESULT = new FieldList(ty.pos, null, ty, tl);
-       :}    
-	   | type:ty
-	   {: 
-	     RESULT = new FieldList(ty.pos, null, ty, null); 
-       :}
-	   ;
+	  {: RESULT = new FieldList(tyleft, null, ty, tl); :}    
+	| type:ty
+	  {: RESULT = new FieldList(tyleft, null, ty, null); :}
+	;
+
+/* Represents a list of IDs denoting type names. */  
+opt_parenthesized_type_var_lst ::= /* EMPTY */
+    {: RESULT = null; :}
+  | LPAREN RPAREN          
+    {: RESULT = null; :}
+  | LPAREN type_var_lst:tl RPAREN
+    {: RESULT = tl; :}
+  ;
+
+type_var_lst ::= type:ty ID:id COMMA type_var_lst:tl  
+    {: RESULT = new FieldList(tyleft, id, ty, tl); :}    
+  | type:ty ID:id
+    {: RESULT = new FieldList(tyleft, id, ty, null); :}
+  ;
+
 
 /* A nonrandom function declaration may declare a nonrandom constant or 
  * a non-random function.  The distinction is whether there is a 
  * parenthesized list of arguments after the function/constant name.  
  */
-fixed_func_decl ::= FIXED type:ret_type ID:fname opt_parenthesized_type_lst:otl EQ expression:ex
+fixed_func_decl ::= FIXED type:ret_type ID:fname opt_parenthesized_type_var_lst:otl EQ expression:ex
            {: 
              RESULT = new FixedFuncDec(fnameleft, sym(fname), otl, ret_type, ex);
            :}
@@ -401,15 +413,15 @@ rand_func_decl ::= RANDOM type:ret_type ID:fname opt_parenthesized_type_lst:otl
 	   {: 
 	     RESULT = new RandomFuncDec(fnameleft, sym(fname), otl, ret_type);
 	   :}
-       ;
+  ;
 
 /**
  * origin function declaration
  */
 origin_func_decl ::= ORIGIN type:ret_type ID:fname 
                      LPAREN type:arg_type RPAREN
-	   {: RESULT = new OriginFuncDec(fnameleft, sym(fname), new FieldList(arg_type.pos, null, arg_type, null), ret_type); :}
-       ;
+	{: RESULT = new OriginFuncDec(fnameleft, sym(fname), new FieldList(arg_type.pos, null, arg_type, null), ret_type); :}
+  ;
 
 
 /* Represents a term, which can be either a 0-ary function application, a 
@@ -419,13 +431,12 @@ origin_func_decl ::= ORIGIN type:ret_type ID:fname
  * Result is null if the term is invalid.    
  */
  
-
 expression ::= operation_expr:e  {: RESULT = e; :}
-    | literal:e  {: RESULT = e; :}
-    | function_call:e {: RESULT = e; :}
-    | list_construct_expression:e {: RESULT = e; :}
+  | literal:e  {: RESULT = e; :}
+  | function_call:e {: RESULT = e; :}
+  | list_construct_expression:e {: RESULT = e; :}
 	| map_construct_expression:e {: RESULT = e; :}
-    ;
+  ;
     
 literal ::= STRING_LITERAL:e 
     {: RESULT = new StringExpr(eleft, e.intern()); :}
@@ -512,6 +523,7 @@ expression_pair_list ::=
     {: RESULT = ExprTupleList(e1, e2, null); :}
   ;
   
+distribution_declaration ::=
 /***** leili stops here ********/
 
 symbol_term:s
