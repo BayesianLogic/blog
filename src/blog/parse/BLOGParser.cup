@@ -327,7 +327,7 @@ declaration_stmt ::=
   | origin_func_decl : e {: RESULT = e; :}
   | dep_stmt : e {: RESULT = e; :}
   | num_stmt : e {: RESULT = e; :}
-  | guaranteed_decl : e {: RESULT = e; :}
+  | distinct_decl : e {: RESULT = e; :}
   | parameter_decl : e {: RESULT = e; :}
   | parfactor : e {: RESULT = e; :}
   | error
@@ -411,16 +411,30 @@ fixed_func_decl ::=
  */
 rand_func_decl ::= 
     RANDOM type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
-    rand_func_body:body SEMI
-    {: RESULT = new RandomFuncDec(fnameleft, sym(fname), otl, ret_type); :}
+    dependency_statement_body:body SEMI
+    {: RESULT = new RandomFuncDec(fnameleft, sym(fname), otl, ret_type, body); :}
   ;
 
 /**
  * number statement 
  */ 
-//number_statement ::=
-//    NUMSIGN
- 
+number_statement ::=
+    NUMSIGN ID:id opt_parenthesized_origin_var_list:otl     
+	dependency_statement_body:body SEMI
+    {: RESULT = new NumberDec(fnameleft, sym(fname), otl, body); :}
+  ;
+
+opt_parenthesized_origin_var_list ::= LPAREN origin_var_list:e RPAREN
+    {: RESULT = e; :}
+  | {: RESULT = null; :}
+  ;
+
+origin_var_list ::= ID:func EQ ID:var COMMA origin_var_list:n
+    {: RESULT = new OriginFieldList(funcleft, sym(func), sym(var), n); :} 
+  | ID:func EQ ID:var
+    {: RESULT = new OriginFieldList(funcleft, sym(func), sym(var), null); :}
+  ;
+  
 /**
  * origin function declaration
  */
@@ -446,11 +460,27 @@ class_name ::= ID:id {: RESULT = id; :}
   | ID:id DOT class_name:n {: RESULT = id + "." + n; :}
   ;
 
-
 /**
  * body of random function or number statement
  */
-rand_func_body ::= 
+dependency_statement_body ::= EQ expression:e
+    {: RESULT = e; :}
+  | DISTRIB class_name:name LPAREN opt_expression_list:e RPAREN
+    {: RESULT = new DistributionExpr(nameleft, sym(name), e); :}
+  | IF:a expression:e1 THEN dependency_statement_body:e2 elseif_list:e3
+    {: RESULT = new IfExpr(aleft, e1, e2, e3); :} 
+  | /* not recommended to add {}, just for compactibility of old syntax */
+    LBRACE dependency_statement_body:e RBRACE
+    {: RESULT = e; :}  
+  ;
+	
+elseif_list ::= 
+    ELSEIF:eif expression:e1 THEN dependency_statement_body:e2 elseif_list:e3
+    {: RESULT = new IfExpr(eifleft, e1, e2, e3); :} 
+  | ELSE dependency_statement_body:e
+    {: RESULT = e; :}
+  | {: RESULT = null; :}
+  ;	
 
 /* Represents a term, which can be either a 0-ary function application, a 
  * variable, a  non-0-ary function application, or a built-in constant.
@@ -464,7 +494,6 @@ expression ::= operation_expr:e  {: RESULT = e; :}
   | function_call:e {: RESULT = e; :}
   | list_construct_expression:e {: RESULT = e; :}
   | map_construct_expression:e {: RESULT = e; :}
-  | if_expression:e {: RESULT = e; :}
   ;
     
 literal ::= STRING_LITERAL:e 
@@ -516,19 +545,6 @@ function_call ::= ID:id LPAREN opt_expression_list:e RPAREN
   | ID:id 
     {: RESULT = new FuncCallExpr(idleft, sym(id), null); :}
   ;
-  
-if_expression ::= 
-    IF:a expression:e1 THEN expression:e2 elseif_list:e3
-    {: RESULT = new IfExpr(aleft, e1, e2, e3); :}
-  ;
-
-elseif_list ::= 
-    ELSEIF:eif expression:e1 THEN expression:e2 elseif_list:e3
-    {: RESULT = new IfExpr(eifleft, e1, e2, e3); :} 
-  | ELSE expression:e
-    {: RESULT = e; :}
-  | {: RESULT = null; :}
-  :
 
 opt_expression_list ::= expression_list:e {: RESULT = e; :}
   | {: RESULT = null; :}
@@ -564,128 +580,7 @@ expression_pair_list ::=
     {: RESULT = ExprTupleList(e1, e2, null); :}
   ;
   
-
-
-
 /***** leili stops here ********/
-
-num_stmt ::= num_stmt_intro:pop opt_braces_clause_lst:cl
-	   {: if (pop != null) {
-                  if (!cl.contains(null)) {
-                      Type childType = BuiltInTypes.NATURAL_NUM;
-                      Object defaultVal = new Integer(0);
-                      pop.setDepModel(new DependencyModel(cl, childType, 
-                                                          defaultVal));
-                  }
-              }
-           :}
-           ;
-
-/* The beginning of a number statement, which specifies a potential 
- * object pattern (POP) and introduces variables for the 
- * generating objects.    
- */
-num_stmt_intro ::= NUMSIGN type:type opt_parenthesized_gen_obj_lst:gl
-           {: RESULT = null;
-              POP pop = null;
-              boolean correct = true;
-
-              if (type.isBuiltIn()) {
-                  semantic_error
-                      ("Can't have number statement for built-in type.");
-              } else if (gl.contains(null)) {
-                  semantic_error("Number statement failed due to error in "
-                                 + "generating object list.");
-                  correct = false;
-              } else {
-                  List originFuncs = new ArrayList();
-
-                  // Make sure origin funcs exist (declaring them as 
-                  // necessary) and are not repeated
-                  for (Iterator iter = gl.iterator(); iter.hasNext(); ) {
-                      BLOGParser.GenObjSpec s
-                          = (BLOGParser.GenObjSpec) iter.next();
-                      Function g = parser.getFunction
-                          (s.originFuncName, Collections.singletonList(type));
-                      if (g == null) {
-                          if (s.genObjType == null) {
-                              semantic_error
-                                  ("Function " + s.originFuncName 
-                                   + " with argument type " + type + " has not "
-                                   + "been declared.  To declare it implicitly"
-                                   + ", you must specify the type of its "
-                                   + "return value \"" + s.genObjVar + "\".");
-                              correct = false;
-                          }
-
-                          // declare the origin function
-                          List argTps = Collections.singletonList(type);
-                          if (checkOverlappingFuncs(s.originFuncName, argTps)) {
-                              g = new OriginFunction
-                                      (s.originFuncName, argTps, s.genObjType);
-		              parser.model().addFunction(g);
-                          } else {
-                              correct = false;
-                          }
-                      } else if (!(g instanceof OriginFunction)) {
-                          semantic_error("Function " + s.originFuncName 
-                                         + " with argument type " + type 
-                                         + " has not been declared as an "
-                                         + "origin function.");
-                          correct = false;
-                      } else if ((s.genObjType != null) 
-                                 && (g.getRetType() != s.genObjType)) {
-                          semantic_error("Return type of origin function " + g
-                                         + " is " + g.getRetType() + ", which "
-                                         + "does not match return value \""
-                                         + s.genObjType + " " + s.genObjVar
-                                         + "\".");
-                          correct = false;
-                      }
-                      if (originFuncs.contains(g)) {
-                          semantic_error("Origin function " + g
-                                         + " used more than once in "
-                                         + "number statement.");
-                          correct = false;
-                      }
-                      originFuncs.add(g);
-                  }
-
-                  // Add this POP to the type, if it's not a duplicate
-                  if (correct) {
-                      pop = new POP(type, originFuncs, null);
-                      if (type.getPOPWithOriginFuncs(pop.getOriginFuncSet()) 
-                              == null) {
-                          type.addPOP(pop);
-                      } else {
-                          semantic_error("number statement " + pop 
-                                         + " uses same origin functions "
-                                         + "as earlier number statement.");
-                          correct = false;
-                      }
-                  }
-              }
-
-              // Make sure no variable name is used twice.
-              List genObjVars = new ArrayList();
-              for (Iterator iter = gl.iterator(); iter.hasNext(); ) {
-                  BLOGParser.GenObjSpec genObjSpec 
-                      = (BLOGParser.GenObjSpec) iter.next();
-                  if (genObjVars.contains(genObjSpec.genObjVar)) {
-                       semantic_error("Variable name \"" + genObjSpec.genObjVar
-                                      + "\" is used for more than one "
-                                      + "generating object.");
-                       correct = false;
-                  }
-                  genObjVars.add(genObjSpec.genObjVar);
-              }
-
-              if (correct) {
-                  pop.setGenObjVars(genObjVars);
-                  RESULT = pop;
-              } :}
-           ; 
-
 
 guaranteed_decl ::= GUARANTEED type:type id_spec:ids
 	   {: if (type == null) {
