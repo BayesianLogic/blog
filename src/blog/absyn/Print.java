@@ -114,7 +114,7 @@ public class Print {
     prExp(e.exp, d+1); say(")");
   }
 
-  void prExp(IfExp e, int d) {
+  void prExp(IfExpr e, int d) {
     sayln("IfExp(");
     prExp(e.test, d+1); sayln(",");
     prExp(e.thenclause, d+1);
@@ -166,7 +166,7 @@ public class Print {
     else if (e instanceof RecordExp) prExp((RecordExp) e, d);
     else if (e instanceof SeqExp) prExp((SeqExp) e, d);
     else if (e instanceof AssignExp) prExp((AssignExp) e, d);
-    else if (e instanceof IfExp) prExp((IfExp) e, d);
+    else if (e instanceof IfExpr) prExp((IfExpr) e, d);
     else if (e instanceof WhileExp) prExp((WhileExp) e, d);
     else if (e instanceof ForExp) prExp((ForExp) e, d);
     else if (e instanceof BreakExp) prExp((BreakExp) e, d);
