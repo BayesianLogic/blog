@@ -320,24 +320,23 @@ statement ::= declaration_stmt : e {: RESULT = e; :}
  *                type being generated.).
  *    * a parfactor statement // not used in current blog
  */   
-declaration_stmt ::= type_decl : e {: RESULT = e; :}
-           | rand_func_decl : e {: RESULT = e; :}
-           | rand_func_defn : e {: RESULT = e; :}
-           | origin_func_decl : e {: RESULT = e; :}
-           | non_rand_func_decl : e {: RESULT = e; :}
-           | non_rand_func_defn : e {: RESULT = e; :}
-           | dep_stmt : e {: RESULT = e; :}
-           | num_stmt : e {: RESULT = e; :}
-           | guaranteed_decl : e {: RESULT = e; :}
-		   | parameter_decl : e {: RESULT = e; :}
-           | parfactor : e {: RESULT = e; :}
-	   | error
-	   {: System.err.println
-			( "Possible cause: forgotten semicolon or "
-			+ "a type/random/nonrandom/guaranteed modifier." ); RESULT = null; :}
-           ;
+declaration_stmt ::= 
+    type_decl:e {: RESULT = e; :}
+  | fixed_func_decl:e {: RESULT = e; :}
+  | rand_func_decl:e {: RESULT = e; :}
+  | origin_func_decl : e {: RESULT = e; :}
+  | dep_stmt : e {: RESULT = e; :}
+  | num_stmt : e {: RESULT = e; :}
+  | guaranteed_decl : e {: RESULT = e; :}
+  | parameter_decl : e {: RESULT = e; :}
+  | parfactor : e {: RESULT = e; :}
+  | error
+   {: System.err.println
+	( "Possible cause: forgotten semicolon or "
+	+ "a type/random/nonrandom/guaranteed modifier." ); RESULT = null; :}
+  ;
 		   
-type_decl ::= TYPE ID:typename
+type_decl ::= TYPE ID:typename SEMI
     {: RESULT = new TypeDec(typenameleft, sym(typename)); :} 
   ;
 
@@ -400,29 +399,58 @@ type_var_lst ::= type:ty ID:id COMMA type_var_lst:tl
  * a non-random function.  The distinction is whether there is a 
  * parenthesized list of arguments after the function/constant name.  
  */
-fixed_func_decl ::= FIXED type:ret_type ID:fname opt_parenthesized_type_var_lst:otl EQ expression:ex
-           {: 
-             RESULT = new FixedFuncDec(fnameleft, sym(fname), otl, ret_type, ex);
-           :}
-           ;
+fixed_func_decl ::= 
+    FIXED type:ret_type ID:fname opt_parenthesized_type_var_lst:otl 
+    EQ expression:ex SEMI
+    {: RESULT = new FixedFuncDec(fnameleft, sym(fname), otl, ret_type, ex); :}
+  ;
 
 /**
  * random function declaration
+ * including dependency statement
  */
-rand_func_decl ::= RANDOM type:ret_type ID:fname opt_parenthesized_type_lst:otl
-	   {: 
-	     RESULT = new RandomFuncDec(fnameleft, sym(fname), otl, ret_type);
-	   :}
+rand_func_decl ::= 
+    RANDOM type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
+    rand_func_body:body SEMI
+    {: RESULT = new RandomFuncDec(fnameleft, sym(fname), otl, ret_type); :}
   ;
 
 /**
+ * number statement 
+ */ 
+//number_statement ::=
+//    NUMSIGN
+ 
+/**
  * origin function declaration
  */
-origin_func_decl ::= ORIGIN type:ret_type ID:fname 
-                     LPAREN type:arg_type RPAREN
-	{: RESULT = new OriginFuncDec(fnameleft, sym(fname), new FieldList(arg_type.pos, null, arg_type, null), ret_type); :}
+origin_func_decl ::= 
+    ORIGIN type:ret_type ID:fname LPAREN type:arg_type RPAREN SEMI
+    {: RESULT = new OriginFuncDec(fnameleft, sym(fname), 
+      new FieldList(arg_type.pos, null, arg_type, null), ret_type); :}
   ;
 
+/**
+ * declaration of a distribution
+ */
+distribution_declaration ::= 
+    DISTRIBUTION ID:id EQ class_name:name 
+    LPAREN opt_expression_list:e RPAREN SEMI
+    {: RESULT = new DistributionDec(idleft, sym(id), 
+      new ClassName(sym(name)), e); :}
+  ;
+  
+
+/* reference to Java class */
+class_name ::= ID:id {: RESULT = id; :}
+  | ID:id DOT class_name:n {: RESULT = id + "." + n; :}
+  ;
+
+
+/**
+ * body of random function or number statement
+ */
+rand_func_body ::= 
 
 /* Represents a term, which can be either a 0-ary function application, a 
  * variable, a  non-0-ary function application, or a built-in constant.
@@ -435,7 +463,8 @@ expression ::= operation_expr:e  {: RESULT = e; :}
   | literal:e  {: RESULT = e; :}
   | function_call:e {: RESULT = e; :}
   | list_construct_expression:e {: RESULT = e; :}
-	| map_construct_expression:e {: RESULT = e; :}
+  | map_construct_expression:e {: RESULT = e; :}
+  | if_expression:e {: RESULT = e; :}
   ;
     
 literal ::= STRING_LITERAL:e 
@@ -487,7 +516,19 @@ function_call ::= ID:id LPAREN opt_expression_list:e RPAREN
   | ID:id 
     {: RESULT = new FuncCallExpr(idleft, sym(id), null); :}
   ;
+  
+if_expression ::= 
+    IF:a expression:e1 THEN expression:e2 elseif_list:e3
+    {: RESULT = new IfExpr(aleft, e1, e2, e3); :}
+  ;
 
+elseif_list ::= 
+    ELSEIF:eif expression:e1 THEN expression:e2 elseif_list:e3
+    {: RESULT = new IfExpr(eifleft, e1, e2, e3); :} 
+  | ELSE expression:e
+    {: RESULT = e; :}
+  | {: RESULT = null; :}
+  :
 
 opt_expression_list ::= expression_list:e {: RESULT = e; :}
   | {: RESULT = null; :}
@@ -523,264 +564,10 @@ expression_pair_list ::=
     {: RESULT = ExprTupleList(e1, e2, null); :}
   ;
   
-distribution_declaration ::= 
-    DISTRIBUTION ID:id EQ class_name:name LPAREN opt_expression_list:e RPAREN
-    {: RESULT = new DistributionDec(idleft, id, new ClassName(name), e); :}
-  ;
 
-class_name ::= ID:id {: RESULT = id; :}
-  | ID:id DOT class_name:n {: RESULT = id + "." + n; :}
-  ;
 
 
 /***** leili stops here ********/
-
-symbol_term:s
-	   {: RESULT = s; :}
-
-	   | func_app_with_parens:f
-	   {: RESULT = f; :} 
-
-           | counting_term:c
-           {: RESULT = c; :}
-
-	   | built_in:bi
-	   {: if (bi == null) {
-                  RESULT = null;
-              } else {
-                  RESULT = new FuncAppTerm(bi, Collections.EMPTY_LIST);
-                  RESULT.setLocation(getCurLocation());
-              } :} 
-
-           | LPAREN term:t RPAREN
-           {: RESULT = t; :}
-
-           | term:t1 LT term:t2
-           {: Term[] args = {t1, t2};
-              RESULT = new FuncAppTerm("LessThan", Arrays.asList(args));
-              RESULT.setLocation(getCurLocation());
-           :}
-
-           | term:t1 GT term:t2
-           {: Term[] args = {t1, t2};
-              RESULT = new FuncAppTerm("GreaterThan", Arrays.asList(args));
-              RESULT.setLocation(getCurLocation());
-           :}
-
-           | term:t1 LEQ term:t2
-           {: Term[] args = {t1, t2};
-              RESULT = new FuncAppTerm("LessThanOrEqual", Arrays.asList(args));
-              RESULT.setLocation(getCurLocation());
-           :}
-
-           | term:t1 GEQ term:t2
-           {: Term[] args = {t1, t2};
-              RESULT = new FuncAppTerm("GreaterThanOrEqual", 
-                                       Arrays.asList(args));
-              RESULT.setLocation(getCurLocation());
-           :}
-
-	   | LBRACKET term_lst_lst:tll RBRACKET
-           {: int rows = tll.size();
-	      int columns = ((List) tll.get(0)).size();
-              MatrixType type = (MatrixType) BuiltInTypes.getType
-                  ("R" + rows + "x" + columns + "Matrix");
-
-              List args = new ArrayList(); // of Term
-              boolean correct = true;
-	      for( int i = 0; i < rows; i++ ){    
-		  List row = (List) tll.get(i);
-		  if( row.size() != columns ){
-			semantic_error("Ill-formed matrix: row " + (i+1) 
-					+ " of the matrix has a different "
-					+ "number of elements than "
-					+ "row 1 of this matrix.");
-                        correct = false;
-		  } else {
-		      for( int j = 0; j < row.size(); j++ ){
-		          Term arg = (Term) row.get(j);
-                          if (arg == null) {
-                              correct = false;
-                          } else {
-                              args.add(arg);
-                          }
-		      }
-                  }
-	      }
-
-              if (correct) {
-                  NonRandomFunction constr = type.getConstructor();
-	          RESULT = new FuncAppTerm(constr, args);
-                  RESULT.setLocation(getCurLocation());
-              } else {
-                  RESULT = null;
-              } :}
-	   ;
-
-
-
-/* Beginning of a random function definition.  This is just like a random 
- * function declaration, except that there are variable names associated 
- * with the function arguments.  This is a separate nonterminal so the 
- * function can be added to the model before the dependency clauses are parsed.
- */
-rand_func_defn ::=  rand_func_defn_intro:f opt_braces_clause_lst:cl
-           {: if ((f != null) && !cl.contains(null)) {
-                  Type childType = f.getRetType();
-                  Object defaultVal = f.getDefaultValue();
-                  f.setDepModel(new DependencyModel(cl, childType, 
-                                                    defaultVal));
-              } :}
-           ;
-
-rand_func_defn_intro ::= RANDOM type:ret_type ID:func 
-                         opt_parenthesized_var_type_lst:vtl
-           {: RESULT = null;
-              List argTypes = new ArrayList();
-              List argVars = new ArrayList();
-              for (Iterator iter = vtl.iterator(); iter.hasNext(); ) {
-                  BLOGParser.TypedVar tv = (BLOGParser.TypedVar) iter.next();
-                  argTypes.add(tv.type);
-                  argVars.add(tv.var);
-              }
-
-              if (parser.getFunction(func, argTypes) != null) {
-                  semantic_error("Function " + func + " has already been "
-                                 + "declared with argument types " + argTypes);
-              } else if (((ret_type == null) || argTypes.contains(null))) {
-		   semantic_error
-			( "the declaration of the function " 
-			+ func 
-			+ " has failed due to: " ); 
-	           if( ret_type == null ) {
-		         System.err.println( "\t- return type error;" );
-                   }
-                   if( argTypes.contains(null) ) {
-		         System.err.println 
-					( "\t- parameter type error(s);" );
-                   }
-              } else if (checkOverlappingFuncs(func, argTypes)) {
-                  RandomFunction f = new RandomFunction(func, argTypes, 
-                                                        ret_type, null); 
-	          parser.model().addFunction(f);  
-                  f.setArgVars(argVars);
-                  RESULT = f;
-              }
-           :}
-           ;
-
-
-
-
-
-
-
-dep_stmt ::= dep_stmt_intro:func opt_braces_clause_lst:cl
-	   {: if (func != null) {
-                  if (!cl.contains(null)) {
-                      Type childType = func.getRetType();
-                      Object defaultVal = func.getDefaultValue();
-                      func.setDepModel(new DependencyModel(cl, childType,
-                                                           defaultVal));
-                  }
-               }
-           :}
-           ;
-
-/* The beginning of a dependency statement, which specifies the function and 
- * introduces variables for the function's arguments.  
- */
-dep_stmt_intro ::= ID:func opt_parenthesized_var_type_lst:vtl
-           {: RESULT = null;
-              List argTypes = new ArrayList();
-              List argVars = new ArrayList();
-              for (Iterator iter = vtl.iterator(); iter.hasNext(); ) {
-                  BLOGParser.TypedVar tv = (BLOGParser.TypedVar) iter.next();
-                  argTypes.add(tv.type);
-                  argVars.add(tv.var);
-              }
-              
-              Function f = parser.getFunction(func, argTypes);
-              boolean correct = true;
-
-              if (f == null) {
-                  semantic_error("function " + func + " with argument types "
-                                 + argTypes + " has not been declared.");
-                  correct = false;
-              } else if (!(f instanceof RandomFunction)) {
-                  semantic_error("function " + func + " with argument types "
-                                 + argTypes + " was not declared as random.");
-
-                  correct = false;
-              } else if (((RandomFunction) f).hasDepModel()) {
-                  semantic_error("function " + func + " already has "
-		                 + "a dependency statement." ); 
-                  correct = false;
-              } else if (argTypes.contains(null)) {
-                  semantic_error("Dependency statement failed because of "
-                                 + "error in function's argument list.");
-                  correct = false;
-              } 
-
-              // Make sure no variable name is used twice
-              Set vars = new HashSet();
-              for (Iterator iter = argVars.iterator(); iter.hasNext(); ) {
-                  String var = (String) iter.next();
-                  if (!vars.add(var)) {
-                      semantic_error("Variable name \"" + var + "\" is used "
-                                     + "for more than one argument.");
-                      correct = false;
-                  }
-              }
-
-              if (correct) {
-                  RESULT = (RandomFunction) f;
-                  RESULT.setArgVars(argVars);
-              } :}
-
-           | ID:func LPAREN new_var_lst:vl RPAREN
-           {: RESULT = null;
-              Object f = parser.model().getRandomFunc(func, vl.size());
-              boolean correct = true;
-
-              if (f == null) {
-                  semantic_error("random function " + func + " with "
-                                 + vl.size() + " arguments has not "
-                                 + "been declared.");
-                  correct = false;
-              } else if (f == Model.MULTIPLE_FUNCTIONS) {
-                  semantic_error("dependency statement must specify argument "
-                                 + "types, because there is more than one "
-                                 + "random function called \"" + func 
-                                 + "\" with " + vl.size() + " argument(s).");
-                  correct = false;
-              } else if (((RandomFunction) f).hasDepModel()) {
-                  semantic_error("function " + func + " already has "
-		                 + "a dependency statement." ); 
-                  correct = false;
-              } else if (vl.contains(null)) {
-                  semantic_error("Dependency statement failed because of "
-                                 + "error in function's argument list.");
-                  correct = false;
-              } 
-
-              // Make sure no variable name is used twice
-              Set vars = new HashSet();
-              for (Iterator iter = vl.iterator(); iter.hasNext(); ) {
-                  String var = (String) iter.next();
-                  if (!vars.add(var)) {
-                      semantic_error("Variable name \"" + var + "\" is used "
-                                     + "for more than one argument.");
-                      correct = false;
-                  }
-              }
-
-              if (correct) {
-                  RESULT = (RandomFunction) f;
-                  RESULT.setArgVars(vl);
-              } :}
-           ;
-
 
 num_stmt ::= num_stmt_intro:pop opt_braces_clause_lst:cl
 	   {: if (pop != null) {
