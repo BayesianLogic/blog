@@ -523,7 +523,16 @@ expression_pair_list ::=
     {: RESULT = ExprTupleList(e1, e2, null); :}
   ;
   
-distribution_declaration ::= DISTRIBUTION ID:id 
+distribution_declaration ::= 
+    DISTRIBUTION ID:id EQ class_name:name LPAREN opt_expression_list:e RPAREN
+    {: RESULT = new DistributionDec(idleft, id, new ClassName(name), e); :}
+  ;
+
+class_name ::= ID:id {: RESULT = id; :}
+  | ID:id DOT class_name:n {: RESULT = id + "." + n; :}
+  ;
+
+
 /***** leili stops here ********/
 
 symbol_term:s
