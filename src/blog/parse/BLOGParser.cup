@@ -648,13 +648,40 @@ implicit_set ::= LBRACE Type:ty ID:id COLON expression:e RBRACE
  *            - whether the function has been declared.).
  */ 
 evidence_stmt ::= symbol_evidence_stmt:e {: RESULT = e; :}
+  | number_evidence_stmt:e {: RESULT = e; :}
+  | value_evidence_stmt:e {: RESULT = e; :}
   ;
 
-symbol_evidence_stmt ::= OBS implicit_set:e1 EQ explicit_set:e2 SEMI
-    {:  :}
+symbol_evidence_stmt ::= 
+    OBS implicit_set:e1 EQ explicit_set:e2 SEMI
+    {: RESULT = new SymbolEvidence(e1left, e1, e2); :}
   ;
+
+number_evidence_stmt ::= 
+    OBS NUMSIGN implicit_set:e1 EQ INT_LITERAL:s SEMI
+    {: RESULT = new NumberEvidence(e1left, e1, s.intValue()); :}
+  ;
+  
+value_evidence_stmt ::=
+    OBS expression:e1 EQ expression:e2 SEMI
+    {: RESULT = new ValueEvidence(e1left, e1, e2); :}
+  ;
+  
+
+
+
+	  
 
 /***** leili stops here ********/
+
+value_evidence_statement_left_side ::= 
+
+	  explicit_set:es
+	  {: RESULT = es; :}
+
+	  | tuple_set:ts
+	  {: RESULT = ts; :}
+
 
 evidence ::= OBS implicit_set:s EQ LBRACE opt_id_lst:symbols RBRACE
 	   {: if (s != null){
