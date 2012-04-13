@@ -1,6 +1,6 @@
 package blog.absyn;
 
-public class ListInitExpr extends Stmt {
+public class ListInitExpr extends Expr {
 
 	public ExprList values;
 
