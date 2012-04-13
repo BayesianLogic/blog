@@ -329,7 +329,7 @@ declaration_stmt ::=
   | num_stmt : e {: RESULT = e; :}
   | distinct_decl : e {: RESULT = e; :}
   | parameter_decl : e {: RESULT = e; :}
-  | parfactor : e {: RESULT = e; :}
+/*  | parfactor : e {: RESULT = e; :}  */
   | error
    {: System.err.println
 	( "Possible cause: forgotten semicolon or "
@@ -345,10 +345,13 @@ type_decl ::= TYPE ID:typename SEMI
  * Represents a type that is built in or has already been declared.  
  * can also be an array  
  */
-type ::= ID:typename 
-    {: RESULT = new NameTy(typenameleft, sym(typename)); :}
+type ::= declared_type:e {: RESULT = e; :}
   | array_type : at {: RESULT = at; :}
   | map_type:e {: RESULT = e; :}
+  ;
+  
+declared_type ::= ID:typename 
+    {: RESULT = new NameTy(typenameleft, sym(typename)); :}
   ;
        
 array_type ::= ID : typename  dims : d
@@ -445,6 +448,24 @@ origin_func_decl ::=
   ;
 
 /**
+ * declaration of distinct symbols, (guaranteed objects)
+ */
+distinct_decl ::= 
+    DISTINCT declared_type:ty id_or_subid_list:e SEMI
+    {: RESULT = new DistinctSymbolDec(tyleft, ty, e); :}
+  ;  
+ 
+id_or_subid_list ::= id_or_subid:e {: RESULT = e; :}
+  | id_or_subid:e COMMA id_or_subid_list:n
+    {: RESULT = new SymbolArrayList(eleft, e, n); :}
+  
+id_or_subid ::= ID:id
+    {: RESULT = new SymbolArray(idleft, sym(id)); :}
+  | ID:id LBRACKET INT_LITERAL:s RBRACKET
+    {: RESULT = new SymbolArray(idleft, sym(id), s.intValue()); :}
+  ;
+
+/**
  * declaration of a distribution
  */
 distribution_declaration ::= 
@@ -482,6 +503,12 @@ elseif_list ::=
   | {: RESULT = null; :}
   ;	
 
+parameter_decl ::= PARAM type:ty ID:id SEMI
+    {: RESULT = new ParameterDec(tyleft, ty, sym(id), null); :}
+  | PARAM type:ty ID:id COLON expression:e SEMI
+    {: RESULT = new ParameterDec(tyleft, ty, sym(id), e); :}
+  ;
+
 /* Represents a term, which can be either a 0-ary function application, a 
  * variable, a  non-0-ary function application, or a built-in constant.
  * (Propagates an error-check from production for specific kinds of terms.) 
@@ -494,6 +521,8 @@ expression ::= operation_expr:e  {: RESULT = e; :}
   | function_call:e {: RESULT = e; :}
   | list_construct_expression:e {: RESULT = e; :}
   | map_construct_expression:e {: RESULT = e; :}
+  | quantified_formula:e {: RESULT = e; :}
+  | explicit_set:e {: RESULT = e; :}  
   ;
     
 literal ::= STRING_LITERAL:e 
@@ -504,9 +533,12 @@ literal ::= STRING_LITERAL:e
     {: RESULT = new DoubleExpr(eleft, e.doubleValue()); :}
   | TIME_LITERAL:e
     {: RESULT = new TimeExpr(eleft, e.intValue()); :}
+  | BOOLEAN_LITERAL:e
+    {: RESULT = new TimeExpr(eleft, e.booleanValue()); :}
   | NULL:e
     {: RESULT = new NullExpr(eleft); :}
   ;
+
     
 operation_expr ::= expression:e1 PLUS expression:e2 
     {: RESULT = new OpExpr(e1left, e1, OpExpr.PLUS, e2); :}
@@ -538,6 +570,14 @@ operation_expr ::= expression:e1 PLUS expression:e2
     {: RESULT = new OpExpr(e1left, e1, OpExpr.NOT, e2); :}
   | expression:e1 LBRACKET expression:e2 RBRACKET
     {: RESULT = new OpExpr(e1left, e1, OpExpr.SUB, e2); :}
+  ;
+
+quantified_formula ::= FORALL type:ty ID:id expression:e
+    {: RESULT = new QuantifiedFormulaExpr(tyleft, 
+    QuantifiedFormulaExpr.FORALL, ty, sym(id), e); :}
+  | EXISTS type:ty ID:id expression:e
+    {: RESULT = new QuantifiedFormulaExpr(tyleft, 
+    QuantifiedFormulaExpr.EXISTS, ty, sym(id), e); :}
   ;
 
 function_call ::= ID:id LPAREN opt_expression_list:e RPAREN
@@ -580,53 +620,15 @@ expression_pair_list ::=
     {: RESULT = ExprTupleList(e1, e2, null); :}
   ;
   
-/***** leili stops here ********/
-
-guaranteed_decl ::= GUARANTEED type:type id_spec:ids
-	   {: if (type == null) {
-                  semantic_error
-			( "a declaration of guaranteed objects " 
-			 + " has failed due to:" );
-	          System.err.println( "\t- type error;" );  
-              } else {
-	          Iterator iter = ids.iterator( );
-	          while( iter.hasNext( ) ){
-		      String name = ( String )iter.next( );
-                      if (parser.getFunction(name, 
-                                             Collections.EMPTY_LIST) != null) {
-                          semantic_error("Error: function \"" + name 
-                                         + "\" with no arguments "
-                                         + "has already been declared.");
-                      } else {
-                          parser.model().addEnumeratedObject(name, type);
-                      }
-                  } 
-              } :}
-           ; 
-
-parfactor ::= FACTOR potential:potspec
-           {:
-               if (potspec != null) {
-                   BLOGParser.VarsWithConstraint vc 
-                       = new BLOGParser.VarsWithConstraint();
-                   Parfactor pf = new Parfactor(vc.logicalVars, vc.constraint, 
-                                                potspec.args, 
-                                                potspec.cls, potspec.params);
-                   pf.setLocation(getCurLocation());
-                   parser.model().addParfactor(pf);
-               }
-           :}
-           | PARFACTOR vars_opt_constraint:vc DOT potential:potspec
-           {:
-               if ((vc != null) && (potspec != null)) {
-                   Parfactor pf = new Parfactor(vc.logicalVars, vc.constraint,
-                                                potspec.args, 
-                                                potspec.cls, potspec.params);
-                   pf.setLocation(getCurLocation());
-                   parser.model().addParfactor(pf);
-               }
-           :}
-           ;
+explicit_set ::= LBRACE opt_expression_list:e RBRACE
+    {: RESULT = new ExplicitSetExpr(eleft, e); :}
+  ;
+  
+implicit_set ::= LBRACE Type:ty ID:id COLON expression:e RBRACE
+    {: RESULT = new ImplicitSetExpr(tyleft, ty, sym(id), e); :}
+  ;
+  
+///no implementation for PARFACTOR
 
 
 /* Represents an evidence statement, which can be:
@@ -645,6 +647,15 @@ parfactor ::= FACTOR potential:potspec
  *		  passed to it match;
  *            - whether the function has been declared.).
  */ 
+evidence_stmt ::= symbol_evidence_stmt:e {: RESULT = e; :}
+  ;
+
+symbol_evidence_stmt ::= OBS implicit_set:e1 EQ explicit_set:e2 SEMI
+    {:  :}
+  ;
+
+/***** leili stops here ********/
+
 evidence ::= OBS implicit_set:s EQ LBRACE opt_id_lst:symbols RBRACE
 	   {: if (s != null){
                 boolean correct = true;
@@ -675,6 +686,10 @@ evidence ::= OBS implicit_set:s EQ LBRACE opt_id_lst:symbols RBRACE
                         (new ValueEvidenceStatement(leftSide, value));
 	      } :} 
 	   ;   
+
+
+
+
 
 
 /* Represents a generic query. */
