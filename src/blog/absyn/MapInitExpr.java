@@ -1,6 +1,6 @@
 package blog.absyn;
 
-public class MapInitExpr extends Stmt {
+public class MapInitExpr extends Expr {
 
 	public ExprTupleList values;
 

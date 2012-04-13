@@ -174,8 +174,8 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 	
 
 /* literals */
-"true"	{ return symbol(BLOGTokenConstants.TRUE, new Boolean(true)); }
-"false"   { return symbol(BLOGTokenConstants.FALSE, new Boolean(false)); }
+"true"	{ return symbol(BLOGTokenConstants.BOOLEAN_LITERAL, new Boolean(true)); }
+"false"   { return symbol(BLOGTokenConstants.BOOLEAN_LITERAL, new Boolean(false)); }
 "null" {return symbol(BLOGTokenConstants.NULL); }
 {DoubleLiteral} { return 
 		 symbol(BLOGTokenConstants.DOUBLE_LITERAL, new Double(yytext())); }
