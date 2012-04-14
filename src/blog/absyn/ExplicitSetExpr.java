@@ -1,6 +1,6 @@
 package blog.absyn;
 
-public class ExplicitSetExpr extends Expr {
+public class ExplicitSetExpr extends SetExpr {
 
 	public ExprList values;
 
