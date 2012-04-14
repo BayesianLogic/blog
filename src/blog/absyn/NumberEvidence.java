@@ -1,12 +1,12 @@
 package blog.absyn;
 
 public class NumberEvidence extends Evidence {
-	public ImplicitSetExpr set;
+	public NumberExpr num;
 	public int size;
 	
-	public NumberEvidence(int p, ImplicitSetExpr s, int sz) {
+	public NumberEvidence(int p, NumberExpr s, int sz) {
 		pos = p;
-		set = s;
+		num = s;
 		size = sz;
 	}
 	
