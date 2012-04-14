@@ -29,93 +29,53 @@ public class Print {
 	say(s); say("\n");
   }
 
-  void prVar(SimpleVar v, int d) {
-    say("SimpleVar("); say(v.name.toString()); say(")");
-  }
-
-  void prVar(FieldVar v, int d) {
-    sayln("FieldVar(");
-    prVar(v.var, d+1); sayln(",");
-    indent(d+1); say(v.field.toString()); say(")");
-  }
-
-  void prVar(SubscriptVar v, int d) {
-    sayln("SubscriptVar(");
-    prVar(v.var, d+1); sayln(",");
-    prExp(v.index, d+1); say(")");
-  }
-
-  /* Print A_var types. Indent d spaces. */
-  void prVar(Var v, int d) {
-    indent(d);
-    if (v instanceof SimpleVar) prVar((SimpleVar) v, d);
-    else if (v instanceof FieldVar) prVar((FieldVar) v, d);
-    else if (v instanceof SubscriptVar) prVar((SubscriptVar) v, d);
-    else throw new Error("Print.prVar");
-  }
-
-  void prExp(OpExp e, int d) {
-    sayln("OpExp(");
+  void prExp(OpExpr e, int d) {
+  	if (e==null) return;
+    sayln("OpExpr(");
     indent(d+1);
     switch(e.oper) {
-    case OpExp.PLUS: say("PLUS"); break;
-    case OpExp.MINUS: say("MINUS"); break;
-    case OpExp.MUL: say("MUL"); break;
-    case OpExp.DIV: say("DIV"); break;
-    case OpExp.EQ: say("EQ"); break;
-    case OpExp.NE: say("NE"); break;
-    case OpExp.LT: say("LT"); break;
-    case OpExp.LE: say("LE"); break;
-    case OpExp.GT: say("GT"); break;
-    case OpExp.GE: say("GE"); break;
+    case OpExpr.PLUS: say("PLUS"); break;
+    case OpExpr.MINUS: say("MINUS"); break;
+    case OpExpr.MULT: say("MULT"); break;
+    case OpExpr.DIV: say("DIV"); break;
+    case OpExpr.MOD: say("MOD"); break;
+    case OpExpr.EQ: say("EQ"); break;
+    case OpExpr.NEQ: say("NEQ"); break;
+    case OpExpr.LT: say("LT"); break;
+    case OpExpr.LEQ: say("LEQ"); break;
+    case OpExpr.GT: say("GT"); break;
+    case OpExpr.GEQ: say("GEQ"); break;
+    case OpExpr.AND: say("AND"); break;
+    case OpExpr.OR: say("OR"); break;
+    case OpExpr.NOT: say("NOT"); break;
+    case OpExpr.SUB: say("SUB"); break;
     default:
-      throw new Error("Print.prExp.OpExp");
+      throw new Error("Print.prExp.OpExpr");
     }
     sayln(",");
     prExp(e.left, d+1); sayln(",");
     prExp(e.right, d+1); say(")");
   }
 
-  void prExp(VarExp e, int d) {
-    sayln("varExp("); prVar(e.var, d+1);
-    say(")");
-  }
-
-  void prExp(NilExp e, int d) {
-    say("NilExp()");
+  void prExp(NullExpr e, int d) {
+    say("NullExpr()");
   }
 
   void prExp(IntExpr e, int d) {
-    say("IntExp("); say(e.value); say(")");
+    say("IntExpr("); say(e.value); say(")");
   }
 
   void prExp(StringExpr e, int d) {
-    say("StringExp("); say(e.value); say(")");
+    say("StringExpr("); say(e.value); say(")");
   }
 
-  void prExp(FuncCallExp e, int d) {
-    say("CallExp("); say(e.func.toString()); sayln(",");
+  void prExp(FuncCallExpr e, int d) {
+    say("FuncCallExpr("); say(e.func.toString()); sayln(",");
     prExplist(e.args, d+1); say(")");
   }
 
-  void prExp(RecordExp e, int d) {
-    say("RecordExp("); say(e.typ.toString());  sayln(",");
-    prFieldExpList(e.fields, d+1); say(")");
-  }
-
-  void prExp(SeqExp e, int d) {
-    sayln("SeqExp(");
-    prExplist(e.list, d+1); say(")");
-  }
-
-  void prExp(AssignExp e, int d) {
-    sayln("AssignExp(");
-    prVar(e.var, d+1); sayln(",");
-    prExp(e.exp, d+1); say(")");
-  }
-
   void prExp(IfExpr e, int d) {
-    sayln("IfExp(");
+    sayln("IfExpr(");
     prExp(e.test, d+1); sayln(",");
     prExp(e.thenclause, d+1);
     if (e.elseclause!=null) { /* else is optional */
@@ -125,55 +85,46 @@ public class Print {
     say(")");
   }
 
-  void prExp(WhileExp e, int d) {
-    sayln("WhileExp(");
-    prExp(e.test, d+1); sayln(",");
-    prExp(e.body, d+1); sayln(")");
-  }
-
-  void prExp(ForExp e, int d) {
-    sayln("ForExp(");
-    indent(d+1); prDec(e.var, d+1); sayln(",");
-    prExp(e.hi, d+1); sayln(",");
-    prExp(e.body, d+1); say(")");
-  }
-
-  void prExp(BreakExp e, int d) {
-    say("BreakExp()");
-  }
-
-  void prExp(LetExp e, int d) {
-    say("LetExp("); sayln("");
-    prDecList(e.decs, d+1); sayln(",");
-    prExp(e.body, d+1); say(")");
-  }
-
   void prExp(ListInitExpr e, int d) {
-    say("ArrayExp("); say(e.typ.toString()); sayln(",");
-    prExp(e.size, d+1); sayln(",");
-    prExp(e.init, d+1); say(")");
+    say("ListInitExpr("); 
+    prExplist(e.values, d+1); 
+    say(")");
+  }
+  
+  void prExp(ExplicitSetExpr e, int d) {
+  	say("ExplicitSetExpr(");
+  	prExplist(e.values, d+1);
+  	say(")");
   }
 
+  void prExp(ImplicitSetExpr e, int d) {
+  	say("ExplicitSetExpr(");
+  	prTy(e.type, d+1);
+  	sayln(",");
+  	prSymbol(e.var, d+1);
+  	sayln(",");
+  	prExp(e.cond, d+1);
+  	prExplist(e.values, d+1);
+  	say(")");
+  }
+  
   /* Print Exp class types. Indent d spaces. */
-  public void prExp(Stmt e, int d) {
+  public void prExp(Expr e, int d) {
     indent(d);
-    if (e instanceof OpExp) prExp((OpExp)e, d);
-    else if (e instanceof VarExp) prExp((VarExp) e, d);
-    else if (e instanceof NilExp) prExp((NilExp) e, d);
+    if (e instanceof OpExpr) prExp((OpExpr)e, d);
+    else if (e instanceof NullExpr) prExp((NullExpr) e, d);
     else if (e instanceof IntExpr) prExp((IntExpr) e, d);
     else if (e instanceof StringExpr) prExp((StringExpr) e, d);
-    else if (e instanceof FuncCallExp) prExp((FuncCallExp) e, d);
-    else if (e instanceof RecordExp) prExp((RecordExp) e, d);
-    else if (e instanceof SeqExp) prExp((SeqExp) e, d);
-    else if (e instanceof AssignExp) prExp((AssignExp) e, d);
+    else if (e instanceof BooleanExpr) prExp((BooleanExpr) e, d);
+    else if (e instanceof FuncCallExpr) prExp((FuncCallExpr) e, d);
     else if (e instanceof IfExpr) prExp((IfExpr) e, d);
-    else if (e instanceof WhileExp) prExp((WhileExp) e, d);
-    else if (e instanceof ForExp) prExp((ForExp) e, d);
-    else if (e instanceof BreakExp) prExp((BreakExp) e, d);
-    else if (e instanceof LetExp) prExp((LetExp) e, d);
     else if (e instanceof ListInitExpr) prExp((ListInitExpr) e, d);
+    else if (e instanceof ExplicitSetExpr) prExp((ExplicitSetExpr) e, d);
+    else if (e instanceof ImplicitSetExpr) prExp((ImplicitSetExpr) e, d);
     else throw new Error("Print.prExp");
   }
+  
+  
 
   void prDec(FunctionDec d, int i) {
     say("FunctionDec(");
@@ -254,14 +205,14 @@ public class Print {
     say(")");
   }
 
-  void prExplist(StmtList e, int d) {
+  void prExplist(ExprList e, int d) {
     indent(d);
     say("ExpList(");
     if (e!=null) {
       sayln("");
       prExp(e.head, d+1);
-      if (e.tail != null) {
-	sayln(","); prExplist(e.tail, d+1);
+      if (e.next != null) {
+	sayln(","); prExplist(e.next, d+1);
       }
     }
     say(")");
