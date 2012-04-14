@@ -2,7 +2,7 @@ package blog.absyn;
 
 import blog.symbol.Symbol;
 
-public class ImplicitSetExpr extends Expr {
+public class ImplicitSetExpr extends SetExpr {
 
 	public Symbol var;
 	public Ty type;

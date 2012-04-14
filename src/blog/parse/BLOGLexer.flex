@@ -153,8 +153,8 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Ff][Ii][Xx][Ee][Dd] { return symbol(BLOGTokenConstants.FIXED); }			   
 [Gg][Ee][Nn][Ee][Rr][Aa][Tt][Ii][Nn][Gg] { return symbol(BLOGTokenConstants.ORIGIN); }
 [Oo][Rr][Ii][Gg][Ii][Nn] { return symbol(BLOGTokenConstants.ORIGIN); }
-[Gg][Uu][Aa][Rr][Aa][Nn][Tt][Ee][Ee][Dd] { return symbol(BLOGTokenConstants.GUARANTEED); }
-[Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt] { return symbol(BLOGTokenConstants.GUARANTEED); }
+[Gg][Uu][Aa][Rr][Aa][Nn][Tt][Ee][Ee][Dd] { return symbol(BLOGTokenConstants.DISTINCT); }
+[Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt] { return symbol(BLOGTokenConstants.DISTINCT); }
 [Ff][Aa][Cc][Tt][Oo][Rr] { return symbol(BLOGTokenConstants.FACTOR); }
 [Pp][Aa][Rr][Ff][Aa][Cc][Tt][Oo][Rr] { return symbol(BLOGTokenConstants.PARFACTOR); }
 [Tt][Hh][Ee][Nn]     { return symbol(BLOGTokenConstants.THEN); }
@@ -222,10 +222,6 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 {Whitespace} { /* Do nothing */}
 
 {Identifier} {return symbol(BLOGTokenConstants.ID, yytext()); }
-
-[A-Za-z][A-Za-z0-9_]*([.][A-Za-z][A-Za-z0-9_]*)* {
-        return symbol(BLOGTokenConstants.CLASS_NAME, yytext()); }
-}
 
 <STR_LIT>\" { /* closing double-quote not matched by \" rule below */
        BLOGSymbol s =   symbol(BLOGTokenConstants.STRING_LITERAL, 
