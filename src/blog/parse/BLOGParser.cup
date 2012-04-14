@@ -115,7 +115,8 @@ nonterminal statement, declaration_stmt, type_decl, fixed_func_decl,
   distinct_decl, distribution_declaration, parameter_decl, 
   evidence_stmt, query_stmt;
 nonterminal evidence, value_evidence, query;
-nonterminal expression, literal, operation_expr, quantified_formula, 
+nonterminal expression, literal, operation_expr, unary_operation_expr, 
+  quantified_formula, 
   function_call, list_construct_expression, 
   semi_colon_separated_expression_list, 
   map_construct_expression, number_expr, set_expr, 
@@ -458,11 +459,18 @@ operation_expr ::= expression:e1 PLUS expression:e2
     {: RESULT = new OpExpr(e1left, e1, OpExpr.AND, e2); :}
   | expression:e1 OR expression:e2 
     {: RESULT = new OpExpr(e1left, e1, OpExpr.OR, e2); :}
-  | expression:e1 NOT expression:e2 
-    {: RESULT = new OpExpr(e1left, e1, OpExpr.NOT, e2); :}
   | expression:e1 LBRACKET expression:e2 RBRACKET
     {: RESULT = new OpExpr(e1left, e1, OpExpr.SUB, e2); :}
+  | unary_operation_expr:e {: RESULT = e; :}
   ;
+
+unary_operation_expr ::= 
+    MINUS expression:e
+    {: RESULT = new OpExpr(e1left, new IntExpr(eleft, 0), OpExpr.NOT, e); :}
+  | NOT expression:e
+    {: RESULT = new OpExpr(e1left, null, OpExpr.NOT, e); :}
+  ;
+
 
 quantified_formula ::= FORALL type:ty ID:id expression:e
     {: RESULT = new QuantifiedFormulaExpr(tyleft, 
@@ -514,6 +522,8 @@ expression_pair_list ::=
 
 number_expr ::= NUMSIGN set_expr:e
     {: RESULT = new NumberExpr(eleft, e); :}
+  | NUMSIGN type:ty
+    {: RESULT = new NumberExpr(tyleft, new ImplicitSetExpr(tyleft, ty, null, null)); :}
   ;
 
 
