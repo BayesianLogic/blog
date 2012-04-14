@@ -1,5 +1,7 @@
 package blog.absyn;
 
+import blog.symbol.Symbol;
+
 public class Print {
 
   java.io.PrintStream out;
@@ -58,7 +60,7 @@ public class Print {
   }
 
   void prExp(NullExpr e, int d) {
-    say("NullExpr()");
+    sayln("NullExpr()");
   }
 
   void prExp(IntExpr e, int d) {
@@ -70,7 +72,10 @@ public class Print {
   }
 
   void prExp(FuncCallExpr e, int d) {
-    say("FuncCallExpr("); say(e.func.toString()); sayln(",");
+    sayln("FuncCallExpr(");
+    indent(d+1);
+    say(e.func.toString()); 
+    sayln(",");
     prExplist(e.args, d+1); say(")");
   }
 
@@ -101,11 +106,14 @@ public class Print {
   	say("ExplicitSetExpr(");
   	prTy(e.type, d+1);
   	sayln(",");
-  	prSymbol(e.var, d+1);
+  	say(e.var.toString());
   	sayln(",");
   	prExp(e.cond, d+1);
-  	prExplist(e.values, d+1);
   	say(")");
+  }
+  
+  void prExp(DistributionExpr e, int d) {
+  	say()
   }
   
   /* Print Exp class types. Indent d spaces. */
@@ -121,10 +129,9 @@ public class Print {
     else if (e instanceof ListInitExpr) prExp((ListInitExpr) e, d);
     else if (e instanceof ExplicitSetExpr) prExp((ExplicitSetExpr) e, d);
     else if (e instanceof ImplicitSetExpr) prExp((ImplicitSetExpr) e, d);
+    else if (e instanceof DistributionExpr) prExp((DistributionExpr) e, d); 
     else throw new Error("Print.prExp");
   }
-  
-  
 
   void prDec(FunctionDec d, int i) {
     say("FunctionDec(");
