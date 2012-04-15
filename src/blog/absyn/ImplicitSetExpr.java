@@ -5,13 +5,30 @@ import blog.symbol.Symbol;
 public class ImplicitSetExpr extends SetExpr {
 
 	public Symbol var;
-	public Ty type;
+	public Ty typ;
 	public Expr cond;
 
 	public ImplicitSetExpr(int p, Ty t, Symbol v, Expr c) {
 		pos = p;
 		var = v;
-		type = t;
+		typ = t;
 		cond = c;
+	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.sayln("ExplicitSetExpr(");
+		typ.printTree(pr, d + 1);
+		if (var != null) {
+			pr.sayln(",");
+			pr.indent(d + 1);
+			pr.say(var.toString());
+		}
+		if (cond != null) {
+			pr.sayln(",");
+			cond.printTree(pr, d + 1);
+		}
+		pr.say(")");
 	}
 }

@@ -13,4 +13,16 @@ public class OriginFieldList extends Absyn {
 		func = f;
 		next = x;
 	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.sayln("OriginFieldList(");
+		pr.indent(d + 1);
+		pr.say(func.toString());
+		pr.sayln(",");
+		pr.say(var.toString());
+		next.printTree(pr, d + 1);
+		pr.say("");
+	}
 }

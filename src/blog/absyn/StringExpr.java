@@ -7,4 +7,12 @@ public class StringExpr extends Expr {
 		pos = p;
 		value = v;
 	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.say("StringExpr(");
+		pr.say(value);
+		pr.say(")");
+	}
 }

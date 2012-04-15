@@ -13,4 +13,16 @@ public class FieldList extends Absyn {
 		typ = t;
 		next = x;
 	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.sayln("FieldList(");
+		pr.say(name.toString());
+		pr.sayln(",");
+		typ.printTree(pr, d + 1);
+		pr.sayln(",");
+		next.printTree(pr, d + 1);
+		pr.say(")");
+	}
 }

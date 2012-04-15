@@ -11,4 +11,15 @@ public class DistributionExpr extends Expr {
 		name = f;
 		args = a;
 	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.sayln("DistributionExpr(");
+		pr.indent(d + 1);
+		pr.say(name.toString());
+		pr.sayln(",");
+		args.printTree(pr, d + 1);
+		pr.say(")");
+	}
 }

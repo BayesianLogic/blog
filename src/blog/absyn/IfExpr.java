@@ -1,6 +1,5 @@
 package blog.absyn;
 
-import blog.symbol.Symbol;
 
 public class IfExpr extends Expr {
 	public Expr test;
@@ -19,5 +18,19 @@ public class IfExpr extends Expr {
 		test = x;
 		thenclause = y;
 		elseclause = z;
+	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.sayln("IfExpr(");
+		test.printTree(pr, d + 1);
+		pr.sayln(",");
+		thenclause.printTree(pr, d + 1);
+		if (elseclause != null) { /* else is optional */
+			pr.sayln(",");
+			elseclause.printTree(pr, d + 1);
+		}
+		pr.say(")");
 	}
 }
