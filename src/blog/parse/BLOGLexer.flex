@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2005, Regents of the University of California
  * All rights reserved.
  * 
@@ -120,7 +120,7 @@ DoubleLiteral = ({FLit1}|{FLit2}|{FLit3}) {Exponent}?
 
 TimeLiteral = [@]{Digit}+
 
-LineTerminator	= \n|\r|\r\n
+LineTerminator	= [\n\r\r\n]
 
 InputCharacter = [^\r\n]
 
