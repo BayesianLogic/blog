@@ -10,4 +10,23 @@ public class ExprTupleList extends Absyn {
 		to = t;
 		next = n;
 	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.say("ExprTupleList(");
+		if (from != null) {
+			pr.sayln("");
+			from.printTree(pr, d + 1);
+			pr.sayln(",");
+			if (to != null) {
+				to.printTree(pr, d + 1);
+			}
+			if (next != null) {
+				pr.sayln(",");
+				next.printTree(pr, d + 1);
+			}
+		}
+		pr.say(")");
+	}
 }

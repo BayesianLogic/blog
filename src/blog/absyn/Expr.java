@@ -1,5 +1,5 @@
 package blog.absyn;
 
-public class Expr extends Absyn {
+public abstract class Expr extends Absyn {
 
 }

@@ -13,4 +13,19 @@ public class ParameterDec extends Dec {
 		name = n;
 		cond = c;
 	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.sayln("ParameterDec(");
+		type.printTree(pr, d + 1);
+		pr.sayln(",");
+		pr.indent(d + 1);
+		pr.say(name.toString());
+		if (cond != null) {
+			pr.sayln(",");
+			cond.printTree(pr, d + 1);
+		}
+		pr.say(")");
+	}
 }
