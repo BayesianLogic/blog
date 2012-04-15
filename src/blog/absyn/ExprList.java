@@ -8,4 +8,19 @@ public class ExprList extends Absyn {
 		head = h;
 		next = t;
 	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.say("ExprList(");
+		if (head != null) {
+			pr.sayln("");
+			head.printTree(pr, d + 1);
+			if (next != null) {
+				pr.sayln(",");
+				next.printTree(pr, d + 1);
+			}
+		}
+		pr.say(")");
+	}
 }

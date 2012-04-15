@@ -7,4 +7,12 @@ public class IntExpr extends Expr {
 		pos = p;
 		value = v;
 	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.say("IntExpr(");
+		pr.say(value);
+		pr.say(")");
+	}
 }

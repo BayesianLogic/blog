@@ -7,4 +7,12 @@ public class BooleanExpr extends Expr {
 		pos = p;
 		value = v;
 	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.say("BooleanExpr(");
+		pr.say(value);
+		pr.say(")");
+	}
 }

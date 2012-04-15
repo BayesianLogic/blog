@@ -13,4 +13,16 @@ public class DistributionDec extends Dec {
 		classname = cn;
 		params = a;
 	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.sayln("DistributionDec(");
+		pr.indent(d + 1);
+		pr.say(name.toString());
+		pr.sayln(",");
+		classname.printTree(pr, d + 1);
+		pr.sayln(",");
+		params.printTree(pr, d + 1);
+	}
 }

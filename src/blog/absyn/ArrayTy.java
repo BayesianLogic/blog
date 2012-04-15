@@ -1,7 +1,5 @@
 package blog.absyn;
 
-import blog.symbol.Symbol;
-
 public class ArrayTy extends Ty {
 	public Ty typ;
 	public int dim;
@@ -10,5 +8,16 @@ public class ArrayTy extends Ty {
 		pos = p;
 		typ = t;
 		dim = d;
+	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.say("ArrayTy(");
+		typ.printTree(pr, d + 1);
+		pr.sayln(",");
+		pr.indent(d + 1);
+		pr.say(dim);
+		pr.say(")");
 	}
 }

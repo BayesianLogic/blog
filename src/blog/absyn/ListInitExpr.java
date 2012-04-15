@@ -8,4 +8,12 @@ public class ListInitExpr extends Expr {
 		pos = p;
 		values = v;
 	}
+
+	@Override
+	void printTree(Printer pr, int d) {
+		pr.indent(d);
+		pr.sayln("ListInitExpr(");
+		values.printTree(pr, d + 1);
+		pr.say(")");
+	}
 }
