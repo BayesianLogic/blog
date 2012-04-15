@@ -112,10 +112,10 @@ Identifier = {Alpha}({Alpha}|{Digit}|_)*
 
 IntegerLiteral = {Digit}+
 
-FLit1    = [0-9]+ \. [0-9]* 
-FLit2    = \. [0-9]+ 
-FLit3    = [0-9]+ 
-Exponent = [eE] [+-]? [0-9]+
+FLit1    = {Digit}+ \. {Digit}* 
+FLit2    = \. {Digit}+ 
+FLit3    = {Digit}+ 
+Exponent = [eE] [+-]? {Digit}+
 DoubleLiteral = ({FLit1}|{FLit2}|{FLit3}) {Exponent}?
 
 TimeLiteral = [@]{Digit}+
