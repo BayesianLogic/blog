@@ -1,6 +1,6 @@
 package blog.absyn;
 
-public class NumberExpr extends Evidence {
+public class NumberExpr extends Expr {
 	public SetExpr values;
 
 	public NumberExpr(int p, SetExpr s) {

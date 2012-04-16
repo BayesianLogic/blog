@@ -39,8 +39,8 @@ import blog.absyn.*;
 
 action code {: 
 
-  static symbol.Symbol sym(String s) {
-	         return symbol.Symbol.symbol(s);
+  static blog.symbol.Symbol sym(String s) {
+	         return blog.symbol.Symbol.symbol(s);
   }
 
     LocationInFile getCurLocation() {
@@ -53,11 +53,13 @@ action code {:
 	return ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum();
     }
 
+/*
     void semantic_error( String message ){
          System.err.println("\n" + curr_filename( ) + ":" + curr_lineno( ) 
                             + " Semantic error: " + message);
 	 parser.omerrs++;
     }
+*/
 
     void warning( String message ){
          System.err.println("\n" + curr_filename( ) + ":" + curr_lineno( ) 
@@ -67,20 +69,20 @@ action code {:
     String curr_filename() {
 	  return ((ScannerWithLocInfo)parser.getScanner()).getCurFilename();
     }
+   
 :} 
 
 
 parser code {:
-  private Absyn parseResult; //variable to store the final parsing result
+  Absyn parseResult; //variable to store the final parsing result
   
   public Absyn getParseResult() {
     return parseResult;
   }
-
 :}
 
 init with {:
-  scanner.init();
+
 :}
 
 /* Terminal declarations; a few have types for associated lexemes.  The
@@ -88,11 +90,11 @@ init with {:
  * the lexer returns it. For the terminals' interpretations, consult with
  * BLOGLexer.lex.  
  */
-
+terminal FACTOR, PARFACTOR, FOR; //not implemented yet
 terminal ERROR;
 terminal ELSE, ELSEIF, IF, THEN;
 terminal TYPE, RANDOM, FIXED, ORIGIN, DISTINCT, 
-        QUERY, OBS, PARAM;
+        QUERY, OBS, PARAM, MAP, DISTRIBUTION;
 terminal EXISTS, FORALL;
 terminal NULL;
 terminal java.lang.Number INT_LITERAL, DOUBLE_LITERAL, TIME_LITERAL;
@@ -109,36 +111,39 @@ terminal NOT, AND, OR;
 terminal COMMA, SEMI, COLON, DOT, NUMSIGN, RIGHTARROW;
 terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET;
 
-nonterminal program, opt_statement_lst, statement_lst;
-nonterminal statement, declaration_stmt, type_decl, fixed_func_decl,
-  rand_func_decl, number_statement, origin_func_decl
-  distinct_decl, distribution_declaration, parameter_decl, 
+nonterminal program;
+nonterminal StmtList opt_statement_lst, statement_lst;
+nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
+  rand_func_decl, number_stmt, origin_func_decl,
+  distinct_decl, distribution_decl, parameter_decl, 
   evidence_stmt, query_stmt;
-nonterminal evidence, value_evidence, query;
-nonterminal expression, literal, operation_expr, unary_operation_expr, 
+nonterminal Stmt evidence, value_evidence, query;
+nonterminal Expr expression, literal, operation_expr, unary_operation_expr, 
   quantified_formula, 
-  function_call, list_construct_expression, 
-  semi_colon_separated_expression_list, 
-  map_construct_expression, number_expr, set_expr, 
-  explicit_set, implicit_set;
-nonterminal opt_expression_list, expression_list, expression_pair_list;
-nonterminal type, declared_type, array_type, map_type;
-nonterminal dims; 
-nonterminal opt_parenthesized_type_lst, type_lst, 
-  opt_parenthesized_type_var_lst, type_var_lst, 
-  opt_parenthesized_origin_var_list, origin_var_list, 
-  id_or_subid_list, id_or_subid;
-nonterminal class_name;
-nonterminal dependency_statement_body;
-nonterminal elseif_list;
+  function_call, list_construct_expression,  
+  map_construct_expression, number_expr, elseif_list;
+nonterminal Expr dependency_statement_body; 
+nonterminal SetExpr set_expr, explicit_set, implicit_set;
+nonterminal ExprList semi_colon_separated_expression_list, 
+  opt_expression_list, expression_list;
+nonterminal ExprTupleList expression_pair_list;
+nonterminal Ty type, array_type, map_type, name_type;
+nonterminal Integer dims; 
+nonterminal FieldList opt_parenthesized_type_lst, type_lst; 
+nonterminal FieldList opt_parenthesized_type_var_lst, type_var_lst;
+nonterminal OriginFieldList opt_parenthesized_origin_var_list, 
+  origin_var_list;
+nonterminal SymbolArray id_or_subid;
+nonterminal SymbolArrayList id_or_subid_list;
+nonterminal String class_name;
+
 
 /*
  * Precedence declarations.  The later the precedence declaration, the 
  * higher the precedence.  
  */
-
 precedence left ELSE;
-precedence nonassoc ASSIGN, DISTRIB;
+precedence nonassoc EQ, DISTRIB;
 precedence right RIGHTARROW;
 precedence left AND, OR;
 precedence left NOT;
@@ -154,7 +159,7 @@ start with program;
 
 
 /* The start nonterminal */
-program ::= opt_statement_lst : e {: parseResult = e;  :}
+program ::= opt_statement_lst : e {: parser.parseResult = e;  :}
                 ;
 
 /* Represents a possibly-empty list of statements. */
@@ -164,7 +169,7 @@ opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
 
 /* Represents a non-empty list of statements terminated by semicolons. */
 statement_lst ::= statement:e statement_lst:slst {: RESULT = new StmtList(e, slst); :} 
-		| statement {: RESULT = new StmtList(e, null); :} 
+		| statement:e {: RESULT = new StmtList(e, null); :} 
 		| error
 		{: System.err.println( 
 			"Possible cause: forgotten semicolon" ); 
@@ -215,15 +220,12 @@ declaration_stmt ::=
   | fixed_func_decl:e {: RESULT = e; :}
   | rand_func_decl:e {: RESULT = e; :}
   | origin_func_decl : e {: RESULT = e; :}
-  | dep_stmt : e {: RESULT = e; :}
-  | num_stmt : e {: RESULT = e; :}
+//  | dep_stmt : e {: RESULT = e; :}
+  | number_stmt : e {: RESULT = e; :}
   | distinct_decl : e {: RESULT = e; :}
   | parameter_decl : e {: RESULT = e; :}
+  | distribution_decl :e {: RESULT = e; :}
 /*  | parfactor : e {: RESULT = e; :}  */
-  | error
-   {: System.err.println
-	( "Possible cause: forgotten semicolon or "
-	+ "a type/random/nonrandom/guaranteed modifier." ); RESULT = null; :}
   ;
 		   
 type_decl ::= TYPE ID:typename SEMI
@@ -235,22 +237,23 @@ type_decl ::= TYPE ID:typename SEMI
  * Represents a type that is built in or has already been declared.  
  * can also be an array  
  */
-type ::= declared_type:e {: RESULT = e; :}
+type ::= name_type:e {: RESULT = e; :}
   | array_type : at {: RESULT = at; :}
   | map_type:e {: RESULT = e; :}
   ;
   
-declared_type ::= ID:typename 
+name_type ::= ID:typename 
     {: RESULT = new NameTy(typenameleft, sym(typename)); :}
   ;
        
 array_type ::= ID : typename  dims : d
     /* only allow nametype as array */
-    {: RESULT = new ArrayTy(typenameleft, sym(typename), d); :}
+    {: RESULT = new ArrayTy(typenameleft, 
+        new NameTy(typenameleft, sym(typename)), d.intValue()); :}
   ;
 
-dims ::= LBRACKET RBRACKET {: RESULT = 1; :}
-  | LBRACKET RBRACKET dims : d {: RESULT = d + 1; :}
+dims ::= LBRACKET RBRACKET {: RESULT = new Integer(1); :}
+  | LBRACKET RBRACKET dims : d {: RESULT = new Integer(d.intValue() + 1); :}
   ;
   
 map_type ::= MAP LT type:t1 COMMA type:t2 GT 
@@ -282,9 +285,9 @@ opt_parenthesized_type_var_lst ::= /* EMPTY */
   ;
 
 type_var_lst ::= type:ty ID:id COMMA type_var_lst:tl  
-    {: RESULT = new FieldList(tyleft, id, ty, tl); :}    
+    {: RESULT = new FieldList(tyleft, sym(id), ty, tl); :}    
   | type:ty ID:id
-    {: RESULT = new FieldList(tyleft, id, ty, null); :}
+    {: RESULT = new FieldList(tyleft, sym(id), ty, null); :}
   ;
 
 
@@ -311,10 +314,10 @@ rand_func_decl ::=
 /**
  * number statement 
  */ 
-number_statement ::=
-    NUMSIGN ID:id opt_parenthesized_origin_var_list:otl     
+number_stmt ::=
+    NUMSIGN name_type:ty opt_parenthesized_origin_var_list:otl     
 	dependency_statement_body:body SEMI
-    {: RESULT = new NumberDec(fnameleft, sym(fname), otl, body); :}
+    {: RESULT = new NumberDec(tyleft, ty, otl, body); :}
   ;
 
 opt_parenthesized_origin_var_list ::= LPAREN origin_var_list:e RPAREN
@@ -341,13 +344,14 @@ origin_func_decl ::=
  * declaration of distinct symbols, (guaranteed objects)
  */
 distinct_decl ::= 
-    DISTINCT declared_type:ty id_or_subid_list:e SEMI
+    DISTINCT name_type:ty id_or_subid_list:e SEMI
     {: RESULT = new DistinctSymbolDec(tyleft, ty, e); :}
   ;  
  
-id_or_subid_list ::= id_or_subid:e {: RESULT = e; :}
+id_or_subid_list ::= id_or_subid:e {: RESULT = new SymbolArrayList(eleft, e, null); :}
   | id_or_subid:e COMMA id_or_subid_list:n
     {: RESULT = new SymbolArrayList(eleft, e, n); :}
+  ;
   
 id_or_subid ::= ID:id
     {: RESULT = new SymbolArray(idleft, sym(id)); :}
@@ -358,11 +362,11 @@ id_or_subid ::= ID:id
 /**
  * declaration of a distribution
  */
-distribution_declaration ::= 
+distribution_decl ::= 
     DISTRIBUTION ID:id EQ class_name:name 
     LPAREN opt_expression_list:e RPAREN SEMI
     {: RESULT = new DistributionDec(idleft, sym(id), 
-      new ClassName(sym(name)), e); :}
+      new ClassName(nameleft, sym(name)), e); :}
   ;
   
 
@@ -386,9 +390,9 @@ dependency_statement_body ::= EQ expression:e
   ;
 	
 elseif_list ::= 
-    ELSEIF:eif expression:e1 THEN dependency_statement_body:e2 elseif_list:e3
-    {: RESULT = new IfExpr(eifleft, e1, e2, e3); :} 
-  | ELSE dependency_statement_body:e
+//    ELSEIF:eif expression:e1 THEN dependency_statement_body:e2 elseif_list:e3
+//    {: RESULT = new IfExpr(eifleft, e1, e2, e3); :} | 
+    ELSE dependency_statement_body:e
     {: RESULT = e; :}
   | {: RESULT = null; :}
   ;	
@@ -427,7 +431,7 @@ literal ::= STRING_LITERAL:e
   | TIME_LITERAL:e
     {: RESULT = new TimeExpr(eleft, e.intValue()); :}
   | BOOLEAN_LITERAL:e
-    {: RESULT = new TimeExpr(eleft, e.booleanValue()); :}
+    {: RESULT = new BooleanExpr(eleft, e.booleanValue()); :}
   | NULL:e
     {: RESULT = new NullExpr(eleft); :}
   ;
@@ -466,9 +470,9 @@ operation_expr ::= expression:e1 PLUS expression:e2
 
 unary_operation_expr ::= 
     MINUS expression:e
-    {: RESULT = new OpExpr(e1left, new IntExpr(eleft, 0), OpExpr.NOT, e); :}
+    {: RESULT = new OpExpr(eleft, new IntExpr(eleft, 0), OpExpr.NOT, e); :}
   | NOT expression:e
-    {: RESULT = new OpExpr(e1left, null, OpExpr.NOT, e); :}
+    {: RESULT = new OpExpr(eleft, null, OpExpr.NOT, e); :}
   ;
 
 
@@ -504,9 +508,9 @@ list_construct_expression ::= LBRACKET opt_expression_list:e RBRACKET
 
 semi_colon_separated_expression_list ::= 
     expression_list:e SEMI semi_colon_separated_expression_list:elst
-    {: RESULT = new ExprList(e, elst); :}
+    {: RESULT = new ExprList(new ListInitExpr(eleft, e), elst); :}
   | expression_list:e SEMI expression_list:e2
-    {: RESULT = new ExprList(e, new ExprList(e2, null)); :}
+    {: RESULT = new ExprList(new ListInitExpr(eleft, e), new ExprList(new ListInitExpr(e2left, e2), null)); :}
   ;
 
 map_construct_expression ::= LBRACE expression_pair_list:e RBRACE
@@ -515,9 +519,9 @@ map_construct_expression ::= LBRACE expression_pair_list:e RBRACE
   
 expression_pair_list ::= 
     expression:e1 RIGHTARROW expression:e2 COMMA expression_pair_list:e3
-    {: RESULT = ExprTupleList(e1, e2, e3); :}
+    {: RESULT = new ExprTupleList(e1, e2, e3); :}
   | expression:e1 RIGHTARROW expression:e2
-    {: RESULT = ExprTupleList(e1, e2, null); :}
+    {: RESULT = new ExprTupleList(e1, e2, null); :}
   ;
 
 number_expr ::= NUMSIGN set_expr:e
@@ -560,6 +564,7 @@ implicit_set ::= LBRACE type:ty ID:id COLON expression:e RBRACE
  *            - whether the function has been declared.).
  */ 
 evidence_stmt ::= OBS evidence:e SEMI {: RESULT = e; :}
+  ;
 
 evidence ::= 
 //    symbol_evidence:e {: RESULT = e; :} |//covered by value_evidence
