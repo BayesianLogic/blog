@@ -165,12 +165,10 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Qq][Uu][Ee][Rr][Yy]	{ return symbol(BLOGTokenConstants.QUERY);}
 [Oo][Bb][Ss]         { return symbol(BLOGTokenConstants.OBS);}
 [Pp][Aa][Rr][Aa][Mm] { return symbol(BLOGTokenConstants.PARAM);}
-[Ee][Xx][Ii][Ss][Tt][Ss] { /* existential quantifier */
-	return symbol(BLOGTokenConstants.EXISTS); }
-[Ff][Oo][Rr][Aa][Ll][Ll] { /* universal quantifier */
-	return symbol(BLOGTokenConstants.FORALL); }
+[Ee][Xx][Ii][Ss][Tt][Ss] { return symbol(BLOGTokenConstants.EXISTS); }
+[Ff][Oo][Rr][Aa][Ll][Ll] { return symbol(BLOGTokenConstants.FORALL); }
 [Mm][Aa][Pp] { return symbol(BLOGTokenConstants.MAP); }
-
+[Dd][Ii][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DISTRIBUTION); }
 	
 
 /* literals */
@@ -179,8 +177,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 "null" {return symbol(BLOGTokenConstants.NULL); }
 {DoubleLiteral} { return 
 		 symbol(BLOGTokenConstants.DOUBLE_LITERAL, new Double(yytext())); }
-{IntegerLiteral}  { /* Integers */
-     return symbol(BLOGTokenConstants.INT_LITERAL, new Integer(yytext())); }
+{IntegerLiteral}  { return symbol(BLOGTokenConstants.INT_LITERAL, new Integer(yytext())); }
 {TimeLiteral} { return symbol(BLOGTokenConstants.TIME_LITERAL, new Integer(yytext())); }
 
 /* operators */
@@ -222,16 +219,17 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 {Whitespace} { /* Do nothing */}
 
 {Identifier} {return symbol(BLOGTokenConstants.ID, yytext()); }
+}
 
 <STR_LIT>\" { /* closing double-quote not matched by \" rule below */
-       BLOGSymbol s =   symbol(BLOGTokenConstants.STRING_LITERAL, 
+       Symbol s =   symbol(BLOGTokenConstants.STRING_LITERAL, 
 			       string_buf.toString());
        string_buf = new StringBuffer(); /* reinitialize the buffer */
        yybegin(YYINITIAL);
        return s;}
 
 <CHAR_LIT>\' { /* closing single-quote not matched by \' rule below */
-       BLOGSymbol s;
+       Symbol s;
        if (string_buf.length() == 1) {
 	   s = symbol(BLOGTokenConstants.CHAR_LITERAL, 
                           new Character(string_buf.charAt(0)));
@@ -280,7 +278,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
        string_buf.append(yytext()); }
 
 
-<YYINITIAL>.                     { return symbol(BLOGTokenConstants.ERROR, 
+<YYINITIAL>.  { return symbol(BLOGTokenConstants.ERROR, 
                                           yytext()); }
 .             { /*
                     *  This should be the very last rule and will match
