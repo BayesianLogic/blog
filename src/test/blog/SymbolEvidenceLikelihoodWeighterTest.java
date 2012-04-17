@@ -1,10 +1,17 @@
-package blog;
+package test.blog;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+import blog.BLOGUtil;
+import blog.DefaultPartialWorld;
+import blog.Evidence;
+import blog.LikelihoodAndWeight;
+import blog.PartialWorld;
+import blog.SymbolEvidenceLikelihoodWeighter;
+import blog.ValueEvidenceStatement;
 import blog.bn.BasicVar;
 import blog.common.Util;
 import blog.distrib.Gaussian;

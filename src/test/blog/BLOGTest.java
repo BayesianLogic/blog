@@ -1,7 +1,11 @@
-package blog;
+package test.blog;
 
 import java.util.Properties;
 
+import blog.ArgSpecQuery;
+import blog.BLOGUtil;
+import blog.Evidence;
+import blog.InferenceEngine;
 import blog.common.Util;
 import blog.model.Model;
 
