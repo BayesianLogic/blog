@@ -1,5 +1,11 @@
 package blog;
 
+import test.blog.FormulaLikelihoodTest;
+import test.blog.LWImportanceSamplerTest;
+import test.blog.MiscTest;
+import test.blog.ParticleFilterTest;
+import test.blog.SymbolEvidenceLikelihoodWeighterTest;
+import test.blog.TupleSetSpecEvidenceLikelihoodWeighterTest;
 import junit.framework.*;
 
 /**
@@ -9,7 +15,7 @@ public class TestAll {
 	public static void main(String[] args) {
 		TestSuite test = new TestSuite();
 
-		test.addTestSuite(blog.BLOGTest.class);
+		test.addTestSuite(test.blog.BLOGTest.class);
 		test.addTestSuite(FormulaLikelihoodTest.class);
 		test.addTestSuite(LWImportanceSamplerTest.class);
 		test.addTestSuite(MiscTest.class);

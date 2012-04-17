@@ -1,7 +1,12 @@
-package blog;
+package test.blog;
 
 import java.util.*;
 
+import blog.BLOGUtil;
+import blog.DefaultPartialWorld;
+import blog.Evidence;
+import blog.PartialWorld;
+import blog.TupleSetSpecEvidenceLikelihoodWeighter;
 import blog.common.TupleIterator;
 import blog.common.Util;
 import blog.distrib.Gaussian;
