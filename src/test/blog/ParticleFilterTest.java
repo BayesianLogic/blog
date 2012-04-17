@@ -1,8 +1,13 @@
-package blog;
+package test.blog;
 
 import java.util.*;
 import java.io.*;
 
+import blog.ArgSpecQuery;
+import blog.BLOGUtil;
+import blog.Evidence;
+import blog.Main;
+import blog.ParticleFilter;
 import blog.common.Histogram;
 import blog.common.UnaryPredicate;
 import blog.common.Util;
