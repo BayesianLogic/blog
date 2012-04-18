@@ -33,19 +33,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
+import blog.PartialWorld;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.common.Util;
-import blog.model.ArgSpec;
-import blog.model.EqualityFormula;
-import blog.model.Formula;
-import blog.model.Model;
-import blog.model.Term;
-import blog.model.Type;
 
 /**
  * Represents a statement that a certain term has a certain value. Such a

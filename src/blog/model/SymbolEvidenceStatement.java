@@ -33,20 +33,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
+import blog.PartialWorld;
 import blog.bn.BasicVar;
 import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
-import blog.model.ArgSpec;
-import blog.model.CardinalitySpec;
-import blog.model.ImplicitSetSpec;
-import blog.model.Model;
-import blog.model.SkolemConstant;
-import blog.model.Term;
 
 
 /**

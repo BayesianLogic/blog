@@ -29,6 +29,7 @@ import blog.model.Evidence;
 import blog.model.ExplicitSetSpec;
 import blog.model.Model;
 import blog.model.Term;
+import blog.model.ValueEvidenceStatement;
 import static blog.common.Experiment.*;
 import static blog.common.RangeOperations.*;
 

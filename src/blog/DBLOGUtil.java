@@ -18,6 +18,8 @@ import blog.model.ArgSpec;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.NonRandomFunction;
+import blog.model.SymbolEvidenceStatement;
+import blog.model.ValueEvidenceStatement;
 
 
 /**
