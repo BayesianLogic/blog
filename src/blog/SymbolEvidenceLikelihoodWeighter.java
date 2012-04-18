@@ -11,8 +11,10 @@ import blog.model.Evidence;
 import blog.model.NonRandomFunction;
 import blog.model.RandomFunction;
 import blog.model.SkolemConstant;
+import blog.model.SymbolEvidenceStatement;
 import blog.model.Term;
 import blog.model.Type;
+import blog.model.ValueEvidenceStatement;
 
 
 /**

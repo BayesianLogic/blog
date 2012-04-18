@@ -40,13 +40,12 @@ import java.util.*;
 import blog.Clause;
 import blog.DependencyModel;
 import blog.FuncAppTerm;
-import blog.SymbolEvidenceStatement;
 
 /**
  * Represents a skolem constant -- a constant introduced by symbol evidence
  * statements.
  * 
- * @see blog.SymbolEvidenceStatement
+ * @see blog.model.SymbolEvidenceStatement
  */
 public class SkolemConstant extends RandomFunction {
 

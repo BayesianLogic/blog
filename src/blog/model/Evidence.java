@@ -40,9 +40,7 @@ import java.io.PrintStream;
 
 import blog.BLOGUtil;
 import blog.PartialWorld;
-import blog.SymbolEvidenceStatement;
 import blog.Timestep;
-import blog.ValueEvidenceStatement;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
@@ -66,8 +64,8 @@ import blog.common.Util;
  * new random variable whose value is the value of the term
  * height(mother(John)).
  * 
- * @see blog.SymbolEvidenceStatement
- * @see blog.ValueEvidenceStatement
+ * @see blog.model.SymbolEvidenceStatement
+ * @see blog.model.ValueEvidenceStatement
  */
 public class Evidence {
 
