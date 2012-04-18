@@ -7,6 +7,7 @@ import blog.bn.RandFuncAppVar;
 import blog.common.HashMultiMap;
 import blog.common.Util;
 import blog.model.ArgSpec;
+import blog.model.Evidence;
 import blog.model.NonRandomFunction;
 import blog.model.RandomFunction;
 import blog.model.SkolemConstant;

@@ -33,18 +33,19 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.BLOGUtil;
+import blog.PartialWorld;
+import blog.SymbolEvidenceStatement;
+import blog.Timestep;
+import blog.ValueEvidenceStatement;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
-import blog.model.ArgSpec;
-import blog.model.Model;
-import blog.model.SkolemConstant;
-import blog.model.Term;
 
 /**
  * Stores the information extracted from evidence file. The evidence is of 2

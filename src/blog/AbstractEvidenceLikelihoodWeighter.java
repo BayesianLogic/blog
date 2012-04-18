@@ -1,5 +1,7 @@
 package blog;
 
+import blog.model.Evidence;
+
 /**
  * An {@link EvidenceLikelihoodWeighter} that selects a part of the evidence for
  * itself, computes a likelihood sample for it, and sends the rest of the
