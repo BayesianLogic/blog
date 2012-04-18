@@ -17,6 +17,7 @@ import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.AtomicFormula;
 import blog.model.EqualityFormula;
+import blog.model.Evidence;
 import blog.model.Formula;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;

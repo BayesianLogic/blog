@@ -7,11 +7,11 @@ import java.util.Set;
 import blog.ArgSpecQuery;
 import blog.BLOGUtil;
 import blog.DBLOGUtil;
-import blog.Evidence;
 import blog.InferenceEngine;
 import blog.SamplingEngine;
 import blog.common.Util;
 import blog.model.ArgSpec;
+import blog.model.Evidence;
 import blog.model.Model;
 
 

@@ -40,6 +40,7 @@ import blog.*;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.common.Util;
+import blog.model.Evidence;
 import blog.model.Model;
 
 public class VarElimEngine extends InferenceEngine {

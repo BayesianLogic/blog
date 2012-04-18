@@ -38,12 +38,12 @@ import java.util.*;
 
 import blog.BLOGUtil;
 import blog.DefaultPartialWorld;
-import blog.Evidence;
 import blog.MHSampler;
 import blog.PartialWorld;
 import blog.PartialWorldDiff;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
+import blog.model.Evidence;
 import blog.model.Model;
 
 public class TemporaryTest {

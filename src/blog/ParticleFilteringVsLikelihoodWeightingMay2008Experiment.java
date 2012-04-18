@@ -8,6 +8,7 @@ import blog.common.NullaryFunction;
 import blog.common.UnaryFunction;
 import blog.common.UnaryPredicate;
 import blog.common.Util;
+import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.parse.BLOGParser;

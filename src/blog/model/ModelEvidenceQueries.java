@@ -8,7 +8,6 @@ import java.util.List;
 
 import blog.ArgSpecQuery;
 import blog.BLOGUtil;
-import blog.Evidence;
 import blog.common.Util;
 
 

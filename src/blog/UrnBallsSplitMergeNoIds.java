@@ -41,6 +41,7 @@ import blog.bn.BasicVar;
 import blog.bn.NumberVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
+import blog.model.Evidence;
 import blog.model.Function;
 import blog.model.Model;
 import blog.model.RandomFunction;
