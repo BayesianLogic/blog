@@ -41,6 +41,7 @@ import blog.bn.BayesNetVar;
 import blog.bn.NumberVar;
 import blog.common.Timer;
 import blog.common.Util;
+import blog.model.Evidence;
 import blog.model.Model;
 
 import java.lang.reflect.Constructor;

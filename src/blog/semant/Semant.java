@@ -8,5 +8,7 @@ package blog.semant;
  *
  */
 public class Semant {
+	
+	
 
 }

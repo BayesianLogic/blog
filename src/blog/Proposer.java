@@ -37,6 +37,8 @@ package blog;
 
 import java.util.*;
 
+import blog.model.Evidence;
+
 /**
  * Interface for Metropolis-Hastings proposal distributions. A Proposer object
  * must be able to create an initial state for the Markov chain, and propose a

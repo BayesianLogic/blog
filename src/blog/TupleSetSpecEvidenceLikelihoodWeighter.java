@@ -6,6 +6,7 @@ import blog.bn.BayesNetVar;
 import blog.common.HashMultiset;
 import blog.common.Multiset;
 import blog.common.Util;
+import blog.model.Evidence;
 import blog.model.TupleSetSpec;
 
 

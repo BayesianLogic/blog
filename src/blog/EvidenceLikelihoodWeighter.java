@@ -1,5 +1,7 @@
 package blog;
 
+import blog.model.Evidence;
+
 /**
  * An interface for classes that know how to do sampling in order to evaluate
  * evidence likelihood. Typically, they will operate on some part of the

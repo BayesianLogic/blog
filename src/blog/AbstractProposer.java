@@ -4,6 +4,7 @@ import java.util.*;
 
 import blog.bn.BasicVar;
 import blog.common.Util;
+import blog.model.Evidence;
 import blog.model.Model;
 
 

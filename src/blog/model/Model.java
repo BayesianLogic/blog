@@ -42,7 +42,6 @@ import java.io.StringReader;
 
 import blog.DependencyModel;
 import blog.EnumeratedObject;
-import blog.Evidence;
 import blog.Main;
 import blog.NonGuaranteedObject;
 import blog.ObjectIdentifier;

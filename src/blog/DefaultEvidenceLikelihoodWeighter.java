@@ -1,5 +1,7 @@
 package blog;
 
+import blog.model.Evidence;
+
 /**
  * A default {@link EvidenceLikelihoodWeighter} that calls
  * <code>evidence.setEvidenceEnsureSupportedAndReturnLikelihood(world)</code>
