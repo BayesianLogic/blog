@@ -7,7 +7,9 @@ import blog.common.HashMultiset;
 import blog.common.Multiset;
 import blog.common.Util;
 import blog.model.Evidence;
+import blog.model.SymbolEvidenceStatement;
 import blog.model.TupleSetSpec;
+import blog.model.ValueEvidenceStatement;
 
 
 /**

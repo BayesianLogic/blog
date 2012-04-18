@@ -23,6 +23,7 @@ import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.model.NegFormula;
 import blog.model.Term;
+import blog.model.ValueEvidenceStatement;
 import blog.parse.BLOGParser;
 
 
