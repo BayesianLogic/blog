@@ -45,9 +45,10 @@ public class Semant {
 	void transDec(TypeDec e) {
 		String name = e.name.toString();
 		if (model.getType(name) != null) {
-			
+			error(e.line, e.col, "Type " + name +  " already defined!");
+		} else {
+			model.addType(name);
 		}
-		model.addType(name);
 	}
 	
 	void transExpr(Expr e) {
