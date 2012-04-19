@@ -15,18 +15,8 @@ public class Parse {
 	protected blog.msg.ErrorMsg errorMsg;
 	protected Absyn absyn;
 
-	public Parse() {
-	}
-	
-	public void parseFile(String filename) {
-		errorMsg = new blog.msg.ErrorMsg(filename);
-		java.io.InputStream inp;
+	public Parse(java.io.Reader inp, blog.msg.ErrorMsg msg) {
 		BLOGParser parser;
-		try {
-			inp = new java.io.FileInputStream(filename);
-		} catch (java.io.FileNotFoundException e) {
-			throw new Error("File not found: " + filename);
-		}
 		try {
 			parser = new BLOGParser(new BLOGLexer(inp, errorMsg), errorMsg);
 			/* open input files, etc. here */
@@ -44,8 +34,26 @@ public class Parse {
 		}		
 	}
 	
-	public void parseString(String content) {
-		
+	public static Parse parseFile(String filename) {
+		blog.msg.ErrorMsg errorMsg = new blog.msg.ErrorMsg(filename);
+		java.io.Reader inp;
+		try {
+			inp = new java.io.FileReader(filename);
+		} catch (java.io.FileNotFoundException e) {
+			throw new Error("File not found: " + filename);
+		}
+		return new Parse(inp, errorMsg);
+	}
+	
+	public static Parse parseString(String content) {
+		blog.msg.ErrorMsg errorMsg = new blog.msg.ErrorMsg("STRING" + content.hashCode());
+		java.io.Reader inp;
+		try {
+			inp = new java.io.StringReader(content);
+		} catch (Throwable e) {
+			throw new Error("String is null!");
+		}
+		return new Parse(inp, errorMsg);		
 	}
 	
 	
