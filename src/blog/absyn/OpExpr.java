@@ -16,7 +16,7 @@ public class OpExpr extends Expr {
 			OR = 22, NOT = 23, SUB = 31;
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("OpExpr(");
 		pr.indent(d + 1);

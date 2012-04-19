@@ -11,7 +11,7 @@ public class DistinctSymbolDec extends Dec {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("DistinctSymbolDec(");
 		type.printTree(pr, d + 1);

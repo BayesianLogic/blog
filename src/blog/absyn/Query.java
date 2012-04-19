@@ -9,7 +9,7 @@ public class Query extends Stmt {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("Query(");
 		query.printTree(pr, d + 1);

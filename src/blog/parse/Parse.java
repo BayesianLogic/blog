@@ -4,6 +4,7 @@
 package blog.parse;
 
 import blog.absyn.Absyn;
+import blog.absyn.Printer;
 
 /**
  * @author leili
@@ -61,4 +62,8 @@ public class Parse {
 		return absyn;
 	}
 	
+	public static void main(String[] args) {
+		Parse parse = parseFile(args[0]);
+		parse.getResult().printTree(new Printer(System.out), 0);
+	}
 }

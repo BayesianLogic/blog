@@ -10,7 +10,7 @@ public class MapInitExpr extends Expr {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("MapInitExpr(");
 		values.printTree(pr, d + 1);

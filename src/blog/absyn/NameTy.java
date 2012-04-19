@@ -11,7 +11,7 @@ public class NameTy extends Ty {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.say("NameTy(");
 		pr.say(name.toString());

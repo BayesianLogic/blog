@@ -13,7 +13,7 @@ public class DistributionExpr extends Expr {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("DistributionExpr(");
 		pr.indent(d + 1);
