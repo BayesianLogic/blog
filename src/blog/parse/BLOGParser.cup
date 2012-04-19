@@ -437,7 +437,7 @@ expression ::= operation_expr:e  {: RESULT = e; :}
   | map_construct_expression:e {: RESULT = e; :}
   | quantified_formula:e {: RESULT = e; :}
   | set_expr:e {: RESULT = e; :}  
-  | number_expr:e {: RESULT = e; :}    
+  | number_expr:e {: RESULT = e; :}  
   ;
     
 literal ::= STRING_LITERAL:e 
@@ -548,6 +548,8 @@ number_expr ::= NUMSIGN set_expr:e
     {: RESULT = new NumberExpr(eleft, e); :}
   | NUMSIGN type:ty
     {: RESULT = new NumberExpr(tyleft, new ImplicitSetExpr(tyleft, ty, null, null)); :}
+  | NUMSIGN error 
+    {: error("expecting number expresssion here. # should be followed by a type or a set"); :}
   ;
 
 
@@ -561,6 +563,8 @@ explicit_set ::= LBRACE opt_expression_list:e RBRACE
   
 implicit_set ::= LBRACE type:ty ID:id COLON expression:e RBRACE
     {: RESULT = new ImplicitSetExpr(tyleft, ty, sym(id), e); :}
+  | LBRACE type:ty ID:id RBRACE
+    {: RESULT = new ImplicitSetExpr(tyleft, ty, sym(id), null); :}
   ;
   
   
