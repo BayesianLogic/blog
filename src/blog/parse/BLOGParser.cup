@@ -53,7 +53,7 @@ action code {:
 	return ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum();
     }
 
-/*
+/* //TO-DO
     void semantic_error( String message ){
          System.err.println("\n" + curr_filename( ) + ":" + curr_lineno( ) 
                             + " Semantic error: " + message);
