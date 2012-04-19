@@ -52,4 +52,6 @@ public interface ScannerWithLocInfo extends Scanner {
 	 * matched. Line numbers are 1-based.
 	 */
 	int getCurLineNum();
+	
+	int getCurColNum();
 }
