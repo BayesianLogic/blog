@@ -75,10 +75,17 @@ action code {:
 
 parser code {:
   Absyn parseResult; //variable to store the final parsing result
+  blog.msg.ErrorMsg errorMsg; //for error
   
   public Absyn getParseResult() {
     return parseResult;
   }
+  
+  public BLOGParser(Scanner s, blog.msg.ErrorMsg msg) {
+    this(s);
+    errorMsg = msg;
+  }
+  
 :}
 
 init with {:
