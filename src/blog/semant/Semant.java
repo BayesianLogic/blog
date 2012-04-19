@@ -7,6 +7,7 @@ import blog.absyn.Dec;
 import blog.absyn.Expr;
 import blog.absyn.TypeDec;
 import blog.model.*;
+import blog.msg.ErrorMsg;
 
 
 /**
@@ -15,10 +16,11 @@ import blog.model.*;
  */
 public class Semant {
 	
+	private ErrorMsg errorMsg;
 	private Model model;
 	private Evidence evidence;
 	
-	public Semant() {
+	public Semant(ErrorMsg msg) {
 		model = new Model();
 		evidence = new Evidence();
 	}
@@ -42,12 +44,18 @@ public class Semant {
 	
 	void transDec(TypeDec e) {
 		String name = e.name.toString();
-		if (model.getType(name) != null) 
+		if (model.getType(name) != null) {
+			
+		}
 		model.addType(name);
 	}
 	
 	void transExpr(Expr e) {
 		
+	}
+	
+	void error(int line, int col, String msg) {
+		errorMsg.error(line, col, msg);
 	}
 	
 	

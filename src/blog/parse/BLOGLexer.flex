@@ -57,6 +57,10 @@ import java_cup.runtime.*;
   public int getCurLineNum() {
     return (yyline + 1);
   }
+  
+  public int getCurColNum() {
+    return yycolumn + 1;
+  }
 
   private String filename;
 
@@ -68,12 +72,27 @@ import java_cup.runtime.*;
     return filename;
   }
   
+  private void err(int line, int col, String s) {
+    errorMsg.error(line, col, s);
+  }
+
+  private void err(String s) {
+    err(getCurLineNum(), getCurColNum(), s);
+  }  
+  
   private Symbol symbol(int type) {
     return new BLOGSymbol(type, yyline+1, yycolumn+1);
   }
 
   private Symbol symbol(int type, Object value) {
     return new BLOGSymbol(type, yyline+1, yycolumn+1, value);
+  }
+  
+  blog.msg.ErrorMsg errorMsg; //for error
+  
+  public BLOGLexer(java.io.InputStream s, blog.msg.ErrorMsg e) {
+    this(s);
+    errorMsg=e;
   }
 
 %}
@@ -175,10 +194,10 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 "true"	{ return symbol(BLOGTokenConstants.BOOLEAN_LITERAL, new Boolean(true)); }
 "false"   { return symbol(BLOGTokenConstants.BOOLEAN_LITERAL, new Boolean(false)); }
 "null" {return symbol(BLOGTokenConstants.NULL); }
-{DoubleLiteral} { return 
-		 symbol(BLOGTokenConstants.DOUBLE_LITERAL, new Double(yytext())); }
 {IntegerLiteral}  { return symbol(BLOGTokenConstants.INT_LITERAL, new Integer(yytext())); }
 {TimeLiteral} { return symbol(BLOGTokenConstants.TIME_LITERAL, new Integer(yytext())); }
+{DoubleLiteral} { return 
+		 symbol(BLOGTokenConstants.DOUBLE_LITERAL, new Double(yytext())); }
 
 /* operators */
 "+"     { return symbol(BLOGTokenConstants.PLUS); }
