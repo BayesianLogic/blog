@@ -9,7 +9,7 @@ public class TimeExpr extends Expr {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.say("TimeExpr(");
 		pr.say(value);

@@ -11,7 +11,7 @@ public class NumberEvidence extends Evidence {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("NumberEvidence(");
 		num.printTree(pr, d + 1);

@@ -15,7 +15,7 @@ public class OriginFieldList extends Absyn {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("OriginFieldList(");
 		pr.indent(d + 1);

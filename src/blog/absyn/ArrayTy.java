@@ -11,7 +11,7 @@ public class ArrayTy extends Ty {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.say("ArrayTy(");
 		typ.printTree(pr, d + 1);

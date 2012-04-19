@@ -10,7 +10,7 @@ public class ClassName extends Absyn {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.say("ClassName(");
 		pr.say(name.toString());

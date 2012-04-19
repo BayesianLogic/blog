@@ -15,7 +15,7 @@ public class ParameterDec extends Dec {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("ParameterDec(");
 		type.printTree(pr, d + 1);
