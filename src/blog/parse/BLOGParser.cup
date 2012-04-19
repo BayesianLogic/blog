@@ -405,6 +405,8 @@ dependency_statement_body ::= EQ expression:e
   | /* not recommended to add {}, just for compactibility of old syntax */
     LBRACE dependency_statement_body:e RBRACE
     {: RESULT = e; :}  
+  | error 
+    {: error("invalid body of random function or number statement"); :}
   ;
 	
 elseif_list ::= 
