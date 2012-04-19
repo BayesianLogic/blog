@@ -15,7 +15,7 @@ public class FieldList extends Absyn {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("FieldList(");
 		pr.say(name.toString());

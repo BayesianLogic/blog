@@ -11,7 +11,7 @@ public class SymbolArrayList extends Absyn {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		if (head != null) {
 			head.printTree(pr, d);
 			pr.sayln("");

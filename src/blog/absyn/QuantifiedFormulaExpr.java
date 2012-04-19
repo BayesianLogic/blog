@@ -19,7 +19,7 @@ public class QuantifiedFormulaExpr extends Expr {
 	public final static int FORALL = 51, EXISTS = 52;
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("QuantifiedFormulaExpr(");
 		pr.indent(d + 1);

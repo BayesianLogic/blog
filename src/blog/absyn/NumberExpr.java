@@ -9,7 +9,7 @@ public class NumberExpr extends Expr {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("NumberExpr(");
 		values.printTree(pr, d + 1);

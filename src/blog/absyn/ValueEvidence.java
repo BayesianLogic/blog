@@ -11,7 +11,7 @@ public class ValueEvidence extends Evidence {
 	}
 
 	@Override
-	void printTree(Printer pr, int d) {
+	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("ValueEvidence(");
 		if (left != null) {
