@@ -18,7 +18,7 @@ public class ImplicitSetExpr extends SetExpr {
 	@Override
 	public void printTree(Printer pr, int d) {
 		pr.indent(d);
-		pr.sayln("ExplicitSetExpr(");
+		pr.sayln("ImplicitSetExpr(");
 		typ.printTree(pr, d + 1);
 		if (var != null) {
 			pr.sayln(",");
