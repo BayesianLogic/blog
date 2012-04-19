@@ -15,9 +15,11 @@ public class Parse {
 	protected blog.msg.ErrorMsg errorMsg;
 	protected Absyn absyn;
 
-	public Parse(String filename) {
+	public Parse() {
+	}
+	
+	public void parseFile(String filename) {
 		errorMsg = new blog.msg.ErrorMsg(filename);
-
 		java.io.InputStream inp;
 		BLOGParser parser;
 		try {
@@ -39,9 +41,13 @@ public class Parse {
 				inp.close();
 			} catch (java.io.IOException e) {
 			}
-		}
-
+		}		
 	}
+	
+	public void parseString(String content) {
+		
+	}
+	
 	
 	public Absyn getResult() {
 		return absyn;
