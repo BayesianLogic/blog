@@ -90,8 +90,8 @@ import java_cup.runtime.*;
   
   blog.msg.ErrorMsg errorMsg; //for error
   
-  public BLOGLexer(java.io.InputStream s, blog.msg.ErrorMsg e) {
-    this(s);
+  public BLOGLexer(java.io.Reader r, blog.msg.ErrorMsg e) {
+    this(r);
     errorMsg=e;
   }
 
