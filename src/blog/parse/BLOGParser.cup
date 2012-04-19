@@ -49,9 +49,14 @@ action code {:
              ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum());
     }
    
-    int curr_lineno() {
+    int currLineno() {
 	return ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum();
     }
+
+
+    int currColno() {
+	return ((ScannerWithLocInfo)parser.getScanner()).getCurColNum();
+    }    
 
 /* //TO-DO
     void semantic_error( String message ){
@@ -60,9 +65,12 @@ action code {:
 	 parser.omerrs++;
     }
 */
+  void error(String msg) {
+    parser.errorMsg.error(currLineno(), currColno(), msg);
+  }
 
     void warning( String message ){
-         System.err.println("\n" + curr_filename( ) + ":" + curr_lineno( ) 
+         System.err.println("\n" + curr_filename( ) + ":" + currLineno( ) 
                             + " Warning: " + message);
     }
 
@@ -189,6 +197,9 @@ statement_lst ::= statement:e statement_lst:slst {: RESULT = new StmtList(e, sls
 statement ::= declaration_stmt : e {: RESULT = e; :}
             | evidence_stmt : e {: RESULT = e; :}
             | query_stmt : e {: RESULT = e; :}
+            | error SEMI 
+            {: error("unmatched statement");
+              RESULT = null; :}
             ;
 
 /* Represents a declaration, which can be:

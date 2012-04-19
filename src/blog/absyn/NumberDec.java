@@ -18,8 +18,7 @@ public class NumberDec extends Dec {
 	public void printTree(Printer pr, int d) {
 		pr.indent(d);
 		pr.sayln("NumberDec(");
-		pr.indent(d + 1);
-		pr.say(type.toString());
+		type.printTree(pr, d + 1);
 		if (params != null) {
 			pr.sayln(",");
 			params.printTree(pr, d + 1);
