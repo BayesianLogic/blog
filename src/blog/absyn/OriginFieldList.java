@@ -21,8 +21,12 @@ public class OriginFieldList extends Absyn {
 		pr.indent(d + 1);
 		pr.say(func.toString());
 		pr.sayln(",");
+		pr.indent(d + 1);
 		pr.say(var.toString());
-		next.printTree(pr, d + 1);
-		pr.say("");
+		if (next != null) {
+			pr.sayln(",");
+			next.printTree(pr, d + 1);
+		}
+		pr.say(")");
 	}
 }
