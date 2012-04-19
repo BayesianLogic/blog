@@ -16,7 +16,8 @@ public class Parse {
 	protected blog.msg.ErrorMsg errorMsg;
 	protected Absyn absyn;
 
-	public Parse(java.io.Reader inp, blog.msg.ErrorMsg msg) {
+	public Parse(java.io.Reader inp, blog.msg.ErrorMsg errorMsg) {
+		this.errorMsg = errorMsg;
 		BLOGParser parser;
 		try {
 			parser = new BLOGParser(new BLOGLexer(inp, errorMsg), errorMsg);
