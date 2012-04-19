@@ -2,9 +2,10 @@
  * 
  */
 package blog.parse;
-
 import blog.absyn.Absyn;
 import blog.absyn.Printer;
+
+import java.io.InputStream;
 
 /**
  * @author leili
@@ -15,6 +16,7 @@ public class Parse {
 
 	protected blog.msg.ErrorMsg errorMsg;
 	protected Absyn absyn;
+	protected InputStream inp;
 
 	public Parse(java.io.Reader inp, blog.msg.ErrorMsg errorMsg) {
 		this.errorMsg = errorMsg;
@@ -33,7 +35,7 @@ public class Parse {
 				inp.close();
 			} catch (java.io.IOException e) {
 			}
-		}		
+		}
 	}
 	
 	public static Parse parseFile(String filename) {

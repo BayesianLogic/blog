@@ -184,7 +184,7 @@ opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
 
 /* Represents a non-empty list of statements terminated by semicolons. */
 statement_lst ::= statement:e statement_lst:slst {: RESULT = new StmtList(e, slst); :} 
-		| statement:e {: RESULT = new StmtList(e, null); :} 
+		| statement:e {: RESULT = new StmtList(e, null); :}
 		| error
 		{: System.err.println( 
 			"Possible cause: forgotten semicolon" ); 
