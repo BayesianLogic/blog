@@ -18,8 +18,10 @@ public class FuncCallExpr extends Expr {
 		pr.sayln("FuncCallExpr(");
 		pr.indent(d + 1);
 		pr.say(func.toString());
-		pr.sayln(",");
-		args.printTree(pr, d + 1);
+		if (args != null) {
+			pr.sayln(",");
+			args.printTree(pr, d + 1);
+		}
 		pr.say(")");
 	}
 }
