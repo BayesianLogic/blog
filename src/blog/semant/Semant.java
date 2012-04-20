@@ -12,6 +12,7 @@ import blog.absyn.DistributionDec;
 import blog.absyn.Expr;
 import blog.absyn.FieldList;
 import blog.absyn.FixedFuncDec;
+import blog.absyn.FunctionDec;
 import blog.absyn.NameTy;
 import blog.absyn.RandomFuncDec;
 import blog.absyn.SymbolArrayList;
@@ -56,11 +57,9 @@ public class Semant {
 			transDec((DistinctSymbolDec) e);
 		} else if (e instanceof DistributionDec) {
 			// TO-DO
-		} else if (e instanceof FixedFuncDec) {
-			transDec((FixedFuncDec) e);
-		} else if (e instanceof RandomFuncDec) {
-			transDec((RandomFuncDec) e);
-		}
+		} else if (e instanceof FunctionDec) {
+			transDec((FunctionDec) e);
+		} 
 	}
 
 	/**
@@ -71,10 +70,13 @@ public class Semant {
 	void transDec(FixedFuncDec e) {
 		Type type = getType(e.result);
 		// TO-DO
-
 	}
 
-	void transDec(RandomFuncDec e) {
+	/**
+	 * translate Function declaration to internal representation 
+	 * @param e
+	 */
+	void transDec(FunctionDec e) {
 		Type resTy = getType(e.result);
 		List<Type> argTy = new ArrayList<Type>();
 		for (FieldList fl = e.params; fl != null; fl = fl.next) {
@@ -91,6 +93,12 @@ public class Semant {
 
 		if (model.getOverlappingFuncs(name, (Type[]) argTy.toArray()) != null) {
 			error(e.line, e.col, "Function " + name + " overlapped");
+		}
+		if (e instanceof FixedFuncDec) {
+			
+		} else if (e instanceof RandomFuncDec) {
+			//TO-DO
+//			transDec((RandomFuncDec) e);
 		}
 
 	}
