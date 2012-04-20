@@ -1,16 +1,16 @@
 package test.blog.parse;
-import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import blog.absyn.*;
-import blog.parse.Parse;
-import blog.symbol.Symbol;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
+
+import blog.absyn.*;
+import blog.symbol.Symbol;
+import blog.parse.Parse;
 
 /**
  * @author leili, amatsukawa
@@ -21,7 +21,6 @@ public class TestParse {
 
 	public static ByteArrayOutputStream out = new ByteArrayOutputStream();
 	public static Printer pr = new Printer(new PrintStream(out));
-	
 
 	/**
 	 * @throws java.lang.Exception
@@ -29,19 +28,6 @@ public class TestParse {
 	@After
 	public void tearDown() throws Exception {
 		TestParse.out.reset();
-	}
-
-	@Test
-	public void testTypeDeclaration() {
-		
-		String parsed = TestParse.parsedStringRepr("type Test;");
-		
-		Stmt[] stmts= {new TypeDec(0, Symbol.symbol("Test"))};
-		Absyn shouldBeTree = makeStmtList(stmts);
-		shouldBeTree.printTree(pr, 0);
-		String shouldBe = out.toString();
-		
-		assertEquals(shouldBe, parsed);
 	}
 	
 	public static String parsedStringRepr(String s) {
@@ -51,6 +37,13 @@ public class TestParse {
 		String parsed = out.toString();
 		out.reset();
 		return parsed;
+	}
+	
+	public static String shouldBeRepr(Stmt[] stmts){
+		Absyn shouldBeTree = makeStmtList(stmts);
+		shouldBeTree.printTree(pr, 0);
+		String shouldBe = out.toString();
+		return shouldBe;
 	}
 	
 	public static StmtList makeStmtList(Stmt[] stmts) {
