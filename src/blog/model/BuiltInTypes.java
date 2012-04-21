@@ -38,7 +38,6 @@ package blog.model;
 import java.util.*;
 import java.util.regex.*;
 
-import blog.FuncAppTerm;
 import blog.Timestep;
 
 /**

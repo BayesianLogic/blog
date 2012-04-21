@@ -44,6 +44,7 @@ import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Function;
 import blog.model.Model;
+import blog.model.POP;
 import blog.model.RandomFunction;
 import blog.model.Type;
 

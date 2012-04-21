@@ -39,6 +39,7 @@ import java.util.*;
 import blog.*;
 import blog.common.CartesianProduct;
 import blog.model.ArgSpec;
+import blog.model.FuncAppTerm;
 import blog.model.LogicalVar;
 import blog.model.Term;
 import ve.Potential;

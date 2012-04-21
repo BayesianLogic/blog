@@ -40,6 +40,7 @@ import java.util.*;
 import blog.bn.NumberVar;
 import blog.model.Model;
 import blog.model.OriginFunction;
+import blog.model.POP;
 
 /**
  * Represents a generic satisfier of some POP application. Origin functions can

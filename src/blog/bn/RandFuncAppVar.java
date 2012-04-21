@@ -38,10 +38,10 @@ package blog.bn;
 import java.util.*;
 
 import blog.EvalContext;
-import blog.FuncAppTerm;
 import blog.ObjectIdentifier;
 import blog.common.Util;
 import blog.model.DependencyModel;
+import blog.model.FuncAppTerm;
 import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.RandomFunction;

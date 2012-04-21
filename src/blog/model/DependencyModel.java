@@ -40,7 +40,6 @@ import java.io.PrintStream;
 
 import blog.EqualsCPD;
 import blog.EvalContext;
-import blog.POP;
 import blog.bn.BasicVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
@@ -55,7 +54,7 @@ import blog.distrib.CondProbDistrib;
  * for Boolean functions, null for all other functions, and Integer(0) for POPs.
  * 
  * @see blog.model.Function
- * @see blog.POP
+ * @see blog.model.POP
  */
 public class DependencyModel {
 
