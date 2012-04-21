@@ -5,6 +5,8 @@ import java.util.*;
 import blog.*;
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
+import blog.model.Clause;
+import blog.model.DependencyModel;
 
 public class Util {
 

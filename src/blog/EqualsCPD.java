@@ -37,6 +37,8 @@ package blog;
 
 import java.util.*;
 
+import blog.model.Clause;
+
 /**
  * EqualsCPD class is a convenience hack to represent the situation when the
  * value of the right-hand side of a {@link Clause} depends on a function

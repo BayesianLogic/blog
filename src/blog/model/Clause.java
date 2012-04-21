@@ -33,22 +33,17 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 import java.lang.reflect.*;
 
+import blog.EqualsCPD;
+import blog.EvalContext;
+import blog.FuncAppTerm;
 import blog.bn.BasicVar;
 import blog.bn.RandFuncAppVar;
 import blog.distrib.CondProbDistrib;
-import blog.model.ArgSpec;
-import blog.model.BuiltInTypes;
-import blog.model.CardinalitySpec;
-import blog.model.Formula;
-import blog.model.Model;
-import blog.model.RandomFunction;
-import blog.model.Term;
-import blog.model.Type;
 
 /**
  * Represents a clause in dependency statements and number statements.

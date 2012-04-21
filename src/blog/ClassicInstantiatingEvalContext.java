@@ -41,6 +41,7 @@ import blog.bn.BasicVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
+import blog.model.DependencyModel;
 
 /**
  * Implementation of the EvalContext interface that instantiates new basic

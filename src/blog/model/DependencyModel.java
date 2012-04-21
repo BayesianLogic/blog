@@ -33,20 +33,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.EqualsCPD;
+import blog.EvalContext;
+import blog.POP;
 import blog.bn.BasicVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
-import blog.model.LogicalVar;
-import blog.model.Model;
-import blog.model.Term;
-import blog.model.TrueFormula;
-import blog.model.Type;
 
 /**
  * Represents dependency statements for functions and number statements for

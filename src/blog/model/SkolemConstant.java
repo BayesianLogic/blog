@@ -37,8 +37,6 @@ package blog.model;
 
 import java.util.*;
 
-import blog.Clause;
-import blog.DependencyModel;
 import blog.FuncAppTerm;
 
 /**
