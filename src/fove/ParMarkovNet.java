@@ -40,6 +40,7 @@ import java.io.PrintStream;
 
 import blog.*;
 import blog.model.ArgSpec;
+import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.Model;
 import blog.model.RandomFunction;

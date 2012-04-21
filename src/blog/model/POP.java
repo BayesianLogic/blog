@@ -33,17 +33,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
-import java.util.*;
 import java.io.PrintStream;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import blog.bn.NumberVar;
-import blog.model.DependencyModel;
-import blog.model.LogicalVar;
-import blog.model.Model;
-import blog.model.OriginFunction;
-import blog.model.Type;
 
 /**
  * Represents a potential object pattern (POP), which includes the type of
@@ -106,10 +104,10 @@ public class POP {
 	 * @param vars
 	 *          List of String objects representing the variables
 	 */
-	public void setGenObjVars(List vars) {
+	public void setGenObjVars(List<String> vars) {
 		genObjVars = new LogicalVar[vars.size()];
 		for (int i = 0; i < genObjVars.length; ++i) {
-			genObjVars[i] = new LogicalVar((String) vars.get(i), argTypes[i]);
+			genObjVars[i] = new LogicalVar(vars.get(i), argTypes[i]);
 		}
 	}
 

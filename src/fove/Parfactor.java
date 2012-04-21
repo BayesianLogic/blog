@@ -49,6 +49,7 @@ import blog.model.ArgSpec;
 import blog.model.Clause;
 import blog.model.DependencyModel;
 import blog.model.Formula;
+import blog.model.FuncAppTerm;
 import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.NonRandomFunction;

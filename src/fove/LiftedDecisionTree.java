@@ -47,6 +47,7 @@ import blog.model.Clause;
 import blog.model.ConjFormula;
 import blog.model.DependencyModel;
 import blog.model.Formula;
+import blog.model.FuncAppTerm;
 import blog.model.ImplicitSetSpec;
 import blog.model.LogicalVar;
 import blog.model.RandomFunction;

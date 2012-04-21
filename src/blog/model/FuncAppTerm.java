@@ -33,22 +33,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
+import blog.EvalContext;
+import blog.Substitution;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;
-import blog.model.ArgSpec;
-import blog.model.Function;
-import blog.model.LogicalVar;
-import blog.model.Model;
-import blog.model.NonRandomFunction;
-import blog.model.OriginFunction;
-import blog.model.RandomFunction;
-import blog.model.Term;
-import blog.model.Type;
 
 /**
  * Represents a function invocation.

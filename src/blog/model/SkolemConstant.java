@@ -37,7 +37,6 @@ package blog.model;
 
 import java.util.*;
 
-import blog.FuncAppTerm;
 
 /**
  * Represents a skolem constant -- a constant introduced by symbol evidence

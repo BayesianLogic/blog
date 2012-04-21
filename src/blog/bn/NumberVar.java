@@ -38,12 +38,12 @@ package blog.bn;
 import java.util.*;
 
 import blog.EvalContext;
-import blog.POP;
 import blog.PartialWorld;
 import blog.model.BuiltInTypes;
 import blog.model.DependencyModel;
 import blog.model.Model;
 import blog.model.OriginFunction;
+import blog.model.POP;
 import blog.model.Type;
 import blog.model.DependencyModel.Distrib;
 

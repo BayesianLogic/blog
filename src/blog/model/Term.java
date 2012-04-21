@@ -38,7 +38,6 @@ package blog.model;
 import java.util.*;
 
 import blog.ConstantInterp;
-import blog.FuncAppTerm;
 import blog.Substitution;
 import blog.common.UnaryProcedure;
 
