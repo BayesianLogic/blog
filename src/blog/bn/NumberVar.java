@@ -37,15 +37,15 @@ package blog.bn;
 
 import java.util.*;
 
-import blog.DependencyModel;
 import blog.EvalContext;
 import blog.POP;
 import blog.PartialWorld;
-import blog.DependencyModel.Distrib;
 import blog.model.BuiltInTypes;
+import blog.model.DependencyModel;
 import blog.model.Model;
 import blog.model.OriginFunction;
 import blog.model.Type;
+import blog.model.DependencyModel.Distrib;
 
 /**
  * A number random variable. It consists of a potential object pattern (POP) and

@@ -56,6 +56,7 @@ import blog.common.MapWithPreimages;
 import blog.common.MultiMap;
 import blog.common.Timer;
 import blog.common.Util;
+import blog.model.DependencyModel;
 import blog.model.Model;
 import blog.model.RandomFunction;
 

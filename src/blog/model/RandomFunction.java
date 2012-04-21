@@ -38,7 +38,6 @@ package blog.model;
 import java.util.*;
 import java.io.PrintStream;
 
-import blog.DependencyModel;
 import blog.EvalContext;
 import blog.GenericObject;
 import blog.bn.RandFuncAppVar;
