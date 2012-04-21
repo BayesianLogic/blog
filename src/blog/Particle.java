@@ -40,6 +40,7 @@ import java.util.regex.*;
 
 import blog.common.Util;
 import blog.model.Evidence;
+import blog.model.Query;
 
 /**
  * A Particle for Particle Filtering. The particle is advanced as it receives

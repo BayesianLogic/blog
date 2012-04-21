@@ -35,14 +35,18 @@
 
 package blog.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import blog.PartialWorld;
 import blog.bn.BasicVar;
 import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;
-import blog.common.Util;
-
 
 /**
  * Represents a symbol evidence statement, which is of the form <I>{type_name
@@ -86,7 +90,7 @@ public class SymbolEvidenceStatement {
 	 * 
 	 * @return unmodifiable List of SkolemConstant objects
 	 */
-	public List getSkolemConstants() {
+	public List<SkolemConstant> getSkolemConstants() {
 
 		return Collections.unmodifiableList(skolemConstants);
 
@@ -146,8 +150,8 @@ public class SymbolEvidenceStatement {
 		observedVar = new DerivedVar(cardSpec);
 		observedValue = new Integer(skolemConstants.size());
 
-		for (Iterator iter = skolemConstants.iterator(); iter.hasNext();) {
-			errors += ((SkolemConstant) iter.next()).getDepModel().compile(callStack);
+		for (SkolemConstant c : skolemConstants) {
+			errors += ((SkolemConstant) c).getDepModel().compile(callStack);
 		}
 
 		return errors;
@@ -254,7 +258,7 @@ public class SymbolEvidenceStatement {
 	}
 
 	private ImplicitSetSpec setSpec;
-	private List skolemConstants = new ArrayList(); // of SkolemConstant
+	private List<SkolemConstant> skolemConstants = new ArrayList<SkolemConstant>(); // of																													// SkolemConstant
 
 	private boolean compiled = false;
 	private DerivedVar observedVar;

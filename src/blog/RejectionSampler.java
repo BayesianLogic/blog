@@ -43,6 +43,7 @@ import blog.common.Util;
 import blog.model.DependencyModel;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Query;
 
 /**
  * Generates a partial world by sampling basic random variables in an order that
