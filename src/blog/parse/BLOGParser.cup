@@ -609,6 +609,11 @@ number_evidence ::=
   ;
 */
 
+/* valid evidence format include (will be checked in semantic checking)
+ *   - general form: random expression = fixed expression  
+ *   - symbol evidence: implicit_set = explicit_set of ids
+ *   - number_evidence: # implicit_set = int constant
+ */
 value_evidence ::=
     expression:e1 EQ expression:e2 
     {: RESULT = new ValueEvidence(e1left, e1, e2); :}

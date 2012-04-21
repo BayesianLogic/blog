@@ -18,9 +18,11 @@ import blog.absyn.ExprList;
 import blog.absyn.FieldList;
 import blog.absyn.FixedFuncDec;
 import blog.absyn.FunctionDec;
+import blog.absyn.ImplicitSetExpr;
 import blog.absyn.IntExpr;
 import blog.absyn.NameTy;
 import blog.absyn.NumberDec;
+import blog.absyn.NumberExpr;
 import blog.absyn.OriginFieldList;
 import blog.absyn.RandomFuncDec;
 import blog.absyn.SymbolArrayList;
@@ -30,6 +32,7 @@ import blog.absyn.ValueEvidence;
 import blog.model.ArgSpec;
 import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
+import blog.model.CardinalitySpec;
 import blog.model.Clause;
 import blog.model.DependencyModel;
 import blog.model.Evidence;
@@ -42,6 +45,7 @@ import blog.model.RandomFunction;
 import blog.model.Term;
 import blog.model.TrueFormula;
 import blog.model.Type;
+import blog.model.ValueEvidenceStatement;
 import blog.msg.ErrorMsg;
 
 /**
@@ -313,6 +317,8 @@ public class Semant {
 			return transExpr((DoubleExpr) e);
 		} else if (e instanceof IntExpr) {
 			return transExpr((IntExpr) e);
+		} else if (e instanceof NumberExpr) {
+			return transExpr((NumberExpr) e);
 		}
 
 		return null;
@@ -325,6 +331,12 @@ public class Semant {
 				Collections.EMPTY_LIST);
 		t.setLocation(e.line);
 		return t;
+	}
+	
+	CardinalitySpec transExpr(NumberExpr e) {
+		// TODO
+		
+		return null;
 	}
 
 	List<ArgSpec> transExprList(ExprList e, boolean allowRandom) {
@@ -348,14 +360,41 @@ public class Semant {
 	 * @param e
 	 */
 	void transEvi(EvidenceStmt e) {
-		// TODO Auto-generated method stub
 		if (e instanceof ValueEvidence) {
 			transEvi((ValueEvidence) e);
 		}
+		// TODO if more evidence
 	}
 	
 	void transEvi(ValueEvidence e) {
+//		Object left = transExpr(e.left);
+//		Object right = transExpr(e.right);
 		
+		if (e.left instanceof NumberExpr) {
+			// number evidence
+			// # implicit_set = int constant
+			NumberExpr le = (NumberExpr) e.left;
+			CardinalitySpec cs = null;
+			
+			if (le.values instanceof ImplicitSetExpr) {
+				cs = transExpr(le);
+			} else {
+				error(le.line, le.col, "Number evidence expecting implicit set on the left side");
+			}
+			if (e.right instanceof IntExpr) {
+				// good
+				
+			} else {
+				error(e.right.line, e.right.col, "Number evidence expecting integer(natural number) on the right side");
+			}
+			
+			ArgSpec value = (ArgSpec) transExpr(e.right);
+			
+			
+			evidence.addValueEvidence(new ValueEvidenceStatement(cs, value));
+			
+		}
+		//TODO
 	}
 
 }
