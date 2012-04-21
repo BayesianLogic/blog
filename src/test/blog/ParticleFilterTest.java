@@ -3,13 +3,13 @@ package test.blog;
 import java.util.*;
 import java.io.*;
 
-import blog.ArgSpecQuery;
 import blog.BLOGUtil;
 import blog.Main;
 import blog.ParticleFilter;
 import blog.common.Histogram;
 import blog.common.UnaryPredicate;
 import blog.common.Util;
+import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;

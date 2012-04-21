@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import blog.model.ArgSpecQuery;
 import blog.model.Model;
 
 /**

@@ -33,13 +33,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.PartialWorld;
 import blog.bn.BayesNetVar;
-import blog.model.Model;
 import ve.Factor;
 
 /**

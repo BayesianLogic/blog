@@ -40,6 +40,7 @@ import java.util.*;
 
 import blog.bn.BasicVar;
 import blog.common.Histogram;
+import blog.model.ArgSpecQuery;
 import blog.model.Formula;
 import ve.Factor;
 import ve.Potential;
