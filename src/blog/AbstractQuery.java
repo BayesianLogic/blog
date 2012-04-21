@@ -35,6 +35,7 @@
 
 package blog;
 
+import blog.model.Query;
 import ve.Factor;
 
 /**

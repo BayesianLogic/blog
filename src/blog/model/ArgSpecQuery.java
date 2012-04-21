@@ -33,19 +33,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.AbstractQuery;
+import blog.Main;
+import blog.PartialWorld;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.UnaryFunction;
-import blog.model.ArgSpec;
-import blog.model.Model;
-import blog.model.Term;
-import blog.model.Type;
 
 import ve.Factor;
 import ve.Potential;

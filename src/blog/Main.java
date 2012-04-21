@@ -44,6 +44,7 @@ import blog.common.Util;
 import blog.common.cmdline.*;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Query;
 import blog.parse.BLOGParser;
 import java_cup.runtime.Symbol;
 

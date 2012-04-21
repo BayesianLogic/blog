@@ -41,6 +41,7 @@ import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Query;
 
 /**
  * A likelihood weighting sampler. Instantiates the context-specifically active

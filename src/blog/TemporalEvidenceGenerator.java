@@ -7,6 +7,7 @@ import blog.common.HashMultiset;
 import blog.common.Multiset;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
+import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.TupleSetSpec;

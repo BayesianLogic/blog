@@ -15,6 +15,7 @@ import blog.bn.VarWithDistrib;
 import blog.common.Histogram;
 import blog.common.Util;
 import blog.model.ArgSpec;
+import blog.model.ArgSpecQuery;
 import blog.model.AtomicFormula;
 import blog.model.DependencyModel;
 import blog.model.EqualityFormula;

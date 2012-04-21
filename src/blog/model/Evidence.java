@@ -35,8 +35,19 @@
 
 package blog.model;
 
-import java.util.*;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import blog.BLOGUtil;
 import blog.PartialWorld;
@@ -95,8 +106,7 @@ public class Evidence {
 
 	public void addSymbolEvidence(SymbolEvidenceStatement sevid) {
 		symbolEvidence.add(sevid);
-		for (Iterator iter = sevid.getSkolemConstants().iterator(); iter.hasNext();) {
-			SkolemConstant c = (SkolemConstant) iter.next();
+		for (SkolemConstant c : sevid.getSkolemConstants()) {
 			skolemConstants.add(c);
 			skolemConstantsByName.put(c.getName(), c);
 		}
@@ -142,7 +152,7 @@ public class Evidence {
 	 * Skolem constant has been introduced.
 	 */
 	public SkolemConstant getSkolemConstant(String name) {
-		return (SkolemConstant) skolemConstantsByName.get(name);
+		return skolemConstantsByName.get(name);
 	}
 
 	/**
@@ -417,10 +427,10 @@ public class Evidence {
 	private List valueEvidence = new ArrayList();
 
 	// map from String to SkolemConstant
-	private Map skolemConstantsByName = new HashMap();
+	private Map<String, SkolemConstant> skolemConstantsByName = new HashMap<String, SkolemConstant>();
 
 	// List of SkolemConstant objects in the order they were introduced
-	private List skolemConstants = new ArrayList();
+	private List<SkolemConstant> skolemConstants = new ArrayList<SkolemConstant>();
 
 	// map from BayesNetVar to Object
 	private Map observedValues = new LinkedHashMap();

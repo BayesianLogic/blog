@@ -4,11 +4,11 @@ import static blog.BLOGUtil.parseEvidence_NE;
 
 import java.util.*;
 
-import blog.ArgSpecQuery;
 import blog.BLOGUtil;
 import blog.InferenceEngine;
 import blog.SamplingEngine;
 import blog.common.Util;
+import blog.model.ArgSpecQuery;
 import blog.model.ModelEvidenceQueries;
 
 

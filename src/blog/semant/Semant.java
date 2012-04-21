@@ -7,16 +7,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import blog.FormulaQuery;
 import blog.absyn.Dec;
 import blog.absyn.DistinctSymbolDec;
 import blog.absyn.DistributionDec;
 import blog.absyn.DistributionExpr;
 import blog.absyn.DoubleExpr;
 import blog.absyn.EvidenceStmt;
+import blog.absyn.ExplicitSetExpr;
 import blog.absyn.Expr;
 import blog.absyn.ExprList;
 import blog.absyn.FieldList;
 import blog.absyn.FixedFuncDec;
+import blog.absyn.FuncCallExpr;
 import blog.absyn.FunctionDec;
 import blog.absyn.ImplicitSetExpr;
 import blog.absyn.IntExpr;
@@ -24,24 +27,32 @@ import blog.absyn.NameTy;
 import blog.absyn.NumberDec;
 import blog.absyn.NumberExpr;
 import blog.absyn.OriginFieldList;
+import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
 import blog.absyn.SymbolArrayList;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
 import blog.model.ArgSpec;
+import blog.model.ArgSpecQuery;
 import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
 import blog.model.Clause;
 import blog.model.DependencyModel;
 import blog.model.Evidence;
+import blog.model.ExplicitSetSpec;
+import blog.model.Formula;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
+import blog.model.ImplicitSetSpec;
 import blog.model.Model;
 import blog.model.OriginFunction;
 import blog.model.POP;
+import blog.model.Query;
 import blog.model.RandomFunction;
+import blog.model.SkolemConstant;
+import blog.model.SymbolEvidenceStatement;
 import blog.model.Term;
 import blog.model.TrueFormula;
 import blog.model.Type;
@@ -57,17 +68,19 @@ public class Semant {
 	private ErrorMsg errorMsg;
 	private Model model;
 	private Evidence evidence;
+	private List<Query> queries;
 
 	List<String> packages;
 
 	public Semant(ErrorMsg msg) {
-		this(new Model(), new Evidence(), msg);
+		this(new Model(), new Evidence(), new ArrayList<Query>(), msg);
 	}
 
-	public Semant(Model m, Evidence e, ErrorMsg msg) {
+	public Semant(Model m, Evidence e, List<Query> qs, ErrorMsg msg) {
 		model = m;
 		evidence = e;
 		errorMsg = msg;
+		queries = qs;
 	}
 
 	void error(int line, int col, String msg) {
@@ -92,7 +105,17 @@ public class Semant {
 		return null;
 	}
 
-	private Function getFunction(String name, List<Type> argTypeList) {
+	protected boolean checkSymbolDup(int line, int col, String name) {
+		if (getFunction(name, Collections.EMPTY_LIST) != null) {
+			return true;
+		} else {
+			error(line, col, "Function/Symbol " + name
+					+ " without argument has already been declared.");
+			return false;
+		}
+	}
+
+	protected Function getFunction(String name, List<Type> argTypeList) {
 		Function f = model.getFunction(new Function.Sig(name, argTypeList));
 		if ((f == null) && (evidence != null)) {
 			f = evidence.getSkolemConstant(name);
@@ -112,6 +135,32 @@ public class Semant {
 			error(type.line, type.col, "Type not allowed!");
 		}
 		return ty;
+	}
+
+	/**
+	 * check whether e is a list of symbol names (function call without argument)
+	 * 
+	 * @param e
+	 * @return a list of Symbol names
+	 */
+	List<String> getSymbolList(ExprList e) {
+		List<String> res = new ArrayList<String>();
+		for (; e != null; e = e.next) {
+			Expr h = e.head;
+			if (h instanceof FuncCallExpr) {
+				FuncCallExpr fc = (FuncCallExpr) h;
+				String fn = fc.func.toString();
+				if (fc.args == null)
+					checkSymbolDup(fc.line, fc.col, fn);
+				else {
+					error(fc.line, fc.col, "Invalid expression: expecting No argument");
+				}
+				res.add(fn);
+			} else {
+				error(h.line, h.col, "Invalid expression: expecting Symbol names");
+			}
+		}
+		return res;
 	}
 
 	Type getType(Ty type) {
@@ -162,13 +211,14 @@ public class Semant {
 			} else {
 				int sz = sa.head.size;
 				String name = sa.head.name.toString();
-				if (sz == 1) {
-					model.addEnumeratedObject(name, type);
-				} else {
-					for (int i = 1; i <= sz; i++) {
-						model.addEnumeratedObject(name + i, type);
+				if (checkSymbolDup(sa.line, sa.col, name))
+					if (sz == 1) {
+						model.addEnumeratedObject(name, type);
+					} else {
+						for (int i = 1; i <= sz; i++) {
+							model.addEnumeratedObject(name + i, type);
+						}
 					}
-				}
 			}
 		}
 	}
@@ -227,6 +277,74 @@ public class Semant {
 			error(e.line, e.col, "invalid body of dependency clause");
 		}
 		return new DependencyModel(cl, resTy, defVal);
+	}
+
+	/**
+	 * semantic checking for evidence statement and translate to internal
+	 * representation
+	 * 
+	 * @param e
+	 */
+	void transEvi(EvidenceStmt e) {
+		if (e instanceof ValueEvidence) {
+			transEvi((ValueEvidence) e);
+		}
+		// TODO if more evidence
+	}
+
+	/**
+	 * valid evidence format include (will be checked in semantic checking)
+	 * 
+	 * - general form: random expression = fixed expression
+	 * - symbol evidence: implicit_set = explicit_set of ids
+	 * - number_evidence: # implicit_set = int constant
+	 * 
+	 * @param e
+	 */
+	void transEvi(ValueEvidence e) {
+		Object left = transExpr(e.left);
+		Object right = null;
+		;
+
+		if (left instanceof CardinalitySpec) {
+			// number evidence
+			// # implicit_set = int constant
+			ArgSpec value = null;
+			if (e.right instanceof IntExpr) {
+				// ok
+				value = (ArgSpec) transExpr(e.right);
+			} else {
+				error(e.right.line, e.right.col,
+						"Number evidence expecting integer(natural number) on the right side");
+			}
+			evidence.addValueEvidence(new ValueEvidenceStatement(
+					(CardinalitySpec) left, value));
+		} else if (left instanceof ImplicitSetSpec) {
+			// symbol evidence
+			// implicit set = set of ids
+			List<String> value = null;
+			if (e.right instanceof ExplicitSetExpr) {
+				// ok
+				value = getSymbolList(((ExplicitSetExpr) e.right).values);
+			} else {
+				error(
+						e.right.line,
+						e.right.col,
+						"Invalid expression in right side of symbol evidence: explicit set of symbols expected");
+			}
+			SymbolEvidenceStatement sevid = new SymbolEvidenceStatement(
+					(ImplicitSetSpec) left, value);
+			evidence.addSymbolEvidence(sevid);
+			for (SkolemConstant obj : sevid.getSkolemConstants()) {
+				checkSymbolDup(e.right.line, e.right.col, obj.toString());
+				model.addFunction(obj);
+			}
+		} else {
+			// general value expression
+			ArgSpec value = (ArgSpec) transExpr(e.right);
+			evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
+					value));
+		}
 	}
 
 	/**
@@ -319,8 +437,17 @@ public class Semant {
 			return transExpr((IntExpr) e);
 		} else if (e instanceof NumberExpr) {
 			return transExpr((NumberExpr) e);
+		} else if (e instanceof ImplicitSetExpr) {
+			return transExpr((ImplicitSetExpr) e);
+		} else if (e instanceof ExplicitSetExpr) {
+			return transExpr((ExplicitSetExpr) e);
 		}
 
+		return null;
+	}
+
+	ExplicitSetSpec transExpr(ExplicitSetExpr e) {
+		// TODO
 		return null;
 	}
 
@@ -332,69 +459,92 @@ public class Semant {
 		t.setLocation(e.line);
 		return t;
 	}
-	
+
+	ImplicitSetSpec transExpr(ImplicitSetExpr e) {
+		Type typ = getNameType(e.typ);
+		String vn;
+		if (e.var != null) {
+			vn = e.var.toString();
+		} else {
+			vn = "_";
+		}
+		Formula cond = TrueFormula.TRUE;
+		if (e.cond != null) {
+			Object c = transExpr(e.cond);
+			if (c instanceof Formula) {
+				cond = (Formula) c;
+			} else {
+				error(
+						e.cond.line,
+						e.cond.pos,
+						"Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
+			}
+		}
+		return new ImplicitSetSpec(vn, typ, cond);
+	}
+
+	/**
+	 * number expression translated to CardinalitySpec
+	 * 
+	 * @param e
+	 * @return
+	 */
 	CardinalitySpec transExpr(NumberExpr e) {
-		// TODO
-		
+		Object r = transExpr(e.values);
+		if (r instanceof ImplicitSetSpec) {
+			return new CardinalitySpec((ImplicitSetSpec) r);
+		} else {
+			error(e.line, e.col, "Number expression expecting implicit set");
+		}
 		return null;
 	}
 
+	/**
+	 * check list of expressions
+	 * 
+	 * @param e
+	 *          list of expression
+	 * @param allowRandom
+	 *          whether allow terms with random functions in the expression
+	 * @return
+	 */
 	List<ArgSpec> transExprList(ExprList e, boolean allowRandom) {
 		List<ArgSpec> args = new ArrayList<ArgSpec>();
 		for (; e != null; e = e.next) {
 			args.add((ArgSpec) transExpr(e.head));
 		}
+		// TODO add checking for allowRandom
+
 		return args;
+	}
+
+	/**
+	 * @param e
+	 */
+	void transQuery(QueryStmt e) {
+		// TODO Auto-generated method stub
+		Object as = transExpr(e.query);
+		Query q;
+		if (as != null) {
+			if (as instanceof Formula) {
+				q = new FormulaQuery((Formula) as);
+			} else {
+				q = new ArgSpecQuery((ArgSpec) as);
+			}
+
+			queries.add(q);
+		}
+
 	}
 
 	void transStmt(blog.absyn.Stmt e) {
 		if (e instanceof Dec) {
 			transDec((Dec) e);
-		} if (e instanceof EvidenceStmt) {
+		} else if (e instanceof EvidenceStmt) {
 			transEvi((EvidenceStmt) e);
+		} else if (e instanceof QueryStmt) {
+			transQuery((QueryStmt) e);
 		}
-	}
-
-	/**
-	 * semantic checking for evidence statement and translate to internal representation
-	 * @param e
-	 */
-	void transEvi(EvidenceStmt e) {
-		if (e instanceof ValueEvidence) {
-			transEvi((ValueEvidence) e);
-		}
-		// TODO if more evidence
-	}
-	
-	void transEvi(ValueEvidence e) {
-//		Object left = transExpr(e.left);
-//		Object right = transExpr(e.right);
-		
-		if (e.left instanceof NumberExpr) {
-			// number evidence
-			// # implicit_set = int constant
-			NumberExpr le = (NumberExpr) e.left;
-			CardinalitySpec cs = null;
-			
-			if (le.values instanceof ImplicitSetExpr) {
-				cs = transExpr(le);
-			} else {
-				error(le.line, le.col, "Number evidence expecting implicit set on the left side");
-			}
-			if (e.right instanceof IntExpr) {
-				// good
-				
-			} else {
-				error(e.right.line, e.right.col, "Number evidence expecting integer(natural number) on the right side");
-			}
-			
-			ArgSpec value = (ArgSpec) transExpr(e.right);
-			
-			
-			evidence.addValueEvidence(new ValueEvidenceStatement(cs, value));
-			
-		}
-		//TODO
 	}
 
 }

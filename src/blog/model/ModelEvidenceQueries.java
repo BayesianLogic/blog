@@ -6,16 +6,14 @@ package blog.model;
 import java.util.LinkedList;
 import java.util.List;
 
-import blog.ArgSpecQuery;
 import blog.BLOGUtil;
 import blog.common.Util;
-
 
 public class ModelEvidenceQueries {
 	public ModelEvidenceQueries() {
 		model = new Model();
 		evidence = new Evidence();
-		queries = new LinkedList();
+		queries = new LinkedList<Query>();
 	}
 
 	public ModelEvidenceQueries(Model model, Evidence evidence, List queries) {
@@ -41,5 +39,5 @@ public class ModelEvidenceQueries {
 
 	public Model model;
 	public Evidence evidence;
-	public List queries;
+	public List<Query> queries;
 }
