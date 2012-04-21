@@ -12,6 +12,7 @@ import blog.absyn.DistinctSymbolDec;
 import blog.absyn.DistributionDec;
 import blog.absyn.DistributionExpr;
 import blog.absyn.DoubleExpr;
+import blog.absyn.EvidenceStmt;
 import blog.absyn.Expr;
 import blog.absyn.ExprList;
 import blog.absyn.FieldList;
@@ -25,6 +26,7 @@ import blog.absyn.RandomFuncDec;
 import blog.absyn.SymbolArrayList;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
+import blog.absyn.ValueEvidence;
 import blog.model.ArgSpec;
 import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
@@ -112,7 +114,7 @@ public class Semant {
 		if (type instanceof NameTy) {
 			return getNameType(type);
 		}
-		// TO-DO
+		// TODO
 		return null;
 	}
 
@@ -135,7 +137,7 @@ public class Semant {
 		} else if (e instanceof DistinctSymbolDec) {
 			transDec((DistinctSymbolDec) e);
 		} else if (e instanceof DistributionDec) {
-			// TO-DO
+			// TODO
 		} else if (e instanceof FunctionDec) {
 			transDec((FunctionDec) e);
 		} else if (e instanceof NumberDec) {
@@ -201,7 +203,7 @@ public class Semant {
 		}
 
 		if (e instanceof FixedFuncDec) {
-			// TO-DO
+			// TODO
 		} else if (e instanceof RandomFuncDec) {
 			DependencyModel dm;
 			dm = transDependency(e.body, resTy, resTy.getDefaultValue());
@@ -282,7 +284,7 @@ public class Semant {
 	}
 
 	Clause transExpr(DistributionExpr e) {
-		// TO-DO
+		// TODO
 		Class cls = getClassWithName(e.name.toString());
 		if (cls == null) {
 			error(e.line, e.col, "Class not found: " + e.name);
@@ -296,7 +298,7 @@ public class Semant {
 	}
 
 	ArgSpec transExpr(DoubleExpr e) {
-		// TO-DO
+		// TODO
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
 				String.valueOf(e.value), BuiltInTypes.REAL, e.value),
 				Collections.EMPTY_LIST);
@@ -317,7 +319,7 @@ public class Semant {
 	}
 
 	ArgSpec transExpr(IntExpr e) {
-		// TO-DO
+		// TODO
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
 				String.valueOf(e.value), BuiltInTypes.INTEGER, e.value),
 				Collections.EMPTY_LIST);
@@ -336,7 +338,24 @@ public class Semant {
 	void transStmt(blog.absyn.Stmt e) {
 		if (e instanceof Dec) {
 			transDec((Dec) e);
+		} if (e instanceof EvidenceStmt) {
+			transEvi((EvidenceStmt) e);
 		}
+	}
+
+	/**
+	 * semantic checking for evidence statement and translate to internal representation
+	 * @param e
+	 */
+	void transEvi(EvidenceStmt e) {
+		// TODO Auto-generated method stub
+		if (e instanceof ValueEvidence) {
+			transEvi((ValueEvidence) e);
+		}
+	}
+	
+	void transEvi(ValueEvidence e) {
+		
 	}
 
 }

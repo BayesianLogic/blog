@@ -618,5 +618,5 @@ query_stmt ::= QUERY  query:q SEMI
     {: RESULT = q; :}
   ;
   
-query ::= expression:e {: RESULT = new Query(eleft, e); :}
+query ::= expression:e {: RESULT = new QueryStmt(eleft, e); :}
   ;

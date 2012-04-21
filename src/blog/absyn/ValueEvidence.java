@@ -1,6 +1,6 @@
 package blog.absyn;
 
-public class ValueEvidence extends Evidence {
+public class ValueEvidence extends EvidenceStmt {
 	public Expr left;
 	public Expr right;
 
