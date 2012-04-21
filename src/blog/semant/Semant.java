@@ -5,10 +5,8 @@ package blog.semant;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
-import blog.FuncAppTerm;
 import blog.absyn.Dec;
 import blog.absyn.DistinctSymbolDec;
 import blog.absyn.DistributionDec;
@@ -21,6 +19,8 @@ import blog.absyn.FixedFuncDec;
 import blog.absyn.FunctionDec;
 import blog.absyn.IntExpr;
 import blog.absyn.NameTy;
+import blog.absyn.NumberDec;
+import blog.absyn.OriginFieldList;
 import blog.absyn.RandomFuncDec;
 import blog.absyn.SymbolArrayList;
 import blog.absyn.Ty;
@@ -31,8 +31,11 @@ import blog.model.BuiltInTypes;
 import blog.model.Clause;
 import blog.model.DependencyModel;
 import blog.model.Evidence;
+import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.Model;
+import blog.model.OriginFunction;
+import blog.model.POP;
 import blog.model.RandomFunction;
 import blog.model.Term;
 import blog.model.TrueFormula;
@@ -49,6 +52,8 @@ public class Semant {
 	private Model model;
 	private Evidence evidence;
 
+	List<String> packages;
+
 	public Semant(ErrorMsg msg) {
 		this(new Model(), new Evidence(), msg);
 	}
@@ -57,6 +62,58 @@ public class Semant {
 		model = m;
 		evidence = e;
 		errorMsg = msg;
+	}
+
+	void error(int line, int col, String msg) {
+		errorMsg.error(line, col, msg);
+	}
+
+	/**
+	 * search the pre-loaded packages for the classname of the distribution
+	 * function
+	 * 
+	 * @param classname
+	 * @return
+	 */
+	Class getClassWithName(String classname) {
+		for (String pkg : packages) {
+			try {
+				return Class.forName(pkg + classname);
+			} catch (ClassNotFoundException e) {
+				// continue loop
+			}
+		}
+		return null;
+	}
+
+	private Function getFunction(String name, List<Type> argTypeList) {
+		Function f = model.getFunction(new Function.Sig(name, argTypeList));
+		if ((f == null) && (evidence != null)) {
+			f = evidence.getSkolemConstant(name);
+		}
+		return f;
+	}
+
+	Type getNameType(Ty type) {
+		Type ty = null;
+		if (type instanceof NameTy) {
+			String name = ((NameTy) type).name.toString();
+			ty = model.getType(name);
+			if (ty == null) {
+				error(type.line, type.col, "Type " + name + " undefined!");
+			}
+		} else {
+			error(type.line, type.col, "Type not allowed!");
+		}
+		return ty;
+	}
+
+	Type getType(Ty type) {
+		if (type instanceof NameTy) {
+			return getNameType(type);
+		}
+		// TO-DO
+		return null;
 	}
 
 	/**
@@ -68,10 +125,8 @@ public class Semant {
 		packages.add("blog.distrib.");
 	}
 
-	void transStmt(blog.absyn.Stmt e) {
-		if (e instanceof Dec) {
-			transDec((Dec) e);
-		}
+	public void setPackages(List<String> pks) {
+		packages = pks;
 	}
 
 	void transDec(Dec e) {
@@ -83,85 +138,8 @@ public class Semant {
 			// TO-DO
 		} else if (e instanceof FunctionDec) {
 			transDec((FunctionDec) e);
-		}
-	}
-
-	/**
-	 * translate fixed function to model representation
-	 * 
-	 * @param e
-	 */
-	void transDec(FixedFuncDec e) {
-		Type type = getType(e.result);
-		// TO-DO
-	}
-
-	/**
-	 * translate Function declaration to internal representation
-	 * 
-	 * @param e
-	 */
-	void transDec(FunctionDec e) {
-		Type resTy = getType(e.result);
-		List<Type> argTy = new ArrayList<Type>();
-		List<String> argVars = new ArrayList<String>();
-		for (FieldList fl = e.params; fl != null; fl = fl.next) {
-			Type ty = getType(fl.typ);
-			argTy.add(ty);
-			if (fl.name != null) {
-				argVars.add(fl.name.toString());
-			}
-		}
-
-		String name = e.name.toString();
-		Function fun = getFunction(name, argTy);
-
-		if (fun != null) {
-			error(e.line, e.col, "Function " + name + " already defined");
-		}
-
-		if (model.getOverlappingFuncs(name, (Type[]) argTy.toArray()) != null) {
-			error(e.line, e.col, "Function " + name + " overlapped");
-		}
-
-		if (e instanceof FixedFuncDec) {
-			// TO-DO
-		} else if (e instanceof RandomFuncDec) {
-			// TO-DO
-			Object body = transExpr(e.body);
-			DependencyModel dm;
-			List<Clause> cl = new ArrayList<Clause>(1);
-			if (body instanceof Clause) {
-				cl.add((Clause) body);
-			} else {
-				error(e.line, e.col, "invalid body of random function");
-			}
-			dm = new DependencyModel(cl, resTy, resTy.getDefaultValue());
-			RandomFunction f = new RandomFunction(name, argTy, resTy, dm);
-			f.setArgVars(argVars);
-		}
-
-	}
-
-	public Function getFunction(String name, List<Type> argTypeList) {
-		Function f = model.getFunction(new Function.Sig(name, argTypeList));
-		if ((f == null) && (evidence != null)) {
-			f = evidence.getSkolemConstant(name);
-		}
-		return f;
-	}
-
-	/**
-	 * add the declared type to model
-	 * 
-	 * @param e
-	 */
-	void transDec(TypeDec e) {
-		String name = e.name.toString();
-		if (model.getType(name) != null) {
-			error(e.line, e.col, "Type " + name + " already defined!");
-		} else {
-			model.addType(name);
+		} else if (e instanceof NumberDec) {
+			transDec((NumberDec) e);
 		}
 	}
 
@@ -189,35 +167,118 @@ public class Semant {
 		}
 	}
 
-	Type getNameType(Ty type) {
-		Type ty = null;
-		if (type instanceof NameTy) {
-			String name = ((NameTy) type).name.toString();
-			ty = model.getType(name);
-			if (ty == null) {
-				error(type.line, type.col, "Type " + name + " undefined!");
+	/**
+	 * translate Function declaration to internal representation
+	 * 
+	 * @param e
+	 */
+	void transDec(FunctionDec e) {
+		Type resTy = getType(e.result);
+		List<Type> argTy = new ArrayList<Type>();
+		List<String> argVars = new ArrayList<String>();
+		for (FieldList fl = e.params; fl != null; fl = fl.next) {
+			Type ty = getType(fl.typ);
+			argTy.add(ty);
+			if (fl.var != null) {
+				String vn = fl.var.toString();
+				if (argVars.contains(vn)) {
+					error(fl.line, fl.pos, "Variable " + vn + " used multiple times");
+				} else {
+					argVars.add(vn);
+				}
 			}
+		}
+
+		String name = e.name.toString();
+		Function fun = getFunction(name, argTy);
+
+		if (fun != null) {
+			error(e.line, e.col, "Function " + name + " already defined");
+		}
+
+		if (model.getOverlappingFuncs(name, (Type[]) argTy.toArray()) != null) {
+			error(e.line, e.col, "Function " + name + " overlapped");
+		}
+
+		if (e instanceof FixedFuncDec) {
+			// TO-DO
+		} else if (e instanceof RandomFuncDec) {
+			DependencyModel dm;
+			dm = transDependency(e.body, resTy, resTy.getDefaultValue());
+			RandomFunction f = new RandomFunction(name, argTy, resTy, dm);
+			f.setArgVars(argVars);
+			fun = f;
+		}
+		model.addFunction(fun);
+	}
+
+	DependencyModel transDependency(Expr e, Type resTy, Object defVal) {
+		Object body = transExpr(e);
+		List<Clause> cl = new ArrayList<Clause>(1);
+		if (body instanceof Clause) {
+			cl.add((Clause) body);
 		} else {
-			error(type.line, type.col, "Type not allowed!");
+			error(e.line, e.col, "invalid body of dependency clause");
 		}
-		return ty;
+		return new DependencyModel(cl, resTy, defVal);
 	}
 
-	Type getType(Ty type) {
-		// TO-DO
-		return null;
-	}
+	/**
+	 * translate number statement to model representation
+	 * 
+	 * @param e
+	 */
+	void transDec(NumberDec e) {
+		Type typ = getNameType(e.typ);
 
-	Object transExpr(Expr e) {
-		if (e instanceof DistributionExpr) {
-			return transExpr((DistributionExpr) e);
-		} else if (e instanceof DoubleExpr) {
-			return transExpr((DoubleExpr) e);
-		} else if (e instanceof IntExpr) {
-			return transExpr((IntExpr) e);
+		List<OriginFunction> fs = new ArrayList<OriginFunction>();
+		List<String> argVars = new ArrayList<String>();
+		for (OriginFieldList fl = e.params; fl != null; fl = fl.next) {
+			String name = fl.func.toString();
+			Function f = getFunction(name, Collections.singletonList(typ));
+			if (f == null) {
+				error(fl.line, fl.pos, "function undefined: " + name);
+			} else if (!(f instanceof OriginFunction)) {
+				error(fl.line, fl.pos, "Function " + name + " with argument type "
+						+ typ.getName() + " has not been declared as an origin function.");
+			} else if (fs.contains(f)) {
+				error(fl.line, fl.pos, "Origin function " + name
+						+ " used more than once");
+			} else {
+				fs.add((OriginFunction) f);
+			}
+			String vn = fl.var.toString();
+			if (argVars.contains(vn)) {
+				error(fl.line, fl.pos, "Variable " + vn + " used multiple times");
+			} else {
+				argVars.add(vn);
+			}
 		}
 
-		return null;
+		POP pop = new POP(typ, fs, transDependency(e.body,
+				BuiltInTypes.NATURAL_NUM, new Integer(0)));
+		if (typ.getPOPWithOriginFuncs(pop.getOriginFuncSet()) != null) {
+			error(e.line, e.col, "number statement #" + typ.getName()
+					+ " uses same origin functions as earlier number statement.");
+		} else {
+			typ.addPOP(pop);
+		}
+		pop.setGenObjVars(argVars);
+
+	}
+
+	/**
+	 * add the declared type to model
+	 * 
+	 * @param e
+	 */
+	void transDec(TypeDec e) {
+		String name = e.name.toString();
+		if (model.getType(name) != null) {
+			error(e.line, e.col, "Type " + name + " already defined!");
+		} else {
+			model.addType(name);
+		}
 	}
 
 	Clause transExpr(DistributionExpr e) {
@@ -243,6 +304,18 @@ public class Semant {
 		return t;
 	}
 
+	Object transExpr(Expr e) {
+		if (e instanceof DistributionExpr) {
+			return transExpr((DistributionExpr) e);
+		} else if (e instanceof DoubleExpr) {
+			return transExpr((DoubleExpr) e);
+		} else if (e instanceof IntExpr) {
+			return transExpr((IntExpr) e);
+		}
+
+		return null;
+	}
+
 	ArgSpec transExpr(IntExpr e) {
 		// TO-DO
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
@@ -260,25 +333,10 @@ public class Semant {
 		return args;
 	}
 
-	Class getClassWithName(String classname) {
-		for (String pkg : packages) {
-			try {
-				return Class.forName(pkg + classname);
-			} catch (ClassNotFoundException e) {
-				// continue loop
-			}
+	void transStmt(blog.absyn.Stmt e) {
+		if (e instanceof Dec) {
+			transDec((Dec) e);
 		}
-		return null;
-	}
-
-	public void setPackages(List<String> pks) {
-		packages = pks;
-	}
-
-	List<String> packages;
-
-	void error(int line, int col, String msg) {
-		errorMsg.error(line, col, msg);
 	}
 
 }

@@ -11,6 +11,7 @@ import blog.model.ConjFormula;
 import blog.model.DisjFormula;
 import blog.model.EqualityFormula;
 import blog.model.Formula;
+import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.NegFormula;
 import blog.model.NonRandomFunction;

@@ -40,7 +40,6 @@ import java.lang.reflect.*;
 
 import blog.EqualsCPD;
 import blog.EvalContext;
-import blog.FuncAppTerm;
 import blog.bn.BasicVar;
 import blog.bn.RandFuncAppVar;
 import blog.distrib.CondProbDistrib;

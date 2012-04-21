@@ -38,6 +38,7 @@ import java.util.*;
 
 import blog.model.ArgSpec;
 import blog.model.BuiltInFunctions;
+import blog.model.FuncAppTerm;
 import blog.model.LogicalVar;
 
 /**

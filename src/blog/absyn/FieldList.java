@@ -3,13 +3,13 @@ package blog.absyn;
 import blog.symbol.Symbol;
 
 public class FieldList extends Absyn {
-	public Symbol name;
+	public Symbol var;
 	public Ty typ;
 	public FieldList next;
 
 	public FieldList(int p, Symbol n, Ty t, FieldList x) {
 		pos = p;
-		name = n;
+		var = n;
 		typ = t;
 		next = x;
 	}
@@ -19,10 +19,10 @@ public class FieldList extends Absyn {
 		pr.indent(d);
 		pr.sayln("FieldList(");
 		typ.printTree(pr, d + 1);
-		if (name != null) {
+		if (var != null) {
 			pr.sayln(",");
 			pr.indent(d + 1);
-			pr.say(name.toString());
+			pr.say(var.toString());
 		}
 		if (next != null) {
 			pr.sayln(",");

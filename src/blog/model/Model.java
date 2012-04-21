@@ -44,7 +44,6 @@ import blog.EnumeratedObject;
 import blog.Main;
 import blog.NonGuaranteedObject;
 import blog.ObjectIdentifier;
-import blog.POP;
 import blog.Timestep;
 import blog.common.Util;
 import blog.model.Function.Sig;

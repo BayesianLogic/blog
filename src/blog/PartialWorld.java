@@ -47,6 +47,7 @@ import blog.common.IndexedMultiMap;
 import blog.common.IndexedSet;
 import blog.common.MapWithPreimages;
 import blog.common.MultiMap;
+import blog.model.POP;
 import blog.model.RandomFunction;
 
 

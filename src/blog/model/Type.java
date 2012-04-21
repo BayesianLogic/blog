@@ -35,13 +35,21 @@
 
 package blog.model;
 
-import java.util.*;
 import java.io.PrintStream;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 import blog.EnumeratedObject;
-import blog.FuncAppTerm;
-import blog.POP;
-import blog.common.Util;
 
 /**
  * Represents a type in a BLOG model. Stores a set of potential object patterns

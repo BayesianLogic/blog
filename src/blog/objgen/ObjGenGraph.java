@@ -39,9 +39,7 @@ import java.util.*;
 
 import blog.AbstractObjectIterator;
 import blog.EvalContext;
-import blog.FuncAppTerm;
 import blog.ObjectIterator;
-import blog.POP;
 import blog.common.AbstractDGraph;
 import blog.common.DGraph;
 import blog.common.Util;
@@ -51,11 +49,13 @@ import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
 import blog.model.EqualityFormula;
 import blog.model.Formula;
+import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.NegFormula;
 import blog.model.OriginFunction;
+import blog.model.POP;
 import blog.model.Term;
 import blog.model.Type;
 

@@ -41,6 +41,7 @@ import java.util.*;
 import blog.bn.NumberVar;
 import blog.model.Model;
 import blog.model.OriginFunction;
+import blog.model.POP;
 import blog.model.Type;
 
 /*

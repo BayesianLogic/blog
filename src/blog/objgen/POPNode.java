@@ -12,10 +12,10 @@ import blog.AbstractObjectIterator;
 import blog.EvalContext;
 import blog.ObjectIterator;
 import blog.ObjectSet;
-import blog.POP;
 import blog.bn.NumberVar;
 import blog.common.TupleIterator;
 import blog.common.Util;
+import blog.model.POP;
 
 
 /**
