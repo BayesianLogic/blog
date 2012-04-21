@@ -38,12 +38,12 @@ package blog.bn;
 import java.util.*;
 
 import blog.DefaultEvalContext;
-import blog.DependencyModel;
 import blog.EvalContext;
 import blog.InstantiatingEvalContext;
 import blog.ParentRecEvalContext;
 import blog.PartialWorld;
-import blog.DependencyModel.Distrib;
+import blog.model.DependencyModel;
+import blog.model.DependencyModel.Distrib;
 
 /**
  * Abstract class for variables that have a distribution specified by the BLOG

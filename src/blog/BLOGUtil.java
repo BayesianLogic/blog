@@ -16,6 +16,7 @@ import blog.common.Histogram;
 import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.AtomicFormula;
+import blog.model.DependencyModel;
 import blog.model.EqualityFormula;
 import blog.model.Evidence;
 import blog.model.Formula;

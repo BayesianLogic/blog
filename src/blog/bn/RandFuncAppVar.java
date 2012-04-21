@@ -37,17 +37,17 @@ package blog.bn;
 
 import java.util.*;
 
-import blog.DependencyModel;
 import blog.EvalContext;
 import blog.FuncAppTerm;
 import blog.ObjectIdentifier;
-import blog.DependencyModel.Distrib;
 import blog.common.Util;
+import blog.model.DependencyModel;
 import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.RandomFunction;
 import blog.model.Term;
 import blog.model.Type;
+import blog.model.DependencyModel.Distrib;
 
 /**
  * A random variable whose value is the value of a certain random function on a

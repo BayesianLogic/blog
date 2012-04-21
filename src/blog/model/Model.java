@@ -40,7 +40,6 @@ import java.util.regex.*;
 import java.io.PrintStream;
 import java.io.StringReader;
 
-import blog.DependencyModel;
 import blog.EnumeratedObject;
 import blog.Main;
 import blog.NonGuaranteedObject;

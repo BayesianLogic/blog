@@ -39,6 +39,7 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.bn.NumberVar;
+import blog.model.DependencyModel;
 import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.OriginFunction;

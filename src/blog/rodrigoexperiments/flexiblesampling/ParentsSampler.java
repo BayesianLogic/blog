@@ -5,10 +5,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import blog.DependencyModel;
 import blog.PartialWorld;
-import blog.DependencyModel.Distrib;
 import blog.bn.VarWithDistrib;
+import blog.model.DependencyModel;
+import blog.model.DependencyModel.Distrib;
 
 public class ParentsSampler extends AbstractSampler {
 

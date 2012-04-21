@@ -2,10 +2,10 @@ package blog.rodrigoexperiments.flexiblesampling;
 
 import java.util.*;
 
-import blog.DependencyModel;
 import blog.PartialWorld;
-import blog.DependencyModel.Distrib;
 import blog.bn.VarWithDistrib;
+import blog.model.DependencyModel;
+import blog.model.DependencyModel.Distrib;
 
 public abstract class AbstractSampler implements Sampler {
 
