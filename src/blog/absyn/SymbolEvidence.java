@@ -1,6 +1,6 @@
 package blog.absyn;
 
-public class SymbolEvidence extends Evidence {
+public class SymbolEvidence extends EvidenceStmt {
 	public ImplicitSetExpr left;
 	public ExplicitSetExpr right;
 
