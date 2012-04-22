@@ -1,21 +1,20 @@
 package test.blog;
 
-import java.util.*;
-import java.io.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Properties;
 
+import junit.framework.TestCase;
 import blog.BLOGUtil;
 import blog.Main;
 import blog.ParticleFilter;
 import blog.common.Histogram;
-import blog.common.UnaryPredicate;
 import blog.common.Util;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
-import blog.parse.BLOGParser;
-
-import junit.framework.TestCase;
 
 /**
  * Unit testing for the {@link ParticleFilter}. Because sampling can potentially
@@ -133,7 +132,8 @@ public class ParticleFilterTest extends TestCase {
 
 	private void assertProb(String evidenceAndQuery, String valueString,
 			double expected) throws Exception {
-		ModelEvidenceQueries meq = BLOGParser.parseString(model, evidenceAndQuery);
+		ModelEvidenceQueries meq = BLOGUtil.parseAndTranslateFromString(model,
+				evidenceAndQuery);
 		particleFilter.take(meq.evidence);
 		particleFilter.answer(meq.queries);
 		assertEquals(expected, BLOGUtil.getProbabilityByString(

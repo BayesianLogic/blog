@@ -2,10 +2,12 @@
  * 
  */
 package blog.parse;
-import blog.absyn.Absyn;
-import blog.absyn.Printer;
 
 import java.io.InputStream;
+
+import blog.absyn.Absyn;
+import blog.absyn.Printer;
+import blog.msg.ErrorMsg;
 
 /**
  * @author leili
@@ -14,11 +16,11 @@ import java.io.InputStream;
  */
 public class Parse {
 
-	protected blog.msg.ErrorMsg errorMsg;
+	protected ErrorMsg errorMsg;
 	protected Absyn absyn;
 	protected InputStream inp;
 
-	public Parse(java.io.Reader inp, blog.msg.ErrorMsg errorMsg) {
+	public Parse(java.io.Reader inp, ErrorMsg errorMsg) {
 		this.errorMsg = errorMsg;
 		BLOGParser parser;
 		try {
@@ -37,7 +39,7 @@ public class Parse {
 			}
 		}
 	}
-	
+
 	public static Parse parseFile(String filename) {
 		blog.msg.ErrorMsg errorMsg = new blog.msg.ErrorMsg(filename);
 		java.io.Reader inp;
@@ -48,25 +50,29 @@ public class Parse {
 		}
 		return new Parse(inp, errorMsg);
 	}
-	
+
 	public static Parse parseString(String content) {
-		blog.msg.ErrorMsg errorMsg = new blog.msg.ErrorMsg("STRING" + content.hashCode());
+		blog.msg.ErrorMsg errorMsg = new blog.msg.ErrorMsg("STRING"
+				+ content.hashCode());
 		java.io.Reader inp;
 		try {
 			inp = new java.io.StringReader(content);
 		} catch (Throwable e) {
 			throw new Error("String is null!");
 		}
-		return new Parse(inp, errorMsg);		
+		return new Parse(inp, errorMsg);
 	}
-	
-	
-	public Absyn getResult() {
+
+	public ErrorMsg getErrorMsg() {
+		return errorMsg;
+	}
+
+	public Absyn getParseResult() {
 		return absyn;
 	}
-	
+
 	public static void main(String[] args) {
 		Parse parse = parseFile(args[0]);
-		parse.getResult().printTree(new Printer(System.out), 0);
+		parse.getParseResult().printTree(new Printer(System.out), 0);
 	}
 }

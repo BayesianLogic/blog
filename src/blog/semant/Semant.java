@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import blog.FormulaQuery;
+import blog.absyn.Absyn;
 import blog.absyn.Dec;
 import blog.absyn.DistinctSymbolDec;
 import blog.absyn.DistributionDec;
@@ -29,6 +30,7 @@ import blog.absyn.NumberExpr;
 import blog.absyn.OriginFieldList;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
+import blog.absyn.StmtList;
 import blog.absyn.SymbolArrayList;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
@@ -47,6 +49,7 @@ import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.ImplicitSetSpec;
 import blog.model.Model;
+import blog.model.ModelEvidenceQueries;
 import blog.model.OriginFunction;
 import blog.model.POP;
 import blog.model.Query;
@@ -76,11 +79,16 @@ public class Semant {
 		this(new Model(), new Evidence(), new ArrayList<Query>(), msg);
 	}
 
+	public Semant(ModelEvidenceQueries meq, ErrorMsg msg) {
+		this(meq.model, meq.evidence, meq.queries, msg);
+	}
+
 	public Semant(Model m, Evidence e, List<Query> qs, ErrorMsg msg) {
 		model = m;
 		evidence = e;
 		errorMsg = msg;
 		queries = qs;
+		initialize();
 	}
 
 	void error(int line, int col, String msg) {
@@ -545,6 +553,32 @@ public class Semant {
 		} else if (e instanceof QueryStmt) {
 			transQuery((QueryStmt) e);
 		}
+	}
+
+	void transStmtList(StmtList e) {
+		for (; e != null; e = e.next) {
+			transStmt(e.head);
+		}
+	}
+
+	/**
+	 * semantic checking and translate the BLOG program to model representation
+	 * 
+	 * @param e
+	 * @return
+	 *         whether any error happened during parsing and translating
+	 */
+	public boolean transProg(Absyn e) {
+		if (e instanceof StmtList) {
+			transStmtList((StmtList) e);
+		} else {
+			error(0, 0, "Invalid program");
+		}
+		return errorMsg.OK();
+	}
+
+	public ModelEvidenceQueries getModelEvidenceQueries() {
+		return new ModelEvidenceQueries(model, evidence, queries);
 	}
 
 }

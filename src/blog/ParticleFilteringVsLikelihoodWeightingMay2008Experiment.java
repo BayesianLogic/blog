@@ -1,20 +1,18 @@
 package blog;
 
-import java.util.*;
-import java.io.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
 import blog.common.Histogram;
-import blog.common.NullaryFunction;
 import blog.common.UnaryFunction;
-import blog.common.UnaryPredicate;
 import blog.common.Util;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
-import blog.parse.BLOGParser;
-
-import junit.framework.TestCase;
 
 /**
  * Compares the particle filter and likelihood weighting by running a temporal
@@ -159,14 +157,16 @@ public class ParticleFilteringVsLikelihoodWeightingMay2008Experiment {
 
 	static private void takeStep(ParticleFilter particleFilter, Model model,
 			String evidenceAndQuery) throws Exception {
-		ModelEvidenceQueries meq = BLOGParser.parseString(model, evidenceAndQuery);
+		ModelEvidenceQueries meq = BLOGUtil.parseAndTranslateFromString(model,
+				evidenceAndQuery);
 		particleFilter.take(meq.evidence);
 		particleFilter.answer(meq.queries);
 	}
 
 	static private double valueProbability(ParticleFilter particleFilter,
 			Model model, String queryString, String valueString) throws Exception {
-		ModelEvidenceQueries meq = BLOGParser.parseString(model, queryString);
+		ModelEvidenceQueries meq = BLOGUtil.parseAndTranslateFromString(model,
+				queryString);
 		particleFilter.answer(meq.queries);
 		return valueProbability(meq.queries, valueString);
 	}

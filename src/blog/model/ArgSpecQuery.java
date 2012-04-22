@@ -35,9 +35,19 @@
 
 package blog.model;
 
-import java.util.*;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 
+import ve.Factor;
+import ve.Potential;
 import blog.AbstractQuery;
 import blog.Main;
 import blog.PartialWorld;
@@ -45,9 +55,6 @@ import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.UnaryFunction;
-
-import ve.Factor;
-import ve.Potential;
 
 /**
  * A query on the value of a given {@link ArgSpec}.
@@ -77,14 +84,14 @@ public class ArgSpecQuery extends AbstractQuery {
 	}
 
 	public ArgSpec argSpec() {
-		return argSpec;
+		return getArgSpec();
 	}
 
 	public void printResults(PrintStream s) {
-		s.println("Distribution of values for " + argSpec);
+		s.println("Distribution of values for " + getArgSpec());
 		List entries = new ArrayList(histogram.entrySet());
 
-		if (argSpec.isNumeric())
+		if (getArgSpec().isNumeric())
 			Collections.sort(entries, NUMERIC_COMPARATOR);
 		else
 			Collections.sort(entries, WEIGHT_COMPARATOR);
@@ -139,8 +146,8 @@ public class ArgSpecQuery extends AbstractQuery {
 	}
 
 	public boolean checkTypesAndScope(Model model) {
-		if (argSpec instanceof Term) {
-			Term termInScope = ((Term) argSpec).getTermInScope(model,
+		if (getArgSpec() instanceof Term) {
+			Term termInScope = ((Term) getArgSpec()).getTermInScope(model,
 					Collections.EMPTY_MAP);
 			if (termInScope == null) {
 				return false;
@@ -148,7 +155,7 @@ public class ArgSpecQuery extends AbstractQuery {
 			argSpec = termInScope;
 			return true;
 		}
-		return argSpec.checkTypesAndScope(model, Collections.EMPTY_MAP);
+		return getArgSpec().checkTypesAndScope(model, Collections.EMPTY_MAP);
 	}
 
 	/**
@@ -156,9 +163,9 @@ public class ArgSpecQuery extends AbstractQuery {
 	 * to this query.
 	 */
 	public int compile() {
-		int errors = argSpec.compile(new LinkedHashSet());
+		int errors = getArgSpec().compile(new LinkedHashSet());
 		if (errors == 0) {
-			variable = argSpec.getVariable();
+			variable = getArgSpec().getVariable();
 		}
 		return errors;
 	}
@@ -166,7 +173,7 @@ public class ArgSpecQuery extends AbstractQuery {
 	public void updateStats(PartialWorld world, double weight) {
 		// System.out.println("ArqSpecQuery.updateStats: World is " +
 		// System.identityHashCode(world));
-		Object value = argSpec.evaluate(world);
+		Object value = getArgSpec().evaluate(world);
 		// System.out.println("ArqSpecQuery.updateStats: " + argSpec +
 		// " determined as " + value);
 		// System.out.println("ArgSpecQuery: increasing weight of " + value + " by "
@@ -209,7 +216,7 @@ public class ArgSpecQuery extends AbstractQuery {
 	}
 
 	public void printVarianceResults(PrintStream s) {
-		s.println("\tVariance of " + argSpec + " results is not computed.");
+		s.println("\tVariance of " + getArgSpec() + " results is not computed.");
 		// printVarStats(s);
 	}
 
@@ -305,7 +312,7 @@ public class ArgSpecQuery extends AbstractQuery {
 	}
 
 	public Object getLocation() {
-		return argSpec.getLocation();
+		return getArgSpec().getLocation();
 	}
 
 	/**
@@ -326,9 +333,16 @@ public class ArgSpecQuery extends AbstractQuery {
 
 	public String toString() {
 		if (variable == null) {
-			return argSpec.toString();
+			return getArgSpec().toString();
 		}
 		return variable.toString();
+	}
+
+	/**
+	 * @return the argSpec
+	 */
+	public ArgSpec getArgSpec() {
+		return argSpec;
 	}
 
 	private static Comparator WEIGHT_COMPARATOR = new Comparator() {
