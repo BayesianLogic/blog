@@ -438,7 +438,7 @@ public class Semant {
 		if (e.args != null) {
 			as = transExprList(e.args, true);
 		}
-		return new Clause(TrueFormula.TRUE, cls, as, null);
+		return new Clause(TrueFormula.TRUE, cls, as, Collections.EMPTY_LIST);
 	}
 
 	ArgSpec transExpr(DoubleExpr e) {
