@@ -1,9 +1,13 @@
-package blog;
+package test.blog;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+
+import blog.BLOGUtil;
+import blog.TemporalEvidenceGenerator;
+import blog.TemporalQueriesInstantiator;
 import blog.common.UnaryFunction;
 import blog.common.Util;
 import blog.model.ArgSpecQuery;

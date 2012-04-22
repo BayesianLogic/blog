@@ -33,11 +33,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.engine;
 
-import java.util.*;
-import java.util.regex.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
+import blog.BLOGUtil;
+import blog.DBLOGUtil;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Query;
@@ -158,7 +161,7 @@ public class Particle {
 	}
 
 	protected Set idTypes; // of Type
-	protected PartialWorld curWorld = null;
+	public PartialWorld curWorld = null;
 	protected double weight;
 	public int numTimeSlicesInMemory;
 	private Sampler sampler;

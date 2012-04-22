@@ -39,7 +39,6 @@ import java.util.*;
 
 import blog.CompiledSetSpec;
 import blog.EvalContext;
-import blog.ExistentialFormula;
 import blog.GenericObject;
 import blog.ObjectIterator;
 import blog.ObjectSet;
