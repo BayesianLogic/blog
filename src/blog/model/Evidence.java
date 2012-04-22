@@ -104,12 +104,15 @@ public class Evidence {
 		return result;
 	}
 
-	public void addSymbolEvidence(SymbolEvidenceStatement sevid) {
+	public boolean addSymbolEvidence(SymbolEvidenceStatement sevid) {
+		boolean mark = true;
 		symbolEvidence.add(sevid);
 		for (SkolemConstant c : sevid.getSkolemConstants()) {
 			skolemConstants.add(c);
-			skolemConstantsByName.put(c.getName(), c);
+			if (skolemConstantsByName.put(c.getName(), c) != null)
+				mark = false;
 		}
+		return mark;
 	}
 
 	/**

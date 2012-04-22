@@ -29,6 +29,7 @@ import blog.absyn.NumberDec;
 import blog.absyn.NumberExpr;
 import blog.absyn.OriginFieldList;
 import blog.absyn.OriginFuncDec;
+import blog.absyn.ParameterDec;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
 import blog.absyn.StmtList;
@@ -204,6 +205,8 @@ public class Semant {
 			transDec((FunctionDec) e);
 		} else if (e instanceof NumberDec) {
 			transDec((NumberDec) e);
+		} else if (e instanceof ParameterDec) {
+			// TODO
 		}
 	}
 
@@ -311,23 +314,22 @@ public class Semant {
 	void transEvi(EvidenceStmt e) {
 		if (e instanceof ValueEvidence) {
 			transEvi((ValueEvidence) e);
+		} else {
+			error(e.line, e.col, "Unsupported Evidence type: " + e);
 		}
-		// TODO if more evidence
 	}
 
 	/**
 	 * valid evidence format include (will be checked in semantic checking)
 	 * 
-	 * - general form: random expression = fixed expression
-	 * - symbol evidence: implicit_set = explicit_set of ids
-	 * - number_evidence: # implicit_set = int constant
+	 * - general form: random expression = fixed expression - symbol evidence:
+	 * implicit_set = explicit_set of ids - number_evidence: # implicit_set = int
+	 * constant
 	 * 
 	 * @param e
 	 */
 	void transEvi(ValueEvidence e) {
 		Object left = transExpr(e.left);
-		Object right = null;
-		;
 
 		if (left instanceof CardinalitySpec) {
 			// number evidence
@@ -357,18 +359,25 @@ public class Semant {
 			}
 			SymbolEvidenceStatement sevid = new SymbolEvidenceStatement(
 					(ImplicitSetSpec) left, value);
-			evidence.addSymbolEvidence(sevid);
-
-			// TODO doublecheck
+			if (!evidence.addSymbolEvidence(sevid)) {
+				error(e.right.line, e.right.col, "Duplicate names in symbol evidence.");
+			}
 			for (SkolemConstant obj : sevid.getSkolemConstants()) {
-				checkSymbolDup(e.right.line, e.right.col, obj.toString());
 				model.addFunction(obj);
 			}
-		} else {
+		} else if (left instanceof ArgSpec) {
 			// general value expression
-			ArgSpec value = (ArgSpec) transExpr(e.right);
-			evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
-					value));
+			Object value = transExpr(e.right);
+			if (value instanceof ArgSpec) {
+				evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
+						(ArgSpec) value));
+			} else {
+				error(e.right.line, e.right.col,
+						"Invalid expression on the right side of evidence.");
+			}
+		} else {
+			error(e.left.line, e.left.col,
+					"Invalid expression on the left side of evidence.");
 		}
 	}
 
@@ -444,7 +453,7 @@ public class Semant {
 	}
 
 	ArgSpec transExpr(DoubleExpr e) {
-		// TODO
+		// TODO is there a better way than using function?
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
 				String.valueOf(e.value), BuiltInTypes.REAL, e.value),
 				Collections.EMPTY_LIST);
@@ -581,8 +590,7 @@ public class Semant {
 	 * semantic checking and translate the BLOG program to model representation
 	 * 
 	 * @param e
-	 * @return
-	 *         whether any error happened during parsing and translating
+	 * @return whether any error happened during parsing and translating
 	 */
 	public boolean transProg(Absyn e) {
 		if (e instanceof StmtList) {
