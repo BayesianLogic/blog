@@ -1,4 +1,4 @@
-package blog.sampling.modular;
+package blog.sample.modular;
 
 import blog.InstantiatingEvalContext;
 

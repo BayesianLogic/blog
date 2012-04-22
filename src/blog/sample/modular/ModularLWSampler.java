@@ -2,12 +2,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package blog.sampling.modular;
+package blog.sample.modular;
 
 import java.util.Properties;
 
 import blog.model.Model;
-import blog.sampling.LWSampler;
+import blog.sample.LWSampler;
 
 /**
  * 

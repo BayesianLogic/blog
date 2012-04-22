@@ -52,7 +52,7 @@ import java.io.*;
 
 import blog.common.RangeOperations.RangeOperation;
 import blog.model.Model;
-import blog.sampling.Sampler;
+import blog.sample.Sampler;
 
 /**
  * Provides common utilities to FOMIE programs.
