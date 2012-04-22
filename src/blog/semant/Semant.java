@@ -115,7 +115,7 @@ public class Semant {
 	}
 
 	protected boolean checkSymbolDup(int line, int col, String name) {
-		if (getFunction(name, Collections.EMPTY_LIST) != null) {
+		if (getFunction(name, Collections.EMPTY_LIST) == null) {
 			return true;
 		} else {
 			error(line, col, "Function/Symbol " + name
@@ -358,6 +358,8 @@ public class Semant {
 			SymbolEvidenceStatement sevid = new SymbolEvidenceStatement(
 					(ImplicitSetSpec) left, value);
 			evidence.addSymbolEvidence(sevid);
+
+			// TODO doublecheck
 			for (SkolemConstant obj : sevid.getSkolemConstants()) {
 				checkSymbolDup(e.right.line, e.right.col, obj.toString());
 				model.addFunction(obj);
