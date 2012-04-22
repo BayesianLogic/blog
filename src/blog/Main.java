@@ -66,7 +66,7 @@ import blog.model.Model;
 import blog.model.Query;
 import blog.msg.ErrorMsg;
 import blog.parse.Parse;
-import blog.sampling.RejectionSampler;
+import blog.sample.RejectionSampler;
 import blog.semant.Semant;
 
 /**

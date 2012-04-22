@@ -1,4 +1,4 @@
-package blog.sampling;
+package blog.sample;
 
 import java.util.Properties;
 

@@ -33,7 +33,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog.sampling;
+package blog.sample;
 
 import java.util.ArrayList;
 import java.util.Iterator;

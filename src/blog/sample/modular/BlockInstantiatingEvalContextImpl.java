@@ -1,7 +1,7 @@
 /**
  * 
  */
-package blog.sampling.modular;
+package blog.sample.modular;
 
 import blog.ClassicInstantiatingEvalContext;
 import blog.world.PartialWorld;

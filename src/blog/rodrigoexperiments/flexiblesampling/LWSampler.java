@@ -6,7 +6,7 @@ import java.util.Set;
 import blog.BLOGUtil;
 import blog.common.Util;
 import blog.model.Model;
-import blog.sampling.Sampler;
+import blog.sample.Sampler;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 

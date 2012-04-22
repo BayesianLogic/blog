@@ -11,7 +11,7 @@ import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
-import blog.sampling.MHSampler;
+import blog.sample.MHSampler;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;
