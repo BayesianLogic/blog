@@ -42,7 +42,6 @@ import java.util.Set;
 
 import blog.ObjectIdentifier;
 import blog.ObjectSet;
-import blog.WorldListener;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;

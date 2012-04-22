@@ -61,6 +61,7 @@ import blog.common.cmdline.Parser;
 import blog.common.cmdline.PropertiesOption;
 import blog.common.cmdline.StringListOption;
 import blog.common.cmdline.StringOption;
+import blog.engine.InferenceEngine;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -291,7 +292,7 @@ public class Main {
 		specialOptions.put("burnIn", optBurnIn);
 
 		StringOption optSampler = new StringOption("s", "sampler",
-				"blog.LWSampler", "Use sampler class <s>");
+				"blog.sample.LWSampler", "Use sampler class <s>");
 		specialOptions.put("samplerClass", optSampler);
 
 		StringOption optProposer = new StringOption("p", "proposer",

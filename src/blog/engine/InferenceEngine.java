@@ -33,7 +33,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.engine;
 
 import java.util.*;
 import java.lang.reflect.*;

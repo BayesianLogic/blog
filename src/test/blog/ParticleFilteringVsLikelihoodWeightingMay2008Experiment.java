@@ -1,4 +1,4 @@
-package blog;
+package test.blog;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -6,9 +6,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import blog.BLOGUtil;
+import blog.Main;
 import blog.common.Histogram;
 import blog.common.UnaryFunction;
 import blog.common.Util;
+import blog.engine.InferenceEngine;
+import blog.engine.ParticleFilter;
+import blog.engine.SamplingEngine;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;

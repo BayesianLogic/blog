@@ -3,8 +3,8 @@ package test.blog;
 import java.util.Properties;
 
 import blog.BLOGUtil;
-import blog.InferenceEngine;
 import blog.common.Util;
+import blog.engine.InferenceEngine;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;

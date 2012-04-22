@@ -1,7 +1,7 @@
 package blog;
 
-import java.util.*;
-import java.util.regex.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 import blog.common.UnaryProcedure;
 import blog.common.Util;
@@ -9,7 +9,6 @@ import blog.model.ArgSpecQuery;
 import blog.model.Model;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
-
 
 /**
  * Generates and increasingly augments a partial world by sampling
@@ -73,11 +72,16 @@ public class TemporalPartialWorldGenerator {
 	}
 
 	protected Model model;
+
+	public Model getModel() {
+		return model;
+	}
+
 	/**
 	 * The current world.
 	 */
 	public PartialWorld currentPartialWorld;
-	protected int lastTimeStep = -1;
+	public int lastTimeStep = -1;
 	private Collection latestQueries;
 	private TemporalQueriesInstantiator queryInstantiator;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, Regents of the University of California
+ * Copyright (c) 2007, Massachusetts Institute of Technology
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,23 +33,32 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.world;
 
 import java.util.*;
 
+import blog.ObjectIdentifier;
+import blog.bn.BasicVar;
+import blog.bn.NumberVar;
+
 /**
- * Interface for objects that can be notified when a PartialWorldDiff object is
- * saved or reverted.
+ * Interface for objects that can be notified of changes to the values of random
+ * variables in a PartialWorld.
  */
-public interface WorldDiffListener {
+public interface WorldListener {
 	/**
-	 * Called when the <code>save</code> method is called on the PartialWorldDiff.
+	 * Called when the value of a basic random variable has changed. If the
+	 * variable was not previously instantiated, <code>oldValue</code> is null. If
+	 * it has just been uninstantiated, then <code>newValue</code> is null.
 	 */
-	void notifySaved();
+	void varChanged(BasicVar rv, Object oldValue, Object newValue);
 
 	/**
-	 * Called when the <code>revert</code> method is called on the
-	 * PartialWorldDiff.
+	 * Called when the assertion that a partial world makes about the given object
+	 * identifier has changed. If the identifier was not previously asserted to
+	 * satisfy any POP application, then <code>oldPOPApp</code> is null. If the
+	 * identifier has just been unasserted, then <code>newPOPApp</code> is null.
 	 */
-	void notifyReverted();
+	void identifierChanged(ObjectIdentifier id, NumberVar oldPOPApp,
+			NumberVar newPOPApp);
 }

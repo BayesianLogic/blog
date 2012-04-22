@@ -42,6 +42,7 @@ import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
+import blog.engine.InferenceEngine;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;

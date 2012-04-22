@@ -44,7 +44,6 @@ import blog.ObjectIdentifier;
 import blog.ObjectIterator;
 import blog.ObjectSet;
 import blog.ParentRecEvalContext;
-import blog.WorldListener;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;

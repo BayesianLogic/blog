@@ -1,8 +1,25 @@
-package blog;
+package test.blog;
 
-import java.util.*;
-import java.util.regex.*;
+import static blog.common.Experiment.YSeriesSpec;
+import static blog.common.Experiment.experiment;
+import static blog.common.RangeOperations.Averaging;
+import static blog.common.RangeOperations.Axis;
+import static blog.common.RangeOperations.PredicatedAveraging;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.regex.Matcher;
+
+import blog.BLOGUtil;
+import blog.DBLOGUtil;
+import blog.TemporalEvidenceGenerator;
+import blog.Timestep;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.CountedIterator;
@@ -10,21 +27,18 @@ import blog.common.DAEFunction;
 import blog.common.DependencyAwareEnvironment;
 import blog.common.Distance;
 import blog.common.EZIterator;
-import blog.common.Experiment;
-import blog.common.GeometricSeriesIterator;
-import blog.common.Gnuplot;
 import blog.common.HashMapWithGetWithDefault;
-import blog.common.IntegerArithmeticSeriesIterator;
-import blog.common.IntegerGeometricSeriesIterator;
 import blog.common.Multiset;
 import blog.common.Mutable;
-import blog.common.NullaryFunction;
-import blog.common.RangeOperations;
+import blog.common.RangeOperations.AbstractRange;
 import blog.common.Timer;
 import blog.common.UnaryFunction;
 import blog.common.UnaryPredicate;
 import blog.common.Util;
-import blog.common.Gnuplot.YSeries;
+import blog.engine.InferenceEngine;
+import blog.engine.Particle;
+import blog.engine.ParticleFilter;
+import blog.engine.SamplingEngine;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.ExplicitSetSpec;
@@ -32,8 +46,6 @@ import blog.model.Model;
 import blog.model.Term;
 import blog.model.ValueEvidenceStatement;
 import blog.world.PartialWorld;
-import static blog.common.Experiment.*;
-import static blog.common.RangeOperations.*;
 
 public class DBLOGExperiments {
 
@@ -824,7 +836,7 @@ public class DBLOGExperiments {
 			String aircraftPositionsString = DBLOGUtil.replaceTByTimeStep(
 					"{Position(a,t) for Aircraft a}", finalTimestepIndex);
 			BayesNetVar aircraftPositionsVar = BLOGUtil.parseVariable_NE(
-					aircraftPositionsString, generator.model);
+					aircraftPositionsString, generator.getModel());
 			BLOGUtil.ensureDetAndSupported(aircraftPositionsVar,
 					generator.currentPartialWorld);
 			Multiset aircraftPositions = (Multiset) aircraftPositionsVar
