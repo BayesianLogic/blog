@@ -22,6 +22,7 @@ import blog.absyn.FieldList;
 import blog.absyn.FixedFuncDec;
 import blog.absyn.FuncCallExpr;
 import blog.absyn.FunctionDec;
+import blog.absyn.IfExpr;
 import blog.absyn.ImplicitSetExpr;
 import blog.absyn.IntExpr;
 import blog.absyn.NameTy;
@@ -299,6 +300,8 @@ public class Semant {
 		List<Clause> cl = new ArrayList<Clause>(1);
 		if (body instanceof Clause) {
 			cl.add((Clause) body);
+		} else if (e instanceof IfExpr) {
+			// TODO
 		} else {
 			error(e.line, e.col, "invalid body of dependency clause");
 		}
