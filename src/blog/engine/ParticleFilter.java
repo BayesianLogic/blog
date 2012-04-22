@@ -33,12 +33,19 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.engine;
 
-import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Properties;
+import java.util.Set;
 
-import blog.common.UnaryFunction;
+import blog.AfterSamplingListener;
+import blog.DBLOGUtil;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -46,10 +53,9 @@ import blog.model.Query;
 import blog.sample.DMHSampler;
 import blog.sample.Sampler;
 
-
 /**
- * <<<<<<< .mine A Particle Filter. It works by keeping a set of
- * {@link Particles}, each representing a partial world, weighted by the
+ * A Particle Filter. It works by keeping a set of {@link Particles}, each
+ * representing a partial world, weighted by the
  * evidence. It uses the following properties: <code>numParticles</code> or
  * <code>numSamples</code>: number of particles (default is <code>1000</code>).
  * <code>useDecayedMCMC</code>: takes values <code>true</code> or
@@ -58,17 +64,7 @@ import blog.sample.Sampler;
  * "Following a moving target --- Monte Carlo inference for dynamic Bayesian models."
  * Journal of the Royal Statistical Society, Series B, 63:127--146, 2001.
  * <code>numMoves</code>: the number of moves used in specified by the property
- * given at construction time (default is <code>1</code>). ======= A Particle
- * Filter. It works by keeping a set of {@link Particle}s, each representing a
- * partial world, weighted by the evidence. The number of particles used is
- * specified by the property <code>numParticles</code> given at construction
- * time (default is <code>100</code>). If property <code>useDecayedMCMC</code>
- * is set to <code>true</code> (default is <code>false</code>), it uses the
- * rejuvenation method presented by W. R. Gilks and C. Berzuini. "Following a
- * moving target --- Monte Carlo inference for dynamic Bayesian models." Journal
- * of the Royal Statistical Society, Series B, 63:127--146, 2001. The number of
- * moves used is specified by the property <code>numMoves</code> given at
- * construction time (default is <code>1</code>). >>>>>>> .r136
+ * given at construction time (default is <code>1</code>).
  * 
  * The ParticleFilter is an unusual {@link InferenceEngine} in that it takes
  * evidence and queries additional to the ones taken by

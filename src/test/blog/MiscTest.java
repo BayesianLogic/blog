@@ -6,9 +6,9 @@ import java.util.Set;
 
 import blog.BLOGUtil;
 import blog.DBLOGUtil;
-import blog.InferenceEngine;
-import blog.SamplingEngine;
 import blog.common.Util;
+import blog.engine.InferenceEngine;
+import blog.engine.SamplingEngine;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;

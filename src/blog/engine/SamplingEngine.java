@@ -33,11 +33,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.engine;
 
 import java.util.*;
 import java.lang.reflect.*;
 
+import blog.BLOGUtil;
+import blog.Main;
 import blog.common.Timer;
 import blog.common.Util;
 import blog.model.Model;
