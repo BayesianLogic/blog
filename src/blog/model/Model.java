@@ -35,10 +35,21 @@
 
 package blog.model;
 
-import java.util.*;
-import java.util.regex.*;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import blog.EnumeratedObject;
 import blog.Main;
@@ -46,8 +57,6 @@ import blog.NonGuaranteedObject;
 import blog.ObjectIdentifier;
 import blog.Timestep;
 import blog.common.Util;
-import blog.model.Function.Sig;
-
 import fove.Parfactor;
 
 /**
@@ -85,10 +94,11 @@ public class Model {
 	 * Copy constructor.
 	 */
 	public Model(Model another) {
-		types = new ArrayList(another.types);
-		typesByName = new HashMap(another.typesByName);
-		functions = new ArrayList(another.functions);
-		functionsByName = new HashMap(another.functionsByName);
+		types = new ArrayList<Type>(another.types);
+		typesByName = new HashMap<String, Type>(another.typesByName);
+		functions = new ArrayList<Function>(another.functions);
+		functionsByName = new HashMap<String, List<Function>>(
+				another.functionsByName);
 		parfactors = new ArrayList<Parfactor>(another.parfactors);
 	}
 
@@ -176,8 +186,8 @@ public class Model {
 	 * If some of the named types are undefined, this method prints an error
 	 * message and returns null.
 	 */
-	public Set getListedTypes(String typeList) {
-		Set listedTypes = new HashSet();
+	public Set<Type> getListedTypes(String typeList) {
+		Set<Type> listedTypes = new HashSet<Type>();
 		if (typeList.equals("none")) {
 			return listedTypes;
 		}
@@ -727,24 +737,26 @@ public class Model {
 	/**
 	 * Stores user-defined Type objects in the order they were declared.
 	 */
-	protected List types = new ArrayList(); // of Type
+	protected List<Type> types = new ArrayList<Type>(); // of Type
 
 	/**
 	 * Maps type names to Type objects. For user-defined types.
 	 */
-	protected Map typesByName = new HashMap(); // from String to Type
+	protected Map<String, Type> typesByName = new HashMap<String, Type>(); // from
+																																					// String
+																																					// to
+																																					// Type
 
 	/**
 	 * Stores user-defined Function objects in the order they were declared.
 	 */
-	protected List functions = new ArrayList(); // of Function
+	protected List<Function> functions = new ArrayList<Function>(); // of Function
 
 	/**
 	 * Maps function names to lists of functions with that name (and different
 	 * argument types). For user-defined functions.
 	 */
-	protected Map functionsByName = new HashMap(); // from String to List of
-																									// Function
+	protected Map<String, List<Function>> functionsByName = new HashMap<String, List<Function>>();
 
 	/**
 	 * Parfactors, in the order they were defined.

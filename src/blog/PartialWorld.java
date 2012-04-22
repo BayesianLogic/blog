@@ -35,8 +35,10 @@
 
 package blog;
 
-import java.util.*;
 import java.io.PrintStream;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
@@ -49,7 +51,6 @@ import blog.common.MapWithPreimages;
 import blog.common.MultiMap;
 import blog.model.POP;
 import blog.model.RandomFunction;
-
 
 /**
  * A partial description of a possible world in a BLOG model. A PartialWorld

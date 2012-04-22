@@ -50,9 +50,9 @@ import java.util.regex.*;
 import java.io.*;
 
 
-import blog.Sampler;
 import blog.common.RangeOperations.RangeOperation;
 import blog.model.Model;
+import blog.sampling.Sampler;
 
 /**
  * Provides common utilities to FOMIE programs.

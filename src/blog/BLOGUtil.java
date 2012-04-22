@@ -39,10 +39,9 @@ public class BLOGUtil {
 	 * Ensures given variables are instantiated and supported in a given context,
 	 * sampling further variables if necessary.
 	 */
-	public static void ensureDetAndSupported(Collection vars,
-			InstantiatingEvalContext context) {
-		for (Iterator iter = vars.iterator(); iter.hasNext();) {
-			BayesNetVar var = (BayesNetVar) iter.next();
+	public static void ensureDetAndSupported(
+			Collection<? extends BayesNetVar> vars, InstantiatingEvalContext context) {
+		for (BayesNetVar var : vars) {
 			var.ensureDetAndSupported(context);
 		}
 	}
@@ -51,7 +50,8 @@ public class BLOGUtil {
 	 * Ensures given variables are instantiated and supported in a given world,
 	 * sampling further variables if necessary.
 	 */
-	public static void ensureDetAndSupported(Collection vars, PartialWorld world) {
+	public static void ensureDetAndSupported(
+			Collection<? extends BayesNetVar> vars, PartialWorld world) {
 		ensureDetAndSupported(vars, new ClassicInstantiatingEvalContext(world));
 	}
 
@@ -91,8 +91,7 @@ public class BLOGUtil {
 	 * will be a consequence of basic variables anyway).
 	 */
 	public static void setBasicVars(Evidence evidence, PartialWorld world) {
-		for (Iterator iter = evidence.getEvidenceVars().iterator(); iter.hasNext();) {
-			BayesNetVar var = (BayesNetVar) iter.next();
+		for (BayesNetVar var : evidence.getEvidenceVars()) {
 			if (var instanceof BasicVar)
 				world.setValue((BasicVar) var, evidence.getObservedValue(var));
 		}

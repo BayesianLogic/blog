@@ -42,6 +42,7 @@ import blog.common.Timer;
 import blog.common.Util;
 import blog.model.Model;
 import blog.model.Query;
+import blog.sampling.Sampler;
 
 
 /**
