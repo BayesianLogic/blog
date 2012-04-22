@@ -35,15 +35,16 @@
 
 package blog.engine;
 
-import java.util.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.model.Query;
-
 
 /**
  * Abstract class representing a BLOG inference engine. Its central method is
@@ -69,7 +70,7 @@ public abstract class InferenceEngine {
 	public static InferenceEngine constructEngine(Model model,
 			Properties properties) {
 		String className = properties.getProperty("engineClass",
-				"blog.SamplingEngine");
+				"blog.engine.SamplingEngine");
 		System.out.println("Constructing inference engine of class " + className);
 
 		try {
