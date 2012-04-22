@@ -1,12 +1,10 @@
 package blog;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
@@ -26,8 +24,8 @@ import blog.model.ModelEvidenceQueries;
 import blog.model.NegFormula;
 import blog.model.Term;
 import blog.model.ValueEvidenceStatement;
-import blog.parse.BLOGParser;
-
+import blog.parse.Parse;
+import blog.semant.Semant;
 
 /**
  * A class defining static helper methods on basic interfaces (therefore not
@@ -147,7 +145,7 @@ public class BLOGUtil {
 	 */
 	public static List parseQueries(String description, Model model)
 			throws Exception {
-		ModelEvidenceQueries meq = BLOGParser.parseString(model, description);
+		ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
 		return meq.queries;
 	}
 
@@ -157,12 +155,22 @@ public class BLOGUtil {
 	 */
 	public static List parseQueries_NE(String description, Model model) {
 		try {
-			ModelEvidenceQueries meq = BLOGParser.parseString(model, description);
+			ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
 			return meq.queries;
 		} catch (Exception e) {
 			Util.fatalError(e);
 		}
 		return null;
+	}
+
+	public static ModelEvidenceQueries parseAndTranslateFromString(Model m,
+			String description) {
+		ModelEvidenceQueries meq = new ModelEvidenceQueries();
+		meq.model = m;
+		Parse parse = Parse.parseString(description);
+		Semant sem = new Semant(meq, parse.getErrorMsg());
+		sem.transProg(parse.getParseResult());
+		return sem.getModelEvidenceQueries();
 	}
 
 	/**
@@ -174,7 +182,7 @@ public class BLOGUtil {
 	 */
 	public static ArgSpecQuery parseQuery(String description, Model model)
 			throws Exception {
-		ModelEvidenceQueries meq = BLOGParser.parseString(model, description);
+		ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
 		return (ArgSpecQuery) Util.getFirst(meq.queries);
 	}
 
@@ -184,7 +192,7 @@ public class BLOGUtil {
 	 */
 	public static ArgSpecQuery parseQuery_NE(String description, Model model) {
 		try {
-			ModelEvidenceQueries meq = BLOGParser.parseString(model, description);
+			ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
 			return (ArgSpecQuery) Util.getFirst(meq.queries);
 		} catch (Exception e) {
 			Util.fatalError(e);
@@ -201,7 +209,7 @@ public class BLOGUtil {
 	 */
 	public static Evidence parseEvidence(String description, Model model)
 			throws Exception {
-		ModelEvidenceQueries meq = BLOGParser.parseString(model, description);
+		ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
 		meq.evidence.compile();
 		return meq.evidence;
 	}
@@ -212,7 +220,7 @@ public class BLOGUtil {
 	 */
 	public static Evidence parseEvidence_NE(String description, Model model) {
 		try {
-			ModelEvidenceQueries meq = BLOGParser.parseString(model, description);
+			ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
 			meq.evidence.compile();
 			return meq.evidence;
 		} catch (Exception e) {

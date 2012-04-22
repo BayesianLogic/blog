@@ -32,7 +32,7 @@ public class TestParse {
 	
 	public static String parsedStringRepr(String s) {
 		Parse tester = Parse.parseString(s);
-		Absyn parsedTree = tester.getResult();
+		Absyn parsedTree = tester.getParseResult();
 		parsedTree.printTree(pr, 0);
 		String parsed = out.toString();
 		out.reset();
