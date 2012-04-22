@@ -22,6 +22,7 @@ public class ModelEvidenceQueries {
 		this.queries = queries;
 	}
 
+	@Deprecated
 	public ModelEvidenceQueries(String modelDescription, String evidenceString,
 			String queriesString) {
 		model = BLOGUtil.parseModel_NE(modelDescription);

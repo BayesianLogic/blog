@@ -35,18 +35,38 @@
 
 package blog;
 
-import java.io.*;
-import java.util.*;
-import java.lang.reflect.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.PrintStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import blog.common.Timer;
 import blog.common.Util;
-import blog.common.cmdline.*;
+import blog.common.cmdline.BooleanOption;
+import blog.common.cmdline.IntOption;
+import blog.common.cmdline.Option;
+import blog.common.cmdline.Parser;
+import blog.common.cmdline.PropertiesOption;
+import blog.common.cmdline.StringListOption;
+import blog.common.cmdline.StringOption;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
-import blog.parse.BLOGParser;
-import java_cup.runtime.Symbol;
+import blog.msg.ErrorMsg;
+import blog.parse.Parse;
+import blog.semant.Semant;
 
 /**
  * Main program for the BLOG (Bayesian Logic) inference engine.
@@ -146,7 +166,7 @@ public class Main {
 		parseOptions(args);
 		Util.setVerbose(verbose);
 		Util.initRandom(randomize);
-		BLOGParser.setPackagesToSearch(packages);
+		// BLOGParser.setPackagesToSearch(packages);
 
 		List readersAndOrigins = makeReaders(filenames);
 
@@ -251,7 +271,8 @@ public class Main {
 
 		blog.common.cmdline.Parser
 				.setProgramDesc("Bayesian Logic (BLOG) inference engine");
-		blog.common.cmdline.Parser.setUsageLine("Usage: runblog <file1> ... <fileN>");
+		blog.common.cmdline.Parser
+				.setUsageLine("Usage: runblog <file1> ... <fileN>");
 
 		BooleanOption optRandomize = new BooleanOption("r", "randomize", false,
 				"Use clock time as random seed");
@@ -498,8 +519,7 @@ public class Main {
 			Reader reader = (Reader) readerAndOrigin[0];
 			String origin = (String) readerAndOrigin[1];
 			try {
-				if (!BLOGParser.parseReader(model, evidence, queries, debug, reader,
-						origin, parseFromMessage)) {
+				if (!parseAndTranslate(model, evidence, queries, reader, origin)) {
 					System.err.println();
 					Util.fatalErrorWithoutStack("File interpretation halted "
 							+ "due to error(s) in \"" + origin + "\".");
@@ -560,6 +580,15 @@ public class Main {
 		}
 	}
 
+	private static boolean parseAndTranslate(Model m, Evidence e, List<Query> qs,
+			Reader reader, String origin) {
+		ErrorMsg msg = new ErrorMsg(origin);
+		Parse parse = new Parse(reader, msg);
+		Semant sem = new Semant(m, e, qs, msg);
+		sem.transProg(parse.getParseResult());
+		return msg.OK();
+	}
+
 	/**
 	 * A version of
 	 * {@link #setup(Model, Evidence, List, Collection, Collection, boolean, boolean)}
@@ -611,4 +640,5 @@ public class Main {
 	private static int outputInterval;
 	private static String histOut;
 	private static List setupExtenders = new ArrayList(); // of SetupExtender
+	private static Semant semantor;
 }

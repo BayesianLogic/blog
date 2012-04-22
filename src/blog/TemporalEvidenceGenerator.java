@@ -129,7 +129,7 @@ public class TemporalEvidenceGenerator extends TemporalPartialWorldGenerator {
 	 * them from elements.
 	 */
 	private String valueRepresentation(ArgSpecQuery linkQuery, Object value) {
-		if (linkQuery.argSpec instanceof TupleSetSpec) {
+		if (linkQuery.getArgSpec() instanceof TupleSetSpec) {
 			Collection valueAsCollection = (Collection) value;
 			Multiset elements = new HashMultiset();
 			for (Object element : valueAsCollection) {

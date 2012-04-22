@@ -57,11 +57,11 @@ public class FormulaQuery extends ArgSpecQuery {
 	}
 
 	public Formula formula() {
-		return (Formula) argSpec;
+		return (Formula) getArgSpec();
 	}
 
 	public void printResults(PrintStream s) {
-		s.println("Probability of " + argSpec + " is " + calculateResult());
+		s.println("Probability of " + getArgSpec() + " is " + calculateResult());
 	}
 
 	public void logResults(int numSamples) {
@@ -76,7 +76,7 @@ public class FormulaQuery extends ArgSpecQuery {
 					"Can't update states: posterior already specified.");
 		}
 
-		if (((Formula) argSpec).isTrue(world)) {
+		if (((Formula) getArgSpec()).isTrue(world)) {
 			trueSum += weight;
 		}
 		totalSum += weight;
@@ -123,8 +123,8 @@ public class FormulaQuery extends ArgSpecQuery {
 	// CAREFUL: zeroOut() must be called before using this method
 	public void printVarianceResults(PrintStream s) {
 		double mean = runningProbSum / trialNum;
-		s.println("Mean of " + argSpec + " query results is " + mean);
-		s.println("Std dev of " + argSpec + " query results is "
+		s.println("Mean of " + getArgSpec() + " query results is " + mean);
+		s.println("Std dev of " + getArgSpec() + " query results is "
 				+ Math.sqrt(runningProbSumSquares / trialNum - (mean * mean)));
 	}
 
