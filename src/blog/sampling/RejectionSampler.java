@@ -38,9 +38,6 @@ package blog.sampling;
 import java.util.*;
 
 import blog.DefaultEvalContext;
-import blog.PartialWorld;
-import blog.WorldInProgress;
-import blog.WorldInProgress.UninstVarIterator;
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
@@ -48,6 +45,9 @@ import blog.model.DependencyModel;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
+import blog.world.PartialWorld;
+import blog.world.WorldInProgress;
+import blog.world.WorldInProgress.UninstVarIterator;
 
 /**
  * Generates a partial world by sampling basic random variables in an order that

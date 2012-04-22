@@ -33,10 +33,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.world;
 
 import java.util.*;
 
+import blog.ObjectIdentifier;
+import blog.WorldDiffListener;
 import blog.bn.BasicVar;
 import blog.bn.DerivedVar;
 import blog.bn.NumberVar;

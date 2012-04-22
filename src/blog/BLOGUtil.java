@@ -26,6 +26,7 @@ import blog.model.Term;
 import blog.model.ValueEvidenceStatement;
 import blog.parse.Parse;
 import blog.semant.Semant;
+import blog.world.PartialWorld;
 
 /**
  * A class defining static helper methods on basic interfaces (therefore not

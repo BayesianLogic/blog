@@ -39,8 +39,8 @@ import java.util.*;
 
 import blog.InstantiatingEvalContext;
 import blog.ObjectIdentifier;
-import blog.PartialWorld;
 import blog.Timestep;
+import blog.world.PartialWorld;
 
 /**
  * A variable whose value is the POP application satisfied by a given object

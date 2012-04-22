@@ -1,6 +1,7 @@
 package blog;
 
 import blog.model.Evidence;
+import blog.world.PartialWorld;
 
 /**
  * An interface for classes that know how to do sampling in order to evaluate

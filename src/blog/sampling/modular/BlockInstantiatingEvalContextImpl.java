@@ -4,7 +4,7 @@
 package blog.sampling.modular;
 
 import blog.ClassicInstantiatingEvalContext;
-import blog.PartialWorld;
+import blog.world.PartialWorld;
 
 /**
  * @author leili

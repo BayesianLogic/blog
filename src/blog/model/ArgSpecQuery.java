@@ -49,11 +49,11 @@ import java.util.Map;
 import ve.Factor;
 import ve.Potential;
 import blog.Main;
-import blog.PartialWorld;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.UnaryFunction;
+import blog.world.PartialWorld;
 
 /**
  * A query on the value of a given {@link ArgSpec}.

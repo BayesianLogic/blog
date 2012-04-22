@@ -41,9 +41,9 @@ import blog.DefaultEvalContext;
 import blog.EvalContext;
 import blog.InstantiatingEvalContext;
 import blog.ParentRecEvalContext;
-import blog.PartialWorld;
 import blog.Timestep;
 import blog.model.ArgSpec;
+import blog.world.PartialWorld;
 
 /**
  * A random variable whose value is a deterministic function of some basic

@@ -33,10 +33,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.world;
 
 import java.util.*;
 
+import blog.NonGuaranteedObject;
 import blog.bn.NumberVar;
 import blog.bn.RandFuncAppVar;
 import blog.bn.VarWithDistrib;

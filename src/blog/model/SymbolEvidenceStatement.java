@@ -43,10 +43,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import blog.PartialWorld;
 import blog.bn.BasicVar;
 import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;
+import blog.world.PartialWorld;
 
 /**
  * Represents a symbol evidence statement, which is of the form <I>{type_name

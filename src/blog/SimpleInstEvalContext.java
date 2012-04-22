@@ -43,6 +43,7 @@ import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 import blog.model.Model;
 import blog.model.Type;
+import blog.world.PartialWorld;
 
 /**
  * Evaluation context that instantiates random variables as needed, using some

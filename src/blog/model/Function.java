@@ -39,9 +39,9 @@ import java.util.*;
 
 import blog.DefaultEvalContext;
 import blog.EvalContext;
-import blog.PartialWorld;
 import blog.common.TupleIterator;
 import blog.common.Util;
+import blog.world.PartialWorld;
 
 /**
  * Represents a BLOG function. A function is specified by its name, return type,

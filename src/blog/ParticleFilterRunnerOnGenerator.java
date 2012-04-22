@@ -8,6 +8,7 @@ import blog.common.Util;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.world.PartialWorld;
 
 
 /**

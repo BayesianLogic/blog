@@ -42,14 +42,14 @@ import java.util.Properties;
 import java.util.Set;
 
 import blog.BLOGUtil;
-import blog.DefaultPartialWorld;
-import blog.PartialWorld;
 import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
 import blog.model.Type;
+import blog.world.DefaultPartialWorld;
+import blog.world.PartialWorld;
 
 /**
  * A likelihood weighting sampler. Instantiates the context-specifically active

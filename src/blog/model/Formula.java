@@ -39,9 +39,9 @@ import java.util.*;
 
 import blog.EvalContext;
 import blog.GenericObject;
-import blog.PartialWorld;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
+import blog.world.PartialWorld;
 
 
 /**

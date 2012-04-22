@@ -37,14 +37,14 @@ package blog.rodrigoexperiments.gibbssamplingexperiment;
 import java.util.*;
 
 import blog.BLOGUtil;
-import blog.DefaultPartialWorld;
-import blog.PartialWorld;
-import blog.PartialWorldDiff;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.sampling.MHSampler;
+import blog.world.DefaultPartialWorld;
+import blog.world.PartialWorld;
+import blog.world.PartialWorldDiff;
 
 public class TemporaryTest {
 	public static void main(String[] args) {

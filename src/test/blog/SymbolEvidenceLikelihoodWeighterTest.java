@@ -6,9 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import blog.BLOGUtil;
-import blog.DefaultPartialWorld;
 import blog.LikelihoodAndWeight;
-import blog.PartialWorld;
 import blog.SymbolEvidenceLikelihoodWeighter;
 import blog.bn.BasicVar;
 import blog.common.Util;
@@ -17,6 +15,8 @@ import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Term;
 import blog.model.ValueEvidenceStatement;
+import blog.world.DefaultPartialWorld;
+import blog.world.PartialWorld;
 
 
 import junit.framework.TestCase;

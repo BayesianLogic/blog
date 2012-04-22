@@ -4,11 +4,11 @@ import java.util.*;
 
 import blog.DefaultEvalContext;
 import blog.InstantiatingEvalContext;
-import blog.PartialWorld;
 import blog.bn.BasicVar;
 import blog.bn.VarWithDistrib;
 import blog.common.HashSetDiff;
 import blog.rodrigoexperiments.flexiblesampling.Sampler.Sample;
+import blog.world.PartialWorld;
 
 public class EvalContext extends DefaultEvalContext implements
 		InstantiatingEvalContext {

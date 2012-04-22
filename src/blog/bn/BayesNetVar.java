@@ -39,8 +39,8 @@ import java.util.*;
 
 import blog.ClassicInstantiatingEvalContext;
 import blog.InstantiatingEvalContext;
-import blog.PartialWorld;
 import blog.Timestep;
+import blog.world.PartialWorld;
 
 /**
  * A random variable that serves as a node in a Bayes net (directed graphical

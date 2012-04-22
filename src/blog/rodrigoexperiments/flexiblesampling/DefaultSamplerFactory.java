@@ -3,9 +3,9 @@ package blog.rodrigoexperiments.flexiblesampling;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import blog.PartialWorld;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
+import blog.world.PartialWorld;
 
 
 /**
