@@ -33,15 +33,17 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.sampling;
 
 import java.util.List;
 import java.util.Properties;
 
+import blog.AfterSamplingListener;
+import blog.PartialWorld;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
-
+import blog.model.Query;
 
 /**
  * An object that stochastically generates a sequence of samples, which are
@@ -158,5 +160,5 @@ public abstract class Sampler {
 	 * <code>initialize</code>, but extending classes may have methods to increase
 	 * it) or null if <code>initialize</code> has not been called.
 	 */
-	protected List queries;
+	protected List<Query> queries;
 }

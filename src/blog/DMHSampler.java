@@ -40,6 +40,7 @@ import java.util.*;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.sampling.MHSampler;
 
 /**
  * Implements a Metropolis-Hastings sampler with the {@link DecayedProposer}.

@@ -4,7 +4,6 @@ import java.util.*;
 
 import blog.BLOGUtil;
 import blog.DefaultPartialWorld;
-import blog.MHSampler;
 import blog.PartialWorld;
 import blog.PartialWorldDiff;
 import blog.TruncatedUniformAndGaussianMCMCSampler;
@@ -15,6 +14,7 @@ import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.sampling.MHSampler;
 
 public class TemporaryTest {
 	public static void main(String[] args) {

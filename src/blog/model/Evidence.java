@@ -118,7 +118,7 @@ public class Evidence {
 	/**
 	 * Returns an unmodifiable Collection of SymbolEvidenceStatement objects.
 	 */
-	public Collection getSymbolEvidence() {
+	public Collection<SymbolEvidenceStatement> getSymbolEvidence() {
 		return Collections.unmodifiableCollection(symbolEvidence);
 	}
 
@@ -172,7 +172,7 @@ public class Evidence {
 	 * 
 	 * @return an unmodifiable Set of BayesNetVar objects
 	 */
-	public Set getEvidenceVars() {
+	public Set<? extends BayesNetVar> getEvidenceVars() {
 		return Collections.unmodifiableSet(observedValues.keySet());
 	}
 
@@ -424,10 +424,10 @@ public class Evidence {
 	}
 
 	// List of SymbolEvidenceStatement
-	private List symbolEvidence = new ArrayList();
+	private List<SymbolEvidenceStatement> symbolEvidence = new ArrayList<SymbolEvidenceStatement>();
 
 	// List of ValueEvidenceStatement
-	private List valueEvidence = new ArrayList();
+	private List<ValueEvidenceStatement> valueEvidence = new ArrayList<ValueEvidenceStatement>();
 
 	// map from String to SkolemConstant
 	private Map<String, SkolemConstant> skolemConstantsByName = new HashMap<String, SkolemConstant>();
@@ -436,7 +436,7 @@ public class Evidence {
 	private List<SkolemConstant> skolemConstants = new ArrayList<SkolemConstant>();
 
 	// map from BayesNetVar to Object
-	private Map observedValues = new LinkedHashMap();
+	private Map<BayesNetVar, Object> observedValues = new LinkedHashMap<BayesNetVar, Object>();
 
 	private boolean compiled = false;
 }

@@ -41,6 +41,7 @@ import java.util.regex.*;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Query;
+import blog.sampling.Sampler;
 
 /**
  * A Particle for Particle Filtering. The particle is advanced as it receives

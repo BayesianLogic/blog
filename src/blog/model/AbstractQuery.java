@@ -33,9 +33,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
-import blog.model.Query;
+import blog.PartialWorld;
 import ve.Factor;
 
 /**
