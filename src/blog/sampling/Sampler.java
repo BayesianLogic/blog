@@ -39,11 +39,11 @@ import java.util.List;
 import java.util.Properties;
 
 import blog.AfterSamplingListener;
-import blog.PartialWorld;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
+import blog.world.PartialWorld;
 
 /**
  * An object that stochastically generates a sequence of samples, which are

@@ -38,6 +38,7 @@ package blog;
 import java.util.*;
 
 import blog.model.Evidence;
+import blog.world.PartialWorldDiff;
 
 /**
  * Interface for Metropolis-Hastings proposal distributions. A Proposer object

@@ -31,6 +31,7 @@ import blog.model.ExplicitSetSpec;
 import blog.model.Model;
 import blog.model.Term;
 import blog.model.ValueEvidenceStatement;
+import blog.world.PartialWorld;
 import static blog.common.Experiment.*;
 import static blog.common.RangeOperations.*;
 

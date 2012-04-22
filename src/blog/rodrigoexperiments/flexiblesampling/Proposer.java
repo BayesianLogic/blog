@@ -3,13 +3,13 @@ package blog.rodrigoexperiments.flexiblesampling;
 import java.util.List;
 
 import blog.BLOGUtil;
-import blog.DefaultPartialWorld;
 import blog.InstantiatingEvalContext;
-import blog.PartialWorld;
-import blog.PartialWorldDiff;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.model.Evidence;
+import blog.world.DefaultPartialWorld;
+import blog.world.PartialWorld;
+import blog.world.PartialWorldDiff;
 
 
 public class Proposer implements blog.Proposer {

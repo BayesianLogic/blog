@@ -48,6 +48,9 @@ import blog.model.Model;
 import blog.model.POP;
 import blog.model.RandomFunction;
 import blog.model.Type;
+import blog.world.DefaultPartialWorld;
+import blog.world.PartialWorld;
+import blog.world.PartialWorldDiff;
 
 /**
  * Split-merge proposal distribution for the urn-and-balls model.

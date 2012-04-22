@@ -39,9 +39,9 @@ import java.io.PrintStream;
 import java.util.*;
 
 import blog.Main;
-import blog.PartialWorld;
 import blog.bn.BasicVar;
 import blog.common.Histogram;
+import blog.world.PartialWorld;
 import ve.Factor;
 import ve.Potential;
 

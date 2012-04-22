@@ -42,6 +42,8 @@ import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Query;
 import blog.sampling.Sampler;
+import blog.world.DefaultPartialWorld;
+import blog.world.PartialWorld;
 
 /**
  * A Particle for Particle Filtering. The particle is advanced as it receives

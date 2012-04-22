@@ -37,12 +37,12 @@ package blog.bn;
 
 import java.util.*;
 
-import blog.PartialWorld;
 import blog.Timestep;
 import blog.common.Util;
 import blog.model.FuncAppTerm;
 import blog.model.Model;
 import blog.model.Type;
+import blog.world.PartialWorld;
 
 
 /**

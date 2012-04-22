@@ -1,10 +1,10 @@
 package blog.rodrigoexperiments.gibbssamplingexperiment;
 
 import java.util.*;
-import blog.PartialWorld;
 import blog.bn.VarWithDistrib;
 import blog.common.EZIterator;
 import blog.distrib.*;
+import blog.world.PartialWorld;
 
 /*
  * Copyright (c) 2005, 2007, 2008, Regents of the University of California

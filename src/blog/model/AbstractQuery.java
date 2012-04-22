@@ -35,7 +35,7 @@
 
 package blog.model;
 
-import blog.PartialWorld;
+import blog.world.PartialWorld;
 import ve.Factor;
 
 /**

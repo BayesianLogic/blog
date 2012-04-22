@@ -40,6 +40,7 @@ import java.util.*;
 import blog.bn.BasicVar;
 import blog.bn.NumberVar;
 import blog.bn.OriginVar;
+import blog.world.PartialWorld;
 
 /**
  * Implementation of the EvalContext interface that records the basic random

@@ -22,6 +22,7 @@ import blog.model.Model;
 import blog.model.NonRandomFunction;
 import blog.model.SymbolEvidenceStatement;
 import blog.model.ValueEvidenceStatement;
+import blog.world.PartialWorld;
 
 
 /**

@@ -37,8 +37,6 @@ package blog.sampling;
 
 import java.util.*;
 
-import blog.PartialWorld;
-import blog.PartialWorldDiff;
 import blog.Proposer;
 import blog.bn.BayesNetVar;
 import blog.bn.NumberVar;
@@ -46,6 +44,8 @@ import blog.common.Timer;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.world.PartialWorld;
+import blog.world.PartialWorldDiff;
 
 import java.lang.reflect.Constructor;
 

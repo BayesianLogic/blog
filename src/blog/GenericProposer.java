@@ -44,6 +44,8 @@ import blog.common.MultiMap;
 import blog.common.Util;
 import blog.model.DependencyModel;
 import blog.model.Model;
+import blog.world.PartialWorld;
+import blog.world.PartialWorldDiff;
 
 /**
  * Implements a generic MCMC proposal algorithm. Each step changes the value of

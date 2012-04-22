@@ -3,7 +3,7 @@ package blog.bn;
 import java.util.Set;
 
 import blog.ClassicInstantiatingEvalContext;
-import blog.PartialWorld;
+import blog.world.PartialWorld;
 
 public abstract class AbstractBayesNetVar implements BayesNetVar {
 
