@@ -35,8 +35,9 @@
 
 package blog.engine;
 
-import java.util.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.util.Iterator;
+import java.util.Properties;
 
 import blog.BLOGUtil;
 import blog.Main;
@@ -45,7 +46,6 @@ import blog.common.Util;
 import blog.model.Model;
 import blog.model.Query;
 import blog.sample.Sampler;
-
 
 /**
  * Inference engine that answers queries by sampling partial worlds (possibly
@@ -83,7 +83,7 @@ public class SamplingEngine extends InferenceEngine {
 		super(model);
 
 		String samplerClassName = properties.getProperty("samplerClass",
-				"blog.LWSampler");
+				"blog.sample.LWSampler");
 		System.out.println("Constructing sampler of class " + samplerClassName);
 
 		try {

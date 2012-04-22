@@ -280,7 +280,7 @@ public class Main {
 				"Use clock time as random seed");
 
 		StringOption optEngine = new StringOption("e", "engine",
-				"blog.SamplingEngine", "Use inference engine class <s>");
+				"blog.engine.SamplingEngine", "Use inference engine class <s>");
 		specialOptions.put("engineClass", optEngine);
 
 		IntOption optNumSamples = new IntOption("n", "num_samples", 10000,
