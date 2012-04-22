@@ -6,9 +6,9 @@ import java.util.Set;
 import blog.BLOGUtil;
 import blog.DefaultPartialWorld;
 import blog.PartialWorld;
-import blog.Sampler;
 import blog.common.Util;
 import blog.model.Model;
+import blog.sampling.Sampler;
 
 
 public class LWSampler extends Sampler {

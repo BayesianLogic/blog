@@ -66,6 +66,7 @@ import blog.model.Model;
 import blog.model.Query;
 import blog.msg.ErrorMsg;
 import blog.parse.Parse;
+import blog.sampling.RejectionSampler;
 import blog.semant.Semant;
 
 /**
@@ -624,21 +625,20 @@ public class Main {
 		return histOut;
 	}
 
-	private static List filenames; // of String
+	private static List<String> filenames; // of String
 	private static Properties inferenceProps;
 	private static boolean randomize = false;
 	private static int numSamples;
 	private static int numStatSamples;
 	private static Model model = new Model();
 	private static Evidence evidence = new Evidence();
-	private static List queries = new ArrayList();
+	private static List<Query> queries = new ArrayList<Query>();
 	private static boolean generate;
-	private static List packages = new LinkedList(); // of String
+	private static List<String> packages = new LinkedList<String>(); // of String
 	private static boolean verbose;
 	private static boolean debug;
 	private static String outputPath;
 	private static int outputInterval;
 	private static String histOut;
 	private static List setupExtenders = new ArrayList(); // of SetupExtender
-	private static Semant semantor;
 }

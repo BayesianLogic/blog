@@ -48,7 +48,6 @@ import java.util.Map;
 
 import ve.Factor;
 import ve.Potential;
-import blog.AbstractQuery;
 import blog.Main;
 import blog.PartialWorld;
 import blog.bn.BasicVar;

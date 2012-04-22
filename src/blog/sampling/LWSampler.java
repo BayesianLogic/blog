@@ -33,15 +33,23 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.sampling;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
+import blog.BLOGUtil;
+import blog.DefaultPartialWorld;
+import blog.PartialWorld;
 import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
+import blog.model.Type;
 
 /**
  * A likelihood weighting sampler. Instantiates the context-specifically active
@@ -174,7 +182,7 @@ public class LWSampler extends Sampler {
 		}
 	}
 
-	private Set idTypes; // of Type
+	private Set<Type> idTypes; // of Type
 	private List<BayesNetVar> queryVars = new ArrayList<BayesNetVar>();
 
 	protected PartialWorld curWorld = null;

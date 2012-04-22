@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import blog.FormulaQuery;
 import blog.absyn.Absyn;
 import blog.absyn.Dec;
 import blog.absyn.DistinctSymbolDec;
@@ -48,6 +47,7 @@ import blog.model.DependencyModel;
 import blog.model.Evidence;
 import blog.model.ExplicitSetSpec;
 import blog.model.Formula;
+import blog.model.FormulaQuery;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.ImplicitSetSpec;
@@ -372,6 +372,7 @@ public class Semant {
 			// general value expression
 			Object value = transExpr(e.right);
 			if (value instanceof ArgSpec) {
+				// need more semantic checking on type match
 				evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
 						(ArgSpec) value));
 			} else {
