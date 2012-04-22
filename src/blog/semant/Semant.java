@@ -28,6 +28,7 @@ import blog.absyn.NameTy;
 import blog.absyn.NumberDec;
 import blog.absyn.NumberExpr;
 import blog.absyn.OriginFieldList;
+import blog.absyn.OriginFuncDec;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
 import blog.absyn.StmtList;
@@ -260,7 +261,8 @@ public class Semant {
 			error(e.line, e.col, "Function " + name + " already defined");
 		}
 
-		if (model.getOverlappingFuncs(name, (Type[]) argTy.toArray()) != null) {
+		if (!(model.getOverlappingFuncs(name,
+				(Type[]) argTy.toArray(new Type[argTy.size()])).isEmpty())) {
 			error(e.line, e.col, "Function " + name + " overlapped");
 		}
 
@@ -271,6 +273,19 @@ public class Semant {
 			dm = transDependency(e.body, resTy, resTy.getDefaultValue());
 			RandomFunction f = new RandomFunction(name, argTy, resTy, dm);
 			f.setArgVars(argVars);
+			fun = f;
+		} else if (e instanceof OriginFuncDec) {
+			if (argTy.size() != 1) {
+				error(e.line, e.col,
+						"Incorrect number of arguments: origin function expecting exactly One argument");
+			}
+			if (e.body != null) {
+				error(
+						e.line,
+						e.col,
+						"Invalid origin function definition: the body of origin functions should be empty");
+			}
+			OriginFunction f = new OriginFunction(name, argTy, resTy);
 			fun = f;
 		}
 		model.addFunction(fun);
@@ -414,7 +429,6 @@ public class Semant {
 	}
 
 	Clause transExpr(DistributionExpr e) {
-		// TODO
 		Class cls = getClassWithName(e.name.toString());
 		if (cls == null) {
 			error(e.line, e.col, "Class not found: " + e.name);
