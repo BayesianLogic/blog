@@ -41,9 +41,9 @@ import blog.DefaultEvalContext;
 import blog.EvalContext;
 import blog.InstantiatingEvalContext;
 import blog.ParentRecEvalContext;
-import blog.PartialWorld;
 import blog.model.DependencyModel;
 import blog.model.DependencyModel.Distrib;
+import blog.world.PartialWorld;
 
 /**
  * Abstract class for variables that have a distribution specified by the BLOG

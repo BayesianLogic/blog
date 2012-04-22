@@ -9,6 +9,9 @@ import blog.model.Model;
 import blog.model.Query;
 import blog.sampling.LWSampler;
 import blog.sampling.Sampler;
+import blog.world.DefaultPartialWorld;
+import blog.world.PartialWorld;
+import blog.world.PartialWorldDiff;
 
 
 /**

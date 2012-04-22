@@ -37,10 +37,10 @@ package blog.model;
 
 import java.util.*;
 
-import blog.PartialWorld;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.common.Util;
+import blog.world.PartialWorld;
 
 /**
  * Represents a statement that a certain term has a certain value. Such a

@@ -1,6 +1,7 @@
 package blog;
 
 import blog.model.Evidence;
+import blog.world.PartialWorld;
 
 /**
  * A default {@link EvidenceLikelihoodWeighter} that calls

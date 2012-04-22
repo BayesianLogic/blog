@@ -4,11 +4,11 @@ import java.util.Properties;
 import java.util.Set;
 
 import blog.BLOGUtil;
-import blog.DefaultPartialWorld;
-import blog.PartialWorld;
 import blog.common.Util;
 import blog.model.Model;
 import blog.sampling.Sampler;
+import blog.world.DefaultPartialWorld;
+import blog.world.PartialWorld;
 
 
 public class LWSampler extends Sampler {

@@ -41,6 +41,8 @@ import blog.bn.NumberVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.model.Model;
+import blog.world.PartialWorld;
+import blog.world.PartialWorldDiff;
 
 /**
  * A DecayedProposer as defined by Bhaskara Marthi, Hanna Pasula, Stuart

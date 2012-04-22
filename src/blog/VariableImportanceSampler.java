@@ -3,6 +3,7 @@ package blog;
 import java.util.*;
 
 import blog.bn.VarWithDistrib;
+import blog.world.PartialWorld;
 
 /**
  * An interface for variable proposal methods specific to certain situations

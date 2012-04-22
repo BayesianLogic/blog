@@ -1,6 +1,8 @@
 package blog;
 
 import blog.model.Evidence;
+import blog.world.PartialWorld;
+import blog.world.PartialWorldDiff;
 
 /**
  * An {@link EvidenceLikelihoodWeighter} that selects a part of the evidence for

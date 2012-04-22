@@ -38,8 +38,8 @@ package blog.model;
 import java.util.*;
 import java.io.PrintStream;
 
-import blog.PartialWorld;
 import blog.bn.BayesNetVar;
+import blog.world.PartialWorld;
 import ve.Factor;
 
 /**

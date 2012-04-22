@@ -1,11 +1,5 @@
-package blog;
+package test.blog;
 
-import test.blog.FormulaLikelihoodTest;
-import test.blog.LWImportanceSamplerTest;
-import test.blog.MiscTest;
-import test.blog.ParticleFilterTest;
-import test.blog.SymbolEvidenceLikelihoodWeighterTest;
-import test.blog.TupleSetSpecEvidenceLikelihoodWeighterTest;
 import junit.framework.*;
 
 /**
