@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Set;
 
 import blog.ObjectIdentifier;
-import blog.ObjectSet;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
@@ -53,6 +52,7 @@ import blog.common.MapWithPreimages;
 import blog.common.MultiMap;
 import blog.model.POP;
 import blog.model.RandomFunction;
+import blog.objgen.ObjectSet;
 
 /**
  * A partial description of a possible world in a BLOG model. A PartialWorld

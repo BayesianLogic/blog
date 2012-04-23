@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import blog.ObjectIterator;
 import blog.sample.EvalContext;
 
 public abstract class Node {

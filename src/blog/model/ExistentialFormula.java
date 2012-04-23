@@ -38,11 +38,11 @@ package blog.model;
 import java.util.*;
 
 import blog.GenericObject;
-import blog.ObjectIterator;
-import blog.ObjectSet;
 import blog.Substitution;
 import blog.common.HashMapDiff;
 import blog.objgen.CompiledSetSpec;
+import blog.objgen.ObjectIterator;
+import blog.objgen.ObjectSet;
 import blog.sample.EvalContext;
 
 /**

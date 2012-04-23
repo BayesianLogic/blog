@@ -37,8 +37,6 @@ package blog.objgen;
 
 import java.util.List;
 
-import blog.ObjectIterator;
-import blog.ObjectSet;
 import blog.model.ConjFormula;
 import blog.model.Formula;
 import blog.model.LogicalVar;

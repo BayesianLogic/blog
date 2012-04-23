@@ -33,12 +33,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.objgen;
 
 import java.util.*;
 
 /**
- * Iterator over an {@link blog.ObjectSet ObjectSet}. This interface extends the
+ * Iterator over an {@link blog.objgen.ObjectSet ObjectSet}. This interface extends the
  * Java Iterator interface in two ways:
  * <ul>
  * <li><b>Indistinguishable objects</b>: Two objects are indistinguishable in a

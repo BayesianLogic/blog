@@ -37,10 +37,10 @@ package blog.model;
 
 import java.util.*;
 
-import blog.ObjectSet;
 import blog.Substitution;
 import blog.common.Multiset;
 import blog.common.UnaryProcedure;
+import blog.objgen.ObjectSet;
 import blog.sample.EvalContext;
 
 
