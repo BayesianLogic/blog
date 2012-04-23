@@ -35,7 +35,9 @@
 
 package blog.model;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 import blog.GenericObject;
 import blog.Substitution;
@@ -89,6 +91,8 @@ public class TrueFormula extends Formula {
 	 * conjunction.
 	 */
 	public DisjFormula getPropDNF() {
+		// TODO leili: make it static to save time for object construction every
+		// time.
 		return new DisjFormula(new ConjFormula(Collections.EMPTY_LIST));
 	}
 
