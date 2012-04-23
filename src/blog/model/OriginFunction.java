@@ -38,11 +38,11 @@ package blog.model;
 import java.util.*;
 import java.io.PrintStream;
 
-import blog.EvalContext;
 import blog.GenericObject;
 import blog.NonGuaranteedObject;
 import blog.ObjectIdentifier;
 import blog.bn.NumberVar;
+import blog.sample.EvalContext;
 
 /**
  * Represents a BLOG generating function.

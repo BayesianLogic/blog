@@ -39,11 +39,11 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.EqualsCPD;
-import blog.EvalContext;
 import blog.bn.BasicVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
+import blog.sample.EvalContext;
 
 /**
  * Represents dependency statements for functions and number statements for

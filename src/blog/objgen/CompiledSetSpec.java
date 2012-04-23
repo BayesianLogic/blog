@@ -33,10 +33,17 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.objgen;
 
 import java.util.*;
 
+import blog.AbstractObjectIterator;
+import blog.AbstractObjectSet;
+import blog.GenericObject;
+import blog.GenericPOPAppSatisfier;
+import blog.ObjectIterator;
+import blog.ObjectSet;
+import blog.POPAppBasedSet;
 import blog.bn.NumberVar;
 import blog.common.HashMultiMap;
 import blog.common.MultiMap;
@@ -44,7 +51,7 @@ import blog.common.Util;
 import blog.model.ConjFormula;
 import blog.model.Formula;
 import blog.model.LogicalVar;
-import blog.objgen.ObjGenGraph;
+import blog.sample.EvalContext;
 
 /**
  * Data structure that facilitates iterating over the set of objects <i>x</i>

@@ -40,10 +40,10 @@ import java.lang.reflect.*;
 import java.io.PrintStream;
 
 import blog.ConstantInterp;
-import blog.EvalContext;
 import blog.FunctionInterp;
 import blog.GenericObject;
 import blog.common.Util;
+import blog.sample.EvalContext;
 
 
 /**

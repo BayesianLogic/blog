@@ -38,11 +38,11 @@ package blog.bn;
 import java.util.*;
 
 import blog.DefaultEvalContext;
-import blog.EvalContext;
-import blog.InstantiatingEvalContext;
 import blog.ParentRecEvalContext;
 import blog.Timestep;
 import blog.model.ArgSpec;
+import blog.sample.EvalContext;
+import blog.sample.InstantiatingEvalContext;
 import blog.world.PartialWorld;
 
 /**

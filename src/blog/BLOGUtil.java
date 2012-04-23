@@ -25,6 +25,8 @@ import blog.model.NegFormula;
 import blog.model.Term;
 import blog.model.ValueEvidenceStatement;
 import blog.parse.Parse;
+import blog.sample.ClassicInstantiatingEvalContext;
+import blog.sample.InstantiatingEvalContext;
 import blog.semant.Semant;
 import blog.world.PartialWorld;
 

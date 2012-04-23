@@ -53,6 +53,7 @@ import blog.model.LogicalVar;
 import blog.model.RandomFunction;
 import blog.model.Term;
 import blog.model.Type;
+import blog.sample.EvalContext;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 import ve.*;

@@ -33,11 +33,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.sample;
 
 import java.util.*;
 import java.io.PrintStream;
 
+import blog.ObjectSet;
 import blog.bn.BasicVar;
 import blog.bn.NumberVar;
 import blog.model.LogicalVar;

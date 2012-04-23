@@ -37,10 +37,10 @@ package blog.model;
 
 import java.util.*;
 
-import blog.EvalContext;
 import blog.GenericObject;
 import blog.Substitution;
 import blog.bn.BayesNetVar;
+import blog.sample.EvalContext;
 
 /**
  * A Formula consisting of a single boolean-valued term.
