@@ -4,24 +4,42 @@
  */
 package blog.sample.modular;
 
-import java.util.Properties;
-
 import blog.model.Model;
-import blog.sample.LWSampler;
+import blog.sample.Sampler;
+import blog.world.PartialWorld;
 
 /**
  * 
  * @author leili
+ * @date Apr 22, 2012
  */
-public class ModularLWSampler extends LWSampler {
+public class ModularLWSampler extends Sampler {
 
 	/**
 	 * @param model
 	 * @param properties
 	 */
-	public ModularLWSampler(Model model, Properties properties) {
-		super(model, properties);
+	public ModularLWSampler(Model model) {
+		super(model);
 		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void nextSample() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setBaseWorld(PartialWorld world) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public PartialWorld getLatestWorld() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
