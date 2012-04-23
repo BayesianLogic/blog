@@ -40,6 +40,7 @@ import blog.*;
 import blog.common.Util;
 import blog.model.Model;
 import blog.model.Type;
+import blog.objgen.ObjectSet;
 
 /**
  * CPD that takes a set of objects (an instance of the ObjectSet interface) as

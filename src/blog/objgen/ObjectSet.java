@@ -33,9 +33,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.objgen;
 
 import java.util.*;
+
 
 /**
  * Interface for sets of objects in a partial world. Each ObjectSet is backed by
@@ -48,7 +49,7 @@ import java.util.*;
  * <i>N</i>).
  * 
  * <li><b>Indistinguishable objects:</b> The <code>iterator</code> method on an
- * ObjectSet returns an {@link blog.ObjectIterator ObjectIterator}, which has a
+ * ObjectSet returns an {@link blog.objgen.ObjectIterator ObjectIterator}, which has a
  * special method for skipping objects that are indistinguishable (in the
  * underlying partial world) from the last object returned. There is also an
  * iterator method that takes a set of <i>externally distinguished</i> objects

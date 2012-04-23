@@ -10,13 +10,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import blog.AbstractObjectIterator;
-import blog.AbstractObjectSet;
 import blog.GenericObject;
 import blog.GenericPOPAppSatisfier;
-import blog.ObjectIterator;
-import blog.ObjectSet;
-import blog.POPAppBasedSet;
 import blog.bn.NumberVar;
 import blog.common.HashMultiMap;
 import blog.common.MultiMap;

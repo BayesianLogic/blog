@@ -33,9 +33,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.objgen;
 
 import java.util.*;
+
 
 /**
  * ObjectIterator implementation that wraps around an ordinary Iterator.

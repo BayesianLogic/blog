@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import blog.AbstractObjectIterator;
-import blog.ObjectIterator;
-import blog.ObjectSet;
 import blog.common.Util;
 import blog.model.Term;
 import blog.sample.EvalContext;

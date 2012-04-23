@@ -46,6 +46,7 @@ import blog.common.MapWithPreimages;
 import blog.common.Util;
 import blog.model.LogicalVar;
 import blog.model.Type;
+import blog.objgen.ObjectSet;
 import blog.sample.EvalContext;
 import blog.world.PartialWorld;
 
