@@ -99,8 +99,18 @@ public class LWSampler extends Sampler {
 		weight = -1;
 	}
 
+	/**
+	 * set the base partial world
+	 */
 	public void setBaseWorld(PartialWorld world) {
 		baseWorld = world;
+	}
+
+	/**
+	 * get the base partial world
+	 */
+	public PartialWorld getBaseWorld() {
+		return baseWorld;
 	}
 
 	/**
@@ -118,7 +128,7 @@ public class LWSampler extends Sampler {
 		else
 			curWorld = new DefaultPartialWorld(idTypes);
 
-		weight = calculateWeight();
+		weight = supportEvidenceAndCalculateWeight();
 		BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
 				afterSamplingListener);
 
@@ -140,7 +150,7 @@ public class LWSampler extends Sampler {
 	/**
 	 * Calculates weight for evidence and current world.
 	 */
-	protected double calculateWeight() {
+	protected double supportEvidenceAndCalculateWeight() {
 		return evidence.setEvidenceEnsureSupportedAndReturnLikelihood(curWorld);
 	}
 
@@ -152,9 +162,10 @@ public class LWSampler extends Sampler {
 	}
 
 	public double getLatestWeight() {
-		if (weight == -1) {
-			throw new IllegalStateException("LWSampler has no latest sample.");
-		}
+		// leili: this code is not correct, should not compare double with ==
+		// if (weight == -1) {
+		// throw new IllegalStateException("LWSampler has no latest sample.");
+		// }
 		return weight;
 	}
 
@@ -182,19 +193,19 @@ public class LWSampler extends Sampler {
 		}
 	}
 
-	private Set<Type> idTypes; // of Type
-	private List<BayesNetVar> queryVars = new ArrayList<BayesNetVar>();
+	protected Set<Type> idTypes; // of Type
+	protected List<BayesNetVar> queryVars = new ArrayList<BayesNetVar>();
 
 	protected PartialWorld curWorld = null;
 	private PartialWorld baseWorld = null;
-	private double weight = -1;
+	protected double weight = -1;
 
 	// overall statistics
-	private int totalNumSamples = 0;
-	private int totalNumConsistent = 0;
+	protected int totalNumSamples = 0;
+	protected int totalNumConsistent = 0;
 
 	// statistics since last call to initialize()
-	private int numSamplesThisTrial = 0;
-	private int numConsistentThisTrial = 0;
-	private double sumWeightsThisTrial = 0;
+	protected int numSamplesThisTrial = 0;
+	protected int numConsistentThisTrial = 0;
+	protected double sumWeightsThisTrial = 0;
 }
