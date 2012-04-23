@@ -1,7 +1,7 @@
 /**
  * 
  */
-package blog.util;
+package blog.common;
 
 import java.io.InputStream;
 import java.util.Properties;
