@@ -1,5 +1,10 @@
 package blog.absyn;
 
+/**
+ * @author leili
+ * @date Apr 22, 2012
+ * 
+ */
 public class DistinctSymbolDec extends Dec {
 	public SymbolArrayList symbols;
 	public Ty type;

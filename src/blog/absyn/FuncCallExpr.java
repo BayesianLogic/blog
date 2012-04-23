@@ -2,6 +2,10 @@ package blog.absyn;
 
 import blog.symbol.Symbol;
 
+/**
+ * @author leili
+ * @date Apr 22, 2012
+ */
 public class FuncCallExpr extends Expr {
 	public Symbol func;
 	public ExprList args;

@@ -1,5 +1,12 @@
 package blog.absyn;
 
+/**
+ * abstract syntax node for Array type
+ * 
+ * @author leili
+ * @date Apr 22, 2012
+ * 
+ */
 public class ArrayTy extends Ty {
 	public Ty typ;
 	public int dim;

@@ -1,5 +1,9 @@
 package blog.absyn;
 
+/**
+ * @author leili
+ * @date Apr 22, 2012
+ */
 public class OpExpr extends Expr {
 	public Expr left, right;
 	public int oper;

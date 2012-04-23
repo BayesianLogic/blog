@@ -1,5 +1,9 @@
 package blog.absyn;
 
+/**
+ * @author leili
+ * @date Apr 22, 2012
+ */
 public class Printer {
 
 	java.io.PrintStream out;
