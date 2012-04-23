@@ -453,6 +453,7 @@ public class Semant {
 		if (e.args != null) {
 			as = transExprList(e.args, true);
 		}
+		// TODO leili: check whether correct
 		return new Clause(TrueFormula.TRUE, cls, as, Collections.EMPTY_LIST);
 	}
 
@@ -478,12 +479,19 @@ public class Semant {
 			return transExpr((ImplicitSetExpr) e);
 		} else if (e instanceof ExplicitSetExpr) {
 			return transExpr((ExplicitSetExpr) e);
+		} else if (e instanceof IfExpr) {
+			return transExpr((IfExpr) e);
 		}
 
 		return null;
 	}
 
 	ExplicitSetSpec transExpr(ExplicitSetExpr e) {
+		// TODO
+		return null;
+	}
+
+	List<Clause> transExpr(IfExpr e) {
 		// TODO
 		return null;
 	}
