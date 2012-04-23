@@ -1,0 +1,60 @@
+/**
+ * Adaptive background mixture models
+ * This BLOG program describe the model for image background 
+ * segmentation. 
+ * See the paper: 
+ *   Image segmentation in video sequences: A probabilistic approach
+ *   Nir Friedman, Stuart Russell, UAI 1997
+ * and the paper:
+ *   Adaptive background mixture models for real-time tracking
+ *   Chris Stauffer, W.E.L Grimson, CVPR 1999
+ * In particular, each pixel is drawn from a mixture of components. 
+ * Each component is modeled as a Gaussian distribution. 
+ *
+ * Note the model is not exactly the same as those described in the 
+ * above papers.
+ * This version assumes a Poisson prior for the number of components.
+ *
+ * author: leili
+ */
+
+type Component;
+type Pixel;
+
+random R3Vector Mean(Component, Timestep);
+random R3Vector Weight(Timestep);
+
+origin Timestep Time(Pixel);
+origin NaturalNum X(Pixel);
+origin NaturalNum Y(Pixel);
+random R3Vector Intensity(Pixel);
+random Component AssociatedComponent(Pixel);
+
+#Component ~ Poisson[5]();
+#Pixel(X=x, Y=y, Time=t)=1;
+
+// the prior posts uniform distribution over a box of 3D space.
+Mean(c, t) {
+    if t=@1 then ~ UniformVector[[0, 255, 0, 255, 0, 255]]()
+    else ~ MultivarGaussian[3, [10, 0, 0; 
+                                0, 10, 0; 
+                                0, 0, 10]](Mean(c, Prev(t)))
+}
+/**
+ * need to use Dirichlet distribution, however, Dirichlet is not 
+ * implemented in BLOG right now. 
+ * need implementation of Dirichlet distribution
+ */
+//note this one is not in standard BLOG, needs extension of BLOG.
+Weight ~ Dirichlet[](#{Component c}, Divide(1.0, #{Component c})); 
+//Weight ~  UniformVector[[0, 1, 0, 1, 0, 1]]();
+
+//ideally, we would hope to set this probability in the same way as
+// Mean(Componnet)
+AssociatedComponnet(pixel) ~ TabularCPD[](Weight);
+
+// the parameters can be set in Mean(Component)
+Intensity(pixel) ~ MultivarGaussian[3, [10, 0, 0; 
+                                0, 10, 0; 
+                                0, 0, 10]]
+                    (Mean(AssociatedComponent(pixel)))

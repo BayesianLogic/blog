@@ -1,0 +1,28 @@
+/**
+ * A simple DBLOG model with a single atemporal variable.
+ */
+
+type RainEvent;
+guaranteed RainEvent Rainy, Dry;
+
+random RainEvent Weather(Timestep);
+random Boolean RainyRegion();
+
+RainyRegion ~ Bernoulli[0.5]();
+
+Weather(d) 
+    if (d = @0) then ~ TabularCPD[[0.7, 0.3],[0.3, 0.7]](RainyRegion)
+    else ~ TabularCPD[[0.8, 0.2],
+                      [0.3, 0.7],
+                      [0.5, 0.5],
+                      [0.2, 0.8]]
+                 (RainyRegion, Weather(Prev(d)));
+    
+obs Weather(@0) = Rainy;
+obs Weather(@1) = Rainy;
+obs Weather(@2) = Rainy;
+obs Weather(@3) = Rainy;
+obs Weather(@4) = Dry;
+obs Weather(@5) = Dry;
+
+query Weather(@6);
