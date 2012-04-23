@@ -4,9 +4,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import blog.AbstractObjectSet;
-import blog.ObjectIterator;
-import blog.ObjectSet;
 import blog.model.Term;
 import blog.sample.EvalContext;
 

@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import blog.AbstractObjectIterator;
-import blog.ObjectIterator;
 import blog.sample.EvalContext;
 
 

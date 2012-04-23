@@ -38,11 +38,8 @@ package blog.world;
 import java.util.*;
 import java.io.PrintStream;
 
-import blog.AbstractObjectSet;
 import blog.NonGuaranteedObject;
 import blog.ObjectIdentifier;
-import blog.ObjectIterator;
-import blog.ObjectSet;
 import blog.ParentRecEvalContext;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
@@ -66,6 +63,9 @@ import blog.model.DependencyModel;
 import blog.model.Model;
 import blog.model.POP;
 import blog.model.RandomFunction;
+import blog.objgen.AbstractObjectSet;
+import blog.objgen.ObjectIterator;
+import blog.objgen.ObjectSet;
 
 
 /**

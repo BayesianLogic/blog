@@ -37,7 +37,6 @@ package blog.objgen;
 
 import java.util.*;
 
-import blog.ObjectIterator;
 import blog.common.AbstractDGraph;
 import blog.common.DGraph;
 import blog.common.Util;

@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import blog.AbstractObjectIterator;
-import blog.ObjectIterator;
 import blog.sample.EvalContext;
 
 class SatisfierIterator extends AbstractObjectIterator {

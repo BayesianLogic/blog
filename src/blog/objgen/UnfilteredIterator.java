@@ -6,8 +6,6 @@ package blog.objgen;
 import java.util.BitSet;
 import java.util.Set;
 
-import blog.AbstractObjectIterator;
-import blog.ObjectIterator;
 import blog.sample.EvalContext;
 
 class UnfilteredIterator extends AbstractObjectIterator {
