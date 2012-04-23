@@ -2,6 +2,11 @@ package blog.absyn;
 
 import blog.symbol.Symbol;
 
+/**
+ * @author leili
+ * @date Apr 22, 2012
+ * 
+ */
 public class DistributionExpr extends Expr {
 	public Symbol name;
 	public ExprList args;

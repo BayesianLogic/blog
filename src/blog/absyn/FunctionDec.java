@@ -2,6 +2,10 @@ package blog.absyn;
 
 import blog.symbol.Symbol;
 
+/**
+ * @author leili
+ * @date Apr 22, 2012
+ */
 public class FunctionDec extends Dec {
 	public Symbol name;
 	public FieldList params;

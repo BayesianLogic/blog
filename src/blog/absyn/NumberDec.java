@@ -1,7 +1,10 @@
 package blog.absyn;
 
-import blog.symbol.Symbol;
 
+/**
+ * @author leili
+ * @date Apr 22, 2012
+ */
 public class NumberDec extends Dec {
 	public Ty typ;
 	public OriginFieldList params;

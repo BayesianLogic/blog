@@ -1,5 +1,10 @@
 package blog.absyn;
 
+/**
+ * @author leili
+ * @date Apr 22, 2012
+ * 
+ */
 public class ExprList extends Absyn {
 	public Expr head;
 	public ExprList next;

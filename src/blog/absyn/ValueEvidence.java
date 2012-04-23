@@ -1,5 +1,9 @@
 package blog.absyn;
 
+/**
+ * @author leili
+ * @date Apr 22, 2012
+ */
 public class ValueEvidence extends EvidenceStmt {
 	public Expr left;
 	public Expr right;

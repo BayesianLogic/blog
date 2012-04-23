@@ -1,5 +1,9 @@
 package blog.absyn;
 
+/**
+ * @author leili
+ * @date Apr 22, 2012
+ */
 public class NumberEvidence extends EvidenceStmt {
 	public NumberExpr num;
 	public int size;
