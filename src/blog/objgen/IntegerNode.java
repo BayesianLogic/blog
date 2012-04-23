@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.Set;
 
 import blog.AbstractObjectIterator;
-import blog.EvalContext;
 import blog.ObjectIterator;
 import blog.ObjectSet;
 import blog.common.Util;
 import blog.model.Term;
+import blog.sample.EvalContext;
 
 
 public class IntegerNode extends Node {

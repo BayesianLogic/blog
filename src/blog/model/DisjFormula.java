@@ -37,10 +37,10 @@ package blog.model;
 
 import java.util.*;
 
-import blog.EvalContext;
 import blog.GenericObject;
 import blog.Substitution;
 import blog.common.TupleIterator;
+import blog.sample.EvalContext;
 
 
 /**

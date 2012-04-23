@@ -50,6 +50,7 @@ import blog.model.NegFormula;
 import blog.model.Term;
 import blog.model.TrueFormula;
 import blog.model.Type;
+import blog.sample.EvalContext;
 
 public class Constraint {
 

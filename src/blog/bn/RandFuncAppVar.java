@@ -37,7 +37,6 @@ package blog.bn;
 
 import java.util.*;
 
-import blog.EvalContext;
 import blog.ObjectIdentifier;
 import blog.common.Util;
 import blog.model.DependencyModel;
@@ -48,6 +47,7 @@ import blog.model.RandomFunction;
 import blog.model.Term;
 import blog.model.Type;
 import blog.model.DependencyModel.Distrib;
+import blog.sample.EvalContext;
 
 /**
  * A random variable whose value is the value of a certain random function on a

@@ -37,13 +37,13 @@ package blog.model;
 
 import java.util.*;
 
-import blog.CompiledSetSpec;
-import blog.EvalContext;
 import blog.GenericObject;
 import blog.ObjectIterator;
 import blog.ObjectSet;
 import blog.Substitution;
 import blog.common.HashMapDiff;
+import blog.objgen.CompiledSetSpec;
+import blog.sample.EvalContext;
 
 /**
  * Represents a universal instantiation for one variable using one expression of

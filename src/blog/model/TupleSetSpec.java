@@ -37,7 +37,6 @@ package blog.model;
 
 import java.util.*;
 
-import blog.EvalContext;
 import blog.ObjectIterator;
 import blog.Substitution;
 import blog.bn.BayesNetVar;
@@ -50,6 +49,7 @@ import blog.common.UnaryFunction;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
 import blog.objgen.ObjGenGraph;
+import blog.sample.EvalContext;
 
 
 /**

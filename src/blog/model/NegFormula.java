@@ -37,9 +37,9 @@ package blog.model;
 
 import java.util.*;
 
-import blog.EvalContext;
 import blog.GenericObject;
 import blog.Substitution;
+import blog.sample.EvalContext;
 
 /**
  * Represents a logical negation of an expression of type Formula.

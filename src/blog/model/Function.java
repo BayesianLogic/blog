@@ -38,9 +38,9 @@ package blog.model;
 import java.util.*;
 
 import blog.DefaultEvalContext;
-import blog.EvalContext;
 import blog.common.TupleIterator;
 import blog.common.Util;
+import blog.sample.EvalContext;
 import blog.world.PartialWorld;
 
 /**

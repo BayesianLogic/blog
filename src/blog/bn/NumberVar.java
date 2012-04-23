@@ -37,7 +37,6 @@ package blog.bn;
 
 import java.util.*;
 
-import blog.EvalContext;
 import blog.model.BuiltInTypes;
 import blog.model.DependencyModel;
 import blog.model.Model;
@@ -45,6 +44,7 @@ import blog.model.OriginFunction;
 import blog.model.POP;
 import blog.model.Type;
 import blog.model.DependencyModel.Distrib;
+import blog.sample.EvalContext;
 import blog.world.PartialWorld;
 
 /**

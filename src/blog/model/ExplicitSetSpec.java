@@ -38,12 +38,12 @@ package blog.model;
 import java.util.*;
 
 import blog.DefaultObjectSet;
-import blog.EvalContext;
 import blog.Substitution;
 import blog.common.HashMultiset;
 import blog.common.Multiset;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
+import blog.sample.EvalContext;
 
 
 /**

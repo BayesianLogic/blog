@@ -44,6 +44,7 @@ import blog.common.MultiMap;
 import blog.common.Util;
 import blog.model.DependencyModel;
 import blog.model.Model;
+import blog.sample.ClassicInstantiatingEvalContext;
 import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;
 

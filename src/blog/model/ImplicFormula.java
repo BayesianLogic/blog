@@ -37,9 +37,9 @@ package blog.model;
 
 import java.util.*;
 
-import blog.EvalContext;
 import blog.GenericObject;
 import blog.Substitution;
+import blog.sample.EvalContext;
 
 /**
  * An implication formula alpha -> beta. It is true if alpha is false or beta is

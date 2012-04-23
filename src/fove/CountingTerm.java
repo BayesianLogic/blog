@@ -48,6 +48,7 @@ import blog.model.LogicalVar;
 import blog.model.Model;
 import blog.model.Term;
 import blog.model.Type;
+import blog.sample.EvalContext;
 
 /**
  * A term whose value is a histogram, counting the number of bindings to a set
