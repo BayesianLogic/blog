@@ -38,6 +38,7 @@ package blog;
 import blog.model.Model;
 import blog.model.OriginFunction;
 import blog.model.Type;
+import blog.sample.EvalContext;
 
 /**
  * Represents a generic object of some type, possibly with constraints on the

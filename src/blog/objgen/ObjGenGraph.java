@@ -38,7 +38,6 @@ package blog.objgen;
 import java.util.*;
 
 import blog.AbstractObjectIterator;
-import blog.EvalContext;
 import blog.ObjectIterator;
 import blog.common.AbstractDGraph;
 import blog.common.DGraph;
@@ -58,6 +57,7 @@ import blog.model.OriginFunction;
 import blog.model.POP;
 import blog.model.Term;
 import blog.model.Type;
+import blog.sample.EvalContext;
 
 /**
  * An object generation graph contains nodes that represent sets of objects with

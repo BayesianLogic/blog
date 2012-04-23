@@ -3,7 +3,7 @@
  */
 package blog.sample.modular;
 
-import blog.ClassicInstantiatingEvalContext;
+import blog.sample.ClassicInstantiatingEvalContext;
 import blog.world.PartialWorld;
 
 /**

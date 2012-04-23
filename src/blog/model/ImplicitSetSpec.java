@@ -37,9 +37,7 @@ package blog.model;
 
 import java.util.*;
 
-import blog.CompiledSetSpec;
 import blog.DefaultEvalContext;
-import blog.EvalContext;
 import blog.ObjectSet;
 import blog.Substitution;
 import blog.common.HashMapDiff;
@@ -48,6 +46,8 @@ import blog.common.MultisetBackedSet;
 import blog.common.SetBackedMultiset;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
+import blog.objgen.CompiledSetSpec;
+import blog.sample.EvalContext;
 import blog.world.PartialWorld;
 
 /**

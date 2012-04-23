@@ -1,6 +1,6 @@
 package blog.sample.modular;
 
-import blog.InstantiatingEvalContext;
+import blog.sample.InstantiatingEvalContext;
 
 public interface BlockInstantiatingEvalContext extends InstantiatingEvalContext {
 //	public 

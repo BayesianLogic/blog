@@ -37,9 +37,9 @@ package blog.model;
 
 import java.util.*;
 
-import blog.EvalContext;
 import blog.GenericObject;
 import blog.Substitution;
+import blog.sample.EvalContext;
 
 /**
  * Represents an equality test on 2 expressions, each of which is a

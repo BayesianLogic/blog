@@ -10,6 +10,7 @@ import blog.model.Evidence;
 import blog.model.SymbolEvidenceStatement;
 import blog.model.TupleSetSpec;
 import blog.model.ValueEvidenceStatement;
+import blog.sample.ClassicInstantiatingEvalContext;
 import blog.world.PartialWorld;
 
 

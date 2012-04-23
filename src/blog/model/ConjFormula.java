@@ -37,11 +37,11 @@ package blog.model;
 
 import java.util.*;
 
-import blog.EvalContext;
 import blog.GenericObject;
 import blog.Substitution;
 import blog.common.TupleIterator;
 import blog.common.Util;
+import blog.sample.EvalContext;
 
 /**
  * Represents a conjuction of expressions, each of which is a Formula.

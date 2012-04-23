@@ -39,10 +39,10 @@ import java.util.*;
 import java.lang.reflect.*;
 
 import blog.EqualsCPD;
-import blog.EvalContext;
 import blog.bn.BasicVar;
 import blog.bn.RandFuncAppVar;
 import blog.distrib.CondProbDistrib;
+import blog.sample.EvalContext;
 
 /**
  * Represents a clause in dependency statements and number statements.

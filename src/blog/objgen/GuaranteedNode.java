@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.Set;
 
 import blog.DefaultObjectIterator;
-import blog.EvalContext;
 import blog.ObjectIterator;
 import blog.ObjectSet;
 import blog.model.BuiltInTypes;
 import blog.model.Type;
+import blog.sample.EvalContext;
 
 public class GuaranteedNode extends Node {
 	GuaranteedNode(Type type) {

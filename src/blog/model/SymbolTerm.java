@@ -37,12 +37,12 @@ package blog.model;
 
 import java.util.*;
 
-import blog.EvalContext;
 import blog.Substitution;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
+import blog.sample.EvalContext;
 
 
 /**

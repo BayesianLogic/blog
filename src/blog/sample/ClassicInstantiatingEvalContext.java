@@ -33,10 +33,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.sample;
 
 import java.util.*;
 
+import blog.AfterSamplingListener;
+import blog.ObjectIdentifier;
+import blog.ParentRecEvalContext;
 import blog.bn.BasicVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
