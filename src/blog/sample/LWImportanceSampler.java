@@ -22,7 +22,7 @@ public class LWImportanceSampler extends LWSampler {
 				new TupleSetSpecEvidenceLikelihoodWeighter());
 	}
 
-	protected double calculateWeight() {
+	protected double supportEvidenceAndCalculateWeight() {
 		return weighter.likelihoodAndWeight(evidence, curWorld)
 				.weightedLikelihood();
 	}

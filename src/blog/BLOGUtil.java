@@ -54,7 +54,6 @@ public class BLOGUtil {
 	public static void ensureDetAndSupported(
 			Collection<? extends BayesNetVar> vars, PartialWorld world) {
 		ensureDetAndSupported(vars, new ClassicInstantiatingEvalContext(world));
-		// TODO changed to a dynamically dispatched Context based on sampling engine
 	}
 
 	/**

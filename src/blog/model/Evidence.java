@@ -173,8 +173,15 @@ public class Evidence {
 	 * @return an unmodifiable Set of BayesNetVar objects
 	 */
 	public Set<? extends BayesNetVar> getEvidenceVars() {
-		return Collections.unmodifiableSet(observedValues.keySet());
+		if (unmodifiableEvidenceVars == null)
+			unmodifiableEvidenceVars = Collections.unmodifiableSet(observedValues
+					.keySet());
+		return unmodifiableEvidenceVars;
 	}
+
+	// place holder for variables in evidence
+	// only used in getEvidenceVars
+	private Set<BayesNetVar> unmodifiableEvidenceVars = null;
 
 	public Set getEvidenceVars(Timestep t) {
 		Set evidenceAtTime = new HashSet();
