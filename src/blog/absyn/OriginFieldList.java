@@ -2,6 +2,10 @@ package blog.absyn;
 
 import blog.symbol.Symbol;
 
+/**
+ * @author leili
+ * @date Apr 22, 2012
+ */
 public class OriginFieldList extends Absyn {
 	public Symbol var;
 	public Symbol func;
