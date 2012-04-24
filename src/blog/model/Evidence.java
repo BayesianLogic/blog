@@ -296,6 +296,11 @@ public class Evidence {
 		return getEvidenceProb(curWorld);
 	}
 
+	/**
+	 * leili: this method is a bit wired???
+	 * 
+	 * @param curWorld
+	 */
 	public void setEvidenceAndEnsureSupported(PartialWorld curWorld) {
 		BLOGUtil.setBasicVars(this, curWorld);
 		BLOGUtil.ensureDetAndSupported(getEvidenceVars(), curWorld);

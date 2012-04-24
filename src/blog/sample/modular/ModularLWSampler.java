@@ -4,15 +4,18 @@
  */
 package blog.sample.modular;
 
+import java.util.List;
 import java.util.Properties;
 
 import blog.BLOGUtil;
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
+import blog.distrib.CondProbDistrib;
 import blog.model.DependencyModel;
 import blog.model.Model;
 import blog.model.Query;
+import blog.model.Type;
 import blog.sample.LWSampler;
 import blog.world.PartialWorld;
 import blog.world.UninstVarIterator;
@@ -52,20 +55,31 @@ public class ModularLWSampler extends LWSampler {
 				VarWithDistrib var = iter.next();
 				DependencyModel.Distrib distrib = var
 						.getDistrib(new BlockInstantiatingEvalContextImpl(curWorld));
-				if (distrib == null) {
-					Util.debug("Not supported yet: " + var);
-				} else {
-					Util.debug("Instantiating: " + var);
-					iter.setValue(distrib.getCPD().sampleVal(distrib.getArgValues(),
-							var.getType()));
-					// TODO special treatment for number variables
-				}
+				Util.debug("Instantiating: " + var);
+				Type varType = var.getType();
+				CondProbDistrib cpd = distrib.getCPD();
+				List args = distrib.getArgValues();
+				Object value = cpd.sampleVal(args, varType);
 
+				iter.setValue(value);
+				varInst = true;
+				break;
+				// TODO special treatment for number variables
 			}
 
+			if (!varInst) {
+				System.out.println("World is not complete, but no basic random "
+						+ "variable is supported.  Please check for "
+						+ "a possible cycle in your model.");
+			}
 		}
 
-		weight = supportEvidenceAndCalculateWeight();
+		// TODO compute weight
+		if (evidence.isTrue(curWorld)) {
+			weight = 1;
+		} else
+			weight = 0;
+		// weight = supportEvidenceAndCalculateWeight();
 		BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
 				afterSamplingListener);
 
