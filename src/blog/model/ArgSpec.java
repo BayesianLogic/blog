@@ -37,13 +37,13 @@ package blog.model;
 
 import java.util.*;
 
-import blog.DefaultEvalContext;
 import blog.Substitution;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.common.UnaryFunction;
 import blog.common.UnaryPredicate;
 import blog.common.UnaryProcedure;
+import blog.sample.DefaultEvalContext;
 import blog.sample.EvalContext;
 import blog.world.PartialWorld;
 

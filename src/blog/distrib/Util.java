@@ -7,6 +7,7 @@ import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
 import blog.model.Clause;
 import blog.model.DependencyModel;
+import blog.sample.DefaultEvalContext;
 import blog.world.PartialWorld;
 
 public class Util {

@@ -40,6 +40,7 @@ import java.util.*;
 import blog.bn.BasicVar;
 import blog.bn.NumberVar;
 import blog.bn.OriginVar;
+import blog.sample.DefaultEvalContext;
 import blog.world.PartialWorld;
 
 /**

@@ -37,7 +37,6 @@ package blog.sample;
 
 import java.util.*;
 
-import blog.DefaultEvalContext;
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
@@ -46,8 +45,8 @@ import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
 import blog.world.PartialWorld;
+import blog.world.UninstVarIterator;
 import blog.world.WorldInProgress;
-import blog.world.WorldInProgress.UninstVarIterator;
 
 /**
  * Generates a partial world by sampling basic random variables in an order that
@@ -159,7 +158,7 @@ public class RejectionSampler extends Sampler {
 						+ "values for evidence and queries.", false);
 			}
 
-			for (WorldInProgress.UninstVarIterator iter = curWorld
+			for (UninstVarIterator iter = curWorld
 					.uninstVarIterator(); iter.hasNext();) {
 				VarWithDistrib var = (VarWithDistrib) iter.next();
 				DependencyModel.Distrib distrib = var
