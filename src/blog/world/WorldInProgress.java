@@ -184,7 +184,7 @@ public class WorldInProgress extends DefaultPartialWorld {
 	 * necessarily exist in this world, but which are not yet instantiated.
 	 */
 	public UninstVarIterator uninstVarIterator() {
-		return new UninstVarIterator();
+		return new UninstVarIterator(this);
 	}
 
 	/**
@@ -223,7 +223,7 @@ public class WorldInProgress extends DefaultPartialWorld {
 	 * increases won't do anything either. So there's no point in calling this
 	 * method in a loop.
 	 */
-	private void increaseMaxInt() {
+	void increaseMaxInt() {
 		if (intsAreArgs && ((intBound < 0) || (maxInt < intBound))) {
 
 			++maxInt;
@@ -322,74 +322,10 @@ public class WorldInProgress extends DefaultPartialWorld {
 		return new AddedTupleIterator(orig, added);
 	}
 
-	/**
-	 * Inner class for iterating over the list of uninstantiated variables. It is
-	 * like an ordinary iterator, but has an extra method <code>setValue</code>
-	 * for instantiating the variable returned by the last call to
-	 * <code>next</code>.
-	 */
-	public class UninstVarIterator implements Iterator {
-		public boolean hasNext() {
-			ensureListExtended();
-			return listIter.hasNext();
-		}
-
-		/**
-		 * Always returns an object of class VarWithDistrib.
-		 */
-		public Object next() {
-			ensureListExtended();
-			lastVar = (VarWithDistrib) listIter.next();
-			return lastVar;
-		}
-
-		/**
-		 * The <code>remove</code> method is not supported, because the only way to
-		 * remove a variable from the list of uninstantiated variables is to
-		 * instantiate it.
-		 */
-		public void remove() {
-			throw new UnsupportedOperationException(
-					"Can't remove objects from UninstVarIterator.");
-		}
-
-		/**
-		 * Instantiates the last variable returned by <code>next</code> to the given
-		 * value. The variable must be supported by this partial world, or a fatal
-		 * error will occur.
-		 * 
-		 * @throws IllegalStateException
-		 *           if <code>next</code> has not yet been called, or if
-		 *           <code>setValue</code> has already been called since the last
-		 *           call to <code>next</code>
-		 */
-		public void setValue(Object value) {
-			if (lastVar == null) {
-				throw new IllegalStateException("No variable to instantiate.");
-			}
-
-			WorldInProgress.this.setValue(lastVar, value);
-			listIter.remove(); // no longer uninstantiated
-
-			lastVar = null;
-		}
-
-		private void ensureListExtended() {
-			if (!listIter.hasNext()) {
-				// Try extending the list of uninstantiated vars by
-				// increasing maxInt.
-				increaseMaxInt();
-			}
-		}
-
-		private Iterator listIter = uninstVars.iterator();
-		VarWithDistrib lastVar = null;
-	}
-
 	private Model model;
 	private Evidence evidence;
 
-	private Collection uninstVars = new ExtensibleLinkedList();
+	Collection uninstVars = new ExtensibleLinkedList();
 
 	private Map objectsByType = new HashMap(); // from Type to List
 	private boolean intsAreArgs = false;
