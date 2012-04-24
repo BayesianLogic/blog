@@ -37,10 +37,10 @@ package blog.bn;
 
 import java.util.*;
 
-import blog.DefaultEvalContext;
 import blog.ParentRecEvalContext;
 import blog.model.DependencyModel;
 import blog.model.DependencyModel.Distrib;
+import blog.sample.DefaultEvalContext;
 import blog.sample.EvalContext;
 import blog.sample.InstantiatingEvalContext;
 import blog.world.PartialWorld;

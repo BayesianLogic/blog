@@ -45,6 +45,7 @@ import blog.common.Util;
 import blog.model.DependencyModel;
 import blog.model.Model;
 import blog.sample.ClassicInstantiatingEvalContext;
+import blog.sample.DefaultEvalContext;
 import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;
 
