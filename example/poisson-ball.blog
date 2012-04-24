@@ -10,24 +10,27 @@ random Color TrueColor(Ball);
 random Ball BallDrawn(Draw);
 random Color ObsColor(Draw);
 
-guaranteed Color Blue, Green;
-guaranteed Draw Draw[10];
+distinct Color Blue, Green;
+distinct Draw Draw[10];
 
 #Ball {
-	~ Poisson[6.0]()
+	~ Poisson(6.0)
 };
 
 TrueColor(b) {
-	~ TabularCPD[[0.5, 0.5]]()
+	~ Categorical({Blue -> 0.5, Green -> 0.5})
 };
 
 BallDrawn(d) {
 	~ UniformChoice({Ball b})
 };
 
+Distribution cpd1 = Categorical({Blue -> 0.8, Green -> 0.2});
+Distribution cpd2 = Categorical({Blue -> 0.3, Green -> 0.7});
+
 ObsColor(d) {
 	if BallDrawn(d) != null then  
-		~ TabularCPD[[0.8, 0.2], [0.2, 0.8]](TrueColor(BallDrawn(d)))
+		~ TabularCPD({Blue -> cpd1, Green -> cpd2}, TrueColor(BallDrawn(d)))
 };
 
 
