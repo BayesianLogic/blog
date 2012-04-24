@@ -23,6 +23,7 @@ public class UninstVarIterator implements Iterator<VarWithDistrib> {
 	 */
 	UninstVarIterator(WorldInProgress worldInProgress) {
 		this.worldInProgress = worldInProgress;
+		listIter = this.worldInProgress.uninstVars.iterator();
 	}
 
 	public boolean hasNext() {
@@ -78,6 +79,6 @@ public class UninstVarIterator implements Iterator<VarWithDistrib> {
 		}
 	}
 
-	private Iterator listIter = this.worldInProgress.uninstVars.iterator();
+	private Iterator listIter;
 	VarWithDistrib lastVar = null;
 }

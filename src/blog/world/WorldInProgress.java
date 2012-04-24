@@ -35,14 +35,20 @@
 
 package blog.world;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import blog.NonGuaranteedObject;
 import blog.bn.NumberVar;
 import blog.bn.RandFuncAppVar;
 import blog.bn.VarWithDistrib;
 import blog.common.AddedTupleIterator;
-import blog.common.DGraph;
 import blog.common.ExtensibleLinkedList;
 import blog.common.Util;
 import blog.model.BuiltInTypes;
@@ -322,10 +328,10 @@ public class WorldInProgress extends DefaultPartialWorld {
 		return new AddedTupleIterator(orig, added);
 	}
 
-	private Model model;
-	private Evidence evidence;
+	protected Model model;
+	protected Evidence evidence;
 
-	Collection uninstVars = new ExtensibleLinkedList();
+	Collection<VarWithDistrib> uninstVars = new ExtensibleLinkedList();
 
 	private Map objectsByType = new HashMap(); // from Type to List
 	private boolean intsAreArgs = false;
