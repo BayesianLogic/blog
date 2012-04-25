@@ -171,7 +171,7 @@ public class Model {
 	 * 
 	 * @return unmodifiable Collection of Type
 	 */
-	public Collection getTypes() {
+	public Collection<Type> getTypes() {
 		return Collections.unmodifiableCollection(types);
 	}
 
@@ -381,7 +381,7 @@ public class Model {
 	 * 
 	 * @return unmodifiable Collection of Function
 	 */
-	public Collection getFunctions() {
+	public Collection<Function> getFunctions() {
 		return Collections.unmodifiableCollection(functions);
 	}
 

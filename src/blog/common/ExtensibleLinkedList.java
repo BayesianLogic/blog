@@ -35,7 +35,11 @@
 
 package blog.common;
 
-import java.util.*;
+import java.util.AbstractCollection;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * A data structure that is implemented as a linked list, but only implements

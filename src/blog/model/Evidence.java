@@ -162,7 +162,7 @@ public class Evidence {
 	 * Returns an unmodifiable List of the SkolemConstant objects introduced by
 	 * this evidence, in the order they were introduced.
 	 */
-	public List getSkolemConstants() {
+	public List<SkolemConstant> getSkolemConstants() {
 		return Collections.unmodifiableList(skolemConstants);
 	}
 
@@ -219,20 +219,17 @@ public class Evidence {
 	 * whether this evidence is true or false.
 	 */
 	public boolean isDetermined(PartialWorld w) {
-		for (Iterator iter = symbolEvidence.iterator(); iter.hasNext();) {
-			SymbolEvidenceStatement stmt = (SymbolEvidenceStatement) iter.next();
+		for (SymbolEvidenceStatement stmt : symbolEvidence) {
 			if (!stmt.isDetermined(w)) {
 				return false;
 			}
 		}
 
-		for (Iterator iter = valueEvidence.iterator(); iter.hasNext();) {
-			ValueEvidenceStatement stmt = (ValueEvidenceStatement) iter.next();
+		for (ValueEvidenceStatement stmt : valueEvidence) {
 			if (!stmt.isDetermined(w)) {
 				return false;
 			}
 		}
-
 		return true;
 	}
 
@@ -240,20 +237,17 @@ public class Evidence {
 	 * Returns true if this evidence is true in the given world; otherwise false.
 	 */
 	public boolean isTrue(PartialWorld w) {
-		for (Iterator iter = symbolEvidence.iterator(); iter.hasNext();) {
-			SymbolEvidenceStatement stmt = (SymbolEvidenceStatement) iter.next();
+		for (SymbolEvidenceStatement stmt : symbolEvidence) {
 			if (!stmt.isTrue(w)) {
 				return false;
 			}
 		}
 
-		for (Iterator iter = valueEvidence.iterator(); iter.hasNext();) {
-			ValueEvidenceStatement stmt = (ValueEvidenceStatement) iter.next();
+		for (ValueEvidenceStatement stmt : valueEvidence) {
 			if (!stmt.isTrue(w)) {
 				return false;
 			}
 		}
-
 		return true;
 	}
 

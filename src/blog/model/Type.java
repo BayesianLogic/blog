@@ -139,7 +139,7 @@ public class Type {
 	 * 
 	 * @return unmodifiable Collection of POP objects
 	 */
-	public Collection getPOPs() {
+	public Collection<? extends POP> getPOPs() {
 		return Collections.unmodifiableCollection(pops);
 	}
 
@@ -153,7 +153,7 @@ public class Type {
 	 * 
 	 * @return unmodifiable List of OriginFunction objects
 	 */
-	public List getOriginFunctions() {
+	public List<OriginFunction> getOriginFunctions() {
 		return Collections.unmodifiableList(originFuncs);
 	}
 
@@ -410,8 +410,9 @@ public class Type {
 	private Type supertype;
 	private int creationIndex = Model.nextCreationIndex();
 
-	private List pops = new ArrayList(); // of POP
-	private List originFuncs = new ArrayList(); // of OriginFunction
+	private List<POP> pops = new ArrayList<POP>(); // of POP
+	private List<OriginFunction> originFuncs = new ArrayList<OriginFunction>(); // of
+	// OriginFunction
 	private List userDefGuarObjs = new ArrayList(); // of EnumeratedObject
 	private boolean infiniteGuaranteed = false;
 
