@@ -35,12 +35,11 @@
 
 package blog.distrib;
 
-import blog.*;
+import java.io.Serializable;
+import java.util.List;
+
 import blog.common.Util;
 import blog.model.Type;
-
-import java.io.Serializable;
-import java.util.*;
 
 /**
  * A Poisson distribution with mean and variance lambda. This is a distribution
@@ -77,6 +76,10 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
 	 */
 	public double getLogProb(List args, Object value) {
 		int n = ((Number) value).intValue();
+		return computeLogProb(n);
+	}
+
+	private double computeLogProb(int n) {
 		return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
 	}
 
@@ -101,6 +104,24 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
 		}
 
 		return new Integer(n);
+	}
+
+	/**
+	 * compute the cumulative density
+	 * 
+	 * @author leili
+	 * @param args
+	 * @param value
+	 * @return
+	 */
+	public double cdf(List args, Object value) {
+		int n = ((Number) value).intValue();
+		double w = 0;
+		for (int i = 0; i <= n; i++) {
+			w += Math.exp(computeLogProb(i));
+		}
+		return w;
+		// TODO cache of computed cdf
 	}
 
 	public String toString() {
