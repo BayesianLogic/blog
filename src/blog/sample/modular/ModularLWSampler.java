@@ -4,11 +4,13 @@
  */
 package blog.sample.modular;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import java.util.Properties;
 import blog.BLOGUtil;
 import blog.NonGuaranteedObject;
 import blog.bn.BayesNetVar;
+import blog.bn.DerivedVar;
 import blog.bn.NumberVar;
 import blog.bn.RandFuncAppVar;
 import blog.bn.VarWithDistrib;
@@ -24,16 +27,21 @@ import blog.common.AddedTupleIterator;
 import blog.common.ExtensibleLinkedList;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
+import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
+import blog.model.CardinalitySpec;
 import blog.model.DependencyModel;
 import blog.model.Evidence;
+import blog.model.Formula;
 import blog.model.Function;
+import blog.model.ImplicitSetSpec;
 import blog.model.Model;
 import blog.model.POP;
 import blog.model.Query;
 import blog.model.RandomFunction;
 import blog.model.SkolemConstant;
 import blog.model.Type;
+import blog.sample.IntRegion;
 import blog.sample.LWSampler;
 import blog.sample.Region;
 import blog.world.DefaultPartialWorld;
@@ -65,33 +73,24 @@ public class ModularLWSampler extends LWSampler {
 			Util.debug("Creating initial possible world");
 		}
 		this.curWorld = curWorld;
-
+		double w = 0;
+		weight = 1;
 		while (!isCurWorldSufficient(curWorld)) {
 			VarWithDistrib var = curWorld.getNextUninstVar();
 			if (var != null) {
-				DependencyModel.Distrib distrib = var
-						.getDistrib(new BlockInstantiatingEvalContextImpl(curWorld));
-				Util.debug("Instantiating: " + var);
-				Type varType = var.getType();
-				CondProbDistrib cpd = distrib.getCPD();
-				List args = distrib.getArgValues();
-				Object value = cpd.sampleVal(args, varType);
-				curWorld.setValue(var, value);
-
-				// TODO special treatment for number variables
+				w = sampleAndComputeWeight(var, curWorld);
+				if (w < 0)
+					break;
 			} else {
 				System.out.println("World is not complete, but no basic random "
 						+ "variable is supported.  Please check for "
 						+ "a possible cycle in your model.");
 			}
+			weight *= w;
 		}
 
-		// TODO compute weight
-		if (evidence.isTrue(curWorld)) {
-			weight = 1;
-		} else
+		if (!evidence.isTrue(curWorld))
 			weight = 0;
-		// weight = supportEvidenceAndCalculateWeight();
 		BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
 				afterSamplingListener);
 
@@ -108,6 +107,58 @@ public class ModularLWSampler extends LWSampler {
 			++numConsistentThisTrial;
 		}
 		sumWeightsThisTrial += weight;
+	}
+
+	private double sampleAndComputeWeight(VarWithDistrib var,
+			WorldWithBlock curWorld) {
+		DependencyModel.Distrib distrib = var
+				.getDistrib(new BlockInstantiatingEvalContextImpl(curWorld));
+		Util.debug("Instantiating: " + var);
+		Type varType = var.getType();
+		CondProbDistrib cpd = distrib.getCPD();
+		List args = distrib.getArgValues();
+		Region r = curWorld.getSatisfyingRegion(var);
+
+		double w = 0;
+		if (r.isEmpty())
+			return -1;
+		Object value = null;
+		if (r.isSingleton()) {
+			value = r.getOneValue();
+			w = cpd.getProb(args, value);
+		} else {
+			do {
+				value = cpd.sampleVal(args, varType);
+			} while (!r.contains(value));
+			w = computeCPD(cpd, args, r);
+		}
+		curWorld.setValue(var, value);
+		return w; // TODO return weight
+	}
+
+	/**
+	 * compute the cumulative probability within the region
+	 * 
+	 * @param cpd
+	 * @param args
+	 * @param rg
+	 * @return
+	 */
+	private double computeCPD(CondProbDistrib cpd, List args, Region rg) {
+		if (rg == Region.FULL_REGION)
+			return 1;
+		Class cls = cpd.getClass();
+		try {
+			Method method = cls.getMethod("cdf", new Class[] { List.class,
+					Object.class });
+			IntRegion reg = (IntRegion) rg;
+			Object high = method.invoke(cpd, new Object[] { args, reg.getMax() });
+			Object low = method.invoke(cpd, new Object[] { args, reg.getMin() - 1 });
+			return ((Number) high).doubleValue() - ((Number) low).doubleValue();
+		} catch (Exception ex) {
+			Util.debug("no idea how to compute the weight!!!");
+		}
+		return 1;
 	}
 
 	private boolean isCurWorldSufficient(PartialWorld world) {
@@ -220,13 +271,18 @@ class WorldWithBlock extends DefaultPartialWorld {
 		// added number variables for those number statement without origin
 		// functions
 		for (Type generatedType : model.getTypes()) {
-			for (POP pop : generatedType.getPOPs()) {
+			Collection<POP> pops = generatedType.getPOPs();
+
+			// set initial size of unused number statements for each type
+			restPOPs.put(generatedType, new HashSet<POP>(pops));
+
+			for (POP pop : pops) {
 				for (int i = 0; i < pop.getArgTypes().length; ++i) {
 					objectsByType.put(pop.getArgTypes()[i], new ArrayList());
 				}
 
 				if (pop.getArgTypes().length == 0) {
-					uninstVars.add(new NumberVar(pop, Collections.EMPTY_LIST));
+					addNumberVar(new NumberVar(pop, Collections.EMPTY_LIST));
 				}
 			}
 		}
@@ -270,6 +326,7 @@ class WorldWithBlock extends DefaultPartialWorld {
 
 		if (var instanceof NumberVar) {
 			int varDepth = getVarDepth(var);
+			NumberVar nv = (NumberVar) var;
 			if ((depthBound < 0) || (varDepth < depthBound)) {
 				if (getVarDepth(var) >= maxInt) {
 					// We're creating non-guaranteed objects of greater depth,
@@ -278,9 +335,11 @@ class WorldWithBlock extends DefaultPartialWorld {
 				}
 
 				// Add objects generated by this number variable
-				NumberVar nv = (NumberVar) var;
 				addObjects(nv.pop().type(), getSatisfiers(nv));
 			}
+			Type ty = nv.pop().type();
+			Integer t = restNumberVars.get(ty) - 1;
+			restNumberVars.put(ty, t);
 		}
 
 		if (var != lastVar) {
@@ -411,29 +470,68 @@ class WorldWithBlock extends DefaultPartialWorld {
 
 	public Region getSatisfyingRegion(VarWithDistrib var) {
 		for (BayesNetVar ev : evidence.getEvidenceVars()) {
-			if (isDirectParent(var, ev)) {
-				return computeRegionFromEvidence(var, ev);
+			Region r = computeRegionFromEvidence(var, ev);
+			if (r != null) {
+				return r;
 			}
 		}
+		return Region.FULL_REGION;
+	}
 
+	private Region computeRegionFromEvidence(BayesNetVar v1, BayesNetVar v2) {
+		if (v2 instanceof DerivedVar) {
+			ArgSpec as = ((DerivedVar) v2).getArgSpec();
+			if (as instanceof CardinalitySpec) {
+				// child is cardinality of a set
+				ImplicitSetSpec iss = ((CardinalitySpec) as).getSetSpec();
+				Type childType = iss.getType();
+				if (v1 instanceof NumberVar) {
+					// parent is number variable, potential match
+					NumberVar numv1 = (NumberVar) v1;
+					POP parentPOP = numv1.pop();
+					Type parentType = parentPOP.type();
+					if (parentType != childType) {
+						return null;
+					} else {
+						// potential match, if
+						Object[] objs = numv1.args(); // generating objects for parent
+																					// variable
+						if (objs.length == 0) {
+							// no any constraint
+							return Region.FULL_REGION;
+						} else {
+							//
+							Formula cond = iss.getCond();
+							if (cond.isDetermined(this) && cond.isTrue(this)) {
+								int value = ((Number) evidence.getObservedValue(v2)).intValue();
+								if (anyMoreNumberVar(childType)) {
+									return new IntRegion(0, value);
+								} else {
+									return new IntRegion(value);
+								}
+							}
+						}
+					}
+				} /* TODO check other cases of v1 that can be potential parent of this */
+
+			} else {
+				// other cases of argspec in v1
+			}
+
+		} else {
+			// other variables
+			// might be parent
+			// TODO check whether the condition has v1 as parent
+		}
 		return null;
 	}
 
-	Region computeRegionFromEvidence(BayesNetVar parent, BayesNetVar child) {
-		// TODO
-		return null;
-	}
-
-	/**
-	 * 
-	 * @param v1
-	 * @param v2
-	 * @return
-	 *         true if v1 is direct parent of v2
-	 */
-	boolean isDirectParent(BayesNetVar v1, BayesNetVar v2) {
-		// TODO
-		return false;
+	boolean anyMoreNumberVar(Type type) {
+		if (restPOPs.containsKey(type) && restPOPs.get(type).size() == 0) {
+			if (restNumberVars.containsKey(type))
+				return restNumberVars.get(type) > 0;
+		}
+		return true;
 	}
 
 	private void addFuncAppVars(RandomFunction f, Type newObjType,
@@ -453,12 +551,27 @@ class WorldWithBlock extends DefaultPartialWorld {
 		for (Iterator iter = getAddedTupleIterator(
 				Arrays.asList(pop.getArgTypes()), newObjType, newObjs); iter.hasNext();) {
 			List genObjs = (List) iter.next();
-			VarWithDistrib v = new NumberVar(pop, genObjs);
+			NumberVar v = new NumberVar(pop, genObjs);
 			if (Util.verbose()) {
 				System.out.println("Adding uninstantiated var: " + v);
 			}
-			uninstVars.add(v);
+			addNumberVar(v);
 		}
+	}
+
+	private void addNumberVar(NumberVar var) {
+		Type type = var.pop().type();
+		Integer value = restNumberVars.get(type);
+		if (value == null) {
+			value = 1;
+		} else {
+			value = value + 1;
+		}
+		HashSet<POP> pops = restPOPs.get(type);
+		pops.remove(var.pop());
+
+		restNumberVars.put(type, value);
+		uninstVars.add(var);
 	}
 
 	private Iterator getAddedTupleIterator(List argTypes, Type newObjType,
@@ -482,6 +595,10 @@ class WorldWithBlock extends DefaultPartialWorld {
 	protected Evidence evidence;
 
 	ExtensibleLinkedList uninstVars = new ExtensibleLinkedList();
+	// remaining number of already generated number variables for each type,
+	private Map<Type, Integer> restNumberVars = new HashMap<Type, Integer>();
+	// remaining number of number statements for each type of variable
+	private Map<Type, HashSet<POP>> restPOPs = new HashMap<Type, HashSet<POP>>();
 
 	private Map<Type, List> objectsByType = new HashMap<Type, List>(); // from
 																																			// Type to
