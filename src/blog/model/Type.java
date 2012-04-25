@@ -139,7 +139,7 @@ public class Type {
 	 * 
 	 * @return unmodifiable Collection of POP objects
 	 */
-	public Collection<? extends POP> getPOPs() {
+	public Collection<POP> getPOPs() {
 		return Collections.unmodifiableCollection(pops);
 	}
 
