@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import blog.BLOGUtil;
 import blog.NonGuaranteedObject;
@@ -44,6 +45,7 @@ import blog.model.Type;
 import blog.sample.IntRegion;
 import blog.sample.LWSampler;
 import blog.sample.Region;
+import blog.sample.SingletonRegion;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 
@@ -478,7 +480,24 @@ class WorldWithBlock extends DefaultPartialWorld {
 		return Region.FULL_REGION;
 	}
 
+	/**
+	 * compute the feasible region based on the evidence,
+	 * the method will only use the v2 if
+	 * 1. v1 is a direct parent of v2, or
+	 * 2. v1 and v2 are the same, i.e. corresponding to evidence variable
+	 * 
+	 * @param v1
+	 *          the variable to sample
+	 * @param v2
+	 *          the variable corresponding to evidence
+	 * @return
+	 */
 	private Region computeRegionFromEvidence(BayesNetVar v1, BayesNetVar v2) {
+		if (v1.equals(v2)) {
+			// the variable is in the evidence, it should be directly set to evidence
+			// value
+			return new SingletonRegion(evidence.getObservedValue(v2));
+		}
 		if (v2 instanceof DerivedVar) {
 			ArgSpec as = ((DerivedVar) v2).getArgSpec();
 			if (as instanceof CardinalitySpec) {
@@ -490,7 +509,7 @@ class WorldWithBlock extends DefaultPartialWorld {
 					NumberVar numv1 = (NumberVar) v1;
 					POP parentPOP = numv1.pop();
 					Type parentType = parentPOP.type();
-					if (parentType != childType) {
+					if (!parentType.equals(childType)) {
 						return null;
 					} else {
 						// potential match, if
@@ -500,11 +519,20 @@ class WorldWithBlock extends DefaultPartialWorld {
 							// no any constraint
 							return Region.FULL_REGION;
 						} else {
-							//
+							// v1 is parent of v2
 							Formula cond = iss.getCond();
 							if (cond.isDetermined(this) && cond.isTrue(this)) {
 								int value = ((Number) evidence.getObservedValue(v2)).intValue();
-								if (anyMoreNumberVar(childType)) {
+								// get all previously satisfied var
+								Set<BayesNetVar> pvars = getAlreadySampledParentVars(v2);
+								for (BayesNetVar pv : pvars) {
+									// eliminate the already sampled ones
+									int a = ((Number) this.getValue(pv)).intValue();
+									value -= a;
+								}
+								// v1 is parent of v2, and will be sampled immediately
+								pvars.add(v1);
+								if ((value > 0) && anyMoreNumberVar(childType)) {
 									return new IntRegion(0, value);
 								} else {
 									return new IntRegion(value);
@@ -526,7 +554,25 @@ class WorldWithBlock extends DefaultPartialWorld {
 		return null;
 	}
 
-	boolean anyMoreNumberVar(Type type) {
+	/**
+	 * get the already sampled variables that are parent of this one
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private Set<BayesNetVar> getAlreadySampledParentVars(BayesNetVar var) {
+		HashSet<BayesNetVar> vs = sampledParentVarMap.get(var);
+		if (vs == null) {
+			vs = new HashSet<BayesNetVar>();
+			sampledParentVarMap.put(var, vs);
+		}
+		return vs;
+	}
+
+	/**
+	 * is there any more number variables for this type?
+	 */
+	private boolean anyMoreNumberVar(Type type) {
 		if (restPOPs.containsKey(type) && restPOPs.get(type).size() == 0) {
 			if (restNumberVars.containsKey(type))
 				return restNumberVars.get(type) > 0;
@@ -594,15 +640,21 @@ class WorldWithBlock extends DefaultPartialWorld {
 	protected Model model;
 	protected Evidence evidence;
 
+	// a stable and extensible list of uninstantiated random variables
 	ExtensibleLinkedList uninstVars = new ExtensibleLinkedList();
+
 	// remaining number of already generated number variables for each type,
 	private Map<Type, Integer> restNumberVars = new HashMap<Type, Integer>();
+
 	// remaining number of number statements for each type of variable
 	private Map<Type, HashSet<POP>> restPOPs = new HashMap<Type, HashSet<POP>>();
 
-	private Map<Type, List> objectsByType = new HashMap<Type, List>(); // from
-																																			// Type to
-																																			// List
+	// map from child var to already sampled parent variables
+	private Map<BayesNetVar, HashSet<BayesNetVar>> sampledParentVarMap = new HashMap<BayesNetVar, HashSet<BayesNetVar>>();
+
+	// from Type to List of objects
+	private Map<Type, List> objectsByType = new HashMap<Type, List>();
+
 	private boolean intsAreArgs = false;
 	private int maxInt = 0; // max int added to object list so far
 
