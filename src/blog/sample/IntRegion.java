@@ -47,6 +47,10 @@ public class IntRegion extends Region {
 		this.high = high;
 	}
 
+	/**
+	 * @deprecated
+	 * @param high
+	 */
 	public IntRegion(int high) {
 		this(high, high);
 	}
