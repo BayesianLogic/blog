@@ -535,7 +535,7 @@ class WorldWithBlock extends DefaultPartialWorld {
 								if ((value > 0) && anyMoreNumberVar(childType)) {
 									return new IntRegion(0, value);
 								} else {
-									return new IntRegion(value);
+									return new SingletonRegion(value);
 								}
 							}
 						}
@@ -575,7 +575,7 @@ class WorldWithBlock extends DefaultPartialWorld {
 	private boolean anyMoreNumberVar(Type type) {
 		if (restPOPs.containsKey(type) && restPOPs.get(type).size() == 0) {
 			if (restNumberVars.containsKey(type))
-				return restNumberVars.get(type) > 0;
+				return restNumberVars.get(type) > 1;
 		}
 		return true;
 	}
