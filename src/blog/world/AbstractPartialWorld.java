@@ -35,8 +35,18 @@
 
 package blog.world;
 
-import java.util.*;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 import blog.NonGuaranteedObject;
 import blog.ObjectIdentifier;
@@ -57,7 +67,6 @@ import blog.common.IndexedMultiMap;
 import blog.common.IndexedSet;
 import blog.common.MapWithPreimages;
 import blog.common.MultiMap;
-import blog.common.Timer;
 import blog.common.Util;
 import blog.model.DependencyModel;
 import blog.model.Model;
@@ -66,7 +75,6 @@ import blog.model.RandomFunction;
 import blog.objgen.AbstractObjectSet;
 import blog.objgen.ObjectIterator;
 import blog.objgen.ObjectSet;
-
 
 /**
  * An implementation of the PartialWorld interface that just requires concrete
@@ -122,8 +130,11 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 
 		Object oldValue = basicVarToValue.get(var);
 		if (value == null ? (oldValue == null) : value.equals(oldValue)) {
+			Util.debug("Setting var: " + var + " to " + value);
 			return;
 		}
+		Util.debug("Setting var: " + var + " to " + value + ", replacing "
+				+ oldValue);
 		var.ensureStable();
 
 		if ((var instanceof NumberVar) && (oldValue != null)) {
