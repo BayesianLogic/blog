@@ -32,8 +32,8 @@ public class IntRegion extends Region {
 		return low == high;
 	}
 
-	private long low;
-	private long high;
+	private int low;
+	private int high;
 
 	/**
 	 * create a region over integers; [low, high]
@@ -41,7 +41,7 @@ public class IntRegion extends Region {
 	 * @param low
 	 * @param high
 	 */
-	public IntRegion(long low, long high) {
+	public IntRegion(int low, int high) {
 		// valueset = new IntervalsSet(low, high);
 		this.low = low;
 		this.high = high;
@@ -58,8 +58,8 @@ public class IntRegion extends Region {
 	 */
 	@Override
 	public boolean contains(Object value) {
-		if (value instanceof Integer) {
-			long num = ((Number) value).longValue();
+		if ((value instanceof Integer) || (value instanceof Long)) {
+			int num = ((Number) value).intValue();
 			return (num <= high) && (num >= low);
 		}
 		return false;
@@ -81,5 +81,15 @@ public class IntRegion extends Region {
 
 	public long getMax() {
 		return high;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return ("[" + low + "," + high + "]");
 	}
 }
