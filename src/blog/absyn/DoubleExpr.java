@@ -9,7 +9,11 @@ public class DoubleExpr extends Expr {
 	public double value;
 
 	public DoubleExpr(int p, double v) {
-		pos = p;
+		this(0, p, v);
+	}
+
+	public DoubleExpr(int line, int col, double v) {
+		super(line, col);
 		value = v;
 	}
 

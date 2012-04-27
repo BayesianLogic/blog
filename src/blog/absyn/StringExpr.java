@@ -7,9 +7,13 @@ package blog.absyn;
 public class StringExpr extends Expr {
 	public String value;
 
-	public StringExpr(int p, String v) {
-		pos = p;
+	public StringExpr(int line, int col, String v) {
+		super(line, col);
 		value = v;
+	}
+
+	public StringExpr(int pos, String v) {
+		this(0, pos, v);
 	}
 
 	@Override

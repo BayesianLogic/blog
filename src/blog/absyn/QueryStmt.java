@@ -7,9 +7,13 @@ package blog.absyn;
 public class QueryStmt extends Stmt {
 	public Expr query;
 
-	public QueryStmt(int p, Expr q) {
-		pos = p;
+	public QueryStmt(int line, int p, Expr q) {
+		super(line, p);
 		query = q;
+	}
+
+	public QueryStmt(int p, Expr q) {
+		this(0, p, q);
 	}
 
 	@Override

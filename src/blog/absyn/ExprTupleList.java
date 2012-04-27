@@ -11,6 +11,7 @@ public class ExprTupleList extends Absyn {
 	public ExprTupleList next;
 
 	public ExprTupleList(Expr f, Expr t, ExprTupleList n) {
+		super(f.getLine(), f.getCol());
 		from = f;
 		to = t;
 		next = n;

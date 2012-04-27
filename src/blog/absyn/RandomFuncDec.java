@@ -16,16 +16,12 @@ public class RandomFuncDec extends FunctionDec {
 	 * @param r
 	 * @param b
 	 */
-	public RandomFuncDec(int p, Symbol n, Ty r, Expr b) {
-		this(p, n, null, r, b);
-	}
-
-	public RandomFuncDec(int p, Symbol n, FieldList a, Ty r) {
-		this(p, n, a, r, null);
+	public RandomFuncDec(int line, int p, Symbol n, FieldList a, Ty r, Expr b) {
+		super(line, p, n, a, r, b);
 	}
 
 	public RandomFuncDec(int p, Symbol n, FieldList a, Ty r, Expr b) {
-		super(p, n, a, r, b);
+		this(0, p, n, a, r, b);
 	}
 
 }

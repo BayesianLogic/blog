@@ -12,8 +12,8 @@ public class FieldList extends Absyn {
 	public Ty typ;
 	public FieldList next;
 
-	public FieldList(int p, Symbol n, Ty t, FieldList x) {
-		pos = p;
+	public FieldList(Symbol n, Ty t, FieldList x) {
+		super(t.getLine(), t.getCol());
 		var = n;
 		typ = t;
 		next = x;

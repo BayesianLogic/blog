@@ -10,17 +10,22 @@ public class IfExpr extends Expr {
 	public Expr elseclause; /* optional */
 
 	public IfExpr(int p, Expr x, Expr y) {
-		pos = p;
-		test = x;
-		thenclause = y;
-		elseclause = null;
+		this(p, x, y, null);
 	}
 
 	public IfExpr(int p, Expr x, Expr y, Expr z) {
-		pos = p;
+		this(0, p, x, y, z);
+	}
+
+	public IfExpr(int line, int col, Expr x, Expr y, Expr z) {
+		super(line, col);
 		test = x;
 		thenclause = y;
 		elseclause = z;
+	}
+
+	public IfExpr(int line, int col, Expr x, Expr y) {
+		this(line, col, x, y, null);
 	}
 
 	@Override

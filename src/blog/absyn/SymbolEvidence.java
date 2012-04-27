@@ -8,10 +8,14 @@ public class SymbolEvidence extends EvidenceStmt {
 	public ImplicitSetExpr left;
 	public ExplicitSetExpr right;
 
-	public SymbolEvidence(int p, ImplicitSetExpr s, ExplicitSetExpr t) {
-		pos = p;
+	public SymbolEvidence(int line, int p, ImplicitSetExpr s, ExplicitSetExpr t) {
+		super(line, p);
 		left = s;
 		right = t;
+	}
+
+	public SymbolEvidence(int p, ImplicitSetExpr s, ExplicitSetExpr t) {
+		this(0, p, s, t);
 	}
 
 	@Override

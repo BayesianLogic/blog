@@ -9,7 +9,20 @@ public class OpExpr extends Expr {
 	public int oper;
 
 	public OpExpr(int p, Expr l, int o, Expr r) {
-		pos = p;
+		this(0, p, l, o, r);
+	}
+
+	/**
+	 * create an Operator expression at the specified line and column
+	 * 
+	 * @param line
+	 * @param col
+	 * @param l
+	 * @param o
+	 * @param r
+	 */
+	public OpExpr(int line, int col, Expr l, int o, Expr r) {
+		super(line, col);
 		left = l;
 		oper = o;
 		right = r;
@@ -17,7 +30,7 @@ public class OpExpr extends Expr {
 
 	public final static int PLUS = 0, MINUS = 1, MULT = 2, DIV = 3, MOD = 4,
 			EQ = 11, NEQ = 12, LT = 13, LEQ = 14, GT = 15, GEQ = 16, AND = 21,
-			OR = 22, NOT = 23, SUB = 31;
+			OR = 22, NOT = 23, SUB = 31, AT = 99;
 
 	@Override
 	public void printTree(Printer pr, int d) {
@@ -69,6 +82,9 @@ public class OpExpr extends Expr {
 			break;
 		case OpExpr.SUB:
 			pr.say("SUB");
+			break;
+		case OpExpr.AT:
+			pr.say("AT");
 			break;
 		default:
 			throw new Error("Print.prExp.OpExpr");
