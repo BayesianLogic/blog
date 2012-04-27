@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import blog.Timestep;
 import blog.absyn.Absyn;
 import blog.absyn.Dec;
 import blog.absyn.DistinctSymbolDec;
@@ -27,6 +28,7 @@ import blog.absyn.IntExpr;
 import blog.absyn.NameTy;
 import blog.absyn.NumberDec;
 import blog.absyn.NumberExpr;
+import blog.absyn.OpExpr;
 import blog.absyn.OriginFieldList;
 import blog.absyn.OriginFuncDec;
 import blog.absyn.ParameterDec;
@@ -483,6 +485,8 @@ public class Semant {
 			return transExpr((ExplicitSetExpr) e);
 		} else if (e instanceof IfExpr) {
 			return transExpr((IfExpr) e);
+		} else if (e instanceof OpExpr) {
+			return transExpr((OpExpr) e);
 		}
 
 		return null;
@@ -542,6 +546,50 @@ public class Semant {
 			return new CardinalitySpec((ImplicitSetSpec) r);
 		} else {
 			error(e.line, e.col, "Number expression expecting implicit set");
+		}
+		return null;
+	}
+
+	ArgSpec transExpr(OpExpr e) {
+		switch (e.oper) {
+		case OpExpr.PLUS:
+			break;
+		case OpExpr.MINUS:
+			break;
+		case OpExpr.MULT:
+			break;
+		case OpExpr.DIV:
+			break;
+		case OpExpr.MOD:
+			break;
+		case OpExpr.EQ:
+			break;
+		case OpExpr.NEQ:
+			break;
+		case OpExpr.LT:
+			break;
+		case OpExpr.LEQ:
+			break;
+		case OpExpr.GT:
+			break;
+		case OpExpr.GEQ:
+			break;
+		case OpExpr.AND:
+			break;
+		case OpExpr.OR:
+			break;
+		case OpExpr.NOT:
+			break;
+		case OpExpr.SUB:
+			break;
+		case OpExpr.AT:
+			if (e.left == null && e.right instanceof IntExpr)
+				BuiltInFunctions.getLiteral(e.toString(), BuiltInTypes.TIMESTEP,
+						Timestep.at(((IntExpr) e.right).value));
+			break;
+		default:
+			error(e.getLine(), e.getCol(),
+					"The operation could not be applied" + e.toString());
 		}
 		return null;
 	}
