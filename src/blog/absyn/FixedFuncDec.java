@@ -16,16 +16,21 @@ public class FixedFuncDec extends FunctionDec {
 	 * @param r
 	 * @param b
 	 */
-	public FixedFuncDec(int p, Symbol n, Ty r, Expr b) {
-		this(p, n, null, r, b);
-	}
-
-	public FixedFuncDec(int p, Symbol n, FieldList a, Ty r) {
-		this(p, n, a, r, null);
-	}
-
 	public FixedFuncDec(int p, Symbol n, FieldList a, Ty r, Expr b) {
-		super(p, n, a, r, b);
+		this(0, p, n, a, r, b);
 	}
 
+	public FixedFuncDec(int line, int pos, Symbol n, FieldList a, Ty r, Expr b) {
+		super(line, pos, n, a, r, b);
+	}
+
+	/**
+	 * @param i
+	 * @param symbol
+	 * @param nameTy
+	 * @param booleanExpr
+	 */
+	public FixedFuncDec(int p, Symbol n, NameTy r, Expr b) {
+		this(0, p, n, null, r, b);
+	}
 }

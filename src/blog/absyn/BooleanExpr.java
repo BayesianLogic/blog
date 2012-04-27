@@ -9,7 +9,11 @@ public class BooleanExpr extends Expr {
 	public boolean value;
 
 	public BooleanExpr(int p, boolean v) {
-		pos = p;
+		this(0, p, v);
+	}
+
+	public BooleanExpr(int line, int col, boolean v) {
+		super(line, col);
 		value = v;
 	}
 

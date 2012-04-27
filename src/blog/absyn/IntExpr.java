@@ -8,7 +8,11 @@ public class IntExpr extends Expr {
 	public int value;
 
 	public IntExpr(int p, int v) {
-		pos = p;
+		this(0, p, v);
+	}
+
+	public IntExpr(int line, int col, int v) {
+		super(line, col);
 		value = v;
 	}
 

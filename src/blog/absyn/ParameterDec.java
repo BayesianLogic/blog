@@ -11,11 +11,15 @@ public class ParameterDec extends Dec {
 	public Symbol name;
 	public Ty type;
 
-	public ParameterDec(int p, Ty t, Symbol n, Expr c) {
-		pos = p;
+	public ParameterDec(int line, int p, Ty t, Symbol n, Expr c) {
+		super(line, p);
 		type = t;
 		name = n;
 		cond = c;
+	}
+
+	public ParameterDec(int p, Ty t, Symbol n, Expr c) {
+		this(0, p, t, n, c);
 	}
 
 	@Override

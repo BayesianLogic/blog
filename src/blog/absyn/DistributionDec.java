@@ -13,7 +13,11 @@ public class DistributionDec extends Dec {
 	public ExprList params;
 
 	public DistributionDec(int p, Symbol n, ClassName cn, ExprList a) {
-		pos = p;
+		this(0, p, n, cn, a);
+	}
+
+	public DistributionDec(int line, int col, Symbol n, ClassName cn, ExprList a) {
+		super(line, col);
 		name = n;
 		classname = cn;
 		params = a;

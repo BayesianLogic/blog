@@ -10,8 +10,13 @@ import blog.symbol.Symbol;
 public class ClassName extends Absyn {
 	public Symbol name;
 
-	public ClassName(int p, Symbol name) {
+	public ClassName(int line, int p, Symbol name) {
+		super(line, p);
 		this.name = name;
+	}
+
+	public ClassName(int p, Symbol name) {
+		this(0, p, name);
 	}
 
 	@Override

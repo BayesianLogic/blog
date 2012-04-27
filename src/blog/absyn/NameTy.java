@@ -10,7 +10,11 @@ public class NameTy extends Ty {
 	public Symbol name;
 
 	public NameTy(int p, Symbol n) {
-		pos = p;
+		this(0, p, n);
+	}
+
+	public NameTy(int line, int col, Symbol n) {
+		super(line, col);
 		name = n;
 	}
 

@@ -17,7 +17,11 @@ public class OriginFuncDec extends FunctionDec {
 	 * @param b
 	 */
 	public OriginFuncDec(int p, Symbol n, FieldList a, Ty r) {
-		super(p, n, a, r, null);
+		this(0, p, n, a, r);
+	}
+
+	public OriginFuncDec(int line, int pos, Symbol n, FieldList a, Ty r) {
+		super(line, pos, n, a, r, null);
 	}
 
 }

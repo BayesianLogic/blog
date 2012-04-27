@@ -13,11 +13,24 @@ public class FunctionDec extends Dec {
 	public Expr body;
 
 	public FunctionDec(int p, Symbol n, FieldList a, Ty r, Expr b) {
-		pos = p;
+		this(0, p, n, a, r, b);
+	}
+
+	/**
+	 * @param line
+	 * @param pos
+	 * @param n
+	 * @param a
+	 * @param r
+	 * @param b
+	 */
+	public FunctionDec(int line, int pos, Symbol n, FieldList a, Ty r, Expr b) {
+		super(line, pos);
 		name = n;
 		params = a;
 		result = r;
 		body = b;
+
 	}
 
 	@Override

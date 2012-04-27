@@ -1,6 +1,5 @@
 package blog.absyn;
 
-
 /**
  * @author leili
  * @date Apr 22, 2012
@@ -10,11 +9,15 @@ public class NumberDec extends Dec {
 	public OriginFieldList params;
 	public Expr body;
 
-	public NumberDec(int p, Ty n, OriginFieldList a, Expr b) {
-		pos = p;
+	public NumberDec(int line, int pos, Ty n, OriginFieldList a, Expr b) {
+		super(line, pos);
 		typ = n;
 		params = a;
 		body = b;
+	}
+
+	public NumberDec(int pos, Ty n, OriginFieldList a, Expr b) {
+		this(0, pos, n, a, b);
 	}
 
 	@Override

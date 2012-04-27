@@ -10,6 +10,7 @@ public class ExprList extends Absyn {
 	public ExprList next;
 
 	public ExprList(Expr h, ExprList t) {
+		super(h.getLine(), h.getCol());
 		head = h;
 		next = t;
 	}

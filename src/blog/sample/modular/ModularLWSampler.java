@@ -40,7 +40,6 @@ import blog.model.Model;
 import blog.model.POP;
 import blog.model.Query;
 import blog.model.RandomFunction;
-import blog.model.SkolemConstant;
 import blog.model.Type;
 import blog.sample.IntRegion;
 import blog.sample.LWSampler;
@@ -252,23 +251,6 @@ class WorldWithBlock extends DefaultPartialWorld {
 	 * add all random variables without parents into the uninstantiated variables
 	 */
 	protected void init() {
-		// Determine what types serve as arguments to basic RVs. Initialize
-		// their object lists to be empty. As we're doing this, add any
-		// random variables with empty arg lists to the list of uninstantiated
-		// RVs.
-
-		for (Function f : model.getFunctions()) {
-			if (f instanceof RandomFunction) {
-				for (int i = 0; i < f.getArgTypes().length; ++i) {
-					objectsByType.put(f.getArgTypes()[i], new ArrayList());
-				}
-
-				if (f.getArgTypes().length == 0) {
-					uninstVars.add(new RandFuncAppVar((RandomFunction) f,
-							Collections.EMPTY_LIST));
-				}
-			}
-		}
 
 		// added number variables for those number statement without origin
 		// functions
@@ -289,10 +271,29 @@ class WorldWithBlock extends DefaultPartialWorld {
 			}
 		}
 
-		// add skolem constants defined in symbol evidence
-		for (SkolemConstant c : evidence.getSkolemConstants()) {
-			uninstVars.add(new RandFuncAppVar(c, Collections.EMPTY_LIST));
+		// Determine what types serve as arguments to basic RVs. Initialize
+		// their object lists to be empty. As we're doing this, add any
+		// random variables with empty arg lists to the list of uninstantiated
+		// RVs.
+
+		for (Function f : model.getFunctions()) {
+			if (f instanceof RandomFunction) {
+				for (int i = 0; i < f.getArgTypes().length; ++i) {
+					objectsByType.put(f.getArgTypes()[i], new ArrayList());
+				}
+
+				if (f.getArgTypes().length == 0) {
+					uninstVars.add(new RandFuncAppVar((RandomFunction) f,
+							Collections.EMPTY_LIST));
+				}
+			}
 		}
+
+		// add skolem constants defined in symbol evidence
+		// already added in step 1
+		// for (SkolemConstant c : evidence.getSkolemConstants()) {
+		// uninstVars.add(new RandFuncAppVar(c, Collections.EMPTY_LIST));
+		// }
 
 		// Create initial object lists for those types. While doing so,
 		// add uninstantiated variables that have these objects as arguments.
@@ -532,7 +533,7 @@ class WorldWithBlock extends DefaultPartialWorld {
 								}
 								// v1 is parent of v2, and will be sampled immediately
 								pvars.add(v1);
-								if ((value > 0) && anyMoreNumberVar(childType)) {
+								if ((value > 0) && anyMoreNumberVar(childType, cond)) {
 									return new IntRegion(0, value);
 								} else {
 									return new SingletonRegion(value);
@@ -572,7 +573,7 @@ class WorldWithBlock extends DefaultPartialWorld {
 	/**
 	 * is there any more number variables for this type?
 	 */
-	private boolean anyMoreNumberVar(Type type) {
+	private boolean anyMoreNumberVar(Type type, Formula cond) {
 		if (restPOPs.containsKey(type) && restPOPs.get(type).size() == 0) {
 			if (restNumberVars.containsKey(type))
 				return restNumberVars.get(type) > 1;

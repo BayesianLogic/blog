@@ -9,7 +9,11 @@ public class MapInitExpr extends Expr {
 	public ExprTupleList values;
 
 	public MapInitExpr(int p, ExprTupleList v) {
-		pos = p;
+		this(0, p, v);
+	}
+
+	public MapInitExpr(int line, int col, ExprTupleList v) {
+		super(line, col);
 		values = v;
 	}
 

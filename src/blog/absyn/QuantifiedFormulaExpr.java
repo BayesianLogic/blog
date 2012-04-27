@@ -13,7 +13,11 @@ public class QuantifiedFormulaExpr extends Expr {
 	public int quantifier;
 
 	public QuantifiedFormulaExpr(int p, int q, Ty t, Symbol v, Expr f) {
-		pos = p;
+		this(0, p, q, t, v, f);
+	}
+
+	public QuantifiedFormulaExpr(int line, int p, int q, Ty t, Symbol v, Expr f) {
+		super(line, p);
 		quantifier = q;
 		type = t;
 		var = v;

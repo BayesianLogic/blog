@@ -9,8 +9,16 @@ import blog.symbol.Symbol;
 public class TypeDec extends Dec {
 	public Symbol name;
 
+	/**
+	 * @param p
+	 * @param n
+	 */
 	public TypeDec(int p, Symbol n) {
-		pos = p;
+		this(0, p, n);
+	}
+
+	public TypeDec(int line, int pos, Symbol n) {
+		super(line, pos);
 		name = n;
 	}
 

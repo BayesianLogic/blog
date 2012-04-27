@@ -12,7 +12,11 @@ public class DistributionExpr extends Expr {
 	public ExprList args;
 
 	public DistributionExpr(int p, Symbol f, ExprList a) {
-		pos = p;
+		this(0, p, f, a);
+	}
+
+	public DistributionExpr(int line, int col, Symbol f, ExprList a) {
+		super(line, col);
 		name = f;
 		args = a;
 	}

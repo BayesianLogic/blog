@@ -10,7 +10,11 @@ public class ExplicitSetExpr extends SetExpr {
 	public ExprList values;
 
 	public ExplicitSetExpr(int p, ExprList v) {
-		pos = p;
+		this(0, p, v);
+	}
+
+	public ExplicitSetExpr(int line, int col, ExprList v) {
+		super(line, col);
 		values = v;
 	}
 

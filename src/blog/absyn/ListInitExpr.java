@@ -9,7 +9,11 @@ public class ListInitExpr extends Expr {
 	public ExprList values;
 
 	public ListInitExpr(int p, ExprList v) {
-		pos = p;
+		this(0, p, v);
+	}
+
+	public ListInitExpr(int line, int col, ExprList v) {
+		super(line, col);
 		values = v;
 	}
 

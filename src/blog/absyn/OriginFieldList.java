@@ -11,11 +11,15 @@ public class OriginFieldList extends Absyn {
 	public Symbol func;
 	public OriginFieldList next;
 
-	public OriginFieldList(int p, Symbol f, Symbol v, OriginFieldList x) {
-		pos = p;
+	public OriginFieldList(int line, int p, Symbol f, Symbol v, OriginFieldList x) {
+		super(line, p);
 		var = v;
 		func = f;
 		next = x;
+	}
+
+	public OriginFieldList(int p, Symbol f, Symbol v, OriginFieldList x) {
+		this(0, p, v, f, x);
 	}
 
 	@Override
