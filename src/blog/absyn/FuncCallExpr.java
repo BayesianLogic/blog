@@ -11,7 +11,11 @@ public class FuncCallExpr extends Expr {
 	public ExprList args;
 
 	public FuncCallExpr(int p, Symbol f, ExprList a) {
-		pos = p;
+		this(0, p, f, a);
+	}
+
+	public FuncCallExpr(int line, int col, Symbol f, ExprList a) {
+		super(line, col);
 		func = f;
 		args = a;
 	}

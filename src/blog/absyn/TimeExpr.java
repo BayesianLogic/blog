@@ -1,22 +1,35 @@
 package blog.absyn;
 
 /**
+ * Time expression
+ * 
  * @author leili
  * @date Apr 22, 2012
+ * @deprecated please use {@link OpExpr} instead
+ * @see OpExpr
  */
 public class TimeExpr extends Expr {
-	public int value;
+	public Expr value;
 
-	public TimeExpr(int p, int v) {
-		pos = p;
+	/**
+	 * @deprecated
+	 * @param p
+	 * @param v
+	 */
+	public TimeExpr(int p, Expr v) {
+		this(0, p, v);
+	}
+
+	public TimeExpr(int line, int col, Expr v) {
+		super(line, col);
 		value = v;
 	}
 
 	@Override
 	public void printTree(Printer pr, int d) {
 		pr.indent(d);
-		pr.say("TimeExpr(");
-		pr.say(value);
+		pr.sayln("TimeExpr(");
+		value.printTree(pr, d + 1);
 		pr.say(")");
 	}
 }

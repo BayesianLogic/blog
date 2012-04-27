@@ -5,8 +5,12 @@ package blog.absyn;
  * @date Apr 22, 2012
  */
 public class NullExpr extends Expr {
-	public NullExpr(int p) {
-		pos = p;
+	public NullExpr(int line, int pos) {
+		super(line, pos);
+	}
+
+	public NullExpr(int pos) {
+		this(0, pos);
 	}
 
 	@Override

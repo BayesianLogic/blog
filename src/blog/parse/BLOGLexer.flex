@@ -81,11 +81,12 @@ import java_cup.runtime.*;
   }  
   
   private Symbol symbol(int type) {
-    return new BLOGSymbol(type, yyline+1, yycolumn+1);
+    return symbol(type, null);
   }
 
   private Symbol symbol(int type, Object value) {
-    return new BLOGSymbol(type, yyline+1, yycolumn+1, value);
+    return new BLOGSymbol(type, getCurLineNum(), getCurColNum(), yychar, yychar+yylength(), value);
+
   }
   
   blog.msg.ErrorMsg errorMsg; //for error
@@ -136,8 +137,6 @@ FLit2    = \. {Digit}+
 FLit3    = {Digit}+ 
 Exponent = [eE] [+-]? {Digit}+
 DoubleLiteral = ({FLit1}|{FLit2}|{FLit3}) {Exponent}?
-
-TimeLiteral = [@]{Digit}+
 
 LineTerminator	= [\n\r\r\n]
 
@@ -195,7 +194,6 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 "false"   { return symbol(BLOGTokenConstants.BOOLEAN_LITERAL, new Boolean(false)); }
 "null" {return symbol(BLOGTokenConstants.NULL); }
 {IntegerLiteral}  { return symbol(BLOGTokenConstants.INT_LITERAL, new Integer(yytext())); }
-{TimeLiteral} { return symbol(BLOGTokenConstants.TIME_LITERAL, new Integer(yytext())); }
 {DoubleLiteral} { return 
 		 symbol(BLOGTokenConstants.DOUBLE_LITERAL, new Double(yytext())); }
 
@@ -214,6 +212,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 "&"			{ return symbol(BLOGTokenConstants.AND); }
 "|"     { return symbol(BLOGTokenConstants.OR); }
 "!"			{ return symbol(BLOGTokenConstants.NOT); }
+"@"     { return symbol(BLOGTokenConstants.AT); }
 
 
 /* seperator */

@@ -12,7 +12,11 @@ public class ArrayTy extends Ty {
 	public int dim;
 
 	public ArrayTy(int p, Ty t, int d) {
-		pos = p;
+		this(0, p, t, d);
+	}
+
+	public ArrayTy(int line, int col, Ty t, int d) {
+		super(line, col);
 		typ = t;
 		dim = d;
 	}

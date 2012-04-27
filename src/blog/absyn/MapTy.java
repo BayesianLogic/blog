@@ -8,7 +8,11 @@ public class MapTy extends Ty {
 	public Ty from, to;
 
 	public MapTy(int p, Ty f, Ty t) {
-		pos = p;
+		this(0, p, f, t);
+	}
+
+	public MapTy(int line, int col, Ty f, Ty t) {
+		super(line, col);
 		from = f;
 		to = t;
 	}

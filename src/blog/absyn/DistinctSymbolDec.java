@@ -10,7 +10,11 @@ public class DistinctSymbolDec extends Dec {
 	public Ty type;
 
 	public DistinctSymbolDec(int p, Ty t, SymbolArrayList ss) {
-		pos = p;
+		this(0, p, t, ss);
+	}
+
+	public DistinctSymbolDec(int line, int col, Ty t, SymbolArrayList ss) {
+		super(line, col);
 		type = t;
 		symbols = ss;
 	}

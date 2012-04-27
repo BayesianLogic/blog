@@ -8,10 +8,14 @@ public class NumberEvidence extends EvidenceStmt {
 	public NumberExpr num;
 	public int size;
 
-	public NumberEvidence(int p, NumberExpr s, int sz) {
-		pos = p;
+	public NumberEvidence(int line, int pos, NumberExpr s, int sz) {
+		super(line, pos);
 		num = s;
 		size = sz;
+	}
+
+	public NumberEvidence(int pos, NumberExpr s, int sz) {
+		this(0, pos, s, sz);
 	}
 
 	@Override

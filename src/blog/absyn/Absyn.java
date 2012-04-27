@@ -14,16 +14,39 @@ package blog.absyn;
  */
 
 abstract public class Absyn {
-	public int pos;
-	public int line;
 	public int col;
+	public int line;
+
+	/**
+	 * @param line
+	 * @param col
+	 */
+	public Absyn(int line, int col) {
+		this.line = line;
+		this.col = col;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public Absyn() {
+		line = 0;
+		col = 0;
+	}
+
+	/**
+	 * @deprecated
+	 * @param p
+	 */
+	public Absyn(int p) {
+		this(0, p);
+	}
 
 	/**
 	 * @return position of this abstract syntax tree in the input file
 	 */
-	@Deprecated
-	public int getPos() {
-		return pos;
+	public int getCol() {
+		return col;
 	}
 
 	/**
@@ -31,14 +54,8 @@ abstract public class Absyn {
 	 * 
 	 * @return
 	 */
-	@Deprecated
 	public int getLine() {
 		return line;
-	}
-
-	@Deprecated
-	public int getCol() {
-		return col;
 	}
 
 	/**

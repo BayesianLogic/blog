@@ -8,7 +8,11 @@ public class NumberExpr extends Expr {
 	public SetExpr values;
 
 	public NumberExpr(int p, SetExpr s) {
-		pos = p;
+		this(0, p, s);
+	}
+
+	public NumberExpr(int line, int p, SetExpr s) {
+		super(line, p);
 		values = s;
 	}
 

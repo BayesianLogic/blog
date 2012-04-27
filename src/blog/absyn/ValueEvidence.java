@@ -8,10 +8,14 @@ public class ValueEvidence extends EvidenceStmt {
 	public Expr left;
 	public Expr right;
 
-	public ValueEvidence(int p, Expr s, Expr t) {
-		pos = p;
+	public ValueEvidence(int line, int p, Expr s, Expr t) {
+		super(line, p);
 		left = s;
 		right = t;
+	}
+
+	public ValueEvidence(int p, Expr s, Expr t) {
+		this(0, p, s, t);
 	}
 
 	@Override

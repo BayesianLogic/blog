@@ -8,8 +8,8 @@ public class SymbolArrayList extends Absyn {
 	public SymbolArray head;
 	public SymbolArrayList next;
 
-	public SymbolArrayList(int p, SymbolArray h, SymbolArrayList n) {
-		pos = p;
+	public SymbolArrayList(SymbolArray h, SymbolArrayList n) {
+		super(h.getLine(), h.getCol());
 		head = h;
 		next = n;
 	}

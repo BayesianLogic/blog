@@ -13,7 +13,11 @@ public class ImplicitSetExpr extends SetExpr {
 	public Expr cond;
 
 	public ImplicitSetExpr(int p, Ty t, Symbol v, Expr c) {
-		pos = p;
+		this(0, p, t, v, c);
+	}
+
+	public ImplicitSetExpr(int line, int col, Ty t, Symbol v, Expr c) {
+		super(line, col);
 		var = v;
 		typ = t;
 		cond = c;

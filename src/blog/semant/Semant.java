@@ -251,7 +251,7 @@ public class Semant {
 			if (fl.var != null) {
 				String vn = fl.var.toString();
 				if (argVars.contains(vn)) {
-					error(fl.line, fl.pos, "Variable " + vn + " used multiple times");
+					error(fl.line, fl.col, "Variable " + vn + " used multiple times");
 				} else {
 					argVars.add(vn);
 				}
@@ -368,6 +368,8 @@ public class Semant {
 			for (SkolemConstant obj : sevid.getSkolemConstants()) {
 				model.addFunction(obj);
 			}
+
+			// ValueEvidenceStatement vst = new ValueEvidenceStatement();
 		} else if (left instanceof ArgSpec) {
 			// general value expression
 			Object value = transExpr(e.right);
@@ -399,19 +401,19 @@ public class Semant {
 			String name = fl.func.toString();
 			Function f = getFunction(name, Collections.singletonList(typ));
 			if (f == null) {
-				error(fl.line, fl.pos, "function undefined: " + name);
+				error(fl.line, fl.col, "function undefined: " + name);
 			} else if (!(f instanceof OriginFunction)) {
-				error(fl.line, fl.pos, "Function " + name + " with argument type "
+				error(fl.line, fl.col, "Function " + name + " with argument type "
 						+ typ.getName() + " has not been declared as an origin function.");
 			} else if (fs.contains(f)) {
-				error(fl.line, fl.pos, "Origin function " + name
+				error(fl.line, fl.col, "Origin function " + name
 						+ " used more than once");
 			} else {
 				fs.add((OriginFunction) f);
 			}
 			String vn = fl.var.toString();
 			if (argVars.contains(vn)) {
-				error(fl.line, fl.pos, "Variable " + vn + " used multiple times");
+				error(fl.line, fl.col, "Variable " + vn + " used multiple times");
 			} else {
 				argVars.add(vn);
 			}
@@ -521,7 +523,7 @@ public class Semant {
 			} else {
 				error(
 						e.cond.line,
-						e.cond.pos,
+						e.cond.col,
 						"Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
 			}
 		}

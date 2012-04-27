@@ -9,4 +9,21 @@ package blog.absyn;
  * 
  */
 abstract public class Dec extends Stmt {
+
+	/**
+	 * @param line
+	 * @param pos
+	 */
+	public Dec(int line, int pos) {
+		super(line, pos);
+	}
+
+	/**
+	 * @deprecated
+	 * @param p
+	 */
+	public Dec(int p) {
+		super(p);
+	}
+
 }
