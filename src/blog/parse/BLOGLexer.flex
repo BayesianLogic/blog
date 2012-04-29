@@ -46,6 +46,7 @@ import java_cup.runtime.*;
 %cup
 %unicode
 %line
+%char
 %column
 %public
 

@@ -173,6 +173,7 @@ public class Main {
 	}
 
 	public static void init(String[] args) {
+		ok = true;
 		parseOptions(args);
 		Util.setVerbose(verbose);
 		Util.initRandom(randomize);
@@ -180,6 +181,9 @@ public class Main {
 	}
 
 	public static void run() {
+		if (!ok) {
+			return;
+		}
 		System.out.println("............................................");
 		if (generate) {
 			generateWorlds();
@@ -526,11 +530,13 @@ public class Main {
 			String origin = (String) readerAndOrigin[1];
 			try {
 				if (!parseAndTranslate(model, evidence, queries, reader, origin)) {
+					ok = false;
 					System.err.println();
 					Util.fatalErrorWithoutStack("File interpretation halted "
 							+ "due to error(s) in \"" + origin + "\".");
 				}
 			} catch (Exception e) {
+				ok = false;
 				System.err.println("Error parsing file: " + origin);
 				Util.fatalError(e);
 			}
@@ -542,6 +548,7 @@ public class Main {
 			try {
 				extender.extendSetup(model, evidence, queries);
 			} catch (Exception e) {
+				ok = false;
 				System.err.println("Error running setup extender: "
 						+ extender.getClass().getName());
 				Util.fatalError(e);
@@ -591,7 +598,8 @@ public class Main {
 		ErrorMsg msg = new ErrorMsg(origin);
 		Parse parse = new Parse(reader, msg);
 		Semant sem = new Semant(m, e, qs, msg);
-		sem.transProg(parse.getParseResult());
+		if (msg.OK())
+			sem.transProg(parse.getParseResult());
 		return msg.OK();
 	}
 
@@ -638,6 +646,7 @@ public class Main {
 		return histOut;
 	}
 
+	private static boolean ok = true;
 	private static List<String> filenames; // of String
 	private static Properties inferenceProps;
 	private static boolean randomize = false;
