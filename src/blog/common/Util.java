@@ -492,12 +492,20 @@ public class Util {
 		fatalError("Fatal error: ", e, trace);
 	}
 
+	private static boolean suppress_error = false;
+
+	public static void setSuppressError(boolean b) {
+		suppress_error = b;
+	}
+
 	/**
 	 * Prints a top level message, the error message for the given exception, and
 	 * optionally prints a stack trace. Then exits the program with return code 1.
 	 */
 	public static void fatalError(String topLevelMessage, Throwable e,
 			boolean trace) {
+		if (suppress_error)
+			return;
 		System.err.println(topLevelMessage + "\n" + e.getMessage());
 		if (trace) {
 			e.printStackTrace();
@@ -508,7 +516,8 @@ public class Util {
 			}
 		}
 
-		System.exit(1);
+		throw new Error(topLevelMessage);
+		// System.exit(1);
 	}
 
 	/**
@@ -532,12 +541,15 @@ public class Util {
 	 *          if true, print a stack trace
 	 */
 	public static void fatalError(String msg, boolean trace) {
+		if (suppress_error)
+			return;
 		System.err.println("Fatal error: " + msg);
 		if (trace) {
 			Thread.currentThread().dumpStack();
 		}
-
-		System.exit(1);
+		// modified by leili
+		throw new Error(msg);
+		// System.exit(1);
 	}
 
 	/**
@@ -1241,7 +1253,7 @@ public class Util {
 		Object result = null;
 		Iterator it = c.iterator();
 		do { // we use 'do' to ensure next() is called at least once, throwing
-					// exception if c is empty.
+				 // exception if c is empty.
 			result = it.next();
 		} while (it.hasNext());
 		return result;
