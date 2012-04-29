@@ -3,7 +3,6 @@
  */
 package blog.msg;
 
-
 /**
  * @author leili
  * @since Apr 18, 2012
@@ -14,7 +13,8 @@ public class ErrorMsg {
 	// private List<Integer> linePos;
 	// private int lineNum=1;
 	private String filename;
-	public boolean anyErrors = false;
+
+	// public boolean anyErrors = false;
 
 	public ErrorMsg(String f) {
 		// linePos = new LinkedList<Integer>();
@@ -28,7 +28,7 @@ public class ErrorMsg {
 
 	public void error(int line, int col, String msg) {
 		errorMark = false;
-		anyErrors = true;
+		// anyErrors = true;
 		String sayPos = String.valueOf(line) + "." + String.valueOf(col);
 		System.out.println(filename + "::" + sayPos + ": " + msg);
 	}

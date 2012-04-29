@@ -548,7 +548,7 @@ public class Util {
 			Thread.currentThread().dumpStack();
 		}
 		// modified by leili
-		throw new Error(msg);
+		// throw new Error(msg);
 		// System.exit(1);
 	}
 
@@ -1253,7 +1253,7 @@ public class Util {
 		Object result = null;
 		Iterator it = c.iterator();
 		do { // we use 'do' to ensure next() is called at least once, throwing
-				 // exception if c is empty.
+					// exception if c is empty.
 			result = it.next();
 		} while (it.hasNext());
 		return result;
