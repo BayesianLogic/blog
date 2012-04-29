@@ -184,13 +184,16 @@ opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
                 ;
 
 /* Represents a non-empty list of statements terminated by semicolons. */
-statement_lst ::= statement:e statement_lst:slst {: RESULT = new StmtList(e, slst); :} 
-		| statement:e {: RESULT = new StmtList(e, null); :}
-		| error
-		{: System.err.println( 
-			"Possible cause: forgotten semicolon" ); 
-			RESULT = null; :}
-		;
+statement_lst ::= statement:e statement_lst:slst 
+    {: if (e==null) RESULT = slst;
+       else RESULT = new StmtList(e, slst); 
+    :} 
+  | statement:e {: RESULT = new StmtList(e, null); :}
+  | error
+	{: System.err.println( 
+		"Possible cause: forgotten semicolon" ); 
+		RESULT = null; :}
+;
 
 /* A statement can be a declaration, an observation (assertion of some 
  * evidence), or a query.
@@ -199,7 +202,7 @@ statement ::= declaration_stmt : e {: RESULT = e; :}
             | evidence_stmt : e {: RESULT = e; :}
             | query_stmt : e {: RESULT = e; :}
             | error SEMI 
-            {: error("unmatched statement");
+            {: error("unmatched statement, or possible missing semicolon");
               RESULT = null; :}
             ;
 
@@ -406,8 +409,8 @@ dependency_statement_body ::= EQ expression:e
   | /* not recommended to add {}, just for compactibility of old syntax */
     LBRACE dependency_statement_body:e RBRACE
     {: RESULT = e; :}  
-  | error 
-    {: error("invalid body of random function or number statement"); :}
+//  | error 
+//    {: error("invalid body of random function or number statement"); :}
   ;
 	
 elseif_list ::= 
