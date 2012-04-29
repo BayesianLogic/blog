@@ -165,16 +165,21 @@ import blog.semant.Semant;
 public class Main {
 
 	public static void main(String[] args) {
+		init(args);
+		List readersAndOrigins = makeReaders(filenames);
+		setup(model, evidence, queries, readersAndOrigins, setupExtenders,
+				Util.verbose(), true);
+		run();
+	}
+
+	public static void init(String[] args) {
 		parseOptions(args);
 		Util.setVerbose(verbose);
 		Util.initRandom(randomize);
 		// BLOGParser.setPackagesToSearch(packages);
+	}
 
-		List readersAndOrigins = makeReaders(filenames);
-
-		setup(model, evidence, queries, readersAndOrigins, setupExtenders,
-				Util.verbose(), true);
-
+	public static void run() {
 		System.out.println("............................................");
 		if (generate) {
 			generateWorlds();
@@ -326,9 +331,8 @@ public class Main {
 
 		filenames = blog.common.cmdline.Parser.parse(args);
 		if (filenames.isEmpty()) {
-			System.err.println("Error: no BLOG input files specified.");
+			Util.fatalError("Error: no BLOG input files specified.");
 			Parser.printUsage(System.err);
-			System.exit(1);
 		}
 
 		randomize = optRandomize.getValue();
@@ -604,6 +608,14 @@ public class Main {
 		readersAndOrigins.add(new Object[] { reader, origin });
 		setup(model, evidence, queries, readersAndOrigins, new LinkedList(),
 				false /* verbose */, false);
+	}
+
+	/**
+	 * 
+	 * @param modelString
+	 */
+	public static void stringSetup(String modelString) {
+		stringSetup(model, evidence, queries, modelString);
 	}
 
 	public static String outputPath() {
