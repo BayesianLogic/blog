@@ -41,8 +41,10 @@ public class Shell {
 		StringBuilder stb = new StringBuilder();
 		boolean newline = true;
 		do {
-			if (newline)
-				System.out.print(PROMPT);
+			if (newline) {
+				out.print(PROMPT);
+				out.flush();
+			}
 			try {
 				input = in.readLine().trim();
 			} catch (Throwable e) {
