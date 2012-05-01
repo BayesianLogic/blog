@@ -1,7 +1,7 @@
 type Aircraft;
 type Blip;
-#Aircraft ~ Poisson(5);
+#Aircraft ~ Poisson(10);
 origin Aircraft Source(Blip);
-#Blip(Source=a) ~ Poisson(4);
+#Blip(Source=a) ~ Poisson(5);
 obs #Blip=3;
 Query #{Aircraft a};

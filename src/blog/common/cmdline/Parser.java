@@ -35,8 +35,12 @@
 
 package blog.common.cmdline;
 
-import java.util.*;
-import java.io.*;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Parses options on a command line. This class should not be instantiated; all
@@ -128,8 +132,8 @@ public class Parser {
 		for (Iterator iter = opt.getShortForms().iterator(); iter.hasNext();) {
 			Character ch = (Character) iter.next();
 			if (shortFormTable.containsKey(ch)) {
-				throw new IllegalArgumentException("Short form \"" + ch
-						+ "\" is already in use.");
+				// throw new IllegalArgumentException("Short form \"" + ch
+				// + "\" is already in use.");
 			}
 			shortFormTable.put(ch, opt);
 		}
@@ -137,8 +141,8 @@ public class Parser {
 		for (Iterator iter = opt.getLongForms().iterator(); iter.hasNext();) {
 			String str = (String) iter.next();
 			if (longFormTable.containsKey(str)) {
-				throw new IllegalArgumentException("Long form \"" + str
-						+ "\" is already in use.");
+				// throw new IllegalArgumentException("Long form \"" + str
+				// + "\" is already in use.");
 			}
 			longFormTable.put(str, opt);
 		}
