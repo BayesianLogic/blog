@@ -174,6 +174,9 @@ public class Main {
 
 	public static void init(String[] args) {
 		ok = true;
+		model = new Model();
+		evidence = new Evidence();
+		queries = new ArrayList<Query>();
 		parseOptions(args);
 		Util.setVerbose(verbose);
 		Util.initRandom(randomize);
@@ -646,15 +649,19 @@ public class Main {
 		return histOut;
 	}
 
+	public static List<Query> getQueries() {
+		return queries;
+	}
+
 	private static boolean ok = true;
 	private static List<String> filenames; // of String
 	private static Properties inferenceProps;
 	private static boolean randomize = false;
 	private static int numSamples;
 	private static int numStatSamples;
-	private static Model model = new Model();
-	private static Evidence evidence = new Evidence();
-	private static List<Query> queries = new ArrayList<Query>();
+	private static Model model;
+	private static Evidence evidence;
+	private static List<Query> queries;
 	private static boolean generate;
 	private static List<String> packages = new LinkedList<String>(); // of String
 	private static boolean verbose;
