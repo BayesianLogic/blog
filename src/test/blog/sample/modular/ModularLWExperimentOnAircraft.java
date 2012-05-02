@@ -6,6 +6,7 @@ package test.blog.sample.modular;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import blog.common.Histogram;
@@ -18,6 +19,8 @@ import blog.model.ArgSpecQuery;
 public class ModularLWExperimentOnAircraft {
 
 	private static final int N = 100;
+	private static final int REPEATS = 10;
+	private static final int MAX = 10000000;
 	private static PrintWriter out;
 
 	/**
@@ -25,20 +28,29 @@ public class ModularLWExperimentOnAircraft {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		out = new PrintWriter(new FileWriter("simple-aircraft-lw.result"));
-		String[] airargs = new String[4];
+		String[] airargs = new String[args.length + 4];
 		airargs[0] = "-n";
 		airargs[2] = "example/simple-aircraft.blog";
 		airargs[3] = "-r";
+		// airargs[4] = "-s";
+		// airargs[5] = "blog.sample.modular.ModularLWSampler";
+		for (int n = 0; n < args.length; n++) {
+			airargs[n + 4] = args[n];
+		}
+
+		out = new PrintWriter(new FileWriter("simple-aircraft-" + airargs
+				+ ".result"));
+		out.println(Arrays.toString(airargs));
+
 		double[] answer = new double[] { 0, 0.711148719206, 0.260502862743,
 				0.0268384295446, 0.0014564829152, 5.21023732859e-05, 1.37417508627e-06 };
 		double cumerr = 0;
-		int t = 0;
-		for (int i = 1; i <= 1000000;) {
+		for (int i = 1; i < MAX;) {
 			i = i * 10;
+			out.print(i);
 			airargs[1] = Integer.toString(i);
 			cumerr = 0;
-			for (int rep = 0; rep < 10; rep++) {
+			for (int rep = 0; rep < REPEATS; rep++) {
 				blog.Main.main(airargs);
 				ArgSpecQuery q = (ArgSpecQuery) blog.Main.getQueries().get(0);
 				Histogram hist = q.getHistogram();
@@ -53,14 +65,15 @@ public class ModularLWExperimentOnAircraft {
 						res[x] = prob;
 				}
 				double error = computeError(answer, res);
+				out.print("\t");
+				out.print(error);
 				cumerr += error;
 			}
-			double avgerr = cumerr / 10;
-			out.print(i);
-			out.print("\t");
+			double avgerr = cumerr / REPEATS;
+			out.print("\t\t\t");
 			out.println(avgerr);
-			t++;
 		}
+		out.close();
 	}
 
 	/**
