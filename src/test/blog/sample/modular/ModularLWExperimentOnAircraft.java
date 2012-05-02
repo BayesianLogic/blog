@@ -38,7 +38,7 @@ public class ModularLWExperimentOnAircraft {
 			airargs[n + 4] = args[n];
 		}
 
-		out = new PrintWriter(new FileWriter("simple-aircraft-" + airargs
+		out = new PrintWriter(new FileWriter("simple-aircraft-" + Math.random()
 				+ ".result"));
 		out.println(Arrays.toString(airargs));
 
@@ -72,6 +72,7 @@ public class ModularLWExperimentOnAircraft {
 			double avgerr = cumerr / REPEATS;
 			out.print("\t\t\t");
 			out.println(avgerr);
+			out.flush();
 		}
 		out.close();
 	}
