@@ -207,7 +207,8 @@ public class Main {
 				for (Iterator iter = queries.iterator(); iter.hasNext();) {
 					Query q = (Query) iter.next();
 					q.printResults(System.out);
-					q.zeroOut();
+					// leili: why to zero out???
+					// q.zeroOut();
 				}
 
 				System.out.println();
