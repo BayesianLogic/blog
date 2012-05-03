@@ -105,6 +105,10 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
 	}
 
 	public int sampleInt() {
+		return sampleInt(lambda);
+	}
+
+	public static int sampleInt(double lambda) {
 		int n = 0;
 		double probOfN = Math.exp(-lambda); // start with prob of 0
 		double cumProb = probOfN;
@@ -186,6 +190,14 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
 			return cdf_table[b];
 		else
 			return cdf_table[b] - cdf_table[a - 1];
+	}
+
+	public static double cdf(double lambda, int a, int b) {
+		double w = 0;
+		for (int i = a; i <= b; i++) {
+			w += Math.exp(computeLogProb(lambda, i));
+		}
+		return w;
 	}
 
 	public String toString() {
