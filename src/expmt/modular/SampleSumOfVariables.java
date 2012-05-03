@@ -30,7 +30,9 @@ public class SampleSumOfVariables {
 
 		// SumSamplerForPoisson sumsampler = new RangeSumSamplerForPoisson();
 
-		SumSamplerForPoisson sumsampler = new RejectionSumSamplerForPoisson();
+		// SumSamplerForPoisson sumsampler = new RejectionSumSamplerForPoisson();
+
+		SumSamplerForPoisson sumsampler = new RescalingSumSamplerForPoisson();
 
 		AircraftBlipSampler s = new AircraftBlipSampler(
 				Double.parseDouble(args[0]), Double.parseDouble(args[1]), sumsampler);
@@ -41,8 +43,21 @@ public class SampleSumOfVariables {
 			evid[i - 2] = Integer.parseInt(args[i]);
 		}
 
-		run(Double.parseDouble(args[0]), Double.parseDouble(args[1]), evid,
-				sumsampler);
+		// run(Double.parseDouble(args[0]), Double.parseDouble(args[1]), evid,
+		// sumsampler);
+		double lam1 = Double.parseDouble(args[0]);
+		double lam2 = Double.parseDouble(args[1]);
+
+		// run(lam1, lam2, evid, sumsampler);
+
+		for (int num = 1; num < 11; num++) {
+			evid = new int[num];
+			for (int i = 0; i < evid.length; i++)
+				evid[i] = 3;
+
+			System.out.println("sampling for " + num + " evidences");
+			run(lam1, lam2, evid, sumsampler);
+		}
 	}
 
 	public static SampleSumOfVariables run(double airlambda, double bliplambda,
@@ -149,8 +164,10 @@ class AircraftBlipSampler {
 	}
 
 	double sampleNumAircraft() {
-		numAircraft = airpoisson.sampleInt();
-		return 1.0;
+		int[] x = { 0 };
+		double w = sumsampler.sampleParent(x, airLambda, blipLambda, blipEvid);
+		numAircraft = x[0];
+		return w;
 	}
 
 	double sampleBlipAtT(int t) {
@@ -173,11 +190,18 @@ class AircraftBlipSampler {
 	private SumSamplerForPoisson sumsampler;
 }
 
-interface SumSamplerForPoisson {
-	public double sample(int sum, int[] x, Poisson poss);
+abstract class SumSamplerForPoisson {
+	abstract public double sample(int sum, int[] x, Poisson poss);
+
+	public double sampleParent(int[] x, double lambdaParent, double lambdaChild,
+			int[] evid) {
+		x[0] = Poisson.sampleInt(lambdaParent);
+		return 1.0;
+	}
 }
 
-class RangeSumSamplerForPoisson implements SumSamplerForPoisson {
+class RangeSumSamplerForPoisson extends SumSamplerForPoisson {
+
 	public double sample(int sum, int[] x, Poisson poss) {
 		if (sum < 0)
 			return 0;
@@ -203,9 +227,10 @@ class RangeSumSamplerForPoisson implements SumSamplerForPoisson {
 		w *= Math.exp(poss.computeLogProb(sum));
 		return w;
 	}
+
 }
 
-class RejectionSumSamplerForPoisson implements SumSamplerForPoisson {
+class RejectionSumSamplerForPoisson extends SumSamplerForPoisson {
 	public double sample(int sum, int[] x, Poisson poss) {
 		if (sum < 0)
 			return 0;
@@ -220,6 +245,66 @@ class RejectionSumSamplerForPoisson implements SumSamplerForPoisson {
 			return 1.0;
 		else
 			return 0;
+	}
+}
+
+class RescalingSumSamplerForPoisson extends SumSamplerForPoisson {
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see expmt.modular.SumSamplerForPoisson#sampleParent(int[], double, double,
+	 * int[])
+	 */
+	@Override
+	public double sampleParent(int[] x, double lambdaParent, double lambdaChild,
+			int[] evid) {
+		int i;
+		int s = 0;
+		for (i = 0; i < evid.length; i++) {
+			s += evid[i];
+		}
+		double lambda1 = ((double) s) / evid.length / lambdaChild;
+		x[0] = Poisson.sampleInt(lambda1);
+		double w = Poisson.computeLogProb(lambdaParent, x[0]);
+		w = Math.exp(w - Poisson.computeLogProb(lambda1, x[0]));
+		return w;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see expmt.modular.SumSamplerForPoisson#sample(int, int[],
+	 * blog.distrib.Poisson)
+	 */
+	@Override
+	public double sample(int sum, int[] x, Poisson poss) {
+		if (sum < 0)
+			return 0;
+		int k = x.length - 1;
+		double w = 1;
+		double w0 = poss.cdf(0, 0);
+		int i;
+		for (i = 0; i < k; i++) {
+			if (sum == 0) {
+				w *= w0;
+				x[i] = 0;
+			} else {
+				int s = -1;
+				double lambda = ((double) sum) / (k - i);
+				do {
+					s = Poisson.sampleInt(lambda);
+				} while (s > sum);
+				x[i] = s;
+				w *= Math.exp(poss.computeLogProb(s)
+						- Poisson.computeLogProb(lambda, s))
+						* Poisson.cdf(lambda, 0, sum);
+				sum = sum - s;
+			}
+		}
+		x[k] = sum;
+		w *= Math.exp(poss.computeLogProb(sum));
+		return w;
 	}
 }
 
