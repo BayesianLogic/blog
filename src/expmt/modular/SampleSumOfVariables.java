@@ -47,6 +47,7 @@ public class SampleSumOfVariables {
 		// sumsampler);
 		double lam1 = Double.parseDouble(args[0]);
 		double lam2 = Double.parseDouble(args[1]);
+		numSample = 10;
 
 		// run(lam1, lam2, evid, sumsampler);
 
@@ -57,6 +58,7 @@ public class SampleSumOfVariables {
 
 			System.out.println("sampling for " + num + " evidences");
 			run(lam1, lam2, evid, sumsampler);
+
 		}
 	}
 
@@ -118,8 +120,8 @@ public class SampleSumOfVariables {
 
 	AircraftBlipSampler sampler;
 
-	int numSample = 1000000;
-	int MAX = 1000;
+	static int numSample = 1000000;
+	static int MAX = 1000;
 	double[] probs;
 	double totalWeight;
 	int numConsistentSample = 0;
