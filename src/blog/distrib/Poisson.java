@@ -63,6 +63,11 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
 		lambda = ((Number) params.get(0)).doubleValue();
 	}
 
+	// more succinct constructor
+	public Poisson(double lambda) {
+		this.lambda = lambda;
+	}
+
 	/**
 	 * Returns the probability of the integer n under this distribution.
 	 */
@@ -79,7 +84,11 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
 		return computeLogProb(n);
 	}
 
-	private double computeLogProb(int n) {
+	public double computeLogProb(int n) {
+		return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
+	}
+
+	public static double computeLogProb(double lambda, int n) {
 		return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
 	}
 
@@ -91,6 +100,11 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
 	 * http://www.columbia.edu/~ak2108/ta/summer2003/poisson1.c </blockquote>
 	 */
 	public Object sampleVal(List args, Type childType) {
+		int n = sampleInt();
+		return new Integer(n);
+	}
+
+	public int sampleInt() {
 		int n = 0;
 		double probOfN = Math.exp(-lambda); // start with prob of 0
 		double cumProb = probOfN;
@@ -103,7 +117,7 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
 			cumProb += probOfN;
 		}
 
-		return new Integer(n);
+		return n;
 	}
 
 	/**
@@ -122,6 +136,56 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
 		}
 		return w;
 		// TODO cache of computed cdf
+	}
+
+	private double[] cdf_table = null;
+
+	private static double[] ensureSize(int n, double[] table) {
+		double[] tb = table;
+		if (table == null)
+			tb = new double[n + 1];
+		else if (n >= table.length) {
+			tb = new double[n + 1];
+			System.arraycopy(table, 0, tb, 0, table.length);
+		}
+		return tb;
+	}
+
+	private void ensureCDFTable(int n) {
+		int oldn = 0;
+		double w;
+		if (cdf_table != null) {
+			oldn = cdf_table.length;
+		}
+		if ((cdf_table == null) || (n >= cdf_table.length)) {
+			cdf_table = ensureSize(n, cdf_table);
+		}
+		if (oldn > 0)
+			w = cdf_table[oldn - 1];
+		else
+			w = 0;
+		for (; oldn < cdf_table.length; oldn++) {
+			w += Math.exp(computeLogProb(lambda, oldn));
+			cdf_table[oldn] = w;
+		}
+	}
+
+	/**
+	 * dynamically construct cdf table based on demand, and return cdf within the
+	 * region of a to b, inclusive
+	 * 
+	 * @param lambda
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public double cdf(int a, int b) {
+		ensureCDFTable(b);
+
+		if (a <= 0)
+			return cdf_table[b];
+		else
+			return cdf_table[b] - cdf_table[a - 1];
 	}
 
 	public String toString() {
