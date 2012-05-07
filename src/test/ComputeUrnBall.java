@@ -1,9 +1,20 @@
 package test;
 
 //import org.apache.commons.math.fraction.*;
-import org.apache.commons.math3.fraction.*;
-import java.math.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
+import org.apache.commons.math3.fraction.BigFraction;
+
+/**
+ * compute urn ball example, using exact method
+ * will produce the exact fractional number
+ * 
+ * to run
+ * 
+ * @author leili
+ * @date May 6, 2012
+ */
 public class ComputeUrnBall {
 
 	/**
@@ -84,8 +95,8 @@ public class ComputeUrnBall {
 				// * 1/ (2^N) * (N! / k! / (N-1)!)
 				// choice(N, k) * N
 				BigFraction tmpnk = choice(N, k);
-				totalnum = totalnum.add(tmpnk.multiply(
-						new BigFraction(N).pow(obs.length)));
+				totalnum = totalnum.add(tmpnk.multiply(new BigFraction(N)
+						.pow(obs.length)));
 				p = computePrior(N).multiply(tmpnk).divide(1 << N);
 				BigFraction tmpres;
 				BigFraction chose0 = new BigFraction(k, N);
