@@ -1,5 +1,13 @@
 package test;
 
+/**
+ * compute urn ball example, using exact method
+ * will produce the exact using double (will be faster than fraction number)
+ * 
+ * @see ComputeUrnBall.java
+ * @author leili
+ * @date May 6, 2012
+ */
 public class ComputeUrnBallWithDouble {
 
 	/**
@@ -84,11 +92,9 @@ public class ComputeUrnBallWithDouble {
 				double chose1 = (1.0 * (N - k)) / N;
 				for (int i = 0; i < obs.length; i++) {
 					if (obs[i] == 0) {
-						tmpres = chose0 * ProbCorrectObs + 
-								chose1 * ProbWrongObs;
+						tmpres = chose0 * ProbCorrectObs + chose1 * ProbWrongObs;
 					} else {
-						tmpres = chose1 * ProbCorrectObs + 
-								chose0 * ProbWrongObs;
+						tmpres = chose1 * ProbCorrectObs + chose0 * ProbWrongObs;
 					}
 					p = p * tmpres;
 				}

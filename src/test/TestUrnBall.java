@@ -7,12 +7,18 @@ import java.io.PrintStream;
 
 import blog.Main;
 
+/**
+ * test blog inference for urn-ball case with variant number of evidence
+ * 
+ * @author leili
+ * @date May 6, 2012
+ */
 public class TestUrnBall {
 
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {	
+	public static void main(String[] args) {
 		StringBuilder sb = new StringBuilder();
 		int numObs = 32;
 		try {
