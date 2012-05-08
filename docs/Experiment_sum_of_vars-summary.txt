@@ -1,0 +1,60 @@
+5, 1, 
+all evidence are 3 blips
+1 million samples
+
+================Rejection sampling==========
+Using fixed random seed for repeatability.
+Using expmt.modular.RejectionSumSamplerForPoisson
+fraction of consistent worlds: 0.128496
+fraction of consistent worlds: 0.021516
+fraction of consistent worlds: 0.003995
+fraction of consistent worlds: 7.73E-4
+fraction of consistent worlds: 1.49E-4
+fraction of consistent worlds: 2.9E-5
+fraction of consistent worlds: 1.4E-5
+fraction of consistent worlds: 3.0E-6
+fraction of consistent worlds: 0.0
+
+
+============Region Based block sampler==========
+Using fixed random seed for repeatability.
+Using expmt.modular.RangeSumSamplerForPoisson
+fraction of consistent worlds: 0.7411930115739929
+fraction of consistent worlds: 0.5914563375064688
+fraction of consistent worlds: 0.49159868929059336
+fraction of consistent worlds: 0.4210392456493219
+fraction of consistent worlds: 0.3673909891677097
+fraction of consistent worlds: 0.3265825448626787
+fraction of consistent worlds: 0.2935752128210199
+fraction of consistent worlds: 0.26684259434128266
+fraction of consistent worlds: 0.24472502420086634
+
+
+====================Rescaling based sampler===========
+Using fixed random seed for repeatability.
+Using expmt.modular.RescalingSumSamplerForPoisson
+fraction of consistent worlds: 0.6973052288684602
+fraction of consistent worlds: 0.5499370859508935
+fraction of consistent worlds: 0.45415829496885846
+fraction of consistent worlds: 0.3871269006410309
+fraction of consistent worlds: 0.3369593903371676
+fraction of consistent worlds: 0.29845902566196564
+fraction of consistent worlds: 0.267992388459289
+fraction of consistent worlds: 0.24308587319010172
+fraction of consistent worlds: 0.2223781737527257
+
+
+============Rescaling only the variables above evidence ===========
+Using fixed random seed for repeatability.
+Using expmt.modular.RescalingSumSamplerForPoissonOneStep
+sampling for 1 evidences
+fraction of consistent worlds: 0.7226727539369392
+fraction of consistent worlds: 0.5672886088572077
+fraction of consistent worlds: 0.4671843343372531
+fraction of consistent worlds: 0.3968308135550552
+fraction of consistent worlds: 0.3453931694857603
+fraction of consistent worlds: 0.30539640002226043
+fraction of consistent worlds: 0.27357501907980136
+fraction of consistent worlds: 0.2480335438061343
+fraction of consistent worlds: 0.2266230415108218
+
