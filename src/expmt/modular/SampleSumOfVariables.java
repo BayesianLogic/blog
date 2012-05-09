@@ -14,6 +14,10 @@ import blog.distrib.Poisson;
  * 
  */
 public class SampleSumOfVariables {
+	private static final int REPEATS = 10;
+	private static final int NUM_EVIDENCE = 10;
+	static int numSample = 1000000;
+	static int MAX = 1000;
 
 	SampleSumOfVariables(AircraftBlipSampler s) {
 		sampler = s;
@@ -25,14 +29,16 @@ public class SampleSumOfVariables {
 	public static void main(String[] args) {
 		if (args.length < 3) {
 			System.out
-					.println("expecting two arguments: lambda_of_aircraft lambda_of_blip_per_aircraft num_blip_at_each_timestep");
+					.println("expecting three arguments: lambda_of_aircraft lambda_of_blip_per_aircraft num_blip_at_each_timestep");
 		}
 
 		// SumSamplerForPoisson sumsampler = new RangeSumSamplerForPoisson();
 
 		// SumSamplerForPoisson sumsampler = new RejectionSumSamplerForPoisson();
+		// SumSamplerForPoisson sumsampler = new RescalingSumSamplerForPoisson();
+		SumSamplerForPoisson sumsampler = new RescalingSumSamplerForPoissonOneStep();
 
-		SumSamplerForPoisson sumsampler = new RescalingSumSamplerForPoisson();
+		Util.initRandom(false);
 
 		AircraftBlipSampler s = new AircraftBlipSampler(
 				Double.parseDouble(args[0]), Double.parseDouble(args[1]), sumsampler);
@@ -47,14 +53,16 @@ public class SampleSumOfVariables {
 		// sumsampler);
 		double lam1 = Double.parseDouble(args[0]);
 		double lam2 = Double.parseDouble(args[1]);
-		numSample = 10;
+		int numblip_ev = Integer.parseInt(args[2]);
+		// numSample = 10;
 
 		// run(lam1, lam2, evid, sumsampler);
+		System.out.println("Using " + sumsampler.getClass().getName());
 
-		for (int num = 1; num < 11; num++) {
+		for (int num = 1; num < NUM_EVIDENCE; num++) {
 			evid = new int[num];
 			for (int i = 0; i < evid.length; i++)
-				evid[i] = 3;
+				evid[i] = numblip_ev;
 
 			System.out.println("sampling for " + num + " evidences");
 			run(lam1, lam2, evid, sumsampler);
@@ -71,7 +79,6 @@ public class SampleSumOfVariables {
 		s.setEvidence(evid);
 		SampleSumOfVariables engine = new SampleSumOfVariables(s);
 
-		Util.initRandom(false);
 		engine.inference();
 		engine.normalize();
 		engine.printResult(System.out);
@@ -92,6 +99,7 @@ public class SampleSumOfVariables {
 			totalWeight += w;
 			checkConsistency();
 		}
+		numRejections = sampler.sumsampler.getNumRejections();
 	}
 
 	void checkConsistency() {
@@ -107,8 +115,7 @@ public class SampleSumOfVariables {
 	}
 
 	void printResult(PrintStream out) {
-		out.println("fraction of consistent worlds: "
-				+ ((double) numConsistentSample / numSample));
+		out.println("fraction of consistent worlds: " + getAcceptRate());
 		for (int i = 0; i < probs.length; i++) {
 			if (probs[i] > 0) {
 				out.print(i);
@@ -118,14 +125,16 @@ public class SampleSumOfVariables {
 		}
 	}
 
+	double getAcceptRate() {
+		return ((double) numConsistentSample / (numSample + numRejections));
+	}
+
 	AircraftBlipSampler sampler;
 
-	static int numSample = 1000000;
-	static int MAX = 1000;
 	double[] probs;
 	double totalWeight;
 	int numConsistentSample = 0;
-
+	int numRejections = 0;
 }
 
 class AircraftBlipSampler {
@@ -137,6 +146,7 @@ class AircraftBlipSampler {
 		this.airpoisson = new Poisson(airLambda);
 		this.blipPoisson = new Poisson(blipLambda);
 		this.sumsampler = sumsampler;
+		sumsampler.init();
 	}
 
 	/**
@@ -189,7 +199,7 @@ class AircraftBlipSampler {
 	double blipLambda;
 	Poisson blipPoisson;
 	double weight = 0;
-	private SumSamplerForPoisson sumsampler;
+	SumSamplerForPoisson sumsampler;
 }
 
 abstract class SumSamplerForPoisson {
@@ -200,9 +210,14 @@ abstract class SumSamplerForPoisson {
 		x[0] = Poisson.sampleInt(lambdaParent);
 		return 1.0;
 	}
+
+	abstract public int getNumRejections();
+
+	abstract void init();
 }
 
 class RangeSumSamplerForPoisson extends SumSamplerForPoisson {
+	private int numRej = 0;
 
 	public double sample(int sum, int[] x, Poisson poss) {
 		if (sum < 0)
@@ -219,7 +234,9 @@ class RangeSumSamplerForPoisson extends SumSamplerForPoisson {
 				int s = -1;
 				do {
 					s = poss.sampleInt();
+					numRej++;
 				} while (s > sum);
+				numRej--;
 				x[i] = s;
 				w *= poss.cdf(0, sum);
 				sum = sum - s;
@@ -228,6 +245,26 @@ class RangeSumSamplerForPoisson extends SumSamplerForPoisson {
 		x[k] = sum;
 		w *= Math.exp(poss.computeLogProb(sum));
 		return w;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see expmt.modular.SumSamplerForPoisson#getNumRejections()
+	 */
+	@Override
+	public int getNumRejections() {
+		return numRej;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see expmt.modular.SumSamplerForPoisson#init()
+	 */
+	@Override
+	void init() {
+		numRej = 0;
 	}
 
 }
@@ -248,30 +285,30 @@ class RejectionSumSamplerForPoisson extends SumSamplerForPoisson {
 		else
 			return 0;
 	}
-}
-
-class RescalingSumSamplerForPoisson extends SumSamplerForPoisson {
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see expmt.modular.SumSamplerForPoisson#sampleParent(int[], double, double,
-	 * int[])
+	 * @see expmt.modular.SumSamplerForPoisson#getNumRejections()
 	 */
 	@Override
-	public double sampleParent(int[] x, double lambdaParent, double lambdaChild,
-			int[] evid) {
-		int i;
-		int s = 0;
-		for (i = 0; i < evid.length; i++) {
-			s += evid[i];
-		}
-		double lambda1 = ((double) s) / evid.length / lambdaChild;
-		x[0] = Poisson.sampleInt(lambda1);
-		double w = Poisson.computeLogProb(lambdaParent, x[0]);
-		w = Math.exp(w - Poisson.computeLogProb(lambda1, x[0]));
-		return w;
+	public int getNumRejections() {
+		return 0;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see expmt.modular.SumSamplerForPoisson#init()
+	 */
+	@Override
+	void init() {
+	}
+}
+
+class RescalingSumSamplerForPoissonOneStep extends SumSamplerForPoisson {
+
+	private int numRej = 0;
 
 	/*
 	 * (non-Javadoc)
@@ -296,7 +333,9 @@ class RescalingSumSamplerForPoisson extends SumSamplerForPoisson {
 				double lambda = ((double) sum) / (k - i);
 				do {
 					s = Poisson.sampleInt(lambda);
+					numRej++;
 				} while (s > sum);
+				numRej--;
 				x[i] = s;
 				w *= Math.exp(poss.computeLogProb(s)
 						- Poisson.computeLogProb(lambda, s))
@@ -308,6 +347,52 @@ class RescalingSumSamplerForPoisson extends SumSamplerForPoisson {
 		w *= Math.exp(poss.computeLogProb(sum));
 		return w;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see expmt.modular.SumSamplerForPoisson#getNumRejections()
+	 */
+	@Override
+	public int getNumRejections() {
+		return numRej;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see expmt.modular.SumSamplerForPoisson#init()
+	 */
+	@Override
+	void init() {
+		numRej = 0;
+	}
+}
+
+class RescalingSumSamplerForPoisson extends
+		RescalingSumSamplerForPoissonOneStep {
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see expmt.modular.SumSamplerForPoisson#sampleParent(int[], double, double,
+	 * int[])
+	 */
+	@Override
+	public double sampleParent(int[] x, double lambdaParent, double lambdaChild,
+			int[] evid) {
+		int i;
+		int s = 0;
+		for (i = 0; i < evid.length; i++) {
+			s += evid[i];
+		}
+		double lambda1 = ((double) s) / evid.length / lambdaChild;
+		x[0] = Poisson.sampleInt(lambda1);
+		double w = Poisson.computeLogProb(lambdaParent, x[0]);
+		w = Math.exp(w - Poisson.computeLogProb(lambda1, x[0]));
+		return w;
+	}
+
 }
 
 class Aircraft {
