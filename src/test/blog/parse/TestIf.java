@@ -20,7 +20,9 @@ public class TestIf extends TestParse {
 	
 	@Test
 	public void testSimpleDecl() {
-		String parsed = TestParse.parsedStringRepr("random Real test(Ball b) ~ Poisson(5);");
+		String toParse = "random Color ObsColor(Draw d) " + 
+				"~ Categorical({Blue -> 0.8, Green -> 0.2});";
+		String parsed = TestParse.parsedStringRepr(toParse);
 		System.out.println(parsed);
 	}
 
@@ -31,7 +33,7 @@ public class TestIf extends TestParse {
 				"if 1 == 2 then ~ Poisson(5) " + 
 				"else if 1 == 3 then ~ Poisson(4);";
 		parsed = TestParse.parsedStringRepr(toParse);
-		System.out.println(parsed);
+//		System.out.println(parsed);
 	}
 	
 }
