@@ -6,33 +6,25 @@ type Ball;
 type Draw;
 type Color;
 
+distinct Color Blue, Green;
+distinct Draw Draw[10];
+
 random Color TrueColor(Ball);
 random Ball BallDrawn(Draw);
 random Color ObsColor(Draw);
 
-distinct Color Blue, Green;
-distinct Draw Draw[10];
 
-#Ball {
-	~ Poisson(6.0)
-};
+#Ball ~ Poisson(6.0);
 
-TrueColor(b) {
-	~ Categorical({Blue -> 0.5, Green -> 0.5})
-};
+random Color TrueColor(Ball b) ~ Categorical({Blue -> 0.5, Green -> 0.5});
 
-BallDrawn(d) {
-	~ UniformChoice({Ball b})
-};
+random Ball BallDrawn(Draw d) ~ UniformChoice({Ball b});
 
-Distribution cpd1 = Categorical({Blue -> 0.8, Green -> 0.2});
-Distribution cpd2 = Categorical({Blue -> 0.3, Green -> 0.7});
-
-ObsColor(d) {
-	if BallDrawn(d) != null then  
-		~ TabularCPD({Blue -> cpd1, Green -> cpd2}, TrueColor(BallDrawn(d)))
-};
-
+random Color ObsColor(Draw d) 
+	if BallDrawn(d) != null & 
+		TrueColor(BallDrawn(d)) == Blue then ~ Categorical({Blue -> 0.8, Green -> 0.2})
+	else if BallDrawn(d) != null & 
+		TrueColor(BallDrawn(d)) == Green then ~ Categorical({Blue -> 0.2, Green -> 0.8});
 
 /* Evidence file asserting that the drawn balls appeared blue on half the 
  * draws and green on half the draws.
@@ -57,7 +49,7 @@ query #{Ball b};
 /* Answers to some queries on this model, computed by exhaustive 
  * enumeration up to 170 balls:
  *
- * * Observe 10 draws, half with ObsColor blue, half with ObsColor green
+ *   Observe 10 draws, half with ObsColor blue, half with ObsColor green
  *   (half-half.eblog).
  *   Posterior over number of balls:
  *     1   0.002139745568962195 
@@ -80,25 +72,25 @@ query #{Ball b};
  *    18   4.797291677039901E-5
  *    19   1.521992902268052E-5
  *
-Result from leili (computed using BigFraction, enumerated to 1000 balls)
-1	0.0021386745199658413
-2	0.03308494968293541
-3	0.0762905301419065
-4	0.1255616280625423
-5	0.16006699924216627
-6	0.1670308506044634
-7	0.14777911194652654
-8	0.11358830823600115
-9	0.07722371903304646
-10	0.047082092762321365
-11	0.026025962651445116
-12	0.0131606747419658
-13	0.006133216131957407
-14	0.002650665106107055
-15	0.0010680814102366667
-16	4.031358218831964E-4
-17	1.4310605451901205E-4
-18	4.7948903941441924E-5
-19	1.5212310691818765E-5
-20	4.582938305002154E-6
+ *    Result from leili (computed using BigFraction, enumerated to 1000 balls)
+ *    1	    0.0021386745199658413
+ *    2	    0.03308494968293541
+ *    3	    0.0762905301419065
+ *    4	    0.1255616280625423
+ *    5	    0.16006699924216627
+ *    6	    0.1670308506044634
+ *    7	    0.14777911194652654
+ *    8	    0.11358830823600115
+ *    9	    0.07722371903304646
+ *    10	0.047082092762321365
+ *    11	0.026025962651445116
+ *    12	0.0131606747419658
+ *    13	0.006133216131957407
+ *    14	0.002650665106107055
+ *    15	0.0010680814102366667
+ *    16	4.031358218831964E-4
+ *    17	1.4310605451901205E-4
+ *    18	4.7948903941441924E-5
+ *    19	1.5212310691818765E-5
+ *    20	4.582938305002154E-6
  */
