@@ -16,6 +16,8 @@ import blog.symbol.Symbol;
  * @date Apr 19, 2012
  */
 
+// TODO: These still need testing, but this helps me see the tree structure
+
 public class TestIf extends TestParse {
 	
 	@Test
