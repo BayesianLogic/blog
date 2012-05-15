@@ -20,7 +20,8 @@ public class TestIf extends TestParse {
 	
 	@Test
 	public void testSimpleDecl() {
-		String parsed = TestParse.parsedStringRepr("Random real test(Ball b) ~ Poisson(5);");
+		String parsed = TestParse.parsedStringRepr("random Real test(Ball b) ~ Poisson(5);");
+		System.out.println(parsed);
 	}
 
 	@Test
