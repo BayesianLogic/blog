@@ -9,11 +9,6 @@ type Color;
 distinct Color Blue, Green;
 distinct Draw Draw[10];
 
-random Color TrueColor(Ball);
-random Ball BallDrawn(Draw);
-random Color ObsColor(Draw);
-
-
 #Ball ~ Poisson(6.0);
 
 random Color TrueColor(Ball b) ~ Categorical({Blue -> 0.5, Green -> 0.5});

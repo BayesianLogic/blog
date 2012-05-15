@@ -247,7 +247,7 @@ public class Semant {
 		if (body instanceof Clause) {
 			cl.add((Clause) body);
 		} else if (e instanceof IfExpr) {
-			// TODO
+			error(e.line, e.col, "If not yet implemented");
 		} else {
 			error(e.line, e.col, "invalid body of dependency clause");
 		}
