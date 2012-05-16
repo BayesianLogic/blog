@@ -35,7 +35,7 @@ public class TestIf extends TestParse {
 				"if 1 == 2 then ~ Poisson(5) " + 
 				"else if 1 == 3 then ~ Poisson(4);";
 		parsed = TestParse.parsedStringRepr(toParse);
-//		System.out.println(parsed);
+		System.out.println(parsed);
 	}
 	
 }
