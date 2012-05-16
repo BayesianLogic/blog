@@ -248,7 +248,7 @@ public class Semant {
 		if (body instanceof Clause) {
 			cl.add((Clause) body);
 		} else if (e instanceof IfExpr) {
-			error(e.line, e.col, "If not yet implemented");
+			cl = transExpr((IfExpr) e);
 		} else {
 			error(e.line, e.col, "invalid body of dependency clause");
 		}
@@ -452,8 +452,34 @@ public class Semant {
 	}
 
 	List<Clause> transExpr(IfExpr e) {
-		// TODO
-		return null;
+		ArrayList<Clause> clauses = new ArrayList<Clause>();
+
+		// TODO: add proper check, error if not
+		Formula test = (Formula) transExpr(e.test);
+
+		Expr thenClause = e.thenclause;
+		if (thenClause instanceof DistributionExpr) {
+			DistributionExpr distExpr = (DistributionExpr) thenClause;
+			Class cls = getClassWithName(distExpr.name.toString());
+			if (cls == null) {
+				error(distExpr.line, distExpr.col, "Class not found: " + distExpr.name);
+			}
+
+			List<ArgSpec> as = null;
+			if (distExpr.args != null) {
+				as = transExprList(distExpr.args, true);
+			}
+			clauses.add(new Clause(test, cls, as, Collections.EMPTY_LIST));
+		}
+
+		Expr elseClause = e.elseclause;
+		if (elseClause instanceof IfExpr) {
+			List<Clause> rest = transExpr((IfExpr) elseClause);
+			clauses.addAll(rest);
+		} else if (elseClause instanceof DistributionExpr) {
+			clauses.add( transExpr((DistributionExpr) elseClause ));
+		}
+		return clauses;
 	}
 
 	ArgSpec transExpr(IntExpr e) {
