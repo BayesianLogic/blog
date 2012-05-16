@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package blog.semant;
 
@@ -14,7 +14,7 @@ import blog.msg.*;
 
 /**
  * @author leili
- * 
+ *
  */
 public class Semant {
 
@@ -48,7 +48,7 @@ public class Semant {
 	/**
 	 * search the pre-loaded packages for the classname of the distribution
 	 * function
-	 * 
+	 *
 	 * @param classname
 	 * @return
 	 */
@@ -97,7 +97,7 @@ public class Semant {
 
 	/**
 	 * check whether e is a list of symbol names (function call without argument)
-	 * 
+	 *
 	 * @param e
 	 * @return a list of Symbol names
 	 */
@@ -160,7 +160,7 @@ public class Semant {
 
 	/**
 	 * translate the Distinct symbol declaration to internal model representation
-	 * 
+	 *
 	 * @param e
 	 */
 	void transDec(DistinctSymbolDec e) {
@@ -185,7 +185,7 @@ public class Semant {
 
 	/**
 	 * translate Function declaration to internal representation
-	 * 
+	 *
 	 * @param e
 	 */
 	void transDec(FunctionDec e) {
@@ -258,7 +258,7 @@ public class Semant {
 	/**
 	 * semantic checking for evidence statement and translate to internal
 	 * representation
-	 * 
+	 *
 	 * @param e
 	 */
 	void transEvi(EvidenceStmt e) {
@@ -271,11 +271,11 @@ public class Semant {
 
 	/**
 	 * valid evidence format include (will be checked in semantic checking)
-	 * 
+	 *
 	 * - general form: random expression = fixed expression - symbol evidence:
 	 * implicit_set = explicit_set of ids - number_evidence: # implicit_set = int
 	 * constant
-	 * 
+	 *
 	 * @param e
 	 */
 	void transEvi(ValueEvidence e) {
@@ -336,7 +336,7 @@ public class Semant {
 
 	/**
 	 * translate number statement to model representation
-	 * 
+	 *
 	 * @param e
 	 */
 	void transDec(NumberDec e) {
@@ -380,7 +380,7 @@ public class Semant {
 
 	/**
 	 * add the declared type to model
-	 * 
+	 *
 	 * @param e
 	 */
 	void transDec(TypeDec e) {
@@ -432,6 +432,8 @@ public class Semant {
 			return transExpr((IfExpr) e);
 		} else if (e instanceof OpExpr) {
 			return transExpr((OpExpr) e);
+		} else if (e instanceof FuncCallExpr) {
+			return transExpr((FuncCallExpr) e);
 		}
 
 		return null;
@@ -440,6 +442,13 @@ public class Semant {
 	ExplicitSetSpec transExpr(ExplicitSetExpr e) {
 		// TODO
 		return null;
+	}
+
+	ArgSpec transExpr(FuncCallExpr e){
+		List<ArgSpec> args = transExprList(e.args);
+		Term t = new FuncAppTerm(e.func.toString(), args);
+		t.setLocation(e.line);
+		return t;
 	}
 
 	List<Clause> transExpr(IfExpr e) {
@@ -481,7 +490,7 @@ public class Semant {
 
 	/**
 	 * number expression translated to CardinalitySpec
-	 * 
+	 *
 	 * @param e
 	 * @return
 	 */
@@ -541,7 +550,7 @@ public class Semant {
 
 	/**
 	 * check list of expressions
-	 * 
+	 *
 	 * @param e
 	 *          list of expression
 	 * @param allowRandom
@@ -595,7 +604,7 @@ public class Semant {
 
 	/**
 	 * semantic checking and translate the BLOG program to model representation
-	 * 
+	 *
 	 * @param e
 	 * @return whether any error happened during parsing and translating
 	 */
