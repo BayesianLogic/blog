@@ -445,7 +445,7 @@ public class Semant {
 	}
 
 	ArgSpec transExpr(FuncCallExpr e){
-		List<ArgSpec> args = transExprList(e.args);
+		List<ArgSpec> args = transExprList(e.args, true);
 		Term t = new FuncAppTerm(e.func.toString(), args);
 		t.setLocation(e.line);
 		return t;
