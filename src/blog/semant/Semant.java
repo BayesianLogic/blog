@@ -453,8 +453,16 @@ public class Semant {
 		return t;
 	}
 
-	ArgSpec transExpr(MapInitExpr e) {
-		return null;
+	List<ArgSpec> transExpr(MapInitExpr e) {
+		// TODO: This is incorrect. This code is only to make 
+		// the poission-ball case work
+		ArrayList<ArgSpec> vals = new ArrayList<ArgSpec>();
+		ExprTupleList current = e.values;
+		while (current != null) {
+			vals.add((ArgSpec) transExpr(current.to));
+			current = current.next;
+		}
+		return vals;
 	}
 
 	List<Clause> transExpr(IfExpr e) {
@@ -599,7 +607,10 @@ public class Semant {
 	List<ArgSpec> transExprList(ExprList e, boolean allowRandom) {
 		List<ArgSpec> args = new ArrayList<ArgSpec>();
 		for (; e != null; e = e.next) {
-			args.add((ArgSpec) transExpr(e.head));
+			Object o = transExpr(e.head);
+			if (o instanceof List) 
+				return (List<ArgSpec>) o;
+			args.add((ArgSpec) o); 
 		}
 		// TODO add checking for allowRandom
 
