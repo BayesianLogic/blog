@@ -434,6 +434,8 @@ public class Semant {
 			return transExpr((OpExpr) e);
 		} else if (e instanceof FuncCallExpr) {
 			return transExpr((FuncCallExpr) e);
+		} else if (e instanceof MapInitExpr) {
+			return transExpr((MapInitExpr) e);
 		}
 
 		return null;
@@ -449,6 +451,10 @@ public class Semant {
 		Term t = new FuncAppTerm(e.func.toString(), args);
 		t.setLocation(e.line);
 		return t;
+	}
+
+	ArgSpec transExpr(MapInitExpr e) {
+		return null;
 	}
 
 	List<Clause> transExpr(IfExpr e) {
@@ -531,6 +537,7 @@ public class Semant {
 	}
 
 	ArgSpec transExpr(OpExpr e) {
+		Object left, right;
 		switch (e.oper) {
 		case OpExpr.PLUS:
 			break;
@@ -543,9 +550,13 @@ public class Semant {
 		case OpExpr.MOD:
 			break;
 		case OpExpr.EQ:
-			break;
+			left = transExpr(e.left);
+			right = transExpr(e.right);
+			return new EqualityFormula((Term) left, (Term) right);
 		case OpExpr.NEQ:
-			break;
+			left = transExpr(e.left);
+			right = transExpr(e.right);
+			return new NegFormula(new EqualityFormula((Term) left, (Term)right));
 		case OpExpr.LT:
 			break;
 		case OpExpr.LEQ:
@@ -555,7 +566,9 @@ public class Semant {
 		case OpExpr.GEQ:
 			break;
 		case OpExpr.AND:
-			break;
+			left = transExpr(e.left);
+			right = transExpr(e.right);
+			return new ConjFormula((Formula) left, (Formula) right);
 		case OpExpr.OR:
 			break;
 		case OpExpr.NOT:
