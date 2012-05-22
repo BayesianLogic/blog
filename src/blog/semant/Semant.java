@@ -3,9 +3,7 @@
  */
 package blog.semant;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import blog.Timestep;
 import blog.absyn.*;
@@ -14,7 +12,7 @@ import blog.msg.*;
 
 /**
  * @author leili
- *
+ * @author amatsukawa
  */
 public class Semant {
 
@@ -402,8 +400,20 @@ public class Semant {
 		if (e.args != null) {
 			as = transExprList(e.args, true);
 		}
-		// TODO leili: check whether correct
-		Clause c = new Clause(TrueFormula.TRUE, cls, as, Collections.EMPTY_LIST);
+		
+		// random inputs to distribution need to go into args
+		List<ArgSpec> args = new ArrayList<ArgSpec>();
+		List<ArgSpec> params = new ArrayList<ArgSpec>();
+		for (Iterator<ArgSpec> iter = as.iterator(); iter.hasNext();) {
+			ArgSpec spec = iter.next();
+			if (spec.getValueIfNonRandom() == null) {
+				args.add(spec);
+			} else {
+				params.add(spec);
+			}
+		}
+
+		Clause c = new Clause(TrueFormula.TRUE, cls, params, args);
 		c.setLocation(e.line);
 		return c;
 	}
