@@ -403,7 +403,9 @@ public class Semant {
 			as = transExprList(e.args, true);
 		}
 		// TODO leili: check whether correct
-		return new Clause(TrueFormula.TRUE, cls, as, Collections.EMPTY_LIST);
+		Clause c = new Clause(TrueFormula.TRUE, cls, as, Collections.EMPTY_LIST);
+		c.setLocation(e.line);
+		return c;
 	}
 
 	ArgSpec transExpr(DoubleExpr e) {
