@@ -23,7 +23,7 @@ public class TestIf extends TestParse {
 	@Test
 	public void testSimpleDecl() {
 		String toParse = "random Color ObsColor(Draw d) " + 
-				"~ Categorical({Blue -> 0.8, Green -> 0.2});";
+				"~ UniformChoice({Ball b});";
 		String parsed = TestParse.parsedStringRepr(toParse);
 		System.out.println(parsed);
 	}
