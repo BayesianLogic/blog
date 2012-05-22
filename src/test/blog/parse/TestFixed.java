@@ -19,6 +19,7 @@ import blog.absyn.Stmt;
 import blog.absyn.StringExpr;
 import blog.absyn.SymbolArray;
 import blog.absyn.SymbolArrayList;
+import blog.absyn.SymbolExpr;
 import blog.symbol.Symbol;
 
 /**
@@ -51,7 +52,7 @@ public class TestFixed extends TestParse {
 		String parsed = TestParse.parsedStringRepr("fixed Real a = 1.0 + b;");
 		Stmt[] stmts = { new FixedFuncDec(0, Symbol.symbol("a"), new NameTy(0,
 				Symbol.symbol("Real")), new OpExpr(0, new DoubleExpr(0, 1.0),
-				OpExpr.PLUS, new FuncCallExpr(0, Symbol.symbol("b"), null))) };
+				OpExpr.PLUS, new SymbolExpr(0, Symbol.symbol("b")))) };
 		String shouldBe = TestParse.shouldBeRepr(stmts);
 		assertEquals(shouldBe, parsed);
 	}
@@ -84,8 +85,8 @@ public class TestFixed extends TestParse {
 				Symbol.symbol("a"), new NameTy(0, Symbol.symbol("Real")),
 				new FieldList(Symbol.symbol("b"), new NameTy(0, Symbol.symbol("Real")),
 						null)), new NameTy(0, Symbol.symbol("Real")), new OpExpr(0,
-				new FuncCallExpr(0, Symbol.symbol("a"), null), OpExpr.PLUS,
-				new FuncCallExpr(0, Symbol.symbol("b"), null))) };
+				new SymbolExpr(0, Symbol.symbol("a")), OpExpr.PLUS,
+				new SymbolExpr(0, Symbol.symbol("b")))) };
 		String shouldBe = TestParse.shouldBeRepr(stmts);
 		assertEquals(shouldBe, parsed);
 	}
