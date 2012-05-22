@@ -438,9 +438,17 @@ public class Semant {
 			return transExpr((MapInitExpr) e);
 		} else if (e instanceof SymbolExpr) {
 			return transExpr((SymbolExpr) e);
+		} else if (e instanceof NullExpr) {
+			return transExpr((NullExpr) e);
 		}
-
 		return null;
+	}
+
+	ArgSpec transExpr(NullExpr e) {
+		Term t = new FuncAppTerm(BuiltInFunctions.NULL,
+			Collections.EMPTY_LIST);
+		t.setLocation(e.line);
+		return t;
 	}
 
 	ExplicitSetSpec transExpr(ExplicitSetExpr e) {
@@ -572,6 +580,9 @@ public class Semant {
 		case OpExpr.NEQ:
 			left = transExpr(e.left);
 			right = transExpr(e.right);
+			if (right == null) {
+				System.out.println("e");
+			}
 			return new NegFormula(new EqualityFormula((Term) left, (Term)right));
 		case OpExpr.LT:
 			break;
