@@ -436,6 +436,8 @@ public class Semant {
 			return transExpr((FuncCallExpr) e);
 		} else if (e instanceof MapInitExpr) {
 			return transExpr((MapInitExpr) e);
+		} else if (e instanceof SymbolExpr) {
+			return transExpr((SymbolExpr) e);
 		}
 
 		return null;
@@ -446,6 +448,12 @@ public class Semant {
 		return null;
 	}
 
+	ArgSpec transExpr(SymbolExpr e) {
+		Term t = new SymbolTerm(e.name.toString());
+		t.setLocation(e.line);
+		return t;
+	}
+
 	ArgSpec transExpr(FuncCallExpr e){
 		List<ArgSpec> args = transExprList(e.args, true);
 		Term t = new FuncAppTerm(e.func.toString(), args);
@@ -454,7 +462,7 @@ public class Semant {
 	}
 
 	List<ArgSpec> transExpr(MapInitExpr e) {
-		// TODO: This is incorrect. This code is only to make 
+		// TODO: This is incorrect. This code is only to make
 		// the poission-ball case work
 		ArrayList<ArgSpec> vals = new ArrayList<ArgSpec>();
 		ExprTupleList current = e.values;
@@ -608,9 +616,9 @@ public class Semant {
 		List<ArgSpec> args = new ArrayList<ArgSpec>();
 		for (; e != null; e = e.next) {
 			Object o = transExpr(e.head);
-			if (o instanceof List) 
+			if (o instanceof List)
 				return (List<ArgSpec>) o;
-			args.add((ArgSpec) o); 
+			args.add((ArgSpec) o);
 		}
 		// TODO add checking for allowRandom
 
