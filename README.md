@@ -2,7 +2,7 @@ Getting Code
 =====================
 
 1. `cd` into the directory where you want your code to be
-2. Run `$ git clone git@github.com:amatsukawa/outbids.git`
+2. Run `$ git clone git@github.com:amatsukawa/dblog.git`
 
 Generating Lexer and Parser
 ====================
