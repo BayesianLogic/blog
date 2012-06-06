@@ -218,7 +218,11 @@ public class Semant {
 		}
 
 		if (e instanceof FixedFuncDec) {
-			// TODO
+			// TODO: Implement more general fixed functions
+			if (argTy.size() == 0) {
+				NonRandomFunction f = NonRandomFunction.createConstant(name, resTy, e.body);
+				fun = f;
+			}
 		} else if (e instanceof RandomFuncDec) {
 			DependencyModel dm;
 			dm = transDependency(e.body, resTy, resTy.getDefaultValue());
