@@ -75,146 +75,112 @@ import blog.sample.Sampler;
  * The property list is also passed to the sampler's constructor.
  */
 public class SamplingEngine extends InferenceEngine {
-	/**
-	 * Creates a new sampling engine for the given BLOG model, with configuration
-	 * parameters specified by the given properties table.
-	 */
-	public SamplingEngine(Model model, Properties properties) {
-		super(model);
+    /**
+     * Creates a new sampling engine for the given BLOG model, with configuration
+     * parameters specified by the given properties table.
+     */
+    public SamplingEngine(Model model, Properties properties) {
+        super(model);
 
-		String samplerClassName = properties.getProperty("samplerClass",
-				"blog.sample.LWSampler");
-		System.out.println("Constructing sampler of class " + samplerClassName);
+        String samplerClassName = 
+                properties.getProperty("samplerClass", "blog.sample.LWSampler");
+        System.out.println("Constructing sampler of class " + samplerClassName);
 
-		try {
-			Class samplerClass = Class.forName(samplerClassName);
-			Class[] paramTypes = { Model.class, Properties.class };
-			Constructor constructor = samplerClass.getConstructor(paramTypes);
+        try {
+            Class samplerClass = Class.forName(samplerClassName);
+            Class[] paramTypes = { Model.class, Properties.class };
+            Constructor constructor = samplerClass.getConstructor(paramTypes);
 
-			Object[] args = { model, properties };
-			sampler = (Sampler) constructor.newInstance(args);
-		} catch (Exception e) {
-			Util.fatalError(e);
-		}
+            Object[] args = { model, properties };
+            sampler = (Sampler) constructor.newInstance(args);
+        } catch (Exception e) {
+            Util.fatalError(e);
+        }
 
-		String numSamplesStr = properties.getProperty("numSamples", "10000");
-		try {
-			numSamples = Integer.parseInt(numSamplesStr);
-		} catch (NumberFormatException e) {
-			Util.fatalError("Invalid number of samples: " + numSamplesStr, false);
-		}
+        String numSamplesStr = properties.getProperty("numSamples", "10000");
+        try {
+            numSamples = Integer.parseInt(numSamplesStr);
+        } catch (NumberFormatException e) {
+            Util.fatalError("Invalid number of samples: " + numSamplesStr, false);
+        }
 
-		String burnInStr = properties.getProperty("burnIn", "0");
-		try {
-			numBurnIn = Integer.parseInt(burnInStr);
-		} catch (NumberFormatException e) {
-			Util.fatalError("Invalid number of burn-in samples: " + burnInStr, false);
-		}
+        String burnInStr = properties.getProperty("burnIn", "0");
+        try {
+            numBurnIn = Integer.parseInt(burnInStr);
+        } catch (NumberFormatException e) {
+            Util.fatalError("Invalid number of burn-in samples: " + burnInStr, false);
+        }
 
-		String reportIntervalStr = properties.getProperty("reportInterval", "500");
-		try {
-			reportInterval = Integer.parseInt(reportIntervalStr);
-		} catch (NumberFormatException e) {
-			Util.fatalError("Invalid report interval: " + reportIntervalStr, false);
-		}
-	}
+        String reportIntervalStr = properties.getProperty("reportInterval", "500");
+        try {
+            reportInterval = Integer.parseInt(reportIntervalStr);
+        } catch (NumberFormatException e) {
+            Util.fatalError("Invalid report interval: " + reportIntervalStr, false);
+        }
+    }
 
-	public SamplingEngine(Model model) {
-		this(model, new Properties());
-	}
+    public SamplingEngine(Model model) {
+        this(model, new Properties());
+    }
 
-	public void answerQueries() {
-		sampler.initialize(evidence, queries);
+    public void answerQueries() {
+        sampler.initialize(evidence, queries);
 
-		System.out.println("Evidence: " + evidence);
-		System.out.println("Query: " + queries);
-		System.out.println("Running for " + numSamples + " samples...");
-		if (numBurnIn != 0) {
-			System.out.println("(Burn-in samples: " + numBurnIn + ")");
-		}
-		Timer timer = new Timer();
-		timer.start();
+        System.out.println("Evidence: " + evidence);
+        System.out.println("Query: " + queries);
+        System.out.println("Running for " + numSamples + " samples...");
+        if (numBurnIn != 0) {
+            System.out.println("(Burn-in samples: " + numBurnIn + ")");
+        }
+        Timer timer = new Timer();
+        timer.start();
 
-		// Map statisticsOnWeather = new HashMap(); // debugging -- see below
+        for (int i = 0; i < numSamples; ++i) {
+            if (Util.verbose()) {
+                System.out.println();
+                System.out.println("Iteration " + i + ":");
+            }
+            sampler.nextSample();
+            double weight = sampler.getLatestWeight();
 
-		for (int i = 0; i < numSamples; ++i) {
-			if (Util.verbose()) {
-				System.out.println();
-				System.out.println("Iteration " + i + ":");
-			}
-			sampler.nextSample();
-			// System.out.println("SamplingEngine: right after nextSample, world is "
-			// + System.identityHashCode(sampler.getLatestWorld()));
-			double weight = sampler.getLatestWeight();
+            if (i >= numBurnIn) {
+                if (weight > 0) {
+                    // Update statistics to reflect this sample.
+                    for (Iterator iter = queries.iterator(); iter.hasNext();) {
+                        Query query = ((Query) iter.next());
 
-			// I wrote this to debug at a low level. Leaving it for a while. --
-			// Rodrigo
-			// System.out.println("World : " + sampler.getLatestWorld());
-			// System.out.println("Weight: " + weight);
-			// Object weather1 =
-			// sampler.getLatestWorld().getValue(BLOGUtil.parseVariable_NE("Weather(@1)",
-			// model));
-			// Double accumulatedWeight = (Double) statisticsOnWeather.get(weather1);
-			// if (accumulatedWeight == null)
-			// accumulatedWeight = new Double(0);
-			// statisticsOnWeather.put(weather1, accumulatedWeight.doubleValue() +
-			// weight);
-			// System.out.println("Distribution: ");
-			// double sum = 0;
-			// for (Iterator it = statisticsOnWeather.entrySet().iterator();
-			// it.hasNext(); ) {
-			// Map.Entry entry = (Map.Entry) it.next();
-			// sum += ((Double)entry.getValue()).doubleValue();
-			// }
-			// if (sum > 0) {
-			// for (Iterator it = statisticsOnWeather.entrySet().iterator();
-			// it.hasNext(); ) {
-			// Map.Entry entry = (Map.Entry) it.next();
-			// System.out.println(entry.getKey() + ": " +
-			// ((Double)entry.getValue()).doubleValue()/sum);
-			// }
-			// }
+                        // Make sure the new world supports the query variables
+                        BLOGUtil.ensureDetAndSupported(query.getVariables(),
+                                // this is not part of the sampler's 
+                                // sampling, but sampling done on 
+                                // top of it. Since this sampling is 
+                                // done according to the model's 
+                                // distribution, it still converges 
+                                // to it.
+                                sampler.getLatestWorld()); 
+                        query.updateStats(sampler.getLatestWorld(), weight);
+                    }
+                }
 
-			if (i >= numBurnIn) {
-				if (weight > 0) {
-					// Update statistics to reflect this sample.
-					for (Iterator iter = queries.iterator(); iter.hasNext();) {
-						Query query = ((Query) iter.next());
-						// System.out.println("SamplingEngine: Latest world: " +
-						// sampler.getLatestWorld() + " weight " + weight);
-						// System.out.println("SamplingEngine: Query: " + query);
-						// Make sure the new world supports the query variables
-						BLOGUtil.ensureDetAndSupported(query.getVariables(),
-								sampler.getLatestWorld()); // this is not part of the sampler's
-																						// sampling, but sampling done on
-																						// top of it. Since this sampling is
-																						// done according to the model's
-																						// distribution, it still converges
-																						// to it.
-						query.updateStats(sampler.getLatestWorld(), weight);
-					}
-				}
+                if ((Main.outputPath() != null)
+                        && ((i + 1) % Main.outputInterval() == 0)) {
+                    for (Iterator iter = queries.iterator(); iter.hasNext();) {
+                        ((Query) iter.next()).logResults(i + 1);
+                    }
+                }
+            }
 
-				if ((Main.outputPath() != null)
-						&& ((i + 1) % Main.outputInterval() == 0)) {
-					for (Iterator iter = queries.iterator(); iter.hasNext();) {
-						((Query) iter.next()).logResults(i + 1);
-					}
-				}
-			}
+            if (reportInterval != -1 && (i + 1) % reportInterval == 0) {
+                System.out.println("Samples done: " + (i + 1) 
+                                    + ".  \tTime elapsed: "
+                                    + timer.elapsedTime() + " s.");
+            }
+        }
+        sampler.printStats();
+    }
 
-			if (reportInterval != -1 && (i + 1) % reportInterval == 0) {
-				System.out.println("Samples done: " + (i + 1) + ".  \tTime elapsed: "
-						+ timer.elapsedTime() + " s.");
-			}
-		}
-
-		sampler.printStats();
-		// sampler.getLatestWorld().print(System.out);
-	}
-
-	private Sampler sampler;
-	private int numSamples;
-	private int numBurnIn;
-	private int reportInterval;
+    private Sampler sampler;
+    private int numSamples;
+    private int numBurnIn;
+    private int reportInterval;
 }
