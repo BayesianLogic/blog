@@ -9,7 +9,7 @@ type Color;
 distinct Color Blue, Green;
 distinct Draw Draw[10];
 
-#Ball ~ Poisson(6.0);
+#Ball ~ Poisson(6);
 
 random Color TrueColor(Ball b) ~ Categorical({Blue -> 0.5, Green -> 0.5});
 

@@ -3,9 +3,7 @@
  */
 package blog.semant;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import blog.Timestep;
 import blog.absyn.*;
@@ -14,7 +12,7 @@ import blog.msg.*;
 
 /**
  * @author leili
- *
+ * @author amatsukawa
  */
 public class Semant {
 
@@ -406,8 +404,22 @@ public class Semant {
 		if (e.args != null) {
 			as = transExprList(e.args, true);
 		}
-		// TODO leili: check whether correct
-		return new Clause(TrueFormula.TRUE, cls, as, Collections.EMPTY_LIST);
+		
+		// random inputs to distribution need to go into args
+		List<ArgSpec> args = new ArrayList<ArgSpec>();
+		List<ArgSpec> params = new ArrayList<ArgSpec>();
+		for (Iterator<ArgSpec> iter = as.iterator(); iter.hasNext();) {
+			ArgSpec spec = iter.next();
+			if (spec.getValueIfNonRandom() == null) {
+				args.add(spec);
+			} else {
+				params.add(spec);
+			}
+		}
+
+		Clause c = new Clause(TrueFormula.TRUE, cls, params, args);
+		c.setLocation(e.line);
+		return c;
 	}
 
 	ArgSpec transExpr(DoubleExpr e) {
@@ -440,14 +452,30 @@ public class Semant {
 			return transExpr((FuncCallExpr) e);
 		} else if (e instanceof MapInitExpr) {
 			return transExpr((MapInitExpr) e);
+		} else if (e instanceof SymbolExpr) {
+			return transExpr((SymbolExpr) e);
+		} else if (e instanceof NullExpr) {
+			return transExpr((NullExpr) e);
 		}
-
 		return null;
+	}
+
+	ArgSpec transExpr(NullExpr e) {
+		Term t = new FuncAppTerm(BuiltInFunctions.NULL,
+			Collections.EMPTY_LIST);
+		t.setLocation(e.line);
+		return t;
 	}
 
 	ExplicitSetSpec transExpr(ExplicitSetExpr e) {
 		// TODO
 		return null;
+	}
+
+	ArgSpec transExpr(SymbolExpr e) {
+		Term t = new SymbolTerm(e.name.toString());
+		t.setLocation(e.line);
+		return t;
 	}
 
 	ArgSpec transExpr(FuncCallExpr e){
@@ -457,8 +485,16 @@ public class Semant {
 		return t;
 	}
 
-	ArgSpec transExpr(MapInitExpr e) {
-		return null;
+	List<ArgSpec> transExpr(MapInitExpr e) {
+		// TODO: This is incorrect. This code is only to make
+		// the poission-ball case work
+		ArrayList<ArgSpec> vals = new ArrayList<ArgSpec>();
+		ExprTupleList current = e.values;
+		while (current != null) {
+			vals.add((ArgSpec) transExpr(current.to));
+			current = current.next;
+		}
+		return vals;
 	}
 
 	List<Clause> transExpr(IfExpr e) {
@@ -560,6 +596,9 @@ public class Semant {
 		case OpExpr.NEQ:
 			left = transExpr(e.left);
 			right = transExpr(e.right);
+			if (right == null) {
+				System.out.println("e");
+			}
 			return new NegFormula(new EqualityFormula((Term) left, (Term)right));
 		case OpExpr.LT:
 			break;
@@ -603,7 +642,10 @@ public class Semant {
 	List<ArgSpec> transExprList(ExprList e, boolean allowRandom) {
 		List<ArgSpec> args = new ArrayList<ArgSpec>();
 		for (; e != null; e = e.next) {
-			args.add((ArgSpec) transExpr(e.head));
+			Object o = transExpr(e.head);
+			if (o instanceof List)
+				return (List<ArgSpec>) o;
+			args.add((ArgSpec) o);
 		}
 		// TODO add checking for allowRandom
 
