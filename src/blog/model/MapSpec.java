@@ -1,6 +1,9 @@
 package blog.model;
 
 import java.util.*;
+import blog.sample.EvalContext;
+import blog.common.UnaryProcedure;
+import blog.Substitution;
 
 /**
  * ArgSpec that represents a map statement, such as 
@@ -35,7 +38,7 @@ public class MapSpec extends ArgSpec {
      * To compile a map, just compile each of its possible values
      */
     public int compile(LinkedHashSet callStack) {
-        compled = true;
+        compiled = true;
         callStack.add(this);
         int errors = 0;
         if (map.isEmpty()) {
@@ -71,20 +74,25 @@ public class MapSpec extends ArgSpec {
      * Returns term in ArgSpec equal to a given term t, or null if there isn't
      * any.
      */
-    public abstract ArgSpec find(Term t);
+    public ArgSpec find(Term t) {
+        return null;
+    }
 
     /**
      * Applies a procedure to all terms in this ArgSpec which satisfy a given
      * predicate to a given collection.
      */
-    public abstract void applyToTerms(UnaryProcedure procedure);
+    public void applyToTerms(UnaryProcedure procedure) {
+    }
 
     /**
      * Returns an ArgSpec resulting from the replacement of all occurrences of a
      * term by another, if there is any, or self. A new ArgSpec is compiled if
      * this is compiled.
      */
-    public abstract ArgSpec replace(Term t, ArgSpec another);
+    public ArgSpec replace(Term t, ArgSpec another) {
+        return null;
+    }
 
     /**
      * Returns the result of applying the substitution <code>subst</code> to this
@@ -94,6 +102,8 @@ public class MapSpec extends ArgSpec {
      * sub-expression and the top-level expression to which the substitution is
      * being applied.
      */
-    public abstract ArgSpec getSubstResult(Substitution subst,
-            Set<LogicalVar> boundVars);
+    public ArgSpec getSubstResult(Substitution subst,
+            Set<LogicalVar> boundVars) {
+        return null;
+    }
 }
