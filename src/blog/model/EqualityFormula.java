@@ -214,6 +214,11 @@ public class EqualityFormula extends Formula {
 	 * of the type of the other term.
 	 */
 	public boolean checkTypesAndScope(Model model, Map scope) {
+
+        if ((eq1 == null) || (eq2 == null)) {
+            return false;
+        }
+
 		Term eq1InScope = eq1.getTermInScope(model, scope);
 		Term eq2InScope = eq2.getTermInScope(model, scope);
 		if ((eq1InScope == null) || (eq2InScope == null)) {
