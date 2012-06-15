@@ -132,7 +132,7 @@ Digit = [0-9]
 
 Identifier = {Alpha}({Alpha}|{Digit}|_)*
 
-IntegerLiteral = {Digit}+
+IntegerLiteral = [+-]?{Digit}+
 
 FLit1    = {Digit}+ \. {Digit}* 
 FLit2    = \. {Digit}+ 
