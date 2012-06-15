@@ -708,7 +708,6 @@ public class Semant {
      * @return whether any error happened during parsing and translating
      */
     public boolean transProg(Absyn e) {
-        //e.printTree(new Printer(System.out), 0);
         if (e instanceof StmtList) {
             transStmtList((StmtList) e);
         } else {
