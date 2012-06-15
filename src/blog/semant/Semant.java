@@ -189,6 +189,12 @@ public class Semant {
      */
     void transDec(FunctionDec e) {
         Type resTy = getType(e.result);
+		if (resTy == null) {
+			error(e.line, e.col, "Symbol at line " 
+					+ e.result.line + " col " + e.result.col + 
+					 " does not have a type!");
+			return;
+		}	
         List<Type> argTy = new ArrayList<Type>();
         List<String> argVars = new ArrayList<String>();
         for (FieldList fl = e.params; fl != null; fl = fl.next) {
