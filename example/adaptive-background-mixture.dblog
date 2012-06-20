@@ -15,13 +15,12 @@
  * above papers.
  * This version assumes a Poisson prior for the number of components.
  *
- * author: leili
+ * author: leili, rbharath:w
  */
 
 type Component;
 type Pixel;
 
-random R3Vector Mean(Component, Timestep);
 random R3Vector Weight(Timestep);
 
 origin Timestep Time(Pixel);
@@ -30,31 +29,34 @@ origin NaturalNum Y(Pixel);
 random R3Vector Intensity(Pixel);
 random Component AssociatedComponent(Pixel);
 
-#Component ~ Poisson[5]();
+#Component ~ Poisson(5);
 #Pixel(X=x, Y=y, Time=t)=1;
 
 // the prior posts uniform distribution over a box of 3D space.
-Mean(c, t) {
-    if t=@1 then ~ UniformVector[[0, 255, 0, 255, 0, 255]]()
-    else ~ MultivarGaussian[3, [10, 0, 0; 
-                                0, 10, 0; 
-                                0, 0, 10]](Mean(c, Prev(t)))
-}
+random R3Vector Mean(Component c, Timestep t) 
+	// UniformVector(x_lower, x_upper, y_lower, y_upper, z_lower, z_upper)
+    if t=@1 then ~ UniformVector(0, 255, 0, 255, 0, 255)
+	// MultivarGaussian(dimension, mean, covariance)
+    else ~ MultivarGaussian(3, Mean(c, Prev(t)), 
+                                [10, 0, 0; 
+                                  0, 10, 0; 
+                                  0, 0, 10])
 /**
- * need to use Dirichlet distribution, however, Dirichlet is not 
+ * TODO: need to use Dirichlet distribution, however, Dirichlet is not 
  * implemented in BLOG right now. 
  * need implementation of Dirichlet distribution
  */
-//note this one is not in standard BLOG, needs extension of BLOG.
-Weight ~ Dirichlet[](#{Component c}, Divide(1.0, #{Component c})); 
-//Weight ~  UniformVector[[0, 1, 0, 1, 0, 1]]();
+random R3Vector Weight {
+	~ Dirichlet(#{Component c}, (1.0/#{Component c}));
+};
 
 //ideally, we would hope to set this probability in the same way as
-// Mean(Componnet)
-AssociatedComponnet(pixel) ~ TabularCPD[](Weight);
+// Mean(Component)
+random Component AssociatedComponent(Pixel p) ~ TabularCPD[](Weight);
 
 // the parameters can be set in Mean(Component)
-Intensity(pixel) ~ MultivarGaussian[3, [10, 0, 0; 
-                                0, 10, 0; 
-                                0, 0, 10]]
-                    (Mean(AssociatedComponent(pixel)))
+random R3Vector Intensity(Pixel pixel) 
+	~ MultivarGaussian(3, Mean(AssociatedComponent(pixel))
+                       [10, 0, 0; 
+                         0, 10, 0;  
+                         0, 0, 10]);
