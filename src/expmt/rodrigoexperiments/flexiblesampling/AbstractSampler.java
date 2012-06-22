@@ -1,4 +1,4 @@
-package blog.rodrigoexperiments.flexiblesampling;
+package expmt.rodrigoexperiments.flexiblesampling;
 
 import java.util.*;
 
