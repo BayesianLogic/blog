@@ -32,23 +32,18 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package blog.rodrigoexperiments.gibbssamplingexperiment;
+package expmt.rodrigoexperiments.gibbssamplingexperiment;
 
-import java.util.*;
+public class WeightedValue {
+	public Object value;
+	public double weight;
 
-import blog.bn.VarWithDistrib;
-import blog.world.PartialWorld;
+	public WeightedValue(Object value, double weight) {
+		this.value = value;
+		this.weight = weight;
+	}
 
-/**
- * An interface for variable proposal methods specific to certain situations
- * (distributions given blanket).
- * 
- * @author Rodrigo
- */
-public interface VariableImportanceSampler {
-	/**
-	 * Returns an (infinite) Iterator ranging over samples ({@link WeightedValue}
-	 * s) of a variable in a given world.
-	 */
-	public Iterator sampler(VarWithDistrib var, PartialWorld world);
+	public String toString() {
+		return "(" + value + ", " + weight + ")";
+	}
 }
