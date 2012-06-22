@@ -1,4 +1,4 @@
-package blog.rodrigoexperiments.gibbssamplingexperiment;
+package expmt.rodrigoexperiments.gibbssamplingexperiment;
 
 import java.util.*;
 import blog.bn.VarWithDistrib;
