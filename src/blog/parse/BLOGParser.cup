@@ -506,6 +506,8 @@ unary_operation_expr ::=
     {: RESULT = new OpExpr(currLineno(), currColno(), null, OpExpr.NOT, e); :}
   | AT:a expression:e
     {: RESULT = new OpExpr(currLineno(), currColno(), null, OpExpr.AT, e); :}
+  | LPAREN expression:e RPAREN
+    {: RESULT = e; :}
   ;
 
 
