@@ -10,7 +10,7 @@ import java.util.Properties;
  * @date July 13, 2012
  *
  */
-public class TestSimpleAircraftB extends ExampleTest{
+public class TestSimpleAircraft extends ExampleTest{
 	protected static final String DEF_ENGINE = "blog.engine.SamplingEngine";
 	protected static final int NUM_SAMPLES = 10000;
 	protected static final int NUM_BURNIN = 0;
@@ -21,11 +21,11 @@ public class TestSimpleAircraftB extends ExampleTest{
 	private static final double errBound = 1e-3;
 	
 	public static void main(String[] args) throws IncorrectProbException {
-		TestSimpleAircraftB test = new TestSimpleAircraftB();
+		TestSimpleAircraft test = new TestSimpleAircraft();
 		test.runTest();
 	}
 	
-	public TestSimpleAircraftB() {
+	public TestSimpleAircraft() {
 		super(errBound);
 	}
 	
