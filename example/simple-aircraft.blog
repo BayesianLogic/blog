@@ -1,7 +1,0 @@
-type Aircraft;
-type Blip;
-#Aircraft ~ Poisson(5);
-origin Aircraft Source(Blip);
-#Blip(Source=a) ~ Poisson(4);
-obs #Blip=3;
-Query #{Aircraft a};
