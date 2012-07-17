@@ -36,6 +36,7 @@
 /**
  * use JFlex
  * @author leili
+ * @date 2012-07
  */
 
 package blog.parse;
@@ -398,7 +399,7 @@ distribution_decl ::=
   ;
 
 
-/* reference to Java class */
+/* reference to function name or Java class */
 class_name ::= ID:id {: RESULT = id; :}
   | ID:id DOT class_name:n {: RESULT = id + "." + n; :}
   ;
@@ -415,6 +416,9 @@ dependency_statement_body ::= EQ expression:e
   | /* not recommended to add {}, just for compactibility of old syntax */
     LBRACE dependency_statement_body:e RBRACE
     {: RESULT = e; :}
+  | IF:a expression:e1 dependency_statement_body:e2 elseif_list:e3
+    {: error("missing THEN in dependency statement clause, proceed anyway");
+    RESULT = new IfExpr(currLineno(), currColno(), e1, e2, e3); :}
 //  | error
 //    {: error("invalid body of random function or number statement"); :}
   ;
@@ -519,7 +523,7 @@ quantified_formula ::= FORALL type:ty ID:id expression:e
     QuantifiedFormulaExpr.EXISTS, ty, sym(id), e); :}
   ;
 
-function_call ::= ID:id LPAREN opt_expression_list:e RPAREN
+function_call ::= class_name:id LPAREN opt_expression_list:e RPAREN
     {: RESULT = new FuncCallExpr(currLineno(), currColno(), sym(id), e); :}
   ;
 

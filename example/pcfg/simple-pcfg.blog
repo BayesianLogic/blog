@@ -13,24 +13,15 @@
 1.0: V -> "saw";
 */
 
-/*
-must load grammar.blog first
-*/
+/**
+ * Infrastructure for defining probabilistic grammars that generate
+ * strings.  
+ */
 
+type ParseNode;
+type NodeClass;
+type Expansion;
 type Sentence;
-
-// root node of the parse tree
-origin Sentence RootSentence(ParseNode);
-#ParseNode(RootSentence = s) = 1;
-
-// get the node corresponding to a sentence
-random ParseNode ParseTreeRoot(Sentence s) 
-  ~ Iota({ParseNode node: RootSentence(node) == s});
-
-ClassAsRoot(node) {
-  if (Container(node) != null) = S
-};
-
 
 // Non terminals from the PCFG grammar 
 distinct NodeClass S, NP, VP, PP, P, V, NP1, NP2, NP3, NP4, NP5, P1, V1;
@@ -38,7 +29,7 @@ distinct NodeClass S, NP, VP, PP, P, V, NP1, NP2, NP3, NP4, NP5, P1, V1;
 // rules in PCFG
 distinct Expansion SNPVP, PPPNP, VPVNP, VPVPPP, NPNPPP, NPNP1, NPNP2, NPNP3, NPNP4, NPNP5, PP1, VV1; 
 
-NthChildClass(Expansion, NaturalNum)
+fixed NodeClass NthChildClass(Expansion e, NaturalNum n)
   = TabularInterp(2,
       SNPVP, 0, NP,
       SNPVP, 1, NP,
@@ -70,7 +61,51 @@ NthChildClass(Expansion, NaturalNum)
       VV1, 0, V1
     );
 
-ExpansionApplied(node) {
+origin ParseNode Parent(ParseNode);
+origin NaturalNum GenIndex(ParseNode);
+
+// root node of the parse tree
+origin Sentence RootSentence(ParseNode);
+#ParseNode(RootSentence = s) = 1;
+
+// get the node corresponding to a sentence
+random ParseNode ParseTreeRoot(Sentence s) 
+  ~ Iota({ParseNode node: RootSentence(node) == s});
+
+random NodeClass ClassAsRoot(ParseNode node) {
+  if (Container(node) != null) then = S
+};
+
+random NodeClass Class(ParseNode node) {
+  if (Parent(node) == null) then = ClassAsRoot(node)
+  else = NthChildClass(ExpansionApplied(Parent(node)), GenIndex(node))
+};
+
+#ParseNode(Parent = p, GenIndex = n) {
+    if (ExpansionApplied(p) != null) 
+            & (NthChildClass(ExpansionApplied(p), n) != null)
+        then = 1
+};
+
+random ParseNode NthChild(ParseNode node, NaturalNum n) {
+    if (ExpansionApplied(node) != null)
+            & (NthChildClass(ExpansionApplied(node), n) != null)
+        then ~ Iota({ParseNode q : Parent(q) == node & GenIndex(q) == n})
+};
+
+random String TextStartingAtNthChild(ParseNode p, NaturalNum n) {
+    if NthChild(p, Succ(n)) == null then = NodeText(NthChild(p, n))
+    else = Concat(NodeText(NthChild(p, n)), 
+                  TextStartingAtNthChild(p, Succ(n)))
+};
+
+random String NodeText(ParseNode node) {
+    if (NthChild(node, 0) != null) then = TextStartingAtNthChild(node, 0)
+    else if OwnText(node) != null then = OwnText(node)
+    else = ""
+};
+
+random Expansion ExpansionApplied(ParseNode node) {
 	if (Class(node) == S) then = SVPNP
 	
 	else if (Class(node) == PP) then = PPPNP
@@ -86,12 +121,12 @@ ExpansionApplied(node) {
 	                 NPNP4 -> 0.18, 
 	                 NPNP5 -> 0.1})
 
-	else if (Class(node) == P) = PP1
+	else if (Class(node) == P) then = PP1
 
-	else if (Class(node) == V) = VV1
-}
+	else if (Class(node) == V) then = VV1
+};
 
-OwnText(node) {
+random String OwnText(ParseNode node) {
    if (Class(node) == NP1) then = "astronomers"
    else if (Class(node) == NP2) then = "ears"
    else if (Class(node) == NP3) then = "saw"
@@ -99,6 +134,7 @@ OwnText(node) {
    else if (Class(node) == NP5) then = "telescopes"   
    else if (Class(node) == P1) then = "with"   
    else if (Class(node) == V1) then = "saw"
+   else = null
 };
 
 random String Text(Sentence s) = NodeText(ParseTreeRoot(s));
