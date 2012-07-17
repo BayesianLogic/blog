@@ -28,6 +28,8 @@ public class Parse {
 			/* open input files, etc. here */
 
 			parser. /* debug_ */parse();
+			// modified by leili, only for debug purpose
+			// parser.debug_parse();
 			absyn = parser.parseResult;
 		} catch (Throwable e) {
 			e.printStackTrace();

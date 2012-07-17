@@ -35,8 +35,14 @@
 
 package blog.model;
 
-import java.util.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 
 import blog.EqualsCPD;
 import blog.bn.BasicVar;
@@ -226,7 +232,8 @@ public class Clause {
 		if (cpdParams != null) {
 			for (Iterator iter = cpdParams.iterator(); iter.hasNext();) {
 				ArgSpec param = (ArgSpec) iter.next();
-				if (!param.checkTypesAndScope(model, Collections.EMPTY_MAP)) {
+				// if (!param.checkTypesAndScope(model, Collections.EMPTY_MAP)) {
+				if (!param.checkTypesAndScope(model, scope)) {
 					correct = false;
 				}
 			}

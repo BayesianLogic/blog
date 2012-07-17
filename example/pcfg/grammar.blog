@@ -17,7 +17,7 @@ random ParseNode NthChild(ParseNode, NaturalNum); // null-terminated
 random String OwnText(ParseNode);
 random String NodeText(ParseNode);
 
-nonrandom NodeClass NthChildClass(Expansion, NaturalNum); // null-terminated
+fixed NodeClass NthChildClass(Expansion, NaturalNum); // null-terminated
 
 #ParseNode(Parent = p, GenIndex = n) {
     if (ExpansionApplied(p) != null) 

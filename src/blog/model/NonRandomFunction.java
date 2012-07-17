@@ -35,16 +35,23 @@
 
 package blog.model;
 
-import java.util.*;
-import java.lang.reflect.*;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import blog.ConstantInterp;
 import blog.FunctionInterp;
 import blog.GenericObject;
 import blog.common.Util;
 import blog.sample.EvalContext;
-
 
 /**
  * Represents the symbol for a non-random function, whose value for the given
@@ -409,7 +416,8 @@ public class NonRandomFunction extends Function {
 		if (interpParams != null)
 			for (Iterator it = interpParams.iterator(); it.hasNext();)
 				code ^= it.next().hashCode();
-		code ^= interp.hashCode();
+		if (interp != null)
+			code ^= interp.hashCode();
 		return code;
 	}
 
