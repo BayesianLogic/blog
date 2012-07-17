@@ -1,0 +1,50 @@
+/**
+ * Infrastructure for defining probabilistic grammars that generate
+ * strings.  
+ */
+
+type ParseNode;
+type NodeClass;
+type Expansion;
+
+origin ParseNode Parent(ParseNode);
+origin NaturalNum GenIndex(ParseNode);
+
+random NodeClass ClassAsRoot(ParseNode); 
+random NodeClass Class(ParseNode);
+random Expansion ExpansionApplied(ParseNode);
+random ParseNode NthChild(ParseNode, NaturalNum); // null-terminated
+random String OwnText(ParseNode);
+random String NodeText(ParseNode);
+
+nonrandom NodeClass NthChildClass(Expansion, NaturalNum); // null-terminated
+
+#ParseNode(Parent = p, GenIndex = n) {
+    if (ExpansionApplied(p) != null) 
+            & (NthChildClass(ExpansionApplied(p), n) != null)
+        then = 1
+};
+
+NthChild(p, n) {
+    if (ExpansionApplied(p) != null)
+            & (NthChildClass(ExpansionApplied(p), n) != null)
+        then ~ Iota({ParseNode q : Parent(q) = p & GenIndex(q) = n})
+};
+
+Class(p) {
+    if Parent(p) = null then = ClassAsRoot(p)
+    else = NthChildClass(ExpansionApplied(Parent(p)), GenIndex(p))
+};
+
+random String TextStartingAtNthChild(ParseNode p, NaturalNum n) {
+    if NthChild(p, Succ(n)) = null then = NodeText(NthChild(p, n))
+    else = Concat(NodeText(NthChild(p, n)), 
+                  TextStartingAtNthChild(p, Succ(n)))
+};
+
+NodeText(p) {
+    if (NthChild(p, 0) != null) then = TextStartingAtNthChild(p, 0)
+    elseif OwnText(p) != null then = OwnText(p)
+    else = ""
+};
+
