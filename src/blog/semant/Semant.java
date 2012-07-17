@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import blog.EqualsCPD;
 import blog.Timestep;
 import blog.absyn.Absyn;
 import blog.absyn.Dec;
@@ -252,6 +253,7 @@ public class Semant {
 
 	/**
 	 * translate Function declaration to internal representation
+	 * for nonrandom and random functions, this step will not process the body
 	 * 
 	 * @param e
 	 */
@@ -290,16 +292,17 @@ public class Semant {
 		}
 
 		if (e instanceof FixedFuncDec) {
-			// TODO: Implement more general fixed functions
+			NonRandomFunction f;
 			if (argTy.size() == 0) {
-				NonRandomFunction f = NonRandomFunction.createConstant(name, resTy,
-						e.body);
-				fun = f;
+				f = NonRandomFunction.createConstant(name, resTy, e.body);
+
+			} else {
+				f = new NonRandomFunction(name, argTy, resTy);
 			}
+			fun = f;
 		} else if (e instanceof RandomFuncDec) {
-			DependencyModel dm;
-			dm = transDependency(e.body, resTy, resTy.getDefaultValue());
-			RandomFunction f = new RandomFunction(name, argTy, resTy, dm);
+			// dependency statement will added later
+			RandomFunction f = new RandomFunction(name, argTy, resTy, null);
 			f.setArgVars(argVars);
 			fun = f;
 		} else if (e instanceof OriginFuncDec) {
@@ -319,10 +322,52 @@ public class Semant {
 		model.addFunction(fun);
 	}
 
+	/**
+	 * translate the function body
+	 * only nonrandom and random functions will be processed in this step.
+	 * 
+	 * @param e
+	 */
+	void transFuncBody(FunctionDec e) {
+		if (e instanceof OriginFuncDec)
+			return;
+		List<Type> argTy = new ArrayList<Type>();
+		for (FieldList fl = e.params; fl != null; fl = fl.next) {
+			Type ty = getType(fl.typ);
+			argTy.add(ty);
+		}
+
+		String name = e.name.toString();
+		Function fun = getFunction(name, argTy);
+
+		if (e instanceof FixedFuncDec) {
+			if (e.body == null) {
+				error(e.line, e.col, "empty fixed function body");
+			} else if (argTy.size() > 0) {
+				if (e.body instanceof FuncCallExpr) {
+					FuncCallExpr fc = (FuncCallExpr) e.body;
+					List<ArgSpec> args = transExprList(fc.args, false);
+					Class cls = getClassWithName(fc.func.toString());
+					((NonRandomFunction) fun).setInterpretation(cls, args);
+				} else {
+					// TODO: Implement more general fixed functions
+				}
+			}
+		} else if (e instanceof RandomFuncDec) {
+			DependencyModel dm = transDependency(e.body, fun.getRetType(),
+					fun.getDefaultValue());
+			((RandomFunction) fun).setDepModel(dm);
+		}
+
+	}
+
 	DependencyModel transDependency(Expr e, Type resTy, Object defVal) {
 		Object body = transExpr(e);
 		List<Clause> cl = new ArrayList<Clause>(1);
-		if (body instanceof Clause) {
+		if (body instanceof Term) {
+			cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class,
+					Collections.EMPTY_LIST, Collections.singletonList(body)));
+		} else if (body instanceof Clause) {
 			cl.add((Clause) body);
 		} else if (e instanceof IfExpr) {
 			cl = transExpr((IfExpr) e);
@@ -485,13 +530,11 @@ public class Semant {
 		List<ArgSpec> params = new ArrayList<ArgSpec>();
 		for (Iterator<ArgSpec> iter = as.iterator(); iter.hasNext();) {
 			ArgSpec spec = iter.next();
-			// /* TODO: put this back in
-			if (spec.getValueIfNonRandom() == null) {
+			if (spec.containsRandomSymbol()) {
 				args.add(spec);
 			} else {
 				params.add(spec);
 			}
-			// */
 		}
 
 		Clause c = new Clause(TrueFormula.TRUE, cls, params, args);
@@ -605,7 +648,6 @@ public class Semant {
 	}
 
 	ArgSpec transExpr(IntExpr e) {
-		// TODO
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
 				String.valueOf(e.value), BuiltInTypes.INTEGER, e.value),
 				Collections.EMPTY_LIST);
@@ -767,9 +809,24 @@ public class Semant {
 		}
 	}
 
-	void transStmtList(StmtList e) {
-		for (; e != null; e = e.next) {
+	/**
+	 * each statement list will be processed twice
+	 * first time everything except processing function body for random/nonrandom
+	 * functions
+	 * second time those function bodies
+	 * 
+	 * @param stl
+	 */
+	void transStmtList(StmtList stl) {
+		StmtList e;
+		for (e = stl; e != null; e = e.next) {
 			transStmt(e.head);
+		}
+
+		for (e = stl; e != null; e = e.next) {
+			if (e.head instanceof FunctionDec) {
+				transFuncBody((FunctionDec) e.head);
+			}
 		}
 	}
 
