@@ -1,0 +1,109 @@
+/** a very simple PCFG grammar
+1.0: S -> NP VP;
+1.0: PP -> P NP;
+0.7: VP -> V NP;
+0.3: VP -> VP PP;
+0.4: NP -> NP PP;
+0.1: NP -> "astronomers";
+0.18: NP -> "ears";
+0.04: NP -> "saw";
+0.18: NP -> "stars";
+0.1: NP -> "telescopes";
+1.0: P -> "with";
+1.0: V -> "saw";
+*/
+
+/*
+must load grammar.blog first
+*/
+
+type Sentence;
+
+// root node of the parse tree
+origin Sentence RootSentence(ParseNode);
+#ParseNode(RootSentence = s) = 1;
+
+// get the node corresponding to a sentence
+random ParseNode ParseTreeRoot(Sentence s) 
+  ~ Iota({ParseNode node: RootSentence(node) == s});
+
+ClassAsRoot(node) {
+  if (Container(node) != null) = S
+};
+
+
+// Non terminals from the PCFG grammar 
+distinct NodeClass S, NP, VP, PP, P, V, NP1, NP2, NP3, NP4, NP5, P1, V1;
+
+// rules in PCFG
+distinct Expansion SNPVP, PPPNP, VPVNP, VPVPPP, NPNPPP, NPNP1, NPNP2, NPNP3, NPNP4, NPNP5, PP1, VV1; 
+
+NthChildClass(Expansion, NaturalNum)
+  = TabularInterp(2,
+      SNPVP, 0, NP,
+      SNPVP, 1, NP,
+
+      PPPNP, 0, P,
+      PPPNP, 1, NP,
+
+      VPVNP, 0, V,
+      VPVNP, 1, NP,
+
+      VPVPPP, 0, VP,
+      VPVPPP, 1, PP,
+
+      NPNPPP, 0, NP,
+      NPNPPP, 1, PP,
+
+      NPNP1, 0, NP1,
+
+      NPNP2, 0, NP2,
+
+      NPNP3, 0, NP3,
+
+      NPNP4, 0, NP4,
+
+      NPNP5, 0, NP5,
+
+      PP1, 0, P1,
+
+      VV1, 0, V1
+    );
+
+ExpansionApplied(node) {
+	if (Class(node) == S) then = SVPNP
+	
+	else if (Class(node) == PP) then = PPPNP
+	
+	else if (Class(node) == VP) then 
+	  ~ Categorical({VPVNP -> 0.7, VPVPPP -> 0.3})
+	
+	else if (Class(node) == NP) then 
+	  ~ Categorical({NPNPPP -> 0.4, 
+	                 NPNP1 -> 0.1, 
+	                 NPNP2 -> 0.18, 
+	                 NPNP3 -> 0.04, 
+	                 NPNP4 -> 0.18, 
+	                 NPNP5 -> 0.1})
+
+	else if (Class(node) == P) = PP1
+
+	else if (Class(node) == V) = VV1
+}
+
+OwnText(node) {
+   if (Class(node) == NP1) then = "astronomers"
+   else if (Class(node) == NP2) then = "ears"
+   else if (Class(node) == NP3) then = "saw"
+   else if (Class(node) == NP4) then = "stars"
+   else if (Class(node) == NP5) then = "telescopes"   
+   else if (Class(node) == P1) then = "with"   
+   else if (Class(node) == V1) then = "saw"
+};
+
+random String Text(Sentence s) = NodeText(ParseTreeRoot(s));
+
+// just one sentence
+distinct Sentence Sen1;
+
+query Text(Sen1);
