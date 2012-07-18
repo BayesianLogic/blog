@@ -559,6 +559,8 @@ public class Semant {
 			return transExpr((DoubleExpr) e);
 		} else if (e instanceof IntExpr) {
 			return transExpr((IntExpr) e);
+		} else if (e instanceof StringExpr) {
+			return transExpr((StringExpr) e);
 		} else if (e instanceof NumberExpr) {
 			return transExpr((NumberExpr) e);
 		} else if (e instanceof ImplicitSetExpr) {
@@ -696,9 +698,10 @@ public class Semant {
 		// clauses.add(new Clause(test, cls, as, Collections.<ArgSpec>
 		// emptyList()));
 		// }
-
-		Object elseClause = transExpr(e.elseclause);
-		combineFormula(elseClause, clauses);
+		if (e.elseclause != null) {
+			Object elseClause = transExpr(e.elseclause);
+			combineFormula(elseClause, clauses);
+		}
 		return clauses;
 	}
 
