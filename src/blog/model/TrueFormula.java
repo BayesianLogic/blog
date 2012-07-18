@@ -55,8 +55,9 @@ public class TrueFormula extends Formula {
 
 	/**
 	 * Creates a new TrueFormula.
+	 * singleton pattern
 	 */
-	public TrueFormula() {
+	private TrueFormula() {
 	}
 
 	public Object evaluate(EvalContext context) {

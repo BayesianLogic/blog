@@ -35,8 +35,12 @@
 
 package blog.model;
 
-import java.util.*;
 import java.io.PrintStream;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 
 import blog.EqualsCPD;
 import blog.bn.BasicVar;
@@ -108,7 +112,7 @@ public class DependencyModel {
 					+ " of type " + childType);
 		}
 		defaultClause = new Clause(TrueFormula.TRUE, EqualsCPD.CPD,
-				Collections.singletonList(defaultTerm));
+				Collections.singletonList((ArgSpec) defaultTerm));
 	}
 
 	public List getClauseList() {
