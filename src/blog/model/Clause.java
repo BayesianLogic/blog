@@ -76,7 +76,8 @@ public class Clause {
 	 *          List of ArgSpec objects whose denotations will be passed to the
 	 *          CPD each time it is invoked
 	 */
-	public Clause(Formula cond, Class cpdClass, List cpdParams, List cpdArgs) {
+	public Clause(Formula cond, Class cpdClass, List<ArgSpec> cpdParams,
+			List<ArgSpec> cpdArgs) {
 		this.cond = cond;
 		this.cpdClass = cpdClass;
 		this.cpdParams = cpdParams;
@@ -95,18 +96,20 @@ public class Clause {
 	 *          List of ArgSpec objects whose denotations will be passed to the
 	 *          CPD each time it is invoked
 	 */
-	public Clause(Formula cond, CondProbDistrib cpd, List cpdArgs) {
+	public Clause(Formula cond, CondProbDistrib cpd, List<ArgSpec> cpdArgs) {
 		this.cond = cond;
 		this.cpdClass = cpd.getClass();
-		this.cpdParams = Collections.EMPTY_LIST;
+		this.cpdParams = Collections.emptyList();
 		this.cpd = cpd;
 		this.cpdArgs = cpdArgs;
 	}
 
+	public void setCond(Formula cond) {
+		this.cond = cond;
+	}
+
 	public Formula getCond() {
-
 		return cond;
-
 	}
 
 	public Class getCPDClass() {
@@ -230,16 +233,13 @@ public class Clause {
 		// Type-check the CPD parameters, making sure they contain no
 		// free variables
 		if (cpdParams != null) {
-			for (Iterator iter = cpdParams.iterator(); iter.hasNext();) {
-				ArgSpec param = (ArgSpec) iter.next();
+			for (ArgSpec param : cpdParams) {
 				// if (!param.checkTypesAndScope(model, Collections.EMPTY_MAP)) {
 				if (!param.checkTypesAndScope(model, scope)) {
 					correct = false;
 				}
 			}
-
 		}
-
 		return correct;
 	}
 
@@ -275,8 +275,7 @@ public class Clause {
 		int errors = 0;
 
 		List paramValues = new ArrayList();
-		for (Iterator iter = cpdParams.iterator(); iter.hasNext();) {
-			ArgSpec param = (ArgSpec) iter.next();
+		for (ArgSpec param : cpdParams) {
 			int thisParamErrors = param.compile(callStack);
 			errors += thisParamErrors;
 			if (thisParamErrors == 0) {
@@ -369,7 +368,7 @@ public class Clause {
 
 	private Formula cond;
 	private Class cpdClass;
-	private List cpdParams; // of ArgSpec;
+	private List<ArgSpec> cpdParams; // of ArgSpec;
 	private CondProbDistrib cpd;
-	private List cpdArgs; // of ArgSpec
+	private List<ArgSpec> cpdArgs; // of ArgSpec
 }

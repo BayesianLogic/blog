@@ -40,6 +40,7 @@ import blog.absyn.ParameterDec;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
 import blog.absyn.StmtList;
+import blog.absyn.StringExpr;
 import blog.absyn.SymbolArrayList;
 import blog.absyn.SymbolExpr;
 import blog.absyn.Ty;
@@ -365,12 +366,12 @@ public class Semant {
 		Object body = transExpr(e);
 		List<Clause> cl = new ArrayList<Clause>(1);
 		if (body instanceof Term) {
-			cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class,
-					Collections.EMPTY_LIST, Collections.singletonList(body)));
+			cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
+					.<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
 		} else if (body instanceof Clause) {
 			cl.add((Clause) body);
 		} else if (e instanceof IfExpr) {
-			cl = transExpr((IfExpr) e);
+			cl = (List<Clause>) body;
 		} else {
 			error(e.line, e.col, "invalid body of dependency clause");
 		}
@@ -616,41 +617,101 @@ public class Semant {
 		return vals;
 	}
 
+	/**
+	 * combine clauses from if
+	 * 
+	 * @param test
+	 * @param value
+	 * @param clauses
+	 */
+	void combineFormula(Formula test, Object value, List<Clause> clauses) {
+		if (value instanceof Clause) {
+			Clause c = (Clause) value;
+			clauses.add(addTestConditionToClause(test, c));
+		} else if (value instanceof List<?>) {
+			for (Object v : ((List<?>) value)) {
+				Clause c = (Clause) v;
+				clauses.add(addTestConditionToClause(test, c));
+			}
+		} else {
+			// should be ArgSpec
+			clauses.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
+					.<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
+		}
+	}
+
+	private Clause addTestConditionToClause(Formula test, Clause c) {
+		Formula old = c.getCond();
+		Formula ne = createConjunction(test, old);
+		c.setCond(ne);
+		return c;
+	}
+
+	private Formula createConjunction(Formula c1, Formula c2) {
+		if (c2 == TrueFormula.TRUE)
+			return c1;
+		if (c1 == TrueFormula.TRUE)
+			return c2;
+		return new ConjFormula(c1, c2);
+	}
+
+	/**
+	 * combine clauses from else
+	 * 
+	 * @param value
+	 * @param clauses
+	 */
+
+	void combineFormula(Object value, List<Clause> clauses) {
+		if (value instanceof Clause) {
+			clauses.add((Clause) value);
+		} else if (value instanceof List<?>) {
+			clauses.addAll((List<Clause>) value);
+		} else {
+			// should be ArgSpec
+			clauses.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
+					.<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
+		}
+	}
+
 	List<Clause> transExpr(IfExpr e) {
 		ArrayList<Clause> clauses = new ArrayList<Clause>();
 
 		// TODO: add proper check, error if not
 		Formula test = (Formula) transExpr(e.test);
 
-		Expr thenClause = e.thenclause;
-		if (thenClause instanceof DistributionExpr) {
-			DistributionExpr distExpr = (DistributionExpr) thenClause;
-			Class cls = getClassWithName(distExpr.name.toString());
-			if (cls == null) {
-				error(distExpr.line, distExpr.col, "Class not found: " + distExpr.name);
-			}
+		Object thenClause = transExpr(e.thenclause);
+		combineFormula(test, thenClause, clauses);
+		// if (thenClause instanceof DistributionExpr) {
+		// DistributionExpr distExpr = (DistributionExpr) thenClause;
+		// Class cls = getClassWithName(distExpr.name.toString());
+		// if (cls == null) {
+		// error(distExpr.line, distExpr.col, "Class not found: " + distExpr.name);
+		// }
+		//
+		// List<ArgSpec> as = null;
+		// if (distExpr.args != null) {
+		// as = transExprList(distExpr.args, true);
+		// }
+		// clauses.add(new Clause(test, cls, as, Collections.<ArgSpec>
+		// emptyList()));
+		// }
 
-			List<ArgSpec> as = null;
-			if (distExpr.args != null) {
-				as = transExprList(distExpr.args, true);
-			}
-			clauses.add(new Clause(test, cls, as, Collections.EMPTY_LIST));
-		}
-
-		Expr elseClause = e.elseclause;
-		if (elseClause instanceof IfExpr) {
-			List<Clause> rest = transExpr((IfExpr) elseClause);
-			clauses.addAll(rest);
-		} else if (elseClause instanceof DistributionExpr) {
-			clauses.add(transExpr((DistributionExpr) elseClause));
-		}
+		Object elseClause = transExpr(e.elseclause);
+		combineFormula(elseClause, clauses);
 		return clauses;
 	}
 
 	ArgSpec transExpr(IntExpr e) {
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
-				String.valueOf(e.value), BuiltInTypes.INTEGER, e.value),
-				Collections.EMPTY_LIST);
+				String.valueOf(e.value), BuiltInTypes.INTEGER, e.value));
+		t.setLocation(e.line);
+		return t;
+	}
+
+	ArgSpec transExpr(StringExpr e) {
+		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral("\"" + e.value + "\"",
+				BuiltInTypes.STRING, e.value));
 		t.setLocation(e.line);
 		return t;
 	}
