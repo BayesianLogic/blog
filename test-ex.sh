@@ -12,6 +12,7 @@ do
     RET=$?
     if [ $RET != 0 ]
     then
+	echo "Failed regression test for ${CLASS}"
 	break
     fi
 done
