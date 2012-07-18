@@ -19,8 +19,8 @@ public class StringExpr extends Expr {
 	@Override
 	public void printTree(Printer pr, int d) {
 		pr.indent(d);
-		pr.say("StringExpr(");
+		pr.say("StringExpr(\"");
 		pr.say(value);
-		pr.say(")");
+		pr.say("\")");
 	}
 }

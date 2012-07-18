@@ -134,7 +134,6 @@ random String OwnText(ParseNode node) {
    else if (Class(node) == NP5) then = "telescopes"   
    else if (Class(node) == P1) then = "with"   
    else if (Class(node) == V1) then = "saw"
-   else = null
 };
 
 random String Text(Sentence s) = NodeText(ParseTreeRoot(s));
