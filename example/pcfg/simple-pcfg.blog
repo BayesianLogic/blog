@@ -23,11 +23,14 @@ type NodeClass;
 type Expansion;
 type Sentence;
 
+// just one sentence
+distinct Sentence Sen1;
+
 // Non terminals from the PCFG grammar 
-distinct NodeClass S, NP, VP, PP, P, V, NP1, NP2, NP3, NP4, NP5, P1, V1;
+distinct NodeClass S, NP, VP, PP, P, V, w_astronomers, w_ears, w_saw, w_stars, w_telescopes, w_with;
 
 // rules in PCFG
-distinct Expansion SNPVP, PPPNP, VPVNP, VPVPPP, NPNPPP, NPNP1, NPNP2, NPNP3, NPNP4, NPNP5, PP1, VV1; 
+distinct Expansion SNPVP, PPPNP, VPVNP, VPVPPP, NPNPPP, NPw_astronomers, NPw_ears, NPw_saw, NPw_stars, NPw_telescopes, Pw_with, Vw_saw; 
 
 fixed NodeClass NthChildClass(Expansion e, NaturalNum n)
   = TabularInterp(2,
@@ -46,19 +49,19 @@ fixed NodeClass NthChildClass(Expansion e, NaturalNum n)
       NPNPPP, 0, NP,
       NPNPPP, 1, PP,
 
-      NPNP1, 0, NP1,
+      NPw_astronomers, 0, w_astronomers,
 
-      NPNP2, 0, NP2,
+      NPw_ears, 0, w_ears,
 
-      NPNP3, 0, NP3,
+      NPw_saw, 0, w_saw,
 
-      NPNP4, 0, NP4,
+      NPw_stars, 0, w_stars,
 
-      NPNP5, 0, NP5,
+      NPw_telescopes, 0, w_telescopes,
 
-      PP1, 0, P1,
+      Pw_with, 0, w_with,
 
-      VV1, 0, V1
+      Vw_saw, 0, w_saw
     );
 
 origin ParseNode Parent(ParseNode);
@@ -105,6 +108,7 @@ random String NodeText(ParseNode node) {
     else = ""
 };
 
+
 random Expansion ExpansionApplied(ParseNode node) {
 	if (Class(node) == S) then = SNPVP
 	
@@ -115,30 +119,27 @@ random Expansion ExpansionApplied(ParseNode node) {
 	
 	else if (Class(node) == NP) then 
 	  ~ Categorical({NPNPPP -> 0.4, 
-	                 NPNP1 -> 0.1, 
-	                 NPNP2 -> 0.18, 
-	                 NPNP3 -> 0.04, 
-	                 NPNP4 -> 0.18, 
-	                 NPNP5 -> 0.1})
+	                 NPw_astronomers -> 0.1, 
+	                 NPw_ears -> 0.18, 
+	                 NPw_saw -> 0.04, 
+	                 NPw_stars -> 0.18, 
+	                 NPw_telescopes -> 0.1})
 
-	else if (Class(node) == P) then = PP1
+	else if (Class(node) == P) then = Pw_with
 
-	else if (Class(node) == V) then = VV1
+	else if (Class(node) == V) then = Vw_saw
 };
 
 random String OwnText(ParseNode node) {
-   if (Class(node) == NP1) then = "astronomers"
-   else if (Class(node) == NP2) then = "ears"
-   else if (Class(node) == NP3) then = "saw"
-   else if (Class(node) == NP4) then = "stars"
-   else if (Class(node) == NP5) then = "telescopes"   
-   else if (Class(node) == P1) then = "with"   
-   else if (Class(node) == V1) then = "saw"
+   if (Class(node) == w_astronomers) then = "astronomers"
+   else if (Class(node) == w_ears) then = "ears"
+   else if (Class(node) == w_saw) then = "saw"
+   else if (Class(node) == w_stars) then = "stars"
+   else if (Class(node) == w_telescopes) then = "telescopes"   
+   else if (Class(node) == w_with) then = "with"   
+   else if (Class(node) == w_saw) then = "saw"
 };
 
 random String Text(Sentence s) = NodeText(ParseTreeRoot(s));
-
-// just one sentence
-distinct Sentence Sen1;
 
 //query Text(Sen1);
