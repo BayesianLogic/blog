@@ -1,0 +1,35 @@
+/**
+ * Hurricane 
+ * Figure 4.2 in Milch's thesis
+ */
+ 
+type City;
+type PrepLevel;
+type DamageLevel;
+
+random City First ~ UniformChoice({City c});
+
+random City NotFirst ~ UniformChoice({City c: c != First});
+
+random PrepLevel Prep(City c) {
+       if (First == c) then ~ Categorical({High -> 0.5, Low -> 0.5})
+       else {
+       	    if (Damage(First) == Severe) then ~ Categorical({High -> 0.9, Low -> 0.1})
+	    else ~ Categorical({High -> 0.1, Low -> 0.9})
+       }
+};
+
+random DamageLevel Damage(City c) {
+       if (Prep(c) == High) then ~ Categorical({High -> 0.2, Low -> 0.8})
+       else ~ Categorical({High -> 0.8, Low -> 0.2})
+};
+
+distinct City A, B;
+distinct PrepLevel High, Low;
+distinct DamageLevel Severe, Mild;
+
+obs First = A;
+obs Damage(First) = Severe;
+
+query Damage(NotFirst);
+query NotFirst;
