@@ -75,12 +75,15 @@ origin Sentence RootSentence(ParseNode);
 random ParseNode ParseTreeRoot(Sentence s) 
   ~ Iota({ParseNode node: RootSentence(node) == s});
 
+/*
 random NodeClass ClassAsRoot(ParseNode node) {
   if (Container(node) != null) then = S
 };
+*/
 
 random NodeClass Class(ParseNode node) {
-  if (Parent(node) == null) then = ClassAsRoot(node)
+  //if (Parent(node) == null) then = ClassAsRoot(node)
+  if (Parent(node) == null) then = S
   else = NthChildClass(ExpansionApplied(Parent(node)), GenIndex(node))
 };
 
