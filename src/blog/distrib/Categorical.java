@@ -38,9 +38,12 @@ package blog.distrib;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import Jama.Matrix;
 import blog.common.Util;
+import blog.model.ArgSpec;
+import blog.model.MapSpec;
 import blog.model.Model;
 import blog.model.Type;
 
@@ -160,18 +163,39 @@ public class Categorical extends AbstractCondProbDistrib {
 	}
 
 	/**
-	 * Creates a new Categorical distribution from the given parameter list. If
-	 * the parameter list is empty, then the probability vector must be passed as
+	 * Creates a new Categorical distribution from the given parameter list.
+	 * If the parameter list contains only one element of MapSpec,
+	 * the map is used to initialize the categorical distribution (from value to
+	 * probability)
+	 * If the parameter list is empty, then the probability vector must be passed
+	 * as
 	 * an argument to this CPD. Otherwise, the parameter list should contain the
 	 * probability vector as a sequence of Number objects.
 	 */
 	public Categorical(List params) {
 		if (!params.isEmpty()) {
-			probs = new double[params.size()];
-			for (int i = 0; i < params.size(); ++i) {
-				probs[i] = ((Number) params.get(i)).doubleValue();
+			int sz = params.size();
+			if (sz == 1) {
+				Object obj = params.get(0);
+				if (obj instanceof MapSpec) {
+					Map<ArgSpec, ArgSpec> map = ((MapSpec) obj).getMap();
+					int entrysize = map.size();
+					probs = new double[entrysize];
+					values = new Object[entrysize];
+					for (ArgSpec as : map.keySet()) {
+						// TODO leili stoped here 2012/07/20
+					}
+				} else {
+					// TODO
+					Util.fatalError("Categorical with " + obj + " not supported yet");
+				}
+			} else {
+				probs = new double[params.size()];
+				for (int i = 0; i < params.size(); ++i) {
+					probs[i] = ((Number) params.get(i)).doubleValue();
+				}
+				expectProbsAsArg = false;
 			}
-			expectProbsAsArg = false;
 		}
 	}
 
@@ -358,4 +382,6 @@ public class Categorical extends AbstractCondProbDistrib {
 
 	boolean expectProbsAsArg = true;
 	private double[] probs;
+	private Object[] values;
+
 }
