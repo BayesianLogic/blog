@@ -684,20 +684,6 @@ public class Semant {
 
 		Object thenClause = transExpr(e.thenclause);
 		combineFormula(test, thenClause, clauses);
-		// if (thenClause instanceof DistributionExpr) {
-		// DistributionExpr distExpr = (DistributionExpr) thenClause;
-		// Class cls = getClassWithName(distExpr.name.toString());
-		// if (cls == null) {
-		// error(distExpr.line, distExpr.col, "Class not found: " + distExpr.name);
-		// }
-		//
-		// List<ArgSpec> as = null;
-		// if (distExpr.args != null) {
-		// as = transExprList(distExpr.args, true);
-		// }
-		// clauses.add(new Clause(test, cls, as, Collections.<ArgSpec>
-		// emptyList()));
-		// }
 		if (e.elseclause != null) {
 			Object elseClause = transExpr(e.elseclause);
 			combineFormula(elseClause, clauses);
