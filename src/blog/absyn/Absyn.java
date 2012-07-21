@@ -1,5 +1,8 @@
 package blog.absyn;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 /**
  * Root class for abstract syntax tree, all nodes in the syntax tree should be
  * sub-type of this one.
@@ -67,4 +70,18 @@ abstract public class Absyn {
 	 *          depth of the node in the tree
 	 */
 	public abstract void printTree(Printer pr, int d);
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		ByteArrayOutputStream str = new ByteArrayOutputStream();
+		Printer pr = new Printer(new PrintStream(str));
+		printTree(pr, 0);
+		return str.toString();
+	}
+
 }
