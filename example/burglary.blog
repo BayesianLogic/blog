@@ -1,0 +1,44 @@
+/* The class burglary-earthquake network, as presented in "Artificial 
+ * Intelligence: A Modern Approach", 2nd ed., p. 494.  All the CPDs are 
+ * tabular.  We take advantage of the option of leaving out the last 
+ * element of each row in the parameters to TabularCPD.  
+ */
+
+random Boolean Burglary ~ Bernoulli(0.001);
+
+random Boolean Earthquake ~ Bernoulli(0.002);
+
+random Boolean Alarm {
+       if (Burglary == true) then {
+       	    if (Earthquake == true) then ~ Bernoulli(0.95)
+       	    else ~ Bernoulli(0.94)
+       }
+       else if (Earthquake == true) then ~ Bernoulli(0.29)
+       	    else ~ Bernoulli(0.001)
+};
+
+/*
+random Boolean JohnCalls {
+       if (Alarm == true) then ~ Bernoulli(0.9)
+       else ~ Bernoulli(0.05)
+};
+
+random Boolean MaryCalls {
+       if (Alarm == true) then ~ Bernoulli(0.7)
+       else ~ Bernoulli(0.01)
+};
+*/
+
+/* Evidence for the burglary model (burglary.mblog) saying that both 
+ * John and Mary called.  Given this evidence, the posterior probability 
+ * of Burglary is 0.284 (see p. 505 of "AI: A Modern Approach", 2nd ed.).
+ */
+
+//obs JohnCalls = true;
+//obs MaryCalls = true;
+
+/* Query for the burglary model (burglary.mblog) asking whether Burglary 
+ * is true.
+ */
+
+query Burglary;
