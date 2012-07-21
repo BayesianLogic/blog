@@ -637,7 +637,7 @@ public class Semant {
 			}
 		} else {
 			// should be ArgSpec
-			clauses.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
+			clauses.add(new Clause(test, EqualsCPD.class, Collections
 					.<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
 		}
 	}

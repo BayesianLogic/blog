@@ -35,16 +35,18 @@
 
 package blog.distrib;
 
-import blog.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import Jama.Matrix;
 import blog.common.Util;
 import blog.model.Model;
 import blog.model.Type;
 
-import java.util.*;
-import Jama.Matrix;
-
 /**
  * Distribution over a finite set of possible values numbered 0, ..., k-1,
+ * or maybe guaranteed objects
  * parameterized by a vector of probabilities pi<sub>0</sub>, ...,
  * pi<sub>k-1</sub> that sum to one. The possible values can be the user-defined
  * guaranteed objects of some type, or a finite prefix of the natural numbers.
@@ -311,6 +313,7 @@ public class Categorical extends AbstractCondProbDistrib {
 		ensureProbsInited(args);
 
 		int index = Util.sampleWithProbs(probs);
+		// error here
 		Object value = childType.getGuaranteedObject(index);
 		if (value == null) {
 			// make list so we can print the probabilities easily

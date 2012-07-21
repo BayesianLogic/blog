@@ -35,7 +35,10 @@
 
 package blog.sample;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
@@ -158,8 +161,8 @@ public class RejectionSampler extends Sampler {
 						+ "values for evidence and queries.", false);
 			}
 
-			for (UninstVarIterator iter = curWorld
-					.uninstVarIterator(); iter.hasNext();) {
+			for (UninstVarIterator iter = curWorld.uninstVarIterator(); iter
+					.hasNext();) {
 				VarWithDistrib var = (VarWithDistrib) iter.next();
 				DependencyModel.Distrib distrib = var
 						.getDistrib(new DefaultEvalContext(curWorld, false));
