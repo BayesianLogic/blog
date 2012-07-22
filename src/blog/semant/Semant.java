@@ -11,6 +11,7 @@ import java.util.List;
 import blog.EqualsCPD;
 import blog.Timestep;
 import blog.absyn.Absyn;
+import blog.absyn.BooleanExpr;
 import blog.absyn.Dec;
 import blog.absyn.DistinctSymbolDec;
 import blog.absyn.DistributionDec;
@@ -555,6 +556,8 @@ public class Semant {
 	Object transExpr(Expr e) {
 		if (e instanceof DistributionExpr) {
 			return transExpr((DistributionExpr) e);
+		} else if (e instanceof BooleanExpr) {
+			return transExpr((BooleanExpr) e);
 		} else if (e instanceof DoubleExpr) {
 			return transExpr((DoubleExpr) e);
 		} else if (e instanceof IntExpr) {
@@ -689,6 +692,13 @@ public class Semant {
 			combineFormula(elseClause, clauses);
 		}
 		return clauses;
+	}
+	
+	ArgSpec transExpr(BooleanExpr e) {
+		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
+				String.valueOf(e.value), BuiltInTypes.BOOLEAN, e.value));
+		t.setLocation(e.line);
+		return t;
 	}
 
 	ArgSpec transExpr(IntExpr e) {

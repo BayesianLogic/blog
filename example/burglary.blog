@@ -17,7 +17,7 @@ random Boolean Alarm {
        	    else ~ Bernoulli(0.001)
 };
 
-/*
+
 random Boolean JohnCalls {
        if (Alarm == true) then ~ Bernoulli(0.9)
        else ~ Bernoulli(0.05)
@@ -27,15 +27,15 @@ random Boolean MaryCalls {
        if (Alarm == true) then ~ Bernoulli(0.7)
        else ~ Bernoulli(0.01)
 };
-*/
+
 
 /* Evidence for the burglary model (burglary.mblog) saying that both 
  * John and Mary called.  Given this evidence, the posterior probability 
  * of Burglary is 0.284 (see p. 505 of "AI: A Modern Approach", 2nd ed.).
  */
 
-//obs JohnCalls = true;
-//obs MaryCalls = true;
+obs JohnCalls = true;
+obs MaryCalls = true;
 
 /* Query for the burglary model (burglary.mblog) asking whether Burglary 
  * is true.
