@@ -1,0 +1,38 @@
+/* Latent Dirichlet Allocation (LDA) represented in blog model.
+ * (Blei, Ng and Jordan, 2003)
+ * 
+ * Author: leili  
+ */
+
+type Document;
+
+#Document ~ Poisson(1000);
+
+// Suppose we have five topics. 
+fixed Real alpha = 1.0;
+fixed R5Vector beta(NaturalNum);
+beta(1) = [0.1, 0.4, 0.5];
+beta(2) = [0.1, 0.3, 0.6];
+beta(3) = [0.4, 0.2, 0.4];
+beta(4) = [0.6, 0.3, 0.1];
+beta(5) = [0.1, 0.8, 0.1];
+
+random R5Vector theta(Document d) ~ Dirichlet(5, alpha);
+
+random NaturalNum topic(Document d, NaturalNum i) {
+    ~ Categorical( theta(d) )
+};
+
+random NaturalNum wordidx(Document d, NaturalNum i) {
+    ~ Categorial( beta( topic(d, i) ) )
+};
+
+/* Lots of undefined stuff here; ignoring for now
+// define a dictionary mapping from index to word
+fixed String Dictionary(NaturalNum);
+
+random String word(Document d, NaturalNum i) {
+    = Dictionary( wordidx(d, i) );
+}
+*/
+
