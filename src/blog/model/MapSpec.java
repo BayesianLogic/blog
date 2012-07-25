@@ -2,6 +2,7 @@ package blog.model;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,42 +20,71 @@ import blog.sample.EvalContext;
  */
 
 public class MapSpec extends ArgSpec {
-
-	Map<ArgSpec, ArgSpec> map;
+	
+	Map<ArgSpec, Term> map;
 	boolean compiled;
+	
+	// Until compilation, need these lists to store values
+	List<ArgSpec> keys;
+	List<Term> values;
 
 	/**
 	 * Create empty ArgSpec,
 	 * Add Elements to it later on.
 	 */
 	public MapSpec() {
-		this.map = new HashMap<ArgSpec, ArgSpec>();
+		this.map = new HashMap<ArgSpec, Term>();
 		compiled = false;
 	}
 
-	public MapSpec(Map<ArgSpec, ArgSpec> m) {
+	public MapSpec(Map<ArgSpec, Term> m) {
 		// TODO need to check the type consistency
 		this.map = m;
 		compiled = false;
+	}
+	
+	public MapSpec(List<ArgSpec> objs, List<Term> probs) {
+		this.map = new HashMap<ArgSpec, Term>();
+		compiled = false;
+		keys = objs;
+		values = probs;
 	}
 
 	/**
 	 * TODO: Need to check correctness
 	 * 
-	 * To compile a map, just compile each of its possible values
+	 * To compile a map, compile each of its possible values,
+	 * then hash K/V pairs of objects and probs into map
 	 */
 	public int compile(LinkedHashSet callStack) {
 		compiled = true;
 		callStack.add(this);
 		int errors = 0;
-		if (map.isEmpty()) {
+//		if (map.isEmpty()) {
+//			System.err.println("Map expression is empty");
+//			errors = 1;
+//		} else {
+//			for (ArgSpec arg : map.values()) {
+//				errors += arg.compile(callStack);
+//			}
+//		}
+		if (keys.isEmpty()) {
 			System.err.println("Map expression is empty");
 			errors = 1;
-		} else {
-			for (ArgSpec arg : map.values()) {
+		}
+		else {
+			for (ArgSpec arg : keys) {
 				errors += arg.compile(callStack);
 			}
+			for (Term t: values) {
+				errors += t.compile(callStack);
+			}
+			
+			for (int i = 0; i < keys.size(); i++) {
+				map.put(keys.get(i), values.get(i));
+			}
 		}
+		
 		callStack.remove(this);
 		return errors;
 	}
@@ -66,7 +96,7 @@ public class MapSpec extends ArgSpec {
 		return map;
 	}
 
-	public Map<ArgSpec, ArgSpec> getMap() {
+	public Map<ArgSpec, Term> getMap() {
 		return map;
 	}
 
@@ -78,8 +108,14 @@ public class MapSpec extends ArgSpec {
 	}
 
 	public boolean checkTypesAndScope(Model model, Map scope) {
-		// TODO: implement
-		return false;
+		// Check typing of all symbols in the map
+		for (ArgSpec obj: keys) {
+			if (!obj.checkTypesAndScope(model, scope)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 	/**
