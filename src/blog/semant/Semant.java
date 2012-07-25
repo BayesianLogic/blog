@@ -5,8 +5,10 @@ package blog.semant;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import blog.EqualsCPD;
 import blog.Timestep;
@@ -64,6 +66,7 @@ import blog.model.FormulaQuery;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.ImplicitSetSpec;
+import blog.model.MapSpec;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.model.NegFormula;
@@ -613,16 +616,29 @@ public class Semant {
 		return t;
 	}
 
-	List<ArgSpec> transExpr(MapInitExpr e) {
-		// TODO: This is incorrect. This code is only to make
-		// the poission-ball case work
-		ArrayList<ArgSpec> vals = new ArrayList<ArgSpec>();
-		ExprTupleList current = e.values;
-		while (current != null) {
-			vals.add((ArgSpec) transExpr(current.to));
-			current = current.next;
+//	List<ArgSpec> transExpr(MapInitExpr e) {
+//		// TODO: This is incorrect. This code is only to make
+//		// the poission-ball case work
+//		ArrayList<ArgSpec> vals = new ArrayList<ArgSpec>();
+//		ExprTupleList current = e.values;
+//		while (current != null) {
+//			vals.add((ArgSpec) transExpr(current.to));
+//			current = current.next;
+//		}
+//		return vals;
+//	}
+	
+	MapSpec transExpr(MapInitExpr e) {
+		List<ArgSpec> probKeys = new ArrayList<ArgSpec>();
+		List<Term> probs = new ArrayList<Term>();
+		ExprTupleList mapTerms = e.values;
+		while (mapTerms != null) {
+			probKeys.add((ArgSpec) transExpr(mapTerms.from));
+			probs.add((Term) transExpr(mapTerms.to));
+			mapTerms = mapTerms.next;
 		}
-		return vals;
+		MapSpec m = new MapSpec(probKeys, probs);
+		return m;
 	}
 
 	/**
