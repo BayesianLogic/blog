@@ -517,6 +517,9 @@ public class Semant {
 	}
 
 	Clause transExpr(DistributionExpr e) {
+		/* TODO 1: Handle map expressions, not just lists
+		 * 		2: Handle random symbols as arguments where appropriate  
+		 */
 		Class cls = getClassWithName(e.name.toString());
 		if (cls == null) {
 			error(e.line, e.col, "Class not found: " + e.name);

@@ -25,7 +25,7 @@ random DamageLevel Damage(City c) {
 };
 
 distinct City A, B;
-distinct PrepLevel High, Low;
+distinct PrepLevel Low, High;
 distinct DamageLevel Severe, Mild;
 
 obs First = A;
