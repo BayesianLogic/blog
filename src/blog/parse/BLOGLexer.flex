@@ -300,8 +300,3 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 
 <YYINITIAL>.  { return symbol(BLOGTokenConstants.ERROR, 
                                           yytext()); }
-.             { /*
-                    *  This should be the very last rule and will match
-                    *  everything not matched by other lexical rules.
-                    */
-                   System.err.println("LEXER BUG - UNMATCHED: " + yytext()); }
