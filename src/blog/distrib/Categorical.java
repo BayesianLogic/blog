@@ -186,7 +186,6 @@ public class Categorical extends AbstractCondProbDistrib {
 					
 					int termIndex = 0;
 					for (ArgSpec as : map.keySet()) {
-						// TODO leili stoped here 2012/07/20
 						probs[termIndex] = map.get(as).asDouble();
 						values[termIndex] = as.getValueIfNonRandom();
 						termIndex++;
@@ -345,9 +344,8 @@ public class Categorical extends AbstractCondProbDistrib {
 		ensureProbsInited(args);
 
 		int index = Util.sampleWithProbs(probs);
-		// error here
-//		Object value = childType.getGuaranteedObject(index);
-		Object value = childType.getCanonicalTerm(values[index]);
+		Object value = values[index];
+		
 		if (value == null) {
 			// make list so we can print the probabilities easily
 			List probList = new ArrayList();
