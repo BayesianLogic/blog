@@ -20,8 +20,8 @@ random PrepLevel Prep(City c) {
 };
 
 random DamageLevel Damage(City c) {
-       if (Prep(c) == High) then ~ Categorical({High -> 0.2, Low -> 0.8})
-       else ~ Categorical({High -> 0.8, Low -> 0.2})
+       if (Prep(c) == High) then ~ Categorical({Severe -> 0.2, Mild -> 0.8})
+       else ~ Categorical({Severe -> 0.8, Mild -> 0.2})
 };
 
 distinct City A, B;
