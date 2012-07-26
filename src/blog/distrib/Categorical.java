@@ -45,6 +45,7 @@ import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.MapSpec;
 import blog.model.Model;
+import blog.model.Term;
 import blog.model.Type;
 
 /**
@@ -177,14 +178,19 @@ public class Categorical extends AbstractCondProbDistrib {
 			int sz = params.size();
 			if (sz == 1) {
 				Object obj = params.get(0);
-				if (obj instanceof MapSpec) {
-					Map<ArgSpec, ArgSpec> map = ((MapSpec) obj).getMap();
+				if (obj instanceof Map) {
+					Map<ArgSpec, Term> map = (Map<ArgSpec, Term>) obj;
 					int entrysize = map.size();
 					probs = new double[entrysize];
 					values = new Object[entrysize];
+					
+					int termIndex = 0;
 					for (ArgSpec as : map.keySet()) {
-						// TODO leili stoped here 2012/07/20
+						probs[termIndex] = map.get(as).asDouble();
+						values[termIndex] = as.getValueIfNonRandom();
+						termIndex++;
 					}
+					expectProbsAsArg = false;
 				} else {
 					// TODO
 					Util.fatalError("Categorical with " + obj + " not supported yet");
@@ -334,11 +340,12 @@ public class Categorical extends AbstractCondProbDistrib {
 	 *           not specified and <code>args</code> is empty
 	 */
 	public Object sampleVal(List args, Type childType) {
+		// TODO: fix the indices used to sample a type
 		ensureProbsInited(args);
 
 		int index = Util.sampleWithProbs(probs);
-		// error here
-		Object value = childType.getGuaranteedObject(index);
+		Object value = values[index];
+		
 		if (value == null) {
 			// make list so we can print the probabilities easily
 			List probList = new ArrayList();
