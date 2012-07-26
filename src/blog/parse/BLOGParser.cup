@@ -112,9 +112,7 @@ init with {:
  * the lexer returns it. For the terminals' interpretations, consult with
  * BLOGLexer.lex.
  */
-terminal FACTOR, PARFACTOR, FOR; //not implemented yet
-terminal ERROR;
-terminal ELSE, ELSEIF, IF, THEN;
+terminal ELSE, IF, THEN;
 terminal TYPE, RANDOM, FIXED, ORIGIN, DISTINCT,
         QUERY, OBS, PARAM, MAP, DISTRIBUTION;
 terminal EXISTS, FORALL;
@@ -124,6 +122,8 @@ terminal java.lang.Boolean BOOLEAN_LITERAL;
 terminal java.lang.Character CHAR_LITERAL;
 terminal java.lang.String STRING_LITERAL;
 terminal java.lang.String ID;
+terminal PARFACTOR, FACTOR, FOR; // Not Yet Implemented
+terminal ERROR, ELSEIF; // Not Yet Implemented
 terminal AT; // time operator
 terminal PLUS, MINUS, MULT, DIV, MOD; //arithmetic operator
 terminal LT, GT, LEQ, GEQ; // relational_expression
@@ -152,7 +152,7 @@ nonterminal ExprList semi_colon_separated_expression_list,
 nonterminal ExprTupleList expression_pair_list;
 nonterminal Ty type, array_type, map_type, name_type;
 nonterminal Integer dims;
-nonterminal FieldList opt_parenthesized_type_lst, type_lst;
+//nonterminal FieldList opt_parenthesized_type_lst, type_lst // Not Used
 nonterminal FieldList opt_parenthesized_type_var_lst, type_var_lst;
 nonterminal OriginFieldList opt_parenthesized_origin_var_list,
   origin_var_list;
@@ -290,19 +290,23 @@ map_type ::= MAP LT type:t1 COMMA type:t2 GT
   ;
 
 /* A possibly empty list of IDs denoting type names. */
-opt_parenthesized_type_lst ::= /* EMPTY */
-	    {: RESULT = null; :}
-	    | LPAREN RPAREN
-	    {: RESULT = null; :}
-	    | LPAREN type_lst:tl RPAREN
-	    {: RESULT = tl; :}
-	    ;
+// Currently commented this code out since it isn't being
+// used anywhere else in this cup file and cup is giving
+// warnings. Uncomment once these rules are used elsewhere.
+//   
+//opt_parenthesized_type_lst ::= /* EMPTY */
+//	    {: RESULT = null; :}
+//	    | LPAREN RPAREN
+//	    {: RESULT = null; :}
+//	    | LPAREN type_lst:tl RPAREN
+//	    {: RESULT = tl; :}
+//	    ;
 
-type_lst ::= type:ty COMMA type_lst:tl
-	  {: RESULT = new FieldList(null, ty, tl); :}
-	| type:ty
-	  {: RESULT = new FieldList(null, ty, null); :}
-	;
+//type_lst ::= type:ty COMMA type_lst:tl
+//	  {: RESULT = new FieldList(null, ty, tl); :}
+//	| type:ty
+//	  {: RESULT = new FieldList(null, ty, null); :}
+//	;
 
 /* Represents a list of IDs denoting type names. */
 opt_parenthesized_type_var_lst ::= /* EMPTY */
