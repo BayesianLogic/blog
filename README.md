@@ -9,7 +9,7 @@ Generating Lexer and Parser
 
 You only need to do this if you modified `BLOGLexer.flex` or `BLOGParser.cup`
 
-1. Run `$ ./gen-parser`
+1. Run `$ ./gen_parser`
 
 Working with Eclipse
 =====================
