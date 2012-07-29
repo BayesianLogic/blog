@@ -56,17 +56,17 @@ public class FuncAppTerm extends Term {
 	public FuncAppTerm(Function f) {
 		this.f = f;
 		funcName = f.getName();
-		args = new Term[0];
+		args = new ArgSpec[0];
 	}
 
 	/**
 	 * Creates a new function application term with the given function and a
 	 * single given argument.
 	 */
-	public FuncAppTerm(Function f, Term arg) {
+	public FuncAppTerm(Function f, ArgSpec arg) {
 		this.f = f;
 		funcName = f.getName();
-		args = new Term[1];
+		args = new ArgSpec[1];
 		args[0] = arg;
 	}
 
@@ -74,7 +74,7 @@ public class FuncAppTerm extends Term {
 	 * Creates a new function application term with the given function and two
 	 * given arguments.
 	 */
-	public FuncAppTerm(Function f, Term arg1, Term arg2) {
+	public FuncAppTerm(Function f, ArgSpec arg1, ArgSpec arg2) {
 		this.f = f;
 		funcName = f.getName();
 		args = new Term[2];
@@ -94,7 +94,7 @@ public class FuncAppTerm extends Term {
 	public FuncAppTerm(Function f, List argList) {
 		this.f = f;
 		funcName = f.getName();
-		args = new Term[argList.size()];
+		args = new ArgSpec[argList.size()];
 		argList.toArray(args);
 	}
 
@@ -112,7 +112,7 @@ public class FuncAppTerm extends Term {
 		this.funcName = funcName;
 		if (funcName.equals("Position"))
 			position = this;
-		args = new Term[argList.size()];
+		args = new ArgSpec[argList.size()];
 		argList.toArray(args);
 	}
 
@@ -128,7 +128,7 @@ public class FuncAppTerm extends Term {
 	/**
 	 * Returns the arguments in this function application term.
 	 */
-	public Term[] getArgs() {
+	public ArgSpec[] getArgs() {
 		return args;
 	}
 
@@ -147,7 +147,7 @@ public class FuncAppTerm extends Term {
 		for (int i = 0; i < args.length; ++i) {
 			errors += args[i].compile(callStack);
 		}
-		errors += f.compile(callStack);
+		//errors += f.compile(callStack);
 
 		callStack.remove(this);
 		return errors;
@@ -231,10 +231,13 @@ public class FuncAppTerm extends Term {
 		Set genFuncsApplied = new HashSet();
 
 		for (int i = 0; i < args.length; ++i) {
-			if (args[i].equals(subject) && (f instanceof OriginFunction)) {
-				genFuncsApplied.add(f);
-			} else {
-				genFuncsApplied.addAll(args[i].getGenFuncsApplied(subject));
+			if (args[i] instanceof Term) {
+				Term arg = (Term) args[i];
+				if (arg.equals(subject) && (f instanceof OriginFunction)) {
+					genFuncsApplied.add(f);
+				} else {
+					genFuncsApplied.addAll(arg.getGenFuncsApplied(subject));
+				}
 			}
 		}
 
@@ -255,7 +258,7 @@ public class FuncAppTerm extends Term {
 	}
 
 	public int hashCode() {
-		int code = f.hashCode();
+		int code = funcName.hashCode();
 		for (int i = 0; i < args.length; ++i) {
 			code ^= args[i].hashCode();
 		}
@@ -294,13 +297,16 @@ public class FuncAppTerm extends Term {
 
 		Type[] argTypes = new Type[args.length];
 		for (int i = 0; i < args.length; ++i) {
-			Term argInScope = args[i].getTermInScope(model, scope);
-			if (argInScope == null) {
-				correct = false;
-			} else {
-				args[i] = argInScope;
-				argTypes[i] = args[i].getType();
-			}
+			if (args[i] instanceof Term) {
+                Term arg = (Term) args[i];
+    			Term argInScope = arg.getTermInScope(model, scope);
+    			if (argInScope == null) {
+    				correct = false;
+    			} else {
+    				args[i] = argInScope;
+    				argTypes[i] = argInScope.getType();
+    			}
+            }
 		}
 
 		if (correct && (f == null)) {
@@ -380,10 +386,14 @@ public class FuncAppTerm extends Term {
 			FuncAppTerm ft = (FuncAppTerm) t;
 			if (f != ft.f || args.length != ft.args.length)
 				return false;
-			for (int i = 0; i < args.length; i++)
-				if (!args[i].makeOverlapSubst(ft.args[i], theta)) {
-					return false;
-				}
+			for (int i = 0; i < args.length; i++) {
+                if ((args[i] instanceof Term) && (ft.args[i] instanceof Term)) {
+                    Term arg = (Term) args[i];
+				    if (!arg.makeOverlapSubst((Term) ft.args[i], theta)) {
+				    	return false;
+				    }
+                }
+            }
 			return true;
 		}
 		return false;
@@ -402,7 +412,10 @@ public class FuncAppTerm extends Term {
 
 		List<Term> newArgs = new ArrayList<Term>();
 		for (int i = 0; i < args.length; ++i) {
-			newArgs.add(args[i].getCanonicalVersion());
+            if (args[i] instanceof Term) {
+                Term arg = (Term) args[i];
+			    newArgs.add(arg.getCanonicalVersion());
+            }
 		}
 
 		FuncAppTerm canonical = new FuncAppTerm(f, newArgs);
@@ -412,7 +425,7 @@ public class FuncAppTerm extends Term {
 
 	private String funcName;
 	private Function f;
-	private Term[] args;
+	private ArgSpec[] args;
 	private Object[] argValues; // scratch space for storing arg values
 	private boolean compiled = false;
 }
