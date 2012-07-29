@@ -385,7 +385,7 @@ public class ObjGenGraph extends AbstractDGraph {
 		Term bound = null;
 		if ((f == BuiltInFunctions.LT) || (f == BuiltInFunctions.LEQ)
 				|| (f == BuiltInFunctions.GT) || (f == BuiltInFunctions.GEQ)) {
-			Term[] args = ((FuncAppTerm) psiTerm).getArgs();
+			Term[] args = (Term[]) ((FuncAppTerm) psiTerm).getArgs();
 			if (subject.equals(args[0])) {
 				bound = args[1];
 			} else if (subject.equals(args[1])) {

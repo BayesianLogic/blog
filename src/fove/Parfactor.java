@@ -462,7 +462,7 @@ public class Parfactor {
 				term = ((CountingTerm) term).singleSubTerm();
 			}
 
-			Term[] args = ((FuncAppTerm) term).getArgs();
+			Term[] args = (Term[]) ((FuncAppTerm) term).getArgs();
 			for (int i = 0; i < args.length; ++i) {
 				Term arg = args[i];
 				if (!(arg instanceof LogicalVar)) {
@@ -1559,8 +1559,8 @@ public class Parfactor {
 
 			List<Term> newArgs = new ArrayList<Term>();
 			Type[] argTypes = ft1.getFunction().getArgTypes();
-			Term[] args1 = ft1.getArgs();
-			Term[] args2 = ft2.getArgs();
+			Term[] args1 = (Term[]) ft1.getArgs();
+			Term[] args2 = (Term[]) ft2.getArgs();
 			for (int i = 0; i < argTypes.length; ++i) {
 				Term merged = mergeTypedTerms(argTypes[i], args1[i], args2[i], subst1,
 						subst2, splitVars);
@@ -1906,7 +1906,7 @@ public class Parfactor {
 				// Variables that are arguments to this func app are still
 				// liftable. Just recurse on arguments that are not
 				// logical variables.
-				Term[] args = funcApp.getArgs();
+				Term[] args = (Term[]) funcApp.getArgs();
 				for (int i = 0; i < args.length; ++i) {
 					Term arg = args[i];
 					if (!(arg instanceof LogicalVar)) {

@@ -211,7 +211,8 @@ public class SymbolTerm extends Term {
 
 	public int hashCode() {
 		checkCompiled();
-		return ((var != null) ? var.hashCode() : func.hashCode());
+		//return ((var != null) ? var.hashCode() : func.hashCode());
+        return name.hashCode();
 	}
 
 	public String toString() {
@@ -219,10 +220,13 @@ public class SymbolTerm extends Term {
 	}
 
 	private void checkCompiled() {
+        /* Taking this out to handle terms like F(t), where t is time
 		if ((func == null) && (var == null)) {
 			throw new IllegalStateException("SymbolTerm \"" + this
 					+ "\" has not been succesfully " + "compiled.");
 		}
+        */
+        return;
 	}
 
 	public ArgSpec replace(Term t, ArgSpec another) {
