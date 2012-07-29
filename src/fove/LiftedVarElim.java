@@ -199,7 +199,7 @@ public class LiftedVarElim extends InferenceEngine {
 		}
 
 		Type[] argTypes = f.getArgTypes();
-		Term[] args = funcApp.getArgs();
+		Term[] args = (Term[]) funcApp.getArgs();
 		for (int i = 0; i < args.length; ++i) {
 			String errMsg = checkParfactorTermArg(args[i], argTypes[i]);
 			if (errMsg != null) {
