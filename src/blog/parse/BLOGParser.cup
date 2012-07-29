@@ -616,23 +616,9 @@ evidence_stmt ::= OBS evidence:e SEMI {: RESULT = e; :}
   ;
 
 evidence ::=
-//    symbol_evidence:e {: RESULT = e; :} |//covered by value_evidence
-//    number_evidence:e {: RESULT = e; :} |//covered by value_evidence
    value_evidence:e {: RESULT = e; :}
 //  | tuple_evidence:e {: RESULT = e; :} //not implemented yet
   ;
-
-/*
-symbol_evidence ::=
-    implicit_set:e1 EQ explicit_set:e2
-    {: RESULT = new SymbolEvidence(currLineno(), currColno(), e1, e2); :}
-  ;
-
-number_evidence ::=
-    NUMSIGN implicit_set:e1 EQ INT_LITERAL:s
-    {: RESULT = new NumberEvidence(currLineno(), currColno(), e1, s.intValue()); :}
-  ;
-*/
 
 /* valid evidence format include (will be checked in semantic checking)
  *   - general form: random expression = fixed expression
