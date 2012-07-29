@@ -389,7 +389,7 @@ public class LiftedDecisionTree extends ve.DecisionTree<Term> {
 		context.assign(varToBind, skolem);
 
 		// Create random variable
-		Term[] args = targetFuncApp.getArgs();
+		Term[] args = (Term[]) targetFuncApp.getArgs();
 		Object[] argValues = new Object[args.length];
 		for (int i = 0; i < args.length; ++i) {
 			Object argVal = args[i].evaluate(context);
