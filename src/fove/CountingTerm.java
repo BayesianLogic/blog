@@ -378,8 +378,8 @@ public class CountingTerm extends Term {
 				return false;
 			}
 
-			Term[] myArgs = myA.getArgs();
-			Term[] otherArgs = otherA.getArgs();
+			Term[] myArgs = (Term[]) myA.getArgs();
+			Term[] otherArgs = (Term[]) otherA.getArgs();
 			for (int i = 0; i < myArgs.length; i++) {
 				// the both need to be the counting vars or equal to each other
 				if (!((myArgs[i] == myV && otherArgs[i] == otherV) || (myArgs[i]
@@ -421,7 +421,7 @@ public class CountingTerm extends Term {
 		checkSingletons();
 		LogicalVar myV = vars.get(0);
 		FuncAppTerm myA = (FuncAppTerm) subTerms.get(0);
-		Term[] myArgs = myA.getArgs();
+		Term[] myArgs = (Term[]) myA.getArgs();
 
 		int hashCode = myA.getFunction().hashCode();
 		for (int i = 0; i < myArgs.length; i++) {
