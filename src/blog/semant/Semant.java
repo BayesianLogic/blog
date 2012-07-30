@@ -521,7 +521,6 @@ public class Semant {
 
 	Clause transExpr(DistributionExpr e) {
 		/* TODO 1: Handle map expressions, not just lists
-		 * 		2: Handle random symbols as arguments where appropriate  
 		 */
 		Class cls = getClassWithName(e.name.toString());
 		if (cls == null) {
@@ -533,19 +532,7 @@ public class Semant {
 			as = transExprList(e.args, true);
 		}
 
-		// random inputs to distribution need to go into args
-		List<ArgSpec> args = new ArrayList<ArgSpec>();
-		List<ArgSpec> params = new ArrayList<ArgSpec>();
-		for (Iterator<ArgSpec> iter = as.iterator(); iter.hasNext();) {
-			ArgSpec spec = iter.next();
-			if (spec.containsRandomSymbol()) {
-				args.add(spec);
-			} else {
-				params.add(spec);
-			}
-		}
-
-		Clause c = new Clause(TrueFormula.TRUE, cls, params, args);
+		Clause c = new Clause(TrueFormula.TRUE, cls, as);
 		c.setLocation(e.line);
 		return c;
 	}
@@ -616,18 +603,6 @@ public class Semant {
 		return t;
 	}
 
-//	List<ArgSpec> transExpr(MapInitExpr e) {
-//		// TODO: This is incorrect. This code is only to make
-//		// the poission-ball case work
-//		ArrayList<ArgSpec> vals = new ArrayList<ArgSpec>();
-//		ExprTupleList current = e.values;
-//		while (current != null) {
-//			vals.add((ArgSpec) transExpr(current.to));
-//			current = current.next;
-//		}
-//		return vals;
-//	}
-	
 	MapSpec transExpr(MapInitExpr e) {
 		List<ArgSpec> probKeys = new ArrayList<ArgSpec>();
 		List<Term> probs = new ArrayList<Term>();
