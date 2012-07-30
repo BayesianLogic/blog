@@ -83,7 +83,27 @@ public class Clause {
 		this.cpdParams = cpdParams;
 		this.cpd = null;
 		this.cpdArgs = cpdArgs;
+        this.cpdArgsAndParams = null;
 	}
+
+    /**
+     * Create a new clause where it is not yet known which fields are
+     * parameters and which are arguments.
+     * @param cond
+     *          the condition under which this clause applies
+     * @param cpdCLass
+     *          the class of the conditional probability distribution used.
+     * @param cpdArgsAndParams
+     *          A mixed list of arguments and parameters.
+     */
+    public Clause(Formula cond, Class cpdClass, List<ArgSpec> cpdArgsAndParams)
+    {
+        this.cond = cond;
+        this.cpdClass = cpdClass;
+        this.cpdParams = null;
+        this.cpdArgs = null;
+        this.cpdArgsAndParams = cpdArgsAndParams;
+    }
 
 	/**
 	 * Creates a new clause using the given CondProbDistrib object.
@@ -102,6 +122,7 @@ public class Clause {
 		this.cpdParams = Collections.emptyList();
 		this.cpd = cpd;
 		this.cpdArgs = cpdArgs;
+        this.cpdArgsAndParams = null;
 	}
 
 	public void setCond(Formula cond) {
@@ -194,11 +215,28 @@ public class Clause {
 			correct = false;
 		}
 
-		for (Iterator iter = cpdArgs.iterator(); iter.hasNext();) {
+		for (Iterator iter = cpdArgsAndParams.iterator(); iter.hasNext();) {
 			if (!((ArgSpec) iter.next()).checkTypesAndScope(model, scope)) {
 				correct = false;
 			}
 		}
+
+        if (this.cpdArgs == null && this.cpdParams == null)
+        {
+    		// random inputs to distribution need to go into args
+    		this.cpdArgs = new ArrayList<ArgSpec>();
+    		this.cpdParams = new ArrayList<ArgSpec>();
+    		for (Iterator<ArgSpec> iter = this.cpdArgsAndParams.iterator(); 
+                    iter.hasNext();) {
+    			ArgSpec spec = iter.next();
+    			if (spec.containsRandomSymbol()) {
+    				this.cpdArgs.add(spec);
+    			} else {
+    				this.cpdParams.add(spec);
+    			}
+    		}
+            this.cpdArgsAndParams = null;
+        }
 
 		// for EqualsCPD, we can do additional checking
 		if (correct && (cpdClass == EqualsCPD.class)) {
@@ -262,7 +300,7 @@ public class Clause {
 		for (Iterator iter = cpdArgs.iterator(); iter.hasNext();) {
 			errors += ((ArgSpec) iter.next()).compile(callStack);
 		}
-
+    
 		if (cpd == null) {
 			errors += initCPD(callStack);
 		}
@@ -371,4 +409,5 @@ public class Clause {
 	private List<ArgSpec> cpdParams; // of ArgSpec;
 	private CondProbDistrib cpd;
 	private List<ArgSpec> cpdArgs; // of ArgSpec
+    private List<ArgSpec> cpdArgsAndParams; // Only used before compilation.
 }

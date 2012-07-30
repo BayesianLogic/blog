@@ -60,14 +60,6 @@ public class MapSpec extends ArgSpec {
 		compiled = true;
 		callStack.add(this);
 		int errors = 0;
-//		if (map.isEmpty()) {
-//			System.err.println("Map expression is empty");
-//			errors = 1;
-//		} else {
-//			for (ArgSpec arg : map.values()) {
-//				errors += arg.compile(callStack);
-//			}
-//		}
 		if (keys.isEmpty()) {
 			System.err.println("Map expression is empty");
 			errors = 1;
