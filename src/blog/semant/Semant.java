@@ -49,6 +49,7 @@ import blog.absyn.SymbolExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
+import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.BuiltInFunctions;
@@ -675,9 +676,20 @@ public class Semant {
 
 	List<Clause> transExpr(IfExpr e) {
 		ArrayList<Clause> clauses = new ArrayList<Clause>();
+		Formula test = TrueFormula.TRUE;
 
-		// TODO: add proper check, error if not
-		Formula test = (Formula) transExpr(e.test);
+		// TODO: write a test for the SymbolTerm case to exclude non-Boolean variables/functions
+		Object cond = transExpr(e.test);
+		if (cond instanceof Formula) {
+			test = (Formula) cond;
+		}
+		else if (cond instanceof SymbolTerm) {
+			test = new EqualityFormula((SymbolTerm)cond, BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+		}
+		else {
+			error(e.test.line, e.test.col, "Cannot use non-Boolean value as predicate for if clause");
+			System.exit(1);
+		}
 
 		Object thenClause = transExpr(e.thenclause);
 		combineFormula(test, thenClause, clauses);
