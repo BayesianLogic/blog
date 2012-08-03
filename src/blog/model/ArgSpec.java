@@ -305,6 +305,14 @@ public abstract class ArgSpec {
 		return (checkTypesAndScope(model, scope) ? this : null);
 	}
 
+    /**
+     *  <p> Prints out a string representation of ArgSpec
+     *  TODO: implement this more fully.
+     */
+    public String toString() {
+        return "";
+    }
+
 	private static String DEFAULT_LOCATION = "(no location)";
 
 	protected Object location = DEFAULT_LOCATION;
