@@ -1,0 +1,25 @@
+/*
+ * Model: coin-weighted.blog
+ * -------------------------
+ * Models a coin whose weight is drawn from one of two Beta
+ * distributions with equal probability.  Used to test handling
+ * of random variables as parameters for other distributions.
+ *
+ * Author: awong (Aaron Wong)
+ * Date: July 26, 2012
+ */
+
+random Boolean BiasTrue ~ Bernoulli(0.5);
+
+random Real Weight(Boolean b) {
+    if (b == true) then ~ Beta(4, 2)
+    else ~ Beta(2, 4)
+};
+
+random Boolean Flip(Real w) ~ Bernoulli(w);
+//random Boolean Flip ~ Bernoulli(Weight(BiasTrue));
+
+obs Flip(Weight(BiasTrue)) = false;
+//obs Flip = false;
+
+query BiasTrue;
