@@ -36,6 +36,7 @@
 /**
  * use JFlex
  * @author leili
+ * @author bramsundar
  * @date 2012-07
  */
 
@@ -142,7 +143,7 @@ nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   evidence_stmt, query_stmt;
 nonterminal Stmt evidence, value_evidence, query;
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
-  quantified_formula,
+  quantified_formula, distribution_expr,
   function_call, list_construct_expression, symbol_expr,
   map_construct_expression, number_expr, elseif_list;
 nonterminal Expr dependency_statement_body;
@@ -413,8 +414,8 @@ class_name ::= ID:id {: RESULT = id; :}
  */
 dependency_statement_body ::= EQ expression:e
     {: RESULT = e; :}
-  | DISTRIB class_name:name LPAREN opt_expression_list:e RPAREN
-    {: RESULT = new DistributionExpr(currLineno(), currColno(), sym(name), e); :}
+  | distribution_expr:e
+    {: RESULT = e; :}
   | IF:a expression:e1 THEN dependency_statement_body:e2 elseif_list:e3
     {: RESULT = new IfExpr(currLineno(), currColno(), e1, e2, e3); :}
   | /* not recommended to add {}, just for compactibility of old syntax */
@@ -449,6 +450,7 @@ parameter_decl ::= PARAM type:ty ID:id SEMI
  */
 
 expression ::= operation_expr:e  {: RESULT = e; :}
+  | distribution_expr:e {: RESULT = e; :}
   | literal:e  {: RESULT = e; :}
   | function_call:e {: RESULT = e; :}
   | list_construct_expression:e {: RESULT = e; :}
@@ -474,7 +476,6 @@ literal ::= STRING_LITERAL:e
   | NULL:e
     {: RESULT = new NullExpr(currLineno(), currColno()); :}
   ;
-
 
 operation_expr ::= expression:e1 PLUS expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.PLUS, e2); :}
@@ -533,6 +534,10 @@ function_call ::= class_name:id LPAREN opt_expression_list:e RPAREN
 
 symbol_expr ::= ID:id
     {: RESULT = new SymbolExpr(currLineno(), currColno(), sym(id)); :}
+  ;
+
+distribution_expr ::= DISTRIB class_name:name LPAREN opt_expression_list:e RPAREN
+    {: RESULT = new DistributionExpr(currLineno(), currColno(), sym(name), e); :}
   ;
 
 opt_expression_list ::= expression_list:e {: RESULT = e; :}
