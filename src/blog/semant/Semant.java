@@ -606,12 +606,12 @@ public class Semant {
 
 	MapSpec transExpr(MapInitExpr e) {
 		List<ArgSpec> probKeys = new ArrayList<ArgSpec>();
-		List<Term> probs = new ArrayList<Term>();
-		ExprTupleList mapTerms = e.values;
-		while (mapTerms != null) {
-			probKeys.add((ArgSpec) transExpr(mapTerms.from));
-			probs.add((Term) transExpr(mapTerms.to));
-			mapTerms = mapTerms.next;
+		List<Object> probs = new ArrayList<Object>();
+		ExprTupleList mapExprs = e.values;
+		while (mapExprs != null) {
+			probKeys.add((ArgSpec) transExpr(mapExprs.from));
+			probs.add(transExpr(mapExprs.to));
+			mapExprs = mapExprs.next;
 		}
 		MapSpec m = new MapSpec(probKeys, probs);
 		return m;
