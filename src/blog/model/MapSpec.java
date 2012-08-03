@@ -21,30 +21,30 @@ import blog.sample.EvalContext;
 
 public class MapSpec extends ArgSpec {
 	
-	Map<ArgSpec, Term> map;
+	Map<ArgSpec, Object> map;
 	boolean compiled;
 	
 	// Until compilation, need these lists to store values
 	List<ArgSpec> keys;
-	List<Term> values;
+	List<Object> values;
 
 	/**
 	 * Create empty ArgSpec,
 	 * Add Elements to it later on.
 	 */
 	public MapSpec() {
-		this.map = new HashMap<ArgSpec, Term>();
+		this.map = new HashMap<ArgSpec, Object>();
 		compiled = false;
 	}
 
-	public MapSpec(Map<ArgSpec, Term> m) {
+	public MapSpec(Map<ArgSpec, Object> m) {
 		// TODO need to check the type consistency
 		this.map = m;
 		compiled = false;
 	}
 	
-	public MapSpec(List<ArgSpec> objs, List<Term> probs) {
-		this.map = new HashMap<ArgSpec, Term>();
+	public MapSpec(List<ArgSpec> objs, List<Object> probs) {
+		this.map = new HashMap<ArgSpec, Object>();
 		compiled = false;
 		keys = objs;
 		values = probs;
@@ -68,8 +68,17 @@ public class MapSpec extends ArgSpec {
 			for (ArgSpec arg : keys) {
 				errors += arg.compile(callStack);
 			}
-			for (Term t: values) {
-				errors += t.compile(callStack);
+			for (Object o: values) {
+                if (o instanceof Term) {
+                    Term t = (Term) o;
+                    errors += t.compile(callStack);
+                } else if (o instanceof Clause) {
+                    Clause c = (Clause) o;
+                    errors += c.compile(callStack);
+                } else {
+                    throw new IllegalArgumentException("Map values must " + 
+                        "either be terms or clauses!");
+                } 
 			}
 			
 			for (int i = 0; i < keys.size(); i++) {
@@ -88,7 +97,7 @@ public class MapSpec extends ArgSpec {
 		return map;
 	}
 
-	public Map<ArgSpec, Term> getMap() {
+	public Map<ArgSpec, Object> getMap() {
 		return map;
 	}
 
