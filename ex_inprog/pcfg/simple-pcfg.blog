@@ -35,7 +35,7 @@ distinct Expansion SNPVP, PPPNP, VPVNP, VPVPPP, NPNPPP, NPw_astronomers, NPw_ear
 fixed NodeClass NthChildClass(Expansion e, NaturalNum n)
   = TabularInterp(2,
       SNPVP, 0, NP,
-      SNPVP, 1, NP,
+      SNPVP, 1, VP,
 
       PPPNP, 0, P,
       PPPNP, 1, NP,
@@ -134,15 +134,15 @@ random Expansion ExpansionApplied(ParseNode node) {
 };
 
 random String OwnText(ParseNode node) {
-   if (Class(node) == w_astronomers) then = "astronomers"
-   else if (Class(node) == w_ears) then = "ears"
-   else if (Class(node) == w_saw) then = "saw"
-   else if (Class(node) == w_stars) then = "stars"
-   else if (Class(node) == w_telescopes) then = "telescopes"   
-   else if (Class(node) == w_with) then = "with"   
-   else if (Class(node) == w_saw) then = "saw"
+   if (Class(node) == w_astronomers) then = "astronomers "
+   else if (Class(node) == w_ears) then = "ears "
+   else if (Class(node) == w_saw) then = "saw "
+   else if (Class(node) == w_stars) then = "stars "
+   else if (Class(node) == w_telescopes) then = "telescopes "   
+   else if (Class(node) == w_with) then = "with "   
+   else if (Class(node) == w_saw) then = "saw "
 };
 
 random String Text(Sentence s) = NodeText(ParseTreeRoot(s));
 
-//query Text(Sen1);
+query Text(Sen1);

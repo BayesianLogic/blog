@@ -215,9 +215,23 @@ public class Clause {
 			correct = false;
 		}
 
-		for (Iterator iter = cpdArgsAndParams.iterator(); iter.hasNext();) {
-			if (!((ArgSpec) iter.next()).checkTypesAndScope(model, scope)) {
-				correct = false;
+		if (cpdArgsAndParams == null) {
+			for (Iterator iter = cpdArgs.iterator(); iter.hasNext();) {
+				if (!((ArgSpec) iter.next()).checkTypesAndScope(model, scope)) {
+					correct = false;
+				}
+			}
+			for (Iterator iter = cpdParams.iterator(); iter.hasNext();) {
+				if (!((ArgSpec) iter.next()).checkTypesAndScope(model, scope)) {
+					correct = false;
+				}
+			}
+		}
+		else {
+			for (Iterator iter = cpdArgsAndParams.iterator(); iter.hasNext();) {
+				if (!((ArgSpec) iter.next()).checkTypesAndScope(model, scope)) {
+					correct = false;
+				}
 			}
 		}
 
