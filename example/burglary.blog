@@ -9,22 +9,22 @@ random Boolean Burglary ~ Bernoulli(0.001);
 random Boolean Earthquake ~ Bernoulli(0.002);
 
 random Boolean Alarm {
-       if (Burglary == true) then {
-       	    if (Earthquake == true) then ~ Bernoulli(0.95)
+       if (Burglary) then {
+       	    if (Earthquake) then ~ Bernoulli(0.95)
        	    else ~ Bernoulli(0.94)
        }
-       else if (Earthquake == true) then ~ Bernoulli(0.29)
+       else if (Earthquake) then ~ Bernoulli(0.29)
        	    else ~ Bernoulli(0.001)
 };
 
 
 random Boolean JohnCalls {
-       if (Alarm == true) then ~ Bernoulli(0.9)
+       if (Alarm) then ~ Bernoulli(0.9)
        else ~ Bernoulli(0.05)
 };
 
 random Boolean MaryCalls {
-       if (Alarm == true) then ~ Bernoulli(0.7)
+       if (Alarm) then ~ Bernoulli(0.7)
        else ~ Bernoulli(0.01)
 };
 
