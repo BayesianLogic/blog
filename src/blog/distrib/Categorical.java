@@ -387,8 +387,7 @@ public class Categorical extends AbstractCondProbDistrib {
 		}
 	}
 
-	boolean expectProbsAsArg = true;
+	boolean expectProbsAsArg = false;
 	private double[] probs;
 	private Object[] values;
-
 }
