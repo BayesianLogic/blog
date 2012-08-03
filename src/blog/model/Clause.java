@@ -229,7 +229,13 @@ public class Clause {
 		}
 		else {
 			for (Iterator iter = cpdArgsAndParams.iterator(); iter.hasNext();) {
-				if (!((ArgSpec) iter.next()).checkTypesAndScope(model, scope)) {
+                ArgSpec as = (ArgSpec) iter.next();
+                if (as instanceof MapSpec) {
+                    MapSpec m = (MapSpec) as;
+                    if (!m.checkTypesAndScope(model, scope, childType)) {
+                        correct = false;
+                    }
+                } else if (!as.checkTypesAndScope(model, scope)) {
 					correct = false;
 				}
 			}

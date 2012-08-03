@@ -108,13 +108,26 @@ public class MapSpec extends ArgSpec {
 		return false;
 	}
 
-	public boolean checkTypesAndScope(Model model, Map scope) {
+    public boolean checkTypesAndScope(Model model, Map scope) {
+        return checkTypesAndScope(model, scope, null);
+    }
+
+	public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
 		// Check typing of all symbols in the map
 		for (ArgSpec obj: keys) {
 			if (!obj.checkTypesAndScope(model, scope)) {
 				return false;
 			}
 		}
+
+        for (Object val : values) {
+            if (val instanceof Clause) {
+                Clause c = (Clause) val;
+                if (!c.checkTypesAndScope(model, scope, childType)) {
+                    return false;
+                }
+            }
+        }
 		
 		return true;
 	}
