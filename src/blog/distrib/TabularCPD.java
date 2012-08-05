@@ -42,6 +42,8 @@ import blog.model.Model;
 import blog.model.Type;
 import blog.model.MapSpec;
 import blog.model.ArgSpec;
+import blog.model.SymbolTerm;
+import blog.model.Clause;
 
 import java.util.*;
 import Jama.Matrix;
@@ -101,7 +103,8 @@ public class TabularCPD extends AbstractCondProbDistrib {
 		}
 
         ArgSpec parents = getArgSpec(args);
-        CondProbDistrib distrib = (CondProbDistrib) this.map.get(parents);
+        Clause c = (Clause) this.map.get(parents);
+        CondProbDistrib distrib = (CondProbDistrib) c.getCPD();
         if (distrib == null) {
             throw new IllegalArgumentException("TabularCPD args don't "
                 + "specify a distribution");
@@ -116,7 +119,8 @@ public class TabularCPD extends AbstractCondProbDistrib {
 		}
 
         ArgSpec parents = getArgSpec(args);
-        CondProbDistrib distrib = (CondProbDistrib) this.map.get(parents);
+        Clause c = (Clause) this.map.get(parents);
+        CondProbDistrib distrib = c.getCPD();
         if (distrib == null) {
             throw new IllegalArgumentException("TabularCPD args don't "
                 + "specify a distribution");
@@ -137,7 +141,14 @@ public class TabularCPD extends AbstractCondProbDistrib {
 
     private ArgSpec getArgSpec(List params) {
         if (params.size() == 1) {
-            return (ArgSpec) params.get(0);
+            Object o = params.get(0);
+            if (o instanceof EnumeratedObject) {
+                EnumeratedObject e = (EnumeratedObject) o;
+                return new SymbolTerm(e.getName());
+            } else {
+                throw new IllegalArgumentException("TabularCPD: parameters to "
+                    + "sampleVal must be EnumeratedObjects");
+            }
         } else {
             throw new IllegalArgumentException("Arguments to TabularCPD must "
                 + "be instance of ArgSpec");
