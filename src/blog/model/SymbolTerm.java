@@ -203,8 +203,11 @@ public class SymbolTerm extends Term {
 			SymbolTerm other = (SymbolTerm) o;
 			if (var != null) {
 				return (var == other.getLogicalVar());
-			}
-			return (func.equals(other.getFunc()));
+			} else if (func != null) {
+                return (func.equals(other.getFunc()));
+            } else {
+                return (name.equals(other.getName()));
+            }
 		}
 		return false;
 	}
@@ -218,6 +221,10 @@ public class SymbolTerm extends Term {
 	public String toString() {
 		return name;
 	}
+
+    public String getName() {
+        return name;
+    }
 
 	private void checkCompiled() {
         /* Taking this out to handle terms like F(t), where t is time

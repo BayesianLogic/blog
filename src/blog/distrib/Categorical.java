@@ -380,12 +380,14 @@ public class Categorical extends AbstractCondProbDistrib {
 			for (int i = 0; i < probs.length; ++i) {
 				probs[i] = m.get(i, 0);
 			}
-		} else if (!args.isEmpty()) {
-			throw new IllegalArgumentException(
-					"Categorical CPD expects no arguments (probabilities were "
-							+ "specified as CPD parameters).");
-		}
-	}
+		} else if (args != null) {
+            if (!args.isEmpty()) {
+                    throw new IllegalArgumentException(
+                            "Categorical CPD expects no arguments (probabilities " 
+                            + "were specified as CPD parameters).");
+		    }
+        }
+    }
 
 	boolean expectProbsAsArg = false;
 	private double[] probs;
