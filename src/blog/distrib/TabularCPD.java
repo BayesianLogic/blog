@@ -38,6 +38,9 @@ package blog.distrib;
 
 import blog.*;
 import blog.common.Util;
+import blog.model.BuiltInFunctions;
+import blog.model.BuiltInTypes;
+import blog.model.FuncAppTerm;
 import blog.model.Model;
 import blog.model.Type;
 import blog.model.MapSpec;
@@ -145,7 +148,15 @@ public class TabularCPD extends AbstractCondProbDistrib {
             if (o instanceof EnumeratedObject) {
                 EnumeratedObject e = (EnumeratedObject) o;
                 return new SymbolTerm(e.getName());
-            } else {
+            }
+            // TODO: add more types as they are required by getArgSpec,
+            //       or find a better way to handle built-in types
+            else if (o instanceof Boolean) {
+            	Boolean b = (Boolean) o;
+            	return new FuncAppTerm(BuiltInFunctions.getLiteral(
+        								String.valueOf(b), BuiltInTypes.BOOLEAN, b));
+            }
+            else {
                 throw new IllegalArgumentException("TabularCPD: parameters to "
                     + "sampleVal must be EnumeratedObjects");
             }
