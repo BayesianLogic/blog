@@ -1,11 +1,13 @@
 package test.example;
 
+import java.util.HashMap;
+
 /**
- * Regression test for simple-aircraft.blog
- * (correct as of )
+ * Regression test for weather.dblog
+ * (correct as of August 6, 2012)
  * 
  * @author akanata
- * @date 
+ * @date August 6, 2012
  *
  */
 public class TestWeather extends ExampleTest {
@@ -16,7 +18,7 @@ public class TestWeather extends ExampleTest {
 	protected static final String DEF_PROPOSER = "blog.GenericProposer";
 	protected static final int STAT_INTERVAL = 2500;
 	
-	private static final double errBound = 2e-2;
+	private static final double ERR_BOUND = 5e-3;
 	
 	public static void main(String[] args) throws IncorrectProbException {
 		TestWeather test = new TestWeather();
@@ -24,7 +26,7 @@ public class TestWeather extends ExampleTest {
 	}
 
 	public TestWeather() {
-		super(errBound);
+		super(ERR_BOUND);
 	}
 
 	@Override
@@ -44,7 +46,12 @@ public class TestWeather extends ExampleTest {
 
 	@Override
 	public void referenceProbs() {
-		// TODO Auto-generated method stub
-
+		HashMap<Object, Double> nextWeather = refProbs.get(0);
+		nextWeather.put(model.getConstantValue("Dry"), 0.723014607);
+		nextWeather.put(model.getConstantValue("Rainy"), 0.276985393);
+		
+		HashMap<Object, Double> climate = refProbs.get(1);
+		climate.put(true, 0.769853934);
+		climate.put(false, 0.230146066);
 	}
 }
