@@ -11,7 +11,7 @@ import test.ComputeUrnBall;
  * Regression test for poisson-ball.blog
  * (correct as of at least July 12, 2012)
  * 
- * @author akanata
+ * @author awong
  * @date July 13, 2012
  *
  */

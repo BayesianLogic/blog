@@ -7,7 +7,7 @@ import java.util.Properties;
  * Regression test for simple-aircraft.blog
  * (correct as of at least June 8, 2012)
  *
- * @author akanata
+ * @author awong
  * @date July 13, 2012
  *
  */

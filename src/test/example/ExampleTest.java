@@ -30,7 +30,7 @@ import blog.model.Query;
  * 
  * Refer to test.example.TestPoissonBall as an example.
  * 
- * @author akanata
+ * @author awong
  * @date July 14, 2012
  */
 public abstract class ExampleTest {
