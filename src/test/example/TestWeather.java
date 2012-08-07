@@ -6,7 +6,7 @@ import java.util.HashMap;
  * Regression test for weather.dblog
  * (correct as of August 6, 2012)
  * 
- * @author akanata
+ * @author awong
  * @date August 6, 2012
  *
  */

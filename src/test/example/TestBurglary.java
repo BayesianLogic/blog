@@ -6,7 +6,7 @@ import java.util.HashMap;
  * Regression test for burglary.blog
  * (correct as of July 21, 2012)
  *
- * @author akanata
+ * @author awong
  * @date July 19, 2012
  *
  */
