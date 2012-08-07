@@ -1,10 +1,8 @@
-/** a very simple PCFG grammar
+/** an even simpler PCFG grammar
 1.0: S -> NP VP;
 1.0: PP -> P NP;
-0.7: VP -> V NP;
-0.3: VP -> VP PP;
-0.4: NP -> NP PP;
-0.1: NP -> "astronomers";
+1.0: VP -> V NP;
+0.5: NP -> "astronomers";
 0.18: NP -> "ears";
 0.04: NP -> "saw";
 0.18: NP -> "stars";
@@ -117,12 +115,10 @@ random Expansion ExpansionApplied(ParseNode node) {
 	
 	else if (Class(node) == PP) then = PPPNP
 	
-	else if (Class(node) == VP) then
-	  ~ Categorical({VPVNP -> 0.7, VPVPPP -> 0.3})
+	else if (Class(node) == VP) then = VPVNP
 	
 	else if (Class(node) == NP) then 
-	  ~ Categorical({NPNPPP -> 0.4, 
-	                 NPw_astronomers -> 0.1, 
+	  ~ Categorical({NPw_astronomers -> 0.5, 
 	                 NPw_ears -> 0.18, 
 	                 NPw_saw -> 0.04, 
 	                 NPw_stars -> 0.18, 
