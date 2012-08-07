@@ -26,3 +26,4 @@ obs Weather(@4) = Dry;
 obs Weather(@5) = Dry;
 
 query Weather(@6);
+query RainyRegion;

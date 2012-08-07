@@ -18,7 +18,7 @@ public class TestHurricane extends ExampleTest {
         protected static final String DEF_PROPOSER = "blog.GenericProposer";
         protected static final int STAT_INTERVAL = 2500;
 
-        private static final double ERR_BOUND = 5e-4;
+        private static final double ERR_BOUND = 5e-3;
 
         public static void main(String[] args) throws IncorrectProbException {
                 TestHurricane test = new TestHurricane();
