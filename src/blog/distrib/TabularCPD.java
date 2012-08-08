@@ -42,6 +42,8 @@ import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
 import blog.model.FuncAppTerm;
 import blog.model.Model;
+import blog.model.MultisetSpec;
+import blog.model.Term;
 import blog.model.Type;
 import blog.model.MapSpec;
 import blog.model.ArgSpec;
@@ -113,7 +115,7 @@ public class TabularCPD extends AbstractCondProbDistrib {
                 + "specify a distribution");
         }
 
-        return distrib.getProb(null, value); 
+        return distrib.getProb(new LinkedList(), value); 
 	}
 
 	public Object sampleVal(List args, Type childType) {
@@ -129,7 +131,7 @@ public class TabularCPD extends AbstractCondProbDistrib {
                 + "specify a distribution");
         }
 
-        return distrib.sampleVal(null, childType); 
+        return distrib.sampleVal(new LinkedList(), childType); 
 	}
 
     // TODO: Implement this correctly
@@ -155,6 +157,19 @@ public class TabularCPD extends AbstractCondProbDistrib {
             	Boolean b = (Boolean) o;
             	return new FuncAppTerm(BuiltInFunctions.getLiteral(
         								String.valueOf(b), BuiltInTypes.BOOLEAN, b));
+            }
+            else if (o instanceof List) {
+            	List<Object> arg = (List) o;
+            	List<Term> terms = new ArrayList<Term>();
+            	for (Object obj: arg) {
+            		List<Object> wrapper = new LinkedList<Object>();
+            		wrapper.add(obj);
+            		terms.add((Term) this.getArgSpec(wrapper));
+            	}
+            	
+            	MultisetSpec multi = new MultisetSpec(terms);
+//            	MultisetSpec multi = new MultisetSpec((List) o);
+            	return multi;
             }
             else {
                 throw new IllegalArgumentException("TabularCPD: parameters to "
