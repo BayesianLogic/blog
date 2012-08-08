@@ -13,19 +13,15 @@ random City NotFirst ~ UniformChoice({City c: c != First});
 
 random PrepLevel Prep(City c) {
        if (First == c) then ~ Categorical({High -> 0.5, Low -> 0.5})
-       else {
-       	    if (Damage(First) == Severe) then ~ Categorical({High -> 0.9, Low -> 0.1})
-	    else ~ Categorical({High -> 0.1, Low -> 0.9})
-       }
+       else ~ TabularCPD({Severe -> ~ Categorical({High -> 0.9, Low -> 0.1}),
+       	      		  Mild -> ~ Categorical({High -> 0.1, Low -> 0.9})},
+		    Damage(First))
 };
 
 random DamageLevel Damage(City c) {
-       if (Prep(c) == High) then ~ Categorical({Severe -> 0.2, Mild -> 0.8})
-       else ~ Categorical({Severe -> 0.8, Mild -> 0.2})
-/*
 	~ TabularCPD({High -> ~ Categorical({Severe -> 0.2, Mild -> 0.8}),
-	  	      Low -> ~ Categorical({Severe -> 0.8, Mild -> 0.2})}, Prep(c))
-*/
+	  	      Low -> ~ Categorical({Severe -> 0.8, Mild -> 0.2})},
+		Prep(c))
 };
 
 distinct City A, B;
