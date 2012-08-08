@@ -31,6 +31,7 @@ import blog.absyn.FunctionDec;
 import blog.absyn.IfExpr;
 import blog.absyn.ImplicitSetExpr;
 import blog.absyn.IntExpr;
+import blog.absyn.ListInitExpr;
 import blog.absyn.MapInitExpr;
 import blog.absyn.NameTy;
 import blog.absyn.NullExpr;
@@ -70,6 +71,7 @@ import blog.model.ImplicitSetSpec;
 import blog.model.MapSpec;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
+import blog.model.MultisetSpec;
 import blog.model.NegFormula;
 import blog.model.NonRandomFunction;
 import blog.model.OriginFunction;
@@ -89,6 +91,7 @@ import blog.msg.ErrorMsg;
  * @author leili
  * @author amatsukawa
  * @author rbharath
+ * @author awong
  */
 public class Semant {
 
@@ -570,6 +573,8 @@ public class Semant {
 			return transExpr((OpExpr) e);
 		} else if (e instanceof FuncCallExpr) {
 			return transExpr((FuncCallExpr) e);
+		} else if (e instanceof ListInitExpr) {
+			return transExpr((ListInitExpr) e);
 		} else if (e instanceof MapInitExpr) {
 			return transExpr((MapInitExpr) e);
 		} else if (e instanceof SymbolExpr) {
@@ -602,6 +607,16 @@ public class Semant {
 		Term t = new FuncAppTerm(e.func.toString(), args);
 		t.setLocation(e.line);
 		return t;
+	}
+	
+	MultisetSpec transExpr(ListInitExpr e) {
+		List<ArgSpec> values = transExprList(e.values, false);
+		List<Term> terms = new ArrayList<Term>();
+		
+		for (ArgSpec value: values) {
+			terms.add((Term) value);
+		}
+		return new MultisetSpec(terms);
 	}
 
 	MapSpec transExpr(MapInitExpr e) {
