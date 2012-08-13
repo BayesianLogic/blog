@@ -48,8 +48,8 @@ import blog.Timestep;
  */
 public class BuiltInTypes {
 	/**
-	 * Supertype for all built-in types. Used to determine whether a type is built
-	 * in or not.
+	 * Supertype for all built-in types. Used to determine whether a type is
+	 * built in or not.
 	 */
 	public static final Type BUILT_IN = new Type("**BuiltIn**");
 
@@ -71,27 +71,6 @@ public class BuiltInTypes {
 	public static final Type BOOLEAN = new BooleanType();
 
 	/**
-	 * Supertype for real matrices. Specific matrix types have names of the form
-	 * R<i>m</i>x<i>n</i>Matrix for non-zero integers <i>m</i> and <i>n</i>; those
-	 * types are created lazily as needed. Names of the form R<i>m</i>x1Matrix are
-	 * aliases for R<i>m</i>Vector.
-	 * 
-	 * <p>
-	 * Objects of this type are represented as Jama.Matrix objects.
-	 */
-	public static final Type RMATRIX = new Type("RMatrix", BUILT_IN, true);
-
-	/**
-	 * Supertype for real vectors, which are matrices with one column. Specific
-	 * vector types have names of the form R<i>n</i>Vector; those types are
-	 * created lazily as needed.
-	 * 
-	 * <p>
-	 * Objects of this type are represented as Jama.Matrix objects.
-	 */
-	public static final Type RVECTOR = new Type("RVector", RMATRIX, true);
-
-	/**
 	 * Type for real numbers. Objects of this type are represented as
 	 * java.lang.Number objects.
 	 */
@@ -106,8 +85,8 @@ public class BuiltInTypes {
 			}
 
 			double value = ((Number) obj).doubleValue();
-			NonRandomFunction c = BuiltInFunctions.getLiteral(String.valueOf(value),
-					this, new Double(value));
+			NonRandomFunction c = BuiltInFunctions.getLiteral(
+					String.valueOf(value), this, new Double(value));
 			return new FuncAppTerm(c);
 		}
 	};
@@ -122,7 +101,8 @@ public class BuiltInTypes {
 	 * Type for natural numbers. This is a subtype of the integers. Objects of
 	 * this type are represented as java.lang.Integer objects.
 	 */
-	public static final Type NATURAL_NUM = new IntegralType("NaturalNum", INTEGER);
+	public static final Type NATURAL_NUM = new IntegralType("NaturalNum",
+			INTEGER);
 
 	/**
 	 * Type for finite strings of Unicode characters. Objects of this type are
@@ -153,11 +133,11 @@ public class BuiltInTypes {
 				if (obj == Model.NULL) {
 					return new FuncAppTerm(BuiltInFunctions.NULL);
 				}
-				throw new IllegalArgumentException("Object " + obj + " not of type "
-						+ this);
+				throw new IllegalArgumentException("Object " + obj
+						+ " not of type " + this);
 			}
-			NonRandomFunction c = BuiltInFunctions.getLiteral(obj.toString(), this,
-					obj);
+			NonRandomFunction c = BuiltInFunctions.getLiteral(obj.toString(),
+					this, obj);
 			return new FuncAppTerm(c);
 		}
 	};
@@ -167,12 +147,14 @@ public class BuiltInTypes {
 	}
 
 	/**
-	 * Returns the built-in type with the given name, or null if there is no such
-	 * built-in type.
+	 * Returns the built-in type with the given name, or null if there is no
+	 * such built-in type.
 	 */
 	public static Type getType(String name) {
 		Type type = (Type) builtInTypes.get(name);
 		if (type == null) {
+			// TODO: don't touch this until we're sure we're not using TypeGenerators
+			//			in any form whatsoever
 			for (Iterator iter = typeGenerators.iterator(); iter.hasNext();) {
 				TypeGenerator generator = (TypeGenerator) iter.next();
 				type = generator.generateIfMatches(name);
@@ -218,11 +200,11 @@ public class BuiltInTypes {
 
 		public Term getCanonicalTerm(Object obj) {
 			if (!(obj instanceof Boolean)) {
-				throw new IllegalArgumentException("Object " + obj + " not of type "
-						+ this);
+				throw new IllegalArgumentException("Object " + obj
+						+ " not of type " + this);
 			}
-			NonRandomFunction c = BuiltInFunctions.getLiteral(String.valueOf(obj),
-					this, obj);
+			NonRandomFunction c = BuiltInFunctions.getLiteral(
+					String.valueOf(obj), this, obj);
 			return new FuncAppTerm(c);
 		}
 
@@ -246,11 +228,11 @@ public class BuiltInTypes {
 				if (obj == Model.NULL) {
 					return new FuncAppTerm(BuiltInFunctions.NULL);
 				}
-				throw new IllegalArgumentException("Object " + obj + " is not of type "
-						+ this);
+				throw new IllegalArgumentException("Object " + obj
+						+ " is not of type " + this);
 			}
-			NonRandomFunction c = BuiltInFunctions.getLiteral(String.valueOf(obj),
-					this, obj);
+			NonRandomFunction c = BuiltInFunctions.getLiteral(
+					String.valueOf(obj), this, obj);
 			return new FuncAppTerm(c);
 		}
 	}
@@ -261,7 +243,8 @@ public class BuiltInTypes {
 		}
 
 		public Object getGuaranteedObject(int index) {
-			if ((index >= Character.MIN_VALUE) && (index <= Character.MAX_VALUE)) {
+			if ((index >= Character.MIN_VALUE)
+					&& (index <= Character.MAX_VALUE)) {
 				return new Character((char) index);
 			}
 			return null;
@@ -284,37 +267,27 @@ public class BuiltInTypes {
 		Type generateIfMatches(String name);
 	}
 
-	private static class RMatrixGenerator implements TypeGenerator {
-		private static final Pattern MATRIX_PATTERN = Pattern
-				.compile("R([1-9][0-9]*)x([1-9][0-9]*)Matrix");
-
-		public Type generateIfMatches(String name) {
-			Matcher matcher = MATRIX_PATTERN.matcher(name);
-			if (matcher.matches()) {
-				int m = Integer.parseInt(matcher.group(1));
-				int n = Integer.parseInt(matcher.group(2));
-				if (n == 1) {
-					return BuiltInTypes.getType("R" + m + "Vector");
-				}
-				return new MatrixType(name, m, n, RMATRIX);
-			}
-			return null;
-		}
-	}
-
-	private static class RVectorGenerator implements TypeGenerator {
-		private static final Pattern VECTOR_PATTERN = Pattern
-				.compile("R([1-9][0-9]*)Vector");
-
-		public Type generateIfMatches(String name) {
-			Matcher matcher = VECTOR_PATTERN.matcher(name);
-			if (matcher.matches()) {
-				int n = Integer.parseInt(matcher.group(1));
-				return new MatrixType(name, n, 1, RVECTOR);
-			}
-			return null;
-		}
-	}
+/* TODO: Retain RMatrixGenerator comment for now, as it demonstrates how
+ * 			a TypeGenerator	is created.
+ */
+	
+//	private static class RMatrixGenerator implements TypeGenerator {
+//		private static final Pattern MATRIX_PATTERN = Pattern
+//				.compile("R([1-9][0-9]*)x([1-9][0-9]*)Matrix");
+//
+//		public Type generateIfMatches(String name) {
+//			Matcher matcher = MATRIX_PATTERN.matcher(name);
+//			if (matcher.matches()) {
+//				int m = Integer.parseInt(matcher.group(1));
+//				int n = Integer.parseInt(matcher.group(2));
+//				if (n == 1) {
+//					return BuiltInTypes.getType("R" + m + "Vector");
+//				}
+//				return new MatrixType(name, m, n, RMATRIX);
+//			}
+//			return null;
+//		}
+//	}
 
 	private static Map builtInTypes = new HashMap();
 	private static List typeGenerators = new ArrayList();
@@ -322,8 +295,6 @@ public class BuiltInTypes {
 	static {
 		addType(BUILT_IN);
 		addType(BOOLEAN);
-		addType(RMATRIX);
-		addType(RVECTOR);
 		addType(REAL);
 		addType(INTEGER);
 		addType(NATURAL_NUM);
@@ -331,7 +302,7 @@ public class BuiltInTypes {
 		addType(STRING);
 		addType(CHARACTER);
 
-		typeGenerators.add(new RMatrixGenerator());
-		typeGenerators.add(new RVectorGenerator());
+//		typeGenerators.add(new RMatrixGenerator());
+//		typeGenerators.add(new RVectorGenerator());
 	}
 }
