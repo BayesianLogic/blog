@@ -24,7 +24,7 @@ public class Util {
 	public static Collection<UnivarGaussian> getCollectionOfPosteriorDesnsitiesOnVarIfDepModelsAreGaussiansAroundItOrNull(
 			BayesNetVar var, PartialWorld world) {
 		LinkedList result = new LinkedList();
-		Iterator childrenIt = world.getBayesNet().getChildren(var).iterator();
+		Iterator childrenIt = world.getCBN().getChildren(var).iterator();
 		while (childrenIt.hasNext()) {
 			VarWithDistrib child = (VarWithDistrib) childrenIt.next();
 			UnivarGaussian gaussian = getPosteriorDesnsityOnVarIfDepModelIsGaussianAroundItOrNull(

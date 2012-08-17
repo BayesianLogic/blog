@@ -45,6 +45,8 @@ import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.bn.NumberVar;
+import blog.bn.DefaultCBN;
+import blog.bn.CBN;
 import blog.common.DGraph;
 import blog.common.IndexedMultiMap;
 import blog.common.IndexedSet;
@@ -132,7 +134,8 @@ public interface PartialWorld {
 			popAppToAssertedIds = IndexedMultiMap.EMPTY_INDEXED_MULTI_MAP;
 			commIdToPOPApp = Collections.EMPTY_MAP;
 			popAppToCommIds = IndexedMultiMap.EMPTY_INDEXED_MULTI_MAP;
-			bayesNet = DGraph.EMPTY_GRAPH;
+			//cbn = DefaultCBN.EMPTY_GRAPH;
+			cbn = CBN.EMPTY_CBN;
 			varToUninstParent = MapWithPreimages.EMPTY_MAP_WITH_PREIMAGES;
 			varToLogProb = Collections.EMPTY_MAP;
 			derivedVarToValue = Collections.EMPTY_MAP;
@@ -352,12 +355,12 @@ public interface PartialWorld {
 	 */
 	boolean isOverloaded(NumberVar popApp);
 
-	// Method dealing with the Bayes net over this world's variables
+	// Method dealing with the DefaultCBN over this world's variables
 
 	/**
-	 * Returns a directed graph where the nodes are variables, and there is an
+	 * Returns a CBN where the nodes are variables, and there is an
 	 * edge from variable X to variable Y if Y depends directly on X given the
-	 * context represented by this partial world. The graph includes at least the
+	 * context represented by this partial world. The CBN includes at least the
 	 * variables that are instantiated in this partial world. It may also include
 	 * certain derived variables that are not instantiated because their values
 	 * are determined by the instantiated variables.
@@ -369,10 +372,11 @@ public interface PartialWorld {
 	 * <code>var</code> is a derived variable) before the first uninstantiated
 	 * variable.
 	 */
-	DGraph getBayesNet();
+    CBN getCBN();
+	//DGraph getBayesNet();
 
 	/**
-	 * Provides the Bayes net, the mapping from variables to uninstantiated
+	 * Provides the CBN, the mapping from variables to uninstantiated
 	 * parents, the mapping from basic variables to log probabilities, and the
 	 * mapping from derived variables to values for this partial world. This
 	 * method relieves the partial world of the need to recompute parent sets, log
@@ -380,8 +384,8 @@ public interface PartialWorld {
 	 * other object -- such as a PartialWorldDiff -- has already updated these
 	 * data structures.
 	 * 
-	 * @param newBayesNet
-	 *          DGraph whose nodes are BayesNetVar objects
+	 * @param newCBN
+	 *          CBN whose nodes are BayesNetVar objects
 	 * 
 	 * @param varToUninstParent
 	 *          Map from BayesNetVar to BasicVar
@@ -396,7 +400,8 @@ public interface PartialWorld {
 	 *           if the given information is not sufficient to update this partial
 	 *           world's data structures without additional computation
 	 */
-	void updateBayesNet(DGraph newBayesNet, MapWithPreimages varToUninstParent,
+	void updateCBN(CBN newCBN, 
+            MapWithPreimages varToUninstParent,
 			Map newVarLogProbs, Map newDerivedVarValues);
 
 	/**
