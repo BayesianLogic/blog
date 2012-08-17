@@ -33,7 +33,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog.bin;
+package blog.bn;
+
+import blog.common.DGraph;
 
 /**
  * A contingent bayes net (CBN) contains a set of random variables V. For each
@@ -42,13 +44,15 @@ package blog.bin;
  * on some subset of V. Each leaf of T_X is a probability distribution
  * parametrized by a subset of V. (Summarized from Arora et. al, UAI-10)
  *
- * This class provides an implementation of CBNs. Over the next few weeks, all
- * inference algorithms will be modified to use CBNs.
+ * TODO: As the requirements for CBNs become clearer, add actual methods here
  *
- * TODO: This class is currently a stub. Fill out.
- *
- * @author bramsundar
+ * @author rbharath
  * @date Aug 11, 2012
  */
-public class ContingentBayesNet {
+
+public interface CBN extends DGraph { 
+	/**
+	 * An empty CBN
+	 */
+	static final CBN EMPTY_CBN = new DefaultCBN();
 }

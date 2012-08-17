@@ -44,6 +44,7 @@ import blog.common.HashMultiMap;
 import blog.common.IndexedHashMultiMap;
 import blog.common.IndexedMultiMap;
 import blog.common.MultiMap;
+import blog.bn.DefaultCBN;
 
 
 /**
@@ -77,7 +78,7 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
 		popAppToAssertedIds = new IndexedHashMultiMap();
 		commIdToPOPApp = new HashMap();
 		popAppToCommIds = new IndexedHashMultiMap();
-		bayesNet = new DefaultDGraph();
+        cbn = new DefaultCBN();
 		varToUninstParent = new HashMapWithPreimages();
 		varToLogProb = new HashMap();
 		derivedVarToValue = new HashMap();

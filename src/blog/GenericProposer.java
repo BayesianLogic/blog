@@ -147,7 +147,7 @@ public class GenericProposer extends AbstractProposer {
 			if (!evidenceVars.contains(var) && !queryVars.contains(var)) {
 
 				// Remember its parents.
-				Set parentSet = world.getBayesNet().getParents(var);
+				Set parentSet = world.getCBN().getParents(var);
 
 				if (var instanceof VarWithDistrib) {
 					// Multiply in the probability of sampling this
@@ -168,7 +168,7 @@ public class GenericProposer extends AbstractProposer {
 					// end of the list once, when the last child is
 					// considered.
 					BayesNetVar parent = (BayesNetVar) parentIter.next();
-					if (world.getBayesNet().getChildren(parent).isEmpty())
+					if (world.getCBN().getChildren(parent).isEmpty())
 						newlyBarren.addLast(parent);
 				}
 			}
@@ -188,7 +188,7 @@ public class GenericProposer extends AbstractProposer {
 	// updates the logProbForward and logProbBackward variables.
 	private void sampleValue(VarWithDistrib varToSample, PartialWorld world) {
 		// Save child set before graph becomes out of date
-		Set children = world.getBayesNet().getChildren(varToSample);
+		Set children = world.getCBN().getChildren(varToSample);
 
 		DependencyModel.Distrib distrib = varToSample
 				.getDistrib(new DefaultEvalContext(world, true));

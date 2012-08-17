@@ -41,7 +41,7 @@ import blog.ObjectIdentifier;
 import blog.bn.BasicVar;
 import blog.bn.DerivedVar;
 import blog.bn.NumberVar;
-import blog.common.DGraph;
+import blog.bn.PatchCBN;
 import blog.common.HashMapDiff;
 import blog.common.HashMultiMapDiff;
 import blog.common.IndexedMultiMap;
@@ -50,7 +50,6 @@ import blog.common.MapDiff;
 import blog.common.MapWithPreimagesDiff;
 import blog.common.MultiMap;
 import blog.common.MultiMapDiff;
-import blog.common.ParentUpdateDGraph;
 import blog.common.Util;
 
 /**
@@ -76,7 +75,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
 		commIdToPOPApp = new HashMapDiff(underlying.assertedIdToPOPAppMap());
 		popAppToCommIds = new IndexedMultiMapDiff(
 				underlying.popAppToAssertedIdsMap());
-		bayesNet = new ParentUpdateDGraph(underlying.getBayesNet());
+        cbnUpdate = new PatchCBN(underlying.getCBN());
 		varToUninstParent = new MapWithPreimagesDiff(
 				underlying.varToUninstParentMap());
 		varToLogProb = new HashMapDiff(underlying.varToLogProbMap());
@@ -146,7 +145,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
 		}
 
 		updateParentsAndProbs();
-		savedWorld.updateBayesNet(bayesNet, varToUninstParent, varToLogProb,
+		savedWorld.updateCBN(cbnUpdate, varToUninstParent, varToLogProb,
 				derivedVarToValue);
 
 		clearChanges(); // since underlying is now updated
@@ -237,7 +236,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
 	 */
 	public Set getNewlyBarrenVars() {
 		updateParentsAndProbs();
-		return ((ParentUpdateDGraph) bayesNet).getNewlyBarrenNodes();
+		return ((PatchCBN) cbnUpdate).getNewlyBarrenNodes();
 	}
 
 	/**
@@ -375,7 +374,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
 		((MultiMapDiff) objToUsesAsArg).clearChanges();
 		((MapDiff) assertedIdToPOPApp).clearChanges();
 		((MultiMapDiff) popAppToAssertedIds).clearChanges();
-		((ParentUpdateDGraph) bayesNet).clearChanges();
+		((PatchCBN) cbnUpdate).clearChanges();
 		((MapDiff) varToLogProb).clearChanges();
 		((MapDiff) derivedVarToValue).clearChanges();
 
@@ -388,6 +387,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
 	}
 
 	private PartialWorld savedWorld;
+    private PatchCBN cbnUpdate;
 
 	private List diffListeners = new ArrayList(); // of WorldDiffListener
 }
