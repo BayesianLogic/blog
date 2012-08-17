@@ -417,37 +417,6 @@ public class BuiltInFunctions {
 		CONCAT = new NonRandomFunction("Concat", argTypes, retType, concatInterp);
 		addFunction(CONCAT);
 
-		// add non-random functions from (vector x vector) to vector
-		argTypes.clear();
-		argTypes.add(BuiltInTypes.RVECTOR);
-		argTypes.add(BuiltInTypes.RVECTOR);
-		retType = BuiltInTypes.RVECTOR;
-
-		FunctionInterp vecPlusInterp = new AbstractFunctionInterp() {
-			private static final long serialVersionUID = 0;
-
-			public Object getValue(List args) {
-				Matrix arg1 = (Matrix) args.get(0);
-				Matrix arg2 = (Matrix) args.get(1);
-				return arg1.plus(arg2);
-			}
-		};
-		VPLUS = new NonRandomFunction("VectorAdd", argTypes, retType, vecPlusInterp);
-		addFunction(VPLUS);
-
-		FunctionInterp vecMinusInterp = new AbstractFunctionInterp() {
-			private static final long serialVersionUID = 0;
-
-			public Object getValue(List args) {
-				Matrix arg1 = (Matrix) args.get(0);
-				Matrix arg2 = (Matrix) args.get(1);
-				return arg1.minus(arg2);
-			}
-		};
-		VMINUS = new NonRandomFunction("VectorSubtract", argTypes, retType,
-				vecMinusInterp);
-		addFunction(VMINUS);
-
 		// Add non-random functions from string to Boolean
 		argTypes.clear();
 		argTypes.add(BuiltInTypes.STRING);
