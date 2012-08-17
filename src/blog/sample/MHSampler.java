@@ -103,7 +103,6 @@ public class MHSampler extends Sampler {
 		if (Util.verbose())
 			System.out.println("Creating initial world...");
 		curWorld = proposer.initialize(evidence, queries);
-		// System.out.println("MHSampler: initial world: " + curWorld);
 		if (Util.verbose())
 			System.out.println("Saving initial world...");
 		Timer timer = new Timer();
@@ -146,12 +145,6 @@ public class MHSampler extends Sampler {
 	public void nextSample() {
 		curWorld.save(); // make sure we start with saved world.
 
-		// System.out.println("MHSampler.nextSample begins, going to check queries for current world.");
-		// updateQueriesStats(curWorld);
-		//
-		// System.out.println("MHSampler.nextSample begins, going to check queries for saved world.");
-		// updateQueriesStats(curWorld.getSaved());
-
 		++totalNumSamples;
 		++numSamplesThisTrial;
 
@@ -166,21 +159,13 @@ public class MHSampler extends Sampler {
 		}
 		double logProposalRatio = proposer.proposeNextState(curWorld);
 		if (Util.verbose()) {
-			// System.out.println("Proposed world:");
-			// curWorld.print(System.out);
 			System.out.println();
 			System.out.println("\tlog proposal ratio: " + logProposalRatio);
 		}
 
-		// System.out.println("MHSampler.nextSample right before validateIdentifiers, going to check queries for saved world.");
-		// updateQueriesStats(curWorld.getSaved());
-
 		if (!validateIdentifiers(curWorld)) {
 			Util.fatalError("Fatal identifier errors in proposed world.", false);
 		}
-
-		// System.out.println("MHSampler.nextSample right after validateIdentifiers, going to check queries for saved world.");
-		// updateQueriesStats(curWorld.getSaved());
 
 		// Compute the acceptance probability
 		acceptProbTimer.start();
@@ -211,41 +196,12 @@ public class MHSampler extends Sampler {
 			proposer.updateStats(true);
 		} else {
 			curWorld.revert(); // clean slate for next proposal
-			// System.out.println("MHSampler: Move rejected, curWorld " +
-			// System.identityHashCode(curWorld));
 			if (Util.verbose()) {
 				System.out.println("\trejected");
 			}
 			proposer.updateStats(false);
 		}
-		// System.out.println("MHSampler right before returning from nextSample: " +
-		// System.identityHashCode(curWorld));
 	}
-
-	// private void ensureQueriesAreDetAndSupported() {
-	// for (Query query : (Collection<Query>) queries) {
-	// BLOGUtil.ensureDetAndSupported(query.getVariables(), curWorld);
-	// System.out.println("MHSampler: curWorld is " +
-	// System.identityHashCode(curWorld));
-	// System.out.println("After ensuring query " + query);
-	// query.updateStats(curWorld, 0.0000001);
-	// }
-	// }
-
-	// private void updateQueriesStats(PartialWorld world) { // for debugging only
-	// System.out.println("MHSampler.updateQueriesStats: Going to check query-readiness of world "
-	// + System.identityHashCode(world));
-	// try {
-	// for (Query query : (Collection<Query>) queries) {
-	// query.updateStats(world, 0.0001);
-	// }
-	// }
-	// catch (Exception e) {
-	// Util.fatalError("World " + System.identityHashCode(world) +
-	// " not ready for queries.");
-	// }
-	// System.out.println("MHSampler.updateQueriesStats: Approved!");
-	// }
 
 	/**
 	 * Samples from some given world, leaving the current world in sampler
@@ -393,7 +349,7 @@ public class MHSampler extends Sampler {
 			int afterLastInDenominator = oldNumSat - oldNumIds;
 			if ((afterLastInNumerator >= oldNumSat)
 					|| (afterLastInDenominator >= newNumSat)) {
-				// no cancelation between numerator and denominator
+				// no cancellation between numerator and denominator
 				logMultRatio += Util.logPartialFactorial(newNumSat, newNumIds);
 				logMultRatio -= Util.logPartialFactorial(oldNumSat, oldNumIds);
 			} else {
