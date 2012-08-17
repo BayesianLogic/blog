@@ -58,8 +58,9 @@ import blog.bn.NumberVar;
 import blog.bn.OriginVar;
 import blog.bn.RandFuncAppVar;
 import blog.bn.VarWithDistrib;
-import blog.common.DGraph;
-import blog.common.DefaultDGraph;
+import blog.bn.DefaultCBN;
+import blog.bn.PatchCBN;
+import blog.bn.CBN;
 import blog.common.HashMapWithPreimages;
 import blog.common.HashMultiMap;
 import blog.common.IndexedHashMultiMap;
@@ -109,7 +110,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			return commIdToPOPApp.get(((OriginVar) var).getIdentifier());
 		}
 		if (var instanceof DerivedVar) {
-			if (bayesNet.nodes().contains(var)) {
+			if (cbn.nodes().contains(var)) {
 				updateParentsAndProbs();
 				return derivedVarToValue.get(var);
 			}
@@ -310,7 +311,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		popAppToAssertedIds.add(newPOPApp, id);
 
 		OriginVar originVar = new OriginVar(id);
-		if (bayesNet.nodes().contains(originVar)) {
+		if (cbn.nodes().contains(originVar)) {
 			dirtyVars.add(originVar); // so children are updated
 		}
 
@@ -376,15 +377,15 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				.size() > varValue.intValue())));
 	}
 
-	public DGraph getBayesNet() {
+	public CBN getCBN() {
 		updateParentsAndProbs();
-		return bayesNet;
+		return cbn;
 	}
 
-	public void updateBayesNet(DGraph newBayesNet,
+	public void updateCBN(CBN newCBN,
 			MapWithPreimages newVarToUninstParent, Map newVarLogProbs,
 			Map newDerivedVarValues) {
-		VarInfoUpdater updater = new CopyingInfoUpdater(newBayesNet,
+		VarInfoUpdater updater = new CopyingInfoUpdater(newCBN,
 				newVarToUninstParent, newVarLogProbs, newDerivedVarValues);
 		updateParentsAndProbs(updater);
 	}
@@ -394,7 +395,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	}
 
 	public boolean addDerivedVar(DerivedVar var) {
-		if (bayesNet.addNode(var)) {
+		if (cbn.addNode(var)) {
 			derivedVarToValue.put(var, PartialWorld.UNDET);
 			dirtyVars.add(var);
 			return true;
@@ -403,7 +404,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	}
 
 	public boolean removeDerivedVar(DerivedVar var) {
-		if (bayesNet.removeNode(var)) {
+		if (cbn.removeNode(var)) {
 			derivedVarToValue.remove(var);
 			dirtyVars.remove(var);
 			return true;
@@ -418,7 +419,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			BasicVar var = (BasicVar) iter.next();
 			s.println(var + " = " + getValue(var));
 
-			Set parents = getBayesNet().getParents(var);
+			Set parents = getCBN().getParents((Object) var);
 			for (Iterator parentIter = parents.iterator(); parentIter.hasNext();) {
 				s.println("\t<- " + parentIter.next());
 			}
@@ -799,7 +800,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 						.put(var, (value == null) ? PartialWorld.UNDET : value);
 			}
 
-			bayesNet.setParents(var, context.getParents());
+			cbn.setParents(var, context.getParents());
 			if (context.getLatestUninstParent() == null) {
 				varToUninstParent.remove(var);
 			} else {
@@ -809,7 +810,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	}
 
 	private class CopyingInfoUpdater implements VarInfoUpdater {
-		CopyingInfoUpdater(DGraph givenBayesNet,
+		CopyingInfoUpdater(CBN givenBayesNet,
 				MapWithPreimages givenVarUninstParents, Map givenVarLogProbs,
 				Map givenDerivedVarValues) {
 			this.givenBayesNet = givenBayesNet;
@@ -824,7 +825,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				throw new IllegalArgumentException("Need parents for variable " + var
 						+ ", which is not in given Bayes net.");
 			}
-			bayesNet.setParents(var, givenParents);
+			cbn.setParents(var, givenParents);
 
 			BasicVar uninstParent = (BasicVar) givenVarUninstParents.get(var);
 			if (uninstParent == null) {
@@ -850,7 +851,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			}
 		}
 
-		DGraph givenBayesNet;
+		CBN givenBayesNet;
 		MapWithPreimages givenVarUninstParents;
 		Map givenVarLogProbs;
 		Map givenDerivedVarValues;
@@ -868,7 +869,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		Set dirtyVarChildren = new LinkedHashSet();
 		for (Iterator iter = dirtyVars.iterator(); iter.hasNext();) {
 			BayesNetVar dirtyVar = (BayesNetVar) iter.next();
-			Set thisVarChildren = bayesNet.getChildren(dirtyVar);
+			Set thisVarChildren = cbn.getChildren(dirtyVar);
 			if (thisVarChildren != null) {
 				dirtyVarChildren.addAll(thisVarChildren);
 			}
@@ -880,12 +881,12 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			BayesNetVar var = (BayesNetVar) iter.next();
 			if ((var instanceof BasicVar) && (basicVarToValue.get(var) == null)) {
 				// var has been uninstantiated
-				bayesNet.removeNode(var);
+				cbn.removeNode(var);
 				varToLogProb.remove(var);
 			} else if ((var instanceof OriginVar)
 					&& (assertedIdToPOPApp.get(((OriginVar) var).getIdentifier()) == null)) {
 				// identifier has been removed
-				bayesNet.removeNode(var);
+				cbn.removeNode(var);
 			} else {
 				// node still belongs in Bayes net
 				updater.updateVarInfo(var);
@@ -1015,7 +1016,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		newWorld.popAppToAssertedIds = new IndexedHashMultiMap(popAppToAssertedIds);
 		newWorld.commIdToPOPApp = (Map) ((HashMap) commIdToPOPApp).clone();
 		newWorld.popAppToCommIds = new IndexedHashMultiMap(popAppToCommIds);
-		newWorld.bayesNet = (DefaultDGraph) ((DefaultDGraph) bayesNet).clone();
+		newWorld.cbn= (CBN) ((DefaultCBN) cbn).clone();
 		newWorld.varToUninstParent = (MapWithPreimages) ((HashMapWithPreimages) varToUninstParent)
 				.clone();
 		newWorld.varToLogProb = (Map) ((HashMap) varToLogProb).clone();
@@ -1070,10 +1071,10 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	protected IndexedMultiMap popAppToCommIds;
 
 	/**
-	 * Bayes net containing instantiated basic variables, origin variables, and
+	 * CBN containing instantiated basic variables, origin variables, and
 	 * those derived variables that have been explicitly added.
 	 */
-	protected DGraph bayesNet;
+	protected CBN cbn;
 
 	/**
 	 * MapWithPreimages from BayesNetVars to their first uninstantiated parents. A
