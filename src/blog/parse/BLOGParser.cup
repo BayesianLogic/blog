@@ -115,7 +115,7 @@ init with {:
  */
 terminal ELSE, IF, THEN;
 terminal TYPE, RANDOM, FIXED, ORIGIN, DISTINCT,
-        QUERY, OBS, PARAM, MAP, DISTRIBUTION;
+        QUERY, OBS, PARAM, LIST, MAP, DISTRIBUTION;
 terminal EXISTS, FORALL;
 terminal NULL;
 terminal java.lang.Number INT_LITERAL, DOUBLE_LITERAL;
@@ -141,17 +141,19 @@ nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   rand_func_decl, number_stmt, origin_func_decl,
   distinct_decl, distribution_decl, parameter_decl,
   evidence_stmt, query_stmt;
-nonterminal Stmt evidence, value_evidence, query;
+nonterminal Stmt evidence, value_evidence, symbol_evidence, query;
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
   quantified_formula, distribution_expr,
   function_call, list_construct_expression, symbol_expr,
   map_construct_expression, number_expr, elseif_list;
 nonterminal Expr dependency_statement_body;
-nonterminal SetExpr set_expr, explicit_set, implicit_set;
+nonterminal SetExpr set_expr;
+nonterminal ExplicitSetExpr explicit_set;
+nonterminal ImplicitSetExpr implicit_set;
 nonterminal ExprList semi_colon_separated_expression_list,
   opt_expression_list, expression_list;
 nonterminal ExprTupleList expression_pair_list;
-nonterminal Ty type, array_type, map_type, name_type;
+nonterminal Ty type, array_type, list_type, map_type, name_type;
 nonterminal Integer dims;
 //nonterminal FieldList opt_parenthesized_type_lst, type_lst // Not Used
 nonterminal FieldList opt_parenthesized_type_var_lst, type_var_lst;
@@ -268,12 +270,19 @@ type_decl ::= TYPE ID:typename SEMI
  * can also be an array
  */
 type ::= name_type:e {: RESULT = e; :}
+  | list_type:e {: RESULT = e; :}
   | array_type : at {: RESULT = at; :}
   | map_type:e {: RESULT = e; :}
   ;
 
 name_type ::= ID:typename
     {: RESULT = new NameTy(currLineno(), currColno(), sym(typename)); :}
+  ;
+
+list_type ::= LIST LT ID:typename GT
+    /* only allow nametype as list */
+    {: RESULT = new ListTy(currLineno(), currColno(),
+        new NameTy(currLineno(), currColno(), sym(typename))); :}
   ;
 
 array_type ::= ID : typename  dims : d
@@ -621,7 +630,8 @@ evidence_stmt ::= OBS evidence:e SEMI {: RESULT = e; :}
   ;
 
 evidence ::=
-   value_evidence:e {: RESULT = e; :}
+   symbol_evidence:e {: RESULT = e; :}
+   | value_evidence:e {: RESULT = e; :}
 //  | tuple_evidence:e {: RESULT = e; :} //not implemented yet
   ;
 
@@ -633,6 +643,11 @@ evidence ::=
 value_evidence ::=
     expression:e1 EQ expression:e2
     {: RESULT = new ValueEvidence(currLineno(), currColno(), e1, e2); :}
+  ;
+
+symbol_evidence ::=
+    implicit_set:e1 EQ explicit_set:e2
+    {: RESULT = new SymbolEvidence(currLineno(), currColno(), e1, e2); :}
   ;
 
 query_stmt ::= QUERY  query:q SEMI
