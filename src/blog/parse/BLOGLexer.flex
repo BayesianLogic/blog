@@ -187,6 +187,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Pp][Aa][Rr][Aa][Mm] { return symbol(BLOGTokenConstants.PARAM);}
 [Ee][Xx][Ii][Ss][Tt][Ss] { return symbol(BLOGTokenConstants.EXISTS); }
 [Ff][Oo][Rr][Aa][Ll][Ll] { return symbol(BLOGTokenConstants.FORALL); }
+[Ll][Ii][Ss][Tt] { return symbol(BLOGTokenConstants.LIST); }
 [Mm][Aa][Pp] { return symbol(BLOGTokenConstants.MAP); }
 [Dd][Ii][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DISTRIBUTION); }
 	

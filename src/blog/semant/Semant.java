@@ -32,6 +32,7 @@ import blog.absyn.IfExpr;
 import blog.absyn.ImplicitSetExpr;
 import blog.absyn.IntExpr;
 import blog.absyn.ListInitExpr;
+import blog.absyn.ListTy;
 import blog.absyn.MapInitExpr;
 import blog.absyn.NameTy;
 import blog.absyn.NullExpr;
@@ -46,6 +47,7 @@ import blog.absyn.RandomFuncDec;
 import blog.absyn.StmtList;
 import blog.absyn.StringExpr;
 import blog.absyn.SymbolArrayList;
+import blog.absyn.SymbolEvidence;
 import blog.absyn.SymbolExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
@@ -171,6 +173,23 @@ public class Semant {
 		}
 		return ty;
 	}
+	
+	Type getListType(Ty type) {
+		Type ty = null;
+		if (type instanceof ListTy) {
+			Type elementType = getNameType(((ListTy) type).typ);
+			String name = "List<" + elementType.getName() + ">";
+			System.out.println(name);
+			Type listType = model.getType(name);
+			
+			if (listType == null) {
+				error(type.line, type.col, "Type " + name + " undefined!");
+			}
+		} else {
+			error(type.line, type.col, "Type not allowed!");
+		}
+		return ty;
+	}
 
 	/**
 	 * check whether e is a list of symbol names (function call without argument)
@@ -191,7 +210,14 @@ public class Semant {
 					error(fc.line, fc.col, "Invalid expression: expecting No argument");
 				}
 				res.add(fn);
-			} else {
+			} 
+			else if (h instanceof SymbolExpr) {
+				SymbolExpr var = (SymbolExpr) h;
+				String sym = var.name.toString();
+				checkSymbolDup(var.line, var.col, sym);
+				res.add(sym);
+			}
+			else {
 				error(h.line, h.col, "Invalid expression: expecting Symbol names");
 			}
 		}
@@ -202,6 +228,12 @@ public class Semant {
 		if (type instanceof NameTy) {
 			return getNameType(type);
 		}
+		else if (type instanceof ListTy) {
+			return getListType(type);
+		}
+//		else if (type instanceof ArrayTy) {
+//			return ;
+//		}
 		// TODO
 		return null;
 	}
@@ -395,7 +427,11 @@ public class Semant {
 	void transEvi(EvidenceStmt e) {
 		if (e instanceof ValueEvidence) {
 			transEvi((ValueEvidence) e);
-		} else {
+		}
+		else if (e instanceof SymbolEvidence) {
+			transEvi((SymbolEvidence) e);
+		}
+		else {
 			error(e.line, e.col, "Unsupported Evidence type: " + e);
 		}
 	}
@@ -403,9 +439,8 @@ public class Semant {
 	/**
 	 * valid evidence format include (will be checked in semantic checking)
 	 * 
-	 * - general form: random expression = fixed expression - symbol evidence:
-	 * implicit_set = explicit_set of ids - number_evidence: # implicit_set = int
-	 * constant
+	 * - general form: random expression = fixed expression
+	 * - number_evidence: # implicit_set = int constant
 	 * 
 	 * @param e
 	 */
@@ -425,29 +460,6 @@ public class Semant {
 			}
 			evidence.addValueEvidence(new ValueEvidenceStatement(
 					(CardinalitySpec) left, value));
-		} else if (left instanceof ImplicitSetSpec) {
-			// symbol evidence
-			// implicit set = set of ids
-			List<String> value = null;
-			if (e.right instanceof ExplicitSetExpr) {
-				// ok
-				value = getSymbolList(((ExplicitSetExpr) e.right).values);
-			} else {
-				error(
-						e.right.line,
-						e.right.col,
-						"Invalid expression in right side of symbol evidence: explicit set of symbols expected");
-			}
-			SymbolEvidenceStatement sevid = new SymbolEvidenceStatement(
-					(ImplicitSetSpec) left, value);
-			if (!evidence.addSymbolEvidence(sevid)) {
-				error(e.right.line, e.right.col, "Duplicate names in symbol evidence.");
-			}
-			for (SkolemConstant obj : sevid.getSkolemConstants()) {
-				model.addFunction(obj);
-			}
-
-			// ValueEvidenceStatement vst = new ValueEvidenceStatement();
 		} else if (left instanceof ArgSpec) {
 			// general value expression
 			Object value = transExpr(e.right);
@@ -462,6 +474,42 @@ public class Semant {
 		} else {
 			error(e.left.line, e.left.col,
 					"Invalid expression on the left side of evidence.");
+		}
+	}
+	
+	/**
+	 * symbol_evidence format: implicit_set = explicit_set
+	 * 
+	 * @param e
+	 */
+	void transEvi(SymbolEvidence e) {
+		Object left = transExpr(e.left);
+		if (left instanceof ImplicitSetSpec) {
+			// symbol evidence
+			// implicit set = set of ids
+			List<String> value = null;
+			if (e.right instanceof ExplicitSetExpr) {
+				// ok
+				value = getSymbolList(((ExplicitSetExpr) e.right).values);
+			} else {
+				error(	e.right.line,
+						e.right.col,
+						"Invalid expression on right side of symbol evidence: explicit set of symbols expected");
+			}
+			SymbolEvidenceStatement sevid = new SymbolEvidenceStatement(
+					(ImplicitSetSpec) left, value);
+			if (!evidence.addSymbolEvidence(sevid)) {
+				error(e.right.line, e.right.col, "Duplicate names in symbol evidence.");
+			}
+			for (SkolemConstant obj : sevid.getSkolemConstants()) {
+				model.addFunction(obj);
+			}
+
+			// ValueEvidenceStatement vst = new ValueEvidenceStatement();
+		}
+		else {
+				error(e.left.line, e.left.col,
+						"Invalid expression on left side of symbool evidence: implicit set of symbols expected");
 		}
 	}
 
