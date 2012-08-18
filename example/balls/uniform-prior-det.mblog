@@ -6,31 +6,19 @@ type Ball;
 type Draw;
 type Color;
 
-random Color Color(Ball);
-random Ball BallDrawn(Draw);
-random Color ObsColor(Draw);
+random Color Color(Ball b) ~ Categorical({Blue -> 0.5, Green -> 0.5});
 
-guaranteed Color Blue, Green;
-guaranteed Draw Draw[10];
+random Ball BallDrawn(Draw d) ~ UniformChoice({Ball b});
 
-#Ball {
-	~ UniformInt[1, 8]()
-};
-
-Color(b) {
-	~ TabularCPD[[0.5, 0.5]]()
-};
-
-BallDrawn(d) {
-	~ UniformChoice({Ball b})
-};
-
-ObsColor(d) {
-	if BallDrawn(d) != null then 
+random Color ObsColor(Draw d) {
+	if (BallDrawn(d) != null) then 
 		= Color(BallDrawn(d))
 };
 
+distinct Color Blue, Green;
+distinct Draw Draw[10];
 
+#Ball ~ UniformInt(1, 8);
 
 /* Answers to some queries on this model, computed by exhaustive 
  * enumeration:
