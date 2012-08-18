@@ -148,18 +148,6 @@ public class BuiltInFunctions {
 	public static NonRandomFunction CONCAT;
 
 	/**
-	 * A function on RVectors <code>x</code>, <code>y</code> that returns the
-	 * element-wise sum of <code>x</code> and <code>y</code>.
-	 */
-	public static NonRandomFunction VPLUS;
-
-	/**
-	 * A function on RVectors <code>x</code>, <code>y</code> that returns the
-	 * element-wise difference of <code>x</code> and <code>y</code>.
-	 */
-	public static NonRandomFunction VMINUS;
-
-	/**
 	 * A function that takes a string and returns true if the string is empty.
 	 */
 	public static NonRandomFunction IS_EMPTY_STRING;

@@ -1,0 +1,64 @@
+type AircraftType;
+type Length;
+type Aircraft;
+type Blip;
+
+origin AircraftType WingType(Aircraft);
+origin Aircraft Source(Blip);
+
+distinct AircraftType Helicopter, FixedWingPlane;
+distinct Length Short, Long;
+
+// Generate mean of 1 helicopter, 4 airplanes
+#Aircraft(WingType = w) {
+    if (w == Helicopter) then ~ Poisson(1.0)
+    else ~ Poisson(4.0)
+};
+
+// Blips generated as false observations
+#Blip ~ Poisson(2.0);
+
+// Blips actually coming from aircraft
+#Blip(Source = a) ~ Poisson(1.0);
+
+random Length RotorLength(Aircraft a) {
+    if (WingType(a) == Helicopter) then ~ Categorical({Long -> 0.4, Short -> 0.6})
+};
+
+random Boolean BladeFlash(Blip b) {
+    if (Source(b) == null) then
+        ~ Bernoulli(0.01)
+    else if (WingType(Source(b)) == Helicopter & RotorLength(Source(b)) != null) then
+        ~ TabularCPD({Long -> ~ Bernoulli(0.9),
+	  	      Short -> ~ Bernoulli(0.6)}, RotorLength(Source(b)))
+    else  
+        ~ Bernoulli(0.1)
+};
+
+obs {Blip b} = {b1, b2, b3, b4, b5, b6};
+
+
+obs BladeFlash(b1) = true;
+obs BladeFlash(b2) = false;
+obs BladeFlash(b3) = false;
+obs BladeFlash(b4) = false;
+obs BladeFlash(b5) = false;
+obs BladeFlash(b6) = false;
+
+query WingType(Source(b1));
+query WingType(Source(b2));
+query WingType(Source(b3));
+query WingType(Source(b4));
+query WingType(Source(b5));
+query WingType(Source(b6));
+
+/* TESTBLOG: -n 30000 -b 10000
+blogc *
+Samples done: 30000. Elapsed *
+ Query1: {null: *, Helicopter: ~.48, FixedWingPlane: ~.48}
+ Query2: {null: ~.36, Helicopter: *, FixedWingPlane: ~.58}
+ Query3: {null: ~.36, Helicopter: *, FixedWingPlane: ~.58}
+ Query4: {null: ~.36, Helicopter: *, FixedWingPlane: ~.58}
+ Query5: {null: ~.36, Helicopter: *, FixedWingPlane: ~.58}
+ Query6: {null: ~.36, Helicopter: *, FixedWingPlane: ~.58}
+*/

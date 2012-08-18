@@ -115,6 +115,12 @@ public class BuiltInTypes {
 	 * represented as java.lang.Character objects.
 	 */
 	public static final Type CHARACTER = new CharacterType();
+	
+	/**
+	 * Type for lists of elements of a given type.  Objects of this type
+	 * are represented as java.util.ArrayList objects.
+	 */
+	public static final Type LIST = new Type("List", BUILT_IN, true);
 
 	/**
 	 * Type for timesteps. Objects of this type are represented as Timestep
@@ -266,28 +272,30 @@ public class BuiltInTypes {
 	private static interface TypeGenerator {
 		Type generateIfMatches(String name);
 	}
-
-/* TODO: Retain RMatrixGenerator comment for now, as it demonstrates how
- * 			a TypeGenerator	is created.
- */
 	
-//	private static class RMatrixGenerator implements TypeGenerator {
-//		private static final Pattern MATRIX_PATTERN = Pattern
-//				.compile("R([1-9][0-9]*)x([1-9][0-9]*)Matrix");
-//
-//		public Type generateIfMatches(String name) {
-//			Matcher matcher = MATRIX_PATTERN.matcher(name);
-//			if (matcher.matches()) {
-//				int m = Integer.parseInt(matcher.group(1));
-//				int n = Integer.parseInt(matcher.group(2));
+	/**
+	 * ListGenerator - A generator object for list types with associated
+	 * 					generics
+	 * 
+	 * @author awong
+	 */
+	private static class ListGenerator implements TypeGenerator {
+		private static final Pattern MATRIX_PATTERN = Pattern
+				.compile("List<([A-Za-z]*)>");
+		
+		@Override
+		public Type generateIfMatches(String name) {
+			Matcher matcher = MATRIX_PATTERN.matcher(name);
+			if (matcher.matches()) {
+				int innerType = Integer.parseInt(matcher.group(1));
 //				if (n == 1) {
 //					return BuiltInTypes.getType("R" + m + "Vector");
 //				}
 //				return new MatrixType(name, m, n, RMATRIX);
-//			}
-//			return null;
-//		}
-//	}
+			}
+			return null;
+		}
+	}
 
 	private static Map builtInTypes = new HashMap();
 	private static List typeGenerators = new ArrayList();
@@ -301,7 +309,9 @@ public class BuiltInTypes {
 		addType(TIMESTEP);
 		addType(STRING);
 		addType(CHARACTER);
+		addType(LIST);
 
+		typeGenerators.add(new ListGenerator());
 //		typeGenerators.add(new RMatrixGenerator());
 //		typeGenerators.add(new RVectorGenerator());
 	}
