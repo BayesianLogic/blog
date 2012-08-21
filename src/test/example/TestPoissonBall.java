@@ -23,7 +23,7 @@ public class TestPoissonBall extends ExampleTest {
 	protected static final String DEF_PROPOSER = "blog.GenericProposer";
 	protected static final int STAT_INTERVAL = 2500;
 	
-	private static final double errBound = 3e-2;
+	private static final double ERR_BOUND = 3e-2;
 	
 	public static void main(String[] args) throws IncorrectProbException {
 		TestPoissonBall test = new TestPoissonBall();
@@ -31,7 +31,7 @@ public class TestPoissonBall extends ExampleTest {
 	}
 	
 	public TestPoissonBall() {
-		super(errBound);
+		super(ERR_BOUND);
 	}
 	
 	@Override
