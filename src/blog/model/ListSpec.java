@@ -11,30 +11,29 @@ import blog.common.UnaryProcedure;
 import blog.sample.EvalContext;
 
 /**
- * ArgSpec that represents a multiset, in particular arrays and lists.
- * For now supports only constants (distinct objects and literals of
- * built-in types).
+ * ArgSpec that represents a list.  For now supports only constants
+ * (distinct objects and literals of built-in types) and function names.
  * 
  * @author awong
  */
 
-public class MultisetSpec extends ArgSpec {
+public class ListSpec extends ArgSpec {
 	
 	List<Term> elements;
 	boolean compiled;
 	
-	public MultisetSpec() {
+	public ListSpec() {
 		elements = new ArrayList<Term>();
 		compiled = false;
 	}
 	
-	public MultisetSpec(List<Term> args) {
+	public ListSpec(List<Term> args) {
 		elements = args;
 		compiled = false;
 	}
 	
 	/**
-	 * To compile a multiset, it is only necessary to compile
+	 * To compile a list, it is only necessary to compile
 	 * each of its possible values.
 	 */
 	public int compile(LinkedHashSet callStack) {

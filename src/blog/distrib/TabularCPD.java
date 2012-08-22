@@ -42,7 +42,7 @@ import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
 import blog.model.FuncAppTerm;
 import blog.model.Model;
-import blog.model.MultisetSpec;
+import blog.model.ListSpec;
 import blog.model.Term;
 import blog.model.Type;
 import blog.model.MapSpec;
@@ -167,8 +167,8 @@ public class TabularCPD extends AbstractCondProbDistrib {
             		terms.add((Term) this.getArgSpec(wrapper));
             	}
             	
-            	MultisetSpec multi = new MultisetSpec(terms);
-//            	MultisetSpec multi = new MultisetSpec((List) o);
+            	ListSpec multi = new ListSpec(terms);
+//            	ListSpec multi = new ListSpec((List) o);
             	return multi;
             }
             else {

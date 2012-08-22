@@ -5,14 +5,11 @@ package blog.semant;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 import blog.EqualsCPD;
 import blog.Timestep;
 import blog.absyn.Absyn;
+import blog.absyn.ArrayTy;
 import blog.absyn.BooleanExpr;
 import blog.absyn.Dec;
 import blog.absyn.DistinctSymbolDec;
@@ -52,7 +49,6 @@ import blog.absyn.SymbolExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
-import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.BuiltInFunctions;
@@ -73,7 +69,7 @@ import blog.model.ImplicitSetSpec;
 import blog.model.MapSpec;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
-import blog.model.MultisetSpec;
+import blog.model.ListSpec;
 import blog.model.NegFormula;
 import blog.model.NonRandomFunction;
 import blog.model.OriginFunction;
@@ -190,6 +186,17 @@ public class Semant {
 		}
 		return ty;
 	}
+	
+	Type getArrayType(Ty type) {
+		Type ty = null;
+		if (type instanceof ArrayTy) {
+			Type arrType = getNameType(((ArrayTy) type).typ);
+			
+		} else {
+			error(type.line, type.col, "Type not allowed!");
+		}
+		return ty;
+	}
 
 	/**
 	 * check whether e is a list of symbol names (function call without argument)
@@ -231,9 +238,9 @@ public class Semant {
 		else if (type instanceof ListTy) {
 			return getListType(type);
 		}
-//		else if (type instanceof ArrayTy) {
-//			return ;
-//		}
+		else if (type instanceof ArrayTy) {
+			return getArrayType(type);
+		}
 		// TODO
 		return null;
 	}
@@ -657,14 +664,14 @@ public class Semant {
 		return t;
 	}
 	
-	MultisetSpec transExpr(ListInitExpr e) {
+	ListSpec transExpr(ListInitExpr e) {
 		List<ArgSpec> values = transExprList(e.values, false);
 		List<Term> terms = new ArrayList<Term>();
 		
 		for (ArgSpec value: values) {
 			terms.add((Term) value);
 		}
-		return new MultisetSpec(terms);
+		return new ListSpec(terms);
 	}
 
 	MapSpec transExpr(MapInitExpr e) {
