@@ -407,14 +407,16 @@ public class Clause {
 		buf.append(cpdClass.getName());
 		buf.append("(");
 
-		Iterator argsIter = cpdArgs.iterator();
-		if (argsIter.hasNext()) {
-			buf.append(argsIter.next());
-			while (argsIter.hasNext()) {
-				buf.append(", ");
-				buf.append(argsIter.next());
-			}
-		}
+        if (cpdArgs != null) {
+            Iterator argsIter = cpdArgs.iterator();
+            if (argsIter.hasNext()) {
+                buf.append(argsIter.next());
+                while (argsIter.hasNext()) {
+                    buf.append(", ");
+                    buf.append(argsIter.next());
+                }
+            }
+        }
 
 		buf.append(")");
 		return buf.toString();
