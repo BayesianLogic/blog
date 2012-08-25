@@ -157,6 +157,7 @@ public class FuncAppTerm extends Term {
 		// if (argValues == null) { // Not reusing anymore since this array was
 		// being used for being argument arrays for RandFuncAppVars and had to be
 		// cloned anyway.
+        Object [] oldArgValues = argValues;
 		argValues = new Object[args.length];
 		// }
 
@@ -168,11 +169,13 @@ public class FuncAppTerm extends Term {
 
 			if (argValues[i] == Model.NULL) {
 				// short-circuit, don't evaluate other args
+                argValues = oldArgValues;
 				return Model.NULL;
 			}
 		}
 
 		Object result = f.getValueInContext(argValues, context, false);
+        argValues = oldArgValues;
 		return result;
 	}
 
@@ -183,13 +186,16 @@ public class FuncAppTerm extends Term {
 	 * a BasicVar (specifically, a RandFuncAppVar). Otherwise, it's a DerivedVar.
 	 */
 	public BayesNetVar getVariable() {
+        Object [] oldArgValues = argValues;
 		if (f instanceof RandomFunction) {
 			if (loadArgValuesIfNonRandom()) {
 				RandFuncAppVar randFuncAppVar = new RandFuncAppVar((RandomFunction) f,
 						argValues, true);
+                argValues = oldArgValues;
 				return randFuncAppVar;
 			}
 		}
+        argValues = oldArgValues;
 		return new DerivedVar(this);
 	}
 
