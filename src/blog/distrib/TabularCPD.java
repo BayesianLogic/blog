@@ -160,15 +160,14 @@ public class TabularCPD extends AbstractCondProbDistrib {
             }
             else if (o instanceof List) {
             	List<Object> arg = (List) o;
-            	List<Term> terms = new ArrayList<Term>();
+            	List<ArgSpec> terms = new ArrayList<ArgSpec>();
             	for (Object obj: arg) {
             		List<Object> wrapper = new LinkedList<Object>();
             		wrapper.add(obj);
-            		terms.add((Term) this.getArgSpec(wrapper));
+            		terms.add(this.getArgSpec(wrapper));
             	}
             	
             	ListSpec multi = new ListSpec(terms);
-//            	ListSpec multi = new ListSpec((List) o);
             	return multi;
             }
             else {
