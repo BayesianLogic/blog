@@ -170,28 +170,39 @@ public class Semant {
 		return ty;
 	}
 	
-	Type getListType(Ty type) {
-		Type ty = null;
-		if (type instanceof ListTy) {
-			Type elementType = getNameType(((ListTy) type).typ);
-			String name = "List<" + elementType.getName() + ">";
-			System.out.println(name);
-			Type listType = model.getType(name);
-			
-			if (listType == null) {
-				error(type.line, type.col, "Type " + name + " undefined!");
-			}
-		} else {
-			error(type.line, type.col, "Type not allowed!");
-		}
-		return ty;
-	}
+//	// TODO: fix list type!!!
+//	Type getListType(Ty type) {
+//		Type ty = null;
+//		if (type instanceof ListTy) {
+//			Type elementType = getNameType(((ListTy) type).typ);
+//			String name = "List<" + elementType.getName() + ">";
+//			System.out.println(name);
+//			Type listType = model.getType(name);
+//			
+//			if (listType == null) {
+//				error(type.line, type.col, "Type " + name + " undefined!");
+//			}
+//		} else {
+//			error(type.line, type.col, "Type not allowed!");
+//		}
+//		return ty;
+//	}
 	
 	Type getArrayType(Ty type) {
 		Type ty = null;
 		if (type instanceof ArrayTy) {
-			Type arrType = getNameType(((ArrayTy) type).typ);
+			ArrayTy arrDef = (ArrayTy) type;
+			Type termType = getNameType(arrDef.typ);
 			
+			// Construct the array name with square braces; type generator will create later
+			String name = termType.getName();
+			for (int i = 0; i < arrDef.dim; i++) {
+				name += "[]";
+			}
+			Type arrayType = model.getType(name);
+			if (arrayType == null) {
+				error(type.line, type.col, "Type " + name + " undefined!");
+			}
 		} else {
 			error(type.line, type.col, "Type not allowed!");
 		}
@@ -235,9 +246,9 @@ public class Semant {
 		if (type instanceof NameTy) {
 			return getNameType(type);
 		}
-		else if (type instanceof ListTy) {
-			return getListType(type);
-		}
+//		else if (type instanceof ListTy) {
+//			return getListType(type);
+//		}
 		else if (type instanceof ArrayTy) {
 			return getArrayType(type);
 		}
@@ -400,6 +411,14 @@ public class Semant {
 				} else {
 					// TODO: Implement more general fixed functions
 				}
+			}
+			else {
+				Object funcBody = transExpr(e.body);
+					ArgSpec funcValue = (ArgSpec) funcBody;
+					List<ArgSpec> args = new ArrayList<ArgSpec>();
+					args.add(funcValue);
+					((NonRandomFunction) fun).setInterpretation(blog.ConstantInterp.class, args);
+					
 			}
 		} else if (e instanceof RandomFuncDec) {
 			DependencyModel dm = transDependency(e.body, fun.getRetType(),
@@ -575,6 +594,7 @@ public class Semant {
 			error(e.line, e.col, "Type " + name + " already defined!");
 		} else {
 			model.addType(name);
+//			BuiltInTypes.addArrayTypes(name);
 		}
 	}
 
@@ -666,10 +686,10 @@ public class Semant {
 	
 	ListSpec transExpr(ListInitExpr e) {
 		List<ArgSpec> values = transExprList(e.values, false);
-		List<Term> terms = new ArrayList<Term>();
+		List<ArgSpec> terms = new ArrayList<ArgSpec>();
 		
 		for (ArgSpec value: values) {
-			terms.add((Term) value);
+			terms.add(value);
 		}
 		return new ListSpec(terms);
 	}

@@ -19,15 +19,15 @@ import blog.sample.EvalContext;
 
 public class ListSpec extends ArgSpec {
 	
-	List<Term> elements;
+	List<ArgSpec> elements;
 	boolean compiled;
 	
 	public ListSpec() {
-		elements = new ArrayList<Term>();
+		elements = new ArrayList<ArgSpec>();
 		compiled = false;
 	}
 	
-	public ListSpec(List<Term> args) {
+	public ListSpec(List<ArgSpec> args) {
 		elements = args;
 		compiled = false;
 	}
@@ -58,7 +58,7 @@ public class ListSpec extends ArgSpec {
 	@Override
 	public Object evaluate(EvalContext context) {
 		List<Object> evalContents = new ArrayList<Object>();
-		for (Term element: elements) {
+		for (ArgSpec element: elements) {
 			evalContents.add(element.evaluate(context));
 		}
 		return evalContents;
@@ -94,7 +94,7 @@ public class ListSpec extends ArgSpec {
 	 */
 	@Override
 	public ArgSpec find(Term t) {
-		for (Term listTerm: elements) {
+		for (ArgSpec listTerm: elements) {
 			if (listTerm.equals(t)) {
 				return listTerm;
 			}
