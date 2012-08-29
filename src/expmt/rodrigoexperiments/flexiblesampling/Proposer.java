@@ -4,6 +4,7 @@ import java.util.List;
 
 import blog.BLOGUtil;
 import blog.bn.VarWithDistrib;
+import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.sample.InstantiatingEvalContext;
@@ -50,6 +51,19 @@ public class Proposer implements blog.Proposer {
 	public void updateStats(boolean accepted) {
 		// TODO Auto-generated method stub
 	}
+
+    public PartialWorldDiff reduceToCore(PartialWorld curWorld, BayesNetVar var) {
+        return null;
+    }
+
+    public double proposeNextState(PartialWorldDiff proposedWorld, 
+                            BayesNetVar var, int i) {
+        return 0;
+    }
+
+    public double proposeNextState(PartialWorldDiff proposedWorld, BayesNetVar var) {
+        return 0;
+    }
 
 	private SamplerFactory flexibleImportanceSamplerFactory;
 }
