@@ -40,6 +40,7 @@ import java.util.*;
 import blog.bn.BasicVar;
 import blog.bn.NumberVar;
 import blog.bn.RandFuncAppVar;
+import blog.bn.BayesNetVar;
 import blog.common.Timer;
 import blog.common.Util;
 import blog.model.Evidence;
@@ -428,6 +429,19 @@ public class UrnBallsSplitMerge implements Proposer {
 		int oldValue = ((Integer) world.getValue(nv)).intValue();
 		world.setValue(nv, new Integer(oldValue + offset));
 	}
+
+    public PartialWorldDiff reduceToCore(PartialWorld curWorld, BayesNetVar var) {
+        return null;
+    }
+
+    public double proposeNextState(PartialWorldDiff proposedWorld, 
+                            BayesNetVar var, int i) {
+        return 0;
+    }
+
+    public double proposeNextState(PartialWorldDiff proposedWorld, BayesNetVar var) {
+        return 0;
+    }
 
 	private Model model;
 	private Evidence evidence;

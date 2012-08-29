@@ -40,6 +40,7 @@ import java.util.*;
 import blog.bn.BasicVar;
 import blog.bn.NumberVar;
 import blog.bn.RandFuncAppVar;
+import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Function;
@@ -437,6 +438,20 @@ public class UrnBallsSplitMergeNoIds implements Proposer {
 		}
 		return unusedBalls;
 	}
+
+    public PartialWorldDiff reduceToCore(PartialWorld curWorld, BayesNetVar var) {
+        return null;
+    }
+
+    public double proposeNextState(PartialWorldDiff proposedWorld, 
+                            BayesNetVar var, int i) {
+        return 0;
+    }
+
+    public double proposeNextState(PartialWorldDiff proposedWorld, BayesNetVar var) {
+        return 0;
+    }
+
 
 	private Model model;
 	private Evidence evidence;
