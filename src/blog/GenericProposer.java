@@ -130,15 +130,20 @@ public class GenericProposer extends AbstractProposer {
 		// Multiply in the probability of this uniform sample.
 		logProbForward += (-Math.log(result.numberOfChoices));
 
-		// System.out.println("GenericProposer: world right before sampling new value for "
-		// + result.varToSample + ".\n");
-		// System.out.println(world);
+        if (Util.verbose()) {
+		    System.out.println("GenericProposer: world right before sampling" 
+                    + " new value for " + result.varToSample + ".\n");
+		    System.out.println(world);
+        }
 
 		// Sample value for variable and update forward and backward probs
 		sampleValue(result.varToSample, world);
 
-		// System.out.println("GenericProposer: world right before getting newly barren vars.\n");
-		// System.out.println(world);
+        if (Util.verbose()) {
+            System.out.println("GenericProposer: world right before getting" 
+                    + " newly barren vars.\n");
+            System.out.println(world);
+        }
 
 		// Remove barren variables
 		LinkedList newlyBarren = new LinkedList(world.getNewlyBarrenVars());

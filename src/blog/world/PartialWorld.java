@@ -373,7 +373,6 @@ public interface PartialWorld {
 	 * variable.
 	 */
     CBN getCBN();
-	//DGraph getBayesNet();
 
 	/**
 	 * Provides the CBN, the mapping from variables to uninstantiated
