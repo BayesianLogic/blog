@@ -360,6 +360,12 @@ public class ArgSpecQuery extends AbstractQuery {
 		public int compare(Object o1, Object o2) {
 			Object e1 = ((Histogram.Entry) o1).getElement();
 			Object e2 = ((Histogram.Entry) o2).getElement();
+			if (e1 == Model.NULL) {
+				return -1;
+			}
+			else if (e2 == Model.NULL) {
+				return 1;
+			}
 			double n1 = ((Number) e1).doubleValue();
 			double n2 = ((Number) e2).doubleValue();
 			if (n1 < n2) {
