@@ -11,30 +11,29 @@ import blog.common.UnaryProcedure;
 import blog.sample.EvalContext;
 
 /**
- * ArgSpec that represents a multiset, in particular arrays and lists.
- * For now supports only constants (distinct objects and literals of
- * built-in types).
+ * ArgSpec that represents a list.  For now supports only constants
+ * (distinct objects and literals of built-in types) and function names.
  * 
  * @author awong
  */
 
-public class MultisetSpec extends ArgSpec {
+public class ListSpec extends ArgSpec {
 	
-	List<Term> elements;
+	List<ArgSpec> elements;
 	boolean compiled;
 	
-	public MultisetSpec() {
-		elements = new ArrayList<Term>();
+	public ListSpec() {
+		elements = new ArrayList<ArgSpec>();
 		compiled = false;
 	}
 	
-	public MultisetSpec(List<Term> args) {
+	public ListSpec(List<ArgSpec> args) {
 		elements = args;
 		compiled = false;
 	}
 	
 	/**
-	 * To compile a multiset, it is only necessary to compile
+	 * To compile a list, it is only necessary to compile
 	 * each of its possible values.
 	 */
 	public int compile(LinkedHashSet callStack) {
@@ -59,7 +58,7 @@ public class MultisetSpec extends ArgSpec {
 	@Override
 	public Object evaluate(EvalContext context) {
 		List<Object> evalContents = new ArrayList<Object>();
-		for (Term element: elements) {
+		for (ArgSpec element: elements) {
 			evalContents.add(element.evaluate(context));
 		}
 		return evalContents;
@@ -95,7 +94,7 @@ public class MultisetSpec extends ArgSpec {
 	 */
 	@Override
 	public ArgSpec find(Term t) {
-		for (Term listTerm: elements) {
+		for (ArgSpec listTerm: elements) {
 			if (listTerm.equals(t)) {
 				return listTerm;
 			}
