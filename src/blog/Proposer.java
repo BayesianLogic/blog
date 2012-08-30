@@ -39,12 +39,15 @@ import java.util.*;
 
 import blog.model.Evidence;
 import blog.world.PartialWorldDiff;
+import blog.world.PartialWorld;
+import blog.bn.BayesNetVar;
 
 /**
- * Interface for Metropolis-Hastings proposal distributions. A Proposer object
- * must be able to create an initial state for the Markov chain, and propose a
- * new state x' given any state x. It must also be able to compute the proposal
- * ratio q(x | x') / q(x' | x), where q is the proposal distribution.
+ * Interface for Metropolis-Hastings and Gibbs proposal distributions. 
+ * A Proposer object* must be able to create an initial state for the Markov 
+ * chain, and propose a new state x' given any state x. It must also be able to 
+ * compute the proposal ratio q(x | x') / q(x' | x), where q is the proposal 
+ * distribution.
  * 
  * <p>
  * Implementations of the Proposer interface should have a constructor with two
@@ -98,4 +101,36 @@ public interface Proposer {
 	 * rejected (if <code>accepted</code> is false).
 	 */
 	void updateStats(boolean accepted);
+
+    /**
+     * Reduce a partial world to its core of variables relative to the given
+     * random variable X. That is, to those variables which are guaranteed to
+     * exist in any world with any value of X. Returns a diff object which
+     * implements this change
+     */
+    PartialWorldDiff reduceToCore(PartialWorld curWorld, BayesNetVar var);
+
+    /**
+     * Propose a next state for the Markov Chain which sets the given variable
+     * X to the proposed value i. The proposed world satisfies the evidence 
+     * and is complete enough to answer the queries specified in the last 
+     * call to <code>initialize</code>.
+     *
+     * <p> Note that this function is only used within the Gibbs Sampler. No
+     * need to implement the function if Gibbs Sampler is not used.
+     */
+    double proposeNextState(PartialWorldDiff proposedWorld, 
+                            BayesNetVar var, int i);
+
+    /**
+     * Propose a next state for the Markov Chain which resamples the given variable
+     * X The proposed world satisfies the evidence 
+     * and is complete enough to answer the queries specified in the last 
+     * call to <code>initialize</code>.
+     *
+     * <p> Note that this function is only used within the Gibbs Sampler. No
+     * need to implement the function if Gibbs Sampler is not used.
+     */
+    double proposeNextState(PartialWorldDiff proposedWorld, BayesNetVar var);
+
 }

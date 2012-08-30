@@ -3,9 +3,11 @@ package blog;
 import java.util.*;
 
 import blog.bn.VarWithDistrib;
+import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.model.Model;
 import blog.world.PartialWorldDiff;
+import blog.world.PartialWorld;
 
 
 /**
@@ -55,6 +57,19 @@ public class VariableGibbsProposer extends AbstractProposer {
 			if (!(it.next() instanceof VarWithDistrib))
 				it.remove();
 	}
+
+    public PartialWorldDiff reduceToCore(PartialWorld curWorld, BayesNetVar var) {
+        return null;
+    }
+
+    public double proposeNextState(PartialWorldDiff proposedWorld, 
+                            BayesNetVar var, int i) {
+        return 0;
+    }
+
+    public double proposeNextState(PartialWorldDiff proposedWorld, BayesNetVar var) {
+        return 0;
+    }
 
 	public VariableImportanceSampler sampler;
 }
