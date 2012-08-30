@@ -1,8 +1,10 @@
-/** an even simpler PCFG grammar
+/** a very simple PCFG grammar
 1.0: S -> NP VP;
 1.0: PP -> P NP;
-1.0: VP -> V NP;
-0.5: NP -> "astronomers";
+0.7: VP -> V NP;
+0.3: VP -> VP PP;
+0.4: NP -> NP PP;
+0.1: NP -> "astronomers";
 0.18: NP -> "ears";
 0.04: NP -> "saw";
 0.18: NP -> "stars";
@@ -115,10 +117,12 @@ random Expansion ExpansionApplied(ParseNode node) {
 	
 	else if (Class(node) == PP) then = PPPNP
 	
-	else if (Class(node) == VP) then = VPVNP
+	else if (Class(node) == VP) then
+	  ~ Categorical({VPVNP -> 0.7, VPVPPP -> 0.3})
 	
 	else if (Class(node) == NP) then 
-	  ~ Categorical({NPw_astronomers -> 0.5, 
+	  ~ Categorical({NPNPPP -> 0.4, 
+	                 NPw_astronomers -> 0.1, 
 	                 NPw_ears -> 0.18, 
 	                 NPw_saw -> 0.04, 
 	                 NPw_stars -> 0.18, 
@@ -141,21 +145,7 @@ random String OwnText(ParseNode node) {
 
 random String Text(Sentence s) = NodeText(ParseTreeRoot(s));
 
-//query Class(NthChild(ParseTreeRoot(Sen1), 0));
-//query Class(NthChild(NthChild(ParseTreeRoot(Sen1), 0), 0));
-//query TextStartingAtNthChild(NthChild(ParseTreeRoot(Sen1), 0), 0);
-
 query Text(Sen1);
 query TextStartingAtNthChild(ParseTreeRoot(Sen1), 0);
-
-//query Class(NthChild(ParseTreeRoot(Sen1), 1));
-//query TextStartingAtNthChild(NthChild(ParseTreeRoot(Sen1), 1), 0);
 query Concat(NodeText(NthChild(ParseTreeRoot(Sen1), 0)), 
                   TextStartingAtNthChild(ParseTreeRoot(Sen1), Succ(0)));
-/*
-random String TextStartingAtNthChild(ParseNode p, NaturalNum n) {
-    if (NthChild(p, Succ(n)) == null) then = NodeText(NthChild(p, n))
-    else = Concat(NodeText(NthChild(p, n)), 
-                  TextStartingAtNthChild(p, Succ(n)))
-};
-*/
