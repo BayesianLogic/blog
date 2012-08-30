@@ -35,17 +35,38 @@
 
 package blog.sample;
 
-import blog.world.PartialWorld;
+import java.util.*;
+
+import blog.GenericProposer;
+import blog.bn.BayesNetVar;
+import blog.bn.VarWithDistrib;
+import blog.bn.NumberVar;
+import blog.bn.RandFuncAppVar;
+import blog.model.Type;
+import blog.common.Util;
 import blog.model.Model;
 import blog.model.Evidence;
+import blog.world.PartialWorld;
+import blog.world.PartialWorldDiff;
+import blog.model.Query;
 import java.util.List;
 import java.util.Properties;
 
 /**
  * An implementation of the open universe Gibbs Sampler described by 
- * Arora et. al. 
- * TODO: This class is currently just a stub. Will be filled out over the
- * next few commits.
+ * Arora et. al. This sampler differs from a standard Gibbs sampler 
+ * in the fact that it shrinks and expands the CBN during sampling steps
+ * to account for the changes in CBN structure as the values of random
+ * variables change.
+ *
+ * This implementation is built as a modification of the MH sampler since
+ * many of the CBN manipulations are the same for Gibbs as for MH and since this
+ * Gibbs sampler reverts to MH sampling for variables of infinite domain.
+ *
+ * TODO: Although the structure of this class is correct, a number of the 
+ * called methods are only stubs. These will be filled in over the next few
+ * commits. This class will probably have MHSampler as superclass in the next
+ * iteration since both classes share significant amounts of structure.
  *
  * @author rbharath
  * @date Aug 10, 2012
@@ -58,28 +79,13 @@ public class GibbsSampler extends Sampler {
      */
     public GibbsSampler(Model model, Properties properties) {
         super(model);
-        //TODO: Fill This Out
-    }
+        this.properties = properties;
 
-	/**
-	 * set the base partial world
-	 */
-	public void setBaseWorld(PartialWorld world) {
-		baseWorld = world;
-	}
-
-	/**
-	 * get the base partial world
-	 */
-	public PartialWorld getBaseWorld() {
-		return baseWorld;
-	}
-
-	/**
-	 * Generates the next partial world and computes its weight.
-	 */
-	public void nextSample() {
-        return;
+		String idTypesString = properties.getProperty("idTypes", "none");
+		idTypes = model.getListedTypes(idTypesString);
+		if (idTypes == null) {
+			Util.fatalErrorWithoutStack("Invalid idTypes list.");
+		}
     }
 
     /**
@@ -87,23 +93,185 @@ public class GibbsSampler extends Sampler {
      * may be modified by future calls to nextSample.
      */
     public PartialWorld getLatestWorld() {
-        return baseWorld;
+        return curWorld;
     }
 
-	public void initialize(Evidence evidence, List queries) {
-		super.initialize(evidence, queries);
-        //TODO: Fill This Out
+    /**
+     * Initialize the world to a minimally self-supporting instantiation.
+     */
+    public void initialize(Evidence evidence, List queries) {
+        super.initialize(evidence, queries);
+
+        totalNumSamples = 0;
+        totalNumAccepted = 0;
+		numSamplesThisTrial = 0;
+
+        if (Util.verbose())
+            System.out.println("Creating initial world...");
+
+        evidenceVars = evidence.getEvidenceVars();
+        for (Iterator iter = queries.iterator(); iter.hasNext();) {
+            queryVars.addAll(((Query) iter.next()).getVariables());
+        }
+
+        // Construct a Proposer to Manage the world
+        proposer = new GenericProposer(model, properties);
+        // Initialize a base world
+        curWorld = proposer.initialize(evidence, queries);
+
+        if (Util.verbose()) {
+            System.out.println("Successfully generated world:");
+            curWorld.print(System.out);
+        }
+    }
+
+    /**
+     * Generates the next partial world by Gibbs sampling: Randomly selects a
+     * non-evidence variable X. Reduces the current instantiation
+     * to its core, and resamples X from this core. Ensures that the resulting
+     * world is minimal and self supported.
+     */
+    public void nextSample() {
+        // Find Nonevidence Variables in Current World
+		Set eligibleVars = new HashSet(curWorld.getInstantiatedVars());
+		eligibleVars.removeAll(evidenceVars);
+		++totalNumSamples;
+		++numSamplesThisTrial;
+
+        // Return if no vars to sample
+        if (eligibleVars.isEmpty())
+            return;
+
+        // Find Variable to Sample
+        VarWithDistrib varToSample = 
+                (VarWithDistrib) Util.uniformSample(eligibleVars);
+
+		if (Util.verbose())
+			System.out.println("Sampling " + varToSample);
+
+        int domSize = 0;
+
+        // Find the domain size of this variable
+        if (varToSample instanceof NumberVar) {
+            // Number Variables have infinite domain
+            // TODO: If evidence restricts this number var, does it still
+            //       have infinite domain?
+            domSize = -1;
+        } else {
+            RandFuncAppVar randFunc = (RandFuncAppVar) varToSample;
+            Type retType = randFunc.getType();
+            if (!retType.hasFiniteGuaranteed()) {
+                domSize = -1;
+            } else {
+                domSize = retType.range().size();
+            }
+        }
+
+        // If domain size is finite
+        if (domSize >= 0) {
+            // Calculate possible transitions and their weights
+            double[] weights = new double[domSize];
+            PartialWorldDiff[] diffs = new PartialWorldDiff[domSize];
+
+            for (int i = 0; i < domSize; i++) {
+                PartialWorldDiff reducedWorld = 
+                    proposer.reduceToCore(curWorld, varToSample);
+                // Set varToSample to i-th value in domain
+                // Ensure Minimal Self-Supported Instantiation
+                double logProposalRatio = 
+                        proposer.proposeNextState(reducedWorld, varToSample, i);
+                double weight = evidence.getEvidenceProb(curWorld);
+                weights[i] = weight;
+                diffs[i] = reducedWorld;
+            }
+
+            // TODO: This might be inefficient maybe swap out ArrayList for
+            // Array for weights and diffs
+            int idx = Util.sampleWithProbs(weights);
+            PartialWorldDiff selected = diffs[idx];
+
+            // Save the selected world
+            selected.save();
+        } else { 
+            // Infinite Domain Size so we fall back to MH Sampling
+            curWorld.save(); // make sure we start with saved world.
+            double logProposalRatio = 
+                proposer.proposeNextState(curWorld, varToSample);
+
+            if (Util.verbose()) {
+                System.out.println();
+                System.out.println("\tlog proposal ratio: " + logProposalRatio);
+            }
+
+            double logProbRatio = 
+                computeLogProbRatio(curWorld.getSaved(), curWorld);
+            if (Util.verbose()) {
+                System.out.println("\tlog probability ratio: " + logProbRatio);
+            }
+            double logAcceptRatio = logProbRatio + logProposalRatio;
+            if (Util.verbose()) {
+                System.out.println("\tlog acceptance ratio: " + logAcceptRatio);
+            }
+
+            // Accept or reject proposal
+            if ((logAcceptRatio >= 0) || 
+                    (Util.random() < Math.exp(logAcceptRatio))) {
+                curWorld.save();
+                if (Util.verbose()) {
+                    System.out.println("\taccepted");
+                }
+                ++totalNumAccepted;
+                ++numAcceptedThisTrial;
+                proposer.updateStats(true);
+            } else {
+			curWorld.revert(); // clean slate for next proposal
+			if (Util.verbose()) {
+				System.out.println("\trejected");
+			}
+			proposer.updateStats(false);
+		}
+
+        }
+    }
+
+    // TODO: Should GibbsSampler inherit from MH Sampler to get access to this
+    //       method? Maybe should factor out into shared superclass.
+	private double computeLogProbRatio(PartialWorld savedWorld,
+			PartialWorldDiff proposedWorld) {
+        return 0;
+    }
+
+	/** For Gibbs samplers, same as {@link #setWorld(PartialWorld)}. */
+	public void setBaseWorld(PartialWorld world) {
+		setWorld(world);
 	}
 
-	// overall statistics
-	protected int totalNumSamples = 0;
-	protected int totalNumConsistent = 0;
-
-	// statistics since last call to initialize()
+	public void setWorld(PartialWorld w) {
+		if (w instanceof PartialWorldDiff)
+			curWorld = (PartialWorldDiff) w;
+		else
+			curWorld = new PartialWorldDiff(w);
+	}
+            
+    // Num Samples Drawn Thus Far
+    protected int totalNumSamples = 0;
+    protected int totalNumAccepted = 0;
 	protected int numSamplesThisTrial = 0;
-	protected int numConsistentThisTrial = 0;
-	protected double sumWeightsThisTrial = 0;
+	protected int numAcceptedThisTrial = 0;
 
-	protected PartialWorld curWorld = null;
-	private PartialWorld baseWorld = null;
+    // Generic Proposer to Handle State Transitions
+	protected GenericProposer proposer;
+
+    // Properties
+    protected Properties properties;
+
+    // Types of Identifiers
+	protected Set<Type> idTypes; 
+    // The set of query variables
+    protected List<BayesNetVar> queryVars = new ArrayList<BayesNetVar>();
+    protected Set evidenceVars = new HashSet();
+
+    // Generic Proposer to Handle the
+
+    protected PartialWorldDiff curWorld = null;
 }
