@@ -1,0 +1,111 @@
+/* A standard toy example used to explain probabilistic relational 
+ * models (PRMs) and directed acyclic probabilistic entity-relationship 
+ * (DAPER) models.  This version follows Heckerman, Meek and 
+ * Koller (2004). 
+ * "Probabilistic models for relational data". Microsoft Research 
+ * TR 2004-30.
+ *
+ * BLOG features to note:
+ *  * The first clause in the dependency statement for GradeObtained 
+ *    uses a fairly complicated first-order formula.
+ *  
+ */
+
+type Professor;
+type Student;
+type Course;
+
+type Grade;
+distinct Grade A, B, C, D, F;
+
+type DifficultyLevel;
+distinct DifficultyLevel Easy, Hard;
+
+type IntelligenceLevel;
+distinct IntelligenceLevel Weak, Average, Smart;
+
+/* 
+ * In the DAPER paper this relation is called "Friend", but there is no 
+ * attempt to ensure that it's symmetric, and ensuring that in BLOG is 
+ * hard. Here we use "Likes", which doesn't imply symmetry.
+ */
+random Boolean Likes(Professor p1, Professor p2) { 
+    if (p1 == p2) then = true
+    else ~ Bernoulli(0.2)
+};
+
+random DifficultyLevel Difficulty(Course c) ~ Categorical({Easy -> 0.7, Hard -> 0.3});
+
+random IntelligenceLevel Intelligence(Student s) ~ Categorical({Smart -> 0.2, Average -> 0.6, Weak -> 0.2});
+
+/* 
+ * If one of the teachers of course c likes an advisor of student s, 
+ * then student s usually gets an A.  Otherwise the grade depends on 
+ * the student's intelligence and the course's difficulty.  
+ */
+random Grade GradeObtained(Student s, Course c) {
+    if (Takes(s, c) & (exists Professor p1 exists Professor p2 
+                  (Teaches(p1, c) & Advises(p2, s) & Likes(p1, p2))))
+    then ~ Categorical({A -> 0.85, B -> 0.1, C -> 0.03, D -> 0.01, F -> 0.01})
+    else if Takes(s, c) 
+        then ~ TabularCPD({[weak, easy] -> ~ Categorical({A -> 0.2, B -> 0.4, C -> 0.3, D -> 0.07, F -> 0.03}),
+	       		   [weak, hard] -> ~ Categorical({A -> 0.05, B -> 0.1, C -> 0.55, D -> 0.2, F -> 0.1}),
+			   [average, easy] -> ~ Categorical({A -> 0.3, B -> 0.55, C -> 0.10, D -> 0.04, F -> 0.01}),
+			   [average, hard] -> ~ Categorical({A -> 0.15, B -> 0.3, C -> 0.45, D -> 0.07, F -> 0.03}),
+			   [smart, easy] -> ~ Categorical({A -> 0.85, B -> 0.1, C -> 0.03, D -> 0.01, F -> 0.01}),
+			   [smart, hard] -> ~ Categorical({A -> 0.60, B -> 0.25, C -> 0.1, D -> 0.03, F -> 0.02})},
+			[Intelligence(s), Difficulty(c)])
+};
+
+
+/* Relational skeleton and evidence.
+ *
+ * To specify the interpretations of the non-random Boolean functions, 
+ * we use the ListInterp class.  The first parameter to ListInterp is
+ * the number of arguments to the function.  If the number of arguments
+ * is k, then the remaining parameters are interpreted in groups of k,
+ * as k-tuples for which the function returns true.  
+ * 
+ * Given this evidence, Mary has a high probability of getting an A in 
+ * CS106, because she got an A in Phil80.  Since Fred got a C in Stat10, 
+ * his expected grade in CS106 is lower than Mary's.  John got the same 
+ * grade as Fred in Stat10, but has an advisor; since his advisor might 
+ * be friends with one of the CS106 teachers, John has a higher 
+ * probability of getting an A.  
+ */
+
+// Relational skeleton
+
+distinct Professor Smith, Jones, Moriarty;
+distinct Student John, Mary, Fred;
+distinct Course CS106, Phil80, Stat10;
+
+fixed Boolean Teaches(Professor p, Course c) 
+    = ListInterp(2, Smith, CS106,
+                    Jones, CS106,
+                    Moriarty, Phil80,
+                    Jones, Stat10);
+
+fixed Boolean Advises(Professor p, Student s) 
+    = ListInterp(2, Moriarty, John);
+
+fixed Boolean Takes(Student s, Course c) 
+    = ListInterp(2, John, Stat10,
+                    John, CS106,
+                    Mary, Phil80,
+                    Mary, CS106,
+                    Fred, Stat10,
+                    Fred, CS106);
+
+// Evidence
+
+obs GradeObtained(John, Stat10) = C;
+obs GradeObtained(Mary, Phil80) = A;
+obs GradeObtained(Fred, Stat10) = C;
+
+/* Queries for the model in grades.mblog, given the relational skeleton.
+ */
+
+query GradeObtained(John, CS106);
+query GradeObtained(Mary, CS106);
+query GradeObtained(Fred, CS106);
