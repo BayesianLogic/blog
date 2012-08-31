@@ -15,7 +15,7 @@ MISC_FILE=makefile \
  run.sh 
 
 TAGNAME=$(shell git tag)
-TARGETNAME=TAGNAME
+TARGETNAME=${TAGNAME}
 
 compile:
 	./compile.sh
@@ -23,15 +23,13 @@ compile:
 tar: zip
 
 zip:
-	makedir -p tmp/${TARGETNAME}
-	cp src tmp/${TARGETNAME}/
-	cp lib tmp/${TARGETNAME}/
-	cp example tmp/${TAGNAME}/
+	mkdir -p tmp/${TARGETNAME}
+	cp -r src tmp/${TARGETNAME}/
+	cp -r lib tmp/${TARGETNAME}/
+	cp -r example tmp/${TAGNAME}/
 	cp ${MISC_FILE} tmp/${TAGNAME}/
-	cd tmp
-	zip -r ${TARGETNAME}.zip ${TARGETNAME}
-	mv ${TARGETNAME}.zip ../
-	cd ..
+	cd tmp; zip -r ${TARGETNAME}.zip ${TARGETNAME}
+	mv tmp/${TARGETNAME}.zip ./
 	rm -r -f tmp
 
 jar: compile
