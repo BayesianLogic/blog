@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 
 import blog.EqualsCPD;
-import blog.Timestep;
 import blog.absyn.Absyn;
 import blog.absyn.ArrayTy;
 import blog.absyn.BooleanExpr;
@@ -84,6 +83,7 @@ import blog.model.TrueFormula;
 import blog.model.Type;
 import blog.model.ValueEvidenceStatement;
 import blog.msg.ErrorMsg;
+import blog.type.Timestep;
 
 /**
  * @author leili

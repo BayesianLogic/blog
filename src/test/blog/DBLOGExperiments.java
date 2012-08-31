@@ -19,7 +19,6 @@ import java.util.regex.Matcher;
 import blog.BLOGUtil;
 import blog.DBLOGUtil;
 import blog.TemporalEvidenceGenerator;
-import blog.Timestep;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.CountedIterator;
@@ -45,6 +44,7 @@ import blog.model.ExplicitSetSpec;
 import blog.model.Model;
 import blog.model.Term;
 import blog.model.ValueEvidenceStatement;
+import blog.type.Timestep;
 import blog.world.PartialWorld;
 
 public class DBLOGExperiments {

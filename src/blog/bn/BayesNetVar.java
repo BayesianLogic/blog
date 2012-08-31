@@ -37,9 +37,9 @@ package blog.bn;
 
 import java.util.*;
 
-import blog.Timestep;
 import blog.sample.ClassicInstantiatingEvalContext;
 import blog.sample.InstantiatingEvalContext;
+import blog.type.Timestep;
 import blog.world.PartialWorld;
 
 /**
