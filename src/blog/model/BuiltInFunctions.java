@@ -40,7 +40,7 @@ import java.util.*;
 import blog.AbstractFunctionInterp;
 import blog.ConstantInterp;
 import blog.FunctionInterp;
-import blog.Timestep;
+import blog.type.Timestep;
 import Jama.*;
 
 /**
