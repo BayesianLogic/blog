@@ -797,8 +797,8 @@ public class Semant {
 		if (cond instanceof Formula) {
 			test = (Formula) cond;
 		}
-		else if (cond instanceof SymbolTerm) {
-			test = new EqualityFormula((SymbolTerm)cond, BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+		else if (cond instanceof Term) {
+			test = new EqualityFormula((Term)cond, BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 		}
 		else {
 			error(e.test.line, e.test.col, "Cannot use non-Boolean value as predicate for if clause");
@@ -914,6 +914,12 @@ public class Semant {
 		case OpExpr.AND:
 			left = transExpr(e.left);
 			right = transExpr(e.right);
+			if (left instanceof Term) {
+				left = new EqualityFormula((Term) left, BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+			}
+			if (right instanceof Term) {
+				right = new EqualityFormula((Term) right, BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+			}
 			return new ConjFormula((Formula) left, (Formula) right);
 		case OpExpr.OR:
 			break;
