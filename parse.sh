@@ -1,14 +1,8 @@
 #!/bin/bash
 #
-# Script for running the BLOG inference engine.  Typical usage:
+# Script for running the BLOG parser.  Typical usage:
 #
-# runblog [options] <model-file> <evidence-file> <query-file>
-#
-# If your current working directory is the top-level BLOG directory
-# (the one that contains the "blog" and "common" subdirectories), you can
-# use this script without modification.  If you'd like to be able to run
-# blog from another directory, edit this script so BLOG_HOME is set to
-# your top-level BLOG directory.
+# ./parse.sh  <model-file> 
 
 BLOG_HOME="."
 export BLOG_HOME
