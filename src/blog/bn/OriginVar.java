@@ -38,8 +38,8 @@ package blog.bn;
 import java.util.*;
 
 import blog.ObjectIdentifier;
-import blog.Timestep;
 import blog.sample.InstantiatingEvalContext;
+import blog.type.Timestep;
 import blog.world.PartialWorld;
 
 /**

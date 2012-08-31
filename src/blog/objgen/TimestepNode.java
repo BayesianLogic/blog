@@ -1,6 +1,6 @@
 package blog.objgen;
 
-import blog.Timestep;
+import blog.type.Timestep;
 
 public class TimestepNode extends IntegerNode {
 	protected Object correspondingObj(Integer i) {
