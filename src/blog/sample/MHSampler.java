@@ -66,6 +66,12 @@ import java.lang.reflect.Constructor;
  */
 public class MHSampler extends Sampler {
 	/**
+	 * Creates a new sampler for the given BLOG model. 	 
+     **/
+    public MHSampler(Model model) {
+        super(model);
+    }
+	/**
 	 * Creates a new sampler for the given BLOG model. The properties table
 	 * specifies configuration parameters.
 	 */
@@ -266,7 +272,7 @@ public class MHSampler extends Sampler {
 	 * not satisfy the evidence, and undefined if the current world does not
 	 * satisfy the evidence.
 	 */
-	private double computeLogProbRatio(PartialWorld savedWorld,
+	public double computeLogProbRatio(PartialWorld savedWorld,
 			PartialWorldDiff proposedWorld) {
 		double logProbRatio = 0;
 		logProbRatio += computeLogMultRatio(savedWorld, proposedWorld);
