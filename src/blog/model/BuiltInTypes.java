@@ -38,7 +38,7 @@ package blog.model;
 import java.util.*;
 import java.util.regex.*;
 
-import blog.Timestep;
+import blog.type.Timestep;
 
 /**
  * Class with static methods and variables for dealing with the built-in types

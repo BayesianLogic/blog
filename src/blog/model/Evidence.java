@@ -50,10 +50,10 @@ import java.util.Map;
 import java.util.Set;
 
 import blog.BLOGUtil;
-import blog.Timestep;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
+import blog.type.Timestep;
 import blog.world.PartialWorld;
 
 /**
