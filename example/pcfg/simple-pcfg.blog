@@ -146,6 +146,3 @@ random String OwnText(ParseNode node) {
 random String Text(Sentence s) = NodeText(ParseTreeRoot(s));
 
 query Text(Sen1);
-query TextStartingAtNthChild(ParseTreeRoot(Sen1), 0);
-query Concat(NodeText(NthChild(ParseTreeRoot(Sen1), 0)), 
-                  TextStartingAtNthChild(ParseTreeRoot(Sen1), Succ(0)));
