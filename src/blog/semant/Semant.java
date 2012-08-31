@@ -39,6 +39,7 @@ import blog.absyn.OpExpr;
 import blog.absyn.OriginFieldList;
 import blog.absyn.OriginFuncDec;
 import blog.absyn.ParameterDec;
+import blog.absyn.QuantifiedFormulaExpr;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
 import blog.absyn.StmtList;
@@ -60,6 +61,7 @@ import blog.model.ConjFormula;
 import blog.model.DependencyModel;
 import blog.model.EqualityFormula;
 import blog.model.Evidence;
+import blog.model.ExistentialFormula;
 import blog.model.ExplicitSetSpec;
 import blog.model.Formula;
 import blog.model.FormulaQuery;
@@ -82,6 +84,7 @@ import blog.model.SymbolTerm;
 import blog.model.Term;
 import blog.model.TrueFormula;
 import blog.model.Type;
+import blog.model.UniversalFormula;
 import blog.model.ValueEvidenceStatement;
 import blog.msg.ErrorMsg;
 
@@ -656,6 +659,8 @@ public class Semant {
 			return transExpr((SymbolExpr) e);
 		} else if (e instanceof NullExpr) {
 			return transExpr((NullExpr) e);
+		} else if (e instanceof QuantifiedFormulaExpr) {
+			return transExpr((QuantifiedFormulaExpr) e);
 		}
 		return null;
 	}
@@ -705,6 +710,25 @@ public class Semant {
 		}
 		MapSpec m = new MapSpec(probKeys, probs);
 		return m;
+	}
+	
+	Formula transExpr(QuantifiedFormulaExpr e) {
+		Object quantExpr = transExpr(e.formula);
+		if (!(quantExpr instanceof Formula)) {
+			return null;
+		}
+		Formula quantFormula = (Formula) quantExpr;
+		Type quantType = getType(e.type);
+		
+		if (e.quantifier == QuantifiedFormulaExpr.FORALL) {
+			return new UniversalFormula(e.var.toString(), quantType, quantFormula);
+		}
+		else if (e.quantifier == QuantifiedFormulaExpr.EXISTS){
+			return new ExistentialFormula(e.var.toString(), quantType, quantFormula);
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
