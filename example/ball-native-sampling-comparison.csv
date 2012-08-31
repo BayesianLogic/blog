@@ -1,6 +1,0 @@
-"#evidence","java with BigFraction","cpp with GMP","java7 with BigFraction","java7 with double","Java 7 with math3","cpp with double"
-8,,,,"0.112s",,
-32,"4.224s","0.673s","4.215s","0.116s","4.277s","0.024s"
-64,"7.678s","0.953s","7.620s","0.129s","7.602s","0.025s"
-128,"23.988s","1.424s","22.794s","0.148s","22.269s","0.026s"
-,,,,"note double has limited precision",,

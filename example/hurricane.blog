@@ -28,8 +28,6 @@ distinct City A, B;
 distinct PrepLevel Low, High;
 distinct DamageLevel Severe, Mild;
 
-obs First = A;
 obs Damage(First) = Severe;
 
 query Damage(NotFirst);
-query NotFirst;
