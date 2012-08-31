@@ -6,6 +6,7 @@ package blog.semant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import blog.EqualsCPD;
 import blog.Timestep;
 import blog.absyn.Absyn;
@@ -29,7 +30,6 @@ import blog.absyn.IfExpr;
 import blog.absyn.ImplicitSetExpr;
 import blog.absyn.IntExpr;
 import blog.absyn.ListInitExpr;
-import blog.absyn.ListTy;
 import blog.absyn.MapInitExpr;
 import blog.absyn.NameTy;
 import blog.absyn.NullExpr;
@@ -66,10 +66,10 @@ import blog.model.FormulaQuery;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.ImplicitSetSpec;
+import blog.model.ListSpec;
 import blog.model.MapSpec;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
-import blog.model.ListSpec;
 import blog.model.NegFormula;
 import blog.model.NonRandomFunction;
 import blog.model.OriginFunction;
@@ -169,32 +169,33 @@ public class Semant {
 		}
 		return ty;
 	}
-	
-//	// TODO: fix list type!!!
-//	Type getListType(Ty type) {
-//		Type ty = null;
-//		if (type instanceof ListTy) {
-//			Type elementType = getNameType(((ListTy) type).typ);
-//			String name = "List<" + elementType.getName() + ">";
-//			System.out.println(name);
-//			Type listType = model.getType(name);
-//			
-//			if (listType == null) {
-//				error(type.line, type.col, "Type " + name + " undefined!");
-//			}
-//		} else {
-//			error(type.line, type.col, "Type not allowed!");
-//		}
-//		return ty;
-//	}
-	
+
+	// // TODO: fix list type!!!
+	// Type getListType(Ty type) {
+	// Type ty = null;
+	// if (type instanceof ListTy) {
+	// Type elementType = getNameType(((ListTy) type).typ);
+	// String name = "List<" + elementType.getName() + ">";
+	// System.out.println(name);
+	// Type listType = model.getType(name);
+	//
+	// if (listType == null) {
+	// error(type.line, type.col, "Type " + name + " undefined!");
+	// }
+	// } else {
+	// error(type.line, type.col, "Type not allowed!");
+	// }
+	// return ty;
+	// }
+
 	Type getArrayType(Ty type) {
 		Type ty = null;
 		if (type instanceof ArrayTy) {
 			ArrayTy arrDef = (ArrayTy) type;
 			Type termType = getNameType(arrDef.typ);
-			
-			// Construct the array name with square braces; type generator will create later
+
+			// Construct the array name with square braces; type generator will create
+			// later
 			String name = termType.getName();
 			for (int i = 0; i < arrDef.dim; i++) {
 				name += "[]";
@@ -228,14 +229,12 @@ public class Semant {
 					error(fc.line, fc.col, "Invalid expression: expecting No argument");
 				}
 				res.add(fn);
-			} 
-			else if (h instanceof SymbolExpr) {
+			} else if (h instanceof SymbolExpr) {
 				SymbolExpr var = (SymbolExpr) h;
 				String sym = var.name.toString();
 				checkSymbolDup(var.line, var.col, sym);
 				res.add(sym);
-			}
-			else {
+			} else {
 				error(h.line, h.col, "Invalid expression: expecting Symbol names");
 			}
 		}
@@ -246,9 +245,9 @@ public class Semant {
 		if (type instanceof NameTy) {
 			return getNameType(type);
 		}
-//		else if (type instanceof ListTy) {
-//			return getListType(type);
-//		}
+		// else if (type instanceof ListTy) {
+		// return getListType(type);
+		// }
 		else if (type instanceof ArrayTy) {
 			return getArrayType(type);
 		}
@@ -411,14 +410,14 @@ public class Semant {
 				} else {
 					// TODO: Implement more general fixed functions
 				}
-			}
-			else {
+			} else {
 				Object funcBody = transExpr(e.body);
-					ArgSpec funcValue = (ArgSpec) funcBody;
-					List<ArgSpec> args = new ArrayList<ArgSpec>();
-					args.add(funcValue);
-					((NonRandomFunction) fun).setInterpretation(blog.ConstantInterp.class, args);
-					
+				ArgSpec funcValue = (ArgSpec) funcBody;
+				List<ArgSpec> args = new ArrayList<ArgSpec>();
+				args.add(funcValue);
+				((NonRandomFunction) fun).setInterpretation(blog.ConstantInterp.class,
+						args);
+
 			}
 		} else if (e instanceof RandomFuncDec) {
 			DependencyModel dm = transDependency(e.body, fun.getRetType(),
@@ -453,11 +452,9 @@ public class Semant {
 	void transEvi(EvidenceStmt e) {
 		if (e instanceof ValueEvidence) {
 			transEvi((ValueEvidence) e);
-		}
-		else if (e instanceof SymbolEvidence) {
+		} else if (e instanceof SymbolEvidence) {
 			transEvi((SymbolEvidence) e);
-		}
-		else {
+		} else {
 			error(e.line, e.col, "Unsupported Evidence type: " + e);
 		}
 	}
@@ -502,7 +499,7 @@ public class Semant {
 					"Invalid expression on the left side of evidence.");
 		}
 	}
-	
+
 	/**
 	 * symbol_evidence format: implicit_set = explicit_set
 	 * 
@@ -518,7 +515,8 @@ public class Semant {
 				// ok
 				value = getSymbolList(((ExplicitSetExpr) e.right).values);
 			} else {
-				error(	e.right.line,
+				error(
+						e.right.line,
 						e.right.col,
 						"Invalid expression on right side of symbol evidence: explicit set of symbols expected");
 			}
@@ -532,10 +530,11 @@ public class Semant {
 			}
 
 			// ValueEvidenceStatement vst = new ValueEvidenceStatement();
-		}
-		else {
-				error(e.left.line, e.left.col,
-						"Invalid expression on left side of symbool evidence: implicit set of symbols expected");
+		} else {
+			error(
+					e.left.line,
+					e.left.col,
+					"Invalid expression on left side of symbool evidence: implicit set of symbols expected");
 		}
 	}
 
@@ -594,12 +593,13 @@ public class Semant {
 			error(e.line, e.col, "Type " + name + " already defined!");
 		} else {
 			model.addType(name);
-//			BuiltInTypes.addArrayTypes(name);
+			// BuiltInTypes.addArrayTypes(name);
 		}
 	}
 
 	Clause transExpr(DistributionExpr e) {
-		/* TODO 1: Handle map expressions, not just lists
+		/*
+		 * TODO 1: Handle map expressions, not just lists
 		 */
 		Class cls = getClassWithName(e.name.toString());
 		if (cls == null) {
@@ -683,12 +683,12 @@ public class Semant {
 		t.setLocation(e.line);
 		return t;
 	}
-	
+
 	ListSpec transExpr(ListInitExpr e) {
 		List<ArgSpec> values = transExprList(e.values, false);
 		List<ArgSpec> terms = new ArrayList<ArgSpec>();
-		
-		for (ArgSpec value: values) {
+
+		for (ArgSpec value : values) {
 			terms.add(value);
 		}
 		return new ListSpec(terms);
@@ -768,16 +768,17 @@ public class Semant {
 		ArrayList<Clause> clauses = new ArrayList<Clause>();
 		Formula test = TrueFormula.TRUE;
 
-		// TODO: write a test for the SymbolTerm case to exclude non-Boolean variables/functions
+		// TODO: write a test for the SymbolTerm case to exclude non-Boolean
+		// variables/functions
 		Object cond = transExpr(e.test);
 		if (cond instanceof Formula) {
 			test = (Formula) cond;
-		}
-		else if (cond instanceof SymbolTerm) {
-			test = new EqualityFormula((SymbolTerm)cond, BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
-		}
-		else {
-			error(e.test.line, e.test.col, "Cannot use non-Boolean value as predicate for if clause");
+		} else if (cond instanceof SymbolTerm) {
+			test = new EqualityFormula((SymbolTerm) cond,
+					BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+		} else {
+			error(e.test.line, e.test.col,
+					"Cannot use non-Boolean value as predicate for if clause");
 			System.exit(1);
 		}
 
@@ -789,7 +790,7 @@ public class Semant {
 		}
 		return clauses;
 	}
-	
+
 	ArgSpec transExpr(BooleanExpr e) {
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
 				String.valueOf(e.value), BuiltInTypes.BOOLEAN, e.value));
@@ -899,10 +900,11 @@ public class Semant {
 			break;
 		case OpExpr.AT:
 			if (e.left == null && e.right instanceof IntExpr) {
-				Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(e.toString(),
-						BuiltInTypes.TIMESTEP, Timestep.at(((IntExpr) e.right).value)));
-				t.setLocation(e.line);
-				return t;
+				Timestep t = Timestep.at(((IntExpr) e.right).value);
+				Term term = new FuncAppTerm(BuiltInFunctions.getLiteral(t.toString(),
+						BuiltInTypes.TIMESTEP, t));
+				term.setLocation(e.line);
+				return term;
 			}
 
 		default:
