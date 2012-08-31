@@ -55,8 +55,8 @@ import blog.EnumeratedObject;
 import blog.Main;
 import blog.NonGuaranteedObject;
 import blog.ObjectIdentifier;
-import blog.Timestep;
 import blog.common.Util;
+import blog.type.Timestep;
 import fove.Parfactor;
 
 /**
