@@ -34,7 +34,8 @@
  */
 package blog;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import blog.model.ArgSpec;
 import blog.model.BuiltInFunctions;
@@ -152,6 +153,8 @@ public class Timestep extends Number implements Comparable {
 
 	private int index;
 	private static int max = 0;
-	private static Map generatedTimesteps = new HashMap(); // from Integer to
-																													// Timestep
+	private static Map<Integer, Timestep> generatedTimesteps = new HashMap<Integer, Timestep>(); // from
+																																																// Integer
+																																																// to
+	// Timestep
 }
