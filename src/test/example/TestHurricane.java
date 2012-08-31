@@ -49,8 +49,5 @@ public class TestHurricane extends ExampleTest {
                 HashMap<Object, Double> damage = refProbs.get(0);
                 damage.put(model.getConstantValue("Mild"), 0.74);
                 damage.put(model.getConstantValue("Severe"), 0.26);
-
-                HashMap<Object, Double> secondProb = refProbs.get(1);
-                secondProb.put(model.getConstantValue("B"), 1.0);
         }
 }
