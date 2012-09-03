@@ -7,7 +7,9 @@ LIB_FILES=lib/java_cup.jar \
  lib/junit-4.10.jar \
  lib/Jama.jar
 
-MISC_FILE=makefile \
+MISC_FILE=compile.sh \
+ dblog.vim \
+ makefile \
  gen_parser.sh \
  parse.sh \
  path_sep.sh \
