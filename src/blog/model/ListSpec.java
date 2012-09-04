@@ -141,7 +141,6 @@ public class ListSpec extends ArgSpec {
 		return this.toString().hashCode();
 	}
 	
-	// TODO: write a better hash function because this one sucks
 	public boolean equals(Object o) {
 		return o.hashCode() == this.hashCode();
 	}
