@@ -340,7 +340,6 @@ public class Categorical extends AbstractCondProbDistrib {
 	 *           not specified and <code>args</code> is empty
 	 */
 	public Object sampleVal(List args, Type childType) {
-		// TODO: fix the indices used to sample a type
 		ensureProbsInited(args);
 
 		int index = Util.sampleWithProbs(probs);

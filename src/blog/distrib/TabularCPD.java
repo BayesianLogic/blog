@@ -172,7 +172,7 @@ public class TabularCPD extends AbstractCondProbDistrib {
             }
             else {
                 throw new IllegalArgumentException("TabularCPD: parameters to "
-                    + "sampleVal must be EnumeratedObjects");
+                    + "sampleVal must be EnumeratedObjects, built-in types, or lists");
             }
         } else {
             throw new IllegalArgumentException("Arguments to TabularCPD must "
