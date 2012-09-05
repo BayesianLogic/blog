@@ -1,0 +1,171 @@
+type Researcher;
+type Publication;
+type Citation;
+
+random String Surname(Researcher);
+random String GivenName(Researcher);
+
+random String Title(Publication);
+random NaturalNum NumAuthors(Publication);
+random Researcher NthAuthor(Publication, NaturalNum);
+
+random Publication PubCited(Citation);
+random String Text(Citation);
+
+
+// Researchers
+
+#Researcher ~ RoundedLogNormal[100, 1];
+
+Surname(r) ~ LetterNgram["apps/bib/model/surname", 10];
+
+GivenName(r) ~ GivenNameDistrib["apps/bib/model/given", 7];
+
+// Publications
+
+#Publication ~ RoundedLogNormal[1000, 1];
+
+Title(p) ~ LetterNgram["apps/bib/model/Title", 20];
+
+NumAuthors(p) 
+    ~ NatNumDistribWithTail[[0.01; 0.19; 0.5; 0.2; 0.1], 0.8, 0.1];
+
+NthAuthor(p, n) {
+    if n < NumAuthors(p) then 
+    ~ UniformChoice({Researcher r: !exists NaturalNum m 
+                                  ((m < n) & (NthAuthor(p, m) = r))})
+};
+
+
+// Citations
+
+PubCited(c) ~ UniformChoice({Publication p});
+
+random String TitleAsCited(Citation c)
+    ~ StringEditModel(Title(PubCited(c))); // may be empty string
+
+random NaturalNum NumAuthorsDropped(Citation c)
+    ~ Binomial[0.005](NumAuthors(PubCited(c)));
+
+random NaturalNum NumAuthorsAdded(Citation c) {
+    if (NumAuthorsDropped(c) = 0) then ~ Geometric[0.001]
+    else = 0
+};
+
+random NaturalNum NumAuthorsListed(Citation c)
+    = NonNegPart(Sum(Diff(NumAuthors(PubCited(c)), NumAuthorsDropped(c)), 
+                     NumAuthorsAdded(c)));
+
+type AuthorMention;
+
+generating Citation Container(AuthorMention);
+generating NaturalNum Index(AuthorMention);
+#AuthorMention(Container = c, Index = n) {
+    if n < NumAuthorsListed(c) then = 1
+};
+
+random AuthorMention NthAuthorMention(Citation c, NaturalNum n) {
+    if n < NumAuthorsListed(c)
+        then ~ UniformChoice({AuthorMention m : 
+                              Container(m) = c & Index(m) = n})
+};
+
+random Researcher Referent(AuthorMention m) {
+    if (Index(m) < NumAuthors(PubCited(Container(m)))) then  
+        = NthAuthor(PubCited(Container(m)), Index(m))
+};
+
+random String SurnameAsCited(AuthorMention m) 
+    if (Referent(m) = null) then 
+        ~ LetterNgram["apps/bib/model/surname", 10]
+    else ~ StringEditModel(Surname(Referent(m)));
+
+random String GivenNameAsCited(AuthorMention m) 
+    if (Referent(m) = null) then 
+        ~ GivenNameDistrib["apps/bib/model/given", 7]
+    else ~ GivenNameEditModel(GivenName(Referent(m)));
+
+random Boolean NameReversed(AuthorMention m) 
+    if !IsEmptyString(GivenNameAsCited(m)) then ~ Bernoulli[0.5];
+
+random Boolean HasComma(AuthorMention m) {
+    if NameReversed(m) then ~ Bernoulli[0.9]
+};
+
+random Boolean HasCommaSpace(AuthorMention m) {
+    if HasComma(m) then ~ Bernoulli[0.9]
+};
+
+random String InternalSep(AuthorMention m) {
+    if HasCommaSpace(m)
+        then = ", "
+    elseif HasComma(m)
+        then = ","
+    elseif NameReversed(m)
+        then = " "
+};
+
+random String NameListed(AuthorMention m) { 
+    if NameReversed(m)
+        then = Concat(Concat(SurnameAsCited(m), 
+                             InternalSep(m)),
+                      GivenNameAsCited(m))
+    elseif !IsEmptyString(GivenNameAsCited(m))
+        then = Concat(Concat(GivenNameAsCited(m), " "), SurnameAsCited(m))
+    else = SurnameAsCited(m)
+};
+
+random String NthAuthorSeparator(Citation c, NaturalNum n) {
+    if (NumAuthorsListed(c) > 1) & (n < Pred(NumAuthorsListed(c))) 
+    then ~ TokenUnigramDistrib[0.99, "apps/bib/model/citation_known.xml", 
+                                   "apps/bib/model/vocabularyKnown", 1, 0.18]
+};
+
+random String AuthorListTerminator(Citation c) {
+    ~ TokenUnigramDistrib[0.97, "apps/bib/model/citation_known.xml", 
+                          "apps/bib/model/vocabularyKnown", 2, 0.5]
+};
+
+random String FirstNAuthorsText(Citation c, NaturalNum n) {
+    if n = 0 then = ""
+    elseif n < NumAuthorsListed(c) 
+        then = Concat(Concat(FirstNAuthorsText(c, Pred(n)), 
+                             NameListed(NthAuthorMention(c, Pred(n)))),
+                      NthAuthorSeparator(c, Pred(n)))
+    elseif n = NumAuthorsListed(c)
+        then = Concat(Concat(FirstNAuthorsText(c, Pred(n)),
+                             NameListed(NthAuthorMention(c, Pred(n)))),
+                      AuthorListTerminator(c))
+};
+
+random String AuthorText(Citation c)
+     = FirstNAuthorsText(c, NumAuthorsListed(c));
+
+random String InitialFiller(Citation c)
+    ~ TokenUnigramDistrib[0.02, "apps/bib/model/citation_known.xml", 
+                                    "apps/bib/model/vocabularyKnown", 5, 0.91];
+
+random String MiddleFiller(Citation c)
+    ~ TokenUnigramDistrib[0.19, "apps/bib/model/citation_known.xml",
+                                    "apps/bib/model/vocabularyKnown", 6, 0.73];
+
+random String FinalFiller(Citation c)
+    ~ TokenUnigramDistrib[0.99, "apps/bib/model/citation_known.xml",
+                                    "apps/bib/model/vocabularyKnown", 7, 0.95];
+
+random Boolean AuthorsBeforeTitle(Citation c)
+    ~ Bernoulli[0.99];
+
+Text(c) {
+    if AuthorsBeforeTitle(c) 
+        then = Concat(InitialFiller(c), 
+                      Concat(AuthorText(c),
+                             Concat(MiddleFiller(c),
+                                    Concat(TitleAsCited(c),
+                                           FinalFiller(c)))))
+    else = Concat(InitialFiller(c),
+                  Concat(TitleAsCited(c),
+                         Concat(MiddleFiller(c),
+                                Concat(AuthorText(c),
+                                       FinalFiller(c)))))
+};
