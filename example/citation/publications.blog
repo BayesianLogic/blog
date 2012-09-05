@@ -1,0 +1,41 @@
+// A simple BLOG example on the publication domain.
+
+type Researcher;
+#Researcher ~ Poisson(10);
+
+random Boolean Thorough(Researcher r) ~ Bernoulli(0.2);
+
+random Boolean Productive(Researcher r) {
+       ~ TabularCPD({true -> ~ Bernoulli(0.3),
+       	   	     false -> ~ Bernoulli(0.5)}, Thorough(r))
+};
+
+type Publication;
+origin Researcher Author(Publication);
+// each researcher is the author of a random number of publications.
+#Publication(Author = researcher) {
+    if Productive(researcher) then ~ Poisson(5)
+    else ~ Poisson(2)
+};
+        
+type Citation;
+origin Publication Source(Citation);
+// each publication is the source of a random number of citations.
+#Citation(Source = publication) {
+    if (Thorough(Author(publication))) then ~ Poisson(8)
+    else ~ Poisson(4)
+};
+
+// no self-citations        
+random Publication Target(Citation c)
+       ~ UniformChoice({Publication p : p != Source(c)});
+
+
+// Begin evidence, queries
+distinct Researcher Einstein, Galileo;
+obs Productive(Einstein) = true;
+
+query #{Publication p : Author(p) == Einstein};
+query (exists Citation c 
+         Author(Source(c)) == Einstein &
+         Author(Target(c)) == Galileo);
