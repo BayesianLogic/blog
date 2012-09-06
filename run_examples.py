@@ -15,18 +15,25 @@ import os
 import time
 import subprocess
 
-examples_dir = os.path.join(os.getcwd(), "example")
 blog = "./run.sh"
+example = "example"
 working_examples = []
 broken_examples = []
-num_examples = 0
 
-for dirname, subdirnames, filenames in os.walk(examples_dir):
-    for filename in filenames:
-        num_examples += 1
-        example_path = os.path.join(dirname, filename)
+def find_examples(examples_dir):
+    example_paths = []
+    for dirname, subdirnames, filenames in os.walk(examples_dir):
+        for filename in filenames:
+            example_path = os.path.join(dirname, filename)
+            example_paths.append(example_path)
+    return example_paths
+
+def run_examples(example_paths):
+    global blog
+    working_examples = []
+    broken_examples = []
+    for example_path in example_paths:
         command = [blog, example_path]
-        print "Command: " + " ".join(command)
         try:
             start_time = time.time()
             output = subprocess.check_output(command)
@@ -36,13 +43,27 @@ for dirname, subdirnames, filenames in os.walk(examples_dir):
             print "Failure!"
             broken_examples.append(example_path)
         print output
+    return (working_examples, broken_examples)
 
-print "Ran " + str(num_examples) + " examples in total"
-print str(len(working_examples)) + " passed:"
-for working_example_path, time in working_examples:
-    working_example = os.path.basename(working_example_path)
-    print "\t" + str(working_example) + ": " + str(round(time,2)) + " seconds"
-print str(len(broken_examples)) + " failed."
-for broken_example_path in broken_examples:
-    broken_example = os.path.basename(broken_example_path)
-    print "\t" + str(broken_example)
+def print_results(num_examples, working_examples, broken_examples):
+    print "Ran " + str(num_examples) + " examples in total"
+    print str(len(working_examples)) + " passed:"
+    max_working_len = max(map(len,
+                            [os.path.basename(x[0]) for x in working_examples]))
+    for working_example_path, time in working_examples:
+        working_example = os.path.basename(working_example_path)
+        diff_len = max_working_len - len(working_example)
+        out = "\t" + str(working_example) + ": " + " " * diff_len
+        out += str(round(time,2)) + " seconds"
+        print out
+    print str(len(broken_examples)) + " failed."
+    for broken_example_path in broken_examples:
+        broken_example = os.path.basename(broken_example_path)
+        out = "\t" + str(broken_example)
+        print out
+
+if __name__ == "__main__":
+    examples_dir = os.path.join(os.getcwd(), example)
+    example_paths = find_examples(examples_dir)
+    (working_example_data, broken_example_data) = run_examples(example_paths)
+    print_results(len(example_paths), working_example_data, broken_example_data)
