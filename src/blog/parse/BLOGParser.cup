@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2006, Regents of the University of California
+ * Copyright (c) 2005, 2012, Regents of the University of California
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -218,7 +218,7 @@ statement ::= declaration_stmt : e {: RESULT = e; :}
 
 /* Represents a declaration, which can be:
  *    * a type declaration;
- *    * a paramemeter declaration;
+ *    * a parameter declaration;
  *    * a random function or generating function declaration
  *        (Semantic checks:
  *            - whether the return type is a declared type;
