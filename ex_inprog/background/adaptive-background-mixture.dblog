@@ -33,7 +33,7 @@ random Component AssociatedComponent(Pixel);
 #Pixel(X=x, Y=y, Time=t)=1;
 
 // the prior posts uniform distribution over a box of 3D space.
-random R3Vector Mean(Component c, Timestep t) 
+random R3Vector Mean(Component c, Timestep t) {
 	// UniformVector(x_lower, x_upper, y_lower, y_upper, z_lower, z_upper)
     if t=@1 then ~ UniformVector(0, 255, 0, 255, 0, 255)
 	// MultivarGaussian(dimension, mean, covariance)
@@ -41,13 +41,15 @@ random R3Vector Mean(Component c, Timestep t)
                                 [10, 0, 0; 
                                   0, 10, 0; 
                                   0, 0, 10])
+};
+
 /**
  * TODO: need to use Dirichlet distribution, however, Dirichlet is not 
  * implemented in BLOG right now. 
  * need implementation of Dirichlet distribution
  */
 random R3Vector Weight {
-	~ Dirichlet(#{Component c}, (1.0/#{Component c}));
+	~ Dirichlet(#{Component c}, (1.0/#{Component c}))
 };
 
 //ideally, we would hope to set this probability in the same way as
