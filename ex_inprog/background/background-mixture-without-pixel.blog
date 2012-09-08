@@ -25,21 +25,29 @@ random Component AssociatedComponent(NaturalNum x, NaturalNum y, Timestep t)
                 Shadow -> 0.1,
                 Vehicle -> 0.2});
 
-random Real Intensity(NaturalNum x, NaturalNum y, Timestep t) {
-    if AssociatedComponnet(x, y, t) == Road then 
-        ~ MultivarGaussian(3, [240, 240, 240], 
-                              [10, 0, 0; 
-                                0, 10, 0; 
-                                0, 0, 10])
-    elseif AssociatedComponnet(x, y, t) == Shadow then
-        ~ MultivarGaussian(3, [10, 10, 10], 
-                              [10, 0, 0; 
-                                0, 10, 0; 
-                                0, 0, 10])
-    elseif AssociatedComponnet(x, y, t) == Vehicle then
-        ~ MultivarGaussian(3, [100, 100, 100], 
-                              [10, 0, 0; 
-                                0, 10, 0; 
-                                0, 0, 10])
-}
+random Real IntensityR(NaturalNum x, NaturalNum y, Timestep t) {
+    if AssociatedComponent(x, y, t) == Road then 
+        ~ UnivarGaussian(240, 10)
+    else if AssociatedComponent(x, y, t) == Shadow then
+        ~ UnivarGaussian(10, 10)
+    else if AssociatedComponent(x, y, t) == Vehicle then
+        ~ UnivarGaussian(100, 10)
+};
 
+random Real IntensityG(NaturalNum x, NaturalNum y, Timestep t) {
+    if AssociatedComponent(x, y, t) == Road then 
+        ~ UnivarGaussian(240, 10)
+    else if AssociatedComponent(x, y, t) == Shadow then
+        ~ UnivarGaussian(10, 10)
+    else if AssociatedComponent(x, y, t) == Vehicle then
+        ~ UnivarGaussian(100, 10)
+};
+
+random Real IntensityB(NaturalNum x, NaturalNum y, Timestep t) {
+    if AssociatedComponent(x, y, t) == Road then 
+        ~ UnivarGaussian(240, 10)
+    else if AssociatedComponent(x, y, t) == Shadow then
+        ~ UnivarGaussian(10, 10)
+    else if AssociatedComponent(x, y, t) == Vehicle then
+        ~ UnivarGaussian(100, 10)
+};
