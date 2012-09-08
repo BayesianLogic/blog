@@ -1,0 +1,37 @@
+/**
+ * Aircraft tracking in DBLOG
+ * @author: unknown
+ * @author: rbharath
+ */
+
+type Aircraft;
+type Blip;
+
+distinct Aircraft MyAircraft;
+
+origin Aircraft Source(Blip);
+origin Timestep Time(Blip);
+
+
+// num of blips from aircraft is 0 or 1
+#Blip(Source = a, Time = t) {
+    if (Position(t) > -7) & Position(t) < 7)
+        then ~ Categorical({0 -> 0.0, 1 -> 1.0})
+        else ~ Categorical({1 -> 0.0, 0 -> 1.0})
+};
+
+// num false alarms has Poisson distrib.
+#Blip(Time = t) ~ Poisson(2);
+
+random Real Position(Timestep t) {
+    if t == @0
+        then ~ UniformReal(-10, 10)
+        else ~ Gaussian(Position(Prev(t)), 2)
+};
+
+random Real ApparentPos(Blip) {
+    if (Source(b) == null)
+    // if false alarm (no source)
+        then ~ UniformReal(-10, 10)
+        else ~ Gaussian(Position(Time(b)), 1);
+};

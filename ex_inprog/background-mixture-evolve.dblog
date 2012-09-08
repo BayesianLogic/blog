@@ -1,0 +1,57 @@
+/**
+ * background mixture models
+ * This BLOG program describe the model for image background 
+ * segmentation. 
+ * See the paper:
+ *   Image segmentation in video sequences: A probabilistic approach
+ *   Nir Friedman, Stuart Russell, UAI 1997
+ * In particular, each pixel is drawn from a mixture of road, shadow
+ * vehicle components. Each component is modeled as a Gaussian 
+ * distribution. 
+ *
+ * This version assumes a simple dynamics for the mean of each 
+ * componet.
+ *
+ * @author: leili
+ * @author: rbharath
+ */
+
+type Component;
+type Pixel;
+
+distinct Component Road, Shadow, Vehicle;
+
+origin Timestep Time(Pixel);
+origin NaturalNum X(Pixel);
+origin NaturalNum Y(Pixel);
+
+#Pixel(X=x, Y=y, Time=t)=1;
+
+// the prior posts uniform distribution over a box of 3D space.
+random R3Vector Mean(Component c, Timestep t) {
+    if t == @1 
+        then ~ UniformVector(0, 255, 0, 255, 0, 255)
+        else ~ MultivarGaussian(Mean(c, Prev(t)), 
+                                [[10, 0, 0],
+                                 [0, 10, 0],
+                                 [0, 0, 10]])
+};
+
+// Weights over components at time t
+random Real[] Weight(Timestep t) {
+    ~ Dirichlet(3, [0.3, 0.3, 0.3])
+};
+
+//ideally, we would hope to set this probability in the same way as
+// Mean(Component)
+random Component AssociatedComponent(Pixel pixel, Timestep t) {
+    ~ TabularCPD[](Weight(t))
+};
+
+// the parameters can be set in Mean(Component)
+random Real[] Intensity(Pixel) {
+    ~ MultivarGaussian(Mean(AssociatedComponent(pixel)), 
+                       [[10, 0, 0],
+                        [0, 10, 0],
+                        [0, 0, 10]])
+};
