@@ -691,12 +691,7 @@ public class Semant {
 
         ListSpec transExpr(ListInitExpr e) {
                 List<ArgSpec> values = transExprList(e.values, false);
-                List<ArgSpec> terms = new ArrayList<ArgSpec>();
-
-                for (ArgSpec value : values) {
-                        terms.add(value);
-                }
-                return new ListSpec(terms);
+                return new ListSpec(values);
         }
 
         MapSpec transExpr(MapInitExpr e) {
