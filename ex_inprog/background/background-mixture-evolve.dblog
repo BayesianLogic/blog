@@ -47,7 +47,7 @@ Weight ~  UniformVector[[0, 1, 0, 1, 0, 1]]();
 
 //ideally, we would hope to set this probability in the same way as
 // Mean(Componnet)
-AssociatedComponnet(pixel) ~ TabularCPD[](Weight);
+AssociatedComponent(pixel) ~ TabularCPD[](Weight);
 
 // the parameters can be set in Mean(Component)
 Intensity(pixel) ~ MultivarGaussian[3, [10, 0, 0; 
