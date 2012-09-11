@@ -176,7 +176,7 @@ funcname(x) dependency-expression;
 
 \section{Origin functions}
 Origin functions are used in number statement to generate objects in possible worlds. 
-\begin{blog}
+\begin{minted}{blog}
 origin type0 funcname(type1);
 \end{blog}
 
@@ -207,9 +207,9 @@ random Real x ~ Gaussian(a, b);
 \end{minted}
 
 Commonly used parameters are often without arguments. However, the syntax does not prevent specifying infinite parameters like:
-\begin{blog}
+\begin{minted}{blog}
 param Real mu(Int);
-\end{blog}
+\end{minted}
 
 %\hide{
 \subsection{Declaring number param}
@@ -260,9 +260,9 @@ fixed Real Twice(Real x) = x * 2;
 
 \section{Array type}
 to declare an array type
-\begin{blog}
+\begin{minted}{blog}
 type[size]
-\end{blog}
+\end{minted}
  where size should be a natural number or an \emph{expression} that returns a natural number.
 
 \subsection{Constant array}
@@ -272,9 +272,9 @@ fixed type[size] name = Array_Constructor;
 \end{minted}
 
 For example, to declare an array with natural numbers:
-\begin{blog}
+\begin{minted}{blog}
 fixed NaturalNum[10] c = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-\end{blog}
+\end{minted}
 
 When referring to an element in the array, it could be referred as \texttt{c[0], c[1], c[2]}, etc.
 
@@ -288,24 +288,24 @@ random Real[n] x;
 
 \subsection{Multi-dimensional array}
 Since \texttt{Array} is a type, itself could be nested in Array declaration, thus yielding multi-dimensional array. 
-\begin{blog}
+\begin{minted}{blog}
 fixed type[size1][size2] table = [...];
-\end{blog}
+\end{minted}
 
 For example, a two dimensional array of int will be
-\begin{blog}
+\begin{minted}{blog}
 fixed NaturalNum[2][3] table = [[1, 2, 3], [4, 5, 6]];
-\end{blog}
+\end{minted}
 The following syntax in short hand is also correct:
-\begin{blog}
+\begin{minted}{blog}
 fixed NaturalNum[2][3] table = [1, 2, 3; 4, 5, 6];
-\end{blog}
+\end{minted}
 
 
 For example, a transition matrix in Kalman  filters with Newton dynamics can be declared as:
-\begin{blog}
+\begin{minted}{blog}
 fixed Real[2][3] A = [1, 1, .5; 0, 1, 1; 0, 0, 1];
-\end{blog}
+\end{minted}
 An element in such a dimensional array can be referred as \texttt{A[0][0]}.
 
 \hide{By convenience, a shorthand notation could also be used
@@ -324,77 +324,77 @@ In the above example, \texttt{length(table)} will be 3, and \texttt{size(table)}
 
 \subsection {Array of Parameters}
 We could define an array of parameters using
-\begin{blog}
+\begin{minted}{blog}
 param type[size] name;
-\end{blog}
+\end{minted}
 where {\tt size} should be a constant natural number.
 
-\begin{blog}
+\begin{minted}{blog}
 param Real[10] theta;
-\end{blog}
+\end{minted}
 
 
 
 \section{List}
 The declaration of a list:
-\begin{blog}
+\begin{minted}{blog}
 List 
 List<type> 
-\end{blog}
+\end{minted}
 A list is an array with indefinite length (like java).
 
 When constructing list, one could use 
-\begin{blog}
+\begin{minted}{blog}
 fixed List<NaturalNum> a = List(1, 2, 3, 4, 5, 6);
-\end{blog}
+\end{minted}
 Or simply using the short notation
-\begin{blog}
+\begin{minted}{blog}
 fixed List<NaturalNum> a = [1, 2, 3, 4, 5, 6];
-\end{blog}
+\end{minted}
 
 \subsection{Constant list literals}
 As we already seen, we could use the square brackets, \texttt{[]} to denote constant list literals.
 Elements in a list is separated by a comma (,). Lists can be nested within a list. A shorthand notation is to use semicolon (;) to separated multiple lists within a list.
 The following two lists are regarded equivalent.
-\begin{blog}
+\begin{minted}{blog}
 [1, 2, 3; 4, 5, 6];
 [[1, 2, 3], [4, 5, 6]];
-\end{blog}
+\end{minted}
 
 Constant list literals are used to assign values to an array or passing parameters to a function.
 
 \section{Map}
-\begin{blog}
+\begin{minted}{blog}
 Map<type1, type2>
-\end{blog}
+\end{minted}
 internally it is defined as (non)random function.
 
 e.g. 
-\begin{blog}
+\begin{minted}{blog}
 fixed Map<Boolean, Real> map1 = {true -> 0.3, false -> 0.7};
-\end{blog}
+\end{minted}
 or equivalently 
-\begin{blog}
+\begin{minted}{blog}
 fixed Map<Boolean, Real> map2 = Map(true -> 0.3, false -> 0.7);
-\end{blog}
+\end{minted}
 
 A Map's key must be some constant, while its value can be evaluated value of a \emph{general expression}, as long as the type matches.
-\begin{blog}
+\begin{minted}{blog}
 random Real x ~ Uniform(0,1);
 random Real y = 1-x;
 random Map<Boolean, Real> map2 = Map(true -> x, false -> y);
 random Map<Boolean, Real> map3 = {true -> x^2, false -> y/2};
-\end{blog}
+\end{minted}
 
 In addition, \texttt{type2}  in a map can be the \texttt{Distribution} type, which will be introduced in Section~\ref{sec:distribution}.
 
 \subsection{Multi-dimensional map}
 The type in a map can be an array, which will result in a multi-dimensional map.
 For example,
-\begin{blog}
+\begin{minted}{blog}
 fixed Map<Int[2], Real> map4 = 
     {[1, 1] -> 0.1, [1, 2] -> 0.3, [2, 1] -> 0.2, [2, 2] -> 0.4};
-\end{blog}
+\end{minted}
 
 This will be useful in creating TabularCPD (see later sections) with multiple parent variables.
 
@@ -405,47 +405,47 @@ This will be useful in creating TabularCPD (see later sections) with multiple pa
 The internal logic is, \texttt{Categorical} and \texttt{TabularCPD} are sub-type of \texttt{Distribution}.
 
 \subsection{Categorical distribution as defined by probability mass table}
-\begin{blog}
+\begin{minted}{blog}
 Distribution<type>  name = Categorical(Map<type, Real>);
-\end{blog}
+\end{minted}
 It defines probability mass on type, with probability in the Map.
 The first \texttt{Categorical} is type declaration, while the second is constructor. 
 
 The probability should sum up to 1.0, otherwise it will by default add an entry null -> residual probability.
 For example:
-\begin{blog}
+\begin{minted}{blog}
 Distribution<Boolean> cpd1 = Categorical({true -> 0.3, false -> 0.7});
-\end{blog}
+\end{minted}
 or in short, it can be simplified with 
-\begin{blog}
+\begin{minted}{blog}
 Distribution cpd1 = Categorical({true -> 0.3, false -> 0.7});
-\end{blog}
+\end{minted}
 
 If the probabilities sum to more than 1.0, the BLOG compiler will produce a runtime error.
 
 \texttt{Array} can be viewed as a subtype of \texttt{Map}, therefore the following statement is also allowed.
-\begin{blog}
+\begin{minted}{blog}
 Distribution<type>  name = Categorical(Array<Real>);
-\end{blog}
+\end{minted}
 
 
 
 \subsection{Elementary Distribution}
 To declare a distribution:
-\begin{blog}
+\begin{minted}{blog}
 Distribution<type0> name(type1, type2, ...)
-\end{blog}
+\end{minted}
 where {\tt type0}  is the value type of  the random variable, while {\tt type1, type2, \dots} are types of parameters.
 
 For example,
-\begin{blog}
+\begin{minted}{blog}
 Distribution<Real> Gaussian(Real, Real)
-\end{blog}
+\end{minted}
 
 Distributions in the standard library can be used even without declaration. For example:
-\begin{blog}
+\begin{minted}{blog}
 random Real x ~ Gaussian(0, 1.0);
-\end{blog}
+\end{minted}
 
 The Bernoulli can be defined as 
 \begin{minted}{blog}
@@ -494,43 +494,43 @@ random Boolean x(Boolean y)
 \end{minted}
 
 With the comprehension, we could even declare conditional mixture of Gaussian very easily. For example:
-\begin{blog}
+\begin{minted}{blog}
 TabularCPD<Real> mixGaussian1(Int a) = 
     TabularCPD({0 -> Gaussian(5, 1.0), 1 -> Gaussian(10, 1.0)}, a);
 random Int z ~ Categorical({0 -> 0.4, 1 -> 0.6});
 random Real x ~ mixGaussian1(z);
-\end{blog}
+\end{minted}
 
 \subsubsection{Multiple dependent variables}
 If a CPD is dependent on several parent variables, a multi-dimensional map will be used
-\begin{blog}
+\begin{minted}{blog}
 TabularCPD<Real> mixGaussian2(Int x, Int y) = 
     TabularCPD({[0, 0] -> Gaussian(5, 1.0), 
                 [0, 1] -> Gaussian(10, 1.0),
                 [1, 0] -> Gaussian(2, 4.0),
                 [1, 1] -> Gaussian(20, 4.0)}, [x, y]);
-\end{blog}
+\end{minted}
 
 \hide{
 \reminder{Alternative design, which one do you like?? dropped...}
-\begin{blog}
+\begin{minted}{blog}
 TabularCPD<Real> mixGaussian2(Int x, Int y) = 
     TabularCPD({[0, 0] -> Gaussian(5, 1.0), 
                 [0, 1] -> Gaussian(10, 1.0),
                 [1, 0] -> Gaussian(2, 4.0),
                 [1, 1] -> Gaussian(20, 4.0)}, x, y);
-\end{blog}
+\end{minted}
 }
 
 \subsubsection{Tree conditionals}
 If a CPD is based on a map from key to a TabularCPD, it will be a hierarchical \emph{tree conditional}. 
 The following example will essentially construct the same distribution as above.
-\begin{blog}
+\begin{minted}{blog}
 TabularCPD<Real> mixGaussian3(Int x) = 
     TabularCPD({0 -> Gaussian(2, 4.0), 1 -> Gaussian(20, 4.0)}, x);
 TabularCPD<Real> mixGaussian4(Int x, Int y) = 
     TabularCPD({0 -> mixGaussian1(y), 1 -> mixGaussian3(y)}, x);
-\end{blog}
+\end{minted}
 In general there can be multiple hierarchies.
 
 
@@ -538,14 +538,14 @@ In general there can be multiple hierarchies.
 \subsection{Reference to Distribution}
 If a distribution is referred in a \emph{general expression}, it is regarded as a random variable and will take a sample as the value.
 For example, 
-\begin{blog}
+\begin{minted}{blog}
 random Real x = 1 + Gaussian(0, 1.0);
-\end{blog}
+\end{minted}
 It has the same semantics as
-\begin{blog}
+\begin{minted}{blog}
 random Real y ~ Gaussian(0, 1.0);
 random Real x = 1 + y;
-\end{blog}
+\end{minted}
 \texttt{\~{}} is used when the right side is a distribution, while \texttt{=} is used when the right side is a general expression. 
 \reminder{Shaunak suggests using \texttt{=} primarily, and \texttt{\~{}} only in certain cases that are not clear from context.}
 
@@ -554,20 +554,20 @@ random Real x = 1 + y;
 
 \section{Import user libraries}
 \subsection{Import blog program}
-\begin{blog}
+\begin{minted}{blog}
 import path;
-\end{blog}
+\end{minted}
 Where \texttt{path} is a java style package description.
 
 For example, to import urn-ball.blog:
-\begin{blog}
+\begin{minted}{blog}
 import urn-ball;
-\end{blog}
+\end{minted}
 
 \subsection{Referring to external library}
-\begin{blog}
+\begin{minted}{blog}
 extern blog.distribution.*;
-\end{blog}
+\end{minted}
 It will make all implementation of Distribution visible to blog inference engine.
 
 \section{Observations}
