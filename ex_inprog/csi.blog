@@ -1,0 +1,32 @@
+/* Model that illustrates context-specific independence.  This is a 
+ * parameterization of the model shown in Fig. 3 of [Milch et al., 
+ * AISTATS 2005]: X depends on W when U is true, but on V when U is false.  
+ * 
+ * The probability of X being true given no evidence is P(X=true) = 0.596.
+ */
+
+random Boolean U;
+random Boolean V;
+random Boolean W;
+random Boolean X;
+
+U {
+	~ Bernoulli[0.3]()
+};
+
+V {
+	~ Bernoulli[0.9]()
+};
+
+W {
+	~ Bernoulli[0.1]()
+};
+
+X {
+	if U then ~ TabularCPD[[0.8], 
+                               [0.2]](W)
+	else ~ TabularCPD[[0.8], 
+                          [0.2]](V)
+};
+
+query X;
