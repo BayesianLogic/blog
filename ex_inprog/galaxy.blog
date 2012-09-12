@@ -1,0 +1,129 @@
+type Cluster;
+type Galaxy;
+
+random Real ClusVelocity(Cluster);
+random Real Velocity(Galaxy);
+random Cluster OrigCluster(Galaxy);
+
+#Cluster ~ Poisson [10.0];
+
+guaranteed Galaxy Galaxy[82];
+
+ClusVelocity(c) ~ UniformReal[5000.0, 50000.0];
+
+// variance is 10000, i.e. s.d. 100
+Velocity(g) ~ UnivarGaussian[10000.0](ClusVelocity(OrigCluster(g)));
+
+OrigCluster(g) ~ UniformChoice({Cluster c});
+
+obs Velocity(Galaxy1) = 9172;
+obs Velocity(Galaxy2) = 9350;
+obs Velocity(Galaxy3) = 9483;
+obs Velocity(Galaxy4) = 9558;
+obs Velocity(Galaxy5) = 9775;
+obs Velocity(Galaxy6) = 10227;
+obs Velocity(Galaxy7) = 10406;
+obs Velocity(Galaxy8) = 16084;
+obs Velocity(Galaxy9) = 16170;
+obs Velocity(Galaxy10) = 18419;
+obs Velocity(Galaxy11) = 18552;
+obs Velocity(Galaxy12) = 18600;
+obs Velocity(Galaxy13) = 18927;
+obs Velocity(Galaxy14) = 19052;
+obs Velocity(Galaxy15) = 19070;
+obs Velocity(Galaxy16) = 19330;
+obs Velocity(Galaxy17) = 19343;
+obs Velocity(Galaxy18) = 19349;
+obs Velocity(Galaxy19) = 19440;
+obs Velocity(Galaxy20) = 19473;
+obs Velocity(Galaxy21) = 19529;
+obs Velocity(Galaxy22) = 19541;
+obs Velocity(Galaxy23) = 19547;
+obs Velocity(Galaxy24) = 19663;
+obs Velocity(Galaxy25) = 19846;
+obs Velocity(Galaxy26) = 19856;
+obs Velocity(Galaxy27) = 19863;
+obs Velocity(Galaxy28) = 19914;
+obs Velocity(Galaxy29) = 19918;
+obs Velocity(Galaxy30) = 19973;
+obs Velocity(Galaxy31) = 19989;
+obs Velocity(Galaxy32) = 20166;
+obs Velocity(Galaxy33) = 20175;
+obs Velocity(Galaxy34) = 20179;
+obs Velocity(Galaxy35) = 20196;
+obs Velocity(Galaxy36) = 20215;
+obs Velocity(Galaxy37) = 20221;
+obs Velocity(Galaxy38) = 20415;
+obs Velocity(Galaxy39) = 20629;
+obs Velocity(Galaxy40) = 20795;
+obs Velocity(Galaxy41) = 20821;
+obs Velocity(Galaxy42) = 20846;
+obs Velocity(Galaxy43) = 20875;
+obs Velocity(Galaxy44) = 20986;
+obs Velocity(Galaxy45) = 21137;
+obs Velocity(Galaxy46) = 21492;
+obs Velocity(Galaxy47) = 21701;
+obs Velocity(Galaxy48) = 21814;
+obs Velocity(Galaxy49) = 21921;
+obs Velocity(Galaxy50) = 21960;
+obs Velocity(Galaxy51) = 22185;
+obs Velocity(Galaxy52) = 22209;
+obs Velocity(Galaxy53) = 22242;
+obs Velocity(Galaxy54) = 22249;
+obs Velocity(Galaxy55) = 22314;
+obs Velocity(Galaxy56) = 22374;
+obs Velocity(Galaxy57) = 22495;
+obs Velocity(Galaxy58) = 22746;
+obs Velocity(Galaxy59) = 22747;
+obs Velocity(Galaxy60) = 22888;
+obs Velocity(Galaxy61) = 22914;
+obs Velocity(Galaxy62) = 23206;
+obs Velocity(Galaxy63) = 23241;
+obs Velocity(Galaxy64) = 23263;
+obs Velocity(Galaxy65) = 23484;
+obs Velocity(Galaxy66) = 23538;
+obs Velocity(Galaxy67) = 23542;
+obs Velocity(Galaxy68) = 23666;
+obs Velocity(Galaxy69) = 23706;
+obs Velocity(Galaxy70) = 23711;
+obs Velocity(Galaxy71) = 24129;
+obs Velocity(Galaxy72) = 24285;
+obs Velocity(Galaxy73) = 24289;
+obs Velocity(Galaxy74) = 24366;
+obs Velocity(Galaxy75) = 24717;
+obs Velocity(Galaxy76) = 24990;
+obs Velocity(Galaxy77) = 25633;
+obs Velocity(Galaxy78) = 26960;
+obs Velocity(Galaxy79) = 26995;
+obs Velocity(Galaxy80) = 32065;
+obs Velocity(Galaxy81) = 32789;
+obs Velocity(Galaxy82) = 34279;
+
+
+query ClusVelocity(OrigCluster(Galaxy1));
+query ClusVelocity(OrigCluster(Galaxy6));
+query ClusVelocity(OrigCluster(Galaxy10));
+query ClusVelocity(OrigCluster(Galaxy15));
+query ClusVelocity(OrigCluster(Galaxy16));
+query ClusVelocity(OrigCluster(Galaxy32));
+query ClusVelocity(OrigCluster(Galaxy51));
+query ClusVelocity(OrigCluster(Galaxy71));
+query ClusVelocity(OrigCluster(Galaxy81));
+
+query #{Cluster c};
+
+/* TESTBLOG: -n 1000 -b 100
+blogc *
+Samples done: *
+ Query1: P(null) 0 Avg. ~9.43e+03 S.D. *
+ Query2: P(null) 0 Avg. ~1.03e+04 S.D. *
+ Query3: P(null) 0 Avg. ~1.85e+04 S.D. *
+ Query4: P(null) 0 Avg. ~1.9e+04 S.D. *
+ Query5: P(null) 0 Avg. ~1.94e+04 S.D. *
+ Query6: P(null) 0 Avg. ~2.02e+04 S.D. *
+ Query7: P(null) 0 Avg. ~2.23e+04 S.D. *
+ Query8: P(null) 0 Avg. ~2.43e+04 S.D. *
+ Query9: P(null) 0 Avg. ~3.28e+04 S.D. *
+ Query10: {null: 0, *}
+*/
+
