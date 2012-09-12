@@ -7,29 +7,30 @@
 
 type Component;
 
-random R2Vector Theta(Component);
-random Component Z(NaturalNum);
-random R2Vector X(NaturalNum);
-
-#Component ~ Poisson[3];
+#Component ~ Poisson(3);
 
 /*
  * Here we use a MultivarGaussian distribution with three parameters: 
  * the dimension, mean, and covariance matrix.
  */
-Theta(c) ~ MultivarGaussian[2, [0; 0], [100, 0; 0, 100]];
+random Real[] Theta(Component c) {
+    MultivarGaussian(2, [0; 0], [100, 0; 
+                                 0, 100])
+};
 
-Z(n) ~ UniformChoice({Component c});
+random Component Z(NaturalNum n) {
+    UniformChoice({Component c});
+}
 
 /*
  * Here we use a MultivarGaussian distribution with only two fixed 
- * parameters, the dimension and the covariance matrix.  
- * In this case, MultivarGaussian takes one argument, 
- * which is interpreted as the mean.  
+ * parameters, the dimension and the covariant argument. 
+ * The random variable Theta(Z(n)) is interpreted as the mean.  
  */
-X(n) {
-	if Z(n) != null then 
-		~ MultivarGaussian[2, [4, 0; 0, 4]](Theta(Z(n)))
+random Real[] X(NaturalNum n) {
+	if Z(n) != null 
+        then ~ MultivarGaussian(2, Theta(Z(n)), [4, 0; 
+                                                 0, 4]]()
 };
 
 /* Evidence for the Gaussian mixture model.  These are 
