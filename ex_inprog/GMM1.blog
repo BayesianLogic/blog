@@ -5,21 +5,17 @@
 type Component;
 type DataPoint;
 
-#Component ~ Poisson[3];
-random R2Vector Theta(Component);
-Theta(c) ~ MultivarGaussian[2, [0; 0], [100, 0; 0, 100]];
-
 origin NaturalNum Index(DataPoint);
+
+#Component ~ Poisson(3);
 #DataPoint(Index = n) = 1;
 
-random R2Vector ObservedPos(DataPoint);
-random Component AssociatedComponent(DataPoint);
+random Real[] Theta(Component c) 
+    ~ MultivarGaussian(2, [0; 0], [100, 0; 0, 100]);
 
-AssociatedComponent(d) ~ UniformChoice({Component c});
-ObservedPos(d) {
-    if AssociatedComponent(d) != null then
-        ~ MultivarGaussian[2, [4, 0; 0, 4]]
-                          (Theta(AssociatedComponent(d)))
-}
+random Component AssociatedComponent(DataPoint d) ~ UniformChoice({Component c});
 
-
+random Real[] ObservedPos(DataPoint d) {
+    if AssociatedComponent(d) != null 
+        then ~ MultivarGaussian(2, Theta(AssociatedComponent(d)), [4, 0; 0, 4])
+};
