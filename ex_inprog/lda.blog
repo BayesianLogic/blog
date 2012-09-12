@@ -21,7 +21,7 @@ fixed Real[][] beta(NaturalNum) =
 
 random Real[] theta(Document d) ~ Dirichlet(k, alpha);
 
-random NaturalNum topic(Document d) {
+random NaturalNum topic(Document d, NaturalNum i) {
     ~ Categorical(theta(d))
 };
 
