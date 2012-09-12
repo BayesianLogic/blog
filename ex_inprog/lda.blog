@@ -21,12 +21,12 @@ fixed Real[][] beta(NaturalNum) =
 
 random Real[] theta(Document d) ~ Dirichlet(k, alpha);
 
-random NaturalNum topic(Document d, NaturalNum i) {
+random NaturalNum topic(Document d) {
     ~ Categorical(theta(d))
 };
 
 random NaturalNum wordidx(Document d, NaturalNum i) {
-    ~ Categorical(beta(topic(d, i)))
+    ~ Categorical(beta(topic(d)))
 };
 
 /* Lots of undefined stuff here; ignoring for now
