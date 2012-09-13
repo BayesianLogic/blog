@@ -1,3 +1,9 @@
+/**
+ * stochastic volatility model for stock price
+ * @author: leili
+ * @date: 2012-09-12
+ */
+
  
 fixed Matrix[2,2] Q = [1, 0; 0, 1];
 fixed Matrix[1,2] mu0 = [0, 0]; 
@@ -8,5 +14,5 @@ random Matrix[2,1] state(Timestep t) {
 
 fixed Matrix[1,2] C = [1, 0];
 fixed Matrix[2,2] R = Q;
-random Real location(Timestep t) 
+random Real price(Timestep t) 
   ~ Gaussian(C * state(t), R);
