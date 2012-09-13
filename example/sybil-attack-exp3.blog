@@ -10,66 +10,35 @@
  * each other; Otherwise, probability of recommendation depends 
  * on the honesty of the two owners.
  *
- * 2011-12-21
+ * @author: leili
+ * @date: 2011-12-21
+ * @date: 2012-09-13
  */
+
 type Person;
-type Login;
+type Login; 
+
+#Person ~ Poisson(10);
 
 origin Person Owner(Login);
-
-#Person ~ Poisson(3);
-
-#Login(Owner = x) {
-    if (Honest(x) == true) then = 1 
-    else ~ Geometric(0.8)
-};
+#Login(Owner = x)  
+  if Honest(x) then = 1  
+  else ~ Geometric(0.8);
 
 random Boolean Honest(Person p) ~ Bernoulli(0.9);
 
-random Boolean Transaction(Login x, Login y) {
-    if (x != y) then {
-        if (Owner(x) == Owner(y)) then ~ Bernoulli(0.9)
-	else {
-	     if (Honest(Owner(x)) == true) then ~ Bernoulli(0.6)
-	     else ~ Bernoulli(0.1)
-	}
-    }
-};
+random Boolean Transaction(Login x, Login y) 
+  if x!=y & Owner(x) == Owner(y) then ~ Bernoulli(0.9)
+  else if x!=y then 
+    ~ TabularCPD(
+    {True -> ~Categorical(True -> 0.6, False -> 0.4), 
+    False -> ~Categorical(True -> 0.1, False -> 0.9)}, 
+    Honest(Owner(x)));
 
-random Boolean Recommends(Login x, Login y) {
-    if (x != y & Transaction(x,y) == true & Owner(x) == Owner(y)) then ~ Bernoulli(0.99)
-    else if (Transaction(x,y) == true & Owner(x) != Owner(y)) then {
-    	 if (Honest(Owner(x)) == true & Honest(Owner(y)) == true) then ~ Bernoulli(0.9)
-	 else ~ Bernoulli(0.1)
-    }
-};
-
-obs {Login l} = {Login1, Login2, Login3, Login4, Login5};
-
-/**
-obs Honest(Person1) = false;
-obs Honest(Person2) = true;
-obs Honest(Person3) = true;
-
-obs #Login(Owner = Person1) = 3;
-obs #Login(Owner = Person2) = 1;
-obs #Login(Owner = Person3) = 1;
-*/
+obs {Login l} = {Login1, Login2, Login3, Login4, Login5};  
 
 obs Transaction(Login1, Login2) = true;
-obs Transaction(Login1, Login3) = true;
-obs Transaction(Login2, Login3) = true;
-obs Transaction(Login1, Login4) = true;
-obs Transaction(Login4, Login5) = true;
-obs Recommends(Login1, Login2) = true;
-obs Recommends(Login1, Login3) = true;
-obs Recommends(Login2, Login3) = true;
-obs Recommends(Login4, Login5) = true;
-obs Recommends(Login1, Login4) = false;
+obs Transaction(Login3, Login4) = true;
 
-query Honest(Owner(Login1)); 
-query Honest(Owner(Login2)); 
-query Honest(Owner(Login3)); 
-query Honest(Owner(Login4));
-query Honest(Owner(Login5));  
-query Owner(Login1)==Owner(Login2);
+query Honest(Owner(Login1));
+
