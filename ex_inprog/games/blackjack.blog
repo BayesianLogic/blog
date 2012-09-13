@@ -1,0 +1,68 @@
+/**
+ * blackjack.blog
+ * --------------
+ * This is the first in a series of models of games of chance.
+ * 
+ * A deck of playing cards is generated two cards are dealt to
+ * each of two players: the dealer and the gambler.  Starting with
+ * those two cards, the gambler seeks to draw cards until she produces
+ * a hand with at most 21 points that outscores the dealer.
+ *
+ * Face cards are worth 10 points, aces either 1 or 11, and all others
+ * their face value.
+ *
+ * @author awong
+ */
+type Card;
+type Suit;
+type Rank;
+type Player;
+
+distinct Suit Clubs, Diamonds, Hearts, Spades;
+distinct Rank Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King;
+distinct Player Dealer, Gambler;
+
+origin Suit Suit(Card);
+origin Rank Rank(Card);
+
+#Card(Suit=s, Rank=r) = 1;
+
+fixed Integer Value(Rank r)
+    = TabularInterp(1,
+	Ace, 1,
+	Two, 2,
+	Three, 3,
+	Four, 4,
+	Five, 5,
+	Six, 6,
+	Seven, 7,
+	Eight, 8,
+	Nine, 9,
+	Ten, 10,
+	Jack, 10,
+	Queen, 10,
+	King, 10);
+
+random Player Turn(Timestep t) {
+    if Score(Gambler, t) < 16 then = Gambler
+    else if Score(Dealer, t) < 16 then = Dealer
+};
+
+random Score(Player p, Timestep t) {
+    if (t == @0) = Value(InitialCard(p, 0)) + Value(InitialCard(p, 1))
+    else = Score(p, Prev(t)) + Value(DrawCard(t))
+};
+
+random Card InitialCard(Player p, Integer n) {
+    if (n == 0 | n == 1) then
+        ~ UniformChoice({Card c: !(exists Player p exists Integer n (c == InitialCard(p, n)))})
+};
+
+random Card DrawCard(Timestep t)
+    ~ UniformChoice({Card c: !(exists Timestep t_prev ((t_prev < t) & (DrawCard(t_prev) == c))
+      			     	      & !(exists Player p exists Integer n (c == InitialCard(p, n))))});
+
+obs Value(InitialCard(Gambler, 0)) = 10;
+obs Value(InitialCard(Gambler, 1)) = 2;
+
+query Score(Gambler, 5);
