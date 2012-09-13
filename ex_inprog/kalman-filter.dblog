@@ -3,11 +3,11 @@ fixed Matrix[3,3] A = [1, 1, 0.5; 0, 1, 1; 0, 0, 1];
 fixed Matrix[3,3] Q = [0.1, 0, 0; 0, 0.1, 0; 0, 0, 0.1];
 fixed Matrix[1,3] mu0 = [0, 1, 1]; 
 random Matrix[3,1] state(Timestep t) {
-	if t=@0 then ~ MultivarGaussian(3, mu0, Q)
+	if t == @0 then ~ MultivarGaussian(3, mu0, Q)
 	else ~ MultivarGaussian(3, A * state(t-1), Q)
 };
 
 fixed Matrix[1,3] C = [1, 0, 0];
 fixed Matrix[3,3] R = Q;
 random Real location(Timestep t) 
-~ Gaussian(C * state(t), R);
+  ~ Gaussian(C * state(t), R);
