@@ -10,52 +10,61 @@
  * each other; Otherwise, probability of recommendation depends 
  * on the honesty of the two owners.
  *
- * 2011-12-21
+ * @author: leili
+ * @date: 2011-12-21
  */
 
 type Person;
 type Login;
 
-origin Person Owner(Login);
-
 #Person ~ Poisson(10);
 
-#Login(Owner = x) {
-    if (Honest(x) == true) then = 1 
-    else ~ Geometric(0.8)
-};
+random Boolean Honest(Person x) ~ Bernoulli(0.9);
 
-random Boolean Honest(Person p) ~ Bernoulli(0.9);
+origin Person Owner(Login);
+#Login(Owner = x) 
+  if Honest(x) then = 1 
+    else ~ Geometric(0.8);
 
 random Boolean Transaction(Login x, Login y) {
-    if (x != y) then {
-        if (Owner(x) == Owner(y)) then ~ Bernoulli(0.9)
-	else {
-	     if (Honest(Owner(x)) == true) then ~ Bernoulli(0.6)
-	     else ~ Bernoulli(0.1)
-	}
-    }
+  if x!=y & Owner(x) == Owner(y) then ~ Bernoulli(0.9)
+  else if x!=y then 
+    ~ TabularCPD({True -> ~Categorical(True -> 0.6, False -> 0.4), 
+                 False -> ~Categorical(True -> 0.1, False -> 0.9)}, 
+                Honest(Owner(x)))
 };
-
-random Boolean Recommends(Login x, Login y) {
-    if (x != y & Transaction(x,y) == true & Owner(x) == Owner(y)) then ~ Bernoulli(0.99)
-    else if (Transaction(x,y) == true & Owner(x) != Owner(y)) then {
-    	 if (Honest(Owner(x)) == true & Honest(Owner(y)) == true) then ~ Bernoulli(0.9)
-	 else ~ Bernoulli(0.1)
-    }
-};
-
-//obs #Person = 9;
-/*obs {Person p} = {Person1, Person2, Person3, Person4, Person5,
-    	       	 	   Person6, Person7, Person8, Person9};*/
-
-//obs #Login = 18;
-obs {Login l} = {Login1, Login2, Login3, Login4, Login5, Login6,
-    	      	       Login7, Login8, Login9, Login10, Login11, Login12,
-		       Login13, Login14, Login15, Login16, Login17, Login18};
 
 /**
+// in old syntax, it is tedious to write
+if x!=y & Transaction(x,y) & Owner(x) == Owner(y) then ~ Bernoulli(0.99)
+  else if Transaction(x,y) & Owner(x) != Owner(y) then
+    ~ TabularCPD(
+      {[True, True]   -> ~ Bernoulli(0.9),
+       [True, False]  -> ~ Bernoulli(0.1), 
+       [False, True]  -> ~ Bernoulli(0.1),
+       [False, False] -> ~ Bernoulli(0.1),
+    [Honest(Owner(x)), Honest(Owner(y))]);
+*/
 
+random Boolean Recommends(Login x, Login y) {
+  if (x!=y) & Transaction(x,y) then
+    if Owner(x) == Owner(y) then ~ Bernoulli(0.99)
+    else ~ TabularCPD(
+      {[True, True]   -> ~ Bernoulli(0.9),
+       [True, False]  -> ~ Bernoulli(0.1), 
+       [False, True]  -> ~ Bernoulli(0.1),
+       [False, False] -> ~ Bernoulli(0.1),
+    [Honest(Owner(x)), Honest(Owner(y))])
+};
+
+//obs {Person p} = {Person1, Person2, Person3, Person4, Person5, 
+//                  Person6, Person7, Person8, Person9};
+
+obs {Login l} = {Login1, Login2, Login3, Login4, Login5, Login6,
+                Login7, Login8, Login9, Login10, Login11, Login12,
+                Login13, Login14, Login15, Login16, Login17, Login18};
+
+/**
 obs Honest(Person9) = false;
 obs Honest(Person1) = false;
 obs Honest(Person2) = true;
@@ -119,5 +128,4 @@ obs Recommends(Login6, Login4) = true;
 obs Recommends(Login3, Login5) = true;
 obs Recommends(Login11, Login18) = false;
 
-
-query Honest(Owner(Login2)); 
+Query Honest(Person9); 
