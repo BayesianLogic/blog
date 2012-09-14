@@ -12,34 +12,70 @@
     @date September 4th, 2012
 """
 import os
+import sys
+import signal
 import time
+import re
 import subprocess
 import threading
+import matplotlib.pyplot as plot
 from optparse import OptionParser
 
 blog = "./run.sh"
 example = "example"
+solutions = "example/solutions"
+figures = "example/figures"
 working_examples = []
 broken_examples = []
-samplers = ["blog.sample.LWSampler", "blog.sample.MHSampler",
-            "blog.sample.modular.ModularLWSampler"]
+# Define Samplers
+LWSampler = "blog.sample.LWSampler"
+MHSampler = "blog.sample.MHSampler"
+ModularLWSampler = "blog.sample.ModularLWSampler"
+samplers = [LWSampler, MHSampler, ModularLWSampler]
+# Set your favorite color for your sampler
+colors = {}
+colors[LWSampler] = "r"
+colors[MHSampler] = "b"
+colors[ModularLWSampler] = "g"
+# Global variables used to pass information between threads
 result = 0
 process = None
+output = ""
+# all_data is a hash table mapping the example_path of a particular example
+# and a particular sampler to the data associated with that example
+all_data = {}
 
 class ArgParser(object):
     def __init__(self):
         global samplers
         self.parser = OptionParser()
         self.parser.add_option("-s", "--sampler", dest="samplers",
-                                action="append", default=samplers,
-                                metavar="SAMPLER",
+                                type="string",
+                                action="append", metavar="SAMPLER",
                                 help="Use this sampler when evaluating")
         self.parser.add_option("--timeout", dest="timeout",
                                 action="store", type="int",
                                 default=100, metavar="TIMEOUT",
                                 help="Timeout for any one example")
+        self.parser.add_option("-e", "--example", dest="examples",
+                                action="append", metavar="EXAMPLE",
+                                type="string",
+                                help="Run this example")
+        self.parser.add_option("-n", "--num_samples", dest="N",
+                                action="store", type="int",
+                                metavar="N", default=50000,
+                                help="Run inference engine for this
+                                many samples")
+        self.parser.add_option("-i", "--interval", dest="i",
+                                action="store", type="int",
+                                default=10000,
+                                metavar="I", help="write results after this many
+                                samples")
     def parse_args(self):
+        global samplers
         (options, _) = self.parser.parse_args()
+        if options.samplers is None:
+            options.samplers = samplers
         return options
 
 def sampler_base(s):
@@ -47,22 +83,98 @@ def sampler_base(s):
 
 def find_examples(examples_dir, options):
     example_paths = []
-    for dirname, subdirnames, filenames in os.walk(examples_dir):
-        for filename in filenames:
-            example_path = os.path.join(dirname, filename)
-            example_paths.append(example_path)
+    if options.examples is None:
+        for dirname, subdirnames, filenames in os.walk(examples_dir):
+            for filename in filenames:
+                example_path = os.path.join(dirname, filename)
+                example_paths.append(example_path)
+    else:
+        for example in options.examples:
+            example_paths.append(example)
     return example_paths
+
+def parse_distribution(index, lines, data, samplesSoFar):
+    """ Parse the distribution reported in lines starting at line number index and
+        save the results to data. Returns the updated index
+        Precondition: Must be called with index pointing to a Distribution
+    """
+    query_words = lines[index].split()
+    for_index = query_words.index('for')
+    remaining = query_words[for_index + 1:]
+    query_var = ' '.join(remaining)
+    if query_var not in data:
+        data[query_var] = {}
+    # We should not have called this function for the same value of
+    # samplesSoFar Previously
+    data[query_var][samplesSoFar] = {}
+    index += 1
+    while (index < len(lines) and lines[index] is not "" and "Distribution"
+            not in lines[index]):
+        words = lines[index].split()
+        if len(words) < 2:
+            index += 1
+            continue
+        try:
+            prob = float(words[0])
+        except ValueError:
+            prob = 0
+        val = words[1]
+        data[query_var][samplesSoFar][val] = prob
+        index += 1
+    return index
+
+def parse_query_result(index, lines, data):
+    """ Parse the results of reported queries.
+        Precondition: Must be called on line where Query Results is stated.
+    """
+    # Skip the line ======== Query Results =========
+    index += 1
+    if "Iteration" not in lines[index]:
+        samplesSoFar = 0
+    else:
+        iteration_words = lines[index].split()
+        try:
+            samplesSoFar = int(iteration_words[1])
+        except ValueError:
+            samplesSoFar = 0
+    index += 1
+    return parse_distribution(index, lines, data, samplesSoFar)
+
+
+def parse_blog_output(output):
+    """ Parses the blog output and stores it in hash table data. data is a
+    multilevel dictionary. The keys of data are the query variables.  For each
+    query variable qVar, data[qVar] is another dictionary that maps samplesSoFar
+    to distributions.  That is, data[qVar][samplesSoFar] is a distribution. A
+    distribution itself is another dictionary, mapping values to probabilities.
+    The total structure looks like:
+
+        data[qVar][N][val] = P(qVar = val) according to N samples drawn so far
+    """
+    data = {}
+    index = 0
+    lines = output.split("\n")
+    while True:
+        while index < len(lines) and "Query Results" not in lines[index]:
+            index += 1
+        if index >= len(lines):
+            break
+        index = parse_query_result(index, output, data)
+    return data
 
 def run_with_timeout(command, timeout):
     global result
+    global output
     global process
     def thread_fun():
         global process
+        global output
+        global result
         print "Blog Thread Running " + command + " started"
-        devnull = open('/dev/null', 'w')
-        process = subprocess.Popen(command, shell=True, stdout=devnull,
-                stderr=devnull)
-        process.communicate()
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, preexec_fn=os.setsid)
+        output = process.communicate()[0]
+        result = process.returncode
     thread = threading.Thread(target=thread_fun)
     thread.start()
     thread.join(timeout)
@@ -70,24 +182,99 @@ def run_with_timeout(command, timeout):
     if thread.isAlive():
         print "Killing Example"
         try:
-            process.kill()
+            output = ""
+            result = -1
+            #process.kill()
+            os.killpg(process.pid, signal.SIGTERM)
         except OSError:
             pass
         print "Going To Sleep"
         time.sleep(10)
         print "Woken Up"
         thread.join()
-    result = process.returncode
+    return
+
+def variation_distance(data1, data2):
+    """ Returns the total variation distance between the distributions
+        represented by data1 and data2
+    """
+    union_keys = list(set(data1.keys()) | set(data2.keys()))
+    distance = 0
+    for key in union_keys:
+        if key in data1:
+            val1 = data1[key]
+        else:
+            val1 = 0
+        if key in data2:
+            val2 = data2[key]
+        else:
+            val2 = 0
+        distance += math.fabs(val1 - val2)
+    return .5 * distance
+
+def generate_graphs():
+    global all_data
+    global solutions
+    global colors
+
+    for example_path in all_data:
+        sampler_data = all_data[example_path]
+        solution_path = os.path.join(solutions, example_path)
+        # Set the solution data
+        if os.path.isfile(solution_path):
+            solution = open(solution_path)
+            output = solution.read()
+            solution_data = parse_blog_output(output)
+        else:
+            # Construct solution from LWSampler results
+            LWSampler = "blog.sample.LWSampler"
+            lw_data = all_data[example_path][LWSampler]
+            if len(lw_data.keys()) == 0:
+                print "No information from LWSampler!"
+                sys.exit()
+            solution_data = {}
+            for qVar in lw_data:
+                lw_qvar_data = lw_data[qVar]
+                N = max(lw_qvar_data.keys())
+                # Hack to make solution_data look like the out of
+                # parse_blog_output
+                solution_data[qVar] = {}
+                solution_data[qVar][0] = lw_qvar_data[N]
+            all_data[example_path]["solution"] = solution_data
+        # Use the solution data to generate the graphs for example_path
+        for qVar in solution_data.keys():
+            plot.clf()
+            for sampler in sampler_data.keys():
+                data = sampler_data[sampler]
+                xs = []
+                ys = []
+                for n in sorted(data.keys()):
+                    dist = variation_distance(data[n], solution_data[qVar])
+                    xs.append(n)
+                    ys.append(dist)
+                plot.scatter(xs, ys, colors[sampler])
+            plot.savefig(get_graph_name(example_path, sampler, qVar))
+
+def get_graph_name(example_path, sampler, qVar):
+    """ Get the name of the graph for a given example_path, sampler,
+        and query variable.
+    """
+    example = str(example_path).replace("/","_")
+    example += "__" + str(sampler)
+    example += "__" + str(qVar)
+    return re.escape(example)
 
 def run_examples(example_paths, options):
     global blog
     global result
+    global output
     working_examples = []
     broken_examples = []
     for example_path in example_paths:
         timings = {}
-        for sampler in samplers:
+        for sampler in options.samplers:
             command = [blog, "--sampler", sampler, example_path]
+            result = 0
             start_time = time.time()
             run_with_timeout(" ".join(command), options.timeout)
             end_time = time.time()
@@ -95,8 +282,14 @@ def run_examples(example_paths, options):
             if result != 0:
                 out = "Fail!"
                 broken_examples.append((example_path, sampler))
+            else:
+                data = parse_blog_output(output)
+                if example_path not in all_data:
+                    all_data[example_path] = {}
+                all_data[example_path][sampler] = data
             timings[sampler] = out
         working_examples.append((example_path, timings))
+    print "all_data: " + str(all_data)
     return (working_examples, broken_examples)
 
 def print_results(num_examples, working_examples, broken_examples, options):
