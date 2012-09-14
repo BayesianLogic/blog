@@ -211,6 +211,7 @@ public class Main {
 					// leili: why to zero out???
 					// q.zeroOut();
 				}
+                System.out.println("======== Done ========");
 
 				System.out.println();
 			}
