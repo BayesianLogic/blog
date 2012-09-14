@@ -157,12 +157,13 @@ public class SamplingEngine extends InferenceEngine {
             
             if (i != 0 && (i) % queryReportInterval == 0) {
 				// Print query results
-				System.out.println("======== Query Results =========");
+				System.out.println("======== Query Results ========");
                 System.out.println("Iteration " + i + ":");
 				for (Iterator iter = queries.iterator(); iter.hasNext();) {
 					Query q = (Query) iter.next();
 					q.printResults(System.out);
 				}
+                System.out.println("======== Done ========");
             }
 
             if (i >= numBurnIn) {
