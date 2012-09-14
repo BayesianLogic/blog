@@ -1,0 +1,15 @@
+/* Query file asking for the total number of balls in the urn.
+ */
+
+//query #{World w};
+//query #{Scene s};
+query #{Scene s: IsStreet(s) = true};
+query #{Scene s: IsFarm(s) = true};
+query #{Cow c};
+query #{Person p};
+//query #{PersonPose p};
+//query #{PersonPose p: IsFrontal(p) = true};
+//query #{PersonPose p: IsSideway(p) = true};
+query #{Bike b};
+query #{Cart c};
+query #{Wheel w};

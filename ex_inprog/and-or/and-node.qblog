@@ -1,0 +1,4 @@
+query IsNodeActive(ParentNode1);
+query #{ChildNode1 c};
+query #{ChildNode2 c};
+query #{ChildNode3 c};
