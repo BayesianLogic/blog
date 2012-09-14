@@ -2,35 +2,40 @@
     using each available sampling engine and
     displays the time each example takes to complete.
 
-    This script will soon graph the time taken per sample
-    and the variance as a function of the number n of samples
-    thus far. Once DBLOG particle filtering is supported,
-    this script will graph the time and variance as a function
-    of time t as well.
+    The script also graphs the variation distance from the true posterior
+    as a function of the number of samples n for each sampler s on each example.
+
+    The script will soon be upgraded to graph MSE and other forms of error.
+    Once DBLOG particle filtering is supported, this script will graph the time
+    and variance as a function of time t as well.
 
     @author rbharath
-    @date September 4th, 2012
+    @date September 14th, 2012
 """
 import os
 import sys
 import signal
 import time
 import re
+import math
 import subprocess
 import threading
 import matplotlib.pyplot as plot
 from optparse import OptionParser
 
+# Global Constants
 blog = "./run.sh"
 example = "example"
 solutions = "example/solutions"
 figures = "example/figures"
+figure_type = ".png"
+# Used to Gather Data on working and broken examples
 working_examples = []
 broken_examples = []
 # Define Samplers
 LWSampler = "blog.sample.LWSampler"
 MHSampler = "blog.sample.MHSampler"
-ModularLWSampler = "blog.sample.ModularLWSampler"
+ModularLWSampler = "blog.sample.modular.ModularLWSampler"
 samplers = [LWSampler, MHSampler, ModularLWSampler]
 # Set your favorite color for your sampler
 colors = {}
@@ -41,11 +46,14 @@ colors[ModularLWSampler] = "g"
 result = 0
 process = None
 output = ""
-# all_data is a hash table mapping the example_path of a particular example
+# all_data is a global hash table mapping the example_path of a particular example
 # and a particular sampler to the data associated with that example
+#   all_data[example_path][sampler] = data for example run with sampler
 all_data = {}
 
 class ArgParser(object):
+    """ Arguments accepted by this script.
+    """
     def __init__(self):
         global samplers
         self.parser = OptionParser()
@@ -61,16 +69,15 @@ class ArgParser(object):
                                 action="append", metavar="EXAMPLE",
                                 type="string",
                                 help="Run this example")
-        self.parser.add_option("-n", "--num_samples", dest="N",
+        self.parser.add_option("-n", "--num_samples", dest="n",
                                 action="store", type="int",
                                 metavar="N", default=50000,
-                                help="Run inference engine for this
-                                many samples")
-        self.parser.add_option("-i", "--interval", dest="i",
+                                help="Run inference engine for this many samples")
+        self.parser.add_option("-q", "--query_interval", dest="q",
                                 action="store", type="int",
-                                default=10000,
-                                metavar="I", help="write results after this many
-                                samples")
+                                default=5000,
+                                metavar="QUERY_INTERVAL",
+                                help="report query results per this many samples")
     def parse_args(self):
         global samplers
         (options, _) = self.parser.parse_args()
@@ -79,9 +86,15 @@ class ArgParser(object):
         return options
 
 def sampler_base(s):
+    """Given the full name of sampler, e.g. blog.sample.MHSampler, returns
+       its base, i.e. MHSampler
+   """
     return s.split(".")[-1:][0]
 
 def find_examples(examples_dir, options):
+    """ List the paths to all examples currently residing in the
+        examples directory.
+    """
     example_paths = []
     if options.examples is None:
         for dirname, subdirnames, filenames in os.walk(examples_dir):
@@ -109,7 +122,7 @@ def parse_distribution(index, lines, data, samplesSoFar):
     data[query_var][samplesSoFar] = {}
     index += 1
     while (index < len(lines) and lines[index] is not "" and "Distribution"
-            not in lines[index]):
+            not in lines[index] and "Done" not in lines[index]):
         words = lines[index].split()
         if len(words) < 2:
             index += 1
@@ -130,14 +143,15 @@ def parse_query_result(index, lines, data):
     # Skip the line ======== Query Results =========
     index += 1
     if "Iteration" not in lines[index]:
+        print "Iteration Not Found in: " + str(lines[index])
         samplesSoFar = 0
     else:
         iteration_words = lines[index].split()
+        index += 1
         try:
-            samplesSoFar = int(iteration_words[1])
+            samplesSoFar = int(iteration_words[1].strip(":"))
         except ValueError:
             samplesSoFar = 0
-    index += 1
     return parse_distribution(index, lines, data, samplesSoFar)
 
 
@@ -154,15 +168,20 @@ def parse_blog_output(output):
     data = {}
     index = 0
     lines = output.split("\n")
+    lines = [line.strip() for line in lines]
+
     while True:
         while index < len(lines) and "Query Results" not in lines[index]:
             index += 1
         if index >= len(lines):
             break
-        index = parse_query_result(index, output, data)
+        index = parse_query_result(index, lines, data)
     return data
 
 def run_with_timeout(command, timeout):
+    """ Run given command for timeout seconds. If command does not exit
+        before timeout is reached, forcibly kill spawned process.
+    """
     global result
     global output
     global process
@@ -213,6 +232,9 @@ def variation_distance(data1, data2):
     return .5 * distance
 
 def generate_graphs():
+    """ Generate Graphs from data gathered on examples. These graphs currently
+        show the changes in variation distance over number samples.
+    """
     global all_data
     global solutions
     global colors
@@ -240,31 +262,44 @@ def generate_graphs():
                 # parse_blog_output
                 solution_data[qVar] = {}
                 solution_data[qVar][0] = lw_qvar_data[N]
-            all_data[example_path]["solution"] = solution_data
+            #all_data[example_path]["solution"] = solution_data
         # Use the solution data to generate the graphs for example_path
         for qVar in solution_data.keys():
             plot.clf()
             for sampler in sampler_data.keys():
-                data = sampler_data[sampler]
+                data = sampler_data[sampler][qVar]
                 xs = []
                 ys = []
                 for n in sorted(data.keys()):
-                    dist = variation_distance(data[n], solution_data[qVar])
+                    dist = variation_distance(data[n],
+                                              solution_data[qVar][0])
                     xs.append(n)
                     ys.append(dist)
-                plot.scatter(xs, ys, colors[sampler])
-            plot.savefig(get_graph_name(example_path, sampler, qVar))
+                plot.scatter(xs, ys, c=colors[sampler],
+                             label=sampler_base(sampler))
+            graph_name = get_graph_name(example_path, sampler_base(sampler), qVar)
+            plot.ylabel("Variation Distance")
+            plot.xlabel("Num Samples")
+            plot.title(str(os.path.basename(example_path) + ": " + str(qVar)))
+            plot.legend()
+            plot.savefig(graph_name)
 
 def get_graph_name(example_path, sampler, qVar):
     """ Get the name of the graph for a given example_path, sampler,
         and query variable.
     """
-    example = str(example_path).replace("/","_")
-    example += "__" + str(sampler)
-    example += "__" + str(qVar)
-    return re.escape(example)
+    global figures
+    global figure_type
+    example = str(example_path)
+    example += "_" + str(sampler)
+    example += "_" + str(qVar)
+    example = example.replace("/","_").replace(".","_")
+    example += figure_type
+    return str(os.path.join(figures, example))
 
 def run_examples(example_paths, options):
+    """ Run all examples in the examples folder, gather timing statistics.
+    """
     global blog
     global result
     global output
@@ -274,9 +309,12 @@ def run_examples(example_paths, options):
         timings = {}
         for sampler in options.samplers:
             command = [blog, "--sampler", sampler, example_path]
+            command += ["-n", options.n, "-q", options.q]
             result = 0
             start_time = time.time()
-            run_with_timeout(" ".join(command), options.timeout)
+            # This function spawns a thread to execute command. That thread
+            # changes the value of global variables result and output
+            run_with_timeout(" ".join([str(c) for c in command]), options.timeout)
             end_time = time.time()
             out = end_time - start_time
             if result != 0:
@@ -289,7 +327,6 @@ def run_examples(example_paths, options):
                 all_data[example_path][sampler] = data
             timings[sampler] = out
         working_examples.append((example_path, timings))
-    print "all_data: " + str(all_data)
     return (working_examples, broken_examples)
 
 def print_results(num_examples, working_examples, broken_examples, options):
@@ -331,4 +368,5 @@ if __name__ == "__main__":
     examples_dir = os.path.join(os.getcwd(), example)
     example_paths = find_examples(examples_dir, options)
     (working_examples, broken_examples) = run_examples(example_paths, options)
+    generate_graphs()
     print_results(len(example_paths), working_examples, broken_examples, options)
