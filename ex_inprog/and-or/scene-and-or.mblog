@@ -1,0 +1,88 @@
+/* Model file for and-or tree representation of scenes
+ */
+
+type World;
+type Scene;
+type Cow;
+type Person;
+type Bike;
+type Cart;
+
+
+random Boolean IsStreet(Scene);
+random Boolean IsFarm(Scene);
+
+random NaturalNum WhichScene(World);
+
+origin World ParentWorld(Scene);
+origin Scene ParentScene(Cow);
+origin Scene ParentScene(Person);
+origin Scene ParentScene(Cart);
+origin Scene ParentScene(Bike);
+
+
+guaranteed World World[1];
+
+#Scene(ParentWorld = w){
+    if w!=null then
+        =1
+    else
+        =0
+};
+
+WhichScene(w){
+    if w!=null then
+        ~UniformInt[1,2]()
+    else
+        =0
+};
+
+
+
+IsStreet(s){
+    if (s!=null & ParentWorld(s)!=null & WhichScene(ParentWorld(s))=1) then
+        = true
+    else
+        = false
+};
+
+IsFarm(s){
+    if (s!=null & ParentWorld(s)!=null & WhichScene(ParentWorld(s))=2) then
+        = true
+    else
+        = false
+};
+
+#Person(ParentScene = s){
+    if(s!=null & IsStreet(s)) then
+        ~UniformInt[5,10]()
+    elseif (s!=null & IsFarm(s)) then
+        ~UniformInt[1,3]()
+    else
+        =0
+};
+
+
+
+#Bike(ParentScene = s){
+    if(s!=null & IsStreet(s)) then
+        ~UniformInt[0,3]()
+    else
+        =0
+};
+
+#Cow(ParentScene = s){
+    if(s!=null & IsFarm(s)) then
+        ~UniformInt[1,5]()
+    else
+        =0
+};
+
+
+
+#Cart(ParentScene = s){
+    if(s!=null & IsFarm(s)) then
+        ~UniformInt[0,3]()
+    else
+        =0
+};

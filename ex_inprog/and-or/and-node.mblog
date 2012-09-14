@@ -1,0 +1,40 @@
+type ParentNode;
+type ChildNode1;
+type ChildNode2;
+type ChildNode3;
+
+guaranteed ParentNode ParentNode[1];
+
+random Boolean IsNodeActive(ParentNode);
+origin ParentNode WhichParentNode(ChildNode1);
+origin ParentNode WhichParentNode(ChildNode2);
+origin ParentNode WhichParentNode(ChildNode3);
+
+IsNodeActive(p){
+    if (p!=null) then
+        ~TabularCPD[[0.6, 0.4]]()
+    else
+        =false
+};
+
+#ChildNode1(WhichParentNode = p){
+    if (p!=null & IsNodeActive(p)) then
+        ~UniformInt[0,2]()
+    else
+        =0
+};
+
+#ChildNode2(WhichParentNode = p){
+    if (p!=null & IsNodeActive(p)) then
+        ~ UniformInt[3,5]()
+    else
+        =0
+};
+
+
+#ChildNode3(WhichParentNode = p){
+    if (p!=null & IsNodeActive(p)) then
+        ~ UniformInt[6,9]()
+    else
+        =0
+};

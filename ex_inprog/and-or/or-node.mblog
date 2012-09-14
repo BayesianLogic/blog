@@ -1,0 +1,40 @@
+type ParentNode;
+type ChildNode1;
+type ChildNode2;
+type ChildNode3;
+
+guaranteed ParentNode ParentNode[1];
+
+origin ParentNode Parent(ChildNode1);
+origin ParentNode Parent(ChildNode2);
+origin ParentNode Parent(ChildNode3);
+
+random NaturalNum WhichChild(ParentNode);
+
+WhichChild(p){
+    if (p!=null) then
+        ~Categorical[0.2, 0.3, 0.5]
+    else
+        = 0
+};
+
+#ChildNode1(Parent = p){
+    if( p!=null & WhichChild(p)=0) then
+        = 1
+    else
+        =0
+};
+
+#ChildNode2(Parent = p){
+    if( p!=null & WhichChild(p)=1) then
+        = 1
+    else
+        =0
+};
+
+#ChildNode3(Parent = p)  {
+    if( p!=null & WhichChild(p)=2) then
+        = 1
+    else
+        =0
+};
