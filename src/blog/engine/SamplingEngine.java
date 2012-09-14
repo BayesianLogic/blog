@@ -61,6 +61,10 @@ import blog.sample.Sampler;
  * 
  * <dt>numSamples
  * <dd>Number of samples that <code>answerQueries</code> will run. Default is
+ * 50,000.
+ *
+ * <dt>queryReportInterval
+ * <dd>Number of samples after which queries are reported <code>answerQueries</code> will run. Default is
  * 10,000.
  * 
  * <dt>burnIn
@@ -97,11 +101,18 @@ public class SamplingEngine extends InferenceEngine {
             Util.fatalError(e);
         }
 
-        String numSamplesStr = properties.getProperty("numSamples", "10000");
+        String numSamplesStr = properties.getProperty("numSamples", "50000");
         try {
             numSamples = Integer.parseInt(numSamplesStr);
         } catch (NumberFormatException e) {
             Util.fatalError("Invalid number of samples: " + numSamplesStr, false);
+        }
+        
+        String queryReportIntervalStr = properties.getProperty("queryReportInterval", "10000");
+        try {
+            queryReportInterval = Integer.parseInt(queryReportIntervalStr);
+        } catch (NumberFormatException e) {
+            Util.fatalError("Invalid reporting interval: " + queryReportIntervalStr, false);
         }
 
         String burnInStr = properties.getProperty("burnIn", "0");
@@ -129,6 +140,7 @@ public class SamplingEngine extends InferenceEngine {
         System.out.println("Evidence: " + evidence);
         System.out.println("Query: " + queries);
         System.out.println("Running for " + numSamples + " samples...");
+        System.out.println("Query Reporting interval is " + queryReportInterval);
         if (numBurnIn != 0) {
             System.out.println("(Burn-in samples: " + numBurnIn + ")");
         }
@@ -142,6 +154,16 @@ public class SamplingEngine extends InferenceEngine {
             }
             sampler.nextSample();
             double weight = sampler.getLatestWeight();
+            
+            if (i != 0 && (i) % queryReportInterval == 0) {
+				// Print query results
+				System.out.println("======== Query Results =========");
+                System.out.println("Iteration " + i + ":");
+				for (Iterator iter = queries.iterator(); iter.hasNext();) {
+					Query q = (Query) iter.next();
+					q.printResults(System.out);
+				}
+            }
 
             if (i >= numBurnIn) {
                 if (weight > 0) {
@@ -181,6 +203,7 @@ public class SamplingEngine extends InferenceEngine {
 
     private Sampler sampler;
     private int numSamples;
-    private int numBurnIn;
     private int reportInterval;
+    private int queryReportInterval;
+    private int numBurnIn;
 }
