@@ -1,0 +1,1 @@
+obs IsNodeActive(ParentNode1) = false;
