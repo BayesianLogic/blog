@@ -1,0 +1,50 @@
+/** 
+ * healthiness model
+ * This BLOG program describes the model for healthiness in 
+ * a person.
+ * See exercise 3.5 in:
+ *   Probabilistic Graphical Models: Principles and Techniques
+ *   Daphne Koller, Nir Friedman, MIT 2009
+ * Each person is described by whether they are health
+ * conscious, have free time, exercise, have a good diet, 
+ * have normal weight, have high cholesterol, and whether
+ * they tested positive for high cholesterol.
+ * @author: jnieh
+ * @date: 2012-09-13
+ */
+type Person;
+
+distinct Person p1;
+
+random Boolean HealthConscious(Person p) ~ Bernoulli(0.5);
+random Boolean LittleFreeTime(Person p) ~ Bernoulli(0.5);
+random Boolean Exercise(Person p) 
+  ~ TabularCPD({[true, true] -> ~ Bernoulli(0.5),
+								[true, false] -> ~ Bernoulli(0.9),
+								[false, true] -> ~ Bernoulli(0.1),
+								[false, false] -> ~ Bernoulli(0.5)},
+		[HealthConscious(p), LittleFreeTime(p)]);
+random Boolean GoodDiet(Person p) 
+  ~ TabularCPD({true -> ~ Bernoulli(0.7),
+	  						false -> ~ Bernoulli(0.3)},
+		HealthConscious(p));
+random Boolean NormalWeight(Person p) 
+  ~ TabularCPD({[true, true] -> ~ Bernoulli(0.8),
+	      				[true, false] -> ~ Bernoulli(0.5),
+								[false, true] -> ~ Bernoulli(0.5),
+								[false, false] -> ~ Bernoulli(0.2)},
+		[GoodDiet(p), Exercise(p)]);
+random Boolean HighCholesterol(Person p) 
+  ~ TabularCPD({true -> ~ Bernoulli(0.3),
+	  					   false -> ~ Bernoulli(0.7)},
+		GoodDiet(p));
+random Boolean TestedHighCholesterol(Person p) 
+  ~ TabularCPD({true -> ~ Bernoulli(0.9),
+							 false -> ~ Bernoulli(0.1)},
+	  HighCholesterol(p));
+																				 
+/* Evidence */
+obs TestedHighCholesterol(p1) = false;
+
+/* Query */
+query HealthConscious(p1);
