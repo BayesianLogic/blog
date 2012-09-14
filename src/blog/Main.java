@@ -204,6 +204,7 @@ public class Main {
 
 				// Print query results
 				System.out.println("======== Query Results =========");
+                System.out.println("Iteration: " + numSamples);
 				for (Iterator iter = queries.iterator(); iter.hasNext();) {
 					Query q = (Query) iter.next();
 					q.printResults(System.out);
@@ -296,9 +297,18 @@ public class Main {
 				"blog.engine.SamplingEngine", "Use inference engine class <s>");
 		specialOptions.put("engineClass", optEngine);
 
-		IntOption optNumSamples = new IntOption("n", "num_samples", 10000,
+		IntOption optNumSamples = new IntOption("n", "num_samples", 50000,
 				"Run inference engine for <n> samples");
 		specialOptions.put("numSamples", optNumSamples);
+
+		IntOption optQueryReportInterval = new IntOption("q",
+                "query_report_interval", 10000,
+				"Report Query values after <n> samples");
+		specialOptions.put("queryReportInterval", optQueryReportInterval);
+
+		IntOption optInterval = new IntOption("i", "interval", 500,
+				"Write results after every <n> samples");
+		specialOptions.put("reportInterval", optInterval);
 
 		IntOption optBurnIn = new IntOption("b", "burn_in", 0,
 				"Treat first <n> samples as burn-in");
@@ -324,8 +334,6 @@ public class Main {
 				"Print model, evidence, and queries");
 		StringOption optWrite = new StringOption("w", "write", null,
 				"Write sampling results to file <s>");
-		IntOption optInterval = new IntOption("i", "interval", 0,
-				"Write results after every <n> samples");
 		StringOption optHist = new StringOption("h", "histogram_output", null,
 				"Write histogram output to file <s>");
 		PropertiesOption optInferenceProps = new PropertiesOption("P", null, null,
@@ -383,6 +391,12 @@ public class Main {
 		inferenceProps.setProperty("numSamples",
 				String.valueOf(optNumSamples.getValue()));
 		numSamples = optNumSamples.getValue();
+        inferenceProps.setProperty("queryReportInterval",
+                String.valueOf(optQueryReportInterval.getValue()));
+        queryReportInterval = optQueryReportInterval.getValue();
+        inferenceProps.setProperty("reportInterval",
+                String.valueOf(optInterval.getValue()));
+        reportInterval = optQueryReportInterval.getValue();
 		inferenceProps.setProperty("burnIn", String.valueOf(optBurnIn.getValue()));
 		inferenceProps.setProperty("samplerClass", optSampler.getValue());
 		inferenceProps.setProperty("proposerClass", optProposer.getValue());
@@ -659,6 +673,8 @@ public class Main {
 	private static Properties inferenceProps;
 	private static boolean randomize = false;
 	private static int numSamples;
+    private static int queryReportInterval;
+    private static int reportInterval;
 	private static int numStatSamples;
 	private static Model model;
 	private static Evidence evidence;
