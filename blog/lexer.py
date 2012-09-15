@@ -7,7 +7,7 @@ class BlogLexer(RegexLexer):
     filenames = ['*.blog']
     operators = ['=','~',':']
     keywords = ['extern','import','fixed','func','distinct','random','origin','param','type']
-    types = ['Int','Real','Boolean','NaturalNum','List','Map','TabularCPD','Categorical','Distribution','Gaussian','type0','type1','type2']
+    types = ['Int','Real','Boolean','NaturalNum','List','Map','TabularCPD','Categorical','Distribution','Gaussian','type0','type1','type2','typename']
 
     def gen_regex(ops):
         return "|".join(ops)
@@ -19,23 +19,23 @@ class BlogLexer(RegexLexer):
             (r'[0-9]', Token.Literal.Number),
          ],
         'variable' : [
-            (r'([a-zA-Z_\-]*?[0-9_-]*?)[^a-zA-Z]', bygroups(Name.Variable)),
+            (r'[a-zA-Z_\-]*?[0-9_-]*?[^a-zA-Z]', Name.Variable),
         ],
         'root' : [
             (r'([a-zA-Z]+[0-9]*)(\()(.*?)(\))', bygroups(Name.Function, Token.Punctuation, Text.Name, Token.Punctuation)),
-            (r'('+gen_regex(keywords)+') ', Token.Keyword),
-            (r'('+gen_regex(types)+')([,\n <>\[\]]{1})', bygroups(Name.Class, Text)),
+            (r'('+gen_regex(types)+')([ <>\[\]]?)', bygroups(Name.Class, Text)),
+            (r'('+gen_regex(keywords)+')', Token.Keyword),
             (r''+gen_regex(operators)+'', Token.Operator, 'expression'),
-            (r'\s*;$',Text),
             include('variable'),
+            #(r'\s+(.*?)(\()(.*?)(\))', bygroups(Text.Name, Token.Punctuation, Text.Name, Token.Punctuation)),
             (r'\s+', Text),
             include('arithmetic'),
         ],
         'expression' : [
             (r';',Text, "#pop"),
             (r'(\s*)(.*?)(\()(.*?)(\))', bygroups(Text, Name.Function, Token.Punctuation, Text.Name, Token.Punctuation)),
-            include('arithmetic'),
             include('variable'),
+            include('arithmetic'),
             (r'\s+', Text),
         ]
     }
@@ -57,10 +57,7 @@ def run_tests():
         "fixed List<NaturalNum> a = List(1, 2, 3, 4, 5, 6);",
         "fixed Map<Boolean, Real> map1 = {true -> 0.3, false -> 0.7};",
         "Categorical<Boolean> cpd1 =Categorical({true -> 0.3, false -> 0.7});",
-        "List",
-        "random Real y = 1 - x ;\nrandom Map<Boolean, Real> map2 = Map(true -> x, false -> y);",
-        "random Real y = 1-x;",
-        "random Map<Boolean, Real> map2 = Map"
+        "List"
     ]
     lexer = BlogLexer()
     for test in tests:
@@ -68,4 +65,4 @@ def run_tests():
         for token in (lexer.get_tokens(test)):
             print(token)
 
-run_tests()
+#run_tests()
