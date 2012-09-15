@@ -20,29 +20,29 @@ random Boolean HealthConscious(Person p) ~ Bernoulli(0.5);
 random Boolean LittleFreeTime(Person p) ~ Bernoulli(0.5);
 random Boolean Exercise(Person p) 
   ~ TabularCPD({[true, true] -> ~ Bernoulli(0.5),
-								[true, false] -> ~ Bernoulli(0.9),
-								[false, true] -> ~ Bernoulli(0.1),
-								[false, false] -> ~ Bernoulli(0.5)},
-		[HealthConscious(p), LittleFreeTime(p)]);
+                [true, false] -> ~ Bernoulli(0.9),
+                [false, true] -> ~ Bernoulli(0.1),
+                [false, false] -> ~ Bernoulli(0.5)},
+    [HealthConscious(p), LittleFreeTime(p)]);
 random Boolean GoodDiet(Person p) 
   ~ TabularCPD({true -> ~ Bernoulli(0.7),
-	  						false -> ~ Bernoulli(0.3)},
-		HealthConscious(p));
+                false -> ~ Bernoulli(0.3)},
+    HealthConscious(p));
 random Boolean NormalWeight(Person p) 
   ~ TabularCPD({[true, true] -> ~ Bernoulli(0.8),
-	      				[true, false] -> ~ Bernoulli(0.5),
-								[false, true] -> ~ Bernoulli(0.5),
-								[false, false] -> ~ Bernoulli(0.2)},
-		[GoodDiet(p), Exercise(p)]);
+                [true, false] -> ~ Bernoulli(0.5),
+                [false, true] -> ~ Bernoulli(0.5),
+                [false, false] -> ~ Bernoulli(0.2)},
+    [GoodDiet(p), Exercise(p)]);
 random Boolean HighCholesterol(Person p) 
   ~ TabularCPD({true -> ~ Bernoulli(0.3),
-	  					   false -> ~ Bernoulli(0.7)},
-		GoodDiet(p));
+                 false -> ~ Bernoulli(0.7)},
+    GoodDiet(p));
 random Boolean TestedHighCholesterol(Person p) 
   ~ TabularCPD({true -> ~ Bernoulli(0.9),
-							 false -> ~ Bernoulli(0.1)},
-	  HighCholesterol(p));
-																				 
+               false -> ~ Bernoulli(0.1)},
+    HighCholesterol(p));
+                                         
 /* Evidence */
 obs TestedHighCholesterol(p1) = false;
 
