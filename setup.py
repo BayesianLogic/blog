@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from setuptools import setup 
 
 entry_points = """ 
