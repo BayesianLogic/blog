@@ -6,8 +6,8 @@
     as a function of the number of samples n for each sampler s on each example.
 
     The script will soon be upgraded to graph MSE and other forms of error.
-    Once DBLOG particle filtering is supported, this script will graph the time
-    and variance as a function of time t as well.
+    Once DBLOG particle filtering is supported, this script will graph particle
+    statistics as well.
 
     @author rbharath
     @date September 14th, 2012
@@ -98,6 +98,8 @@ def find_examples(examples_dir, options):
     example_paths = []
     if options.examples is None:
         for dirname, subdirnames, filenames in os.walk(examples_dir):
+            if os.path.basename(dirname) == "figures":
+                continue
             for filename in filenames:
                 example_path = os.path.join(dirname, filename)
                 example_paths.append(example_path)
@@ -112,6 +114,8 @@ def parse_distribution(index, lines, data, samplesSoFar):
         Precondition: Must be called with index pointing to a Distribution
     """
     query_words = lines[index].split()
+    if 'for' not in query_words:
+        return index
     for_index = query_words.index('for')
     remaining = query_words[for_index + 1:]
     query_var = ' '.join(remaining)
@@ -143,7 +147,6 @@ def parse_query_result(index, lines, data):
     # Skip the line ======== Query Results =========
     index += 1
     if "Iteration" not in lines[index]:
-        print "Iteration Not Found in: " + str(lines[index])
         samplesSoFar = 0
     else:
         iteration_words = lines[index].split()
@@ -231,7 +234,7 @@ def variation_distance(data1, data2):
         distance += math.fabs(val1 - val2)
     return .5 * distance
 
-def generate_graphs():
+def generate_graphs(examples_dir):
     """ Generate Graphs from data gathered on examples. These graphs currently
         show the changes in variation distance over number samples.
     """
@@ -241,7 +244,8 @@ def generate_graphs():
 
     for example_path in all_data:
         sampler_data = all_data[example_path]
-        solution_path = os.path.join(solutions, example_path)
+        solution_path = os.path.join(solutions,
+                                     os.path.basename(example_path))
         # Set the solution data
         if os.path.isfile(solution_path):
             solution = open(solution_path)
@@ -250,10 +254,14 @@ def generate_graphs():
         else:
             # Construct solution from LWSampler results
             LWSampler = "blog.sample.LWSampler"
-            lw_data = all_data[example_path][LWSampler]
+            if LWSampler in sampler_data:
+                lw_data = sampler_data[LWSampler]
+            else:
+                continue
             if len(lw_data.keys()) == 0:
-                print "No information from LWSampler!"
-                sys.exit()
+                print ("No information from LWSampler for " +
+                        os.path.basename(example_path))
+                continue
             solution_data = {}
             for qVar in lw_data:
                 lw_qvar_data = lw_data[qVar]
@@ -267,6 +275,9 @@ def generate_graphs():
         for qVar in solution_data.keys():
             plot.clf()
             for sampler in sampler_data.keys():
+                if (sampler not in sampler_data or
+                        qVar not in sampler_data[sampler]):
+                    continue
                 data = sampler_data[sampler][qVar]
                 xs = []
                 ys = []
@@ -277,21 +288,22 @@ def generate_graphs():
                     ys.append(dist)
                 plot.scatter(xs, ys, c=colors[sampler],
                              label=sampler_base(sampler))
-            graph_name = get_graph_name(example_path, sampler_base(sampler), qVar)
+            base = os.path.relpath(example_path, examples_dir)
+            graph_name = get_graph_name(base, qVar)
+            print "graph_name: " + str(graph_name)
             plot.ylabel("Variation Distance")
             plot.xlabel("Num Samples")
             plot.title(str(os.path.basename(example_path) + ": " + str(qVar)))
             plot.legend()
             plot.savefig(graph_name)
 
-def get_graph_name(example_path, sampler, qVar):
+def get_graph_name(example_path, qVar):
     """ Get the name of the graph for a given example_path, sampler,
         and query variable.
     """
     global figures
     global figure_type
     example = str(example_path)
-    example += "_" + str(sampler)
     example += "_" + str(qVar)
     example = example.replace("/","_").replace(".","_")
     example += figure_type
@@ -357,10 +369,6 @@ def print_results(num_examples, working_examples, broken_examples, options):
     out += " passed."
     print out
     print str(len(broken_examples)) + " failed:"
-    for (broken_example_path, sampler) in broken_examples:
-        broken_example = os.path.basename(broken_example_path)
-        out = "\t" + str(broken_example) + " on " + str(sampler)
-        print out
 
 if __name__ == "__main__":
     argParser = ArgParser()
@@ -368,5 +376,5 @@ if __name__ == "__main__":
     examples_dir = os.path.join(os.getcwd(), example)
     example_paths = find_examples(examples_dir, options)
     (working_examples, broken_examples) = run_examples(example_paths, options)
-    generate_graphs()
+    generate_graphs(examples_dir)
     print_results(len(example_paths), working_examples, broken_examples, options)
