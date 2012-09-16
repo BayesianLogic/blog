@@ -23,7 +23,8 @@ import math
 import subprocess
 import threading
 import matplotlib.pyplot as plot
-import gv
+import pygraphviz as pgv
+#import gv
 from optparse import OptionParser
 from pygraph.classes.digraph import digraph
 from pygraph.readwrite.dot import write
@@ -341,15 +342,15 @@ def generate_graphs(examples_dir, blog_parser):
                 # Plot the graph for the blog CBN
                 if gr is not None:
                     dot = write(gr)
-                    gvv = gv.readstring(dot)
-                    gv.layout(gvv, 'dot')
+                    G = pgv.AGraph(dot)
+                    G.layout(prog="dot")
                     cbn_name = base.replace("/", "_").replace(".", "_")
                     cbn_name += sampler_base(sampler) + ".png"
                     cbn_name = str(os.path.join(model, cbn_name))
-                    gv.render(gvv, 'png', cbn_name)
+                    G.draw(cbn_name)
             # Plot the convergence graph for the blog model
             graph_name = get_graph_name(base, qVar)
-            print "graph_name: " + str(graph_name)
+            #print "graph_name: " + str(graph_name)
             plot.ylabel("Variation Distance")
             plot.xlabel("Num Samples")
             plot.title(str(os.path.basename(example_path) + ": " + str(qVar)))
