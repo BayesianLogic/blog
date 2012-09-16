@@ -2,15 +2,17 @@
     using each available sampling engine and
     displays the time each example takes to complete.
 
-    The script also graphs the variation distance from the true posterior
+    The script graphs the variation distance from the true posterior
     as a function of the number of samples n for each sampler s on each example.
+    It also generates a graphical representation of the blog model associated
+    with each example for easier visual debugging.
 
     The script will soon be upgraded to graph MSE and other forms of error.
     Once DBLOG particle filtering is supported, this script will graph particle
     statistics as well.
 
     @author rbharath
-    @date September 14th, 2012
+    @date September 15th, 2012
 """
 import os
 import sys
@@ -21,14 +23,17 @@ import math
 import subprocess
 import threading
 import matplotlib.pyplot as plot
+import gv
 from optparse import OptionParser
+from pygraph.classes.digraph import digraph
+from pygraph.readwrite.dot import write
 
 # Global Constants
 blog = "./run.sh"
 example = "example"
 solutions = "example/solutions"
-figures = "example/figures"
-figure_type = ".png"
+model = "example/figures/model"
+error = "example/figures/error"
 # Used to Gather Data on working and broken examples
 working_examples = []
 broken_examples = []
@@ -48,7 +53,7 @@ process = None
 output = ""
 # all_data is a global hash table mapping the example_path of a particular example
 # and a particular sampler to the data associated with that example
-#   all_data[example_path][sampler] = data for example run with sampler
+#   all_data[example_path][sampler] = graph, data for example run with sampler
 all_data = {}
 
 class ArgParser(object):
@@ -85,6 +90,120 @@ class ArgParser(object):
             options.samplers = samplers
         return options
 
+class BlogParser(object):
+    """ Parses the output of the blog program into convenient data structures.
+        Currently handles parsing of Query Reporting and CBN printing.
+    """
+    def __init(self):
+        pass
+
+    def parse_blog_output(self, output):
+        """ Parses the blog output and stores it in hash table data. data is a
+        multilevel dictionary. The keys of data are the query variables.  For
+        each query variable qVar, data[qVar] is another dictionary that maps
+        samplesSoFar to distributions.  That is, data[qVar][samplesSoFar] is a
+        distribution. A distribution itself is another dictionary, mapping
+        values to probabilities.  The total structure looks like:
+
+        data[qVar][N][val] = P(qVar = val) according to N samples drawn so far
+        """
+        data = {}
+        graph = None
+        index = 0
+        lines = output.split("\n")
+        lines = [line.strip() for line in lines]
+
+        while index < len(lines):
+            if "Query Results" in lines[index]:
+                index = self.parse_query_result(index, lines, data)
+            elif "Generated World" in lines[index]:
+                graph, index = self.parse_generated_world(index, lines, data)
+            else:
+                index += 1
+        return graph, data
+
+    def parse_query_result(self, index, lines, data):
+        """ Parse the results of reported queries.
+            Precondition: Must be called on line where Query Results is stated.
+        """
+        # Skip the line ======== Query Results =========
+        index += 1
+        if "Iteration" not in lines[index]:
+            samplesSoFar = 0
+        else:
+            iteration_words = lines[index].split()
+            index += 1
+            try:
+                samplesSoFar = int(iteration_words[1].strip(":"))
+            except ValueError:
+                samplesSoFar = 0
+        return self.parse_distribution(index, lines, data, samplesSoFar)
+
+    def parse_generated_world(self, index, lines, data):
+        """ Parse the generated world and store its data
+            into the created data structure.
+        """
+        # Skip the line ======== Generated World =========
+        index += 1
+        vertices = []
+        gr = digraph()
+        node_lines = []
+        edges = []
+        cur = ""
+        while index < len(lines) and "Weight" not in lines[index]:
+            line = lines[index].strip()
+            if "<-" in line:
+                words = line.split()
+                node = words[1]
+                for line in node_lines:
+                    if node in line:
+                        e = (line, cur)
+                        if e not in edges:
+                            #print "adding edge " + str(e)
+                            gr.add_edge(e)
+                            edges.append(e)
+                            break
+            elif "=" in line:
+                #print "adding node: " + str(line)
+                gr.add_nodes([line])
+                node_lines.append(line)
+                cur = line
+            index += 1
+        return gr, index
+
+    def parse_distribution(self, index, lines, data, samplesSoFar):
+        """ Parse the distribution reported in lines starting at line
+            number index and
+            save the results to data. Returns the updated index
+            Precondition: Must be called with index pointing to a Distribution
+        """
+        query_words = lines[index].split()
+        if 'for' not in query_words:
+            return index
+        for_index = query_words.index('for')
+        remaining = query_words[for_index + 1:]
+        query_var = ' '.join(remaining)
+        if query_var not in data:
+            data[query_var] = {}
+        # We should not have called this function for the same value of
+        # samplesSoFar Previously
+        data[query_var][samplesSoFar] = {}
+        index += 1
+        while (index < len(lines) and lines[index] is not "" and "Distribution"
+                not in lines[index] and "Done" not in lines[index]):
+            words = lines[index].split()
+            if len(words) < 2:
+                index += 1
+                continue
+            try:
+                prob = float(words[0])
+            except ValueError:
+                prob = 0
+            val = words[1]
+            data[query_var][samplesSoFar][val] = prob
+            index += 1
+        return index
+
 def sampler_base(s):
     """Given the full name of sampler, e.g. blog.sample.MHSampler, returns
        its base, i.e. MHSampler
@@ -98,7 +217,8 @@ def find_examples(examples_dir, options):
     example_paths = []
     if options.examples is None:
         for dirname, subdirnames, filenames in os.walk(examples_dir):
-            if os.path.basename(dirname) == "figures":
+            if (os.path.basename(dirname) == "figures" or
+                    os.path.basename(dirname) == "solutions"):
                 continue
             for filename in filenames:
                 example_path = os.path.join(dirname, filename)
@@ -107,79 +227,6 @@ def find_examples(examples_dir, options):
         for example in options.examples:
             example_paths.append(example)
     return example_paths
-
-def parse_distribution(index, lines, data, samplesSoFar):
-    """ Parse the distribution reported in lines starting at line number index and
-        save the results to data. Returns the updated index
-        Precondition: Must be called with index pointing to a Distribution
-    """
-    query_words = lines[index].split()
-    if 'for' not in query_words:
-        return index
-    for_index = query_words.index('for')
-    remaining = query_words[for_index + 1:]
-    query_var = ' '.join(remaining)
-    if query_var not in data:
-        data[query_var] = {}
-    # We should not have called this function for the same value of
-    # samplesSoFar Previously
-    data[query_var][samplesSoFar] = {}
-    index += 1
-    while (index < len(lines) and lines[index] is not "" and "Distribution"
-            not in lines[index] and "Done" not in lines[index]):
-        words = lines[index].split()
-        if len(words) < 2:
-            index += 1
-            continue
-        try:
-            prob = float(words[0])
-        except ValueError:
-            prob = 0
-        val = words[1]
-        data[query_var][samplesSoFar][val] = prob
-        index += 1
-    return index
-
-def parse_query_result(index, lines, data):
-    """ Parse the results of reported queries.
-        Precondition: Must be called on line where Query Results is stated.
-    """
-    # Skip the line ======== Query Results =========
-    index += 1
-    if "Iteration" not in lines[index]:
-        samplesSoFar = 0
-    else:
-        iteration_words = lines[index].split()
-        index += 1
-        try:
-            samplesSoFar = int(iteration_words[1].strip(":"))
-        except ValueError:
-            samplesSoFar = 0
-    return parse_distribution(index, lines, data, samplesSoFar)
-
-
-def parse_blog_output(output):
-    """ Parses the blog output and stores it in hash table data. data is a
-    multilevel dictionary. The keys of data are the query variables.  For each
-    query variable qVar, data[qVar] is another dictionary that maps samplesSoFar
-    to distributions.  That is, data[qVar][samplesSoFar] is a distribution. A
-    distribution itself is another dictionary, mapping values to probabilities.
-    The total structure looks like:
-
-        data[qVar][N][val] = P(qVar = val) according to N samples drawn so far
-    """
-    data = {}
-    index = 0
-    lines = output.split("\n")
-    lines = [line.strip() for line in lines]
-
-    while True:
-        while index < len(lines) and "Query Results" not in lines[index]:
-            index += 1
-        if index >= len(lines):
-            break
-        index = parse_query_result(index, lines, data)
-    return data
 
 def run_with_timeout(command, timeout):
     """ Run given command for timeout seconds. If command does not exit
@@ -234,13 +281,15 @@ def variation_distance(data1, data2):
         distance += math.fabs(val1 - val2)
     return .5 * distance
 
-def generate_graphs(examples_dir):
+def generate_graphs(examples_dir, blog_parser):
     """ Generate Graphs from data gathered on examples. These graphs currently
         show the changes in variation distance over number samples.
     """
     global all_data
     global solutions
     global colors
+    global model
+    global error
 
     for example_path in all_data:
         sampler_data = all_data[example_path]
@@ -250,12 +299,12 @@ def generate_graphs(examples_dir):
         if os.path.isfile(solution_path):
             solution = open(solution_path)
             output = solution.read()
-            solution_data = parse_blog_output(output)
+            solution_graph, solution_data = blog_parser.parse_blog_output(output)
         else:
             # Construct solution from LWSampler results
             LWSampler = "blog.sample.LWSampler"
             if LWSampler in sampler_data:
-                lw_data = sampler_data[LWSampler]
+                lw_graph, lw_data = sampler_data[LWSampler]
             else:
                 continue
             if len(lw_data.keys()) == 0:
@@ -270,15 +319,16 @@ def generate_graphs(examples_dir):
                 # parse_blog_output
                 solution_data[qVar] = {}
                 solution_data[qVar][0] = lw_qvar_data[N]
-            #all_data[example_path]["solution"] = solution_data
         # Use the solution data to generate the graphs for example_path
         for qVar in solution_data.keys():
             plot.clf()
+            base = os.path.relpath(example_path, examples_dir)
             for sampler in sampler_data.keys():
-                if (sampler not in sampler_data or
-                        qVar not in sampler_data[sampler]):
+                gr, file_data = sampler_data[sampler]
+                if (qVar not in file_data):
                     continue
-                data = sampler_data[sampler][qVar]
+                data = file_data[qVar]
+                # Plot the convergence rates
                 xs = []
                 ys = []
                 for n in sorted(data.keys()):
@@ -288,7 +338,16 @@ def generate_graphs(examples_dir):
                     ys.append(dist)
                 plot.scatter(xs, ys, c=colors[sampler],
                              label=sampler_base(sampler))
-            base = os.path.relpath(example_path, examples_dir)
+                # Plot the graph for the blog CBN
+                if gr is not None:
+                    dot = write(gr)
+                    gvv = gv.readstring(dot)
+                    gv.layout(gvv, 'dot')
+                    cbn_name = base.replace("/", "_").replace(".", "_")
+                    cbn_name += sampler_base(sampler) + ".png"
+                    cbn_name = str(os.path.join(model, cbn_name))
+                    gv.render(gvv, 'png', cbn_name)
+            # Plot the convergence graph for the blog model
             graph_name = get_graph_name(base, qVar)
             print "graph_name: " + str(graph_name)
             plot.ylabel("Variation Distance")
@@ -301,15 +360,14 @@ def get_graph_name(example_path, qVar):
     """ Get the name of the graph for a given example_path, sampler,
         and query variable.
     """
-    global figures
-    global figure_type
+    global error
     example = str(example_path)
     example += "_" + str(qVar)
     example = example.replace("/","_").replace(".","_")
-    example += figure_type
-    return str(os.path.join(figures, example))
+    example += ".png"
+    return str(os.path.join(error, example))
 
-def run_examples(example_paths, options):
+def run_examples(example_paths, blog_parser, options):
     """ Run all examples in the examples folder, gather timing statistics.
     """
     global blog
@@ -321,7 +379,7 @@ def run_examples(example_paths, options):
         timings = {}
         for sampler in options.samplers:
             command = [blog, "--sampler", sampler, example_path]
-            command += ["-n", options.n, "-q", options.q]
+            command += ["-n", options.n, "-q", options.q, "--print"]
             result = 0
             start_time = time.time()
             # This function spawns a thread to execute command. That thread
@@ -333,10 +391,10 @@ def run_examples(example_paths, options):
                 out = "Fail!"
                 broken_examples.append((example_path, sampler))
             else:
-                data = parse_blog_output(output)
+                graph, data = blog_parser.parse_blog_output(output)
                 if example_path not in all_data:
                     all_data[example_path] = {}
-                all_data[example_path][sampler] = data
+                all_data[example_path][sampler] = graph, data
             timings[sampler] = out
         working_examples.append((example_path, timings))
     return (working_examples, broken_examples)
@@ -366,15 +424,17 @@ def print_results(num_examples, working_examples, broken_examples, options):
             out += " " * (diff_len + 1) + str(time)
         print out
     out = str(len(working_examples) * len(samplers) - len(broken_examples))
-    out += " passed."
+    out += " completed."
     print out
     print str(len(broken_examples)) + " failed:"
 
 if __name__ == "__main__":
     argParser = ArgParser()
     options = argParser.parse_args()
+    blog_parser = BlogParser()
     examples_dir = os.path.join(os.getcwd(), example)
     example_paths = find_examples(examples_dir, options)
-    (working_examples, broken_examples) = run_examples(example_paths, options)
-    generate_graphs(examples_dir)
+    (working_examples, broken_examples) = run_examples(example_paths,
+                                                    blog_parser, options)
+    generate_graphs(examples_dir, blog_parser)
     print_results(len(example_paths), working_examples, broken_examples, options)

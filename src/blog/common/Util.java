@@ -571,11 +571,27 @@ public class Util {
 	}
 
 	/**
+	 * Returns true if the program should print extra the model. This value
+	 * is false unless it has been set to true using <code>setPrint</code>.
+	 */
+	public static boolean print() {
+		return print;
+	}
+
+	/**
 	 * Sets a flag indicating whether the program should print extra status
 	 * messages. If this message is not called, the flag defaults to false.
 	 */
 	public static void setVerbose(boolean v) {
 		verbose = v;
+	}
+
+	/**
+	 * Sets a flag indicating whether the program should print the generated
+	 * model. If this message is not called, the flag defaults to false.
+	 */
+	public static void setPrint(boolean p) {
+		print = p;
 	}
 
 	/**
@@ -1992,4 +2008,5 @@ public class Util {
 
 	private static Random rand;
 	private static boolean verbose = false;
+    private static boolean print = false;
 }
