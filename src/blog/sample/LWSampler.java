@@ -132,11 +132,11 @@ public class LWSampler extends Sampler {
 		BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
 				afterSamplingListener);
 
-		if (Util.verbose()) {
-			System.out.println("Generated world:");
-			curWorld.print(System.out);
-			System.out.println("Weight: " + weight);
-		}
+		//if (Util.verbose()) {
+		//	System.out.println("Generated world:");
+		//	curWorld.print(System.out);
+		//	System.out.println("Weight: " + weight);
+		//}
 
 		++totalNumSamples;
 		++numSamplesThisTrial;

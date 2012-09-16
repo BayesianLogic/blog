@@ -45,6 +45,7 @@ import blog.common.Timer;
 import blog.common.Util;
 import blog.model.Model;
 import blog.model.Query;
+import blog.world.PartialWorld;
 import blog.sample.Sampler;
 
 /**
@@ -134,6 +135,14 @@ public class SamplingEngine extends InferenceEngine {
         this(model, new Properties());
     }
 
+    public void printGeneratedWorld(Sampler sampler, double weight) {
+      PartialWorld curWorld = sampler.getLatestWorld(); 
+      System.out.println("======== Generated World: ========");
+      curWorld.print(System.out);
+      System.out.println("======== Weight: " + weight + " ========");
+    }
+
+
     public void answerQueries() {
         sampler.initialize(evidence, queries);
 
@@ -147,22 +156,27 @@ public class SamplingEngine extends InferenceEngine {
         Timer timer = new Timer();
         timer.start();
 
+        double weight = 0.0;
         for (int i = 0; i < numSamples; ++i) {
             if (Util.verbose()) {
                 System.out.println();
                 System.out.println("Iteration " + i + ":");
             }
             sampler.nextSample();
-            double weight = sampler.getLatestWeight();
+            weight = sampler.getLatestWeight();
+
+            if (Util.verbose()) {
+                printGeneratedWorld(sampler, weight);
+            }
             
             if (i != 0 && (i) % queryReportInterval == 0) {
-				// Print query results
-				System.out.println("======== Query Results ========");
+            // Print query results
+            System.out.println("======== Query Results ========");
                 System.out.println("Iteration " + i + ":");
-				for (Iterator iter = queries.iterator(); iter.hasNext();) {
-					Query q = (Query) iter.next();
-					q.printResults(System.out);
-				}
+                for (Iterator iter = queries.iterator(); iter.hasNext();) {
+                   Query q = (Query) iter.next();
+                   q.printResults(System.out);
+                }
                 System.out.println("======== Done ========");
             }
 
@@ -198,6 +212,10 @@ public class SamplingEngine extends InferenceEngine {
                                     + ".  \tTime elapsed: "
                                     + timer.elapsedTime() + " s.");
             }
+        }
+
+        if (Util.print()) {
+            printGeneratedWorld(sampler, weight);
         }
         sampler.printStats();
     }
