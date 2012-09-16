@@ -179,6 +179,7 @@ public class Main {
 		queries = new ArrayList<Query>();
 		parseOptions(args);
 		Util.setVerbose(verbose);
+        Util.setPrint(print);
 		Util.initRandom(randomize);
 		// BLOGParser.setPackagesToSearch(packages);
 	}
@@ -331,6 +332,8 @@ public class Main {
 				"Parser looks for classes in package <s>");
 		BooleanOption optVerbose = new BooleanOption("v", "verbose", false,
 				"Print info about every world sampled");
+		BooleanOption optPrint = new BooleanOption("p", "print", false,
+				"Print the CBN of the sampled world");
 		BooleanOption optDebug = new BooleanOption("g", "debug", false,
 				"Print model, evidence, and queries");
 		StringOption optWrite = new StringOption("w", "write", null,
@@ -357,6 +360,7 @@ public class Main {
 		generate = optGenerate.getValue();
 		packages = optPackages.getValue();
 		verbose = optVerbose.getValue();
+        print = optPrint.getValue();
 		debug = optDebug.getValue();
 
 		outputPath = optWrite.getValue();
@@ -683,6 +687,7 @@ public class Main {
 	private static boolean generate;
 	private static List<String> packages = new LinkedList<String>(); // of String
 	private static boolean verbose;
+    private static boolean print;
 	private static boolean debug;
 	private static String outputPath;
 	private static int outputInterval;
