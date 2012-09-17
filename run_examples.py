@@ -364,7 +364,8 @@ def get_graph_name(example_path, qVar):
     global error
     example = str(example_path)
     example += "_" + str(qVar)
-    example = example.replace("/","_").replace(".","_")
+    example = example.replace("/","_").replace(".","_").replace("{",
+            "(").replace("}", ")").replace(" ", "_").replace("#","N")
     example += ".png"
     return str(os.path.join(error, example))
 
