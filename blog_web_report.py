@@ -33,6 +33,8 @@ fname = name + ".html"
 f = open(fname, "w")
 command = ["python", "run_examples.py", "-e", blog]
 subprocess.call(command)
+model_name = None
+error_name = None
 
 for m in os.listdir(model):
     if name in str(m):
@@ -48,10 +50,12 @@ for m in os.listdir(hist):
     if name in str(m):
         hist_names.append(m)
 
-model_path = os.path.join(model, model_name)
-print "model_path: " + model_path
-error_path = os.path.join(error, error_name)
-print "error_path: " + error_path
+if model_name is not None:
+    model_path = os.path.join(model, model_name)
+    print "model_path: " + model_path
+if error_name is not None:
+    error_path = os.path.join(error, error_name)
+    print "error_path: " + error_path
 hist_paths = []
 for hist_name in hist_names:
     hist_paths.append(os.path.join(hist, hist_name))
@@ -64,15 +68,17 @@ out += "</h1>\n"
 out += "<h2>\n"
 out += "CBN: \n"
 out += "</h2>\n"
-out += "<p>\n"
-out += "<img src=\"" + cgi.escape(model_path) + "\"/>\n"
-out += "</p>\n"
+if model_name is not None:
+    out += "<p>\n"
+    out += "<img src=\"" + cgi.escape(model_path) + "\"/>\n"
+    out += "</p>\n"
 out += "<h2>\n"
 out += "Convergence: \n"
 out += "</h2>\n"
-out += "<p>\n"
-out += "<img src=\"" + cgi.escape(error_path) + "\"/>\n"
-out += "</p>\n"
+if error_name is not None:
+    out += "<p>\n"
+    out += "<img src=\"" + cgi.escape(error_path) + "\"/>\n"
+    out += "</p>\n"
 out += "<h2>\n"
 out += "Histograms: \n"
 out += "</h2>\n"
@@ -88,6 +94,6 @@ if sys.platform == 'darwin':
     command = ["open", fname]
     subprocess.call(command)
     pass
-elif sys.platform.startwith('linux'):
+elif sys.platform.startswith('linux'):
     command = ["xdg-open", fname]
     subprocess.call(command)
