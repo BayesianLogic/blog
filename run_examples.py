@@ -23,6 +23,7 @@ import math
 import subprocess
 import threading
 import matplotlib.pyplot as plot
+import matplotlib.figure as figure
 import pygraphviz as pgv
 #import gv
 from optparse import OptionParser
@@ -35,6 +36,7 @@ example = "example"
 solutions = "example/solutions"
 model = "example/figures/model"
 error = "example/figures/error"
+hist = "example/figures/hist"
 # Used to Gather Data on working and broken examples
 working_examples = []
 broken_examples = []
@@ -321,9 +323,10 @@ def generate_graphs(examples_dir, blog_parser):
                 solution_data[qVar] = {}
                 solution_data[qVar][0] = lw_qvar_data[N]
         # Use the solution data to generate the graphs for example_path
+        histograms = {}
+        base = os.path.relpath(example_path, examples_dir)
         for qVar in solution_data.keys():
             plot.clf()
-            base = os.path.relpath(example_path, examples_dir)
             for sampler in sampler_data.keys():
                 gr, file_data = sampler_data[sampler]
                 if (qVar not in file_data):
@@ -332,6 +335,9 @@ def generate_graphs(examples_dir, blog_parser):
                 # Plot the convergence rates
                 xs = []
                 ys = []
+                N = max(data.keys())
+                final = data[N]
+                histograms[(qVar, sampler)] = final
                 for n in sorted(data.keys()):
                     dist = variation_distance(data[n],
                                               solution_data[qVar][0])
@@ -349,25 +355,43 @@ def generate_graphs(examples_dir, blog_parser):
                     cbn_name = str(os.path.join(model, cbn_name))
                     G.draw(cbn_name)
             # Plot the convergence graph for the blog model
-            graph_name = get_graph_name(base, qVar)
+            graph_name = get_graph_name(base, qVar, "")
             #print "graph_name: " + str(graph_name)
             plot.ylabel("Variation Distance")
             plot.xlabel("Num Samples")
             plot.title(str(os.path.basename(example_path) + ": " + str(qVar)))
             plot.legend()
             plot.savefig(graph_name)
+        for (qVar, sampler) in histograms:
+            plot.clf()
+            data = histograms[(qVar, sampler)]
+            for x in data:
+                y = data[x]
+                #print "(x,y) = " + str((x,y))
+                plot.bar(float(x),float(y),width=1)
+            plot.title(str(qVar) + ": " + str(sampler_base(sampler)))
+            plot.xlabel("Value")
+            plot.ylabel("Probability")
+            hist_name = get_graph_name(base, qVar, sampler_base(sampler),
+                                        plot_error=False, plot_hist=True)
+            plot.savefig(hist_name)
 
-def get_graph_name(example_path, qVar):
+def get_graph_name(example_path, qVar, sampler, plot_error=True, plot_hist=False):
     """ Get the name of the graph for a given example_path, sampler,
         and query variable.
     """
     global error
+    global hist
     example = str(example_path)
-    example += "_" + str(qVar)
+    example += "_" + str(qVar) + "_" + str(sampler)
     example = example.replace("/","_").replace(".","_").replace("{",
             "(").replace("}", ")").replace(" ", "_").replace("#","N")
     example += ".png"
-    return str(os.path.join(error, example))
+    if plot_error:
+        example = str(os.path.join(error, example))
+    elif plot_hist:
+        example = str(os.path.join(hist, example))
+    return example
 
 def run_examples(example_paths, blog_parser, options):
     """ Run all examples in the examples folder, gather timing statistics.
