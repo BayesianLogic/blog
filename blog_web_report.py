@@ -13,6 +13,7 @@ import subprocess
 usage = "Accepts exactly one argument, a blog file!"
 model = "example/figures/model"
 error = "example/figures/error"
+hist = "example/figures/hist"
 out = ""
 
 if len(sys.argv) != 2:
@@ -41,22 +42,43 @@ for m in os.listdir(error):
         error_name = m
         break
 
+hist_names = []
+for m in os.listdir(hist):
+    if name in str(m):
+        hist_names.append(m)
+
 model_path = os.path.join(model, model_name)
 print "model_path: " + model_path
 error_path = os.path.join(error, error_name)
 print "error_path: " + error_path
+hist_paths = []
+for hist_name in hist_names:
+    hist_paths.append(os.path.join(hist, hist_name))
 
 out += "<html>\n"
 out += "<body>\n"
 out += "<h1>\n"
 out += blog + "\n"
 out += "</h1>\n"
+out += "<h2>\n"
+out += "CBN: \n"
+out += "</h2>\n"
 out += "<p>\n"
 out += "<img src=\"" + cgi.escape(model_path) + "\"/>\n"
 out += "</p>\n"
+out += "<h2>\n"
+out += "Convergence: \n"
+out += "</h2>\n"
 out += "<p>\n"
 out += "<img src=\"" + cgi.escape(error_path) + "\"/>\n"
 out += "</p>\n"
+out += "<h2>\n"
+out += "Histograms: \n"
+out += "</h2>\n"
+for hist_path in hist_paths:
+    out += "<p>\n"
+    out += "<img src=\"" + cgi.escape(hist_path) + "\"/>\n"
+    out += "</p>\n"
 out += "</body>\n"
 out += "</html>\n"
 f.write(out)
