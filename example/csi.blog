@@ -9,15 +9,13 @@ random Boolean U ~ Bernoulli(0.3);
 
 random Boolean V ~ Bernoulli(0.9);
 
-random Boolean W ~ Bernoulli[0.1]()
-};
+random Boolean W ~ Bernoulli(0.1);
 
 random Boolean X {
-	if U 
-      then ~ TabularCPD({True -> ~ Categorical({True -> 0.8, False -> 0.2}),
-                         False -> ~ Categorical({True -> 0.2, False -> 0.8})}, W)
-	  else ~ TabularCPD({True -> ~ Categorical({True -> 0.8, False -> 0.2}),
-                         False -> ~ Categorical({True -> 0.2, False -> 0.8})}, V)
+    if U then ~ TabularCPD({true -> ~ Bernoulli(0.8),
+       	      		    false -> ~ Bernoulli(0.2)}, W)
+    else ~ TabularCPD({true -> ~ Bernoulli(0.8),
+    	   	       false -> ~ Bernoulli(0.2)}, V)
 };
 
 query X;
