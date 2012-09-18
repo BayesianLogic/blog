@@ -1,0 +1,67 @@
+/**
+ * blackjack-for-one.blog
+ * ----------------------
+ * This model is a simplification of blackjack.blog for a single player.
+ * 
+ * A deck of playing cards is generated and two cards are dealt to
+ * a player.  On seeing these cards, the player would like to know the
+ * most likely outcomes of his hand.  We assume a strategy where the
+ * player
+ *
+ * Face cards are worth 10 points, aces either 1 or 11, and all others
+ * their face value.
+ *
+ * @author awong
+ */
+type Card;
+type Suit;
+type Rank;
+
+/* Define a deck of cards */
+distinct Suit Clubs, Diamonds, Hearts, Spades;
+distinct Rank Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King;
+
+origin Suit Suit(Card);
+origin Rank Rank(Card);
+
+#Card(Suit=s, Rank=r) = 1;
+
+/* Point values of cards in Blackjack (Aces are 1 for now) */
+fixed Integer Value(Rank r)
+    = TabularInterp(1,
+	Ace, 1,
+	Two, 2,
+	Three, 3,
+	Four, 4,
+	Five, 5,
+	Six, 6,
+	Seven, 7,
+	Eight, 8,
+	Nine, 9,
+	Ten, 10,
+	Jack, 10,
+	Queen, 10,
+	King, 10);
+
+random Card InitialCard1 ~ UniformChoice({Card c});
+random Card InitialCard2 ~ UniformChoice({Card c: c != InitialCard1});
+
+random Card CardDrawn(Timestep t) {
+    if ((t == @0) | (Score(Prev(t)) < 16)) then
+        ~ UniformChoice({Card c: (c != InitialCard1) & (c != InitialCard2)
+	  		      	 & (forall Timestep t2 ((t2 < t) & (CardDrawn(t2) != c)))})
+};
+
+random Integer Score(Timestep t) {
+    if ((t == @0) & (CardDrawn(t) != null)) then
+        = Value(Rank(InitialCard1)) + Value(Rank(InitialCard2)) + Value(Rank(CardDrawn(@0)))
+    else if (CardDrawn(t) != null) then
+    	= Score(Prev(t)) + Value(Rank(CardDrawn(t)))
+    else
+        = Score(Prev(t))
+};
+
+obs Value(Rank(InitialCard1)) = 1;
+obs Value(Rank(InitialCard2)) = 1;
+
+query Score(@5);

@@ -55,9 +55,10 @@ import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
 import blog.model.Clause;
-import blog.model.ComparisonTerm;
+import blog.model.ComparisonFormula;
 import blog.model.ConjFormula;
 import blog.model.DependencyModel;
+import blog.model.DisjFormula;
 import blog.model.EqualityFormula;
 import blog.model.Evidence;
 import blog.model.ExistentialFormula;
@@ -874,6 +875,7 @@ public class Semant {
                 Object left, right;
                 switch (e.oper) {
                 case OpExpr.PLUS:
+                		
                         break;
                 case OpExpr.MINUS:
                         break;
@@ -894,19 +896,19 @@ public class Semant {
                 case OpExpr.LT:
                         left = transExpr(e.left);
                         right = transExpr(e.right);
-                        return new ComparisonTerm((Term) left, (Term) right, OpExpr.LT);
+                        return new ComparisonFormula((Term) left, (Term) right, OpExpr.LT);
                 case OpExpr.LEQ:
                         left = transExpr(e.left);
                         right = transExpr(e.right);
-                        return new ComparisonTerm((Term) left, (Term) right, OpExpr.LEQ);
+                        return new ComparisonFormula((Term) left, (Term) right, OpExpr.LEQ);
                 case OpExpr.GT:
                         left = transExpr(e.left);
                         right = transExpr(e.right);
-                        return new ComparisonTerm((Term) left, (Term) right, OpExpr.GT);
+                        return new ComparisonFormula((Term) left, (Term) right, OpExpr.GT);
                 case OpExpr.GEQ:
                         left = transExpr(e.left);
                         right = transExpr(e.right);
-                        return new ComparisonTerm((Term) left, (Term) right, OpExpr.GEQ);
+                        return new ComparisonFormula((Term) left, (Term) right, OpExpr.GEQ);
                 case OpExpr.AND:
                         left = transExpr(e.left);
                         right = transExpr(e.right);
@@ -918,9 +920,18 @@ public class Semant {
                         }
                         return new ConjFormula((Formula) left, (Formula) right);
                 case OpExpr.OR:
-                        break;
+	                    left = transExpr(e.left);
+	                    right = transExpr(e.right);
+	                    if (left instanceof Term) {
+	                            left = new EqualityFormula((Term) left, BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+	                    }
+	                    if (right instanceof Term) {
+	                            right = new EqualityFormula((Term) right, BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+	                    }
+	                    return new DisjFormula((Formula) left, (Formula) right);
                 case OpExpr.NOT:
-                        break;
+                		right = transExpr(e.right);
+                		return new NegFormula((Formula)right);
                 case OpExpr.SUB:
                         break;
                 case OpExpr.AT:
