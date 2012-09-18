@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """ Run the specified blog file and generate a html file reporting
     the convergence graph and the generated CBN.
 
@@ -83,10 +84,10 @@ out += "</body>\n"
 out += "</html>\n"
 f.write(out)
 f.close()
-if os.name == 'mac':
+if sys.platform == 'darwin':
     command = ["open", fname]
     subprocess.call(command)
     pass
-elif os.name == 'posix':
+elif sys.platform.startwith('linux'):
     command = ["xdg-open", fname]
     subprocess.call(command)
