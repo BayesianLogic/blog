@@ -82,10 +82,10 @@ if error_name is not None:
 out += "<h2>\n"
 out += "Histograms: \n"
 out += "</h2>\n"
+out += "<div style=\"width:1633px\">\n"
 for hist_path in hist_paths:
-    out += "<p>\n"
-    out += "<img src=\"" + cgi.escape(hist_path) + "\"/>\n"
-    out += "</p>\n"
+    out += "<img src=\"" + cgi.escape(hist_path) + "\" style=\"float:left;width:49%\"/>\n"
+out += "</div>\n"
 out += "</body>\n"
 out += "</html>\n"
 f.write(out)
