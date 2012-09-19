@@ -24,4 +24,4 @@ obs {Blip b} = {B1, B2, B3};
 
 // Query
 query #{Aircraft a};
-
+//query #{Aircraft a: Position(a) > 5};
