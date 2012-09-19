@@ -1,0 +1,27 @@
+// Type Declarations
+type Aircraft;
+type Blip;
+
+// Origin Declarations
+origin Aircraft Source(Blip);
+
+// Number Declarations
+#Aircraft ~ Poisson(5);
+#Blip(Source=a) ~ Poisson(4);
+
+random Real Position(Aircraft a)
+ ~ UnivarGaussian(0, 10);
+
+// Evidence
+obs {Blip b} = {B1, B2, B3};
+
+random Real ObsPos(Blip b)
+  ~ UnivarGaussian(Position(Source(b)), 1);
+
+obs ObsPos(B1) = 5.0;
+obs ObsPos(B2) = 6.1;
+obs ObsPos(B3) = 7.5;
+
+// Query
+query #{Aircraft a};
+
