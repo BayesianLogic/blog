@@ -12,11 +12,11 @@ origin Aircraft Source(Blip);
 random Real Position(Aircraft a)
  ~ UnivarGaussian(0, 10);
 
-// Evidence
-obs {Blip b} = {B1, B2, B3};
-
 random Real ObsPos(Blip b)
   ~ UnivarGaussian(Position(Source(b)), 1);
+
+// Evidence
+obs {Blip b} = {B1, B2, B3};
 
 obs ObsPos(B1) = 5.0;
 obs ObsPos(B2) = 6.1;
