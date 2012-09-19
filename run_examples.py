@@ -44,7 +44,9 @@ broken_examples = []
 LWSampler = "blog.sample.LWSampler"
 MHSampler = "blog.sample.MHSampler"
 ModularLWSampler = "blog.sample.modular.ModularLWSampler"
-samplers = [LWSampler, MHSampler, ModularLWSampler]
+#samplers = [LWSampler, MHSampler, ModularLWSampler]
+# skip MHSampler for the demo purpose
+samplers = [LWSampler, ModularLWSampler]
 # Set your favorite color for your sampler
 colors = {}
 colors[LWSampler] = "r"
