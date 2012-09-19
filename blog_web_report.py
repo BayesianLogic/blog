@@ -31,7 +31,7 @@ if len(parts) != 2 or (parts[1] != "blog" and parts[1] != "dblog"):
 
 fname = name + ".html"
 f = open(fname, "w")
-command = ["python", "run_examples.py", "-e", blog]
+command = ["python", "run_examples.py", "-r", "-e", blog]
 subprocess.call(command)
 model_name = None
 error_name = None
