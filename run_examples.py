@@ -371,10 +371,20 @@ def generate_graphs(examples_dir, blog_parser):
         for (qVar, sampler) in histograms:
             plot.clf()
             data = histograms[(qVar, sampler)]
-            for x in data:
+            j = 0
+            setValues = False
+            for x in sorted(data.keys()):
                 y = data[x]
                 #print "(x,y) = " + str((x,y))
-                plot.bar(float(x),float(y),color=colors[sampler],width=1,log=True)
+                try:
+                    plot.bar(float(x),float(y),width=1, log=True)
+                except ValueError:
+                    plot.bar(j, float(y), width=1, log=True)
+                    setValues = True
+                j += 1
+            if setValues:
+                plot.xticks([x + 0.5 for x in range(len(data.keys()))],
+                            [str(s) for s in sorted(data.keys())])
             plot.title(str(qVar) + ": " + str(sampler_base(sampler)))
             plot.xlabel("Value")
             plot.ylabel("Probability")
