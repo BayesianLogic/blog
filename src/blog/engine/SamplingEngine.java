@@ -144,6 +144,7 @@ public class SamplingEngine extends InferenceEngine {
 
 
     public void answerQueries() {
+        boolean printed = false;
         sampler.initialize(evidence, queries);
 
         System.out.println("Evidence: " + evidence);
@@ -212,11 +213,13 @@ public class SamplingEngine extends InferenceEngine {
                                     + ".  \tTime elapsed: "
                                     + timer.elapsedTime() + " s.");
             }
+
+            if (Util.print() && weight > 0 && !printed) {
+                printGeneratedWorld(sampler, weight);
+                printed = true;
+            }
         }
 
-        if (Util.print()) {
-            printGeneratedWorld(sampler, weight);
-        }
         sampler.printStats();
     }
 
