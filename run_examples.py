@@ -349,8 +349,8 @@ def generate_graphs(examples_dir, blog_parser):
                                               solution_data[qVar][0])
                     xs.append(n)
                     ys.append(dist)
-                plot.scatter(xs, ys, c=colors[sampler],
-                             label=sampler_base(sampler))
+                plot.plot(xs, ys, 'o-', color=colors[sampler],
+                             label=sampler_base(sampler), linewidth=2)
                 # Plot the graph for the blog CBN
                 if gr is not None:
                     dot = write(gr)
@@ -374,7 +374,7 @@ def generate_graphs(examples_dir, blog_parser):
             for x in data:
                 y = data[x]
                 #print "(x,y) = " + str((x,y))
-                plot.bar(float(x),float(y),width=1)
+                plot.bar(float(x),float(y),color=colors[sampler],width=1,log=True)
             plot.title(str(qVar) + ": " + str(sampler_base(sampler)))
             plot.xlabel("Value")
             plot.ylabel("Probability")
