@@ -86,6 +86,11 @@ class ArgParser(object):
                                 default=5000,
                                 metavar="QUERY_INTERVAL",
                                 help="report query results per this many samples")
+        self.parser.add_option("-r", "--random", dest="r",
+                                action="append", type="bool",
+                                default=False,
+                                metavar="RANDOM_SEED",
+                                help="use a random seed instead of fixed seed")
     def parse_args(self):
         global samplers
         (options, _) = self.parser.parse_args()
@@ -406,6 +411,8 @@ def run_examples(example_paths, blog_parser, options):
         for sampler in options.samplers:
             command = [blog, "--sampler", sampler, example_path]
             command += ["-n", options.n, "-q", options.q, "--print"]
+            if options.r:
+                command += ["-r"]
             result = 0
             start_time = time.time()
             # This function spawns a thread to execute command. That thread
