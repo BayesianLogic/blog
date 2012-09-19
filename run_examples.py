@@ -59,6 +59,7 @@ output = ""
 #   all_data[example_path][sampler] = graph, data for example run with sampler
 all_data = {}
 
+
 class ArgParser(object):
     """ Arguments accepted by this script.
     """
@@ -87,7 +88,7 @@ class ArgParser(object):
                                 metavar="QUERY_INTERVAL",
                                 help="report query results per this many samples")
         self.parser.add_option("-r", "--random", dest="r",
-                                action="append", type="bool",
+                                action="store_true",
                                 default=False,
                                 metavar="RANDOM_SEED",
                                 help="use a random seed instead of fixed seed")
@@ -412,7 +413,7 @@ def run_examples(example_paths, blog_parser, options):
             command = [blog, "--sampler", sampler, example_path]
             command += ["-n", options.n, "-q", options.q, "--print"]
             if options.r:
-                command += ["-r"]
+                command.append("-r")
             result = 0
             start_time = time.time()
             # This function spawns a thread to execute command. That thread
