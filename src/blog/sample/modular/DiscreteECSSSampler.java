@@ -66,6 +66,12 @@ public class DiscreteECSSSampler extends LWSampler {
 
 	@Override
 	public void nextSample() {
+		ECSSWorld curWorld = (ECSSWorld) getBaseWorld();
+		if (curWorld == null)
+		{
+			curWorld = new ECSSWorld(model, evidence, intBound, depthBound);
+			Util.debug("Creating initial possible world");
+		}
 	}
 
 	private void recursiveCardinalitySampler(Type t) {
@@ -128,16 +134,21 @@ class ECSSWorld extends DefaultPartialWorld {
 			
 			// init list of supported #vars
 			waitingNumberVars.put(generatedType, new LinkedList<NumberVar>());
+			
+			HashSet<Type> originSet = new HashSet<Type>();
 
 			for (POP pop : pops) {
 				for (int i = 0; i < pop.getArgTypes().length; ++i) {
 					objectsByType.put(pop.getArgTypes()[i], new ArrayList());
+					originSet.add(pop.getArgTypes()[i]);
 				}
 				
 				if (pop.getArgTypes().length == 0) {
 					addNumberVar(new NumberVar(pop, Collections.EMPTY_LIST));
 				}
 			}
+			
+			remainingOriginSet.put(generatedType, originSet);
 		}
 		
 		/**
@@ -164,7 +175,7 @@ class ECSSWorld extends DefaultPartialWorld {
 		for (Type type : objectsByType.keySet()) {
 			if (type.isSubtypeOf(BuiltInTypes.INTEGER)) {
 				addObjects(type, Collections.singleton(new Integer(0)));
-				// intsAreArgs = true;
+				intsAreArgs = true;
 			} else if (type == BuiltInTypes.BOOLEAN) {
 				addObjects(type, type.getGuaranteedObjects());
 			} else if (type.isBuiltIn()) {
@@ -175,6 +186,69 @@ class ECSSWorld extends DefaultPartialWorld {
 				addObjects(type, type.getGuaranteedObjects());
 			}
 		}
+		
+		moveSamplableNumVars();
+		System.out.println("place");
+	}
+	
+	private void moveSamplableNumVars() {
+		LinkedList<Type> newlySamplable = new LinkedList<Type>();
+		LinkedList<Type> toRemoveFromRemainingSet = new LinkedList<Type>();
+		for (Type type : remainingOriginSet.keySet()) {
+			HashSet<Type> waitingOnOrigins = remainingOriginSet.get(type);
+			if (waitingOnOrigins.isEmpty()) {
+				toRemoveFromRemainingSet.add(type);
+				LinkedList<NumberVar> allNumberVars = waitingNumberVars.get(type);
+				if (!allNumberVars.isEmpty()) {
+					newlySamplable.add(type);
+				}
+			}
+		}
+		for (Type type : newlySamplable) {
+			uninstNumberVars.add(waitingNumberVars.get(type));
+		}
+		for (Type type : toRemoveFromRemainingSet) {
+			remainingOriginSet.remove(type);
+			waitingNumberVars.remove(type);
+		}
+	}
+	
+	public void notifySampled(Type sampledType) {
+		for (Type type : remainingOriginSet.keySet()) {
+			remainingOriginSet.get(type).remove(sampledType);
+		}
+		moveSamplableNumVars();
+	}
+	
+	/**
+	 * Increases the maximum magnitude of integers (and natural numbers) in the
+	 * object lists by 1. Adds any basic RVs that use the newly added integers to
+	 * the uninstantiated variables list.
+	 * 
+	 * Note that no variables will be added if integers don't serve as arguments
+	 * to basic RVs in this model, or if they only occur in argument lists along
+	 * with types that happen to have an empty extension in this world. In either
+	 * case, if increasing maxInt by 1 doesn't yield new variables, then further
+	 * increases won't do anything either. So there's no point in calling this
+	 * method in a loop.
+	 */
+	void increaseMaxInt() {
+		if (intsAreArgs && ((intBound < 0) || (maxInt < intBound))) {
+
+			++maxInt;
+
+			if (objectsByType.containsKey(BuiltInTypes.NATURAL_NUM)) {
+				addObjects(BuiltInTypes.NATURAL_NUM,
+						Collections.singleton(new Integer(maxInt)));
+			}
+
+			if (objectsByType.containsKey(BuiltInTypes.INTEGER)) {
+				List newInts = new ArrayList();
+				newInts.add(new Integer(maxInt));
+				newInts.add(new Integer(-maxInt));
+				addObjects(BuiltInTypes.INTEGER, newInts);
+			}
+		}
 	}
 	
 	private void addNumberVar(NumberVar var) {
@@ -183,10 +257,6 @@ class ECSSWorld extends DefaultPartialWorld {
 		pops.remove(var.pop());
 		LinkedList<NumberVar> allNumVarsWithType = waitingNumberVars.get(type);
 		allNumVarsWithType.add(var);
-		if (pops.isEmpty()) {
-			waitingNumberVars.remove(type);
-			uninstNumberVars.add(allNumVarsWithType);
-		}
 	}
 	
 	private void addObjects(Type newObjType, Collection newObjs) {
@@ -299,8 +369,16 @@ class ECSSWorld extends DefaultPartialWorld {
 	// that is not fully supported.
 	private Map<Type, HashSet<POP>> restPOPs = new HashMap<Type, HashSet<POP>>();
 	
+	// HashSet of remaining origin types that need to be instantiated by EECS, 
+	// per type. A type is ready to be sampled when its remainingOriginSet is empty.
+	private Map<Type, HashSet<Type>> remainingOriginSet =
+			new HashMap<Type, HashSet<Type>>();
+	
 	// from Type to List of objects
 	private Map<Type, List> objectsByType = new HashMap<Type, List>();
+	
+	private boolean intsAreArgs = false;
+	private int maxInt = 0; // max int added to object list so far
 	
 	private int intBound;
 	private int depthBound;
