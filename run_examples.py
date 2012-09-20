@@ -46,7 +46,8 @@ MHSampler = "blog.sample.MHSampler"
 ModularLWSampler = "blog.sample.modular.ModularLWSampler"
 #samplers = [LWSampler, MHSampler, ModularLWSampler]
 # skip MHSampler for the demo purpose
-samplers = [LWSampler, ModularLWSampler]
+#samplers = [LWSampler, ModularLWSampler]
+samplers = [ModularLWSampler]
 # Set your favorite color for your sampler
 colors = {}
 colors[LWSampler] = "r"
