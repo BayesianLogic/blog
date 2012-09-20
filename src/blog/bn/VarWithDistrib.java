@@ -35,11 +35,11 @@
 
 package blog.bn;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 import blog.ParentRecEvalContext;
 import blog.model.DependencyModel;
-import blog.model.DependencyModel.Distrib;
 import blog.sample.DefaultEvalContext;
 import blog.sample.EvalContext;
 import blog.sample.InstantiatingEvalContext;
@@ -128,5 +128,18 @@ public abstract class VarWithDistrib extends BasicVar {
 			// distribution for this variable and instantiate it.
 			instantiator.getValue(this);
 		}
+	}
+
+	/**
+	 * determine whether ready to sample this random variable
+	 * i.e. all parents of this random variable is already sampled
+	 * 
+	 * @param w
+	 * @return
+	 */
+	public boolean canSample(PartialWorld world) {
+		// TODO this implementation is NOT efficient!!!!
+		// leili 2012-09-19
+		return this.getDistrib(world) != null;
 	}
 }

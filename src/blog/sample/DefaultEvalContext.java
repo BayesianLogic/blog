@@ -35,8 +35,11 @@
 
 package blog.sample;
 
-import java.util.*;
 import java.io.PrintStream;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
 
 import blog.NonGuaranteedObject;
 import blog.bn.BasicVar;
@@ -229,4 +232,14 @@ public class DefaultEvalContext implements EvalContext {
 
 	private MapWithPreimages assignment;
 	private LinkedList evaluees;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see blog.sample.EvalContext#getPartialWorld()
+	 */
+	@Override
+	public PartialWorld getPartialWorld() {
+		return world;
+	}
 }

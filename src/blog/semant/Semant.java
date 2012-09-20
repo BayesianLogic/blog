@@ -535,8 +535,8 @@ public class Semant {
 			}
 
 			// add value evidence of this cardinality spec also!!!
-			evidence.addValueEvidence(new ValueEvidenceStatement(leftset,
-					createSpecFromInt(value.size())));
+			evidence.addValueEvidence(new ValueEvidenceStatement(new CardinalitySpec(
+					leftset), createSpecFromInt(value.size())));
 		} else {
 			error(
 					e.left.line,

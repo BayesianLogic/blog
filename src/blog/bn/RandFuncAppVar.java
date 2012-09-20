@@ -35,7 +35,10 @@
 
 package blog.bn;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import blog.ObjectIdentifier;
 import blog.common.Util;
@@ -46,7 +49,6 @@ import blog.model.Model;
 import blog.model.RandomFunction;
 import blog.model.Term;
 import blog.model.Type;
-import blog.model.DependencyModel.Distrib;
 import blog.sample.EvalContext;
 
 /**
@@ -184,4 +186,5 @@ public class RandFuncAppVar extends VarWithDistrib {
 	}
 
 	private RandomFunction f;
+
 }
