@@ -109,6 +109,10 @@ public class ModularLWSampler extends LWSampler {
 		}
 		sumWeightsThisTrial += weight;
 	}
+	
+	public void printStats() {
+		super.printStats("Modular");
+	}
 
 	private double sampleAndComputeWeight(VarWithDistrib var,
 			WorldWithBlock curWorld) {

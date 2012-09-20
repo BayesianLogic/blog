@@ -175,7 +175,11 @@ public class LWSampler extends Sampler {
 	 * once at the end of each trial.
 	 */
 	public void printStats() {
-		System.out.println("======== LW Trial Stats =========");
+		this.printStats("");
+	}
+	
+	public void printStats(String samplerType) {
+		System.out.println("======== " + samplerType + " LW Trial Stats =========");
 
 		if (numSamplesThisTrial > 0) {
 			System.out.println("Average likelihood weight (this trial): "
