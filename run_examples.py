@@ -37,6 +37,7 @@ solutions = "example/solutions"
 model = "example/figures/model"
 error = "example/figures/error"
 hist = "example/figures/hist"
+report = "report"
 # Used to Gather Data on working and broken examples
 working_examples = []
 broken_examples = []
@@ -103,7 +104,9 @@ class BlogParser(object):
     """ Parses the output of the blog program into convenient data structures.
         Currently handles parsing of Query Reporting and CBN printing.
     """
-    def __init(self):
+    def __init__(self):
+        self.report_out = open(report, 'a')
+        self.is_summary = False
         pass
 
     def parse_blog_output(self, output):
@@ -122,7 +125,15 @@ class BlogParser(object):
         lines = output.split("\n")
         lines = [line.strip() for line in lines]
 
+        self.is_summary = False
+
         while index < len(lines):
+            # Reads for print to report
+            if "LW Trial Stats" in lines[index]:
+                self.is_summary = True
+            if self.is_summary:
+                self.report_out.write(lines[index] + "\n")
+            # Reads for graph generation
             if "Query Results" in lines[index]:
                 index = self.parse_query_result(index, lines, data)
             elif "Generated World" in lines[index]:
@@ -140,6 +151,8 @@ class BlogParser(object):
         if "Iteration" not in lines[index]:
             samplesSoFar = 0
         else:
+            if self.is_summary:
+                self.report_out.write(lines[index] + "\n")
             iteration_words = lines[index].split()
             index += 1
             try:
@@ -200,6 +213,8 @@ class BlogParser(object):
         index += 1
         while (index < len(lines) and lines[index] is not "" and "Distribution"
                 not in lines[index] and "Done" not in lines[index]):
+            if self.is_summary:
+                self.report_out.write(lines[index] + "\n")
             words = lines[index].split()
             if len(words) < 2:
                 index += 1
@@ -473,6 +488,8 @@ def print_results(num_examples, working_examples, broken_examples, options):
     print str(len(broken_examples)) + " failed:"
 
 if __name__ == "__main__":
+    f_clear = open(report, 'w')
+    f_clear.close()
     argParser = ArgParser()
     options = argParser.parse_args()
     blog_parser = BlogParser()
