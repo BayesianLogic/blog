@@ -82,10 +82,16 @@ if error_name is not None:
 out += "<h2>\n"
 out += "Histograms: \n"
 out += "</h2>\n"
-out += "<div style=\"width:1633px\">\n"
+out += "<div style=\"width:1634px\">\n"
 for hist_path in hist_paths:
     out += "<img src=\"" + cgi.escape(hist_path) + "\" style=\"float:left;width:49%\"/>\n"
 out += "</div>\n"
+out += "<h2>\n"
+out += "Run Summary: \n";
+out += "</h2>\n"
+f2 = open('report', 'r');
+for line in f2:
+    out += "<p>" + line + "</p>\n"
 out += "</body>\n"
 out += "</html>\n"
 f.write(out)

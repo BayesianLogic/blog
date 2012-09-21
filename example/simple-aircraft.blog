@@ -10,7 +10,8 @@ origin Aircraft Source(Blip);
 #Blip(Source=a) ~ Poisson(4);
 
 // Evidence
-obs #Blip=3;
+obs #Blip = 3;
 
 // Query
 query #{Aircraft a};
+

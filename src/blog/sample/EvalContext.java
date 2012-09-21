@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, Regents of the University of California
+ * Copyright (c) 2006, 2012 Regents of the University of California
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -35,19 +35,24 @@
 
 package blog.sample;
 
-import java.util.*;
 import java.io.PrintStream;
+import java.util.Set;
 
 import blog.bn.BasicVar;
 import blog.bn.NumberVar;
 import blog.model.LogicalVar;
 import blog.model.Type;
 import blog.objgen.ObjectSet;
+import blog.world.PartialWorld;
 
 /**
  * Interface for objects that encapsulate a partial world and an assignment of
  * values to logical variables. To facilitate debugging, an EvalContext object
  * also maintains a separate stack of objects being evaluated.
+ * 
+ * @author unknown
+ * @author leili
+ * @date 2012-09-19
  */
 public interface EvalContext {
 	/**
@@ -175,4 +180,9 @@ public interface EvalContext {
 	 * added to the stack, to the given stream.
 	 */
 	void printEvalTrace(PrintStream s);
+
+	/**
+	 * @return the possible world enclosed in the evaluation context
+	 */
+	PartialWorld getPartialWorld();
 }

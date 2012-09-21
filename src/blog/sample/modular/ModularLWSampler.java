@@ -79,9 +79,13 @@ public class ModularLWSampler extends LWSampler {
 		while (!isCurWorldSufficient(curWorld)) {
 			VarWithDistrib var = curWorld.getNextUninstVar();
 			if (var != null) {
-				w = sampleAndComputeWeight(var, curWorld);
-				if (w < 0)
-					break;
+				if (var.canSample(curWorld)) {
+					w = sampleAndComputeWeight(var, curWorld);
+					if (w < 0)
+						break;
+				} else {
+					curWorld.putBackVarWithDistrib(var);
+				}
 			} else {
 				System.out.println("World is not complete, but no basic random "
 						+ "variable is supported.  Please check for "
@@ -95,11 +99,11 @@ public class ModularLWSampler extends LWSampler {
 		BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
 				afterSamplingListener);
 
-		//if (Util.verbose()) {
-		//	System.out.println("Generated world:");
-		//	curWorld.print(System.out);
-		//	System.out.println("Weight: " + weight);
-		//}
+		// if (Util.verbose()) {
+		// System.out.println("Generated world:");
+		// curWorld.print(System.out);
+		// System.out.println("Weight: " + weight);
+		// }
 
 		++totalNumSamples;
 		++numSamplesThisTrial;
@@ -108,6 +112,10 @@ public class ModularLWSampler extends LWSampler {
 			++numConsistentThisTrial;
 		}
 		sumWeightsThisTrial += weight;
+	}
+	
+	public void printStats() {
+		super.printStats("Modular");
 	}
 
 	private double sampleAndComputeWeight(VarWithDistrib var,
@@ -579,6 +587,15 @@ class WorldWithBlock extends DefaultPartialWorld {
 				return restNumberVars.get(type) > 1;
 		}
 		return true;
+	}
+
+	/**
+	 * add the variable back to the list which is not instantiated
+	 * 
+	 * @param var
+	 */
+	void putBackVarWithDistrib(VarWithDistrib var) {
+		uninstVars.add(var);
 	}
 
 	private void addFuncAppVars(RandomFunction f, Type newObjType,
