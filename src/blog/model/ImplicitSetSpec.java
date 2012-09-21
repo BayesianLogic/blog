@@ -35,15 +35,16 @@
 
 package blog.model;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import blog.Substitution;
 import blog.common.HashMapDiff;
-import blog.common.Multiset;
-import blog.common.MultisetBackedSet;
-import blog.common.SetBackedMultiset;
 import blog.common.UnaryProcedure;
-import blog.common.Util;
 import blog.objgen.CompiledSetSpec;
 import blog.objgen.ObjectSet;
 import blog.sample.DefaultEvalContext;
@@ -110,7 +111,6 @@ public class ImplicitSetSpec extends ArgSpec {
 
 	public Object evaluate(EvalContext context) {
 		context.pushEvaluee(this);
-
 		ObjectSet set = getSatisfierSpec().elementSet(context);
 		ObjectSet result = set.getExplicitVersion();
 		// if (Util.verbose()) {

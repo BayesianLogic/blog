@@ -35,7 +35,10 @@
 
 package blog.sample;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import blog.AfterSamplingListener;
 import blog.ObjectIdentifier;
@@ -98,7 +101,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 	 *          instantiation process, and each variable is mapped to the context
 	 *          that led to it
 	 */
-	private ClassicInstantiatingEvalContext(PartialWorld world,
+	protected ClassicInstantiatingEvalContext(PartialWorld world,
 			LinkedHashMap respVarsAndContexts) {
 		super(world);
 		this.respVarsAndContexts = respVarsAndContexts;
@@ -145,7 +148,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 	 */
 	public static AfterSamplingListener staticAfterSamplingListener;
 
-	private Object instantiate(VarWithDistrib var) {
+	protected Object instantiate(VarWithDistrib var) {
 		var.ensureStable();
 
 		/*
@@ -202,7 +205,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 		return newValue;
 	}
 
-	private void cycleError(VarWithDistrib var) {
+	protected void cycleError(VarWithDistrib var) {
 		System.err.println("Encountered cycle in context-specific "
 				+ "dependency graph.  Evaluation sequence: ");
 		for (Iterator iter = respVarsAndContexts.entrySet().iterator(); iter
@@ -216,7 +219,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 		Util.fatalError("Stopping evaluation to avoid infinite loop.", false);
 	}
 
-	private LinkedHashMap respVarsAndContexts; // VarWithDistrib to EvalContext
+	protected LinkedHashMap respVarsAndContexts; // VarWithDistrib to EvalContext
 
-	private double logProb = 0;
+	protected double logProb = 0;
 }
