@@ -166,9 +166,6 @@ public class Clause {
 
 		for (Iterator iter = cpdArgs.iterator(); iter.hasNext();) {
 			ArgSpec argSpec = (ArgSpec) iter.next();
-			if (!argSpec.isDetermined(context.getPartialWorld())) {
-				break;
-			}
 			Object argValue = argSpec.evaluate(context);
 			if (argValue == null) {
 				break; // CPD arg not determined
