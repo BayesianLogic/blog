@@ -30,10 +30,9 @@ random Boolean Honest(Person p) ~ Bernoulli(0.9);
 random Boolean Transaction(Login x, Login y) {
     if (x != y) then {
         if (Owner(x) == Owner(y)) then ~ Bernoulli(0.9)
-	else {
-	     if (Honest(Owner(x)) == true) then ~ Bernoulli(0.6)
-	     else ~ Bernoulli(0.1)
-	}
+	else ~ TabularCPD({true -> ~ Bernoulli(0.6),
+	       		   false -> ~ Bernoulli(0.1)},
+			Honest(Owner(x)))
     }
 };
 
@@ -45,19 +44,7 @@ random Boolean Recommends(Login x, Login y) {
     }
 };
 
-obs {Person p} = {Person1, Person2, Person3};
-
 obs {Login l} = {Login1, Login2, Login3, Login4, Login5};
-
-/**
-obs Honest(Person1) = false;
-obs Honest(Person2) = true;
-obs Honest(Person3) = true;
-
-obs #Login(Owner = Person1) = 3;
-obs #Login(Owner = Person2) = 1;
-obs #Login(Owner = Person3) = 1;
-*/
 
 obs Transaction(Login1, Login2) = true;
 obs Transaction(Login1, Login3) = true;
@@ -70,6 +57,4 @@ obs Recommends(Login2, Login3) = true;
 obs Recommends(Login4, Login5) = true;
 obs Recommends(Login1, Login4) = false;
 
-Query Honest(Person1); 
-
-
+Query Honest(Owner(Login1)); 

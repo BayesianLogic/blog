@@ -534,9 +534,9 @@ public class Semant {
 				model.addFunction(obj);
 			}
 
-			// add value evidence of this cardinality spec also!!!
-			evidence.addValueEvidence(new ValueEvidenceStatement(new CardinalitySpec(
-					leftset), createSpecFromInt(value.size())));
+//			// add value evidence of this cardinality spec also!!!
+//			evidence.addValueEvidence(new ValueEvidenceStatement(new CardinalitySpec(
+//					leftset), createSpecFromInt(value.size())));
 		} else {
 			error(
 					e.left.line,
@@ -887,7 +887,7 @@ public class Semant {
 		Object left, right;
 		switch (e.oper) {
 		case OpExpr.PLUS:
-
+			
 			break;
 		case OpExpr.MINUS:
 			break;
