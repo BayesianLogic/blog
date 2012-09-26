@@ -9,7 +9,10 @@ public class StmtList extends Absyn {
 	public StmtList next;
 
 	public StmtList(Stmt h, StmtList t) {
-		super(h.getLine(), h.getCol());
+        if (h != null) {
+            this.line = h.getLine(); 
+            this.col = h.getCol();
+        }
 		head = h;
 		next = t;
 	}
