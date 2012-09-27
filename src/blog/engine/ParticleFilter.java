@@ -118,7 +118,7 @@ public class ParticleFilter extends InferenceEngine {
 		}
 
 		String samplerClassName = properties.getProperty("samplerClass",
-				"blog.LWSampler");
+				"blog.sample.LWSampler");
 		System.out.println("Constructing sampler of class " + samplerClassName);
 		particleSampler = Sampler.make(samplerClassName, model, properties);
 
