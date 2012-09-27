@@ -161,7 +161,7 @@ public class DefaultDGraph extends AbstractDGraph implements Cloneable {
 		return clone;
 	}
 
-	private static class NodeInfo implements Cloneable {
+	public static class NodeInfo implements Cloneable {
 		Set parents = new HashSet();
 		Set children = new HashSet();
 
@@ -182,5 +182,5 @@ public class DefaultDGraph extends AbstractDGraph implements Cloneable {
 		return info;
 	}
 
-	private Map nodeInfo = new HashMap(); // from Object to NodeInfo
+	protected Map nodeInfo = new HashMap(); // from Object to NodeInfo
 }
