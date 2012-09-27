@@ -27,7 +27,7 @@ random Output O(Timestep t)
      {A -> ~ Categorical({A -> 0.85, C -> 0.05, G -> 0.05, T -> 0.05}),
       C -> ~ Categorical({A -> 0.05, C -> 0.85, G -> 0.05, T -> 0.05}),
       G -> ~ Categorical({A -> 0.05, C -> 0.05, G -> 0.85, T -> 0.05}),
-      T -> ~ Categorical({A -> 0.05, C -> 0.05, G -> 0.85, T -> 0.05})},
+      T -> ~ Categorical({A -> 0.05, C -> 0.05, G -> 0.05, T -> 0.85})},
      S(t));
 
 /* Evidence for the Hidden Markov Model.
