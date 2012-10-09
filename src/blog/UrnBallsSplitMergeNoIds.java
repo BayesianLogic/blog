@@ -65,8 +65,8 @@ public class UrnBallsSplitMergeNoIds implements Proposer {
 	public UrnBallsSplitMergeNoIds(Model model, Properties properties) {
 		this.model = model;
 
-		ballType = model.getType("Ball");
-		drawType = model.getType("Draw");
+		ballType = Type.getType("Ball");
+		drawType = Type.getType("Draw");
 
 		ballPOP = (POP) ballType.getPOPs().iterator().next();
 		fBallDrawn = (RandomFunction) model.getFunction(new Function.Sig(

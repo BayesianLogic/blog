@@ -296,6 +296,11 @@ public class BuiltInTypes {
 			return null;
 		}
 	}
+	
+	/* A reference to BuiltInTypes is necessary to load the class,
+	   thereby loading built-in types into the type hierarchy */
+	public static void ping() {
+	}
 
 	private static Map builtInTypes = new HashMap();
 	private static List typeGenerators = new ArrayList();

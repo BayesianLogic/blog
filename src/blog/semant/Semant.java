@@ -164,7 +164,7 @@ public class Semant {
 		Type ty = null;
 		if (type instanceof NameTy) {
 			String name = ((NameTy) type).name.toString();
-			ty = model.getType(name);
+			ty = Type.getType(name);
 			if (ty == null) {
 				error(type.line, type.col, "Type " + name + " undefined!");
 			}
@@ -204,7 +204,8 @@ public class Semant {
 			for (int i = 0; i < arrDef.dim; i++) {
 				name += "[]";
 			}
-			Type arrayType = model.getType(name);
+			// TODO: CREATE A METHOD TO HANDLE ARRAY TYPE GENERATION
+			Type arrayType = Type.getType(name);
 			if (arrayType == null) {
 				error(type.line, type.col, "Type " + name + " undefined!");
 			}
@@ -596,7 +597,7 @@ public class Semant {
 	 */
 	void transDec(TypeDec e) {
 		String name = e.name.toString();
-		if (model.getType(name) != null) {
+		if (Type.getType(name) != null) {
 			error(e.line, e.col, "Type " + name + " already defined!");
 		} else {
 			model.addType(name);

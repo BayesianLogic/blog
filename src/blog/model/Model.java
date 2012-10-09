@@ -95,7 +95,6 @@ public class Model {
 	 */
 	public Model(Model another) {
 		types = new ArrayList<Type>(another.types);
-		typesByName = new HashMap<String, Type>(another.typesByName);
 		functions = new ArrayList<Function>(another.functions);
 		functionsByName = new HashMap<String, List<Function>>(
 				another.functionsByName);
@@ -151,18 +150,6 @@ public class Model {
 	public Type addType(String typeName) {
 		Type type = new Type(typeName);
 		types.add(type);
-		typesByName.put(typeName, type);
-		return type;
-	}
-
-	/**
-	 * Returns the type with the given name, or null if no such type exists.
-	 */
-	public Type getType(String typeName) {
-		Type type = (Type) typesByName.get(typeName);
-		if (type == null) {
-			type = BuiltInTypes.getType(typeName); // null if not built in
-		}
 		return type;
 	}
 
@@ -201,7 +188,7 @@ public class Model {
 		StringTokenizer st = new StringTokenizer(typeList, ", ", false);
 		while (st.hasMoreTokens()) {
 			String typeName = st.nextToken();
-			Type type = getType(typeName);
+			Type type = Type.getType(typeName);
 			if (type == null) {
 				System.err.println("Undefined type: " + typeName);
 				correct = false;
@@ -738,14 +725,6 @@ public class Model {
 	 * Stores user-defined Type objects in the order they were declared.
 	 */
 	protected List<Type> types = new ArrayList<Type>(); // of Type
-
-	/**
-	 * Maps type names to Type objects. For user-defined types.
-	 */
-	protected Map<String, Type> typesByName = new HashMap<String, Type>(); // from
-																																					// String
-																																					// to
-																																					// Type
 
 	/**
 	 * Stores user-defined Function objects in the order they were declared.
