@@ -827,17 +827,6 @@ public class Semant {
 		return t;
 	}
 
-	/**
-	 * create a Term from an integer constant
-	 * 
-	 * @param value
-	 * @return a function application term for the integer
-	 */
-	FuncAppTerm createSpecFromInt(int value) {
-		return new FuncAppTerm(BuiltInFunctions.getLiteral(String.valueOf(value),
-				BuiltInTypes.INTEGER, value));
-	}
-
 	ArgSpec transExpr(StringExpr e) {
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral("\"" + e.value + "\"",
 				BuiltInTypes.STRING, e.value));
