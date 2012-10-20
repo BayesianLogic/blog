@@ -167,4 +167,15 @@ public class MapSpec extends ArgSpec {
 	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
 		return null;
 	}
+	
+	public String toString() {
+		String contents = "{";
+		for (int i = 0; i < keys.size(); i++) {
+			contents += keys.get(i) + " -> " + values.get(i);
+			if (i < keys.size() - 1) {
+				contents += ", ";
+			}
+		}
+		return contents + "}";
+	}
 }
