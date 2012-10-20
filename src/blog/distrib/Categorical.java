@@ -300,11 +300,11 @@ public class Categorical extends AbstractCondProbDistrib {
 	public double getProb(List args, Object childValue) {
 		ensureProbsInited(args);
 
-		int index = Model.getObjectIndex(childValue);
-		if ((index == -1) || (index >= probs.length)) {
-			return 0;
+		for (int i = 0; i < values.length; i++) {
+			if (childValue == values[i])
+				return probs[i];
 		}
-		return probs[index];
+		return 0;
 	}
 
 	/**
