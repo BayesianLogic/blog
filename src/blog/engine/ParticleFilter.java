@@ -212,10 +212,10 @@ public class ParticleFilter extends InferenceEngine {
 				if (afterParticleTakesEvidence != null)
 					afterParticleTakesEvidence.evaluate(p, evidence, this);
 
-				if (!useDecayedMCMC) {
-					p.uninstantiatePreviousTimeslices();
-					p.removeAllDerivedVars();
-				}
+//				if (!useDecayedMCMC) {
+//					p.uninstantiatePreviousTimeslices();
+//					p.removeAllDerivedVars();
+//				}
 			}
 
 			double sum = 0;
