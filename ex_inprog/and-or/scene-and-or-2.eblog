@@ -1,6 +1,5 @@
-/* Evidence file asserting that all the drawn balls appeared blue.
- */
 
-obs {Wheel w}  = {W1, W2};
+//obs {Wheel w}  = {W1, W2};
 //obs {Wheel w}  = {W1, W2, W3};
 //obs {Wheel w}  = {W1, W2, W3, W4, W5, W6};
+obs {Wheel w}  = {W1, W2, W3, W4, W5};

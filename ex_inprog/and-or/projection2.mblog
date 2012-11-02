@@ -1,0 +1,132 @@
+type Object;
+
+random NaturalNum sizeX(Object);
+random NaturalNum sizeY(Object);
+random NaturalNum sizeZ(Object);
+
+random NaturalNum X0(Object);
+random NaturalNum Y0(Object);
+random NaturalNum Z0(Object);
+
+random NaturalNum X1(Object);
+random NaturalNum Y1(Object);
+random NaturalNum Z1(Object);
+
+nonrandom NaturalNum Xmin = 1;
+nonrandom NaturalNum Ymin = 1;
+nonrandom NaturalNum Zmin = 1;
+nonrandom NaturalNum Xmax = 20;
+nonrandom NaturalNum Ymax = 20;
+nonrandom NaturalNum Zmax = 20;
+
+nonrandom NaturalNum xMin = 5;
+nonrandom NaturalNum xMax = 11;
+nonrandom NaturalNum yMin = 5;
+nonrandom NaturalNum yMax = 11;
+nonrandom NaturalNum xc  = 7;
+nonrandom NaturalNum yc = 7;
+
+random NaturalNum Zintercept(Object,NaturalNum,NaturalNum);
+random NaturalNum Z(NaturalNum,NaturalNum);
+
+random NaturalNum myAdd(Integer, Integer);
+random Integer Sub(Integer,Integer);
+random Integer Mult(Integer,Integer);
+
+Sub(a,b) ~ Diff[](a,b);
+myAdd(a,b) ~ Add[](a,b);
+Mult(a,b) ~ Mul[](a,b);
+
+
+
+// SIZE OF THE OBJECT IN 3D
+sizeX(O) {
+    if (O!=null) then
+        ~ UniformInt[3,3]()
+    else
+        = 0
+};
+
+sizeY(O) {
+    if (O!=null) then
+        ~ UniformInt[3,3]()
+    else
+        = 0
+};
+
+sizeZ(O) {
+    if (O!=null) then
+        ~ UniformInt[3,3]()
+    else
+        = 0
+};
+
+// LOCATION OF THE OBJECTS IN 3D
+
+X0(o) {
+        ~ UniformInt[Xmin,Xmax]()
+};
+
+Z0(o) {
+        ~ UniformInt[Zmin,Zmax]()
+};
+
+Y0(o) {
+        ~ UniformInt[Ymin,Ymax]()
+};
+
+
+X1(o){
+        = myAdd(X0(o),sizeX(o))
+};
+
+Y1(o){
+        = myAdd(Y0(o),sizeY(o))
+};
+
+Z1(o){
+        = myAdd(0,Sub(Z0(o),sizeZ(o)))
+};
+
+Zintercept(o,x,y){
+    /*if (o!=null & (X0(o) <= myAdd(xc,Mult(Z1(o),Diff(xc,x)))) & (X1(o) >= myAdd(xc,Mult(Z1(o),Diff(xc,x)))) & (Y0(o) <= myAdd(yc,Mult(Z1(o),Diff(yc,y)))) & (Y1(o) >= myAdd(yc,Mult(Z1(o),Diff(yc,y))))   ) then
+        = Z1(o)
+    elseif (o!=null &  (x<=xc) &  (X0(o) >= myAdd(xc,Mult(Z0(o),Diff(xc,x)))) & (X0(o) <= myAdd(xc,Mult(Z1(o),Diff(xc,x)))) &  (Mult(Diff(X0(o),xc),Diff(y,yc)) <= Mult(Diff(Y0(o),yc),Diff(xc,x))) & (Mult(Diff(X0(o),xc),Diff(y,yc)) >= Mult(Diff(Y1(o),yc),Diff(xc,x))) ) then
+        = Z1(o) // need to change
+    elseif (o!=null &  (y<=yc) &  (Y0(o) >= myAdd(yc,Mult(Z0(o),Diff(yc,y)))) & (Y0(o) <= myAdd(yc,Mult(Z1(o),Diff(yc,y)))) &  (Mult(Diff(Y0(o),yc),Diff(x,xc)) <= Mult(Diff(X0(o),xc),Diff(yc,y))) &     (Mult(Diff(Y0(o),yc),Diff(x,xc)) >= Mult(Diff(X1(o),xc),Diff(yc,y))) ) then
+         = Z1(o) // need to change
+    elseif (o!=null &  (x>xc) &  (X1(o) >= myAdd(xc,Mult(Z1(o),Diff(xc,x)))) & (X1(o) <= myAdd(xc,Mult(Z0(o),Diff(xc,x)))) &  (Mult(Diff(xc,X1(o)),Diff(yc,y)) <= Mult(Diff(Y1(o),yc),Diff(x,xc))) &     (Mult(Diff(xc,X1(o)),Diff(yc,y)) >= Mult(Diff(Y0(o),yc),Diff(x,xc))) ) then
+        = Z1(o) // need to change
+    elseif (o!=null &  (y>yc) &  (Y1(o) >= myAdd(yc,Mult(Z1(o),Diff(yc,y)))) & (Y1(o) <= myAdd(yc,Mult(Z0(o),Diff(yc,y)))) &  (Mult(Diff(yc,Y1(o)),Diff(xc,x)) <= Mult(Diff(X1(o),xc),Diff(y,yc)))  &  (Mult(Diff(yc,Y1(o)),Diff(xc,x)) >= Mult(Diff(X0(o),xc),Diff(y,yc))) ) then
+    = Z1(o) // need to change*/
+    //else
+        = 0
+};
+
+
+Z(x,y){
+    if  ((x<=xMax) & (x>=xMin) & (y<=yMax) & (y>=yMin)  ) then
+       //~SetMin[]({NaturalNum Z: Z<Zmax & (exists Object o( Zintercept(o,x,y)  = Z))})
+       //~SetMin[]({NaturalNum Z: Z<Zmax & Z > 3})
+       = 1
+       else
+     = 0
+};
+
+
+
+
+#Object = 1;
+obs {Object o} = {o1};
+obs X0(o1) = 5;
+obs Y0(o1) = 5;
+obs Z0(o1) = 5;
+
+query #{Object o};
+query #{Object o: X0(o) > 0};
+//query {NaturalNum X: X<Xmax & (exists Object o( X0(o) = X))};
+//query {NaturalNum X: X<Xmax & (exists Object o( X1(o) = X))};
+//query {NaturalNum z: z<Zmax & (exists Object o(z=Zintercept(o,7,7)))};
+//query {NaturalNum z: z<Zmax & z=Z(7,7)};
+//query {NaturalNum z: z<Zmax & (exists Object o(z=Zintercept(o,11,11)))};
+//query {NaturalNum z: z<Zmax & z=Z(7,7)};

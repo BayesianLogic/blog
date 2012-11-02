@@ -1,0 +1,2 @@
+//obs {Interval i} = {I1, I2, I3, I4, I5};
+obs nooverlap() = true;

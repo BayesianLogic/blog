@@ -1,0 +1,88 @@
+random Boolean Occupied3D(NaturalNum,NaturalNum,NaturalNum);
+random Boolean Occupied2D(NaturalNum,NaturalNum);
+
+random NaturalNum Color3D(NaturalNum, NaturalNum, NaturalNum);
+random NaturalNum Color2D(NaturalNum, NaturalNum);
+
+random NaturalNum Multiply(NaturalNum,NaturalNum);
+random NaturalNum Setm(NaturalNum,NaturalNum);
+
+// Camera parameters
+nonrandom NaturalNum f = 1;
+
+// 3-D scene parameters
+nonrandom NaturalNum Xmax = 10;
+nonrandom NaturalNum Xmin = 0;
+nonrandom NaturalNum Ymax = 10;
+nonrandom NaturalNum Ymin = 0;
+nonrandom NaturalNum Zmax = 4;
+nonrandom NaturalNum Zmin = 1;
+
+//2-D scene parameters
+nonrandom NaturalNum xmax = 2;
+nonrandom NaturalNum xmin = 0;
+nonrandom NaturalNum ymax = 2;
+nonrandom NaturalNum ymin = 0;
+
+//Intensity parameters
+nonrandom NaturalNum FgMin = 5;
+nonrandom NaturalNum FgMax = 8;
+nonrandom NaturalNum BgMin = 0;
+nonrandom NaturalNum BgMax = 2;
+
+// Is a 3D voxel at (X,Y,Z) occupied or not
+Occupied3D(X,Y,Z){
+    if (X<Xmin | X>Xmax | Y<Ymin | Y>Ymax | Z<Zmin | Z>Zmax) then
+        = false
+    elseif (X=Y & Y=Z & Y > 2) then
+        = true
+    else
+        = false
+};
+
+
+// The color of a voxel at (X,Y,Z) is set to 0 if not occupied, else chosen uniformly from integers in [FgMin, FgMax]
+Color3D(X,Y,Z){
+    if (X>=Xmin & X<=Xmax & Y>=Ymin & Y<=Ymax & Z>=Zmin & Z<=Zmax & Occupied3D(X,Y,Z)) then
+        ~UniformInt[FgMin,FgMax]()
+        else
+            =0
+};
+
+// A 2D pixel at (x,y) is occupied only if a 3D voxel of the form (xZ,yZ,Z) is occupied
+Occupied2D(x,y){
+    if (x<xmin | x>xmax | y<ymin | y>ymax) then
+        = false
+    else 
+        = (exists NaturalNum Z ((Z>=Zmin & Z<=Zmax) & (exists NaturalNum X ((X>=Xmin & X<=Xmax & X=Multiply(x,Z)) & (exists NaturalNum Y ((Y>=Ymin & Y<=Ymax & Y=Multiply(y,Z)) & (Occupied3D(X,Y,Z)) ))))))
+};
+
+
+// The color of a 2D pixel at (x,y) is the color of the closest occupied voxel (xZ,yZ,Z). If there is no such occupied voxel then choose the color from some background model [BgMin,BgMax]
+Color2D(x,y){
+    if (Occupied2D(x,y)) then
+        = Color3D(Multiply(x,Setm(x,y)),Multiply(y,Setm(x,y)),Setm(x,y))
+    else
+        ~ UniformInt[BgMin,BgMax]()
+};
+
+// Function for multiplying two integers
+Multiply(a,b){ 
+    ~Mul[](a,b)
+};
+
+// Function for given a pixel (x,y), finding the closest occupied voxel (xZ,yZ,Z) - i.e. return the minimum z
+Setm(x,y){
+    if(Occupied2D(x,y)) then
+        ~SetMin[]({NaturalNum Z: (Z>=Zmin & Z<=Zmax & Multiply(x,Z)>=Xmin & Multiply(x,Z)<=Xmax & Multiply(y,Z)>=Ymin & Multiply(y,Z)<=Ymax & Occupied3D(Multiply(x,Z), Multiply(y,Z),Z))})
+    else
+        = 0
+};
+
+query {Occupied2D(1,1)}; 
+query {Occupied2D(1,2)};
+query {Color2D(1,1)};
+query {Color2D(2,2)};
+//query {Color3D(1,1,1)};
+//query {Color3D(2,2,2)};
+//query {Color3D(3,3,3)};
