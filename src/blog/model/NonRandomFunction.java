@@ -249,6 +249,8 @@ public class NonRandomFunction extends Function {
 						paramType = ((Term) param).getType();
 					} else if (param instanceof CardinalitySpec) {
 						paramType = BuiltInTypes.NATURAL_NUM;
+					} else if (param instanceof MatrixSpec) {
+						// nothing
 					} else {
 						System.err.println(param.getLocation()
 								+ ": Parameter to ConstantInterp must be a "
