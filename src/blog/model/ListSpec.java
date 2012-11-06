@@ -20,6 +20,7 @@ import blog.sample.EvalContext;
 public class ListSpec extends ArgSpec {
 	
 	List<ArgSpec> elements;
+	Type listType;
 	boolean compiled;
 	
 	public ListSpec() {
@@ -29,6 +30,12 @@ public class ListSpec extends ArgSpec {
 	
 	public ListSpec(List<ArgSpec> args) {
 		elements = args;
+		compiled = false;
+	}
+	
+	public ListSpec(List<ArgSpec> args, Type typeOfContents) {
+		elements = args;
+		listType = typeOfContents;
 		compiled = false;
 	}
 	
