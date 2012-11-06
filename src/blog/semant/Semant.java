@@ -70,6 +70,7 @@ import blog.model.Function;
 import blog.model.ImplicitSetSpec;
 import blog.model.ListSpec;
 import blog.model.MapSpec;
+import blog.model.MatrixSpec;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.model.NegFormula;
@@ -197,17 +198,25 @@ public class Semant {
 		if (type instanceof ArrayTy) {
 			ArrayTy arrDef = (ArrayTy) type;
 			Type termType = getNameType(arrDef.typ);
-
-			// Construct the array name with square braces; type generator will create
-			// later
-			String name = termType.getName();
-			for (int i = 0; i < arrDef.dim; i++) {
-				name += "[]";
+			
+			if (termType == null) {
+				error(type.line, type.col, "Type " + termType.getName() + " undefined!");
 			}
-			// TODO: CREATE A METHOD TO HANDLE ARRAY TYPE GENERATION
-			Type arrayType = Type.getType(name);
-			if (arrayType == null) {
-				error(type.line, type.col, "Type " + name + " undefined!");
+
+			// Type hierarchy: Array -> {type}Array -> {type}([])^{num_dims}
+			String typeName = termType.getName();
+			String arrTypeName = typeName + "_Array";
+			String fullTypeName = arrTypeName + "_" + arrDef.dim;
+			
+			Type arrType = Type.getType(arrTypeName);
+			if (arrType == null) {
+				arrType = new Type(arrTypeName, Type.getType("Array"));
+			}
+			
+			// STOP THE DUPLICATION
+			ty = Type.getType(fullTypeName);
+			if (ty == null) {
+				ty = new Type(fullTypeName, arrType);
 			}
 		} else {
 			error(type.line, type.col, "Type not allowed!");
@@ -339,6 +348,16 @@ public class Semant {
 				} else {
 					argVars.add(vn);
 				}
+			}
+		}
+		
+		// Handling to attach array type to list expression
+		if (e.result instanceof ArrayTy) {
+			if (e.body instanceof ListInitExpr) {
+				((ListInitExpr) e.body).type = e.result;
+			}
+			else {
+				error(e.line, e.col, "Cannot create array from non-list syntax!");
 			}
 		}
 
@@ -694,9 +713,21 @@ public class Semant {
 		return t;
 	}
 
-	ListSpec transExpr(ListInitExpr e) {
+	ArgSpec transExpr(ListInitExpr e) {
 		List<ArgSpec> values = transExprList(e.values, false);
-		return new ListSpec(values);
+		if (e.type instanceof ArrayTy) {			
+			Type arrType = getType(e.type);			
+			String baseType = arrType.getName();
+			baseType = baseType.substring(0, baseType.indexOf('_'));
+			
+			if (baseType.equals("NaturalNum") || baseType.equals("Real")) {
+				return new MatrixSpec(values);
+			}
+			return new ListSpec(values, arrType);
+		}
+		else {
+			return new ListSpec(values, getType(e.type));
+		}
 	}
 
 	MapSpec transExpr(MapInitExpr e) {

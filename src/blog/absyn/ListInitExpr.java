@@ -7,6 +7,7 @@ package blog.absyn;
 public class ListInitExpr extends Expr {
 
 	public ExprList values;
+	public Ty type;
 
 	public ListInitExpr(int p, ExprList v) {
 		this(0, p, v);
