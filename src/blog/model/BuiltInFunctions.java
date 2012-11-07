@@ -124,6 +124,21 @@ public class BuiltInFunctions {
 	 * The function on integers <code>x<code>, <code>y</code> that returns x - y.
 	 */
 	public static NonRandomFunction MINUS;
+	
+	/**
+	 * The function on integers <code>x<code>, <code>y</code> that returns x * y.
+	 */
+	public static NonRandomFunction MULT;
+	
+	/**
+	 * The function on integers <code>x<code>, <code>y</code> that returns x / y.
+	 */
+	public static NonRandomFunction DIV;
+	
+	/**
+	 * The function on integers <code>x<code>, <code>y</code> that returns x % y.
+	 */
+	public static NonRandomFunction MOD;
 
 	/**
 	 * The function on reals <code>x<code>, <code>y</code> that returns x + y.
@@ -335,6 +350,23 @@ public class BuiltInFunctions {
 		};
 		PLUS = new NonRandomFunction("Sum", argTypes, retType, plusInterp);
 		addFunction(PLUS);
+		
+		// Multiply non-random functions from (integer x integer) to integer
+		argTypes.clear();
+		argTypes.add(BuiltInTypes.INTEGER);
+		argTypes.add(BuiltInTypes.INTEGER);
+		retType = BuiltInTypes.INTEGER;
+
+		FunctionInterp multInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				Integer arg1 = (Integer) args.get(0);
+				Integer arg2 = (Integer) args.get(1);
+				return new Integer(arg1.intValue() * arg2.intValue());
+			}
+		};
+		MULT = new NonRandomFunction("Mult", argTypes, retType, multInterp);
+		addFunction(MULT);
+		
 
 		FunctionInterp minusInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
@@ -345,6 +377,38 @@ public class BuiltInFunctions {
 		};
 		MINUS = new NonRandomFunction("Diff", argTypes, retType, minusInterp);
 		addFunction(MINUS);
+		
+		// Divide non-random functions from (integer x integer) to integer
+		argTypes.clear();
+		argTypes.add(BuiltInTypes.INTEGER);
+		argTypes.add(BuiltInTypes.INTEGER);
+		retType = BuiltInTypes.INTEGER;
+
+		FunctionInterp divInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				Integer arg1 = (Integer) args.get(0);
+				Integer arg2 = (Integer) args.get(1);
+				return new Integer(arg1.intValue() / arg2.intValue());
+			}
+		};
+		DIV = new NonRandomFunction("Div", argTypes, retType, divInterp);
+		addFunction(DIV);
+		
+		// Mod non-random functions from (integer x integer) to integer
+		argTypes.clear();
+		argTypes.add(BuiltInTypes.INTEGER);
+		argTypes.add(BuiltInTypes.INTEGER);
+		retType = BuiltInTypes.INTEGER;
+
+		FunctionInterp modInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				Integer arg1 = (Integer) args.get(0);
+				Integer arg2 = (Integer) args.get(1);
+				return new Integer(arg1.intValue() % arg2.intValue());
+			}
+		};
+		MOD = new NonRandomFunction("Mod", argTypes, retType, modInterp);
+		addFunction(MOD);
 
 		// Add non-random functions from (real x real) to real
 		argTypes.clear();
