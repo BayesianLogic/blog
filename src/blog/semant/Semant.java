@@ -906,18 +906,30 @@ public class Semant {
 
 	Object transExpr(OpExpr e) {
 		Object left, right;
+		Term term;
+		left = transExpr(e.left);
+		right = transExpr(e.right);
 		switch (e.oper) {
 		case OpExpr.PLUS:
-			
-			break;
+			term = new FuncAppTerm(BuiltInFunctions.PLUS, (Term)left, (Term)right);
+			term.setLocation(e.line);
+			return term;
 		case OpExpr.MINUS:
-			break;
+			term = new FuncAppTerm(BuiltInFunctions.MINUS, (Term)left, (Term)right);
+			term.setLocation(e.line);
+			return term;
 		case OpExpr.MULT:
-			break;
+			term = new FuncAppTerm(BuiltInFunctions.MULT, (Term)left, (Term)right);
+			term.setLocation(e.line);
+			return term;
 		case OpExpr.DIV:
-			break;
+			term = new FuncAppTerm(BuiltInFunctions.DIV, (Term)left, (Term)right);
+			term.setLocation(e.line);
+			return term;
 		case OpExpr.MOD:
-			break;
+			term = new FuncAppTerm(BuiltInFunctions.MOD, (Term)left, (Term)right);
+			term.setLocation(e.line);
+			return term;
 		case OpExpr.EQ:
 			left = transExpr(e.left);
 			right = transExpr(e.right);
@@ -974,7 +986,7 @@ public class Semant {
 		case OpExpr.AT:
 			if (e.left == null && e.right instanceof IntExpr) {
 				Timestep t = Timestep.at(((IntExpr) e.right).value);
-				Term term = new FuncAppTerm(BuiltInFunctions.getLiteral(t.toString(),
+				term = new FuncAppTerm(BuiltInFunctions.getLiteral(t.toString(),
 						BuiltInTypes.TIMESTEP, t));
 				term.setLocation(e.line);
 				return term;
