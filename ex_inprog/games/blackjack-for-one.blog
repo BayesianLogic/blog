@@ -43,13 +43,8 @@ fixed Integer Value(Rank r)
 	Queen, 10,
 	King, 10);
 
-random Card InitialCard1 ~ UniformChoice({Card c});
-random Card InitialCard2 ~ UniformChoice({Card c: c != InitialCard1});
-
 random Card CardDrawn(Timestep t) {
-    if ((t == @0) | (Score(Prev(t)) < 16)) then
-        ~ UniformChoice({Card c: (c != InitialCard1) & (c != InitialCard2)
-	  		      	 & (forall Timestep t2 ((t2 < t) & (CardDrawn(t2) != c)))})
+    if (t <= @1 | Score(Prev(t)) < 16) then ~ UniformChoice({Card c})
 };
 
 random Integer Score(Timestep t) {
