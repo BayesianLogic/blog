@@ -40,6 +40,7 @@ import java.util.*;
 import blog.AbstractFunctionInterp;
 import blog.ConstantInterp;
 import blog.FunctionInterp;
+import blog.common.numerical.MatrixLib;
 import blog.type.Timestep;
 import Jama.*;
 
@@ -161,6 +162,13 @@ public class BuiltInFunctions {
 	 * concatenation of <code>x</code> and <code>y</code>.
 	 */
 	public static NonRandomFunction CONCAT;
+	
+	/**
+	 * A function on MatrixLib <code>mat</code> and ints <code>i</code> and
+	 * <code>j</code> that returns the element in <code>mat</code> found at
+	 * row <code>i</code> and column <code>j</code>.
+	 */
+	public static NonRandomFunction SUB_MAT;
 
 	/**
 	 * A function that takes a string and returns true if the string is empty.
@@ -482,5 +490,23 @@ public class BuiltInFunctions {
 		IS_EMPTY_STRING = new NonRandomFunction("IsEmptyString", argTypes, retType,
 				isEmptyStringInterp);
 		addFunction(IS_EMPTY_STRING);
+		
+		// Add non-random functions from (Real[][] x int x int) to double
+		argTypes.clear();
+		argTypes.add(BuiltInTypes.getType("Array_Real_2"));
+		argTypes.add(BuiltInTypes.INTEGER);
+		argTypes.add(BuiltInTypes.INTEGER);
+		retType = BuiltInTypes.REAL;
+		
+		FunctionInterp subMatInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				MatrixLib mat = (MatrixLib) args.get(0);
+				int i = (Integer) args.get(1);
+				int j = (Integer) args.get(2);
+				return Double.valueOf(mat.elementAt(i, j));
+			}
+		};
+		SUB_MAT = new NonRandomFunction("SubMat", argTypes, retType, subMatInterp);
+		addFunction(SUB_MAT);
 	}
 }

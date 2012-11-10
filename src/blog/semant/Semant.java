@@ -982,7 +982,22 @@ public class Semant {
 			right = transExpr(e.right);
 			return new NegFormula((Formula) right);
 		case OpExpr.SUB:
-			break;
+			left = transExpr(e.left);
+			right = transExpr(e.right);
+			if (left instanceof SymbolTerm) {
+				List<Object> matAndSub = new ArrayList<Object>();
+				matAndSub.add(left);
+				matAndSub.add(right);
+				return matAndSub;
+			}
+			else {
+				List args = (List) left;
+				args.add(right);
+				
+				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubMat").get(0);
+				term = new FuncAppTerm(func, args);
+				return term;
+			}
 		case OpExpr.AT:
 			if (e.left == null && e.right instanceof IntExpr) {
 				Timestep t = Timestep.at(((IntExpr) e.right).value);
