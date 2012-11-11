@@ -44,7 +44,7 @@ fixed Integer Value(Rank r)
 	King, 10);
 
 random Card CardDrawn(Timestep t) {
-    if (t <= @1 | Score(Prev(t)) < 16) then ~ UniformChoice({Card c})
+    if (t <= (@1) | Score(Prev(t)) < 16) then ~ UniformChoice({Card c})
 };
 
 random Integer Score(Timestep t) {
