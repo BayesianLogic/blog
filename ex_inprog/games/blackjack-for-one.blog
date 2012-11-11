@@ -54,15 +54,12 @@ random Integer Score(Timestep t) {
     	= 1 + 1
     else
         = Score(Prev(t)) + 1*/
-    if ((t == @0) & (CardDrawn(t) != null)) then
-        = Value(Rank(InitialCard1)) + Value(Rank(InitialCard2)) + Value(Rank(CardDrawn(@0)))
+    if ((t == @0) then
+        = Value(Rank(CardDrawn(t))) 
     else if (CardDrawn(t) != null) then
     	= Score(Prev(t)) + Value(Rank(CardDrawn(t)))
     else
         = Score(Prev(t))
 };
-
-obs Value(Rank(InitialCard1)) = 1;
-obs Value(Rank(InitialCard2)) = 1;
 
 query Score(@2);
