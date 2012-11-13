@@ -14,4 +14,19 @@ public class JamaMatrixLib implements MatrixLib {
 	public double elementAt(int i, int j) {
 		return values.get(i, j);
 	}
+	
+	@Override
+	public String toString() {
+		return values.toString();
+	}
+	
+	@Override
+	public int rowLen() {
+		return values.getRowDimension();
+	}
+	
+	@Override
+	public int colLen() {
+		return values.getColumnDimension();
+	}
 }
