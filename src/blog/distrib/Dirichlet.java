@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixLib;
 import blog.model.Type;
 
 /**
@@ -95,21 +97,20 @@ public class Dirichlet extends AbstractCondProbDistrib {
 	 * Returns the probability of a vector of values from this distribution.
 	 */
 	public double getProb(List args, Object childValue) {
-		if (!(childValue instanceof List<?>)) {
+		if (!(childValue instanceof MatrixLib)) {
 			throw new IllegalArgumentException("Dirichlet distribution" +
-					"requires List as argument, not " + childValue.getClass() + ".");
+					"requires MatrixLib as argument, not " + childValue.getClass() + ".");
 		}
 		
-		List children = (List)childValue;
-		if (children.size() == 0 || !(children.get(0) instanceof Number)) {
+		MatrixLib mat = (MatrixLib)childValue;
+		if (mat.rowLen() != 1 || mat.colLen() == 0) {
 			throw new IllegalArgumentException("Dirichlet distribution" +
-					"requires List of Numbers as argument, not " + children.get(0).getClass() + ".");
+					"requires nonempty vector of Numbers as argument.");
 		}
 		
-		List<Number> values = (List<Number>)childValue;
 		double prob = 1.0;
-		for (int i = 0; i < values.size(); i++) {
-			double x = values.get(i).doubleValue();
+		for (int i = 0; i < mat.colLen(); i++) {
+			double x = mat.elementAt(0, i);
 			prob *= Math.pow(x, alpha[i] - 1);
 		}
 		prob /= normalize(alpha);
@@ -121,21 +122,20 @@ public class Dirichlet extends AbstractCondProbDistrib {
 	 * Returns the log of the probability of a vector of values from this distribution.
 	 */
 	public double getLogProb(List args, Object childValue) {
-		if (!(childValue instanceof List<?>)) {
+		if (!(childValue instanceof MatrixLib)) {
 			throw new IllegalArgumentException("Dirichlet distribution" +
-					"requires List as argument, not " + childValue.getClass() + ".");
+					"requires MatrixLib as argument, not " + childValue.getClass() + ".");
 		}
 		
-		List children = (List)childValue;
-		if (children.size() == 0 || !(children.get(0) instanceof Number)) {
+		MatrixLib mat = (MatrixLib)childValue;
+		if (mat.rowLen() != 1 || mat.colLen() == 0) {
 			throw new IllegalArgumentException("Dirichlet distribution" +
-					"requires List of Numbers as argument, not " + children.get(0).getClass() + ".");
+					"requires nonempty vector of Numbers as argument.");
 		}
 		
-		List<Number> values = (List<Number>)childValue;
 		double prob = 0.0;
-		for (int i = 0; i < values.size(); i++) {
-			double x = values.get(i).doubleValue();
+		for (int i = 0; i < mat.colLen(); i++) {
+			double x = mat.elementAt(0, i);
 			prob += Math.log(x) * (alpha[i] - 1);
 		}
 		prob -= Math.log(normalize(alpha));
@@ -147,20 +147,20 @@ public class Dirichlet extends AbstractCondProbDistrib {
 	 * Returns a list of doubles sampled from this distribution.
 	 */
 	public Object sampleVal(List args, Type childType) {
-		double sum = 0.0;
-		List<Double> samples = new ArrayList<Double>();
-		
+		double sum = 0.0;		
+		double[][] samples = new double[1][alpha.length];
 		List<Object> dummy = new ArrayList<Object>();
-		for (Gamma component: gammas) {
+		for (int i = 0; i < alpha.length; i++) {
+			Gamma component = gammas[i];
 			double sample = (Double) component.sampleVal(dummy, childType);
 			sum += sample;
-			samples.add(sample);
+			samples[0][i] = sample;
 		}
 		
-		for (int i = 0; i < samples.size(); i++) {
-			samples.set(i, samples.get(i) / sum);
+		for (int i = 0; i < alpha.length; i++) {
+			samples[0][i] /= sum;
 		}
-		return samples;
+		return new JamaMatrixLib(samples);
 	}
 	
 	/**

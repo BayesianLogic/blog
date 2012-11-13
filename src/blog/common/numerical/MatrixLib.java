@@ -17,4 +17,19 @@ public interface MatrixLib {
 	 * @return 
 	 */
 	public double elementAt(int x, int y);
+	
+	/**
+	 * Returns the contents of this matrix
+	 */
+	public String toString();
+	
+	/**
+	 * Returns number of rows in this matrix
+	 */
+	public int rowLen();
+	
+	/**
+	 * Returns number of columns in this matrix
+	 */
+	public int colLen();
 }
