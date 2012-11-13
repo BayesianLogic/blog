@@ -356,6 +356,9 @@ public class Semant {
 			if (e.body instanceof ListInitExpr) {
 				((ListInitExpr) e.body).type = e.result;
 			}
+			else if (e.body instanceof DistributionExpr) {
+				//Nothing yet
+			}
 			else {
 				error(e.line, e.col, "Cannot create array from non-list syntax!");
 			}

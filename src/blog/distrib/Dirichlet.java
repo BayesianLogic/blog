@@ -62,6 +62,7 @@ public class Dirichlet extends AbstractCondProbDistrib {
 	 * @param a list of parameters for the distribution
 	 */
 	public Dirichlet(List<Double> params) {
+		alpha = new Double[params.size()];
 		params.toArray(alpha);
 		initGammas();
 	}
