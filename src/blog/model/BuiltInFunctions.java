@@ -150,6 +150,21 @@ public class BuiltInFunctions {
 	 * The function on reals <code>x<code>, <code>y</code> that returns x - y.
 	 */
 	public static NonRandomFunction RMINUS;
+	
+	/**
+	 * The function on arrays <code>x<code>, <code>y</code> that returns x + y.
+	 */
+	public static NonRandomFunction PLUS_MAT;
+	
+	/**
+	 * The function on arrays <code>x<code>, <code>y</code> that returns x - y.
+	 */
+	public static NonRandomFunction MINUS_MAT;
+	
+	/**
+	 * The function on arrays <code>x<code>, <code>y</code> that returns x * y.
+	 */
+	public static NonRandomFunction TIMES_MAT;
 
 	/**
 	 * The predecessor function on timesteps. Given a positive timestep n, it
@@ -164,11 +179,17 @@ public class BuiltInFunctions {
 	public static NonRandomFunction CONCAT;
 	
 	/**
-	 * A function on MatrixLib <code>mat</code> and ints <code>i</code> and
-	 * <code>j</code> that returns the element in <code>mat</code> found at
-	 * row <code>i</code> and column <code>j</code>.
+	 * A function on MatrixLib <code>mat</code> and int <code>i</code> and
+	 * that returns the <code>i</code>th row in <code>mat</code>.
 	 */
 	public static NonRandomFunction SUB_MAT;
+	
+	
+	/**
+	 * A function on MatrixLib <code>vec</code> and int <code>i</code> that
+	 * returns the <code>i</code>th element of <code>vec</code>.
+	 */
+	public static NonRandomFunction SUB_VEC;
 
 	/**
 	 * A function that takes a string and returns true if the string is empty.
@@ -491,22 +512,77 @@ public class BuiltInFunctions {
 				isEmptyStringInterp);
 		addFunction(IS_EMPTY_STRING);
 		
-		// Add non-random functions from (Real[][] x int x int) to double
+		// Add non-random functions from (Real[][] x int) to Real[]
 		argTypes.clear();
-		argTypes.add(BuiltInTypes.getType("Array_Real_2"));
+		argTypes.add(Type.getType("Array_Real_2"));
 		argTypes.add(BuiltInTypes.INTEGER);
-		argTypes.add(BuiltInTypes.INTEGER);
-		retType = BuiltInTypes.REAL;
+		retType = Type.getType("Array_Real_1");
 		
 		FunctionInterp subMatInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
 				MatrixLib mat = (MatrixLib) args.get(0);
 				int i = (Integer) args.get(1);
-				int j = (Integer) args.get(2);
-				return Double.valueOf(mat.elementAt(i, j));
+				if (mat.rowLen() == 1) {
+					return mat.elementAt(0, i);
+				}
+				else {
+					return mat.sliceRow(i);
+				}
 			}
 		};
 		SUB_MAT = new NonRandomFunction("SubMat", argTypes, retType, subMatInterp);
 		addFunction(SUB_MAT);
+		
+		// Add non-random functions from (Real[] x int) to double
+		argTypes.clear();
+		argTypes.add(Type.getType("Array_Real_1"));
+		argTypes.add(BuiltInTypes.INTEGER);
+		retType = BuiltInTypes.REAL;
+		
+		FunctionInterp subVecInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				MatrixLib mat = (MatrixLib) args.get(0);
+				int i = (Integer) args.get(1);
+				return mat.elementAt(0, i);
+			}
+		};
+		SUB_VEC = new NonRandomFunction("SubVec", argTypes, retType, subVecInterp);
+		addFunction(SUB_VEC);
+		
+		// Add non-random functions from (Real[]* x Real[]*) to Real[]*
+		argTypes.clear();
+		argTypes.add(Type.getType("Array_Real"));
+		argTypes.add(Type.getType("Array_Real"));
+		retType = Type.getType("Array_Real");
+		
+		FunctionInterp matPlusInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				MatrixLib mat1 = (MatrixLib) args.get(0);
+				MatrixLib mat2 = (MatrixLib) args.get(1);
+				return mat1.plus(mat2);
+			}
+		};
+		PLUS_MAT = new NonRandomFunction("PlusMat", argTypes, retType, matPlusInterp);
+		addFunction(PLUS_MAT);
+		
+		FunctionInterp matMinusInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				MatrixLib mat1 = (MatrixLib) args.get(0);
+				MatrixLib mat2 = (MatrixLib) args.get(1);
+				return mat1.minus(mat2);
+			}
+		};
+		MINUS_MAT = new NonRandomFunction("MinusMat", argTypes, retType, matMinusInterp);
+		addFunction(MINUS_MAT);
+		
+		FunctionInterp matTimesInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				MatrixLib mat1 = (MatrixLib) args.get(0);
+				MatrixLib mat2 = (MatrixLib) args.get(1);
+				return mat1.minus(mat2);
+			}
+		};
+		TIMES_MAT = new NonRandomFunction("TimesMat", argTypes, retType, matTimesInterp);
+		addFunction(TIMES_MAT);
 	}
 }
