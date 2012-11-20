@@ -42,6 +42,7 @@ import java.util.Map;
 
 import Jama.Matrix;
 import blog.common.Util;
+import blog.common.numerical.MatrixLib;
 import blog.model.ArgSpec;
 import blog.model.MapSpec;
 import blog.model.Model;
@@ -202,6 +203,9 @@ public class Categorical extends AbstractCondProbDistrib {
 				}
 				expectProbsAsArg = false;
 			}
+		}
+		else {
+			expectProbsAsArg = true;
 		}
 	}
 
@@ -367,17 +371,19 @@ public class Categorical extends AbstractCondProbDistrib {
 								+ "specified as CPD parameters.");
 			}
 
-			if ((!(args.get(0) instanceof Matrix))
-					|| (((Matrix) args.get(0)).getColumnDimension() != 1)) {
+			if ((!(args.get(0) instanceof MatrixLib))
+					|| (((MatrixLib) args.get(0)).rowLen() != 1)) {
 				throw new IllegalArgumentException(
-						"Argument to Categorical CPD should be a column "
+						"Argument to Categorical CPD should be a row "
 								+ "vector of probabilities, not: " + args.get(0));
 			}
 
-			Matrix m = (Matrix) args.get(0);
-			probs = new double[m.getRowDimension()];
+			MatrixLib m = (MatrixLib) args.get(0);
+			probs = new double[m.colLen()];
+			values = new Object[m.colLen()];
 			for (int i = 0; i < probs.length; ++i) {
-				probs[i] = m.get(i, 0);
+				probs[i] = m.elementAt(0, i);
+				values[i] = Integer.valueOf(i);
 			}
 		} else if (args != null) {
             if (!args.isEmpty()) {
