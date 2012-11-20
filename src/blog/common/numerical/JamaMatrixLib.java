@@ -9,6 +9,10 @@ public class JamaMatrixLib implements MatrixLib {
 	public JamaMatrixLib(double[][] contents) {
 		values = new Matrix(contents);
 	}
+	
+	public JamaMatrixLib(Matrix contents) {
+		values = contents;
+	}
 
 	@Override
 	public double elementAt(int i, int j) {
@@ -28,5 +32,43 @@ public class JamaMatrixLib implements MatrixLib {
 	@Override
 	public int colLen() {
 		return values.getColumnDimension();
+	}
+	
+	@Override
+	public MatrixLib sliceRow(int i) {
+		return new JamaMatrixLib(
+				values.getMatrix(i, i, 0, values.getColumnDimension() - 1));
+	}
+	
+	@Override
+	public MatrixLib plus(MatrixLib otherMat) {
+		if (otherMat instanceof JamaMatrixLib) {
+			JamaMatrixLib newMat = (JamaMatrixLib) otherMat;
+			return new JamaMatrixLib(values.plus(newMat.values));
+		}
+		throw new ClassCastException("Only one matrix library should be in use at a time!");
+	}
+	
+	@Override
+	public MatrixLib minus(MatrixLib otherMat) {
+		if (otherMat instanceof JamaMatrixLib) {
+			JamaMatrixLib newMat = (JamaMatrixLib) otherMat;
+			return new JamaMatrixLib(values.minus(newMat.values));
+		}
+		throw new ClassCastException("Only one matrix library should be in use at a time!");
+	}
+	
+	@Override
+	public MatrixLib timesScale(double scale) {
+		return new JamaMatrixLib(values.times(scale));
+	}
+	
+	@Override
+	public MatrixLib timesMat(MatrixLib otherMat) {
+		if (otherMat instanceof JamaMatrixLib) {
+			JamaMatrixLib newMat = (JamaMatrixLib) otherMat;
+			return new JamaMatrixLib(values.times(newMat.values));
+		}
+		throw new ClassCastException("Only one matrix library should be in use at a time!");
 	}
 }

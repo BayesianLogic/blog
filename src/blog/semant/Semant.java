@@ -49,6 +49,7 @@ import blog.absyn.SymbolExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
+import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.BuiltInFunctions;
@@ -87,6 +88,7 @@ import blog.model.TrueFormula;
 import blog.model.Type;
 import blog.model.UniversalFormula;
 import blog.model.ValueEvidenceStatement;
+import blog.model.Function.Sig;
 import blog.msg.ErrorMsg;
 import blog.type.Timestep;
 
@@ -205,8 +207,7 @@ public class Semant {
 
 			// Type hierarchy: Array -> {type}Array -> {type}([])^{num_dims}
 			String typeName = termType.getName();
-			String arrTypeName = typeName + "_Array";
-			String fullTypeName = arrTypeName + "_" + arrDef.dim;
+			String arrTypeName = "Array_" + typeName;
 			
 			Type arrType = Type.getType(arrTypeName);
 			if (arrType == null) {
@@ -214,9 +215,12 @@ public class Semant {
 			}
 			
 			// STOP THE DUPLICATION
-			ty = Type.getType(fullTypeName);
-			if (ty == null) {
-				ty = new Type(fullTypeName, arrType);
+			for (int i = 1; i <= arrDef.dim; i++) {
+				String fullTypeName = arrTypeName + "_" + i;
+				ty = Type.getType(fullTypeName);
+				if (ty == null) {
+					ty = new Type(fullTypeName, arrType);
+				}
 			}
 		} else {
 			error(type.line, type.col, "Type not allowed!");
@@ -721,7 +725,7 @@ public class Semant {
 		if (e.type instanceof ArrayTy) {			
 			Type arrType = getType(e.type);			
 			String baseType = arrType.getName();
-			baseType = baseType.substring(0, baseType.indexOf('_'));
+			baseType = baseType.substring(baseType.indexOf('_') + 1, baseType.lastIndexOf('_'));
 			
 			if (baseType.equals("NaturalNum") || baseType.equals("Real")) {
 				return new MatrixSpec(values);
@@ -910,19 +914,68 @@ public class Semant {
 	Object transExpr(OpExpr e) {
 		Object left, right;
 		Term term;
+		Type typeOfTerms;
 		left = transExpr(e.left);
 		right = transExpr(e.right);
 		switch (e.oper) {
 		case OpExpr.PLUS:
-			term = new FuncAppTerm(BuiltInFunctions.PLUS, (Term)left, (Term)right);
+			typeOfTerms = typeForTerms((Term)left, (Term)right);
+			NonRandomFunction whichPlus;
+			if (typeOfTerms == BuiltInTypes.INTEGER
+					|| typeOfTerms == BuiltInTypes.NATURAL_NUM) {
+				whichPlus = BuiltInFunctions.PLUS;
+			}
+			else if (typeOfTerms == BuiltInTypes.REAL) {
+				whichPlus = BuiltInFunctions.RPLUS;
+			}
+			else if (typeOfTerms.isSubtypeOf(Type.getType("Array_Real"))) {
+				whichPlus = BuiltInFunctions.PLUS_MAT;
+			}
+			else {
+				Util.fatalError("No addition operator for operands of type "
+									+ typeOfTerms.getName() + "!");
+				throw new IllegalArgumentException("Cannot perform operation '+'!");
+			}
+			term = new FuncAppTerm(whichPlus, (Term)left, (Term)right);
 			term.setLocation(e.line);
 			return term;
 		case OpExpr.MINUS:
-			term = new FuncAppTerm(BuiltInFunctions.MINUS, (Term)left, (Term)right);
+			typeOfTerms = typeForTerms((Term)left, (Term)right);
+			NonRandomFunction whichMinus;
+			if (typeOfTerms == BuiltInTypes.INTEGER
+					|| typeOfTerms == BuiltInTypes.NATURAL_NUM) {
+				whichMinus = BuiltInFunctions.MINUS;
+			}
+			else if (typeOfTerms == BuiltInTypes.REAL) {
+				whichMinus = BuiltInFunctions.RMINUS;
+			}
+			else if (typeOfTerms.isSubtypeOf(Type.getType("Array_Real"))) {
+				whichMinus = BuiltInFunctions.MINUS_MAT;
+			}
+			else {
+				Util.fatalError("No addition operator for operands of type "
+									+ typeOfTerms.getName() + "!");
+				throw new IllegalArgumentException("Cannot perform operation '-'!");
+			}
+			term = new FuncAppTerm(whichMinus, (Term)left, (Term)right);
 			term.setLocation(e.line);
 			return term;
 		case OpExpr.MULT:
-			term = new FuncAppTerm(BuiltInFunctions.MULT, (Term)left, (Term)right);
+			typeOfTerms = typeForTerms((Term)left, (Term)right);
+			NonRandomFunction whichTimes;
+			if (typeOfTerms == BuiltInTypes.INTEGER
+					|| typeOfTerms == BuiltInTypes.NATURAL_NUM) {
+				whichTimes = BuiltInFunctions.MULT;
+			}
+			else if (typeOfTerms.isSubtypeOf(Type.getType("Array_Real"))) {
+				whichTimes = BuiltInFunctions.TIMES_MAT;
+			}
+			else {
+				Util.fatalError("No addition operator for operands of type "
+									+ typeOfTerms.getName() + "!");
+				throw new IllegalArgumentException("Cannot perform operation '*'!");
+			}
+			term = new FuncAppTerm(whichTimes, (Term)left, (Term)right);
 			term.setLocation(e.line);
 			return term;
 		case OpExpr.DIV:
@@ -988,17 +1041,13 @@ public class Semant {
 			left = transExpr(e.left);
 			right = transExpr(e.right);
 			if (left instanceof SymbolTerm) {
-				List<Object> matAndSub = new ArrayList<Object>();
-				matAndSub.add(left);
-				matAndSub.add(right);
-				return matAndSub;
+				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubMat").get(0);
+				term = new FuncAppTerm(func, (ArgSpec)left, (ArgSpec)right);
+				return term;
 			}
 			else {
-				List args = (List) left;
-				args.add(right);
-				
-				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubMat").get(0);
-				term = new FuncAppTerm(func, args);
+				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubVec").get(0);
+				term = new FuncAppTerm(func, (ArgSpec)left, (ArgSpec)right);
 				return term;
 			}
 		case OpExpr.AT:
@@ -1015,6 +1064,51 @@ public class Semant {
 					"The operation could not be applied" + e.toString());
 		}
 		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	Type typeForTerms(Term termFirst, Term termSecond) {
+		List<Term> terms = new ArrayList<Term>();
+		terms.add(termFirst);
+		terms.add(termSecond);
+		
+		List<Type> retTypes = new ArrayList<Type>();
+		
+		for (Term term: terms) {
+			if (term instanceof SymbolTerm) {
+				SymbolTerm funcName = (SymbolTerm) term;
+				Function funcForTerm =
+					(Function) model.getFuncsWithName(funcName.getName()).iterator().next();
+				retTypes.add(funcForTerm.getRetType());
+			}
+			else if (term instanceof FuncAppTerm) {
+				FuncAppTerm funcResult = (FuncAppTerm) term;
+				retTypes.add(funcResult.getType());
+			}
+			else {
+				Util.fatalError("Term must either be SymbolTerm or FuncAppTerm!");
+			}
+		}
+		
+		if (retTypes.get(0).equals(retTypes.get(1))) {
+			return retTypes.get(0);
+		}
+		else if (retTypes.contains(BuiltInTypes.NATURAL_NUM) && 
+					retTypes.contains(BuiltInTypes.INTEGER)) {
+			return BuiltInTypes.INTEGER;
+		}
+		else if ((retTypes.contains(BuiltInTypes.REAL) 
+					&& retTypes.contains(BuiltInTypes.INTEGER))
+				|| (retTypes.contains(BuiltInTypes.REAL) 
+					&& retTypes.contains(BuiltInTypes.NATURAL_NUM))) {
+			return BuiltInTypes.REAL;
+		}
+		else {
+			Util.fatalError("Term types do not match!");
+			return BuiltInTypes.NULL;
+		}
 	}
 
 	/**

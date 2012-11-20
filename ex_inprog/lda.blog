@@ -7,26 +7,28 @@
 
 type Document;
 
-#Document ~ Poisson(1000);
+#Document ~ Poisson(2);
 
 // Suppose we have five topics. 
-fixed NaturalNum k = 5;
+//fixed NaturalNum k = 5;
 fixed Real alpha = 1.0;
-fixed Real[][] beta(NaturalNum) =
+fixed Real[][] beta =
     [[0.1, 0.4, 0.5],
      [0.1, 0.3, 0.6],
      [0.4, 0.2, 0.4],
      [0.6, 0.3, 0.1],
-     [0.1, 0.8, 0.1]]
+     [0.1, 0.8, 0.1]];
 
-random Real[] theta(Document d) ~ Dirichlet(k, alpha);
+random NaturalNum doclen(Document d) ~ UniformInt(5, 10);
+
+random Real[] theta(Document d) ~ Dirichlet(0.2, 0.2, 0.2, 0.2, 0.2);
 
 random NaturalNum topic(Document d, NaturalNum i) {
-    ~ Categorical(theta(d))
+    if (i < doclen(d)) then ~ Categorical(theta(d))
 };
 
 random NaturalNum wordidx(Document d, NaturalNum i) {
-    ~ Categorical(beta(topic(d)))
+    ~ Categorical(beta[topic(d)])
 };
 
 /* Lots of undefined stuff here; ignoring for now

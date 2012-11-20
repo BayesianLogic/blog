@@ -32,4 +32,31 @@ public interface MatrixLib {
 	 * Returns number of columns in this matrix
 	 */
 	public int colLen();
+	
+	/**
+	 * Returns a row of the matrix as specified
+	 * 
+	 * @param i the index of the row
+	 */
+	public MatrixLib sliceRow(int i);
+	
+	/**
+	 * Returns the sum of this matrix with the one provided
+	 */
+	public MatrixLib plus(MatrixLib otherMat);
+	
+	/**
+	 * Returns the difference of this matrix with the one provided
+	 */
+	public MatrixLib minus(MatrixLib otherMat);
+	
+	/**
+	 * Returns the scalar product of this matrix with the given value
+	 */
+	public MatrixLib timesScale(double scale);
+	
+	/**
+	 * Returns the matrix product of this matrix with the one provided
+	 */
+	public MatrixLib timesMat(MatrixLib otherMat);
 }
