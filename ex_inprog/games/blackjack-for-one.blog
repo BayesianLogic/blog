@@ -12,6 +12,9 @@
  * their face value.
  *
  * @author awong
+ * @author gerald
+ * @author leili
+ * @date 2012/11/21
  */
 type Card;
 type Suit;
