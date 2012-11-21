@@ -46,15 +46,13 @@ fixed Integer Value(Rank r)
 random Card CardDrawn(Timestep t) {
     if (t == @0) then
     	~ UniformChoice({Card c})
-    else if (Score(Prev(t)) < 16) then 
+    else if (CardDrawn(Prev(t)) != null) & (Score(Prev(t)) < 16)) then 
     	~ UniformChoice({Card c})
 };
 
 random Integer Score(Timestep t) {
 	if (t==@0) then
 		= Value(Rank(CardDrawn(@0)))
-	else if (Score(Prev(t)) == 0) then
-		= 0
 	else if (CardDrawn(t) != null) then
 		if (Score(Prev(t)) + Value(Rank(CardDrawn(t))) > 21) then
 			= 0
@@ -62,7 +60,6 @@ random Integer Score(Timestep t) {
 			= Score(Prev(t)) + Value(Rank(CardDrawn(t)))
 	else
 		= Score(Prev(t))
-
 };
 
 query Score(@3);
