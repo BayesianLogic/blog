@@ -44,22 +44,25 @@ fixed Integer Value(Rank r)
 	King, 10);
 
 random Card CardDrawn(Timestep t) {
-    if (t <= (@1) | Score(Prev(t)) < 16) then ~ UniformChoice({Card c})
+    if (t == @0) then
+    	~ UniformChoice({Card c})
+    else if (Score(Prev(t)) < 16) then 
+    	~ UniformChoice({Card c})
 };
 
 random Integer Score(Timestep t) {
-	/*if ((t == @0) & (CardDrawn(t) != null)) then
-        = 1 + 1
-    else if (CardDrawn(t) != null) then
-    	= 1 + 1
-    else
-        = Score(Prev(t)) + 1*/
-    if (t == @0) then
-        = Value(Rank(CardDrawn(t))) 
-    else if (CardDrawn(t) != null) then
-    	= Score(Prev(t)) + Value(Rank(CardDrawn(t)))
-    else
-        = Score(Prev(t))
+	if (t==@0) then
+		= Value(Rank(CardDrawn(@0)))
+	else if (Score(Prev(t)) == 0) then
+		= 0
+	else if (CardDrawn(t) != null) then
+		if (Score(Prev(t)) + Value(Rank(CardDrawn(t))) > 21) then
+			= 0
+		else
+			= Score(Prev(t)) + Value(Rank(CardDrawn(t)))
+	else
+		= Score(Prev(t))
+
 };
 
-query Score(@2);
+query Score(@3);
