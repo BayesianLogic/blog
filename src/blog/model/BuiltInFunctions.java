@@ -468,7 +468,7 @@ public class BuiltInFunctions {
 				return new Double(arg1.doubleValue() + arg2.doubleValue());
 			}
 		};
-		RPLUS = new NonRandomFunction("RSum", argTypes, retType, rplusInterp);
+		RPLUS = new NonRandomFunction(PLUS_NAME, argTypes, retType, rplusInterp);
 		addFunction(RPLUS);
 
 		FunctionInterp rminusInterp = new AbstractFunctionInterp() {
@@ -577,7 +577,9 @@ public class BuiltInFunctions {
 				return mat1.plus(mat2);
 			}
 		};
-		PLUS_MAT = new NonRandomFunction("PlusMat", argTypes, retType,
+		// modified by leili
+		// for the moment, use same name as plus for integer/real
+		PLUS_MAT = new NonRandomFunction(PLUS_NAME, argTypes, retType,
 				matPlusInterp);
 		addFunction(PLUS_MAT);
 
