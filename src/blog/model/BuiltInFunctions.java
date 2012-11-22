@@ -60,11 +60,12 @@ public class BuiltInFunctions {
 	/**
 	 * internal names for builtin functions
 	 */
-	public static final String PLUS_NAME = "PLUS";
-	public static final String MINUS_NAME = "MINUS";
-	public static final String MULT_NAME = "MULT";
-	public static final String DIV_NAME = "DIV";
-	public static final String MOD_NAME = "MOD";
+	public static final String PLUS_NAME = "__PLUS";
+	public static final String MINUS_NAME = "__MINUS";
+	public static final String MULT_NAME = "__MULT";
+	public static final String DIV_NAME = "__DIV";
+	public static final String MOD_NAME = "__MOD";
+	public static final String PREV_NAME = "__PREV";
 	// not finished yet (leili)
 
 	/**
@@ -420,7 +421,7 @@ public class BuiltInFunctions {
 				return new Integer(arg1.intValue() - arg2.intValue());
 			}
 		};
-		MINUS = new NonRandomFunction("Diff", argTypes, retType, minusInterp);
+		MINUS = new NonRandomFunction(MINUS_NAME, argTypes, retType, minusInterp);
 		addFunction(MINUS);
 
 		// Divide non-random functions from (integer x integer) to integer
@@ -478,7 +479,7 @@ public class BuiltInFunctions {
 				return new Double(arg1.doubleValue() - arg2.doubleValue());
 			}
 		};
-		RMINUS = new NonRandomFunction("RDiff", argTypes, retType, rminusInterp);
+		RMINUS = new NonRandomFunction(MINUS_NAME, argTypes, retType, rminusInterp);
 		addFunction(RMINUS);
 
 		// Add non-random functions from timestep to timestep
@@ -495,7 +496,7 @@ public class BuiltInFunctions {
 				return Timestep.at(arg.getValue() - 1);
 			}
 		};
-		PREV = new NonRandomFunction("Prev", argTypes, retType, prevInterp);
+		PREV = new NonRandomFunction(PREV_NAME, argTypes, retType, prevInterp);
 		addFunction(PREV);
 
 		// Add non-random functions from (string x string) to string
@@ -590,7 +591,7 @@ public class BuiltInFunctions {
 				return mat1.minus(mat2);
 			}
 		};
-		MINUS_MAT = new NonRandomFunction("MinusMat", argTypes, retType,
+		MINUS_MAT = new NonRandomFunction(MINUS_NAME, argTypes, retType,
 				matMinusInterp);
 		addFunction(MINUS_MAT);
 
@@ -601,7 +602,7 @@ public class BuiltInFunctions {
 				return mat1.minus(mat2);
 			}
 		};
-		TIMES_MAT = new NonRandomFunction("TimesMat", argTypes, retType,
+		TIMES_MAT = new NonRandomFunction(MULT_NAME, argTypes, retType,
 				matTimesInterp);
 		addFunction(TIMES_MAT);
 	}
