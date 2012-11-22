@@ -68,6 +68,7 @@ import blog.model.Formula;
 import blog.model.FormulaQuery;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
+import blog.model.FunctionSignature;
 import blog.model.ImplicitSetSpec;
 import blog.model.ListSpec;
 import blog.model.MapSpec;
@@ -88,7 +89,6 @@ import blog.model.TrueFormula;
 import blog.model.Type;
 import blog.model.UniversalFormula;
 import blog.model.ValueEvidenceStatement;
-import blog.model.Function.Sig;
 import blog.msg.ErrorMsg;
 import blog.type.Timestep;
 
@@ -156,7 +156,7 @@ public class Semant {
 	}
 
 	protected Function getFunction(String name, List<Type> argTypeList) {
-		Function f = model.getFunction(new Function.Sig(name, argTypeList));
+		Function f = model.getFunction(new FunctionSignature(name, argTypeList));
 		if ((f == null) && (evidence != null)) {
 			f = evidence.getSkolemConstant(name);
 		}
@@ -200,7 +200,7 @@ public class Semant {
 		if (type instanceof ArrayTy) {
 			ArrayTy arrDef = (ArrayTy) type;
 			Type termType = getNameType(arrDef.typ);
-			
+
 			if (termType == null) {
 				error(type.line, type.col, "Type " + termType.getName() + " undefined!");
 			}
@@ -208,12 +208,12 @@ public class Semant {
 			// Type hierarchy: Array -> {type}Array -> {type}([])^{num_dims}
 			String typeName = termType.getName();
 			String arrTypeName = "Array_" + typeName;
-			
+
 			Type arrType = Type.getType(arrTypeName);
 			if (arrType == null) {
 				arrType = new Type(arrTypeName, Type.getType("Array"));
 			}
-			
+
 			// STOP THE DUPLICATION
 			for (int i = 1; i <= arrDef.dim; i++) {
 				String fullTypeName = arrTypeName + "_" + i;
@@ -354,16 +354,14 @@ public class Semant {
 				}
 			}
 		}
-		
+
 		// Handling to attach array type to list expression
 		if (e.result instanceof ArrayTy) {
 			if (e.body instanceof ListInitExpr) {
 				((ListInitExpr) e.body).type = e.result;
-			}
-			else if (e.body instanceof DistributionExpr) {
-				//Nothing yet
-			}
-			else {
+			} else if (e.body instanceof DistributionExpr) {
+				// Nothing yet
+			} else {
 				error(e.line, e.col, "Cannot create array from non-list syntax!");
 			}
 		}
@@ -561,9 +559,10 @@ public class Semant {
 				model.addFunction(obj);
 			}
 
-//			// add value evidence of this cardinality spec also!!!
-//			evidence.addValueEvidence(new ValueEvidenceStatement(new CardinalitySpec(
-//					leftset), createSpecFromInt(value.size())));
+			// // add value evidence of this cardinality spec also!!!
+			// evidence.addValueEvidence(new ValueEvidenceStatement(new
+			// CardinalitySpec(
+			// leftset), createSpecFromInt(value.size())));
 		} else {
 			error(
 					e.left.line,
@@ -722,17 +721,17 @@ public class Semant {
 
 	ArgSpec transExpr(ListInitExpr e) {
 		List<ArgSpec> values = transExprList(e.values, false);
-		if (e.type instanceof ArrayTy) {			
-			Type arrType = getType(e.type);			
+		if (e.type instanceof ArrayTy) {
+			Type arrType = getType(e.type);
 			String baseType = arrType.getName();
-			baseType = baseType.substring(baseType.indexOf('_') + 1, baseType.lastIndexOf('_'));
-			
+			baseType = baseType.substring(baseType.indexOf('_') + 1,
+					baseType.lastIndexOf('_'));
+
 			if (baseType.equals("NaturalNum") || baseType.equals("Real")) {
 				return new MatrixSpec(values);
 			}
 			return new ListSpec(values, arrType);
-		}
-		else {
+		} else {
 			return new ListSpec(values, getType(e.type));
 		}
 	}
@@ -917,75 +916,33 @@ public class Semant {
 		Type typeOfTerms;
 		left = transExpr(e.left);
 		right = transExpr(e.right);
+		Type leftType = null;
+		if (left instanceof Term) {
+			leftType = typeOfTerm((Term) left);
+		}
+		Type rightType = null;
+		if (left instanceof Term) {
+			rightType = typeOfTerm((Term) right);
+		}
+		String funcname = null;
+		FunctionSignature sig = null;
+
 		switch (e.oper) {
 		case OpExpr.PLUS:
-			typeOfTerms = typeForTerms((Term)left, (Term)right);
-			NonRandomFunction whichPlus;
-			if (typeOfTerms == BuiltInTypes.INTEGER
-					|| typeOfTerms == BuiltInTypes.NATURAL_NUM) {
-				whichPlus = BuiltInFunctions.PLUS;
-			}
-			else if (typeOfTerms == BuiltInTypes.REAL) {
-				whichPlus = BuiltInFunctions.RPLUS;
-			}
-			else if (typeOfTerms.isSubtypeOf(Type.getType("Array_Real"))) {
-				whichPlus = BuiltInFunctions.PLUS_MAT;
-			}
-			else {
-				Util.fatalError("No addition operator for operands of type "
-									+ typeOfTerms.getName() + "!");
-				throw new IllegalArgumentException("Cannot perform operation '+'!");
-			}
-			term = new FuncAppTerm(whichPlus, (Term)left, (Term)right);
-			term.setLocation(e.line);
-			return term;
+			funcname = BuiltInFunctions.PLUS_NAME;
+			break;
 		case OpExpr.MINUS:
-			typeOfTerms = typeForTerms((Term)left, (Term)right);
-			NonRandomFunction whichMinus;
-			if (typeOfTerms == BuiltInTypes.INTEGER
-					|| typeOfTerms == BuiltInTypes.NATURAL_NUM) {
-				whichMinus = BuiltInFunctions.MINUS;
-			}
-			else if (typeOfTerms == BuiltInTypes.REAL) {
-				whichMinus = BuiltInFunctions.RMINUS;
-			}
-			else if (typeOfTerms.isSubtypeOf(Type.getType("Array_Real"))) {
-				whichMinus = BuiltInFunctions.MINUS_MAT;
-			}
-			else {
-				Util.fatalError("No addition operator for operands of type "
-									+ typeOfTerms.getName() + "!");
-				throw new IllegalArgumentException("Cannot perform operation '-'!");
-			}
-			term = new FuncAppTerm(whichMinus, (Term)left, (Term)right);
-			term.setLocation(e.line);
-			return term;
+			funcname = BuiltInFunctions.MINUS_NAME;
+			break;
 		case OpExpr.MULT:
-			typeOfTerms = typeForTerms((Term)left, (Term)right);
-			NonRandomFunction whichTimes;
-			if (typeOfTerms == BuiltInTypes.INTEGER
-					|| typeOfTerms == BuiltInTypes.NATURAL_NUM) {
-				whichTimes = BuiltInFunctions.MULT;
-			}
-			else if (typeOfTerms.isSubtypeOf(Type.getType("Array_Real"))) {
-				whichTimes = BuiltInFunctions.TIMES_MAT;
-			}
-			else {
-				Util.fatalError("No addition operator for operands of type "
-									+ typeOfTerms.getName() + "!");
-				throw new IllegalArgumentException("Cannot perform operation '*'!");
-			}
-			term = new FuncAppTerm(whichTimes, (Term)left, (Term)right);
-			term.setLocation(e.line);
-			return term;
+			funcname = BuiltInFunctions.MULT_NAME;
+			break;
 		case OpExpr.DIV:
-			term = new FuncAppTerm(BuiltInFunctions.DIV, (Term)left, (Term)right);
-			term.setLocation(e.line);
-			return term;
+			funcname = BuiltInFunctions.DIV_NAME;
+			break;
 		case OpExpr.MOD:
-			term = new FuncAppTerm(BuiltInFunctions.MOD, (Term)left, (Term)right);
-			term.setLocation(e.line);
-			return term;
+			funcname = BuiltInFunctions.MOD_NAME;
+			break;
 		case OpExpr.EQ:
 			left = transExpr(e.left);
 			right = transExpr(e.right);
@@ -1041,13 +998,14 @@ public class Semant {
 			left = transExpr(e.left);
 			right = transExpr(e.right);
 			if (left instanceof SymbolTerm) {
-				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubMat").get(0);
-				term = new FuncAppTerm(func, (ArgSpec)left, (ArgSpec)right);
+				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubMat")
+						.get(0);
+				term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
 				return term;
-			}
-			else {
-				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubVec").get(0);
-				term = new FuncAppTerm(func, (ArgSpec)left, (ArgSpec)right);
+			} else {
+				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubVec")
+						.get(0);
+				term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
 				return term;
 			}
 		case OpExpr.AT:
@@ -1063,52 +1021,40 @@ public class Semant {
 			error(e.getLine(), e.getCol(),
 					"The operation could not be applied" + e.toString());
 		}
-		return null;
+		if (e.left != null)
+			sig = new FunctionSignature(funcname, leftType, rightType);
+		else
+			sig = new FunctionSignature(funcname, rightType);
+		NonRandomFunction func = BuiltInFunctions.getFunction(sig);
+		if (func != null) {
+			if (e.left != null)
+				term = new FuncAppTerm(func, (Term) left, (Term) right);
+			else
+				term = new FuncAppTerm(func, (Term) right);
+			return term;
+		} else {
+			Util.fatalError("No operator " + funcname + " for operands of type "
+					+ leftType + "," + rightType + "!");
+			throw new IllegalArgumentException("Cannot perform operation!");
+		}
 	}
-	
+
 	/**
-	 * 
+	 * get the return type for a term
+	 * the term must be function application term
+	 * or symbolterm
 	 */
-	Type typeForTerms(Term termFirst, Term termSecond) {
-		List<Term> terms = new ArrayList<Term>();
-		terms.add(termFirst);
-		terms.add(termSecond);
-		
-		List<Type> retTypes = new ArrayList<Type>();
-		
-		for (Term term: terms) {
-			if (term instanceof SymbolTerm) {
-				SymbolTerm funcName = (SymbolTerm) term;
-				Function funcForTerm =
-					(Function) model.getFuncsWithName(funcName.getName()).iterator().next();
-				retTypes.add(funcForTerm.getRetType());
-			}
-			else if (term instanceof FuncAppTerm) {
-				FuncAppTerm funcResult = (FuncAppTerm) term;
-				retTypes.add(funcResult.getType());
-			}
-			else {
-				Util.fatalError("Term must either be SymbolTerm or FuncAppTerm!");
-			}
-		}
-		
-		if (retTypes.get(0).equals(retTypes.get(1))) {
-			return retTypes.get(0);
-		}
-		else if (retTypes.contains(BuiltInTypes.NATURAL_NUM) && 
-					retTypes.contains(BuiltInTypes.INTEGER)) {
-			return BuiltInTypes.INTEGER;
-		}
-		else if ((retTypes.contains(BuiltInTypes.REAL) 
-					&& retTypes.contains(BuiltInTypes.INTEGER))
-				|| (retTypes.contains(BuiltInTypes.REAL) 
-					&& retTypes.contains(BuiltInTypes.NATURAL_NUM))) {
-			return BuiltInTypes.REAL;
-		}
-		else {
-			Util.fatalError("Term types do not match!");
-			return BuiltInTypes.NULL;
-		}
+	Type typeOfTerm(Term term) {
+		if (term instanceof SymbolTerm) {
+			SymbolTerm funcName = (SymbolTerm) term;
+			Function funcForTerm = (Function) model
+					.getFuncsWithName(funcName.getName()).iterator().next();
+			return funcForTerm.getRetType();
+		} else if (term instanceof FuncAppTerm) {
+			FuncAppTerm funcResult = (FuncAppTerm) term;
+			return funcResult.getType();
+		} else
+			return null;
 	}
 
 	/**

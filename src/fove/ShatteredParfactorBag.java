@@ -6,7 +6,7 @@ import blog.common.HashMultiMap;
 import blog.common.MultiMap;
 import blog.model.ArgSpec;
 import blog.model.FuncAppTerm;
-import blog.model.Function;
+import blog.model.FunctionSignature;
 import blog.model.Term;
 
 /**
@@ -214,7 +214,7 @@ public class ShatteredParfactorBag {
 
 		for (int i = 0; i < pf.numDimTerms(); i++) {
 			Parfactor.TermPtr tptr = pf.termPtr(i);
-			Function.Sig sig = termSignature(tptr.term());
+			FunctionSignature sig = termSignature(tptr.term());
 			if (!signatureToPF.remove(sig, tptr)) {
 				throw new IllegalStateException(
 						"had parfactor in shatteredParfactors, but term" + " "
@@ -244,7 +244,7 @@ public class ShatteredParfactorBag {
 		for (int i = 0; i < atoms.size(); i++) {
 			Term t = atoms.get(i);
 			Parfactor.TermPtr tPtr = pf.termPtr(i);
-			Function.Sig sig = termSignature(t);
+			FunctionSignature sig = termSignature(t);
 			if (DEBUG)
 				System.out.println("\t" + "added sig " + sig + " at " + i);
 			signatureToPF.add(sig, tPtr);
@@ -254,7 +254,7 @@ public class ShatteredParfactorBag {
 	}
 
 	private Set<Parfactor.TermPtr> termsWithSameSignature(Term t) {
-		Function.Sig signature = termSignature(t);
+		FunctionSignature signature = termSignature(t);
 		return new LinkedHashSet<Parfactor.TermPtr>(
 				(Set<Parfactor.TermPtr>) signatureToPF.get(signature));
 	}
@@ -264,8 +264,8 @@ public class ShatteredParfactorBag {
 	// function; for CountingTerm this is the signature taken from the
 	// FuncAppTerm that the CountingTerm counts over. any other types are
 	// errors.
-	private Function.Sig termSignature(Term t) {
-		Function.Sig termSig = null;
+	private FunctionSignature termSignature(Term t) {
+		FunctionSignature termSig = null;
 		if (t instanceof FuncAppTerm) {
 			termSig = ((FuncAppTerm) t).getFunction().getSig();
 		} else if (t instanceof CountingTerm) {

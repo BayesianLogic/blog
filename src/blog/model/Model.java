@@ -265,7 +265,7 @@ public class Model {
 	 * function with the same signature as a built-in function, the user-defined
 	 * one is returned.
 	 */
-	public Function getFunction(Function.Sig sig) {
+	public Function getFunction(FunctionSignature sig) {
 		List funcsWithName = (List) functionsByName.get(sig.getName());
 		if (funcsWithName != null) {
 			for (Iterator iter = funcsWithName.iterator(); iter.hasNext();) {
@@ -386,7 +386,7 @@ public class Model {
 			return Boolean.FALSE;
 		}
 
-		NonRandomFunction f = ((NonRandomFunction) getFunction(new Function.Sig(
+		NonRandomFunction f = ((NonRandomFunction) getFunction(new FunctionSignature(
 				name)));
 		return (f == null) ? null : f.getValue();
 	}
