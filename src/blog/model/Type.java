@@ -59,6 +59,10 @@ import blog.EnumeratedObject;
  * <p>
  * We ensure that there is only one Type object for each type, so Type objects
  * can be compared with ==.
+ * 
+ * @author unknown
+ * @author leili
+ * @date 2012/11/21
  */
 public class Type {
 	/**
@@ -87,7 +91,7 @@ public class Type {
 	 */
 	public Type(String name, Type supertype) {
 		Type.allTypes.put(name, this);
-		this.name = name;		
+		this.name = name;
 		this.supertype = supertype;
 	}
 
@@ -102,7 +106,7 @@ public class Type {
 	 */
 	public Type(String name, Type supertype, boolean infinite) {
 		Type.allTypes.put(name, this);
-		this.name = name;	
+		this.name = name;
 		this.supertype = supertype;
 		this.infiniteGuaranteed = infinite;
 	}
@@ -408,18 +412,18 @@ public class Type {
 		private List guarObjs;
 		private boolean includesNull;
 	}
-	
+
 	public static Type getType(String typeName) {
 		return allTypes.get(typeName);
 	}
-	
+
 	// Static variables: provide handling for all types
 	private static Map<String, Type> allTypes;
 	static {
 		allTypes = new HashMap<String, Type>();
 		BuiltInTypes.ping();
 	}
-	
+
 	// Object variables: store type-specific information
 	private String name;
 	private Type supertype;

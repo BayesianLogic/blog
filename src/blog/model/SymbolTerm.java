@@ -97,7 +97,7 @@ public class SymbolTerm extends Term {
 		if ((var == null) && (func == null)) {
 			var = (LogicalVar) scope.get(name);
 			if (var == null) {
-				func = model.getFunction(new Function.Sig(name));
+				func = model.getFunction(new FunctionSignature(name));
 				if (func == null) {
 					System.err.println(getLocation() + ": Symbol \"" + name
 							+ "\" is neither a variable in the current scope "
