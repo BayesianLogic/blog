@@ -944,32 +944,18 @@ public class Semant {
 			funcname = BuiltInFunctions.MOD_NAME;
 			break;
 		case OpExpr.EQ:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			return new EqualityFormula((Term) left, (Term) right);
 		case OpExpr.NEQ:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			return new NegFormula(new EqualityFormula((Term) left, (Term) right));
 		case OpExpr.LT:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			return new ComparisonFormula((Term) left, (Term) right, OpExpr.LT);
 		case OpExpr.LEQ:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			return new ComparisonFormula((Term) left, (Term) right, OpExpr.LEQ);
 		case OpExpr.GT:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			return new ComparisonFormula((Term) left, (Term) right, OpExpr.GT);
 		case OpExpr.GEQ:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			return new ComparisonFormula((Term) left, (Term) right, OpExpr.GEQ);
 		case OpExpr.AND:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,
 						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
@@ -980,8 +966,6 @@ public class Semant {
 			}
 			return new ConjFormula((Formula) left, (Formula) right);
 		case OpExpr.OR:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,
 						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
@@ -995,8 +979,6 @@ public class Semant {
 			right = transExpr(e.right);
 			return new NegFormula((Formula) right);
 		case OpExpr.SUB:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			if (left instanceof SymbolTerm) {
 				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubMat")
 						.get(0);
