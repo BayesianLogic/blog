@@ -165,10 +165,21 @@ import blog.semant.Semant;
 public class Main {
 
 	public static void main(String[] args) {
+		fromString = false;
 		init(args);
 		List readersAndOrigins = makeReaders(filenames);
 		setup(model, evidence, queries, readersAndOrigins, setupExtenders,
 				Util.verbose(), true);
+		run();
+	}
+
+	public static void runFromString(String modelstring, String[] args) {
+		fromString = true;
+		if (args == null) {
+			args = new String[0];
+		}
+		init(args);
+		stringSetup(modelstring);
 		run();
 	}
 
@@ -179,7 +190,7 @@ public class Main {
 		queries = new ArrayList<Query>();
 		parseOptions(args);
 		Util.setVerbose(verbose);
-        Util.setPrint(print);
+		Util.setPrint(print);
 		Util.initRandom(randomize);
 		// BLOGParser.setPackagesToSearch(packages);
 	}
@@ -205,14 +216,14 @@ public class Main {
 
 				// Print query results
 				System.out.println("======== Query Results =========");
-                System.out.println("Iteration: " + numSamples);
+				System.out.println("Iteration: " + numSamples);
 				for (Iterator iter = queries.iterator(); iter.hasNext();) {
 					Query q = (Query) iter.next();
 					q.printResults(System.out);
 					// leili: why to zero out???
 					// q.zeroOut();
 				}
-                System.out.println("======== Done ========");
+				System.out.println("======== Done ========");
 
 				System.out.println();
 			}
@@ -304,8 +315,7 @@ public class Main {
 		specialOptions.put("numSamples", optNumSamples);
 
 		IntOption optQueryReportInterval = new IntOption("q",
-                "query_report_interval", 10000,
-				"Report Query values after <n> samples");
+				"query_report_interval", 10000, "Report Query values after <n> samples");
 		specialOptions.put("queryReportInterval", optQueryReportInterval);
 
 		IntOption optInterval = new IntOption("i", "interval", 500,
@@ -350,7 +360,7 @@ public class Main {
 				"Use <m> moves per rejuvenation step (PF only)");
 
 		filenames = blog.common.cmdline.Parser.parse(args);
-		if (filenames.isEmpty()) {
+		if ((!fromString) & filenames.isEmpty()) {
 			Util.fatalError("Error: no BLOG input files specified.");
 			Parser.printUsage(System.err);
 		}
@@ -360,7 +370,7 @@ public class Main {
 		generate = optGenerate.getValue();
 		packages = optPackages.getValue();
 		verbose = optVerbose.getValue();
-        print = optPrint.getValue();
+		print = optPrint.getValue();
 		debug = optDebug.getValue();
 
 		outputPath = optWrite.getValue();
@@ -396,12 +406,12 @@ public class Main {
 		inferenceProps.setProperty("numSamples",
 				String.valueOf(optNumSamples.getValue()));
 		numSamples = optNumSamples.getValue();
-        inferenceProps.setProperty("queryReportInterval",
-                String.valueOf(optQueryReportInterval.getValue()));
-        queryReportInterval = optQueryReportInterval.getValue();
-        inferenceProps.setProperty("reportInterval",
-                String.valueOf(optInterval.getValue()));
-        reportInterval = optQueryReportInterval.getValue();
+		inferenceProps.setProperty("queryReportInterval",
+				String.valueOf(optQueryReportInterval.getValue()));
+		queryReportInterval = optQueryReportInterval.getValue();
+		inferenceProps.setProperty("reportInterval",
+				String.valueOf(optInterval.getValue()));
+		reportInterval = optQueryReportInterval.getValue();
 		inferenceProps.setProperty("burnIn", String.valueOf(optBurnIn.getValue()));
 		inferenceProps.setProperty("samplerClass", optSampler.getValue());
 		inferenceProps.setProperty("proposerClass", optProposer.getValue());
@@ -678,8 +688,8 @@ public class Main {
 	private static Properties inferenceProps;
 	private static boolean randomize = false;
 	private static int numSamples;
-    private static int queryReportInterval;
-    private static int reportInterval;
+	private static int queryReportInterval;
+	private static int reportInterval;
 	private static int numStatSamples;
 	private static Model model;
 	private static Evidence evidence;
@@ -687,8 +697,9 @@ public class Main {
 	private static boolean generate;
 	private static List<String> packages = new LinkedList<String>(); // of String
 	private static boolean verbose;
-    private static boolean print;
+	private static boolean print;
 	private static boolean debug;
+	private static boolean fromString;
 	private static String outputPath;
 	private static int outputInterval;
 	private static String histOut;

@@ -913,7 +913,6 @@ public class Semant {
 	Object transExpr(OpExpr e) {
 		Object left, right;
 		Term term;
-		Type typeOfTerms;
 		left = transExpr(e.left);
 		right = transExpr(e.right);
 		Type leftType = null;
@@ -976,20 +975,18 @@ public class Semant {
 			}
 			return new DisjFormula((Formula) left, (Formula) right);
 		case OpExpr.NOT:
-			right = transExpr(e.right);
 			return new NegFormula((Formula) right);
 		case OpExpr.SUB:
+			Function func;
 			if (left instanceof SymbolTerm) {
-				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubMat")
-						.get(0);
-				term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
-				return term;
+				func = (Function) BuiltInFunctions.getFuncsWithName(
+						BuiltInFunctions.SUB_MAT_NAME).get(0);
 			} else {
-				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubVec")
-						.get(0);
-				term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
-				return term;
+				func = (Function) BuiltInFunctions.getFuncsWithName(
+						BuiltInFunctions.SUB_VEC_NAME).get(0);
 			}
+			term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
+			return term;
 		case OpExpr.AT:
 			if (e.left == null && e.right instanceof IntExpr) {
 				Timestep t = Timestep.at(((IntExpr) e.right).value);
@@ -1002,6 +999,7 @@ public class Semant {
 		default:
 			error(e.getLine(), e.getCol(),
 					"The operation could not be applied" + e.toString());
+			return null;
 		}
 		if (e.left != null)
 			sig = new FunctionSignature(funcname, leftType, rightType);
@@ -1029,8 +1027,10 @@ public class Semant {
 	Type typeOfTerm(Term term) {
 		if (term instanceof SymbolTerm) {
 			SymbolTerm funcName = (SymbolTerm) term;
+			// System.out.println(term);
 			Function funcForTerm = (Function) model
 					.getFuncsWithName(funcName.getName()).iterator().next();
+
 			return funcForTerm.getRetType();
 		} else if (term instanceof FuncAppTerm) {
 			FuncAppTerm funcResult = (FuncAppTerm) term;
