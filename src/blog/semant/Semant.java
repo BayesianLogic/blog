@@ -714,6 +714,12 @@ public class Semant {
 
 	ArgSpec transExpr(FuncCallExpr e) {
 		List<ArgSpec> args = transExprList(e.args, true);
+		List<Type> argTypes = new ArrayList<Type>();
+		for (ArgSpec as : args) {
+			// argTypes.add(as.get)
+			// to add type for this argspec
+		}
+
 		Term t = new FuncAppTerm(e.func.toString(), args);
 		t.setLocation(e.line);
 		return t;
@@ -917,11 +923,11 @@ public class Semant {
 		right = transExpr(e.right);
 		Type leftType = null;
 		if (left instanceof Term) {
-			leftType = typeOfTerm((Term) left);
+			// leftType = typeOfTerm((Term) left);
 		}
 		Type rightType = null;
 		if (left instanceof Term) {
-			rightType = typeOfTerm((Term) right);
+			// rightType = typeOfTerm((Term) right);
 		}
 		String funcname = null;
 		FunctionSignature sig = null;
