@@ -65,6 +65,8 @@ public class BuiltInFunctions {
 	public static final String MULT_NAME = "MULT";
 	public static final String DIV_NAME = "DIV";
 	public static final String MOD_NAME = "MOD";
+	public static final String SUB_MAT_NAME = "SUB_MAT";
+
 	// not finished yet (leili)
 
 	/**
@@ -545,7 +547,8 @@ public class BuiltInFunctions {
 				}
 			}
 		};
-		SUB_MAT = new NonRandomFunction("SubMat", argTypes, retType, subMatInterp);
+		SUB_MAT = new NonRandomFunction(SUB_MAT_NAME, argTypes, retType,
+				subMatInterp);
 		addFunction(SUB_MAT);
 
 		// Add non-random functions from (Real[] x int) to double
