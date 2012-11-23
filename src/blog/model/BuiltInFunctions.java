@@ -67,8 +67,17 @@ public class BuiltInFunctions {
 	public static final String MOD_NAME = "__MOD";
 	public static final String PREV_NAME = "__PREV";
 	public static final String SUB_MAT_NAME = "__SUB_MAT";
+	public static final String SUB_VEC_NAME = "__SUB_VEC";
+	public static final String IS_EMPTY_NAME = "__ISEMPTYSTRING";
+	public static final String CONCAT_NAME = "__CONCAT";
+	public static final String GT_NAME = "__GREATERTHAN";
+	public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
+	public static final String LT_NAME = "__LESSTHAN";
+	public static final String LEQ_NAME = "__LESSTHANOREQUAL";
 
-	// not finished yet (leili)
+	// can be called by user
+	public static final String SUCC_NAME = "succ";
+	public static final String PRED_NAME = "pred";
 
 	/**
 	 * Constant that always denotes Model.NULL.
@@ -173,6 +182,16 @@ public class BuiltInFunctions {
 	public static NonRandomFunction RMINUS;
 
 	/**
+	 * The function on reals <code>x<code>, <code>y</code> that returns x * y.
+	 */
+	public static NonRandomFunction RMULT;
+
+	/**
+	 * The function on reals <code>x<code>, <code>y</code> that returns x / y.
+	 */
+	public static NonRandomFunction RDIV;
+
+	/**
 	 * The function on arrays <code>x<code>, <code>y</code> that returns x + y.
 	 */
 	public static NonRandomFunction PLUS_MAT;
@@ -227,6 +246,8 @@ public class BuiltInFunctions {
 	 * the parser.
 	 */
 	public static NonRandomFunction getFunction(FunctionSignature sig) {
+
+		// TODO change to another hashmap from signature to function
 		List funcsWithName = (List) functions.get(sig.getName());
 		if (funcsWithName != null) {
 			for (Iterator iter = funcsWithName.iterator(); iter.hasNext();) {
@@ -291,8 +312,8 @@ public class BuiltInFunctions {
 	static {
 		// Add non-random constants
 		NULL = getLiteral("null", BuiltInTypes.NULL, Model.NULL);
-		ZERO = getLiteral("0", BuiltInTypes.NATURAL_NUM, new Integer(0));
-		ONE = getLiteral("1", BuiltInTypes.NATURAL_NUM, new Integer(1));
+		ZERO = getLiteral("0", BuiltInTypes.INTEGER, new Integer(0));
+		ONE = getLiteral("1", BuiltInTypes.INTEGER, new Integer(1));
 		EPOCH = getLiteral("@0", BuiltInTypes.TIMESTEP, Timestep.at(0));
 
 		// Add non-random functions from (real x real) to Boolean
@@ -308,7 +329,7 @@ public class BuiltInFunctions {
 				return Boolean.valueOf(arg1 < arg2);
 			}
 		};
-		LT = new NonRandomFunction("LessThan", argTypes, retType, ltInterp);
+		LT = new NonRandomFunction(LT_NAME, argTypes, retType, ltInterp);
 		addFunction(LT);
 
 		FunctionInterp leqInterp = new AbstractFunctionInterp() {
@@ -318,7 +339,7 @@ public class BuiltInFunctions {
 				return Boolean.valueOf(arg1 <= arg2);
 			}
 		};
-		LEQ = new NonRandomFunction("LessThanOrEqual", argTypes, retType, leqInterp);
+		LEQ = new NonRandomFunction(LEQ_NAME, argTypes, retType, leqInterp);
 		addFunction(LEQ);
 
 		FunctionInterp gtInterp = new AbstractFunctionInterp() {
@@ -328,7 +349,7 @@ public class BuiltInFunctions {
 				return Boolean.valueOf(arg1 > arg2);
 			}
 		};
-		GT = new NonRandomFunction("GreaterThan", argTypes, retType, gtInterp);
+		GT = new NonRandomFunction(GT_NAME, argTypes, retType, gtInterp);
 		addFunction(GT);
 
 		FunctionInterp geqInterp = new AbstractFunctionInterp() {
@@ -338,8 +359,7 @@ public class BuiltInFunctions {
 				return Boolean.valueOf(arg1 >= arg2);
 			}
 		};
-		GEQ = new NonRandomFunction("GreaterThanOrEqual", argTypes, retType,
-				geqInterp);
+		GEQ = new NonRandomFunction(GEQ_NAME, argTypes, retType, geqInterp);
 		addFunction(GEQ);
 
 		// Add non-random functions from natural number to natural number
@@ -353,7 +373,7 @@ public class BuiltInFunctions {
 				return new Integer(arg.intValue() + 1);
 			}
 		};
-		SUCC = new NonRandomFunction("Succ", argTypes, retType, succInterp);
+		SUCC = new NonRandomFunction(SUCC_NAME, argTypes, retType, succInterp);
 		addFunction(SUCC);
 
 		FunctionInterp predInterp = new AbstractFunctionInterp() {
@@ -365,7 +385,7 @@ public class BuiltInFunctions {
 				return new Integer(arg.intValue() - 1);
 			}
 		};
-		PRED = new NonRandomFunction("Pred", argTypes, retType, predInterp);
+		PRED = new NonRandomFunction(PRED_NAME, argTypes, retType, predInterp);
 		addFunction(PRED);
 
 		// Add non-random functions from integer to natural number
@@ -484,6 +504,26 @@ public class BuiltInFunctions {
 		RMINUS = new NonRandomFunction(MINUS_NAME, argTypes, retType, rminusInterp);
 		addFunction(RMINUS);
 
+		FunctionInterp rmultInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				Number arg1 = (Number) args.get(0);
+				Number arg2 = (Number) args.get(1);
+				return new Double(arg1.doubleValue() * arg2.doubleValue());
+			}
+		};
+		RMULT = new NonRandomFunction(MULT_NAME, argTypes, retType, rmultInterp);
+		addFunction(RMULT);
+
+		FunctionInterp rdivInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				Number arg1 = (Number) args.get(0);
+				Number arg2 = (Number) args.get(1);
+				return new Double(arg1.doubleValue() / arg2.doubleValue());
+			}
+		};
+		RDIV = new NonRandomFunction(DIV_NAME, argTypes, retType, rdivInterp);
+		addFunction(RDIV);
+
 		// Add non-random functions from timestep to timestep
 		argTypes.clear();
 		argTypes.add(BuiltInTypes.TIMESTEP);
@@ -514,7 +554,7 @@ public class BuiltInFunctions {
 				return arg1.concat(arg2);
 			}
 		};
-		CONCAT = new NonRandomFunction("Concat", argTypes, retType, concatInterp);
+		CONCAT = new NonRandomFunction(CONCAT_NAME, argTypes, retType, concatInterp);
 		addFunction(CONCAT);
 
 		// Add non-random functions from string to Boolean
@@ -527,7 +567,7 @@ public class BuiltInFunctions {
 				return Boolean.valueOf(((String) args.get(0)).length() == 0);
 			}
 		};
-		IS_EMPTY_STRING = new NonRandomFunction("IsEmptyString", argTypes, retType,
+		IS_EMPTY_STRING = new NonRandomFunction(IS_EMPTY_NAME, argTypes, retType,
 				isEmptyStringInterp);
 		addFunction(IS_EMPTY_STRING);
 
@@ -565,7 +605,8 @@ public class BuiltInFunctions {
 				return mat.elementAt(0, i);
 			}
 		};
-		SUB_VEC = new NonRandomFunction("SubVec", argTypes, retType, subVecInterp);
+		SUB_VEC = new NonRandomFunction(SUB_VEC_NAME, argTypes, retType,
+				subVecInterp);
 		addFunction(SUB_VEC);
 
 		// Add non-random functions from (Real[]* x Real[]*) to Real[]*
