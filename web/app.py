@@ -9,6 +9,7 @@ import json
 
 BLOG_EXTENSION = ".blog"
 USER_STORE = "static/user_query/"
+DEFAULT_GRAPH = "static/images/BerkeleyLogo.png"
 
 urls = ('/', 'blog_web_ui')
 render = web.template.render('templates/')
@@ -31,7 +32,7 @@ def generate_graph(prefix, output):
         G.draw(cbn_name)
         
         return cbn_name
-    return "static/images/BerekelyLogo.png"
+    return DEFAULT_GRAPH
 
 def run_process(script_name):
     command = ["./run.sh", "--print", script_name]
@@ -52,15 +53,16 @@ def execute_script(script):
     #Define name of the script 
     current = str(time.time())
     filename = "tmp_%s" % current
+    
     prefix = USER_STORE + filename
     
     script_name = store_script(prefix, script)
     output, returncode = run_process(script_name)
     
+    graph = DEFAULT_GRAPH
     if returncode == 0:
         graph = generate_graph(prefix, output)
     
-    #print graph
     #Run commandline Blog on the file and return output
     return json.dumps({'text_result': text_to_html(output), "graph_result": graph})
 
@@ -76,7 +78,7 @@ class blog_web_ui:
         return render.index(form, "Your result will appear here.")
         
     def POST(self):     
-        s = web.input().textfield
+        s = web.input().textfield 
         return execute_script(s)
 
 if __name__ == '__main__':
