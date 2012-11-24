@@ -49,7 +49,6 @@ import blog.absyn.SymbolExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
-import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.BuiltInFunctions;
@@ -720,7 +719,8 @@ public class Semant {
 			// to add type for this argspec
 		}
 
-		Term t = new FuncAppTerm(e.func.toString(), args);
+		Term t = new FuncAppTerm(e.func.toString(), args.toArray(new ArgSpec[args
+				.size()]));
 		t.setLocation(e.line);
 		return t;
 	}
@@ -917,20 +917,15 @@ public class Semant {
 	}
 
 	Object transExpr(OpExpr e) {
-		Object left, right;
+		Object left = null, right = null;
 		Term term;
-		left = transExpr(e.left);
-		right = transExpr(e.right);
-		Type leftType = null;
-		if (left instanceof Term) {
-			// leftType = typeOfTerm((Term) left);
+		if (e.left != null) {
+			left = transExpr(e.left);
 		}
-		Type rightType = null;
-		if (left instanceof Term) {
-			// rightType = typeOfTerm((Term) right);
+		if (e.right != null) {
+			right = transExpr(e.right);
 		}
 		String funcname = null;
-		FunctionSignature sig = null;
 
 		switch (e.oper) {
 		case OpExpr.PLUS:
@@ -1007,22 +1002,25 @@ public class Semant {
 					"The operation could not be applied" + e.toString());
 			return null;
 		}
+
+		// TODO remove the following lines after testing. (leili)
+		// if (e.left != null)
+		// sig = new FunctionSignature(funcname, leftType, rightType);
+		// else
+		// sig = new FunctionSignature(funcname, rightType);
+		// NonRandomFunction func = BuiltInFunctions.getFunction(sig);
+		// if (func != null) {
 		if (e.left != null)
-			sig = new FunctionSignature(funcname, leftType, rightType);
+			// term = new FuncAppTerm(func, (Term) left, (Term) right);
+			term = new FuncAppTerm(funcname, (Term) left, (Term) right);
 		else
-			sig = new FunctionSignature(funcname, rightType);
-		NonRandomFunction func = BuiltInFunctions.getFunction(sig);
-		if (func != null) {
-			if (e.left != null)
-				term = new FuncAppTerm(func, (Term) left, (Term) right);
-			else
-				term = new FuncAppTerm(func, (Term) right);
-			return term;
-		} else {
-			Util.fatalError("No operator " + funcname + " for operands of type "
-					+ leftType + "," + rightType + "!");
-			throw new IllegalArgumentException("Cannot perform operation!");
-		}
+			term = new FuncAppTerm(funcname, (Term) right);
+		return term;
+		// } else {
+		// Util.fatalError("No operator " + funcname + " for operands of type "
+		// + leftType + "," + rightType + "!");
+		// throw new IllegalArgumentException("Cannot perform operation!");
+		// }
 	}
 
 	/**

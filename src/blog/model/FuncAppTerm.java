@@ -113,16 +113,16 @@ public class FuncAppTerm extends Term {
 	 * 
 	 * @param funcName
 	 *          the name of a function
-	 * @param argList
+	 * @param args
 	 *          a List of Term objects representing arguments
-	 * @deprecated
 	 */
-	public FuncAppTerm(String funcName, List argList) {
+	public FuncAppTerm(String funcName, ArgSpec... args) {
 		this.funcName = funcName;
 		if (funcName.equals("Position"))
 			position = this;
-		args = new ArgSpec[argList.size()];
-		argList.toArray(args);
+		// this.args = new ArgSpec[args.length];
+		// argList.toArray(args);
+		this.args = args;
 	}
 
 	public static FuncAppTerm position;
