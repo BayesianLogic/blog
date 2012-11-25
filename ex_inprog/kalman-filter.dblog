@@ -11,6 +11,8 @@ fixed Real[][] R = Q;
 random Real[] location(Timestep t) 
   ~ MultivarGaussian(state(t), R);
 
-query location(@0)[0];
+obs location(@0) = [0.1, 1.1, 0.9];
+
+query state(@1);
 query location(@1);
 query location(@2);
