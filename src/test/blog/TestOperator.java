@@ -42,15 +42,15 @@ public class TestOperator {
 
 	@Test
 	public void testVarPlus() {
-		String code = "fixed Integer x = 1; fixed Integer y = 2; fixed Integer z = x + y; "
-				+ "query z;";
+		String code = "fixed Integer x = 1; fixed Integer y = 2; "
+				+ "fixed Integer z = x + y; query z;";
 		Main.runFromString(code, args);
 	}
 
 	@Test
 	public void testArrayPlus() {
-		String code = "fixed Real[] x = [1.0, 2.0, 3.0]; fixed Real[] y = [4.0, 5.0, 6.0]; fixed Real[] z = x + y; "
-				+ "query z;";
+		String code = "fixed Real[] x = [1.0, 2.0, 3.0]; "
+				+ "fixed Real[] y = [4.0, 5.0, 6.0]; query x + y; ";
 		Main.runFromString(code, args);
 	}
 
