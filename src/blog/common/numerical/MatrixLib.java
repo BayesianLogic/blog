@@ -59,4 +59,25 @@ public interface MatrixLib {
 	 * Returns the matrix product of this matrix with the one provided
 	 */
 	public MatrixLib timesMat(MatrixLib otherMat);
+	
+	/**
+	 * Returns the determinant of this matrix
+	 */
+	public double det();
+	
+	/**
+	 * Returns the transpose of this matrix
+	 */
+	public MatrixLib transpose();
+	
+	/**
+	 * Returns the inverse of this matrix
+	 */
+	public MatrixLib inverse();
+	
+	/**
+	 * Returns a lower triangular matrix representing the Cholesky
+	 * decomposition of this matrix 
+	 */
+	public MatrixLib choleskyFactor();
 }

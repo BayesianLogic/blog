@@ -5,3 +5,6 @@ fixed Real[][] a = [[1.0, 2.0, 3.0],
 query a[0][2];
 query a[1][1];
 query a[2][0];
+
+query a;
+query a[1];

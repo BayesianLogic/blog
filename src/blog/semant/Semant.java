@@ -4,6 +4,7 @@
 package blog.semant;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -70,6 +71,7 @@ import blog.model.Function;
 import blog.model.FunctionSignature;
 import blog.model.ImplicitSetSpec;
 import blog.model.ListSpec;
+import blog.model.LogicalVar;
 import blog.model.MapSpec;
 import blog.model.MatrixSpec;
 import blog.model.Model;
@@ -105,6 +107,9 @@ public class Semant {
 	private List<Query> queries;
 
 	List<String> packages;
+	
+	// Maintains the currently active function
+	private Function currFunction;
 
 	public Semant(ErrorMsg msg) {
 		this(new Model(), new Evidence(), new ArrayList<Query>(), msg);
@@ -360,6 +365,10 @@ public class Semant {
 				((ListInitExpr) e.body).type = e.result;
 			} else if (e.body instanceof DistributionExpr) {
 				// Nothing yet
+			} else if (e.body instanceof SymbolExpr) {
+				// Nothing yet
+			} else if (e.body instanceof IfExpr) {
+				// Nothing yet
 			} else {
 				error(e.line, e.col, "Cannot create array from non-list syntax!");
 			}
@@ -424,6 +433,7 @@ public class Semant {
 
 		String name = e.name.toString();
 		Function fun = getFunction(name, argTy);
+		currFunction = fun;
 
 		if (e instanceof FixedFuncDec) {
 			if (e.body == null) {
@@ -452,6 +462,7 @@ public class Semant {
 			((RandomFunction) fun).setDepModel(dm);
 		}
 
+		currFunction = null;
 	}
 
 	DependencyModel transDependency(Expr e, Type resTy, Object defVal) {
@@ -1020,26 +1031,6 @@ public class Semant {
 		// + leftType + "," + rightType + "!");
 		// throw new IllegalArgumentException("Cannot perform operation!");
 		// }
-	}
-
-	/**
-	 * get the return type for a term
-	 * the term must be function application term
-	 * or symbolterm
-	 */
-	Type typeOfTerm(Term term) {
-		if (term instanceof SymbolTerm) {
-			SymbolTerm funcName = (SymbolTerm) term;
-			// System.out.println(term);
-			Function funcForTerm = (Function) model
-					.getFuncsWithName(funcName.getName()).iterator().next();
-
-			return funcForTerm.getRetType();
-		} else if (term instanceof FuncAppTerm) {
-			FuncAppTerm funcResult = (FuncAppTerm) term;
-			return funcResult.getType();
-		} else
-			return null;
 	}
 
 	/**
