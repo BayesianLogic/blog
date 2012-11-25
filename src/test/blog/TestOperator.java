@@ -47,4 +47,11 @@ public class TestOperator {
 		Main.runFromString(code, args);
 	}
 
+	@Test
+	public void testArrayPlus() {
+		String code = "fixed Real[] x = [1.0, 2.0, 3.0]; fixed Real[] y = [4.0, 5.0, 6.0]; fixed Real[] z = x + y; "
+				+ "query z;";
+		Main.runFromString(code, args);
+	}
+
 }
