@@ -381,7 +381,6 @@ public class Semant {
 			NonRandomFunction f;
 			if (argTy.size() == 0) {
 				f = NonRandomFunction.createConstant(name, resTy, e.body);
-
 			} else {
 				f = new NonRandomFunction(name, argTy, resTy);
 			}

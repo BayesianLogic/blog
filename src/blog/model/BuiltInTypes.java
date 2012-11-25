@@ -51,6 +51,16 @@ import blog.type.Timestep;
  * R<i>n</i>Vector for positive integers m, n.
  */
 public class BuiltInTypes {
+
+	public static final String INTEGER_TYPE_NAME = "Integer";
+	public static final String REAL_TYPE_NAME = "Real";
+	public static final String ARRAY_REAL_TYPE_NAME = "Array_Real";
+	public static final String NULL_TYPE_NAME = "**NullType**";
+	public static final String STRING_TYPE_NAME = "String";
+	public static final String ARRAY_TYPE_NAME = "Array";
+	public static final String TIMESTEP_TYPE_NAME = "Timestep";
+	public static final String BOOLEAN_TYPE_NAME = "Boolean";
+
 	/**
 	 * Supertype for all built-in types. Used to determine whether a type is
 	 * built in or not.
@@ -62,7 +72,7 @@ public class BuiltInTypes {
 	 * can have the same denotation as "null", so we treat this special type as
 	 * being a subtype of every type except BOOLEAN.
 	 */
-	public static final Type NULL = new Type("**NullType**") {
+	public static final Type NULL = new Type(NULL_TYPE_NAME) {
 		public boolean isSubtypeOf(Type other) {
 			return (other != BOOLEAN);
 		}
@@ -78,7 +88,7 @@ public class BuiltInTypes {
 	 * Type for real numbers. Objects of this type are represented as
 	 * java.lang.Number objects.
 	 */
-	public static final Type REAL = new Type("Real", BUILT_IN, true) {
+	public static final Type REAL = new Type(REAL_TYPE_NAME, BUILT_IN, true) {
 		public Term getCanonicalTerm(Object obj) {
 			if (!(obj instanceof Number)) {
 				if (obj == Model.NULL) {
@@ -99,7 +109,7 @@ public class BuiltInTypes {
 	 * Type for integers. This is a subtype of the real numbers. Objects of this
 	 * type are represented as java.lang.Integer objects.
 	 */
-	public static final Type INTEGER = new IntegralType("Integer", REAL);
+	public static final Type INTEGER = new IntegralType(INTEGER_TYPE_NAME, REAL);
 
 	/**
 	 * Type for natural numbers. This is a subtype of the integers. Objects of
@@ -114,7 +124,7 @@ public class BuiltInTypes {
 	 * Type for finite strings of Unicode characters. Objects of this type are
 	 * represented as java.lang.String objects.
 	 */
-	public static final Type STRING = new Type("String", BUILT_IN, true);
+	public static final Type STRING = new Type(STRING_TYPE_NAME, BUILT_IN, true);
 
 	/**
 	 * Type for individual unicode characters. Objects of this type are
@@ -126,7 +136,10 @@ public class BuiltInTypes {
 	 * Type for arrays of elements of a given type. Objects of this type
 	 * are represented as blog.common.numerical.MatrixLib objects.
 	 */
-	public static final Type ARRAY = new Type("Array", BUILT_IN, true);
+	public static final Type ARRAY = new Type(ARRAY_TYPE_NAME, BUILT_IN, true);
+
+	public static final Type ARRAY_REAL = new Type(ARRAY_REAL_TYPE_NAME,
+			Type.getType(ARRAY_TYPE_NAME));
 
 	// /**
 	// * Type for lists of elements of a given type. Objects of this type
@@ -138,7 +151,7 @@ public class BuiltInTypes {
 	 * Type for timesteps. Objects of this type are represented as Timestep
 	 * objects, which extend Number (but not Integer, because Integer is final).
 	 */
-	public static Type TIMESTEP = new Type("Timestep", REAL, true) {
+	public static Type TIMESTEP = new Type(TIMESTEP_TYPE_NAME, REAL, true) {
 		public Object getGuaranteedObject(int index) {
 			if (index >= 0) {
 				return Timestep.at(index);
@@ -191,7 +204,7 @@ public class BuiltInTypes {
 
 	private static class BooleanType extends Type {
 		BooleanType() {
-			super("Boolean", BUILT_IN);
+			super(BOOLEAN_TYPE_NAME, BUILT_IN);
 			builtInGuarObjs.add(Boolean.TRUE);
 			builtInGuarObjs.add(Boolean.FALSE);
 		}
