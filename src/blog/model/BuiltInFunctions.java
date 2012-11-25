@@ -65,19 +65,19 @@ public class BuiltInFunctions {
 	public static final String MULT_NAME = "__MULT";
 	public static final String DIV_NAME = "__DIV";
 	public static final String MOD_NAME = "__MOD";
-	public static final String PREV_NAME = "__PREV";
 	public static final String SUB_MAT_NAME = "__SUB_MAT";
 	public static final String SUB_VEC_NAME = "__SUB_VEC";
-	public static final String IS_EMPTY_NAME = "__ISEMPTYSTRING";
-	public static final String CONCAT_NAME = "__CONCAT";
 	public static final String GT_NAME = "__GREATERTHAN";
 	public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
 	public static final String LT_NAME = "__LESSTHAN";
 	public static final String LEQ_NAME = "__LESSTHANOREQUAL";
 
 	// can be called by user
-	public static final String SUCC_NAME = "succ";
-	public static final String PRED_NAME = "pred";
+	public static final String SUCC_NAME = "Succ";
+	public static final String PRED_NAME = "Pred";
+	public static final String PREV_NAME = "Prev";
+	public static final String IS_EMPTY_NAME = "IsEmptyString";
+	public static final String CONCAT_NAME = "Concat";
 
 	/**
 	 * Constant that always denotes Model.NULL.
