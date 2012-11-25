@@ -26,9 +26,9 @@ public class TestArray {
 
 	@Test
 	public void testMultiVariateGaussian() {
-		String code = "ixed Real[] mu = [10; 10; 10]; \n"
+		String code = "fixed Real[] mu = [10; 10; 10]; \n"
 				+ "fixed Real[] sigma = [10, 0, 0; 0, 10, 0; 0, 0, 10];\n"
-				+ "random Real[] x ~ MultivarGaussian(mu, sigma); \n" + "query x";
+				+ "random Real[] x ~ MultivarGaussian(mu, sigma); \n" + "query x;";
 		Main.runFromString(code, args);
 	}
 
