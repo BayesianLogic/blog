@@ -317,7 +317,7 @@ public class BuiltInFunctions {
 		EPOCH = getLiteral("@0", BuiltInTypes.TIMESTEP, Timestep.at(0));
 
 		// Add non-random functions from (real x real) to Boolean
-		List argTypes = new ArrayList();
+		List<Type> argTypes = new ArrayList<Type>();
 		argTypes.add(BuiltInTypes.REAL);
 		argTypes.add(BuiltInTypes.REAL);
 		Type retType = BuiltInTypes.BOOLEAN;

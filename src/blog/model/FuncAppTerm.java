@@ -327,9 +327,10 @@ public class FuncAppTerm extends Term {
 		if (correct && (f == null)) {
 			f = model.getApplicableFunc(funcName, argTypes);
 			if (f == null) {
-				System.err.println(getLocation() + ": No function named " + funcName
-						+ " is applicable to arguments " + "of types "
-						+ Arrays.asList(argTypes));
+				System.err
+						.println(getLocation() + ": No function named " + funcName
+								+ " is applicable to arguments of types "
+								+ Arrays.asList(argTypes));
 				return false;
 			}
 		}
