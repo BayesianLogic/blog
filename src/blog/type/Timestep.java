@@ -112,7 +112,7 @@ public class Timestep extends Number implements Comparable {
 	}
 
 	public static Timestep at(int t) {
-		Timestep ts = (Timestep) generatedTimesteps.get(new Integer(t));
+		Timestep ts = generatedTimesteps.get(t);
 		if (ts == null) {
 			ts = new Timestep(t);
 			generatedTimesteps.put(new Integer(t), ts);
