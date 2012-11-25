@@ -643,7 +643,7 @@ public class BuiltInFunctions {
 			public Object getValue(List args) {
 				MatrixLib mat1 = (MatrixLib) args.get(0);
 				MatrixLib mat2 = (MatrixLib) args.get(1);
-				return mat1.minus(mat2);
+				return mat1.timesMat(mat2);
 			}
 		};
 		TIMES_MAT = new NonRandomFunction(MULT_NAME, argTypes, retType,
