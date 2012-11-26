@@ -4,7 +4,6 @@
 package blog.semant;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -71,7 +70,6 @@ import blog.model.Function;
 import blog.model.FunctionSignature;
 import blog.model.ImplicitSetSpec;
 import blog.model.ListSpec;
-import blog.model.LogicalVar;
 import blog.model.MapSpec;
 import blog.model.MatrixSpec;
 import blog.model.Model;
@@ -107,7 +105,7 @@ public class Semant {
 	private List<Query> queries;
 
 	List<String> packages;
-	
+
 	// Maintains the currently active function
 	private Function currFunction;
 
@@ -360,19 +358,20 @@ public class Semant {
 		}
 
 		// Handling to attach array type to list expression
-		if (e.result instanceof ArrayTy) {
-			if (e.body instanceof ListInitExpr) {
-				((ListInitExpr) e.body).type = e.result;
-			} else if (e.body instanceof DistributionExpr) {
-				// Nothing yet
-			} else if (e.body instanceof SymbolExpr) {
-				// Nothing yet
-			} else if (e.body instanceof IfExpr) {
-				// Nothing yet
-			} else {
-				error(e.line, e.col, "Cannot create array from non-list syntax!");
-			}
-		}
+		// TODO need to remove this part.
+		// if (e.result instanceof ArrayTy) {
+		// if (e.body instanceof ListInitExpr) {
+		// ((ListInitExpr) e.body).type = e.result;
+		// } else if (e.body instanceof DistributionExpr) {
+		// // Nothing yet
+		// } else if (e.body instanceof SymbolExpr) {
+		// // Nothing yet
+		// } else if (e.body instanceof IfExpr) {
+		// // Nothing yet
+		// } else {
+		// error(e.line, e.col, "Cannot create array from non-list syntax!");
+		// }
+		// }
 
 		String name = e.name.toString();
 		Function fun = getFunction(name, argTy);
@@ -449,12 +448,16 @@ public class Semant {
 				}
 			} else {
 				Object funcBody = transExpr(e.body);
-				ArgSpec funcValue = (ArgSpec) funcBody;
-				List<ArgSpec> args = new ArrayList<ArgSpec>();
-				args.add(funcValue);
-				((NonRandomFunction) fun).setInterpretation(blog.ConstantInterp.class,
-						args);
-
+				ArgSpec funcValue = getTypedValue(fun.getRetType(), (ArgSpec) funcBody);
+				if (funcValue == null) {
+					error(e.line, e.col, "function body does not match the return type "
+							+ fun.getRetType());
+				} else {
+					List<ArgSpec> args = new ArrayList<ArgSpec>();
+					args.add(funcValue);
+					((NonRandomFunction) fun).setInterpretation(
+							blog.ConstantInterp.class, args);
+				}
 			}
 		} else if (e instanceof RandomFuncDec) {
 			DependencyModel dm = transDependency(e.body, fun.getRetType(),
@@ -463,6 +466,47 @@ public class Semant {
 		}
 
 		currFunction = null;
+	}
+
+	/**
+	 * check whether the actual type matches the expected type.
+	 * 
+	 * @param ty
+	 * @param value
+	 * @return
+	 */
+	ArgSpec getTypedValue(Type ty, ArgSpec value) {
+		if (value instanceof Term) {
+			Type valuetype = ((Term) value).getType();
+			if (valuetype.isSubtypeOf(ty))
+				return value;
+			else
+				return null;
+		} else if (value instanceof Formula) {
+			if (ty == BuiltInTypes.BOOLEAN)
+				return value;
+			else
+				return null;
+		} else if (value instanceof MatrixSpec) {
+			if (ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL))
+				return value;
+			else
+				return null;
+		} else if (value instanceof ListSpec) {
+			// TODO add more checks with array
+			if (ty.isSubtypeOf(BuiltInTypes.ARRAY)) {
+				if (ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL)) {
+					return transferToMatrix((ListSpec) value);
+				} else
+					return value;
+			} else
+				return null;
+		} else
+			return null;
+	}
+
+	MatrixSpec transferToMatrix(ListSpec list) {
+		return new MatrixSpec((List<ArgSpec>) (list.getSubExprs()));
 	}
 
 	DependencyModel transDependency(Expr e, Type resTy, Object defVal) {
@@ -526,8 +570,15 @@ public class Semant {
 			Object value = transExpr(e.right);
 			if (value instanceof ArgSpec) {
 				// need more semantic checking on type match
-				evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
-						(ArgSpec) value));
+				if (left instanceof Term) {
+					value = getTypedValue(((Term) left).getType(), (ArgSpec) value);
+				}
+				if (value != null)
+					evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
+							(ArgSpec) value));
+				else
+					error(e.line, e.col,
+							"type mistach for observation or translation error");
 			} else {
 				error(e.right.line, e.right.col,
 						"Invalid expression on the right side of evidence.");
@@ -737,19 +788,20 @@ public class Semant {
 
 	ArgSpec transExpr(ListInitExpr e) {
 		List<ArgSpec> values = transExprList(e.values, false);
-		if (e.type instanceof ArrayTy) {
-			Type arrType = getType(e.type);
-			String baseType = arrType.getName();
-			baseType = baseType.substring(baseType.indexOf('_') + 1,
-					baseType.lastIndexOf('_'));
-
-			if (baseType.equals("NaturalNum") || baseType.equals("Real")) {
-				return new MatrixSpec(values);
-			}
-			return new ListSpec(values, arrType);
-		} else {
-			return new ListSpec(values, getType(e.type));
-		}
+		// modified by leili, no need to do translation now, will do later
+		// if (e.type instanceof ArrayTy) {
+		// Type arrType = getType(e.type);
+		// String baseType = arrType.getName();
+		// baseType = baseType.substring(baseType.indexOf('_') + 1,
+		// baseType.lastIndexOf('_'));
+		//
+		// if (baseType.equals("NaturalNum") || baseType.equals("Real")) {
+		// return new MatrixSpec(values);
+		// }
+		// return new ListSpec(values, arrType);
+		// } else {
+		return new ListSpec(values, getType(e.type));
+		// }
 	}
 
 	MapSpec transExpr(MapInitExpr e) {
