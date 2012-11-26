@@ -138,8 +138,7 @@ public class BuiltInTypes {
 	 */
 	public static final Type ARRAY = new Type(ARRAY_TYPE_NAME, BUILT_IN, true);
 
-	public static final Type ARRAY_REAL = new Type(ARRAY_REAL_TYPE_NAME,
-			Type.getType(ARRAY_TYPE_NAME));
+	public static final Type ARRAY_REAL = new Type(ARRAY_REAL_TYPE_NAME, ARRAY);
 
 	// /**
 	// * Type for lists of elements of a given type. Objects of this type
@@ -340,6 +339,8 @@ public class BuiltInTypes {
 		addType(TIMESTEP);
 		addType(STRING);
 		addType(CHARACTER);
+		addType(ARRAY);
+		addType(ARRAY_REAL);
 		// addType(LIST);
 
 		// typeGenerators.add(new ListGenerator());
