@@ -75,7 +75,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
 		commIdToPOPApp = new HashMapDiff(underlying.assertedIdToPOPAppMap());
 		popAppToCommIds = new IndexedMultiMapDiff(
 				underlying.popAppToAssertedIdsMap());
-        cbnUpdate = new PatchCBN(underlying.getCBN());
+        cbn = new PatchCBN(underlying.getCBN());
 		varToUninstParent = new MapWithPreimagesDiff(
 				underlying.varToUninstParentMap());
 		varToLogProb = new HashMapDiff(underlying.varToLogProbMap());
@@ -145,7 +145,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
 		}
 
 		updateParentsAndProbs();
-		savedWorld.updateCBN(cbnUpdate, varToUninstParent, varToLogProb,
+		savedWorld.updateCBN(cbn, varToUninstParent, varToLogProb,
 				derivedVarToValue);
 
 		clearChanges(); // since underlying is now updated
@@ -236,7 +236,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
 	 */
 	public Set getNewlyBarrenVars() {
 		updateParentsAndProbs();
-		return ((PatchCBN) cbnUpdate).getNewlyBarrenNodes();
+		return ((PatchCBN) cbn).getNewlyBarrenNodes();
 	}
 
 	/**
@@ -374,7 +374,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
 		((MultiMapDiff) objToUsesAsArg).clearChanges();
 		((MapDiff) assertedIdToPOPApp).clearChanges();
 		((MultiMapDiff) popAppToAssertedIds).clearChanges();
-		((PatchCBN) cbnUpdate).clearChanges();
+		((PatchCBN) cbn).clearChanges();
 		((MapDiff) varToLogProb).clearChanges();
 		((MapDiff) derivedVarToValue).clearChanges();
 
@@ -387,7 +387,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
 	}
 
 	private PartialWorld savedWorld;
-    private PatchCBN cbnUpdate;
+//    private PatchCBN cbn;
 
 	private List diffListeners = new ArrayList(); // of WorldDiffListener
 }
