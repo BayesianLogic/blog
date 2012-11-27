@@ -91,6 +91,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 */
 	public AbstractPartialWorld(Set idTypes) {
 		this.idTypes = new HashSet(idTypes);
+		this.cbn = new DefaultCBN();
 	}
 
 	public Set getInstantiatedVars() {
