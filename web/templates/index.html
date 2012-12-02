@@ -26,7 +26,7 @@ $def with (form, text)
 						success: function(data) {
 							var jsonData = jQuery.parseJSON(data);
 							jQuery('#text_result').html(jsonData.text_result).hide().fadeIn(1500);
-							jQuery('#graph_result').attr('src', jsonData.graph_result).hide().fadeIn(1500);
+							//jQuery('#graph_result').attr('src', jsonData.graph_result).hide().fadeIn(1500);
 						},
 						});
 	                return false;
@@ -116,7 +116,6 @@ query S(@5);
 	</h3>
 	<div id="content">
 		<div id="left"><span id="text_result">$text</span></div>
-		<div id="right"><img id="graph_result" src="/static/images/BerkeleyLogo.png" alt="graph"/></div>
 	</div>
 	<style>
 		#left { float:left }
