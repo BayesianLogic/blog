@@ -1,6 +1,6 @@
-from run_examples import BlogParser
-import pygraphviz as pgv
-import pygraph
+#from run_examples import BlogParser
+#import pygraphviz as pgv
+#import pygraph
 import web
 import time
 import os
@@ -19,7 +19,7 @@ app = web.application(urls, globals())
 my_form = web.form.Form(
                 web.form.Textbox('', class_='code', id='code', cols="25", rows="23"),
                 )
-
+"""
 def generate_graph(prefix, output):
     IMAGE_EXTENSION = ".png"
     blog_parser = BlogParser()
@@ -33,7 +33,8 @@ def generate_graph(prefix, output):
         
         return cbn_name
     return DEFAULT_GRAPH
-
+"""
+    
 def run_process(script_name):
     command = ["./run.sh", "--print", script_name]
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -59,12 +60,12 @@ def execute_script(script):
     script_name = store_script(prefix, script)
     output, returncode = run_process(script_name)
     
-    graph = DEFAULT_GRAPH
-    if returncode == 0:
-        graph = generate_graph(prefix, output)
+    #graph = DEFAULT_GRAPH
+    #if returncode == 0:
+    #    graph = generate_graph(prefix, output)
     
     #Run commandline Blog on the file and return output
-    return json.dumps({'text_result': text_to_html(output), "graph_result": graph})
+    return json.dumps({'text_result': text_to_html(output)})
 
 # A ad hoc text to html converter
 # Should use other library if output include special symbol
