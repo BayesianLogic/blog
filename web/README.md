@@ -5,6 +5,7 @@ Setting up Server
 3. `$ cd dblog`
 4. `$ ./gen_parse`
 5. `$ ./compile.sh`
-6. `$ python app.py <port>`
+6. `$ cd web`
+7. `$ python app.py <port>`
 
 
