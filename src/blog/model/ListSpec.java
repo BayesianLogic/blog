@@ -140,6 +140,15 @@ public class ListSpec extends ArgSpec {
 		return null;
 	}
 
+	/**
+	 * transfer ListSpec to Matrix type
+	 * 
+	 * @return
+	 */
+	public MatrixSpec transferToMatrix() {
+		return new MatrixSpec((List<ArgSpec>) (this.getSubExprs()));
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
