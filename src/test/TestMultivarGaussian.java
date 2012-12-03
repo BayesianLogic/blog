@@ -1,6 +1,8 @@
 package test;
 
 import blog.common.Util;
+import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixLib;
 import blog.distrib.MultivarGaussian;
 import Jama.Matrix;
 
@@ -18,12 +20,19 @@ public class TestMultivarGaussian {
 	 */
 	public static void main(String[] args) {
 		Util.initRandom(true);
-		Matrix zero = new Matrix(5, 1);
-		Matrix unit = Matrix.identity(5, 5);
+		
+		double[][] zeroTmp = new double[5][1];
+		MatrixLib zero = new JamaMatrixLib(zeroTmp);
+		
+		double[][] identityTmp = new double[5][5];
+		for (int i = 0; i < 5; i++) {
+			identityTmp[i][i] = 1;
+		}
+		MatrixLib unit = new JamaMatrixLib(identityTmp);
 
 		MultivarGaussian mvg = new MultivarGaussian(zero, unit);
 
-		Matrix b = mvg.sampleVal();
+		MatrixLib b = mvg.sampleVal();
 		System.out.println(b.toString());
 	}
 }

@@ -11,6 +11,7 @@ import blog.common.Util;
 import blog.common.numerical.JamaMatrixLib;
 import blog.common.numerical.MatrixLib;
 import blog.sample.EvalContext;
+import blog.world.DefaultPartialWorld;
 
 /**
  * Representation of a matrix within BLOG.  
@@ -64,7 +65,8 @@ public class MatrixSpec extends ArgSpec {
 					Util.fatalError("Matrix can only contain constants!");
 				}
 				FuncAppTerm elementTerm = (FuncAppTerm) elementSpec;
-				matVals[i][j] = elementTerm.asDouble();
+				Number val = (Number) elementTerm.evaluate(new DefaultPartialWorld());
+				matVals[i][j] = val.doubleValue();
 			}
 		}
 		
@@ -79,7 +81,8 @@ public class MatrixSpec extends ArgSpec {
 				Util.fatalError("Matrix can only contain constants!");
 			}
 			FuncAppTerm elementTerm = (FuncAppTerm) elementSpec;
-			matVals[0][j] = elementTerm.asDouble();
+			Number val = (Number) elementTerm.evaluate(new DefaultPartialWorld());
+			matVals[0][j] = val.doubleValue();
 		}
 		
 		return matVals;

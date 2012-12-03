@@ -43,7 +43,7 @@ import blog.bn.RandFuncAppVar;
 import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.model.Evidence;
-import blog.model.Function;
+import blog.model.FunctionSignature;
 import blog.model.Model;
 import blog.model.POP;
 import blog.model.RandomFunction;
@@ -69,11 +69,11 @@ public class UrnBallsSplitMergeNoIds implements Proposer {
 		drawType = Type.getType("Draw");
 
 		ballPOP = (POP) ballType.getPOPs().iterator().next();
-		fBallDrawn = (RandomFunction) model.getFunction(new Function.Sig(
+		fBallDrawn = (RandomFunction) model.getFunction(new FunctionSignature(
 				"BallDrawn", drawType));
-		fColor = (RandomFunction) model.getFunction(new Function.Sig("Color",
+		fColor = (RandomFunction) model.getFunction(new FunctionSignature("Color",
 				ballType));
-		fObsColor = (RandomFunction) model.getFunction(new Function.Sig("ObsColor",
+		fObsColor = (RandomFunction) model.getFunction(new FunctionSignature("ObsColor",
 				drawType));
 
 		colorType = fColor.getRetType();

@@ -35,8 +35,12 @@
 
 package blog.model;
 
-import java.util.*;
-import java.util.regex.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import blog.type.Timestep;
 
@@ -47,6 +51,16 @@ import blog.type.Timestep;
  * R<i>n</i>Vector for positive integers m, n.
  */
 public class BuiltInTypes {
+
+	public static final String INTEGER_TYPE_NAME = "Integer";
+	public static final String REAL_TYPE_NAME = "Real";
+	public static final String ARRAY_REAL_TYPE_NAME = "Array_Real";
+	public static final String NULL_TYPE_NAME = "**NullType**";
+	public static final String STRING_TYPE_NAME = "String";
+	public static final String ARRAY_TYPE_NAME = "Array";
+	public static final String TIMESTEP_TYPE_NAME = "Timestep";
+	public static final String BOOLEAN_TYPE_NAME = "Boolean";
+
 	/**
 	 * Supertype for all built-in types. Used to determine whether a type is
 	 * built in or not.
@@ -58,7 +72,7 @@ public class BuiltInTypes {
 	 * can have the same denotation as "null", so we treat this special type as
 	 * being a subtype of every type except BOOLEAN.
 	 */
-	public static final Type NULL = new Type("**NullType**") {
+	public static final Type NULL = new Type(NULL_TYPE_NAME) {
 		public boolean isSubtypeOf(Type other) {
 			return (other != BOOLEAN);
 		}
@@ -74,7 +88,7 @@ public class BuiltInTypes {
 	 * Type for real numbers. Objects of this type are represented as
 	 * java.lang.Number objects.
 	 */
-	public static final Type REAL = new Type("Real", BUILT_IN, true) {
+	public static final Type REAL = new Type(REAL_TYPE_NAME, BUILT_IN, true) {
 		public Term getCanonicalTerm(Object obj) {
 			if (!(obj instanceof Number)) {
 				if (obj == Model.NULL) {
@@ -85,8 +99,8 @@ public class BuiltInTypes {
 			}
 
 			double value = ((Number) obj).doubleValue();
-			NonRandomFunction c = BuiltInFunctions.getLiteral(
-					String.valueOf(value), this, new Double(value));
+			NonRandomFunction c = BuiltInFunctions.getLiteral(String.valueOf(value),
+					this, new Double(value));
 			return new FuncAppTerm(c);
 		}
 	};
@@ -95,44 +109,48 @@ public class BuiltInTypes {
 	 * Type for integers. This is a subtype of the real numbers. Objects of this
 	 * type are represented as java.lang.Integer objects.
 	 */
-	public static final Type INTEGER = new IntegralType("Integer", REAL);
+	public static final Type INTEGER = new IntegralType(INTEGER_TYPE_NAME, REAL);
 
 	/**
 	 * Type for natural numbers. This is a subtype of the integers. Objects of
 	 * this type are represented as java.lang.Integer objects.
 	 */
-	public static final Type NATURAL_NUM = new IntegralType("NaturalNum",
-			INTEGER);
+	// public static final Type NATURAL_NUM = new IntegralType("NaturalNum",
+	// INTEGER);
+	// modified by leili, now Integer type and natural_num are the same
+	public static final Type NATURAL_NUM = INTEGER;
 
 	/**
 	 * Type for finite strings of Unicode characters. Objects of this type are
 	 * represented as java.lang.String objects.
 	 */
-	public static final Type STRING = new Type("String", BUILT_IN, true);
+	public static final Type STRING = new Type(STRING_TYPE_NAME, BUILT_IN, true);
 
 	/**
 	 * Type for individual unicode characters. Objects of this type are
 	 * represented as java.lang.Character objects.
 	 */
 	public static final Type CHARACTER = new CharacterType();
-	
+
 	/**
-	 * Type for arrays of elements of a given type.  Objects of this type
+	 * Type for arrays of elements of a given type. Objects of this type
 	 * are represented as blog.common.numerical.MatrixLib objects.
 	 */
-	public static final Type ARRAY = new Type("Array", BUILT_IN, true);
-	
-//	/**
-//	 * Type for lists of elements of a given type.  Objects of this type
-//	 * are represented as java.util.ArrayList objects.
-//	 */
-//	public static final Type LIST = new Type("List", BUILT_IN, true);
+	public static final Type ARRAY = new Type(ARRAY_TYPE_NAME, BUILT_IN, true);
+
+	public static final Type ARRAY_REAL = new Type(ARRAY_REAL_TYPE_NAME, ARRAY);
+
+	// /**
+	// * Type for lists of elements of a given type. Objects of this type
+	// * are represented as java.util.ArrayList objects.
+	// */
+	// public static final Type LIST = new Type("List", BUILT_IN, true);
 
 	/**
 	 * Type for timesteps. Objects of this type are represented as Timestep
 	 * objects, which extend Number (but not Integer, because Integer is final).
 	 */
-	public static Type TIMESTEP = new Type("Timestep", REAL, true) {
+	public static Type TIMESTEP = new Type(TIMESTEP_TYPE_NAME, REAL, true) {
 		public Object getGuaranteedObject(int index) {
 			if (index >= 0) {
 				return Timestep.at(index);
@@ -145,11 +163,11 @@ public class BuiltInTypes {
 				if (obj == Model.NULL) {
 					return new FuncAppTerm(BuiltInFunctions.NULL);
 				}
-				throw new IllegalArgumentException("Object " + obj
-						+ " not of type " + this);
+				throw new IllegalArgumentException("Object " + obj + " not of type "
+						+ this);
 			}
-			NonRandomFunction c = BuiltInFunctions.getLiteral(obj.toString(),
-					this, obj);
+			NonRandomFunction c = BuiltInFunctions.getLiteral(obj.toString(), this,
+					obj);
 			return new FuncAppTerm(c);
 		}
 	};
@@ -166,7 +184,7 @@ public class BuiltInTypes {
 		Type type = (Type) builtInTypes.get(name);
 		if (type == null) {
 			// TODO: don't touch this until we're sure we're not using TypeGenerators
-			//			in any form whatsoever
+			// in any form whatsoever
 			for (Iterator iter = typeGenerators.iterator(); iter.hasNext();) {
 				TypeGenerator generator = (TypeGenerator) iter.next();
 				type = generator.generateIfMatches(name);
@@ -185,7 +203,7 @@ public class BuiltInTypes {
 
 	private static class BooleanType extends Type {
 		BooleanType() {
-			super("Boolean", BUILT_IN);
+			super(BOOLEAN_TYPE_NAME, BUILT_IN);
 			builtInGuarObjs.add(Boolean.TRUE);
 			builtInGuarObjs.add(Boolean.FALSE);
 		}
@@ -212,11 +230,11 @@ public class BuiltInTypes {
 
 		public Term getCanonicalTerm(Object obj) {
 			if (!(obj instanceof Boolean)) {
-				throw new IllegalArgumentException("Object " + obj
-						+ " not of type " + this);
+				throw new IllegalArgumentException("Object " + obj + " not of type "
+						+ this);
 			}
-			NonRandomFunction c = BuiltInFunctions.getLiteral(
-					String.valueOf(obj), this, obj);
+			NonRandomFunction c = BuiltInFunctions.getLiteral(String.valueOf(obj),
+					this, obj);
 			return new FuncAppTerm(c);
 		}
 
@@ -240,11 +258,11 @@ public class BuiltInTypes {
 				if (obj == Model.NULL) {
 					return new FuncAppTerm(BuiltInFunctions.NULL);
 				}
-				throw new IllegalArgumentException("Object " + obj
-						+ " is not of type " + this);
+				throw new IllegalArgumentException("Object " + obj + " is not of type "
+						+ this);
 			}
-			NonRandomFunction c = BuiltInFunctions.getLiteral(
-					String.valueOf(obj), this, obj);
+			NonRandomFunction c = BuiltInFunctions.getLiteral(String.valueOf(obj),
+					this, obj);
 			return new FuncAppTerm(c);
 		}
 	}
@@ -255,8 +273,7 @@ public class BuiltInTypes {
 		}
 
 		public Object getGuaranteedObject(int index) {
-			if ((index >= Character.MIN_VALUE)
-					&& (index <= Character.MAX_VALUE)) {
+			if ((index >= Character.MIN_VALUE) && (index <= Character.MAX_VALUE)) {
 				return new Character((char) index);
 			}
 			return null;
@@ -278,33 +295,35 @@ public class BuiltInTypes {
 	private static interface TypeGenerator {
 		Type generateIfMatches(String name);
 	}
-	
-//	/**
-//	 * ListGenerator - A generator object for list types with associated
-//	 * 					generics
-//	 * 
-//	 * @author awong
-//	 */
-//	private static class ListGenerator implements TypeGenerator {
-//		private static final Pattern MATRIX_PATTERN = Pattern
-//				.compile("List<([A-Za-z]*)>");
-//		
-//		@Override
-//		public Type generateIfMatches(String name) {
-//			Matcher matcher = MATRIX_PATTERN.matcher(name);
-//			if (matcher.matches()) {
-//				int innerType = Integer.parseInt(matcher.group(1));
-////				if (n == 1) {
-////					return BuiltInTypes.getType("R" + m + "Vector");
-////				}
-////				return new MatrixType(name, m, n, RMATRIX);
-//			}
-//			return null;
-//		}
-//	}
-	
-	/* A reference to BuiltInTypes is necessary to load the class,
-	   thereby loading built-in types into the type hierarchy */
+
+	// /**
+	// * ListGenerator - A generator object for list types with associated
+	// * generics
+	// *
+	// * @author awong
+	// */
+	// private static class ListGenerator implements TypeGenerator {
+	// private static final Pattern MATRIX_PATTERN = Pattern
+	// .compile("List<([A-Za-z]*)>");
+	//
+	// @Override
+	// public Type generateIfMatches(String name) {
+	// Matcher matcher = MATRIX_PATTERN.matcher(name);
+	// if (matcher.matches()) {
+	// int innerType = Integer.parseInt(matcher.group(1));
+	// // if (n == 1) {
+	// // return BuiltInTypes.getType("R" + m + "Vector");
+	// // }
+	// // return new MatrixType(name, m, n, RMATRIX);
+	// }
+	// return null;
+	// }
+	// }
+
+	/*
+	 * A reference to BuiltInTypes is necessary to load the class,
+	 * thereby loading built-in types into the type hierarchy
+	 */
 	public static void ping() {
 	}
 
@@ -320,10 +339,12 @@ public class BuiltInTypes {
 		addType(TIMESTEP);
 		addType(STRING);
 		addType(CHARACTER);
-//		addType(LIST);
+		addType(ARRAY);
+		addType(ARRAY_REAL);
+		// addType(LIST);
 
-//		typeGenerators.add(new ListGenerator());
-//		typeGenerators.add(new RMatrixGenerator());
-//		typeGenerators.add(new RVectorGenerator());
+		// typeGenerators.add(new ListGenerator());
+		// typeGenerators.add(new RMatrixGenerator());
+		// typeGenerators.add(new RVectorGenerator());
 	}
 }

@@ -1,6 +1,7 @@
 package blog.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,34 +12,34 @@ import blog.common.UnaryProcedure;
 import blog.sample.EvalContext;
 
 /**
- * ArgSpec that represents a list.  For now supports only constants
+ * ArgSpec that represents a list. For now supports only constants
  * (distinct objects and literals of built-in types) and function names.
  * 
  * @author awong
  */
 
 public class ListSpec extends ArgSpec {
-	
+
 	List<ArgSpec> elements;
 	Type listType;
 	boolean compiled;
-	
+
 	public ListSpec() {
 		elements = new ArrayList<ArgSpec>();
 		compiled = false;
 	}
-	
+
 	public ListSpec(List<ArgSpec> args) {
 		elements = args;
 		compiled = false;
 	}
-	
+
 	public ListSpec(List<ArgSpec> args, Type typeOfContents) {
 		elements = args;
 		listType = typeOfContents;
 		compiled = false;
 	}
-	
+
 	/**
 	 * To compile a list, it is only necessary to compile
 	 * each of its possible values.
@@ -47,17 +48,16 @@ public class ListSpec extends ArgSpec {
 		compiled = true;
 		callStack.add(this);
 		int errors = 0;
-		
+
 		if (elements.isEmpty()) {
 			System.err.println("List or array expression is empty");
 			errors = 1;
-		}
-		else {
-			for (ArgSpec listTerm: elements) {
+		} else {
+			for (ArgSpec listTerm : elements) {
 				errors += listTerm.compile(callStack);
 			}
 		}
-		
+
 		callStack.remove(this);
 		return errors;
 	}
@@ -65,7 +65,7 @@ public class ListSpec extends ArgSpec {
 	@Override
 	public Object evaluate(EvalContext context) {
 		List<Object> evalContents = new ArrayList<Object>();
-		for (ArgSpec element: elements) {
+		for (ArgSpec element : elements) {
 			evalContents.add(element.evaluate(context));
 		}
 		return evalContents;
@@ -76,7 +76,7 @@ public class ListSpec extends ArgSpec {
 	 */
 	@Override
 	public boolean containsRandomSymbol() {
-		for (ArgSpec item: elements) {
+		for (ArgSpec item : elements) {
 			if (item.containsRandomSymbol()) {
 				return true;
 			}
@@ -87,7 +87,7 @@ public class ListSpec extends ArgSpec {
 	@Override
 	public boolean checkTypesAndScope(Model model, Map scope) {
 		// Check typing of all symbols in the multiset
-		for (ArgSpec obj: elements) {
+		for (ArgSpec obj : elements) {
 			if (!obj.checkTypesAndScope(model, scope)) {
 				return false;
 			}
@@ -101,7 +101,7 @@ public class ListSpec extends ArgSpec {
 	 */
 	@Override
 	public ArgSpec find(Term t) {
-		for (ArgSpec listTerm: elements) {
+		for (ArgSpec listTerm : elements) {
 			if (listTerm.equals(t)) {
 				return listTerm;
 			}
@@ -139,15 +139,35 @@ public class ListSpec extends ArgSpec {
 	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
 		return null;
 	}
-	
+
+	/**
+	 * transfer ListSpec to Matrix type
+	 * 
+	 * @return
+	 */
+	public MatrixSpec transferToMatrix() {
+		return new MatrixSpec((List<ArgSpec>) (this.getSubExprs()));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see blog.model.ArgSpec#getSubExprs()
+	 */
+	@Override
+	public Collection getSubExprs() {
+		// TODO Auto-generated method stub
+		return elements;
+	}
+
 	public String toString() {
 		return elements.toString();
 	}
-	
+
 	public int hashCode() {
 		return this.toString().hashCode();
 	}
-	
+
 	public boolean equals(Object o) {
 		return o.hashCode() == this.hashCode();
 	}

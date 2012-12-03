@@ -35,7 +35,15 @@
 
 package blog.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import blog.Substitution;
 import blog.bn.BayesNetVar;
@@ -105,15 +113,16 @@ public class FuncAppTerm extends Term {
 	 * 
 	 * @param funcName
 	 *          the name of a function
-	 * @param argList
+	 * @param args
 	 *          a List of Term objects representing arguments
 	 */
-	public FuncAppTerm(String funcName, List argList) {
+	public FuncAppTerm(String funcName, ArgSpec... args) {
 		this.funcName = funcName;
 		if (funcName.equals("Position"))
 			position = this;
-		args = new ArgSpec[argList.size()];
-		argList.toArray(args);
+		// this.args = new ArgSpec[args.length];
+		// argList.toArray(args);
+		this.args = args;
 	}
 
 	public static FuncAppTerm position;
@@ -147,7 +156,7 @@ public class FuncAppTerm extends Term {
 		for (int i = 0; i < args.length; ++i) {
 			errors += args[i].compile(callStack);
 		}
-		//errors += f.compile(callStack);
+		// errors += f.compile(callStack);
 
 		callStack.remove(this);
 		return errors;
@@ -157,7 +166,7 @@ public class FuncAppTerm extends Term {
 		// if (argValues == null) { // Not reusing anymore since this array was
 		// being used for being argument arrays for RandFuncAppVars and had to be
 		// cloned anyway.
-        Object [] oldArgValues = argValues;
+		Object[] oldArgValues = argValues;
 		argValues = new Object[args.length];
 		// }
 
@@ -169,13 +178,13 @@ public class FuncAppTerm extends Term {
 
 			if (argValues[i] == Model.NULL) {
 				// short-circuit, don't evaluate other args
-                argValues = oldArgValues;
+				argValues = oldArgValues;
 				return Model.NULL;
 			}
 		}
 
 		Object result = f.getValueInContext(argValues, context, false);
-        argValues = oldArgValues;
+		argValues = oldArgValues;
 		return result;
 	}
 
@@ -186,16 +195,16 @@ public class FuncAppTerm extends Term {
 	 * a BasicVar (specifically, a RandFuncAppVar). Otherwise, it's a DerivedVar.
 	 */
 	public BayesNetVar getVariable() {
-        Object [] oldArgValues = argValues;
+		Object[] oldArgValues = argValues;
 		if (f instanceof RandomFunction) {
 			if (loadArgValuesIfNonRandom()) {
 				RandFuncAppVar randFuncAppVar = new RandFuncAppVar((RandomFunction) f,
 						argValues, true);
-                argValues = oldArgValues;
+				argValues = oldArgValues;
 				return randFuncAppVar;
 			}
 		}
-        argValues = oldArgValues;
+		argValues = oldArgValues;
 		return new DerivedVar(this);
 	}
 
@@ -304,23 +313,24 @@ public class FuncAppTerm extends Term {
 		Type[] argTypes = new Type[args.length];
 		for (int i = 0; i < args.length; ++i) {
 			if (args[i] instanceof Term) {
-                Term arg = (Term) args[i];
-    			Term argInScope = arg.getTermInScope(model, scope);
-    			if (argInScope == null) {
-    				correct = false;
-    			} else {
-    				args[i] = argInScope;
-    				argTypes[i] = argInScope.getType();
-    			}
-            }
+				Term arg = (Term) args[i];
+				Term argInScope = arg.getTermInScope(model, scope);
+				if (argInScope == null) {
+					correct = false;
+				} else {
+					args[i] = argInScope;
+					argTypes[i] = argInScope.getType();
+				}
+			}
 		}
 
 		if (correct && (f == null)) {
 			f = model.getApplicableFunc(funcName, argTypes);
 			if (f == null) {
-				System.err.println(getLocation() + ": No function named " + funcName
-						+ " is applicable to arguments " + "of types "
-						+ Arrays.asList(argTypes));
+				System.err
+						.println(getLocation() + ": No function named " + funcName
+								+ " is applicable to arguments of types "
+								+ Arrays.asList(argTypes));
 				return false;
 			}
 		}
@@ -393,13 +403,13 @@ public class FuncAppTerm extends Term {
 			if (f != ft.f || args.length != ft.args.length)
 				return false;
 			for (int i = 0; i < args.length; i++) {
-                if ((args[i] instanceof Term) && (ft.args[i] instanceof Term)) {
-                    Term arg = (Term) args[i];
-				    if (!arg.makeOverlapSubst((Term) ft.args[i], theta)) {
-				    	return false;
-				    }
-                }
-            }
+				if ((args[i] instanceof Term) && (ft.args[i] instanceof Term)) {
+					Term arg = (Term) args[i];
+					if (!arg.makeOverlapSubst((Term) ft.args[i], theta)) {
+						return false;
+					}
+				}
+			}
 			return true;
 		}
 		return false;
@@ -418,10 +428,10 @@ public class FuncAppTerm extends Term {
 
 		List<Term> newArgs = new ArrayList<Term>();
 		for (int i = 0; i < args.length; ++i) {
-            if (args[i] instanceof Term) {
-                Term arg = (Term) args[i];
-			    newArgs.add(arg.getCanonicalVersion());
-            }
+			if (args[i] instanceof Term) {
+				Term arg = (Term) args[i];
+				newArgs.add(arg.getCanonicalVersion());
+			}
 		}
 
 		FuncAppTerm canonical = new FuncAppTerm(f, newArgs);

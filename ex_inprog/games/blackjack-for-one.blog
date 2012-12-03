@@ -49,7 +49,7 @@ fixed Integer Value(Rank r)
 random Card CardDrawn(Timestep t) {
     if (t == @0) then
     	~ UniformChoice({Card c})
-    else if ((CardDrawn(Prev(t)) != null) & (Score(Prev(t)) < 16)) then 
+    else if ((CardDrawn(Prev(t)) != null) & (Score(Prev(t)) < 16) & (Score(Prev(t)) > 0)) then 
     	~ UniformChoice({Card c})
 };
 
