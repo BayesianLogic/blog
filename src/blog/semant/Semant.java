@@ -5,6 +5,7 @@ package blog.semant;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import blog.EqualsCPD;
@@ -41,6 +42,7 @@ import blog.absyn.ParameterDec;
 import blog.absyn.QuantifiedFormulaExpr;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
+import blog.absyn.Stmt;
 import blog.absyn.StmtList;
 import blog.absyn.StringExpr;
 import blog.absyn.SymbolArrayList;
@@ -49,7 +51,6 @@ import blog.absyn.SymbolExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
-import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.BuiltInFunctions;
@@ -68,6 +69,7 @@ import blog.model.Formula;
 import blog.model.FormulaQuery;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
+import blog.model.FunctionSignature;
 import blog.model.ImplicitSetSpec;
 import blog.model.ListSpec;
 import blog.model.MapSpec;
@@ -88,7 +90,6 @@ import blog.model.TrueFormula;
 import blog.model.Type;
 import blog.model.UniversalFormula;
 import blog.model.ValueEvidenceStatement;
-import blog.model.Function.Sig;
 import blog.msg.ErrorMsg;
 import blog.type.Timestep;
 
@@ -106,6 +107,9 @@ public class Semant {
 	private List<Query> queries;
 
 	List<String> packages;
+
+	// Maintains the currently active function
+	private Function currFunction;
 
 	public Semant(ErrorMsg msg) {
 		this(new Model(), new Evidence(), new ArrayList<Query>(), msg);
@@ -156,7 +160,7 @@ public class Semant {
 	}
 
 	protected Function getFunction(String name, List<Type> argTypeList) {
-		Function f = model.getFunction(new Function.Sig(name, argTypeList));
+		Function f = model.getFunction(new FunctionSignature(name, argTypeList));
 		if ((f == null) && (evidence != null)) {
 			f = evidence.getSkolemConstant(name);
 		}
@@ -200,7 +204,7 @@ public class Semant {
 		if (type instanceof ArrayTy) {
 			ArrayTy arrDef = (ArrayTy) type;
 			Type termType = getNameType(arrDef.typ);
-			
+
 			if (termType == null) {
 				error(type.line, type.col, "Type " + termType.getName() + " undefined!");
 			}
@@ -208,12 +212,12 @@ public class Semant {
 			// Type hierarchy: Array -> {type}Array -> {type}([])^{num_dims}
 			String typeName = termType.getName();
 			String arrTypeName = "Array_" + typeName;
-			
+
 			Type arrType = Type.getType(arrTypeName);
 			if (arrType == null) {
 				arrType = new Type(arrTypeName, Type.getType("Array"));
 			}
-			
+
 			// STOP THE DUPLICATION
 			for (int i = 1; i <= arrDef.dim; i++) {
 				String fullTypeName = arrTypeName + "_" + i;
@@ -354,19 +358,22 @@ public class Semant {
 				}
 			}
 		}
-		
+
 		// Handling to attach array type to list expression
-		if (e.result instanceof ArrayTy) {
-			if (e.body instanceof ListInitExpr) {
-				((ListInitExpr) e.body).type = e.result;
-			}
-			else if (e.body instanceof DistributionExpr) {
-				//Nothing yet
-			}
-			else {
-				error(e.line, e.col, "Cannot create array from non-list syntax!");
-			}
-		}
+		// TODO need to remove this part.
+		// if (e.result instanceof ArrayTy) {
+		// if (e.body instanceof ListInitExpr) {
+		// ((ListInitExpr) e.body).type = e.result;
+		// } else if (e.body instanceof DistributionExpr) {
+		// // Nothing yet
+		// } else if (e.body instanceof SymbolExpr) {
+		// // Nothing yet
+		// } else if (e.body instanceof IfExpr) {
+		// // Nothing yet
+		// } else {
+		// error(e.line, e.col, "Cannot create array from non-list syntax!");
+		// }
+		// }
 
 		String name = e.name.toString();
 		Function fun = getFunction(name, argTy);
@@ -384,7 +391,6 @@ public class Semant {
 			NonRandomFunction f;
 			if (argTy.size() == 0) {
 				f = NonRandomFunction.createConstant(name, resTy, e.body);
-
 			} else {
 				f = new NonRandomFunction(name, argTy, resTy);
 			}
@@ -428,6 +434,7 @@ public class Semant {
 
 		String name = e.name.toString();
 		Function fun = getFunction(name, argTy);
+		currFunction = fun;
 
 		if (e instanceof FixedFuncDec) {
 			if (e.body == null) {
@@ -442,13 +449,11 @@ public class Semant {
 					// TODO: Implement more general fixed functions
 				}
 			} else {
+				// note will do type checking later
 				Object funcBody = transExpr(e.body);
 				ArgSpec funcValue = (ArgSpec) funcBody;
-				List<ArgSpec> args = new ArrayList<ArgSpec>();
-				args.add(funcValue);
 				((NonRandomFunction) fun).setInterpretation(blog.ConstantInterp.class,
-						args);
-
+						Collections.singletonList(funcValue));
 			}
 		} else if (e instanceof RandomFuncDec) {
 			DependencyModel dm = transDependency(e.body, fun.getRetType(),
@@ -456,6 +461,44 @@ public class Semant {
 			((RandomFunction) fun).setDepModel(dm);
 		}
 
+		currFunction = null;
+	}
+
+	/**
+	 * check whether the actual type matches the expected type.
+	 * 
+	 * @param ty
+	 * @param value
+	 * @return
+	 */
+	ArgSpec getTypedValue(Type ty, ArgSpec value) {
+		if (value instanceof Term) {
+			Type valuetype = ((Term) value).getType();
+			if (valuetype.isSubtypeOf(ty))
+				return value;
+			else
+				return null;
+		} else if (value instanceof Formula) {
+			if (ty == BuiltInTypes.BOOLEAN)
+				return value;
+			else
+				return null;
+		} else if (value instanceof MatrixSpec) {
+			if (ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL))
+				return value;
+			else
+				return null;
+		} else if (value instanceof ListSpec) {
+			// TODO add more checks with array
+			if (ty.isSubtypeOf(BuiltInTypes.ARRAY)) {
+				if (ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL)) {
+					return ((ListSpec) value).transferToMatrix();
+				} else
+					return value;
+			} else
+				return null;
+		} else
+			return null;
 	}
 
 	DependencyModel transDependency(Expr e, Type resTy, Object defVal) {
@@ -499,6 +542,7 @@ public class Semant {
 	 * @param e
 	 */
 	void transEvi(ValueEvidence e) {
+
 		Object left = transExpr(e.left);
 
 		if (left instanceof CardinalitySpec) {
@@ -519,8 +563,16 @@ public class Semant {
 			Object value = transExpr(e.right);
 			if (value instanceof ArgSpec) {
 				// need more semantic checking on type match
-				evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
-						(ArgSpec) value));
+				// if (left instanceof Term) {
+				// value = getTypedValue(((Term) left).getType(), (ArgSpec) value);
+				// }
+				// let us use the type checking in Evidence,
+				if (value != null)
+					evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
+							(ArgSpec) value));
+				else
+					error(e.line, e.col,
+							"type mistach for observation or translation error");
 			} else {
 				error(e.right.line, e.right.col,
 						"Invalid expression on the right side of evidence.");
@@ -561,9 +613,10 @@ public class Semant {
 				model.addFunction(obj);
 			}
 
-//			// add value evidence of this cardinality spec also!!!
-//			evidence.addValueEvidence(new ValueEvidenceStatement(new CardinalitySpec(
-//					leftset), createSpecFromInt(value.size())));
+			// // add value evidence of this cardinality spec also!!!
+			// evidence.addValueEvidence(new ValueEvidenceStatement(new
+			// CardinalitySpec(
+			// leftset), createSpecFromInt(value.size())));
 		} else {
 			error(
 					e.left.line,
@@ -715,26 +768,34 @@ public class Semant {
 
 	ArgSpec transExpr(FuncCallExpr e) {
 		List<ArgSpec> args = transExprList(e.args, true);
-		Term t = new FuncAppTerm(e.func.toString(), args);
+		List<Type> argTypes = new ArrayList<Type>();
+		for (ArgSpec as : args) {
+			// argTypes.add(as.get)
+			// to add type for this argspec
+		}
+
+		Term t = new FuncAppTerm(e.func.toString(), args.toArray(new ArgSpec[args
+				.size()]));
 		t.setLocation(e.line);
 		return t;
 	}
 
 	ArgSpec transExpr(ListInitExpr e) {
 		List<ArgSpec> values = transExprList(e.values, false);
-		if (e.type instanceof ArrayTy) {			
-			Type arrType = getType(e.type);			
-			String baseType = arrType.getName();
-			baseType = baseType.substring(baseType.indexOf('_') + 1, baseType.lastIndexOf('_'));
-			
-			if (baseType.equals("NaturalNum") || baseType.equals("Real")) {
-				return new MatrixSpec(values);
-			}
-			return new ListSpec(values, arrType);
-		}
-		else {
-			return new ListSpec(values, getType(e.type));
-		}
+		// modified by leili, no need to do translation now, will do later
+		// if (e.type instanceof ArrayTy) {
+		// Type arrType = getType(e.type);
+		// String baseType = arrType.getName();
+		// baseType = baseType.substring(baseType.indexOf('_') + 1,
+		// baseType.lastIndexOf('_'));
+		//
+		// if (baseType.equals("NaturalNum") || baseType.equals("Real")) {
+		// return new MatrixSpec(values);
+		// }
+		// return new ListSpec(values, arrType);
+		// } else {
+		return new ListSpec(values, getType(e.type));
+		// }
 	}
 
 	MapSpec transExpr(MapInitExpr e) {
@@ -912,107 +973,45 @@ public class Semant {
 	}
 
 	Object transExpr(OpExpr e) {
-		Object left, right;
+		Object left = null, right = null;
 		Term term;
-		Type typeOfTerms;
-		left = transExpr(e.left);
-		right = transExpr(e.right);
+		if (e.left != null) {
+			left = transExpr(e.left);
+		}
+		if (e.right != null) {
+			right = transExpr(e.right);
+		}
+		String funcname = null;
+
 		switch (e.oper) {
 		case OpExpr.PLUS:
-			typeOfTerms = typeForTerms((Term)left, (Term)right);
-			NonRandomFunction whichPlus;
-			if (typeOfTerms == BuiltInTypes.INTEGER
-					|| typeOfTerms == BuiltInTypes.NATURAL_NUM) {
-				whichPlus = BuiltInFunctions.PLUS;
-			}
-			else if (typeOfTerms == BuiltInTypes.REAL) {
-				whichPlus = BuiltInFunctions.RPLUS;
-			}
-			else if (typeOfTerms.isSubtypeOf(Type.getType("Array_Real"))) {
-				whichPlus = BuiltInFunctions.PLUS_MAT;
-			}
-			else {
-				Util.fatalError("No addition operator for operands of type "
-									+ typeOfTerms.getName() + "!");
-				throw new IllegalArgumentException("Cannot perform operation '+'!");
-			}
-			term = new FuncAppTerm(whichPlus, (Term)left, (Term)right);
-			term.setLocation(e.line);
-			return term;
+			funcname = BuiltInFunctions.PLUS_NAME;
+			break;
 		case OpExpr.MINUS:
-			typeOfTerms = typeForTerms((Term)left, (Term)right);
-			NonRandomFunction whichMinus;
-			if (typeOfTerms == BuiltInTypes.INTEGER
-					|| typeOfTerms == BuiltInTypes.NATURAL_NUM) {
-				whichMinus = BuiltInFunctions.MINUS;
-			}
-			else if (typeOfTerms == BuiltInTypes.REAL) {
-				whichMinus = BuiltInFunctions.RMINUS;
-			}
-			else if (typeOfTerms.isSubtypeOf(Type.getType("Array_Real"))) {
-				whichMinus = BuiltInFunctions.MINUS_MAT;
-			}
-			else {
-				Util.fatalError("No addition operator for operands of type "
-									+ typeOfTerms.getName() + "!");
-				throw new IllegalArgumentException("Cannot perform operation '-'!");
-			}
-			term = new FuncAppTerm(whichMinus, (Term)left, (Term)right);
-			term.setLocation(e.line);
-			return term;
+			funcname = BuiltInFunctions.MINUS_NAME;
+			break;
 		case OpExpr.MULT:
-			typeOfTerms = typeForTerms((Term)left, (Term)right);
-			NonRandomFunction whichTimes;
-			if (typeOfTerms == BuiltInTypes.INTEGER
-					|| typeOfTerms == BuiltInTypes.NATURAL_NUM) {
-				whichTimes = BuiltInFunctions.MULT;
-			}
-			else if (typeOfTerms.isSubtypeOf(Type.getType("Array_Real"))) {
-				whichTimes = BuiltInFunctions.TIMES_MAT;
-			}
-			else {
-				Util.fatalError("No addition operator for operands of type "
-									+ typeOfTerms.getName() + "!");
-				throw new IllegalArgumentException("Cannot perform operation '*'!");
-			}
-			term = new FuncAppTerm(whichTimes, (Term)left, (Term)right);
-			term.setLocation(e.line);
-			return term;
+			funcname = BuiltInFunctions.MULT_NAME;
+			break;
 		case OpExpr.DIV:
-			term = new FuncAppTerm(BuiltInFunctions.DIV, (Term)left, (Term)right);
-			term.setLocation(e.line);
-			return term;
+			funcname = BuiltInFunctions.DIV_NAME;
+			break;
 		case OpExpr.MOD:
-			term = new FuncAppTerm(BuiltInFunctions.MOD, (Term)left, (Term)right);
-			term.setLocation(e.line);
-			return term;
+			funcname = BuiltInFunctions.MOD_NAME;
+			break;
 		case OpExpr.EQ:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			return new EqualityFormula((Term) left, (Term) right);
 		case OpExpr.NEQ:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			return new NegFormula(new EqualityFormula((Term) left, (Term) right));
 		case OpExpr.LT:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			return new ComparisonFormula((Term) left, (Term) right, OpExpr.LT);
 		case OpExpr.LEQ:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			return new ComparisonFormula((Term) left, (Term) right, OpExpr.LEQ);
 		case OpExpr.GT:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			return new ComparisonFormula((Term) left, (Term) right, OpExpr.GT);
 		case OpExpr.GEQ:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			return new ComparisonFormula((Term) left, (Term) right, OpExpr.GEQ);
 		case OpExpr.AND:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,
 						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
@@ -1023,8 +1022,6 @@ public class Semant {
 			}
 			return new ConjFormula((Formula) left, (Formula) right);
 		case OpExpr.OR:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,
 						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
@@ -1035,21 +1032,18 @@ public class Semant {
 			}
 			return new DisjFormula((Formula) left, (Formula) right);
 		case OpExpr.NOT:
-			right = transExpr(e.right);
 			return new NegFormula((Formula) right);
 		case OpExpr.SUB:
-			left = transExpr(e.left);
-			right = transExpr(e.right);
+			Function func;
 			if (left instanceof SymbolTerm) {
-				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubMat").get(0);
-				term = new FuncAppTerm(func, (ArgSpec)left, (ArgSpec)right);
-				return term;
+				func = (Function) BuiltInFunctions.getFuncsWithName(
+						BuiltInFunctions.SUB_MAT_NAME).get(0);
+			} else {
+				func = (Function) BuiltInFunctions.getFuncsWithName(
+						BuiltInFunctions.SUB_VEC_NAME).get(0);
 			}
-			else {
-				Function func = (Function) BuiltInFunctions.getFuncsWithName("SubVec").get(0);
-				term = new FuncAppTerm(func, (ArgSpec)left, (ArgSpec)right);
-				return term;
-			}
+			term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
+			return term;
 		case OpExpr.AT:
 			if (e.left == null && e.right instanceof IntExpr) {
 				Timestep t = Timestep.at(((IntExpr) e.right).value);
@@ -1062,53 +1056,27 @@ public class Semant {
 		default:
 			error(e.getLine(), e.getCol(),
 					"The operation could not be applied" + e.toString());
+			return null;
 		}
-		return null;
-	}
-	
-	/**
-	 * 
-	 */
-	Type typeForTerms(Term termFirst, Term termSecond) {
-		List<Term> terms = new ArrayList<Term>();
-		terms.add(termFirst);
-		terms.add(termSecond);
-		
-		List<Type> retTypes = new ArrayList<Type>();
-		
-		for (Term term: terms) {
-			if (term instanceof SymbolTerm) {
-				SymbolTerm funcName = (SymbolTerm) term;
-				Function funcForTerm =
-					(Function) model.getFuncsWithName(funcName.getName()).iterator().next();
-				retTypes.add(funcForTerm.getRetType());
-			}
-			else if (term instanceof FuncAppTerm) {
-				FuncAppTerm funcResult = (FuncAppTerm) term;
-				retTypes.add(funcResult.getType());
-			}
-			else {
-				Util.fatalError("Term must either be SymbolTerm or FuncAppTerm!");
-			}
-		}
-		
-		if (retTypes.get(0).equals(retTypes.get(1))) {
-			return retTypes.get(0);
-		}
-		else if (retTypes.contains(BuiltInTypes.NATURAL_NUM) && 
-					retTypes.contains(BuiltInTypes.INTEGER)) {
-			return BuiltInTypes.INTEGER;
-		}
-		else if ((retTypes.contains(BuiltInTypes.REAL) 
-					&& retTypes.contains(BuiltInTypes.INTEGER))
-				|| (retTypes.contains(BuiltInTypes.REAL) 
-					&& retTypes.contains(BuiltInTypes.NATURAL_NUM))) {
-			return BuiltInTypes.REAL;
-		}
-		else {
-			Util.fatalError("Term types do not match!");
-			return BuiltInTypes.NULL;
-		}
+
+		// TODO remove the following lines after testing. (leili)
+		// if (e.left != null)
+		// sig = new FunctionSignature(funcname, leftType, rightType);
+		// else
+		// sig = new FunctionSignature(funcname, rightType);
+		// NonRandomFunction func = BuiltInFunctions.getFunction(sig);
+		// if (func != null) {
+		if (e.left != null)
+			// term = new FuncAppTerm(func, (Term) left, (Term) right);
+			term = new FuncAppTerm(funcname, (Term) left, (Term) right);
+		else
+			term = new FuncAppTerm(funcname, (Term) right);
+		return term;
+		// } else {
+		// Util.fatalError("No operator " + funcname + " for operands of type "
+		// + leftType + "," + rightType + "!");
+		// throw new IllegalArgumentException("Cannot perform operation!");
+		// }
 	}
 
 	/**
@@ -1154,7 +1122,7 @@ public class Semant {
 
 	}
 
-	void transStmt(blog.absyn.Stmt e) {
+	void transStmt(Stmt e) {
 		if (e instanceof Dec) {
 			transDec((Dec) e);
 		} else if (e instanceof EvidenceStmt) {
@@ -1173,16 +1141,7 @@ public class Semant {
 	 * @param stl
 	 */
 	void transStmtList(StmtList stl) {
-		StmtList e;
-		for (e = stl; e != null; e = e.next) {
-			transStmt(e.head);
-		}
 
-		for (e = stl; e != null; e = e.next) {
-			if (e.head instanceof FunctionDec) {
-				transFuncBody((FunctionDec) e.head);
-			}
-		}
 	}
 
 	/**
@@ -1193,7 +1152,33 @@ public class Semant {
 	 */
 	public boolean transProg(Absyn e) {
 		if (e instanceof StmtList) {
-			transStmtList((StmtList) e);
+			StmtList stl = (StmtList) e;
+			List<Stmt> stmts = new LinkedList<Stmt>();
+			List<FunctionDec> funs = new LinkedList<FunctionDec>();
+			for (; stl != null; stl = stl.next) {
+				if (stl.head instanceof Dec) {
+					transStmt(stl.head);
+					if (stl.head instanceof FunctionDec)
+						funs.add((FunctionDec) stl.head);
+				} else {
+					stmts.add(stl.head);
+				}
+			}
+
+			// second pass translate function body
+			for (FunctionDec fd : funs)
+				transFuncBody(fd);
+
+			// type checking
+			if (!model.checkTypesAndScope()) {
+				error(0, 0, "type checking failed");
+			}
+
+			// third pass: translate observation and statement
+			for (Stmt stm : stmts) {
+				transStmt(stm);
+			}
+
 		} else {
 			error(0, 0, "Invalid program");
 		}

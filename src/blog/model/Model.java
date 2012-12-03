@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2006, Regents of the University of California
+ * Copyright (c) 2005, 2006, 2012 Regents of the University of California
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -70,6 +70,8 @@ import fove.Parfactor;
  * any.Since the type- and semantic checking of the model is done dynamically
  * while the model file is being parsed, it is assumed that if an error occurs
  * it is caught by the type/semantic checker.
+ * 
+ * @author leili
  */
 public class Model {
 	/**
@@ -265,7 +267,7 @@ public class Model {
 	 * function with the same signature as a built-in function, the user-defined
 	 * one is returned.
 	 */
-	public Function getFunction(Function.Sig sig) {
+	public Function getFunction(FunctionSignature sig) {
 		List funcsWithName = (List) functionsByName.get(sig.getName());
 		if (funcsWithName != null) {
 			for (Iterator iter = funcsWithName.iterator(); iter.hasNext();) {
@@ -301,11 +303,22 @@ public class Model {
 	 * both a user-defined function and a built-in function apply, then the
 	 * user-defined one is returned. We assume that there is not more than one
 	 * user-defined function that applies.
+	 * 
+	 * @param name
+	 *          function name
+	 * @param types
+	 *          types of arguments
+	 * @return Function with the name applicable to this type
 	 */
 	public Function getApplicableFunc(String name, Type[] types) {
+		FunctionSignature sig = new FunctionSignature(name, types);
+		Function f = getFunction(sig);
+		if (f != null) {
+			return f;
+		}
 		Collection funcsWithName = getFuncsWithName(name);
 		for (Iterator iter = funcsWithName.iterator(); iter.hasNext();) {
-			Function f = (Function) iter.next();
+			f = (Function) iter.next();
 			if (f.appliesTo(types)) {
 				return f;
 			}
@@ -386,7 +399,7 @@ public class Model {
 			return Boolean.FALSE;
 		}
 
-		NonRandomFunction f = ((NonRandomFunction) getFunction(new Function.Sig(
+		NonRandomFunction f = ((NonRandomFunction) getFunction(new FunctionSignature(
 				name)));
 		return (f == null) ? null : f.getValue();
 	}

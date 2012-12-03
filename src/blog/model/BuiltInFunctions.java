@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, Regents of the University of California
+ * Copyright (c) 2005 - 2012, Regents of the University of California
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -35,20 +35,50 @@
 
 package blog.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import blog.AbstractFunctionInterp;
 import blog.ConstantInterp;
 import blog.FunctionInterp;
 import blog.common.numerical.MatrixLib;
 import blog.type.Timestep;
-import Jama.*;
 
 /**
  * Class with static methods and constants for built-in non-random functions
  * (including built-in constants). This class cannot be instantiated.
+ * 
+ * @author unknown
+ * @author leili
  */
 public class BuiltInFunctions {
+	/**
+	 * internal names for builtin functions
+	 */
+	public static final String PLUS_NAME = "__PLUS";
+	public static final String MINUS_NAME = "__MINUS";
+	public static final String MULT_NAME = "__MULT";
+	public static final String DIV_NAME = "__DIV";
+	public static final String MOD_NAME = "__MOD";
+	public static final String SUB_MAT_NAME = "__SUB_MAT";
+	public static final String SUB_VEC_NAME = "__SUB_VEC";
+	public static final String GT_NAME = "__GREATERTHAN";
+	public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
+	public static final String LT_NAME = "__LESSTHAN";
+	public static final String LEQ_NAME = "__LESSTHANOREQUAL";
+
+	// can be called by user
+	public static final String SUCC_NAME = "Succ";
+	public static final String PRED_NAME = "Pred";
+	public static final String PREV_NAME = "Prev";
+	public static final String IS_EMPTY_NAME = "IsEmptyString";
+	public static final String CONCAT_NAME = "Concat";
+
 	/**
 	 * Constant that always denotes Model.NULL.
 	 */
@@ -125,17 +155,17 @@ public class BuiltInFunctions {
 	 * The function on integers <code>x<code>, <code>y</code> that returns x - y.
 	 */
 	public static NonRandomFunction MINUS;
-	
+
 	/**
 	 * The function on integers <code>x<code>, <code>y</code> that returns x * y.
 	 */
 	public static NonRandomFunction MULT;
-	
+
 	/**
 	 * The function on integers <code>x<code>, <code>y</code> that returns x / y.
 	 */
 	public static NonRandomFunction DIV;
-	
+
 	/**
 	 * The function on integers <code>x<code>, <code>y</code> that returns x % y.
 	 */
@@ -150,17 +180,27 @@ public class BuiltInFunctions {
 	 * The function on reals <code>x<code>, <code>y</code> that returns x - y.
 	 */
 	public static NonRandomFunction RMINUS;
-	
+
+	/**
+	 * The function on reals <code>x<code>, <code>y</code> that returns x * y.
+	 */
+	public static NonRandomFunction RMULT;
+
+	/**
+	 * The function on reals <code>x<code>, <code>y</code> that returns x / y.
+	 */
+	public static NonRandomFunction RDIV;
+
 	/**
 	 * The function on arrays <code>x<code>, <code>y</code> that returns x + y.
 	 */
 	public static NonRandomFunction PLUS_MAT;
-	
+
 	/**
 	 * The function on arrays <code>x<code>, <code>y</code> that returns x - y.
 	 */
 	public static NonRandomFunction MINUS_MAT;
-	
+
 	/**
 	 * The function on arrays <code>x<code>, <code>y</code> that returns x * y.
 	 */
@@ -177,14 +217,13 @@ public class BuiltInFunctions {
 	 * concatenation of <code>x</code> and <code>y</code>.
 	 */
 	public static NonRandomFunction CONCAT;
-	
+
 	/**
 	 * A function on MatrixLib <code>mat</code> and int <code>i</code> and
 	 * that returns the <code>i</code>th row in <code>mat</code>.
 	 */
 	public static NonRandomFunction SUB_MAT;
-	
-	
+
 	/**
 	 * A function on MatrixLib <code>vec</code> and int <code>i</code> that
 	 * returns the <code>i</code>th element of <code>vec</code>.
@@ -206,7 +245,9 @@ public class BuiltInFunctions {
 	 * a numeric, character, or string literal that is only created as needed by
 	 * the parser.
 	 */
-	public static NonRandomFunction getFunction(Function.Sig sig) {
+	public static NonRandomFunction getFunction(FunctionSignature sig) {
+
+		// TODO change to another hashmap from signature to function
 		List funcsWithName = (List) functions.get(sig.getName());
 		if (funcsWithName != null) {
 			for (Iterator iter = funcsWithName.iterator(); iter.hasNext();) {
@@ -227,7 +268,7 @@ public class BuiltInFunctions {
 	 */
 	public static NonRandomFunction getLiteral(String name, Type type,
 			Object value) {
-		NonRandomFunction f = getFunction(new Function.Sig(name));
+		NonRandomFunction f = getFunction(new FunctionSignature(name));
 		if (f == null) {
 			List params = Collections.singletonList(value);
 			f = new NonRandomFunction(name, Collections.EMPTY_LIST, type,
@@ -271,12 +312,12 @@ public class BuiltInFunctions {
 	static {
 		// Add non-random constants
 		NULL = getLiteral("null", BuiltInTypes.NULL, Model.NULL);
-		ZERO = getLiteral("0", BuiltInTypes.NATURAL_NUM, new Integer(0));
-		ONE = getLiteral("1", BuiltInTypes.NATURAL_NUM, new Integer(1));
+		ZERO = getLiteral("0", BuiltInTypes.INTEGER, new Integer(0));
+		ONE = getLiteral("1", BuiltInTypes.INTEGER, new Integer(1));
 		EPOCH = getLiteral("@0", BuiltInTypes.TIMESTEP, Timestep.at(0));
 
 		// Add non-random functions from (real x real) to Boolean
-		List argTypes = new ArrayList();
+		List<Type> argTypes = new ArrayList<Type>();
 		argTypes.add(BuiltInTypes.REAL);
 		argTypes.add(BuiltInTypes.REAL);
 		Type retType = BuiltInTypes.BOOLEAN;
@@ -288,7 +329,7 @@ public class BuiltInFunctions {
 				return Boolean.valueOf(arg1 < arg2);
 			}
 		};
-		LT = new NonRandomFunction("LessThan", argTypes, retType, ltInterp);
+		LT = new NonRandomFunction(LT_NAME, argTypes, retType, ltInterp);
 		addFunction(LT);
 
 		FunctionInterp leqInterp = new AbstractFunctionInterp() {
@@ -298,7 +339,7 @@ public class BuiltInFunctions {
 				return Boolean.valueOf(arg1 <= arg2);
 			}
 		};
-		LEQ = new NonRandomFunction("LessThanOrEqual", argTypes, retType, leqInterp);
+		LEQ = new NonRandomFunction(LEQ_NAME, argTypes, retType, leqInterp);
 		addFunction(LEQ);
 
 		FunctionInterp gtInterp = new AbstractFunctionInterp() {
@@ -308,7 +349,7 @@ public class BuiltInFunctions {
 				return Boolean.valueOf(arg1 > arg2);
 			}
 		};
-		GT = new NonRandomFunction("GreaterThan", argTypes, retType, gtInterp);
+		GT = new NonRandomFunction(GT_NAME, argTypes, retType, gtInterp);
 		addFunction(GT);
 
 		FunctionInterp geqInterp = new AbstractFunctionInterp() {
@@ -318,8 +359,7 @@ public class BuiltInFunctions {
 				return Boolean.valueOf(arg1 >= arg2);
 			}
 		};
-		GEQ = new NonRandomFunction("GreaterThanOrEqual", argTypes, retType,
-				geqInterp);
+		GEQ = new NonRandomFunction(GEQ_NAME, argTypes, retType, geqInterp);
 		addFunction(GEQ);
 
 		// Add non-random functions from natural number to natural number
@@ -333,7 +373,7 @@ public class BuiltInFunctions {
 				return new Integer(arg.intValue() + 1);
 			}
 		};
-		SUCC = new NonRandomFunction("Succ", argTypes, retType, succInterp);
+		SUCC = new NonRandomFunction(SUCC_NAME, argTypes, retType, succInterp);
 		addFunction(SUCC);
 
 		FunctionInterp predInterp = new AbstractFunctionInterp() {
@@ -345,7 +385,7 @@ public class BuiltInFunctions {
 				return new Integer(arg.intValue() - 1);
 			}
 		};
-		PRED = new NonRandomFunction("Pred", argTypes, retType, predInterp);
+		PRED = new NonRandomFunction(PRED_NAME, argTypes, retType, predInterp);
 		addFunction(PRED);
 
 		// Add non-random functions from integer to natural number
@@ -377,9 +417,9 @@ public class BuiltInFunctions {
 				return new Integer(arg1.intValue() + arg2.intValue());
 			}
 		};
-		PLUS = new NonRandomFunction("Sum", argTypes, retType, plusInterp);
+		PLUS = new NonRandomFunction(PLUS_NAME, argTypes, retType, plusInterp);
 		addFunction(PLUS);
-		
+
 		// Multiply non-random functions from (integer x integer) to integer
 		argTypes.clear();
 		argTypes.add(BuiltInTypes.INTEGER);
@@ -393,9 +433,8 @@ public class BuiltInFunctions {
 				return new Integer(arg1.intValue() * arg2.intValue());
 			}
 		};
-		MULT = new NonRandomFunction("Mult", argTypes, retType, multInterp);
+		MULT = new NonRandomFunction(MULT_NAME, argTypes, retType, multInterp);
 		addFunction(MULT);
-		
 
 		FunctionInterp minusInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
@@ -404,9 +443,9 @@ public class BuiltInFunctions {
 				return new Integer(arg1.intValue() - arg2.intValue());
 			}
 		};
-		MINUS = new NonRandomFunction("Diff", argTypes, retType, minusInterp);
+		MINUS = new NonRandomFunction(MINUS_NAME, argTypes, retType, minusInterp);
 		addFunction(MINUS);
-		
+
 		// Divide non-random functions from (integer x integer) to integer
 		argTypes.clear();
 		argTypes.add(BuiltInTypes.INTEGER);
@@ -420,9 +459,9 @@ public class BuiltInFunctions {
 				return new Integer(arg1.intValue() / arg2.intValue());
 			}
 		};
-		DIV = new NonRandomFunction("Div", argTypes, retType, divInterp);
+		DIV = new NonRandomFunction(DIV_NAME, argTypes, retType, divInterp);
 		addFunction(DIV);
-		
+
 		// Mod non-random functions from (integer x integer) to integer
 		argTypes.clear();
 		argTypes.add(BuiltInTypes.INTEGER);
@@ -436,7 +475,7 @@ public class BuiltInFunctions {
 				return new Integer(arg1.intValue() % arg2.intValue());
 			}
 		};
-		MOD = new NonRandomFunction("Mod", argTypes, retType, modInterp);
+		MOD = new NonRandomFunction(MOD_NAME, argTypes, retType, modInterp);
 		addFunction(MOD);
 
 		// Add non-random functions from (real x real) to real
@@ -452,7 +491,7 @@ public class BuiltInFunctions {
 				return new Double(arg1.doubleValue() + arg2.doubleValue());
 			}
 		};
-		RPLUS = new NonRandomFunction("RSum", argTypes, retType, rplusInterp);
+		RPLUS = new NonRandomFunction(PLUS_NAME, argTypes, retType, rplusInterp);
 		addFunction(RPLUS);
 
 		FunctionInterp rminusInterp = new AbstractFunctionInterp() {
@@ -462,8 +501,28 @@ public class BuiltInFunctions {
 				return new Double(arg1.doubleValue() - arg2.doubleValue());
 			}
 		};
-		RMINUS = new NonRandomFunction("RDiff", argTypes, retType, rminusInterp);
+		RMINUS = new NonRandomFunction(MINUS_NAME, argTypes, retType, rminusInterp);
 		addFunction(RMINUS);
+
+		FunctionInterp rmultInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				Number arg1 = (Number) args.get(0);
+				Number arg2 = (Number) args.get(1);
+				return new Double(arg1.doubleValue() * arg2.doubleValue());
+			}
+		};
+		RMULT = new NonRandomFunction(MULT_NAME, argTypes, retType, rmultInterp);
+		addFunction(RMULT);
+
+		FunctionInterp rdivInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				Number arg1 = (Number) args.get(0);
+				Number arg2 = (Number) args.get(1);
+				return new Double(arg1.doubleValue() / arg2.doubleValue());
+			}
+		};
+		RDIV = new NonRandomFunction(DIV_NAME, argTypes, retType, rdivInterp);
+		addFunction(RDIV);
 
 		// Add non-random functions from timestep to timestep
 		argTypes.clear();
@@ -479,7 +538,7 @@ public class BuiltInFunctions {
 				return Timestep.at(arg.getValue() - 1);
 			}
 		};
-		PREV = new NonRandomFunction("Prev", argTypes, retType, prevInterp);
+		PREV = new NonRandomFunction(PREV_NAME, argTypes, retType, prevInterp);
 		addFunction(PREV);
 
 		// Add non-random functions from (string x string) to string
@@ -495,7 +554,7 @@ public class BuiltInFunctions {
 				return arg1.concat(arg2);
 			}
 		};
-		CONCAT = new NonRandomFunction("Concat", argTypes, retType, concatInterp);
+		CONCAT = new NonRandomFunction(CONCAT_NAME, argTypes, retType, concatInterp);
 		addFunction(CONCAT);
 
 		// Add non-random functions from string to Boolean
@@ -508,37 +567,37 @@ public class BuiltInFunctions {
 				return Boolean.valueOf(((String) args.get(0)).length() == 0);
 			}
 		};
-		IS_EMPTY_STRING = new NonRandomFunction("IsEmptyString", argTypes, retType,
+		IS_EMPTY_STRING = new NonRandomFunction(IS_EMPTY_NAME, argTypes, retType,
 				isEmptyStringInterp);
 		addFunction(IS_EMPTY_STRING);
-		
+
 		// Add non-random functions from (Real[][] x int) to Real[]
 		argTypes.clear();
 		argTypes.add(Type.getType("Array_Real_2"));
 		argTypes.add(BuiltInTypes.INTEGER);
 		retType = Type.getType("Array_Real_1");
-		
+
 		FunctionInterp subMatInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
 				MatrixLib mat = (MatrixLib) args.get(0);
 				int i = (Integer) args.get(1);
 				if (mat.rowLen() == 1) {
 					return mat.elementAt(0, i);
-				}
-				else {
+				} else {
 					return mat.sliceRow(i);
 				}
 			}
 		};
-		SUB_MAT = new NonRandomFunction("SubMat", argTypes, retType, subMatInterp);
+		SUB_MAT = new NonRandomFunction(SUB_MAT_NAME, argTypes, retType,
+				subMatInterp);
 		addFunction(SUB_MAT);
-		
+
 		// Add non-random functions from (Real[] x int) to double
 		argTypes.clear();
 		argTypes.add(Type.getType("Array_Real_1"));
 		argTypes.add(BuiltInTypes.INTEGER);
 		retType = BuiltInTypes.REAL;
-		
+
 		FunctionInterp subVecInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
 				MatrixLib mat = (MatrixLib) args.get(0);
@@ -546,15 +605,16 @@ public class BuiltInFunctions {
 				return mat.elementAt(0, i);
 			}
 		};
-		SUB_VEC = new NonRandomFunction("SubVec", argTypes, retType, subVecInterp);
+		SUB_VEC = new NonRandomFunction(SUB_VEC_NAME, argTypes, retType,
+				subVecInterp);
 		addFunction(SUB_VEC);
-		
+
 		// Add non-random functions from (Real[]* x Real[]*) to Real[]*
 		argTypes.clear();
 		argTypes.add(Type.getType("Array_Real"));
 		argTypes.add(Type.getType("Array_Real"));
 		retType = Type.getType("Array_Real");
-		
+
 		FunctionInterp matPlusInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
 				MatrixLib mat1 = (MatrixLib) args.get(0);
@@ -562,9 +622,12 @@ public class BuiltInFunctions {
 				return mat1.plus(mat2);
 			}
 		};
-		PLUS_MAT = new NonRandomFunction("PlusMat", argTypes, retType, matPlusInterp);
+		// modified by leili
+		// for the moment, use same name as plus for integer/real
+		PLUS_MAT = new NonRandomFunction(PLUS_NAME, argTypes, retType,
+				matPlusInterp);
 		addFunction(PLUS_MAT);
-		
+
 		FunctionInterp matMinusInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
 				MatrixLib mat1 = (MatrixLib) args.get(0);
@@ -572,17 +635,19 @@ public class BuiltInFunctions {
 				return mat1.minus(mat2);
 			}
 		};
-		MINUS_MAT = new NonRandomFunction("MinusMat", argTypes, retType, matMinusInterp);
+		MINUS_MAT = new NonRandomFunction(MINUS_NAME, argTypes, retType,
+				matMinusInterp);
 		addFunction(MINUS_MAT);
-		
+
 		FunctionInterp matTimesInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
 				MatrixLib mat1 = (MatrixLib) args.get(0);
 				MatrixLib mat2 = (MatrixLib) args.get(1);
-				return mat1.minus(mat2);
+				return mat1.timesMat(mat2);
 			}
 		};
-		TIMES_MAT = new NonRandomFunction("TimesMat", argTypes, retType, matTimesInterp);
+		TIMES_MAT = new NonRandomFunction(MULT_NAME, argTypes, retType,
+				matTimesInterp);
 		addFunction(TIMES_MAT);
 	}
 }
