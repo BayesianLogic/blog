@@ -35,7 +35,9 @@
 
 package blog.model;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
@@ -121,14 +123,27 @@ public class ValueEvidenceStatement {
 		}
 		output = outputInScope;
 
-		if (leftSide instanceof Term && output instanceof Term) {
-			// TODO: decide whether to have ArgSpec be typed as well.
+		if (leftSide instanceof Term) {
 			Type left = ((Term) leftSide).getType();
-			Type right = ((Term) output).getType();
-			if ((left != null) && (right != null) && !right.isSubtypeOf(left)) {
-				System.err.println("Term " + leftSide + ", of type " + left
-						+ ", cannot take value " + output + ", which has type " + right);
-				return false;
+			if (output instanceof Term) {
+				// TODO: decide whether to have ArgSpec be typed as well. we should
+				// (leili)
+				Type right = ((Term) output).getType();
+				if ((left != null) && (right != null) && !right.isSubtypeOf(left)) {
+					System.err.println("Term " + leftSide + ", of type " + left
+							+ ", cannot take value " + output + ", which has type " + right);
+					return false;
+				}
+			} else if (left.isSubtypeOf(BuiltInTypes.ARRAY_REAL)) {
+				if (output instanceof ListSpec) {
+					output = ((ListSpec) output).transferToMatrix();
+				} else if (output instanceof MatrixSpec) {
+					// do nothing already good
+				} else {
+					System.err.println("Term " + leftSide + ", of type " + left
+							+ ", cannot take value " + output + ", which has type unkown");
+					return false;
+				}
 			}
 		}
 

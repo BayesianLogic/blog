@@ -5,6 +5,7 @@ package blog.semant;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import blog.EqualsCPD;
@@ -41,6 +42,7 @@ import blog.absyn.ParameterDec;
 import blog.absyn.QuantifiedFormulaExpr;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
+import blog.absyn.Stmt;
 import blog.absyn.StmtList;
 import blog.absyn.StringExpr;
 import blog.absyn.SymbolArrayList;
@@ -447,17 +449,11 @@ public class Semant {
 					// TODO: Implement more general fixed functions
 				}
 			} else {
+				// note will do type checking later
 				Object funcBody = transExpr(e.body);
-				ArgSpec funcValue = getTypedValue(fun.getRetType(), (ArgSpec) funcBody);
-				if (funcValue == null) {
-					error(e.line, e.col, "function body does not match the return type "
-							+ fun.getRetType());
-				} else {
-					List<ArgSpec> args = new ArrayList<ArgSpec>();
-					args.add(funcValue);
-					((NonRandomFunction) fun).setInterpretation(
-							blog.ConstantInterp.class, args);
-				}
+				ArgSpec funcValue = (ArgSpec) funcBody;
+				((NonRandomFunction) fun).setInterpretation(blog.ConstantInterp.class,
+						Collections.singletonList(funcValue));
 			}
 		} else if (e instanceof RandomFuncDec) {
 			DependencyModel dm = transDependency(e.body, fun.getRetType(),
@@ -496,17 +492,13 @@ public class Semant {
 			// TODO add more checks with array
 			if (ty.isSubtypeOf(BuiltInTypes.ARRAY)) {
 				if (ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL)) {
-					return transferToMatrix((ListSpec) value);
+					return ((ListSpec) value).transferToMatrix();
 				} else
 					return value;
 			} else
 				return null;
 		} else
 			return null;
-	}
-
-	MatrixSpec transferToMatrix(ListSpec list) {
-		return new MatrixSpec((List<ArgSpec>) (list.getSubExprs()));
 	}
 
 	DependencyModel transDependency(Expr e, Type resTy, Object defVal) {
@@ -550,6 +542,7 @@ public class Semant {
 	 * @param e
 	 */
 	void transEvi(ValueEvidence e) {
+
 		Object left = transExpr(e.left);
 
 		if (left instanceof CardinalitySpec) {
@@ -570,9 +563,10 @@ public class Semant {
 			Object value = transExpr(e.right);
 			if (value instanceof ArgSpec) {
 				// need more semantic checking on type match
-				if (left instanceof Term) {
-					value = getTypedValue(((Term) left).getType(), (ArgSpec) value);
-				}
+				// if (left instanceof Term) {
+				// value = getTypedValue(((Term) left).getType(), (ArgSpec) value);
+				// }
+				// let us use the type checking in Evidence,
 				if (value != null)
 					evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
 							(ArgSpec) value));
@@ -1128,7 +1122,7 @@ public class Semant {
 
 	}
 
-	void transStmt(blog.absyn.Stmt e) {
+	void transStmt(Stmt e) {
 		if (e instanceof Dec) {
 			transDec((Dec) e);
 		} else if (e instanceof EvidenceStmt) {
@@ -1147,16 +1141,7 @@ public class Semant {
 	 * @param stl
 	 */
 	void transStmtList(StmtList stl) {
-		StmtList e;
-		for (e = stl; e != null; e = e.next) {
-			transStmt(e.head);
-		}
 
-		for (e = stl; e != null; e = e.next) {
-			if (e.head instanceof FunctionDec) {
-				transFuncBody((FunctionDec) e.head);
-			}
-		}
 	}
 
 	/**
@@ -1167,7 +1152,33 @@ public class Semant {
 	 */
 	public boolean transProg(Absyn e) {
 		if (e instanceof StmtList) {
-			transStmtList((StmtList) e);
+			StmtList stl = (StmtList) e;
+			List<Stmt> stmts = new LinkedList<Stmt>();
+			List<FunctionDec> funs = new LinkedList<FunctionDec>();
+			for (; stl != null; stl = stl.next) {
+				if (stl.head instanceof Dec) {
+					transStmt(stl.head);
+					if (stl.head instanceof FunctionDec)
+						funs.add((FunctionDec) stl.head);
+				} else {
+					stmts.add(stl.head);
+				}
+			}
+
+			// second pass translate function body
+			for (FunctionDec fd : funs)
+				transFuncBody(fd);
+
+			// type checking
+			if (!model.checkTypesAndScope()) {
+				error(0, 0, "type checking failed");
+			}
+
+			// third pass: translate observation and statement
+			for (Stmt stm : stmts) {
+				transStmt(stm);
+			}
+
 		} else {
 			error(0, 0, "Invalid program");
 		}
