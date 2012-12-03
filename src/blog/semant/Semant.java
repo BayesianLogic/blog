@@ -5,6 +5,7 @@ package blog.semant;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -1177,6 +1178,17 @@ public class Semant {
 			// third pass: translate observation and statement
 			for (Stmt stm : stmts) {
 				transStmt(stm);
+			}
+
+			if (!evidence.checkTypesAndScope(model)) {
+				error(0, 0, "type checking failed for evidence");
+			}
+
+			for (Iterator iter = queries.iterator(); iter.hasNext();) {
+				Query q = (Query) iter.next();
+				if (!q.checkTypesAndScope(model)) {
+					error(0, 0, "type checking failed for query");
+				}
 			}
 
 		} else {
