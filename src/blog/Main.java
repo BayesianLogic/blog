@@ -260,22 +260,6 @@ public class Main {
 			List queries) {
 		boolean correct = true;
 
-		// deteleted by leili, this functionality is moved into Semant.java
-		// if (!model.checkTypesAndScope()) {
-		// correct = false;
-		// }
-
-		if (!evidence.checkTypesAndScope(model)) {
-			correct = false;
-		}
-
-		for (Iterator iter = queries.iterator(); iter.hasNext();) {
-			Query q = (Query) iter.next();
-			if (!q.checkTypesAndScope(model)) {
-				correct = false;
-			}
-		}
-
 		if (!model.checkCompleteness()) {
 			correct = false;
 		}
