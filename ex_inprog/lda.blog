@@ -7,35 +7,45 @@
 
 type Document;
 
-#Document ~ Poisson(2);
+distinct Document Document[5];
+//#Document ~ Poisson(2);
 
 // Suppose we have five topics. 
-//fixed NaturalNum k = 5;
+//fixed Integer k = 5;
 fixed Real alpha = 1.0;
 fixed Real[][] beta =
-    [[0.1, 0.4, 0.5],
-     [0.1, 0.3, 0.6],
-     [0.4, 0.2, 0.4],
-     [0.6, 0.3, 0.1],
-     [0.1, 0.8, 0.1]];
+    [[0.1, 0.4, 0.4, 0.1],
+     [0.1, 0.3, 0.5, 0.1],
+     [0.4, 0.2, 0.3, 0.1],
+     [0.5, 0.3, 0.1, 0.1],
+     [0.1, 0.7, 0.1, 0.1]];
 
-random NaturalNum doclen(Document d) ~ UniformInt(5, 10);
+random Integer doclen(Document d) ~ UniformInt(4, 7);
 
 random Real[] theta(Document d) ~ Dirichlet(0.2, 0.2, 0.2, 0.2, 0.2);
 
-random NaturalNum topic(Document d, NaturalNum i) {
+random Integer topic(Document d, Integer i) {
     if (i < doclen(d)) then ~ Categorical(theta(d))
 };
 
-random NaturalNum wordidx(Document d, NaturalNum i) {
-    ~ Categorical(beta[topic(d)])
+random Integer wordidx(Document d, Integer i) {
+    ~ Categorical(beta[topic(d, i)])
 };
 
-/* Lots of undefined stuff here; ignoring for now
 // define a dictionary mapping from index to word
-fixed String Dictionary(NaturalNum);
+fixed String Dictionary(Integer i)
+    = TabularInterp(1,
+	0, "AAA",
+	1, "BBB",
+	2, "CCC",
+	3, "DDD"
+      );
 
-random String word(Document d, NaturalNum i) {
-    = Dictionary( wordidx(d, i) );
-}
-*/
+random String word(Document d, Integer i) {
+    = Dictionary( wordidx(d, i) )
+};
+
+query word(Document2, 0);
+query word(Document2, 1);
+query word(Document2, 2);
+query word(Document2, 3);

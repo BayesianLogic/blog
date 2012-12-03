@@ -71,4 +71,24 @@ public class JamaMatrixLib implements MatrixLib {
 		}
 		throw new ClassCastException("Only one matrix library should be in use at a time!");
 	}
+	
+	@Override
+	public double det() {
+		return values.det();
+	}
+	
+	@Override
+	public MatrixLib transpose() {
+		return new JamaMatrixLib(values.transpose());
+	}
+	
+	@Override
+	public MatrixLib inverse() {
+		return new JamaMatrixLib(values.inverse());
+	}
+	
+	@Override
+	public MatrixLib choleskyFactor() {
+		return new JamaMatrixLib(values.chol().getL());
+	}
 }

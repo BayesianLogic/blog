@@ -1,13 +1,18 @@
  
 fixed Real[][] A = [1, 1, 0.5; 0, 1, 1; 0, 0, 1];
 fixed Real[][] Q = [0.1, 0, 0; 0, 0.1, 0; 0, 0, 0.1];
-fixed Real[] mu0 = [0, 1, 1]; 
+fixed Real[] mu0 = [0; 1; 1]; 
 random Real[] state(Timestep t) {
-	if t == @0 then ~ MultivarGaussian(3, mu0, Q)
-	else ~ MultivarGaussian(3, A * state(t-1), Q)
+	if t == @0 then ~ MultivarGaussian(mu0, Q)
+	else ~ MultivarGaussian(A * state(Prev(t)), Q)
 };
 
-fixed Real[] C = [1, 0, 0];
-fixed Real[] R = Q;
-random Real location(Timestep t) 
-  ~ Gaussian(C * state(t), R);
+fixed Real[][] R = Q;
+random Real[] location(Timestep t) 
+  ~ MultivarGaussian(state(t), R);
+
+obs location(@0) = [0.1, 1.1, 0.9];
+
+query state(@1);
+query location(@1);
+query location(@2);
