@@ -35,13 +35,12 @@
 
 package blog.distrib;
 
-import blog.*;
+import java.util.List;
+
 import blog.common.numerical.JamaMatrixLib;
 import blog.common.numerical.MatrixLib;
+import blog.model.MatrixSpec;
 import blog.model.Type;
-
-import java.util.*;
-import Jama.*;
 
 /**
  * Gaussian (normal) distribution over real vectors of some fixed dimensionality
@@ -80,14 +79,18 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
 					"Dimension of MultivarGaussian distribution must be "
 							+ "specified as parameter.");
 		}
-		
-		int dims = ((MatrixLib)params.get(0)).rowLen();
+
+		Object ob = params.get(0);
+		int dims = 0;
+		if (ob instanceof MatrixSpec) {
+			dims = ((MatrixLib) ((MatrixSpec) ob).getValueIfNonRandom()).rowLen();
+		} else {
+			dims = ((MatrixLib) ob).rowLen();
+		}
+
 		setDimension(dims);
 
-		if (params.size() == 0) {
-			fixedMean = false;
-			fixedCovariance = false;
-		} else if (params.size() == 1) {
+		if (params.size() == 1) {
 			fixedMean = false;
 			fixedCovariance = true;
 			setCovariance(params.get(0));
@@ -110,9 +113,8 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
 	public double getProb(List args, Object value) {
 		initParams(args);
 
-		if (!((value instanceof MatrixLib)
-				&& (((MatrixLib) value).rowLen() == d) && (((MatrixLib) value)
-					.colLen() == 1)))
+		if (!((value instanceof MatrixLib) && (((MatrixLib) value).rowLen() == d) && (((MatrixLib) value)
+				.colLen() == 1)))
 			throw new IllegalArgumentException("The value passed to the " + d
 					+ "-dimensional " + "multivariate Gaussian distribution's getProb "
 					+ "method must be a column vector of length " + d + ", not " + value);
@@ -257,6 +259,10 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
 	}
 
 	private void setMean(Object mean) {
+		if (mean instanceof MatrixSpec) {
+			mean = ((MatrixSpec) mean).getValueIfNonRandom();
+		}
+
 		if (!((mean instanceof MatrixLib) && (((MatrixLib) mean).colLen() == 1))) {
 			throw new IllegalArgumentException(
 					"The mean of a MultivarGaussian distribution must be a "
@@ -273,6 +279,9 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
 	}
 
 	private void setCovariance(Object cov) {
+		if (cov instanceof MatrixSpec) {
+			cov = ((MatrixSpec) cov).getValueIfNonRandom();
+		}
 		if (!((cov instanceof MatrixLib) && (((MatrixLib) cov).rowLen() == d) && (((MatrixLib) cov)
 				.colLen() == d))) {
 			throw new IllegalArgumentException("The covariance matrix of a " + d
