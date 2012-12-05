@@ -251,6 +251,8 @@ public class NonRandomFunction extends Function {
 						paramType = BuiltInTypes.NATURAL_NUM;
 					} else if (param instanceof MatrixSpec) {
 						// nothing
+					} else if (param instanceof ListSpec) {
+						// nothing
 					} else {
 						System.err.println(param.getLocation()
 								+ ": Parameter to ConstantInterp must be a "
@@ -259,7 +261,11 @@ public class NonRandomFunction extends Function {
 					}
 
 					Type expected = getRetType();
-					if ((paramType != null) && (expected != null)
+					if (expected.isSubtypeOf(BuiltInTypes.ARRAY_REAL)
+							&& (param instanceof ListSpec)) {
+						interpParams = Collections.singletonList(((ListSpec) param)
+								.transferToMatrix());
+					} else if ((paramType != null) && (expected != null)
 							&& !paramType.isSubtypeOf(expected)) {
 						System.err.println(param.getLocation()
 								+ ": Incorrect value type for nonrandom " + "constant " + this

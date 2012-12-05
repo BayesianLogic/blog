@@ -1,17 +1,19 @@
-/*  to create infitie hmm model
+/* to create infitie hmm model
+ * 
+ * leili 
  */
 
 type State;
-distinct State A, C, G, T;
+
+#State ~ Poisson(4);
 
 type Output;
 distinct Output ResultA, ResultC, ResultG, ResultT;
 
+random Real[] InitWeight ~ Dirichlet(1.0);
+
 random State S(Timestep t) {
-    if t == @0 then ~ Categorical({A -> 0.3,
-                 C -> 0.2, 
-                 G -> 0.1, 
-                 T -> 0.4})
+    if t == @0 then ~ Categorical(InitWeight);
     else ~ TabularCPD(
       {A -> ~ Categorical({A -> 0.1, C -> 0.3, G -> 0.3, T -> 0.3}),
        C -> ~ Categorical({A -> 0.3, C -> 0.1, G -> 0.3, T -> 0.3}),
