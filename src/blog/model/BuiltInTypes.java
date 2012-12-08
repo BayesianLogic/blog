@@ -53,6 +53,9 @@ import blog.type.Timestep;
 public class BuiltInTypes {
 
 	public static final String INTEGER_TYPE_NAME = "Integer";
+	public static final String NATURALNUM_TYPE_NAME = "NaturalNum"; // for the
+																																	// moment just
+																																	// integer
 	public static final String REAL_TYPE_NAME = "Real";
 	public static final String ARRAY_REAL_TYPE_NAME = "Array_Real";
 	public static final String NULL_TYPE_NAME = "**NullType**";
@@ -327,7 +330,7 @@ public class BuiltInTypes {
 	public static void ping() {
 	}
 
-	private static Map builtInTypes = new HashMap();
+	private static Map<String, Type> builtInTypes = new HashMap<String, Type>();
 	private static List typeGenerators = new ArrayList();
 
 	static {
@@ -335,12 +338,15 @@ public class BuiltInTypes {
 		addType(BOOLEAN);
 		addType(REAL);
 		addType(INTEGER);
-		addType(NATURAL_NUM);
 		addType(TIMESTEP);
 		addType(STRING);
 		addType(CHARACTER);
 		addType(ARRAY);
 		addType(ARRAY_REAL);
+
+		// special treatment for NaturalNum
+		builtInTypes.put(NATURALNUM_TYPE_NAME, NATURAL_NUM);
+
 		// addType(LIST);
 
 		// typeGenerators.add(new ListGenerator());
