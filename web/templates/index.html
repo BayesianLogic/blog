@@ -24,8 +24,10 @@ $def with (form, text)
 						type: "POST",
 						data: {textfield : input_string},
 						success: function(data) {
-							var jsonData = jQuery.parseJSON(data);
-							jQuery('#text_result').html(jsonData.text_result).hide().fadeIn(1500);
+							//var jsonData = jQuery.parseJSON(data);
+							//jQuery('#text_result').html(jsonData.text_result).hide().fadeIn(1500);
+							//jQuery('#text_result').html(data).hide().fadeIn(1500);
+							jQuery('#text_result').text(data).hide().fadeIn(1500);
 							//jQuery('#graph_result').attr('src', jsonData.graph_result).hide().fadeIn(1500);
 						},
 						});
@@ -114,12 +116,8 @@ query S(@5);
 	<h3>
 		Your submission result (It might takes up to 10 secs):
 	</h3>
-	<div id="content">
-		<div id="left"><span id="text_result">$text</span></div>
-	</div>
-	<style>
-		#left { float:left }
-		#right { float:right }	
-	</style>
+	
+	<textarea id="text_result" readonly="true" rows="300" style="width:100%">$text</textarea>	
+
   </body>
 </html>

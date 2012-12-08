@@ -65,8 +65,9 @@ def execute_script(script):
     #    graph = generate_graph(prefix, output)
     
     #Run commandline Blog on the file and return output
-    return json.dumps({'text_result': text_to_html(output)})
-
+    #return json.dumps({'text_result': text_to_html(output)})
+    return output
+    
 # A ad hoc text to html converter
 # Should use other library if output include special symbol
 def text_to_html(text):
@@ -79,8 +80,11 @@ class blog_web_ui:
         return render.index(form, "Your result will appear here.")
         
     def POST(self):     
-        s = web.input().textfield 
-        return execute_script(s)
+        s = web.input().textfield
+        result = execute_script(s)
+        #print "Return length:", len(result)
+        #return result[-1000:]
+        return result
 
 if __name__ == '__main__':
     app.run()
