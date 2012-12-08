@@ -345,7 +345,7 @@ public class BuiltInTypes {
 		addType(ARRAY_REAL);
 
 		// special treatment for NaturalNum
-		builtInTypes.put(NATURALNUM_TYPE_NAME, NATURAL_NUM);
+		// builtInTypes.put(NATURALNUM_TYPE_NAME, NATURAL_NUM);
 
 		// addType(LIST);
 
