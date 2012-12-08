@@ -41,6 +41,10 @@ fixed String Dictionary(Integer i)
 	3, "DDD"
       );
 
+query wordidx(Document2, 0);
+query wordidx(Document2, 1);
+query wordidx(Document2, 2);
+
 random String word(Document d, Integer i) {
     = Dictionary( wordidx(d, i) )
 };
