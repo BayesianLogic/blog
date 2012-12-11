@@ -33,7 +33,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.sample;
 
 import java.util.*;
 
@@ -44,8 +44,6 @@ import blog.common.MultiMap;
 import blog.common.Util;
 import blog.model.DependencyModel;
 import blog.model.Model;
-import blog.sample.ClassicInstantiatingEvalContext;
-import blog.sample.DefaultEvalContext;
 import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;
 

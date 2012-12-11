@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import blog.EqualsCPD;
 import blog.absyn.Absyn;
 import blog.absyn.ArrayTy;
 import blog.absyn.BooleanExpr;
@@ -52,6 +51,7 @@ import blog.absyn.SymbolExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
+import blog.distrib.EqualsCPD;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.BuiltInFunctions;

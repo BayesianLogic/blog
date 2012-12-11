@@ -49,6 +49,7 @@ import blog.model.Model;
 import blog.model.POP;
 import blog.model.RandomFunction;
 import blog.model.Type;
+import blog.sample.Proposer;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;

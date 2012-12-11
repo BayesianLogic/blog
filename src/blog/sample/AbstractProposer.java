@@ -1,4 +1,4 @@
-package blog;
+package blog.sample;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,8 +15,6 @@ import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
-import blog.sample.LWSampler;
-import blog.sample.Sampler;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;

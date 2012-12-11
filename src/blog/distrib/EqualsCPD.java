@@ -33,10 +33,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.distrib;
 
 import java.util.*;
 
+import blog.DetCondProbDistrib;
 import blog.model.Clause;
 
 /**

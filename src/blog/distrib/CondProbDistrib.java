@@ -37,12 +37,11 @@ package blog.distrib;
 
 import java.util.*;
 
-import blog.EqualsCPD;
 import blog.model.Type;
 
 /**
  * An interface which all user-defined conditional probability distributions
- * (CPDs), as well as the {@link blog.EqualsCPD} class, are expected to
+ * (CPDs), as well as the {@link blog.distrib.EqualsCPD} class, are expected to
  * implement.
  */
 public interface CondProbDistrib {
