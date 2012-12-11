@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import blog.Proposer;
 import blog.bn.BayesNetVar;
 import blog.bn.NumberVar;
 import blog.common.Timer;

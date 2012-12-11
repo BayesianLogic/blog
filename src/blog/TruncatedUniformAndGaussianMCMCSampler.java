@@ -5,6 +5,7 @@ import java.util.*;
 import blog.bn.VarWithDistrib;
 import blog.common.EZIterator;
 import blog.distrib.*;
+import blog.sample.VariableImportanceSampler;
 import blog.world.PartialWorld;
 
 /**

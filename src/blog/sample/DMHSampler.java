@@ -37,7 +37,6 @@ package blog.sample;
 
 import java.util.*;
 
-import blog.DecayedProposer;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;

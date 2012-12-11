@@ -4,7 +4,6 @@ import java.util.*;
 
 import blog.BLOGUtil;
 import blog.TruncatedUniformAndGaussianMCMCSampler;
-import blog.VariableGibbsProposer;
 import blog.WeightedValue;
 import blog.TruncatedUniformAndGaussianMCMCSampler.SampleIterator;
 import blog.bn.RandFuncAppVar;
@@ -12,6 +11,7 @@ import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.sample.MHSampler;
+import blog.sample.VariableGibbsProposer;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;

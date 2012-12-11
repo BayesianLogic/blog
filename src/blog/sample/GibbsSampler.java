@@ -37,7 +37,6 @@ package blog.sample;
 
 import java.util.*;
 
-import blog.GenericProposer;
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
 import blog.bn.NumberVar;
