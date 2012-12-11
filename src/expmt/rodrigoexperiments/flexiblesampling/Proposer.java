@@ -13,7 +13,7 @@ import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;
 
 
-public class Proposer implements blog.Proposer {
+public class Proposer implements blog.sample.Proposer {
 
 	public Proposer(SamplerFactory flexibleImportanceSamplerFactory) {
 		this.flexibleImportanceSamplerFactory = flexibleImportanceSamplerFactory;

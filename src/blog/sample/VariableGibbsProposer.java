@@ -1,7 +1,9 @@
-package blog;
+package blog.sample;
 
 import java.util.*;
 
+import blog.TruncatedUniformAndGaussianMCMCSampler;
+import blog.WeightedValue;
 import blog.bn.VarWithDistrib;
 import blog.bn.BayesNetVar;
 import blog.common.Util;

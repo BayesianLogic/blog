@@ -44,10 +44,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import blog.EqualsCPD;
 import blog.bn.BasicVar;
 import blog.bn.RandFuncAppVar;
 import blog.distrib.CondProbDistrib;
+import blog.distrib.EqualsCPD;
 import blog.sample.EvalContext;
 
 /**
