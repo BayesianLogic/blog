@@ -1,6 +1,13 @@
 package blog;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
@@ -13,7 +20,6 @@ import blog.sample.Sampler;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;
-
 
 /**
  * A class providing basic Proposer functionality, including the creation of an
@@ -46,7 +52,7 @@ public abstract class AbstractProposer implements Proposer {
 	 */
 	public void add(Evidence evidence) {
 		this.evidence.addAll(evidence);
-		evidenceVars.add(evidence.getEvidenceVars());
+		evidenceVars.addAll(evidence.getEvidenceVars());
 		for (Iterator iter = evidenceVars.iterator(); iter.hasNext();) {
 			if (iter.next() instanceof BasicVar) {
 				numBasicEvidenceVars++;
@@ -113,18 +119,18 @@ public abstract class AbstractProposer implements Proposer {
 	public void updateStats(boolean accepted) {
 	}
 
-    public PartialWorldDiff reduceToCore(PartialWorld curWorld, BayesNetVar var) {
-        return null;
-    }
+	public PartialWorldDiff reduceToCore(PartialWorld curWorld, BayesNetVar var) {
+		return null;
+	}
 
-    public double proposeNextState(PartialWorldDiff proposedWorld, 
-                            BayesNetVar var, int i) {
-        return 0;
-    }
+	public double proposeNextState(PartialWorldDiff proposedWorld,
+			BayesNetVar var, int i) {
+		return 0;
+	}
 
-    public double proposeNextState(PartialWorldDiff proposedWorld, BayesNetVar var) {
-        return 0;
-    }
+	public double proposeNextState(PartialWorldDiff proposedWorld, BayesNetVar var) {
+		return 0;
+	}
 
 	public abstract double proposeNextState(PartialWorldDiff proposedWorld);
 

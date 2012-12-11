@@ -1,6 +1,7 @@
 /**
  * Hurricane 
  * Figure 4.2 in Milch's thesis
+ * this one doesnot have deterministic relationship
  */
  
 type City;
@@ -8,8 +9,6 @@ type PrepLevel;
 type DamageLevel;
 
 random City First ~ UniformChoice({City c});
-
-random City NotFirst ~ UniformChoice({City c: c != First});
 
 random PrepLevel Prep(City c) {
   if (First == c) then ~ Categorical({High -> 0.5, Low -> 0.5})
@@ -30,4 +29,6 @@ distinct DamageLevel Severe, Mild;
 
 obs Damage(First) = Severe;
 
-query Damage(NotFirst);
+query First;
+query Damage(A);
+query Damage(B);

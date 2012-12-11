@@ -16,7 +16,7 @@ MISC_FILE=compile.sh \
  README.md \
  run.sh 
 
-TAGNAME=$(shell git tag)
+TAGNAME=$(shell git describe --exact-match --abbrev=0)
 TARGETNAME=${TAGNAME}
 
 compile:
