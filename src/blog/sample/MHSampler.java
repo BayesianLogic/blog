@@ -35,7 +35,11 @@
 
 package blog.sample;
 
-import java.util.*;
+import java.lang.reflect.Constructor;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 import blog.Proposer;
 import blog.bn.BayesNetVar;
@@ -46,8 +50,6 @@ import blog.model.Evidence;
 import blog.model.Model;
 import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;
-
-import java.lang.reflect.Constructor;
 
 /**
  * Generates samples from a Markov chain over possible worlds using a
@@ -66,11 +68,12 @@ import java.lang.reflect.Constructor;
  */
 public class MHSampler extends Sampler {
 	/**
-	 * Creates a new sampler for the given BLOG model. 	 
-     **/
-    public MHSampler(Model model) {
-        super(model);
-    }
+	 * Creates a new sampler for the given BLOG model.
+	 **/
+	public MHSampler(Model model) {
+		super(model);
+	}
+
 	/**
 	 * Creates a new sampler for the given BLOG model. The properties table
 	 * specifies configuration parameters.
