@@ -53,14 +53,13 @@ import blog.ObjectIdentifier;
 import blog.ParentRecEvalContext;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
+import blog.bn.CBN;
+import blog.bn.DefaultCBN;
 import blog.bn.DerivedVar;
 import blog.bn.NumberVar;
 import blog.bn.OriginVar;
 import blog.bn.RandFuncAppVar;
 import blog.bn.VarWithDistrib;
-import blog.bn.DefaultCBN;
-import blog.bn.PatchCBN;
-import blog.bn.CBN;
 import blog.common.HashMapWithPreimages;
 import blog.common.HashMultiMap;
 import blog.common.IndexedHashMultiMap;
@@ -217,10 +216,12 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				throw new IllegalArgumentException("No log prob computed for " + var);
 			}
 			if (logProb == PartialWorld.UNDET) {
-				BasicVar uninstParent = var.getFirstUninstParent(this);
-				Util.fatalError("Can't get log prob of variable " + var
-						+ " because it depends on " + uninstParent
-						+ ", which is not instantiated.");
+				if (Util.verbose()) {
+					BasicVar uninstParent = var.getFirstUninstParent(this);
+					Util.fatalError("Can't get log prob of variable " + var
+							+ " because it depends on " + uninstParent
+							+ ", which is not instantiated.");
+				}
 			}
 			return logProb.doubleValue();
 		}
@@ -383,9 +384,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		return cbn;
 	}
 
-	public void updateCBN(CBN newCBN,
-			MapWithPreimages newVarToUninstParent, Map newVarLogProbs,
-			Map newDerivedVarValues) {
+	public void updateCBN(CBN newCBN, MapWithPreimages newVarToUninstParent,
+			Map newVarLogProbs, Map newDerivedVarValues) {
 		VarInfoUpdater updater = new CopyingInfoUpdater(newCBN,
 				newVarToUninstParent, newVarLogProbs, newDerivedVarValues);
 		updateParentsAndProbs(updater);
@@ -1017,7 +1017,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		newWorld.popAppToAssertedIds = new IndexedHashMultiMap(popAppToAssertedIds);
 		newWorld.commIdToPOPApp = (Map) ((HashMap) commIdToPOPApp).clone();
 		newWorld.popAppToCommIds = new IndexedHashMultiMap(popAppToCommIds);
-		newWorld.cbn= (CBN) ((DefaultCBN) cbn).clone();
+		newWorld.cbn = (CBN) ((DefaultCBN) cbn).clone();
 		newWorld.varToUninstParent = (MapWithPreimages) ((HashMapWithPreimages) varToUninstParent)
 				.clone();
 		newWorld.varToLogProb = (Map) ((HashMap) varToLogProb).clone();
