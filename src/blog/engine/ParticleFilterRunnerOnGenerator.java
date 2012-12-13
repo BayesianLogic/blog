@@ -1,8 +1,11 @@
 package blog.engine;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.*;
 
 import blog.DBLOGUtil;
@@ -97,7 +100,46 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 	 * for current time step.
 	 */
 	public Evidence getEvidence() {
-		return evidenceGenerator.getEvidence();
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		
+		Evidence evidence = new Evidence();
+		String evistr = "";
+		if (evidenceGenerator.lastTimeStep==0){
+			evistr = "obs O(@0) = ResultC;";
+		}
+		else if (evidenceGenerator.lastTimeStep==1){
+			evistr = "obs O(@1) = ResultA;";
+		}
+		else if (evidenceGenerator.lastTimeStep==2){
+			evistr = "obs O(@2) = ResultA;";
+		}
+		else if (evidenceGenerator.lastTimeStep==3){
+			evistr = "obs O(@3) = ResultA;";
+		}
+		else if (evidenceGenerator.lastTimeStep==4){
+			evistr = "obs O(@4) = ResultG;";
+		}
+		else
+			evistr = "";
+
+		parseAndTranslateEvidence(evidence, new StringReader((String) evistr));
+
+		evidence.checkTypesAndScope(model);
+		evidence.compile();
+		//evidenceGenerator.getEvidence();
+		return evidence; //hackyEvidence;
+		
+		//Evidence evidence=null;
+		//try {
+			//evidence = BLOGUtil.parseEvidence_NE(br.readLine(), model);
+		//} catch (IOException e) {
+			// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}
+		//evidence.checkTypesAndScope(model);
+		//evidence.compile();
+		//return hackyEvidence;
 	}
 
 	/**
@@ -208,5 +250,16 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		Semant sem = new Semant(null, e, null, new ErrorMsg("no msg"));
 		sem.transProg(parse.getParseResult());
 		return true;
+	}
+	
+
+	/** Runs until there are no evidence or queries anymore. */
+	public void run() {
+		int i=0;
+		while (moveOn()){
+			i++;
+			if (i>6)
+				break;
+		}
 	}
 }
