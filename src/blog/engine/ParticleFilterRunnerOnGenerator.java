@@ -258,7 +258,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		int i=0;
 		while (moveOn()){
 			i++;
-			if (i>6)
+			if (i>5)
 				break;
 		}
 	}
