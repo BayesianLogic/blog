@@ -31,7 +31,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		super(model, particleFilterProperties);
 		this.particleFilterProperties = particleFilterProperties;
 		this.queryStrings = queryStrings;
-		evidenceGenerator = new TemporalEvidenceGenerator(model, linkStrings,
+		evidenceGenerator = new OPFevidenceGenerator(model, linkStrings,
 				queryStrings);
 		evidenceGenerator.afterMove = afterMoveForward; // this should always be so.
 		afterMove = monitorGeneratorWorld; // this is just a default and the user
@@ -63,9 +63,11 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		}
 	};
 
+	
 	protected void beforeEvidenceAndQueries() {
-		evidenceGenerator.moveOn(); // move generator so that evidence can be
+		//evidenceGenerator.moveOn(); // move generator so that evidence can be
 																// obtained.
+		evidenceGenerator.moveOn();
 	}
 
 	/**
@@ -128,7 +130,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 	}
 
 	/** The evidence generator . */
-	protected TemporalEvidenceGenerator evidenceGenerator;
+	protected OPFevidenceGenerator evidenceGenerator;
 
 	/** Properties for construction of particle filter. */
 	protected Properties particleFilterProperties;
