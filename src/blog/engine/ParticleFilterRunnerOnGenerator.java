@@ -1,8 +1,12 @@
 package blog.engine;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.Reader;
 import java.util.*;
 
 import blog.DBLOGUtil;
+import blog.Main;
 import blog.TemporalEvidenceGenerator;
 import blog.bn.BayesNetVar;
 import blog.common.UnaryProcedure;
@@ -10,6 +14,10 @@ import blog.common.Util;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Query;
+import blog.msg.ErrorMsg;
+import blog.parse.Parse;
+import blog.semant.Semant;
 import blog.world.PartialWorld;
 
 
@@ -161,9 +169,9 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 	 */
 	public UnaryProcedure afterMove;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
 		Properties properties = new Properties();
-		properties.setProperty("numParticles", "3000");
+		properties.setProperty("numParticles", "10000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		boolean randomize = true;
@@ -175,12 +183,30 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		// Util.list("#{Blip r: Time(r) = t & Source(r) = MyAircraft}");
 
 		// Basic case
-		String modelFile = "examples/aircraft-wandering-simplest.mblog";
-		Collection linkStrings = Util.list("#{Blip r: Time(r) = t}");
-		Collection queryStrings = Util.list("#{Aircraft a}");
+		String modelFile = "example/hmm.dblog";
+		Collection linkStrings = Util.list();
+		Collection queryStrings = Util.list("S(t)");
 
 		Util.initRandom(randomize);
-		new ParticleFilterRunnerOnGenerator(Model.readFromFile(modelFile),
+		Model model = new Model();
+		Evidence evidence = new Evidence();
+		ArrayList<Query> queries = new ArrayList<Query>();
+		ArrayList<Object> rao = new ArrayList<Object>();
+		rao.add(new Object[] {new FileReader(modelFile), "blank"});
+
+
+
+		
+		Main.setup(model, evidence, queries, rao, new ArrayList(), false, false);
+		Util.initRandom(true);
+		new ParticleFilterRunnerOnGenerator(model,
 				linkStrings, queryStrings, properties).run();
+		
+	}
+	private static boolean parseAndTranslateEvidence(Evidence e, Reader reader) {
+		Parse parse = new Parse(reader, null);
+		Semant sem = new Semant(null, e, null, new ErrorMsg("no msg"));
+		sem.transProg(parse.getParseResult());
+		return true;
 	}
 }
