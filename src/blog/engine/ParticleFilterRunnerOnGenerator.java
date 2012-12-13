@@ -70,6 +70,20 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		evidenceGenerator.moveOn();
 	}
 
+	//Cheng: overrode the moveOn in particleFilterRunner, mainly to gain access to evidenceGenerator
+	public boolean moveOn() {
+		Evidence evidence;
+		Collection queries;
+		beforeEvidenceAndQueries();
+		if ((evidence = getEvidence()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
+			particleFilter.take(evidence);
+			particleFilter.answer(queries);
+			afterEvidenceAndQueries();
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * Implements method used by {@link ParticleFilterRunner} to obtain evidence
 	 * for current time step.
@@ -86,13 +100,13 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		return getQueriesForLatestTimestep();
 	}
 
-	public boolean moveOn() {
-		queriesCacheInvalid = true;
-		return super.moveOn();
-	}
+	//public boolean moveOn() {
+	//	queriesCacheInvalid = true;
+	//	return super.moveOn();
+	//}
 
 	protected void afterEvidenceAndQueries() {
-		Collection queries = getQueries();
+		Collection queries = evidenceGenerator.getLatestQueries();
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 
