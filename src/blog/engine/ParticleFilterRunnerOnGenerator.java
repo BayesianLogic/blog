@@ -3,7 +3,10 @@ package blog.engine;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.*;
@@ -37,6 +40,8 @@ import blog.world.PartialWorld;
  */
 public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 
+	public InputStream eviInputStream;
+	public OutputStream eviOutputStream;
 	public ParticleFilterRunnerOnGenerator(Model model, Collection linkStrings,
 			Collection queryStrings, Properties particleFilterProperties) {
 		super(model, particleFilterProperties);
@@ -45,8 +50,10 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		evidenceGenerator = new OPFevidenceGenerator(model, linkStrings,
 				queryStrings);
 		evidenceGenerator.afterMove = afterMoveForward; // this should always be so.
-		afterMove = monitorGeneratorWorld; // this is just a default and the user
-																				// can change it.
+		afterMove = monitorGeneratorWorld; // this is just a default and the user can change it
+		
+		eviInputStream = System.in;
+		eviOutputStream = System.out;
 	}
 
 	private UnaryProcedure afterMoveForward = new UnaryProcedure() {
@@ -100,11 +107,19 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 	 * for current time step.
 	 */
 	public Evidence getEvidence() {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		
+		InputStreamReader converter = new InputStreamReader(eviInputStream);
+		BufferedReader in = new BufferedReader(converter);
 		
 		Evidence evidence = new Evidence();
 		String evistr = "";
+		
+		try {
+			evistr = in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//comment out this entire if clause to actually use the inputstream
 		if (evidenceGenerator.lastTimeStep==0){
 			evistr = "obs O(@0) = ResultC;";
 		}
@@ -122,13 +137,13 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		}
 		else
 			evistr = "";
-
+		
 		parseAndTranslateEvidence(evidence, new StringReader((String) evistr));
 
 		evidence.checkTypesAndScope(model);
 		evidence.compile();
-		//evidenceGenerator.getEvidence();
-		return evidence; //hackyEvidence;
+		
+		return evidence; 
 		
 		//Evidence evidence=null;
 		//try {
@@ -247,7 +262,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 	}
 	private static boolean parseAndTranslateEvidence(Evidence e, Reader reader) {
 		Parse parse = new Parse(reader, null);
-		Semant sem = new Semant(null, e, null, new ErrorMsg("no msg"));
+		Semant sem = new Semant(null, e, null, new ErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
 		sem.transProg(parse.getParseResult());
 		return true;
 	}
