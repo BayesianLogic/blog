@@ -223,7 +223,6 @@ public class BLOGUtil {
 	public static Evidence parseEvidence_NE(String description, Model model) {
 		try {
 			ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
-			meq.evidence.compile();
 			return meq.evidence;
 		} catch (Exception e) {
 			Util.fatalError(e);
