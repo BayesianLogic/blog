@@ -127,8 +127,7 @@ public class Util {
 	 * n > 0
 	 */
 	public static int randInt(int n) {
-		return (int) Math.floor(rand.nextDouble() * n); // null pointer exception if
-																										// not initialized
+		return rand.nextInt(n);
 	}
 
 	/** Returns the sum of an array of doubles. */
@@ -2008,5 +2007,5 @@ public class Util {
 
 	private static Random rand;
 	private static boolean verbose = false;
-    private static boolean print = false;
+	private static boolean print = false;
 }
