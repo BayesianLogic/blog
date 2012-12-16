@@ -315,8 +315,8 @@ public class Main {
 				"blog.sample.LWSampler", "Use sampler class <s>");
 		specialOptions.put("samplerClass", optSampler);
 
-		StringOption optProposer = new StringOption("p", "proposer",
-				"blog.GenericProposer", "Use Metropolis-Hastings proposer class <s>");
+		StringOption optProposer = new StringOption("r", "proposer",
+				"blog.sample.GenericProposer", "Use Metropolis-Hastings proposer class <s>");
 		specialOptions.put("proposerClass", optProposer);
 
 		IntOption optNumTrials = new IntOption("t", "num_trials", 1,
