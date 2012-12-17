@@ -49,7 +49,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import blog.EnumeratedObject;
 
 /**
  * Represents a type in a BLOG model. Stores a set of potential object patterns
@@ -376,6 +375,10 @@ public class Type {
 	 */
 	public String toString() {
 		return name;
+	}
+
+	public int hashCode() {
+		return name.hashCode();
 	}
 
 	private class RangeList extends AbstractList {

@@ -45,6 +45,7 @@ import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.FunctionSignature;
 import blog.model.Model;
+import blog.model.NonGuaranteedObject;
 import blog.model.POP;
 import blog.model.RandomFunction;
 import blog.model.Type;

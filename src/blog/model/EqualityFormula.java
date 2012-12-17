@@ -37,7 +37,6 @@ package blog.model;
 
 import java.util.*;
 
-import blog.GenericObject;
 import blog.Substitution;
 import blog.sample.EvalContext;
 

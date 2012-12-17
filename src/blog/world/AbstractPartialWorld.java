@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import blog.NonGuaranteedObject;
 import blog.ObjectIdentifier;
 import blog.ParentRecEvalContext;
 import blog.bn.BasicVar;
@@ -70,6 +69,7 @@ import blog.common.MultiMap;
 import blog.common.Util;
 import blog.model.DependencyModel;
 import blog.model.Model;
+import blog.model.NonGuaranteedObject;
 import blog.model.POP;
 import blog.model.RandomFunction;
 import blog.objgen.AbstractObjectSet;
