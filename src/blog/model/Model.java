@@ -51,9 +51,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import blog.EnumeratedObject;
 import blog.Main;
-import blog.NonGuaranteedObject;
 import blog.ObjectIdentifier;
 import blog.common.Util;
 import blog.type.Timestep;

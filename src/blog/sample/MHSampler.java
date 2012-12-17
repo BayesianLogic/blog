@@ -277,6 +277,10 @@ public class MHSampler extends Sampler {
 	public double computeLogProbRatio(PartialWorld savedWorld,
 			PartialWorldDiff proposedWorld) {
 		double logProbRatio = 0;
+		if (!evidence.isTrue(proposedWorld)) {
+			logProbRatio = Double.NEGATIVE_INFINITY;
+			return logProbRatio;
+		}
 		logProbRatio += computeLogMultRatio(savedWorld, proposedWorld);
 
 		Set factorVars = proposedWorld.getVarsWithChangedProbs();

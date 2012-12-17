@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2006, Regents of the University of California
+ * Copyright (c) 2005, 2006, 2012 Regents of the University of California
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -33,21 +33,22 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
-import blog.model.NonRandomFunction;
-import blog.model.Type;
 
 /**
  * An EnumeratedObject represents a guaranteed object that is explicitly defined
  * and given a name in the model file, using a statement like: <blockquote>
- * guaranteed <i>typename</i> <i>name1</i>, <i>name2</i>, ..., <i>nameN</i>
+ * distincted <i>typename</i> <i>name1</i>, <i>name2</i>, ..., <i>nameN</i>
  * </blockquote> A "name" is really a nonrandom constant symbol that refers to
  * this object. Other constant symbols may also refer to this object, but in
  * presenting query results to the user, we may want to use the name that the
  * modeler used to introduce this object in the model file. Each
  * EnumeratedObject of a given type also has an index, based on the order in
  * which the objects were introduced in the model file.
+ * 
+ * @author leili
+ * @date 2012/12/17
  */
 public class EnumeratedObject implements Comparable {
 	/**
@@ -95,6 +96,10 @@ public class EnumeratedObject implements Comparable {
 	 */
 	public String toString() {
 		return constant.getName();
+	}
+
+	public int hashCode() {
+		return type.hashCode() ^ (constant.hashCode() ^ index);
 	}
 
 	/**

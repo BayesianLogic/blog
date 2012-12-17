@@ -35,7 +35,10 @@
 
 package blog.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 import blog.common.TupleIterator;
 import blog.common.Util;
@@ -262,6 +265,10 @@ public abstract class Function {
 	 */
 	public String toString() {
 		return sig.getName();
+	}
+
+	public int hashCode() {
+		return sig.hashCode();
 	}
 
 	private FunctionSignature sig;

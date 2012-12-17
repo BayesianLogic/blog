@@ -33,11 +33,8 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
-import blog.model.Model;
-import blog.model.OriginFunction;
-import blog.model.Type;
 import blog.sample.EvalContext;
 
 /**

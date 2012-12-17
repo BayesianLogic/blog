@@ -41,7 +41,6 @@ import blog.absyn.OpExpr;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;
-import blog.GenericObject;
 import blog.common.Util;
 import blog.sample.EvalContext;
 

@@ -44,7 +44,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import blog.NonGuaranteedObject;
 import blog.bn.NumberVar;
 import blog.bn.RandFuncAppVar;
 import blog.bn.VarWithDistrib;
@@ -55,6 +54,7 @@ import blog.model.BuiltInTypes;
 import blog.model.Evidence;
 import blog.model.Function;
 import blog.model.Model;
+import blog.model.NonGuaranteedObject;
 import blog.model.POP;
 import blog.model.RandomFunction;
 import blog.model.SkolemConstant;

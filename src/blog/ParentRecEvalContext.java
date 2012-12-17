@@ -40,6 +40,7 @@ import java.util.*;
 import blog.bn.BasicVar;
 import blog.bn.NumberVar;
 import blog.bn.OriginVar;
+import blog.model.NonGuaranteedObject;
 import blog.sample.DefaultEvalContext;
 import blog.world.PartialWorld;
 
