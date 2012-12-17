@@ -40,6 +40,7 @@ import blog.*;
 import blog.common.Util;
 import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
+import blog.model.EnumeratedObject;
 import blog.model.FuncAppTerm;
 import blog.model.Model;
 import blog.model.ListSpec;

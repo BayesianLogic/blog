@@ -41,7 +41,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import blog.NonGuaranteedObject;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.bn.NumberVar;
@@ -49,6 +48,7 @@ import blog.common.HashMapWithPreimages;
 import blog.common.MapWithPreimages;
 import blog.common.Util;
 import blog.model.LogicalVar;
+import blog.model.NonGuaranteedObject;
 import blog.model.Type;
 import blog.objgen.ObjectSet;
 import blog.world.PartialWorld;

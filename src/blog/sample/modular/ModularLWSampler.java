@@ -18,7 +18,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import blog.BLOGUtil;
-import blog.NonGuaranteedObject;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.bn.NumberVar;
@@ -37,6 +36,7 @@ import blog.model.Formula;
 import blog.model.Function;
 import blog.model.ImplicitSetSpec;
 import blog.model.Model;
+import blog.model.NonGuaranteedObject;
 import blog.model.POP;
 import blog.model.Query;
 import blog.model.RandomFunction;

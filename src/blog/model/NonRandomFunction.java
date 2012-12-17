@@ -49,7 +49,6 @@ import java.util.Set;
 
 import blog.ConstantInterp;
 import blog.FunctionInterp;
-import blog.GenericObject;
 import blog.common.Util;
 import blog.sample.EvalContext;
 
@@ -419,15 +418,17 @@ public class NonRandomFunction extends Function {
 				&& Util.equalsOrBothNull(interp, oNRF.interp);
 	}
 
-	public int hashCode() {
-		int code = interpClass.hashCode();
-		if (interpParams != null)
-			for (Iterator it = interpParams.iterator(); it.hasNext();)
-				code ^= it.next().hashCode();
-		if (interp != null)
-			code ^= interp.hashCode();
-		return code;
-	}
+	// removed by leili 2012/12/17
+	// replaced by hashCode in Function
+	// public int hashCode() {
+	// int code = interpClass.hashCode();
+	// if (interpParams != null)
+	// for (Iterator it = interpParams.iterator(); it.hasNext();)
+	// code ^= it.next().hashCode();
+	// if (interp != null)
+	// code ^= interp.hashCode();
+	// return code;
+	// }
 
 	private Class interpClass;
 

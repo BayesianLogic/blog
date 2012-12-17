@@ -38,8 +38,6 @@ package blog.model;
 import java.util.*;
 import java.io.PrintStream;
 
-import blog.GenericObject;
-import blog.NonGuaranteedObject;
 import blog.ObjectIdentifier;
 import blog.bn.NumberVar;
 import blog.sample.EvalContext;

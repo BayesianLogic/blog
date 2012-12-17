@@ -10,12 +10,12 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import blog.GenericObject;
-import blog.GenericPOPAppSatisfier;
 import blog.bn.NumberVar;
 import blog.common.HashMultiMap;
 import blog.common.MultiMap;
 import blog.model.Formula;
+import blog.model.GenericObject;
+import blog.model.GenericPOPAppSatisfier;
 import blog.sample.EvalContext;
 
 class ElementSet extends AbstractObjectSet {
