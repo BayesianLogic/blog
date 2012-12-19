@@ -6,8 +6,8 @@ class BlogLexer(RegexLexer):
     aliases = ['blog']
     filenames = ['*.blog']
     operators = ['=','~',':']
-    keywords = ['extern','import','fixed','func','distinct','random','origin','param','type']
-    types = ['Int','Real','Boolean','NaturalNum','List','Map','TabularCPD','Categorical','Distribution','Gaussian','type0','type1','type2','typename']
+    keywords = ['extern','import','fixed','distinct','random','origin','param','type', 'forall', 'exists']
+    types = ['Integer','Real','Boolean','NaturalNum','List','Map','TabularCPD','Categorical','Distribution','Gaussian']
 
     def gen_regex(ops):
         return "|".join(ops)
