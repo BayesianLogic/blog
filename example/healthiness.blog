@@ -14,7 +14,7 @@
  */
 type Person;
 
-distinct Person p1;
+distinct Person P1;
 
 random Boolean HealthConscious(Person p) ~ Bernoulli(0.5);
 random Boolean LittleFreeTime(Person p) ~ Bernoulli(0.5);
@@ -44,7 +44,7 @@ random Boolean TestedHighCholesterol(Person p)
     HighCholesterol(p));
                                          
 /* Evidence */
-obs TestedHighCholesterol(p1) = false;
+obs TestedHighCholesterol(P1) = false;
 
 /* Query */
-query HealthConscious(p1);
+query HealthConscious(P1);

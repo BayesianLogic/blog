@@ -1,18 +1,17 @@
 type Cluster;
 type Galaxy;
 
-
-#Cluster ~ Poisson [10.0];
+#Cluster ~ Poisson(10.0);
 
 distinct Galaxy Galaxy[82]; 
 
 random Real ClusVelocity(Cluster c) ~ UniformReal(5000.0, 50000.0);
 
-// variance is 10000, i.e. s.d. 100
-random Real Velocity(Galaxy g) 
-    ~ UnivarGaussian(ClusVelocity(OrigCluster(g)), 10000);
-
 random Cluster OrigCluster(Galaxy g) ~ UniformChoice({Cluster c});
+
+random Real Velocity(Galaxy g) 
+  if (OrigCluster(g) != null) then
+    ~ UnivarGaussian(ClusVelocity(OrigCluster(g)), 10000);
 
 obs Velocity(Galaxy1) = 9172;
 obs Velocity(Galaxy2) = 9350;
@@ -96,7 +95,6 @@ obs Velocity(Galaxy79) = 26995;
 obs Velocity(Galaxy80) = 32065;
 obs Velocity(Galaxy81) = 32789;
 obs Velocity(Galaxy82) = 34279;
-
 
 query ClusVelocity(OrigCluster(Galaxy1));
 query ClusVelocity(OrigCluster(Galaxy6));

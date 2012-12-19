@@ -1,9 +1,14 @@
  
-fixed Real[2] beta = [0.2, 0.8];
+fixed Real[] beta = [0.2, 0.8];
 fixed Real sigma = 0.1;
 random Real x(Timestep t) {
 	if t == @0 then = 0
 	else if t == @1 then ~ Gaussian(0, sigma)
-	else ~ Gaussian(beta[0] * x(t-2) + beta[1] * x(t-1), sigma)
+	else ~ Gaussian(beta[0] * x(Prev(Prev(t))) + beta[1] * x(Prev(t)), sigma)
 };
+
+obs x(@1) = 1.0;
+
+query x(@2);
+query x(@3);
 
