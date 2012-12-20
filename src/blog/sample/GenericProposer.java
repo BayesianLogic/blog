@@ -189,7 +189,7 @@ public class GenericProposer extends AbstractProposer {
 	// <code>world</code> is self-supporting by calling
 	// ensureDetAndSupported on each of the variable's children. Also
 	// updates the logProbForward and logProbBackward variables.
-	private void sampleValue(VarWithDistrib varToSample, PartialWorld world) {
+	protected void sampleValue(VarWithDistrib varToSample, PartialWorld world) {
 		// Save child set before graph becomes out of date
 		Set children = world.getCBN().getChildren(varToSample);
 
