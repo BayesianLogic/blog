@@ -581,11 +581,7 @@ public class BuiltInFunctions {
 			public Object getValue(List args) {
 				MatrixLib mat = (MatrixLib) args.get(0);
 				int i = (Integer) args.get(1);
-				if (mat.rowLen() == 1) {
-					return mat.elementAt(0, i);
-				} else {
-					return mat.sliceRow(i);
-				}
+				return mat.sliceRow(i);
 			}
 		};
 		SUB_MAT = new NonRandomFunction(SUB_MAT_NAME, argTypes, retType,

@@ -1037,8 +1037,15 @@ public class Semant {
 		case OpExpr.SUB:
 			Function func;
 			if (left instanceof SymbolTerm) {
-				func = (Function) BuiltInFunctions.getFuncsWithName(
-						BuiltInFunctions.SUB_MAT_NAME).get(0);
+				Object symbolMapping = model.getFuncsWithName(((SymbolTerm)left).getName()).iterator().next();
+				if (((Function)symbolMapping).getRetType().getName().equals("Array_Real_1")) {
+					func = (Function) BuiltInFunctions.getFuncsWithName(
+							BuiltInFunctions.SUB_VEC_NAME).get(0);
+				}
+				else {
+					func = (Function) BuiltInFunctions.getFuncsWithName(
+							BuiltInFunctions.SUB_MAT_NAME).get(0);
+				}
 			} else {
 				func = (Function) BuiltInFunctions.getFuncsWithName(
 						BuiltInFunctions.SUB_VEC_NAME).get(0);
