@@ -5,8 +5,11 @@ class BlogLexer(RegexLexer):
     name = 'BLOG'
     aliases = ['blog']
     filenames = ['*.blog', '*.dblog']
-    operators = ['=','~',':']
-    keywords = ['extern','import','fixed','distinct','random','origin','param','type', 'forall', 'exists', 'obs', 'query']
+    operators = ['\\-\\>','=','~',':', '\\+', '\\-', '\\*', '/', '\\[', ']', 
+                 '\\{', '}', '!', '\\<', '\\>', '\\<=', '\\>=', '==', '!=', 
+                 '&', '\\|', '#', '\\^']
+    deliminators = [',', ';', '\\(', '\\)']
+    keywords = ['extern','import','fixed','distinct','random','origin','param','type', 'forall', 'exists', 'obs', 'query', 'if', 'then', 'else']
     types = ['Integer','Real','Boolean','NaturalNum','List','Map','TabularCPD','Categorical','Distribution','Gaussian']
 
     def gen_regex(ops):
@@ -14,46 +17,44 @@ class BlogLexer(RegexLexer):
 
     tokens = {
         'arithmetic' : [
-            (r'[{}\[\]<>,;\.+*/%&|-]', Text),
-            (r'[0-9]+\.[0-9]+', Token.Literal.Number),
-            (r'[0-9]', Token.Literal.Number),
+            #(r'[{}\[\]<>,;\.\+\*/%&\|\-]', Text),
+            (r'\d+\.\d+', Number.Float),
+            (r'\d+', Number.Integer),
          ],
         'variable' : [
-            (r'[a-zA-Z_\-]*?[0-9_-]*?[^a-zA-Z]', Name.Variable),
+            (r'\b([a-zA-Z_]\w*)\b', Name.Variable),
         ],
         'root' : [
-            (r'([a-zA-Z]+[0-9]*)(\()(.*?)(\))', bygroups(Name.Function, Token.Punctuation, Text.Name, Token.Punctuation)),
-            (r'('+gen_regex(types)+')([ <>\[\]]?)', bygroups(Name.Class, Text)),
-            (r'('+gen_regex(keywords)+')', Token.Keyword),
-            (r''+gen_regex(operators)+'', Token.Operator, 'expression'),
+            (r'([a-zA-Z]+[0-9]*)(\()', bygroups(Name.Function, Punctuation)),
+            ('('+gen_regex(types)+r')', Name.Class),
+            ('('+gen_regex(keywords)+')\\b', Token.Keyword),
+            (gen_regex(operators), Token.Operator),
+            (r'(true|false|null)\b', Keyword.Constant),
             include('variable'),
             #(r'\s+(.*?)(\()(.*?)(\))', bygroups(Text.Name, Token.Punctuation, Text.Name, Token.Punctuation)),
             (r'\s+', Text),
+            (r'"(\\\\|\\"|[^"])*"', String),
+            (gen_regex(deliminators), Punctuation),
             include('arithmetic'),
-        ],
-        'expression' : [
-            (r';',Text, "#pop"),
-            (r'(\s*)(.*?)(\()(.*?)(\))', bygroups(Text, Name.Function, Token.Punctuation, Text.Name, Token.Punctuation)),
-            include('variable'),
-            include('arithmetic'),
-            (r'\s+', Text),
+            (r'//.*?\n', Comment.Single),
+            (r'/\*.*?\*/', Comment.Multiline),
+            (r'[^\S\n]+', Text),
         ]
     }
 
 def run_tests():
     tests = [
         "type Person;",
-        "random Real x ~ Gaussian(0, 1);",
-        "fixed type0 funcname(type1)= e;",
-        "random NaturalNum x~ Poisson(a);",
-        "fixed type name = nonrandom - expression;",
+        "distinct Person Alice, Bob, P[100];",
+        "random Real x ~ Gaussian(0, 1);\nrandom Real y ~ Gaussian(x, 1);",
+        "random type0 funcname(type1 x) =expression;\nrandom type0 funcname(type1 x) dependency-expression;",
+        "random NaturalNum x ~ Poisson(a);",
         "param Real a: 0 < a & a < 10 ;"
-        "distinct type name1, name2, name3;",
         "random Real funcname(type1 x);",
-        "1.0 + 2.0 * 3.0",
+        "1.0 + 2.0 * 3.0 - 4.0",
         "Twice( 10.0 ) * 5.5",
-        "fixed NaturalNum[10] c = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];",
-        "fixed NaturalNum[2][3] table = [1, 2, 3; 4, 5, 6];",
+        "fixed NaturalNum[] c = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];",
+        "fixed NaturalNum[][] table = [1, 2, 3; 4, 5, 6];",
         "fixed List<NaturalNum> a = List(1, 2, 3, 4, 5, 6);",
         "fixed Map<Boolean, Real> map1 = {true -> 0.3, false -> 0.7};",
         "Categorical<Boolean> cpd1 =Categorical({true -> 0.3, false -> 0.7});",
@@ -65,4 +66,3 @@ def run_tests():
         for token in (lexer.get_tokens(test)):
             print(token)
 
-#run_tests()
