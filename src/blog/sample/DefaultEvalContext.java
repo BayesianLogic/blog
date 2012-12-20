@@ -219,7 +219,7 @@ public class DefaultEvalContext implements EvalContext {
 	 * the <code>errorIfUndet</code> field.
 	 */
 	protected void handleMissingVar(BayesNetVar var) {
-		if (errorIfUndet) {
+		if (errorIfUndet & Util.verbose()) {
 			System.err.println("Error with evaluation trace:");
 			printEvalTrace(System.err);
 			Util.fatalError("Variable " + var + " is not instantiated.");

@@ -212,7 +212,7 @@ public class ValueEvidenceStatement {
 	 * the given world.
 	 */
 	public boolean isTrue(PartialWorld w) {
-		return (observedVar.getValue(w).equals(observedValue));
+		return (observedValue.equals(observedVar.getValue(w)));
 	}
 
 	/**
