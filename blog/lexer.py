@@ -4,9 +4,9 @@ from pygments.token import *
 class BlogLexer(RegexLexer):
     name = 'BLOG'
     aliases = ['blog']
-    filenames = ['*.blog']
+    filenames = ['*.blog', '*.dblog']
     operators = ['=','~',':']
-    keywords = ['extern','import','fixed','distinct','random','origin','param','type', 'forall', 'exists']
+    keywords = ['extern','import','fixed','distinct','random','origin','param','type', 'forall', 'exists', 'obs', 'query']
     types = ['Integer','Real','Boolean','NaturalNum','List','Map','TabularCPD','Categorical','Distribution','Gaussian']
 
     def gen_regex(ops):
