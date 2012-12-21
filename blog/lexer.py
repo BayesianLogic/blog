@@ -16,29 +16,20 @@ class BlogLexer(RegexLexer):
         return "|".join(ops)
 
     tokens = {
-        'arithmetic' : [
-            #(r'[{}\[\]<>,;\.\+\*/%&\|\-]', Text),
-            (r'\d+\.\d+', Number.Float),
-            (r'\d+', Number.Integer),
-         ],
-        'variable' : [
-            (r'\b([a-zA-Z_]\w*)\b', Name.Variable),
-        ],
         'root' : [
             (r'([a-zA-Z]+[0-9]*)(\()', bygroups(Name.Function, Punctuation)),
             ('('+gen_regex(types)+r')', Name.Class),
             ('('+gen_regex(keywords)+')\\b', Token.Keyword),
             (gen_regex(operators), Token.Operator),
             (r'(true|false|null)\b', Keyword.Constant),
-            include('variable'),
-            #(r'\s+(.*?)(\()(.*?)(\))', bygroups(Text.Name, Token.Punctuation, Text.Name, Token.Punctuation)),
-            (r'\s+', Text),
+            (r'([a-zA-Z_]\w*)\b', Name),
             (r'"(\\\\|\\"|[^"])*"', String),
             (gen_regex(deliminators), Punctuation),
-            include('arithmetic'),
+            (r'\d+\.\d+', Number.Float),
+            (r'\d+', Number.Integer),
             (r'//.*?\n', Comment.Single),
             (r'/\*.*?\*/', Comment.Multiline),
-            (r'[^\S\n]+', Text),
+            (r'\s+', Text),
         ]
     }
 
