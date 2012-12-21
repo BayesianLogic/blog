@@ -47,4 +47,13 @@ public class TestOperator {
 		Main.runFromString(code, args);
 	}
 
+	@Test
+	public void testMultiInFunction() {
+		String code = "random Integer qstate(Integer t) {\n" + "\n"
+				+ "  if t != 0 then\n" + "\n" + "    = t*2\n" + "\n" + "  else\n"
+				+ "\n" + "    = 0\n" + "\n" + "};"
+				+ "query qstate(2); query qstate(0);";
+		Main.runFromString(code, args);
+	}
+
 }
