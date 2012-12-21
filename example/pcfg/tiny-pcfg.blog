@@ -30,7 +30,7 @@ distinct NodeClass S, NP, VP, PP, P, V, w_astronomers, w_ears, w_saw, w_stars, w
 // rules in PCFG
 distinct Expansion SNPVP, PPPNP, VPVNP, VPVPPP, NPNPPP, NPw_astronomers, NPw_ears, NPw_saw, NPw_stars, NPw_telescopes, Pw_with, Vw_saw; 
 
-fixed NodeClass NthChildClass(Expansion e, NaturalNum n)
+fixed NodeClass NthChildClass(Expansion e, Integer n)
   = TabularInterp(2,
       SNPVP, 0, NP,
       SNPVP, 1, VP,
@@ -63,7 +63,7 @@ fixed NodeClass NthChildClass(Expansion e, NaturalNum n)
     );
 
 origin ParseNode Parent(ParseNode);
-origin NaturalNum GenIndex(ParseNode);
+origin Integer GenIndex(ParseNode);
 
 // root node of the parse tree
 origin Sentence RootSentence(ParseNode);
@@ -91,13 +91,13 @@ random NodeClass Class(ParseNode node) {
         then = 1
 };
 
-random ParseNode NthChild(ParseNode node, NaturalNum n) {
+random ParseNode NthChild(ParseNode node, Integer n) {
     if (ExpansionApplied(node) != null)
             & (NthChildClass(ExpansionApplied(node), n) != null)
         then ~ Iota({ParseNode q : Parent(q) == node & GenIndex(q) == n})
 };
 
-random String TextStartingAtNthChild(ParseNode p, NaturalNum n) {
+random String TextStartingAtNthChild(ParseNode p, Integer n) {
     if (NthChild(p, Succ(n)) == null) then = NodeText(NthChild(p, n))
     else = Concat(NodeText(NthChild(p, n)), 
                   TextStartingAtNthChild(p, Succ(n)))
