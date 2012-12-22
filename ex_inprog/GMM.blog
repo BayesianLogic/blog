@@ -14,23 +14,23 @@ type Component;
  * the dimension, mean, and covariance matrix.
  */
 random Real[] Theta(Component c) {
-    MultivarGaussian(2, [0; 0], [100, 0; 
+   ~  MultivarGaussian(2, [0; 0], [100, 0; 
                                  0, 100])
 };
 
-random Component Z(NaturalNum n) {
-    UniformChoice({Component c});
-}
+random Component Z(Integer n) {
+   ~ UniformChoice({Component c})
+};
 
 /*
  * Here we use a MultivarGaussian distribution with only two fixed 
  * parameters, the dimension and the covariant argument. 
  * The random variable Theta(Z(n)) is interpreted as the mean.  
  */
-random Real[] X(NaturalNum n) {
+random Real[] X(Integer n) {
 	if Z(n) != null 
         then ~ MultivarGaussian(2, Theta(Z(n)), [4, 0; 
-                                                 0, 4]]()
+                                                 0, 4])
 };
 
 /* Evidence for the Gaussian mixture model.  These are 
@@ -88,6 +88,6 @@ obs X(9) = [6.294380168511825; -1.4899535512591284];
  * that groups the sampled values into bins and reports the 
  * probability mass on each of those bins.  
  */
-query Z(0) = Z(1); // do observations 0 and 1 come from same component?
+query Z(0) == Z(1); // do observations 0 and 1 come from same component?
 query Theta(Z(0));
 query Theta(Z(1));
