@@ -188,9 +188,9 @@ public class SymbolEvidenceStatement {
 	public boolean isTrue(PartialWorld w) {
 		Set satisfiers = setSpec.getSatisfyingSet(w);
 		if (satisfiers.size() != skolemConstants.size()) {
-			System.out.println("Symbol evidence statement should be "
-					+ "satisfied by " + skolemConstants.size()
-					+ " objects; actually satisfied by " + satisfiers.size() + ".");
+		//	System.out.println("Symbol evidence statement should be "
+		//			+ "satisfied by " + skolemConstants.size()
+		//			+ " objects; actually satisfied by " + satisfiers.size() + ".");
 			return false;
 		}
 
