@@ -48,21 +48,23 @@ random Player Turn(Timestep t) {
     else if Score(Dealer, t) < 16 then = Dealer
 };
 
-random Score(Player p, Timestep t) {
-    if (t == @0) = Value(InitialCard(p, 0)) + Value(InitialCard(p, 1))
-    else = Score(p, Prev(t)) + Value(DrawCard(t))
+random Integer Score(Player p, Timestep t) {
+    if (t == @0) then = Value(Rank(InitialCard(p, 0))) + Value(Rank(InitialCard(p, 1)))
+    else = Score(p, Prev(t)) + Value(Rank(DrawCard(t)))
 };
 
 random Card InitialCard(Player p, Integer n) {
     if (n == 0 | n == 1) then
-        ~ UniformChoice({Card c: !(exists Player p exists Integer n (c == InitialCard(p, n)))})
+        ~ UniformChoice({Card c: 
+            !(exists Player p exists Integer n (c == InitialCard(p, n)))})
 };
 
 random Card DrawCard(Timestep t)
-    ~ UniformChoice({Card c: !(exists Timestep t_prev ((t_prev < t) & (DrawCard(t_prev) == c))
-      			     	      & !(exists Player p exists Integer n (c == InitialCard(p, n))))});
+    ~ UniformChoice(
+    {Card c: !(exists Timestep t_prev ((t_prev < t) & (DrawCard(t_prev) == c))
+              & !(exists Player p exists Integer n (c == InitialCard(p, n))))});
 
-obs Value(InitialCard(Gambler, 0)) = 10;
-obs Value(InitialCard(Gambler, 1)) = 2;
+obs Value(Rank(InitialCard(Gambler, 0))) = 10;
+obs Value(Rank(InitialCard(Gambler, 1))) = 2;
 
-query Score(Gambler, 5);
+query Score(Gambler, @5);
