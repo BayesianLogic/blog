@@ -19,24 +19,23 @@ origin Timestep Time(Blip);
 
 // num of blips from aircraft is 0 or 1
 #Blip(Source = a, Time = t) 
-    if (Position(t) > -7) & Position(t) < 7)
+    if ((Position(t) > -7) & (Position(t) < 7))
         then ~ Bernoulli(0.95)
         else = 0;
 
 // num false alarms has Poisson distrib.
 #Blip(Time = t) ~ Poisson(2);
 
-random Real ApparentPos(Blip) {
+random Real ApparentPos(Blip b) {
     if (Source(b) == null)
     // if false alarm (no source)
         then ~ UniformReal(-10, 10)
-        else ~ Gaussian(Position(Time(b)), 1);
+        else ~ Gaussian(Position(Time(b)), 1)
 };
 
-obs {Blip b:time(b)=@0} = {B1, B2, B3};
+obs {Blip b : Time(b) == @0} = {B1, B2, B3};
 obs ApparentPos(B1) = 0.3;
 obs ApparentPos(B2) = 1.2;
 obs ApparentPos(B1) = 5.0;
 
 query #{Aircraft a}; 
-
