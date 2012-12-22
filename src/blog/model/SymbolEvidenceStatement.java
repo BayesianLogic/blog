@@ -201,8 +201,8 @@ public class SymbolEvidenceStatement {
 			Object referent = w.getValue(symVar);
 			if (referent != null) {
 				if (referents.contains(referent)) {
-					System.out.println("Skolem constant " + sym
-							+ " corefers with earlier constant.");
+			//		System.out.println("Skolem constant " + sym
+			//				+ " corefers with earlier constant.");
 					return false;
 				}
 				if (!satisfiers.contains(referent)) {
