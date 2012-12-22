@@ -138,7 +138,7 @@ FLit1    = {Digit}+ \. {Digit}*
 FLit2    = \. {Digit}+ 
 FLit3    = {Digit}+ 
 Exponent = [eE] [+-]? {Digit}+
-DoubleLiteral = ({FLit1}|{FLit2}|{FLit3}) {Exponent}?
+DoubleLiteral = [+-]?({FLit1}|{FLit2}|{FLit3}) {Exponent}?
 
 LineTerminator	= [\n\r\r\n]
 
