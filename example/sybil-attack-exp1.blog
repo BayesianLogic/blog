@@ -47,78 +47,9 @@ random Boolean Recommends(Login x, Login y) {
     [Honest(Owner(x)), Honest(Owner(y))])
 };
 
-//obs {Person p} = {Person1, Person2, Person3, Person4, Person5, 
-//                  Person6, Person7, Person8, Person9};
 obs {Person p} = {Person1, Person2};
-
-//obs {Login l} = {Login1, Login2, Login3, Login4, Login5, Login6,
-//                Login7, Login8, Login9, Login10, Login11, Login12,
-//                Login13, Login14, Login15, Login16, Login17, Login18};
 
 obs {Login l} = {Login1, Login2, Login3};
 Query Honest(Person1); 
 
-//obs Honest(Person9) = false;
-//obs Honest(Person1) = false;
-//obs Honest(Person2) = true;
-//obs Honest(Person3) = true;
-//obs Honest(Person4) = true;
-//obs Honest(Person5) = true;
-//obs Honest(Person6) = true;
-//obs Honest(Person7) = true;
-//obs Honest(Person8) = true;
-//
-//obs #Login(Owner = Person9) = 8;
-//obs #Login(Owner = Person1) = 3;
-//obs #Login(Owner = Person2) = 1;
-//obs #Login(Owner = Person3) = 1;
-//obs #Login(Owner = Person4) = 1;
-//obs #Login(Owner = Person5) = 1;
-//obs #Login(Owner = Person6) = 1;
-//obs #Login(Owner = Person7) = 1;
-//obs #Login(Owner = Person8) = 1;
-//
-//obs Transaction(Login7, Login4) = true;
-//obs Transaction(Login1, Login18) = true;
-//obs Transaction(Login3, Login13) = false;
-//obs Transaction(Login15, Login5) = true;
-//obs Transaction(Login6, Login7) = true;
-//obs Transaction(Login16, Login8) = true;
-//obs Transaction(Login11, Login15) = false;
-//obs Transaction(Login12, Login3) = true;
-//
-//obs Transaction(Login3, Login1) = true;
-//obs Transaction(Login3, Login7) = true;
-//obs Transaction(Login12, Login11) = true;
-//obs Transaction(Login15, Login11) = true;
-//obs Transaction(Login9, Login10) = true;
-//obs Transaction(Login18, Login13) = false;
-//obs Transaction(Login7, Login9) = false;
-//obs Transaction(Login9, Login6) = false;
-//obs Transaction(Login5, Login15) = false;
-//obs Transaction(Login4, Login17) = false;
-//obs Transaction(Login8, Login11) = true;
-//obs Transaction(Login17, Login16) = false;
-//
-//obs Recommends(Login8, Login16) = false;
-//obs Recommends(Login8, Login16) = false;
-//obs Recommends(Login13, Login16) = true;
-//obs Recommends(Login17, Login8) = false;
-//obs Recommends(Login17, Login12) = true;
-//obs Recommends(Login1, Login13) = false;
-//obs Recommends(Login4, Login6) = true;
-//obs Recommends(Login1, Login4) = true;
-//obs Recommends(Login1, Login14) = false;
-//obs Recommends(Login14, Login13) = true;
-//obs Recommends(Login8, Login1) = false;
-//obs Recommends(Login3, Login2) = true;
-//obs Recommends(Login5, Login6) = true;
-//obs Recommends(Login17, Login18) = false;
-//obs Recommends(Login11, Login1) = false;
-//obs Recommends(Login2, Login10) = false;
-//obs Recommends(Login16, Login3) = false;
-//obs Recommends(Login6, Login4) = true;
-//obs Recommends(Login3, Login5) = true;
-//obs Recommends(Login11, Login18) = false;
 
-//Query Honest(Person9); 
