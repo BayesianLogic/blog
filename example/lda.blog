@@ -41,15 +41,15 @@ fixed String Dictionary(Integer i)
 	3, "DDD"
       );
 
-query wordidx(Document2, 0);
-query wordidx(Document2, 1);
-query wordidx(Document2, 2);
+query wordidx(Document[1], 0);
+query wordidx(Document[1], 1);
+query wordidx(Document[1], 2);
 
 random String word(Document d, Integer i) {
     = Dictionary( wordidx(d, i) )
 };
 
-query word(Document2, 0);
-query word(Document2, 1);
-query word(Document2, 2);
-query word(Document2, 3);
+query word(Document[1], 0);
+query word(Document[1], 1);
+query word(Document[1], 2);
+query word(Document[1], 3);
