@@ -324,7 +324,7 @@ public class Semant {
 					if (sz == 1) {
 						model.addEnumeratedObject(name, type);
 					} else {
-						for (int i = 1; i <= sz; i++) {
+						for (int i = 0; i < sz; i++) {
 							model.addEnumeratedObject(name + "[" + i + "]", type);
 						}
 					}
@@ -1037,12 +1037,20 @@ public class Semant {
 		case OpExpr.SUB:
 			Function func;
 			if (left instanceof SymbolTerm) {
-				Object symbolMapping = model.getFuncsWithName(((SymbolTerm)left).getName()).iterator().next();
-				if (((Function)symbolMapping).getRetType().getName().equals("Array_Real_1")) {
+				if (e.right instanceof IntExpr) {
+					String objectname = ((SymbolTerm) left).getName() + '['
+							+ ((IntExpr) e.right).value + ']';
+					Function object = getFunction(objectname, Collections.EMPTY_LIST);
+					if (object != null)
+						return new FuncAppTerm(object);
+				}
+				Object symbolMapping = model
+						.getFuncsWithName(((SymbolTerm) left).getName()).iterator().next();
+				if (((Function) symbolMapping).getRetType().getName()
+						.equals("Array_Real_1")) {
 					func = (Function) BuiltInFunctions.getFuncsWithName(
 							BuiltInFunctions.SUB_VEC_NAME).get(0);
-				}
-				else {
+				} else {
 					func = (Function) BuiltInFunctions.getFuncsWithName(
 							BuiltInFunctions.SUB_MAT_NAME).get(0);
 				}
