@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.*;
@@ -40,8 +41,9 @@ import blog.world.PartialWorld;
  */
 public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 
+	public BufferedReader in;
 	public InputStream eviInputStream;
-	public OutputStream eviOutputStream;
+	public PrintStream eviOutputStream;
 	public ParticleFilterRunnerOnGenerator(Model model, Collection linkStrings,
 			Collection queryStrings, Properties particleFilterProperties) {
 		super(model, particleFilterProperties);
@@ -54,6 +56,9 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		
 		eviInputStream = System.in;
 		eviOutputStream = System.out;
+
+		in = new BufferedReader(new InputStreamReader(eviInputStream));
+		
 	}
 
 	private UnaryProcedure afterMoveForward = new UnaryProcedure() {
@@ -107,9 +112,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 	 * for current time step.
 	 */
 	public Evidence getEvidence() {
-		InputStreamReader converter = new InputStreamReader(eviInputStream);
-		BufferedReader in = new BufferedReader(converter);
-		
+
 		Evidence evidence = new Evidence();
 		String evistr = "";
 		
@@ -176,7 +179,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 
 			System.out.println("PF estimate of " + query + ":");
-			query.printResults(System.out);
+			query.printResults(eviOutputStream);
 		}
 	}
 
@@ -232,14 +235,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		boolean randomize = true;
-
-		// // DBN
-		// String modelFile = "examples/aircraft-wandering-DBN.mblog";
-		// Collection linkStrings = Util.list("#{Blip r: Time(r) = t}");
-		// Collection queryStrings =
-		// Util.list("#{Blip r: Time(r) = t & Source(r) = MyAircraft}");
-
-		// Basic case
+		
 		String modelFile = "example/hmm.dblog";
 		Collection linkStrings = Util.list();
 		Collection queryStrings = Util.list("S(t)");
@@ -248,21 +244,21 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		Model model = new Model();
 		Evidence evidence = new Evidence();
 		ArrayList<Query> queries = new ArrayList<Query>();
-		ArrayList<Object> rao = new ArrayList<Object>();
-		rao.add(new Object[] {new FileReader(modelFile), "blank"});
+		ArrayList<Object> readersAndOrigins = new ArrayList<Object>();
+		readersAndOrigins.add(new Object[] {new FileReader(modelFile), "blank"});
 
 
 
 		
-		Main.setup(model, evidence, queries, rao, new ArrayList(), false, false);
+		Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(), false, false);
 		Util.initRandom(true);
 		new ParticleFilterRunnerOnGenerator(model,
 				linkStrings, queryStrings, properties).run();
 		
 	}
-	private static boolean parseAndTranslateEvidence(Evidence e, Reader reader) {
+	private boolean parseAndTranslateEvidence(Evidence e, Reader reader) {
 		Parse parse = new Parse(reader, null);
-		Semant sem = new Semant(null, e, null, new ErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
+		Semant sem = new Semant(model, e, new ArrayList<Query>(), new ErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
 		sem.transProg(parse.getParseResult());
 		return true;
 	}
