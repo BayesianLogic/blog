@@ -1,15 +1,15 @@
  
 fixed Real[][] A = [1, 1, 0.5; 0, 1, 1; 0, 0, 1];
 fixed Real[][] Q = [0.1, 0, 0; 0, 0.1, 0; 0, 0, 0.1];
-fixed Real[][] C = [1, 0, 0];
-fixed Real[][] mu0 = [0; 1; 1]; 
-random Real[][] state(Timestep t) {
+fixed Real[] C = [1, 0, 0];
+fixed Real[] mu0 = [0; 1; 1]; 
+random Real[] state(Timestep t) {
 	if t == @0 then ~ MultivarGaussian(mu0, Q)
 	else ~ MultivarGaussian(A * state(Prev(t)), Q)
 };
 
-fixed Real[][] R = [0.1];
-random Real[][] location(Timestep t) 
+fixed Real[] R = [0.1];
+random Real[] location(Timestep t) 
   ~ MultivarGaussian(C * state(t), R);
 
 obs location(@0) = [0];
