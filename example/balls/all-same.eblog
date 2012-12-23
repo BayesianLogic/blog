@@ -1,13 +1,13 @@
 /* Evidence file asserting that all the drawn balls appeared blue.
  */
 
-obs ObsColor(Draw1) = Blue;
-obs ObsColor(Draw2) = Blue;
-obs ObsColor(Draw3) = Blue;
-obs ObsColor(Draw4) = Blue;
-obs ObsColor(Draw5) = Blue;
-obs ObsColor(Draw6) = Blue;
-obs ObsColor(Draw7) = Blue;
-obs ObsColor(Draw8) = Blue;
-obs ObsColor(Draw9) = Blue;
-obs ObsColor(Draw10) = Blue;
+obs ObsColor(Draw[0]) = Blue;
+obs ObsColor(Draw[1]) = Blue;
+obs ObsColor(Draw[2]) = Blue;
+obs ObsColor(Draw[3]) = Blue;
+obs ObsColor(Draw[4]) = Blue;
+obs ObsColor(Draw[5]) = Blue;
+obs ObsColor(Draw[6]) = Blue;
+obs ObsColor(Draw[7]) = Blue;
+obs ObsColor(Draw[8]) = Blue;
+obs ObsColor(Draw[9]) = Blue;
