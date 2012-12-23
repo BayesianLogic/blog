@@ -325,7 +325,7 @@ public class Semant {
 						model.addEnumeratedObject(name, type);
 					} else {
 						for (int i = 1; i <= sz; i++) {
-							model.addEnumeratedObject(name + i, type);
+							model.addEnumeratedObject(name + "[" + i + "]", type);
 						}
 					}
 			}
