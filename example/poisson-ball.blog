@@ -26,16 +26,16 @@ random Color ObsColor(Draw d) {
  * draws and green on half the draws.
  */
 
-obs ObsColor(Draw1) = Blue;
-obs ObsColor(Draw2) = Green;
-obs ObsColor(Draw3) = Blue;
-obs ObsColor(Draw4) = Green;
-obs ObsColor(Draw5) = Blue;
-obs ObsColor(Draw6) = Green;
-obs ObsColor(Draw7) = Blue;
-obs ObsColor(Draw8) = Green;
-obs ObsColor(Draw9) = Blue;
-obs ObsColor(Draw10) = Green;
+obs ObsColor(Draw[1]) = Blue;
+obs ObsColor(Draw[2]) = Green;
+obs ObsColor(Draw[3]) = Blue;
+obs ObsColor(Draw[4]) = Green;
+obs ObsColor(Draw[5]) = Blue;
+obs ObsColor(Draw[6]) = Green;
+obs ObsColor(Draw[7]) = Blue;
+obs ObsColor(Draw[8]) = Green;
+obs ObsColor(Draw[9]) = Blue;
+obs ObsColor(Draw[10]) = Green;
 
 /* Query file asking for the total number of balls in the urn.
  */
