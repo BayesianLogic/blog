@@ -5,10 +5,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
+import java.util.Set;
 
 import junit.framework.TestCase;
 import blog.BLOGUtil;
 import blog.Main;
+import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.Util;
 import blog.engine.ParticleFilter;
@@ -18,6 +20,7 @@ import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.model.Query;
+import blog.model.ValueEvidenceStatement;
 
 
 import java.io.*;
@@ -30,7 +33,7 @@ import java.io.*;
 public class OnlineParticleFilterTest extends TestCase {
 
 	// Configuration:
-	private double delta = 0.05; // the allowed difference between
+	private double delta = 0.15; // the allowed difference between
 																// expected and computed values
 
 	public static void main(String[] args) throws Exception {
@@ -39,7 +42,7 @@ public class OnlineParticleFilterTest extends TestCase {
 	 
 	    PrintStream out = new PrintStream(pout);
 	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
-	 
+	 /*
 	    System.out.println("Writing to output stream...");
 	    out.println("Hello World!");
 	    out.flush();
@@ -50,10 +53,12 @@ public class OnlineParticleFilterTest extends TestCase {
 	    System.out.println("Text written: " + in.readLine());
 	    
 	    System.out.println("Text written: " + in.readLine());
-	    
-		//junit.textui.TestRunner.run(OnlineParticleFilterTest.class);
-	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
-	    x.test1();
+	    */
+		junit.textui.TestRunner.run(OnlineParticleFilterTest.class);
+	    //OnlineParticleFilterTest x = new OnlineParticleFilterTest();
+	    //x.testCalculation();
+	    //x.test_getEvidence();
+	    //x.test_getQuery1();
 	}
 
 	/** Sets particle filter properties to default values before every test. */
@@ -69,6 +74,43 @@ public class OnlineParticleFilterTest extends TestCase {
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 	}
+
+	private static final String burglaryModelString =
+			"type House;"
+		  +	"distinct House h1, h2, h3;"
+		  +	"random Boolean Burglary(House h, Timestep t) {"
+		  + "if (t == @0) then"
+		  + 	"~ Bernoulli(0.1)"
+		  +	"else if (Burglary(h, Prev(t)) & true) then"
+		  +  	"~ Bernoulli(0.001)"
+		  + "else"
+		  +  	"~ Bernoulli(0.12)"
+		  + "};"
+
+		  +	"random Boolean Earthquake(Timestep t) {"
+		  +		"if (t == @0) then"
+		  +			"~ Bernoulli(0.2)"
+		  +		"else if (Earthquake(Prev(t)) & true) then"
+		  + 		"~ Bernoulli(0.3)"
+		  +		"else"
+		  + 		"~ Bernoulli(0.1)"
+		  +		"};"
+		  +	"random Boolean Alarm(House h, Timestep t) {~ TabularCPD("
+		  +		"{[true, true] -> ~ Bernoulli(0.95),"
+		  +		"[true, false] -> ~ Bernoulli(0.94),"
+		  +		"[false, true] -> ~ Bernoulli(0.29),"
+		  +		"[false, false] -> ~ Bernoulli(0.001)},"
+		  +		"[Burglary(h, t), Earthquake(t)])"
+		  +	"};"
+
+		  + "random Boolean JohnCalls(House h, Timestep t) {~ TabularCPD({true -> ~ Bernoulli(0.9),"
+		  +		"false -> ~ Bernoulli(0.05)}, Alarm(h, t))};"
+
+		  + "random Boolean MaryCalls(House h, Timestep t) {~ TabularCPD({true -> ~ Bernoulli(0.7),"
+		  +		"false -> ~ Bernoulli(0.01)}, Alarm(h, t))};"
+		  + "random House foo (Timestep t){"
+		  + 	"~ UniformChoice({House h})"
+		  +	"};";
 
 	private static final String hmmModelString = 
 			"type State;"
@@ -98,16 +140,16 @@ public class OnlineParticleFilterTest extends TestCase {
 		+	"     S(t));";
 	
 
-	public void test1() throws Exception {
+	public void testCalculation() throws Exception {
 		Properties properties = new Properties();
-		properties.setProperty("numParticles", "5000");
+		properties.setProperty("numParticles", "10000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		boolean randomize = true;
 		Collection linkStrings = Util.list();
 		Collection queryStrings = Util.list("S(t)");
-
-		Util.initRandom(true);
+		
+		Util.initRandom(false);
 		
 		///
 	    PipedInputStream pin = new PipedInputStream();
@@ -122,16 +164,24 @@ public class OnlineParticleFilterTest extends TestCase {
 	    
 	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
 
+	    out.println("obs O(@0) = ResultC;");
+	    runner.moveOn();
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.07193351165456906, 0.07193351165456906*delta);
+	    out.println("obs O(@1) = ResultA;");
+	    runner.moveOn();
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.8673596826330409, 0.8673596826330409*delta);
+	    out.println("obs O(@2) = ResultA;");
+	    runner.moveOn();
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "T"), 0.09414839367669668, 0.09414839367669668*delta);
+	    out.println("obs O(@3) = ResultA;");
+	    runner.moveOn();
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "G"), 0.08214118198875539, 0.08214118198875539*delta);
+	    out.println("obs O(@4) = ResultG;");
+	    runner.moveOn();
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.027222704894296935, 0.027222704894296935*delta);
 	    out.println(" ");
-	    out.println(" ");
-	    out.println(" ");
-	    out.println(" ");
-	    out.println(" ");
-	    out.println(" ");
-	    out.flush();
-	    runner.run();
-		
-		
+	    runner.moveOn();
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "C"), 0.26617348418917625, 0.26617348418917625*delta);
 	}
 
 	private void setModel(String newModelString) throws Exception {
@@ -139,6 +189,113 @@ public class OnlineParticleFilterTest extends TestCase {
 		Evidence evidence = new Evidence();
 		LinkedList queries = new LinkedList();
 		Main.stringSetup(model, evidence, queries, newModelString);
+	}
+	
+	public void test_getEvidence() throws Exception {
+		Properties properties = new Properties();
+		properties.setProperty("numParticles", "1000");
+		properties.setProperty("useDecayedMCMC", "false");
+		properties.setProperty("numMoves", "1");
+		boolean randomize = true;
+		Collection linkStrings = Util.list();
+		Collection queryStrings = Util.list();
+
+		Util.initRandom(true);
+
+	    PipedInputStream pin = new PipedInputStream();
+	    PipedOutputStream pout = new PipedOutputStream(pin);
+	 
+	    PrintStream out = new PrintStream(pout);
+	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
+	    setModel(burglaryModelString);
+	    ParticleFilterRunnerOnGenerator runner = new ParticleFilterRunnerOnGenerator(model, linkStrings, queryStrings, properties);
+	    runner.eviInputStream = pin;
+	    runner.in = new BufferedReader(new InputStreamReader(pin));
+	    
+	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
+
+	    out.println("obs JohnCalls(h1, @0) = true;obs MaryCalls(h2, @0) = true;"); //multiple evidences case
+	    Evidence e = runner.getEvidence();
+	    assertEquals(e.toString(), "[JohnCalls(h1, @0) = true, MaryCalls(h2, @0) = true]");
+	    
+	    out.println("obs JohnCalls(h1, @0) = true;obs MaryCalls(foo(@0), @0) = true;"); //now move on, note that getEvidence "consumed" 
+	    runner.moveOn();																//the previous println to out, so i must println again
+	    
+	    
+	    out.println("obs Alarm(h2,@1) = true;"); //simple case
+	    e = runner.getEvidence();
+	    assertTrue(e.getValueEvidence().toArray()[0] instanceof ValueEvidenceStatement);
+	    assertEquals(e.toString(), "[Alarm(h2, @1) = true]");
+	    assertEquals(e.getValueEvidence().toArray()[0].toString(), "Alarm(h2, @1) = true");
+
+	    out.println("obs Burglary(foo(@0),@1) = true;"); //derived variables case
+	    e = runner.getEvidence();
+	    assertEquals(e.toString(),"[/*DerivedVar*/ Burglary(foo(@0), @1) = true]");
+	    ValueEvidenceStatement v = (ValueEvidenceStatement) Util.getFirst(e.getValueEvidence());
+	    assertEquals(v.toString(),"/*DerivedVar*/ Burglary(foo(@0), @1) = true");
+	    
+	    out.println("obs foo(@2) = h3; obs Earthquake(@2) = true;"); //checking if compiled
+	    e = runner.getEvidence();
+	    v = (ValueEvidenceStatement) Util.getFirst(e.getValueEvidence());
+	    java.lang.reflect.Field iscompiled = ValueEvidenceStatement.class.getDeclaredField("compiled");
+	    iscompiled.setAccessible(true);
+	    Boolean truthvalue = (Boolean) iscompiled.get(v);
+	    assertTrue(truthvalue.booleanValue());
+	    
+	    v = (ValueEvidenceStatement) Util.getLast(e.getValueEvidence());
+	    iscompiled = ValueEvidenceStatement.class.getDeclaredField("compiled");
+	    iscompiled.setAccessible(true);
+	    truthvalue = (Boolean) iscompiled.get(v);
+	    assertTrue(truthvalue.booleanValue());
+	}
+
+
+	public void test_getQuery1() throws Exception {
+		Properties properties = new Properties();
+		properties.setProperty("numParticles", "1000");
+		properties.setProperty("useDecayedMCMC", "false");
+		properties.setProperty("numMoves", "1");
+		boolean randomize = true;
+		Collection linkStrings = Util.list();
+		Collection queryStrings = Util.list("Burglary(h1, t)");
+
+		Util.initRandom(true);
+
+	    PipedInputStream pin = new PipedInputStream();
+	    PipedOutputStream pout = new PipedOutputStream(pin);
+	 
+	    PrintStream out = new PrintStream(pout);
+	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
+
+		
+	    ParticleFilterRunnerOnGenerator runner = new ParticleFilterRunnerOnGenerator(model, linkStrings, queryStrings, properties);
+	    runner.eviInputStream = pin;
+	    runner.in = new BufferedReader(new InputStreamReader(pin));
+	    
+	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
+
+	    //assertEquals(e.toString(), "[JohnCalls(h1, @0) = true, MaryCalls(h2, @0) = true]");
+	    
+	    out.println(""); 
+	    runner.moveOn();															
+	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @0)]");
+	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @0)]");
+	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @0)]");//check that calling getQueries() multiple times works
+	    out.println(""); 
+	    runner.moveOn();
+	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @1)]");
+	    out.println(""); 
+	    runner.moveOn();
+	    out.println(""); 
+	    runner.moveOn();
+	    out.println(""); 
+	    runner.moveOn();
+	    out.println(""); 
+	    runner.moveOn();
+	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @5)]");
+	    out.println(""); 
+	    runner.moveOn();
+	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @6)]");
 	}
 
 	private void assertProb(String evidenceAndQuery, String valueString,
@@ -149,21 +306,8 @@ public class OnlineParticleFilterTest extends TestCase {
 		particleFilter.answer(meq.queries);
 		assertEquals(expected, BLOGUtil.getProbabilityByString(
 				getQuery(meq.queries), model, valueString), delta);
-		outputQueries(meq.queries);
 	}
 
-	private void outputQueries(Collection queries) {
-		for (Iterator it = queries.iterator(); it.hasNext();) {
-			ArgSpecQuery query = (ArgSpecQuery) it.next();
-			for (Iterator it2 = query.getHistogram().entrySet().iterator(); it2
-					.hasNext();) {
-				Histogram.Entry entry = (Histogram.Entry) it2.next();
-				double prob = entry.getWeight() / query.getHistogram().getTotalWeight();
-				System.out.println("Prob. of " + query + " = " + entry.getElement()
-						+ " is " + prob);
-			}
-		}
-	}
 
 	/**
 	 * Helper function that gets a collection assumed to contain a single query

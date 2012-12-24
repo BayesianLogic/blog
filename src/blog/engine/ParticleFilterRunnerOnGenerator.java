@@ -95,6 +95,8 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 
 	//Cheng: overrode the moveOn in particleFilterRunner, mainly to gain access to evidenceGenerator
 	public boolean moveOn() {
+		queriesCacheInvalid = true;
+		
 		Evidence evidence;
 		Collection queries;
 		beforeEvidenceAndQueries();
@@ -123,6 +125,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 			e.printStackTrace();
 		}
 		//comment out this entire if clause to actually use the inputstream
+		/*
 		if (evidenceGenerator.lastTimeStep==0){
 			evistr = "obs O(@0) = ResultC;";
 		}
@@ -140,7 +143,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		}
 		else
 			evistr = "";
-		
+		*/
 		parseAndTranslateEvidence(evidence, new StringReader((String) evistr));
 
 		evidence.checkTypesAndScope(model);
@@ -163,6 +166,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 	/**
 	 * Provides the query instantiations according to current time step, for use
 	 * by {@link ParticleFilterRunner}.
+	 * NOTE: this crashes if called before the first call to moveOn()
 	 */
 	public Collection getQueries() {
 		return getQueriesForLatestTimestep();
@@ -212,7 +216,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 	}
 
 	/** The evidence generator . */
-	protected OPFevidenceGenerator evidenceGenerator;
+	public OPFevidenceGenerator evidenceGenerator;
 
 	/** Properties for construction of particle filter. */
 	protected Properties particleFilterProperties;
@@ -231,7 +235,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		Properties properties = new Properties();
-		properties.setProperty("numParticles", "10000");
+		properties.setProperty("numParticles", "1000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		boolean randomize = true;
