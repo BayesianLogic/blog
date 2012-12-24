@@ -36,7 +36,7 @@ def generate_graph(prefix, output):
 """
     
 def run_process(script_name):
-    command = ["./run.sh", "--print", script_name]
+    command = ["./run.sh", "--displaycbn", script_name]
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = p.communicate()[0]
     returncode = p.returncode
