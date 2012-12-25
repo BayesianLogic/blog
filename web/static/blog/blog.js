@@ -32,7 +32,7 @@ $(function() {
       type: "POST",
       data: {textfield : input_string},
       success: function(data) {
-        $('#text_result').text(data).hide().fadeIn(1500);
+        $('#results').html($(data));
       },
     });
     return false;
