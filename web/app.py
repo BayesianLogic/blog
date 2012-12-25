@@ -46,7 +46,7 @@ def execute_script(script):
 
 class blog_web_ui:
     def GET(self):
-        return render.index(example_blog_code, "Your result will appear here.")
+        return render.index(example_blog_code)
 
     def POST(self):
         s = web.input().textfield
