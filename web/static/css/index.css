@@ -1,0 +1,50 @@
+.CodeMirror {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+.chart rect {
+  stroke: white;
+  fill: steelblue;
+}
+
+.bar-container {
+  position:relative;
+  display:inline-block;
+  background-color:#aaa;
+  width:300px
+}
+
+.bar-container:hover .bar{
+  opacity:0.6
+}
+
+.bar-container:hover .bar-text{
+  opacity:1.0
+}
+
+.bar-text{
+  -webkit-transition:opacity 0.3s linear;
+  -moz-transition:opacity 0.3s linear;
+  -o-transition:opacity 0.3s linear;
+  transition:opacity 0.3s linear;
+  position:relative;
+  z-index:1;
+  padding:10px;
+  opacity:0
+}
+
+.bar {
+  background-color: #0066CC;
+  -webkit-transition:opacity 0.3s linear;
+  -moz-transition:opacity 0.3s linear;
+  -o-transition:opacity 0.3s linear;
+  transition:opacity 0.3s linear;
+  position:absolute;
+  left:0;
+  z-index:0;
+}
+
+.bar .bar-text{
+  opacity:0
+}
