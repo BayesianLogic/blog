@@ -2,7 +2,7 @@ import web
 import time
 import os
 import subprocess
-import json
+import re
 
 BLOG_EXTENSION = ".blog"
 USER_STORE = "static/user_query/"
@@ -15,7 +15,7 @@ render = web.template.render('templates/')
 app = web.application(urls, globals())
 
 with open(EXAMPLE_BLOG_PATH) as f:
-  example_blog_code = f.read()
+    example_blog_code = f.read()
 
 def run_process(script_name):
     command = ["./run.sh", "--displaycbn", script_name]
@@ -50,8 +50,39 @@ class blog_web_ui:
 
     def POST(self):
         s = web.input().textfield
-        result = execute_script(s)
-        return result
+        raw_data = execute_script(s)
+        parsed_results = parse_query_results(raw_data)
+        return render.data(raw_data, parsed_results)
+
+def parse_query_results(s):
+    results = []
+    regex = re.compile(r'======== Query Results ========\n(([^=].*\n)*)======== Done ========')
+    for match in regex.finditer(s):
+        lines = match.groups()[0].split('\n')
+        match = re.match('Iteration (\d+):', lines[0])
+        if match:
+            iteration = match.group(1)
+            results.append({
+                'iteration': iteration,
+                'queries': []
+            })
+        for line in lines[1:]:
+            query_match = re.match('Distribution of values for (.*)', line)
+            result_match = re.match(r'\s*([\d\.]+)\s*(\S*)', line)
+            if query_match:
+                query = query_match.group(1)
+                results[-1]['queries'].append({
+                    'query': query,
+                    'distribution': []
+                })
+            elif result_match:
+                probability, value = result_match.groups()
+                results[-1]['queries'][-1]['distribution'].append({
+                    'value': value,
+                    'probability': 100 * float(probability)
+                })
+    return results
+
 
 if __name__ == '__main__':
     app.run()
