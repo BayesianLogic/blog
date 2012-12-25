@@ -15,8 +15,8 @@ distinct Output ResultA, ResultC, ResultG, ResultT;
 
 random State S(Timestep t) {
     if t == @0 then ~ Categorical({A -> 0.3,
-                 C -> 0.2, 
-                 G -> 0.1, 
+                 C -> 0.2,
+                 G -> 0.1,
                  T -> 0.4})
     else ~ TabularCPD(
       {A -> ~ Categorical({A -> 0.1, C -> 0.3, G -> 0.3, T -> 0.3}),
@@ -43,8 +43,8 @@ obs O(@2) = ResultA;
 obs O(@3) = ResultA;
 obs O(@4) = ResultG;
 
-/* Queries for the Hiddem Markov Model, given the evidence.  
- * Note that we can query S(5) even though our observations only 
+/* Queries for the Hiddem Markov Model, given the evidence.
+ * Note that we can query S(5) even though our observations only
  * went up to time 4.
  */
 

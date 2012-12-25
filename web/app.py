@@ -1,47 +1,29 @@
-#from run_examples import BlogParser
-#import pygraphviz as pgv
-#import pygraph
 import web
 import time
 import os
 import subprocess
-import json
+import re
 
 BLOG_EXTENSION = ".blog"
 USER_STORE = "static/user_query/"
 DEFAULT_GRAPH = "static/images/BerkeleyLogo.png"
+EXAMPLE_BLOG_PATH = 'example.blog'
 
 urls = ('/', 'blog_web_ui')
 render = web.template.render('templates/')
 
 app = web.application(urls, globals())
 
-my_form = web.form.Form(
-                web.form.Textbox('', class_='code', id='code', cols="25", rows="23"),
-                )
-"""
-def generate_graph(prefix, output):
-    IMAGE_EXTENSION = ".png"
-    blog_parser = BlogParser()
-    graph, data = blog_parser.parse_blog_output(output)
-    if graph is not None:
-        dot = pygraph.readwrite.dot.write(graph)
-        G = pgv.AGraph(dot)
-        G.layout(prog="dot")
-        cbn_name = prefix + IMAGE_EXTENSION
-        G.draw(cbn_name)
-        
-        return cbn_name
-    return DEFAULT_GRAPH
-"""
-    
+with open(EXAMPLE_BLOG_PATH) as f:
+    example_blog_code = f.read()
+
 def run_process(script_name):
     command = ["./run.sh", "--displaycbn", script_name]
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = p.communicate()[0]
     returncode = p.returncode
     return output, returncode
- 
+
 def store_script(prefix, script):
     #Write input into local file
     script_name = prefix+BLOG_EXTENSION
@@ -49,42 +31,58 @@ def store_script(prefix, script):
     input_handler.write(script)
     input_handler.close()
     return script_name
-        
+
 def execute_script(script):
-    #Define name of the script 
+    #Define name of the script
     current = str(time.time())
     filename = "tmp_%s" % current
-    
+
     prefix = USER_STORE + filename
-    
+
     script_name = store_script(prefix, script)
     output, returncode = run_process(script_name)
-    
-    #graph = DEFAULT_GRAPH
-    #if returncode == 0:
-    #    graph = generate_graph(prefix, output)
-    
-    #Run commandline Blog on the file and return output
-    #return json.dumps({'text_result': text_to_html(output)})
-    return output
-    
-# A ad hoc text to html converter
-# Should use other library if output include special symbol
-def text_to_html(text):
-    return text.replace("\n", "<br/>")
 
+    return output
 
 class blog_web_ui:
     def GET(self):
-        form = my_form()
-        return render.index(form, "Your result will appear here.")
-        
-    def POST(self):     
+        return render.index(example_blog_code)
+
+    def POST(self):
         s = web.input().textfield
-        result = execute_script(s)
-        #print "Return length:", len(result)
-        #return result[-1000:]
-        return result
+        raw_data = execute_script(s)
+        parsed_results = parse_query_results(raw_data)
+        return render.data(raw_data, parsed_results)
+
+def parse_query_results(s):
+    results = []
+    regex = re.compile(r'======== Query Results ========\n(([^=].*\n)*)======== Done ========')
+    for match in regex.finditer(s):
+        lines = match.groups()[0].split('\n')
+        match = re.match('Iteration (\d+):', lines[0])
+        if match:
+            iteration = match.group(1)
+            results.append({
+                'iteration': iteration,
+                'queries': []
+            })
+        for line in lines[1:]:
+            query_match = re.match('Distribution of values for (.*)', line)
+            result_match = re.match(r'\s*([\d\.]+)\s*(\S*)', line)
+            if query_match:
+                query = query_match.group(1)
+                results[-1]['queries'].append({
+                    'query': query,
+                    'distribution': []
+                })
+            elif result_match:
+                probability, value = result_match.groups()
+                results[-1]['queries'][-1]['distribution'].append({
+                    'value': value,
+                    'probability': 100 * float(probability)
+                })
+    return results
+
 
 if __name__ == '__main__':
     app.run()
