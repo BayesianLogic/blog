@@ -1,123 +1,35 @@
-$def with (form, text)
+$def with (example_blog_code, text)
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-	    <meta charset="utf-8">
-	    <title>Bayesian Logic BLOG Interactive Console</title>
-	    <link rel="stylesheet" type="text/css" href="static/codemirror.css">
-	    <script type="text/javascript" src="/static/codemirror.js"></script>
-	    <script type="text/javascript" src="/static/blog/blog.js"></script>
-	    <style type="text/css">.CodeMirror {border-top: 1px solid black; border-bottom: 1px solid black;}</style>
-	  	<script type="text/javascript" src="/static/jquery.js"></script>
-	    <script type="text/javascript">
-	        jQuery(document).ready(function() {
-	        jQuery(".button").click(function() {
-	                //var input_string = $$("input#code").val();
-	                //alert("Asdkfljas");
-	               	//var input_string = get_editor_string();
-	                var input_string = editor.getValue();
-	                //alert(editor.mirror.getValue('\n'));
-	                //var input_string = jQuery('#textfield').getValue();
-	                jQuery.ajax({
-						type: "POST",
-						data: {textfield : input_string},
-						success: function(data) {
-							//var jsonData = jQuery.parseJSON(data);
-							//jQuery('#text_result').html(jsonData.text_result).hide().fadeIn(1500);
-							//jQuery('#text_result').html(data).hide().fadeIn(1500);
-							jQuery('#text_result').text(data).hide().fadeIn(1500);
-							//jQuery('#graph_result').attr('src', jsonData.graph_result).hide().fadeIn(1500);
-						},
-						});
-	                return false;
-	                });
-	        });
-	   </script>
-	</head>
+  <head>
+    <meta charset="utf-8">
+    <title>Bayesian Logic BLOG Interactive Console</title>
+    <link rel="stylesheet" type="text/css" href="static/codemirror.css"/>
+    <script type="text/javascript" src="/static/jquery.js"></script>
+    <script type="text/javascript" src="/static/codemirror.js"></script>
+    <script type="text/javascript" src="/static/blog/blog.js"></script>
+    <style type="text/css">.CodeMirror {border-top: 1px solid black; border-bottom: 1px solid black;}</style>
+  </head>
   <body>
     <h1>
-    	<img src="/static/images/BerkeleyLogo.png" align="middle" alt="BerkelyLogo" />
-    	Bayesian Logic BLOG - (Alpha testing)
+      <img src="/static/images/BerkeleyLogo.png" align="middle" alt="BerkelyLogo" />
+      Bayesian Logic BLOG - (Alpha testing)
     </h1>
-	<h2>Presented by University of California, Berkeley, Professor Stuart Russell's Research Group.</h2>
-	<form class="form" method="post">
-		<textarea id="textfield" name="code">// Please construct your BLOG model, observation and query here.
-
-// This is an example of a hidden Markov model with four states
-
-/* A hidden Markov model with four states and four output symbols.
- * The parameters of this model are completely made-up.
- * DBLOG model
- */
-
-type State;
-distinct State A, C, G, T;
-
-type Output;
-distinct Output ResultA, ResultC, ResultG, ResultT;
-
-random State S(Timestep t) {
-    if t == @0 then ~ Categorical({A -> 0.3,
-                 C -> 0.2, 
-                 G -> 0.1, 
-                 T -> 0.4})
-    else ~ TabularCPD(
-      {A -> ~ Categorical({A -> 0.1, C -> 0.3, G -> 0.3, T -> 0.3}),
-       C -> ~ Categorical({A -> 0.3, C -> 0.1, G -> 0.3, T -> 0.3}),
-       G -> ~ Categorical({A -> 0.3, C -> 0.3, G -> 0.1, T -> 0.3}),
-       T -> ~ Categorical({A -> 0.3, C -> 0.3, G -> 0.3, T -> 0.1})},
-      S(Prev(t)))
-};
-
-random Output O(Timestep t)
-   ~ TabularCPD(
-     {A -> ~ Categorical({ResultA -> 0.85, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.05}),
-      C -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.85, ResultG -> 0.05, ResultT -> 0.05}),
-      G -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.85, ResultT -> 0.05}),
-      T -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.85})},
-     S(t));
-
-/* Evidence for the Hidden Markov Model.
- */
-
-obs O(@0) = ResultC;
-obs O(@1) = ResultA;
-obs O(@2) = ResultA;
-obs O(@3) = ResultA;
-obs O(@4) = ResultG;
-
-/* Queries for the Hiddem Markov Model, given the evidence.  
- * Note that we can query S(5) even though our observations only 
- * went up to time 4.
- */
-
-query S(@0);
-query S(@1);
-query S(@2);
-query S(@3);
-query S(@4);
-query S(@5);
-</textarea>
-		<input class="button" type="submit" value="Submit"/>
-	</form>
-    <script>
-      var editor = CodeMirror.fromTextArea(document.getElementById("textfield"), {
-        lineNumbers: true,
-        matchBrackets: true
-      });
-    </script>
+    <h2>Presented by University of California, Berkeley, Professor Stuart Russell's Research Group.</h2>
+    <form class="form" method="post">
+      <textarea id="textfield" name="code">$(example_blog_code)</textarea>
+      <input class="button" type="submit" value="Submit"/>
+    </form>
     <p>
-		BLOG interactive console is currently maintain by Cheng Lai Victor Huang (huangchenglai AT berkeley.edu) <br/>
-		It is currently hosted on personal computer for demonstration purpose. <br/>
-		Graph of the submitted BLOG model and histogram will be display in the soon future.
+    BLOG interactive console is currently maintain by Cheng Lai Victor Huang (huangchenglai AT berkeley.edu) <br/>
+    It is currently hosted on personal computer for demonstration purpose. <br/>
+    Graph of the submitted BLOG model and histogram will be display in the soon future.
     </p>
-	<h3>
-		Your submission result (It might takes up to 10 secs):
-	</h3>
-	
-	<textarea id="text_result" readonly="true" rows="300" style="width:100%">$text</textarea>	
-
+    <h3>
+      Your submission result (It might takes up to 10 secs):
+    </h3>
+    <textarea id="text_result" readonly="true" rows="300" style="width:100%">$text</textarea>
   </body>
 </html>
