@@ -1,0 +1,35 @@
+$def with(raw_data, parsed_data)
+$for iteration in parsed_data:
+  <table>
+    <thead>
+      <tr>
+        <th colspan="2">
+          Iteration $(iteration['iteration'])
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      $for query in iteration['queries']:
+      <tr>
+        <td colspan="2">
+          $query['query']
+        </td>
+      </tr>
+      $for entry in query['distribution']:
+        <tr>
+          <td>
+            $entry['value']
+          </td>
+          <td>
+            <span class="bar-container">
+              <span class="bar-text">$(entry['probability'])</span>
+              <span class="bar" style="width: $(entry['probability'])%;">&nbsp;</span>
+            </span>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+<pre>
+$(raw_data)
+</pre>
