@@ -86,7 +86,7 @@ random Boolean pass(Timestep t){
 
 
 random String actionName(Timestep t){
-  if (true & exists Box b exists Truck tr (true & applied_Load(b,tr,t))) then
+  if (true & exists Box b exists Truck tr (applied_Load(b,tr,t) & true)) then
     ="load"
   else if (true & exists Box b exists Truck tr (true & applied_Unload(b,tr,t))) then
     ="unload"
