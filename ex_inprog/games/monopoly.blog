@@ -1,227 +1,203 @@
-
 /** Possible worlds simulate plays of Monopoly. 
  ** See monopoly.eblog for possible observations and queries. **
  ** author siddharth srivastava **/
 
+// Number of properties on the board
+fixed Integer NumSquares = 40; 
+// Number of timesteps for which to simulate
+fixed Integer MaxTime=250; 
 
-nonrandom NaturalNum NumSquares = 40; // Number of properties on the board
-nonrandom NaturalNum MaxTime=250; // Number of timesteps for which to simulate
+random Integer NumPlayers ~ Poisson(6);
 
-random NaturalNum NumPlayers~Poisson[6]();
-random Boolean applied_move(NaturalNum, NaturalNum);
-random Boolean applied_throwDice(NaturalNum, NaturalNum);
-random Boolean applied_advanceTurn(NaturalNum);
-random Boolean applied_purchase(NaturalNum, NaturalNum, NaturalNum);
-random Boolean applied_payRent(NaturalNum, NaturalNum, NaturalNum);
-
-random Boolean axnApplied(NaturalNum);
-random Boolean axnsUntil(NaturalNum);
-
-random NaturalNum playerAt(NaturalNum, NaturalNum);
-random NaturalNum diceVal1(NaturalNum);
-random NaturalNum diceVal2(NaturalNum);
-random NaturalNum whosTurn(NaturalNum);
-random Boolean obligationsDone(NaturalNum);
-random NaturalNum timeOfLastTurnAdvance(NaturalNum);
-random NaturalNum sub(NaturalNum, NaturalNum);
-random Integer capital(NaturalNum, NaturalNum);
-random NaturalNum propertyOwner(NaturalNum, NaturalNum);
-random NaturalNum rentDue(NaturalNum, NaturalNum, NaturalNum);
-random NaturalNum rentPayerFor(NaturalNum, NaturalNum);
-random NaturalNum propertyValue(NaturalNum);
-random NaturalNum propertyRent(NaturalNum);
-random NaturalNum numberRentsPaid(NaturalNum, NaturalNum);
-random NaturalNum numberRentsObtained(NaturalNum, NaturalNum);
-
-//Replace with another property value function
-propertyValue(sq) = 5;
-propertyRent(sq) = 5;
-
-numberRentsPaid(player, t){
-	if t = 0 then = 0
-	elseif exists NaturalNum owner (owner < NumPlayers & applied_payRent(player, owner, Pred(t))) 
-	       then = Succ(numberRentsPaid(player, Pred(t)))
-	else = numberRentsPaid(player, Pred(t))
-};
-
-numberRentsObtained(player, t){
-	if t = 0 then = 0
-	elseif exists NaturalNum renter (renter < NumPlayers & applied_payRent(renter, player, Pred(t))) 
-	       then = Succ(numberRentsObtained(player, Pred(t)))
-	else = numberRentsObtained(player, Pred(t))
-};
-
-
-rentDue(currentPlayer, owner, t){
-//Rent is not due if t=0 or if already paid this turn. It is equal to the property value if
-//not already paid. 
-		if t=0 then = 0
-		elseif applied_payRent(currentPlayer, owner, Pred(t)) then = 0
-		elseif exists NaturalNum tstep (timeOfLastTurnAdvance(t) < tstep) &
-		     (tstep < t) & applied_payRent(currentPlayer, owner, tstep) then = 0		
-		elseif whosTurn(t) = currentPlayer & propertyOwner(playerAt(currentPlayer, Pred(t)), Pred(t)) = owner & 
-		       owner!=currentPlayer then = propertyRent(playerAt(currentPlayer, Pred(t)))
-		else=rentDue(currentPlayer, owner, Pred(t))
-};
-
-
-
-
-propertyOwner(propertyNum, t) {
-//Set to NumPlayers (meaning not owned by any player) by default
-//Changed by purchase action. Auctioning of property not modeled.
-		  if t=0 then = NumPlayers
-		  elseif (exists NaturalNum p p<NumPlayers & whosTurn(Pred(t)) = p & applied_purchase(p, propertyNum, Pred(t))) then ~Iota({NaturalNum p: p<NumPlayers & whosTurn(Pred(t)) = p & applied_purchase(p, propertyNum, Pred(t))})
-		  else = propertyOwner(propertyNum, Pred(t))
-};
-
-timeOfLastTurnAdvance(t) {
-//Gets the timestep at which this turn started.
-//Used to determine if the required actions for the turn have been executed, rent has been paid etc.
-        if t = 0 then = 0
-	elseif applied_advanceTurn(Pred(t)) then = Pred(t)
-	else = timeOfLastTurnAdvance(Pred(t))
-};
-
-obligationsDone(t) {
-//In every turn, throwing dice and moving according to them must take place.
-//If a player lands on another's property, rentDues must be made 0.
-//Turn is allowed to change only if all these obligations are done.
-		   if t = 0 then = false
-		   elseif applied_advanceTurn(Pred(t)) then = false
-		   elseif exists NaturalNum tstep (timeOfLastTurnAdvance(t) < tstep) &
-		     (tstep < t) & (exists NaturalNum p p<NumPlayers & whosTurn(t)=p & applied_throwDice(p,tstep)) &
-		     exists NaturalNum tstep (timeOfLastTurnAdvance(t) < tstep) &
-		     (tstep < t) & (exists NaturalNum p p<NumPlayers & whosTurn(t)=p & applied_move(p,tstep)) 
-		     then = 
-		      forall NaturalNum p ( (p<NumPlayers & whosTurn(t)=p) ->
-		       	 (forall NaturalNum owner (owner<NumPlayers & owner!=p) -> (rentDue(p,owner,t) = 0)))
-};
-
-
-whosTurn(t){
-//Gets the player who's turn this is.
-//Implements +1 mod NumPlayers
-	if t = 0 then = 0
-	elseif t=1 then =0
-	elseif applied_advanceTurn(Pred(t)) & (whosTurn(Pred(t))=Pred(NumPlayers)) then = 0
-	elseif applied_advanceTurn(Pred(t)) then = Succ(whosTurn(Pred(t)))
-	else = whosTurn(Pred(t))
-};
-
-
-playerAt(p, t){
-//player p's position at timestep t
-	     if t = 0 then = 0
-	     elseif p = whosTurn(Pred(t)) & applied_move(p,Pred(t)) 
-	     	    then ~ AddModN[](playerAt(p, Pred(t)),diceVal1(Pred(t)), diceVal2(Pred(t)), NumSquares)
-	     else = playerAt(p, Pred(t))
-};
-
-diceVal1(t) {
-//Value of the dice1. Set to a new value if throwDice occured at previous timestep.
- 	    if t=0 then =0
- 	    elseif exists NaturalNum p (p< NumPlayers & p = whosTurn(Pred(t)) 
-	    	   & applied_throwDice(p, Pred(t))) then ~UniformInt[1,6]()
- 	    else = diceVal1(Pred(t))
-};
-
-diceVal2(t) {
-//Similar to diceVal1
- 	    if t=0 then =0
- 	    elseif exists NaturalNum p (p<NumPlayers & p = whosTurn(Pred(t)) & 
-	    	   applied_throwDice(p, Pred(t))) then ~UniformInt[1,6]()
- 	    else = diceVal2(Pred(t))
-};
-
-
-
-sub(n1, n2){
-	     ~ Subtract[](n1,n2)
-};
-
-
-rentPayerFor(player, t){
-//Use Iota function to extract rent. Needed to determine capital of a player if 
-//another player paid it rent. (See capital(player, t))
-          ~ Iota({NaturalNum renter: renter<NumPlayers & applied_payRent(renter, player, t)})
-};
-
-capital(player, t){
-		if t=0 then =500
-		elseif exists NaturalNum prop prop<NumSquares & applied_purchase(player, prop, Pred(t)) 
-		       then = Diff(capital(player, Pred(t)), propertyValue(playerAt(player, Pred(t))))
-		elseif exists NaturalNum renter (renter<NumPlayers & applied_payRent(renter, player, Pred(t)))
-		       then = Sum(capital(player, Pred(t)), 
-		       	      rentDue(rentPayerFor(player, Pred(t)), player, Pred(t)))
-			      //Need to use rentPayerFor(..) because existentially bound variables under the "if... "
-			      //do not retain their bindings for the "then..."
-		
-		// elseif exists NaturalNum owner (owner<NumPlayers & rentDue(player, owner, Pred(t)) 
-		//        & applied_payRent(player, Pred(t)) )
-		//        	 then = Diff(capital(player, Pred(t)), rentDue(player, owner, Pred(t)))
-		// doesn't work because scope doesn't extend beyond "if.."
-
-		elseif exists NaturalNum owner owner<NumPlayers & applied_payRent(player, owner, Pred(t))
-		       then = Diff(capital(player, Pred(t)), propertyRent(playerAt(player, Pred(t))))
-		else = capital(player, Pred(t))
-};
-
-
-//precons for axn application at t need to talk about conditions at t itself
-applied_purchase(player, propertyNum, t){
-//If on an unowned property, can purchase it
-           if obligationsDone(t) & playerAt(player, t) = propertyNum & (whosTurn(t) = player) & 
-	      propertyOwner(propertyNum, t) = NumPlayers then //= true
-	      ~Bernoulli[0.5]()
-	      //Note: This is 50% likely over all rand generations, not for this player alone
-	   else = false
-};
-
-applied_payRent(p, owner, t){
-//Must pay rent if it is due and there is sufficient capital
-          if t = 0 then = false
-	  elseif  rentDue(p, owner, t) < capital(p, t) 
-	  	 & rentDue(p, owner, t)>0
-	  	 then = true
-	  else = false
-};
-
-applied_throwDice(p,t){
-//Must throw dice if not thrown yet in this turn and it is player p's turn
-	if t=0 then = false
-	elseif exists NaturalNum tstep ((timeOfLastTurnAdvance(t) <tstep) & 
-	   		   (tstep<t) & applied_throwDice(p,tstep)) then = false
-	elseif !whosTurn(t) = p then = false
-	else = true
-};
-
-applied_move(p,t) {
+          
 //Must move if dice was thrown at the previous timestep
-       if t=0 then =false 
-       elseif whosTurn(t) = p & applied_throwDice(p,Pred(t)) then = true
-       else = false
+random Boolean applied_move(Integer p, Timestep t) {
+  if t == 0 then = false 
+  else if whosTurn(t) = p & applied_throwDice(p,Pred(t)) then = true
+  else = false
 };
 
-applied_advanceTurn(t){
+//Must throw dice if not thrown yet in this turn and it is player p's turn
+random Boolean applied_throwDice(Integer p, Timestep t) {
+  if t=0 then = false
+  else if exists Timestep tstep ((timeOfLastTurnAdvance(t) < tstep) & 
+          (tstep<t) & applied_throwDice(p,tstep)) then = false
+  else if !whosTurn(t) = p then = false
+  else = true
+};
+
 //Must advance turn if all obligations are done
+random Boolean applied_advanceTurn(Timestep t) {
 	if t = 0 then = true
-	elseif obligationsDone(t) then = true
+	else if obligationsDone(t) then = true
 	else = false
 };
 
-axnApplied(t){
+//precons for axn application at t need to talk about conditions at t itself
+//If on an unowned property, can purchase it
+random Boolean applied_purchase(Integer player, Integer propertyNum, Timestep t) {
+  if obligationsDone(t) & playerAt(player, t) = propertyNum & 
+     whosTurn(t) = player & 
+	   propertyOwner(propertyNum, t) = NumPlayers 
+     then ~Bernoulli(0.5)
+	      //This is 50% likely over all rand generations, not for this player alone
+   else = false
+};
+  
+random Boolean applied_payRent(Integer p, Integer owner, Timestep t) {
+//Must pay rent if it is due and there is sufficient capital
+  if t = 0 then = false
+  else if  rentDue(p, owner, t) < capital(p, t) 
+  	 & rentDue(p, owner, t)>0
+  	 then = true
+  else = false
+};
+
+
+random Boolean axnApplied(Timestep t) {
 //An action is applied if either of throwDice, advanceTurn, move, payRent, purchase take place
-	= (exists NaturalNum p (p<NumPlayers) & (exists NaturalNum o (o<NumPlayers) & 
+	= (exists Integer p (p<NumPlayers) & (exists Integer o (o<NumPlayers) & 
 	  	  (applied_throwDice(p, t) | applied_move(p, t)| applied_advanceTurn(t) | 
 		  applied_purchase(p, playerAt(p, t), t) | applied_payRent(p, o, t) ))) 
 };
 
-axnsUntil(t){
-	= forall NaturalNum n (n<t -> axnApplied(n))
+random Boolean axnsUntil(Timestep t) {
+	= forall Integer n (n<t -> axnApplied(n))
 };
 
 
+//player p's position at timestep t
+random Integer playerAt(Integer p, Timestep t) {
+  if t = 0 then = 0
+  else if p == whosTurn(Pred(t)) & applied_move(p,Pred(t)) 
+       then ~ AddModN[](playerAt(p, Pred(t)),diceVal1(Pred(t)), diceVal2(Pred(t)), NumSquares)
+  else = playerAt(p, Pred(t))
+};
+
+//Value of the dice1. Set to a new value if throwDice occured at previous timestep.
+random Integer diceVal1(Timestep t) { 
+  if t=0 then =0
+  else if exists Integer p (p< NumPlayers & p = whosTurn(Pred(t)) 
+       & applied_throwDice(p, Pred(t))) then ~UniformInt[1,6]()
+  else = diceVal1(Pred(t))
+};
+
+//Similar to diceVal1
+random Integer diceVal2(Timestep t) {
+  if t == 0 then = 0
+  else if exists Integer p (p<NumPlayers & p = whosTurn(Pred(t)) & 
+          applied_throwDice(p, Pred(t))) then ~UniformInt[1,6]()
+  else = diceVal2(Pred(t))
+};
+
+//Gets the player who's turn this is.
+//Implements +1 mod NumPlayers
+random Integer whosTurn(Timestep t) {
+	if t == 0 then = 0
+	else if t == 1 then =0
+	else if applied_advanceTurn(Pred(t)) & (whosTurn(Pred(t))=Pred(NumPlayers)) 
+    then = 0
+	else if applied_advanceTurn(Pred(t)) 
+    then = Succ(whosTurn(Pred(t)))
+	else = whosTurn(Pred(t))
+};
+
+//In every turn, throwing dice and moving according to them must take place.
+//If a player lands on another's property, rentDues must be made 0.
+//Turn is allowed to change only if all these obligations are done.
+random Boolean obligationsDone(Timestep t) {
+  if t = 0 then = false
+  else if applied_advanceTurn(Pred(t)) then = false
+  else if exists Timestep tstep (timeOfLastTurnAdvance(t) < tstep) &
+          (tstep < t) & (exists Integer p p<NumPlayers & whosTurn(t)=p &
+          applied_throwDice(p,tstep)) &
+          exists Timestep tstep (timeOfLastTurnAdvance(t) < tstep) & (tstep < t) &
+          (exists Integer p p<NumPlayers & whosTurn(t)=p & applied_move(p,tstep)) 
+    then = 
+      forall Integer p ( (p<NumPlayers & whosTurn(t)=p) ->
+        (forall Integer owner (owner<NumPlayers & owner!=p) -> 
+          (rentDue(p,owner,t) = 0)))
+};
+
+//Gets the timestep at which this turn started. Used to determine if the
+//required actions for the turn have been executed, rent has been paid etc.
+random Timestep timeOfLastTurnAdvance(Timestep t) {
+  if t = 0 then = 0
+  else if applied_advanceTurn(Pred(t)) then = Pred(t)
+  else = timeOfLastTurnAdvance(Pred(t))
+};
+
+random Integer sub(Integer n1, Integer n2) {
+  ~ Subtract[](n1,n2)
+};
+
+random Integer capital(Integer player, Timestep t) {
+  if t == 0 then = 500
+  else if exists Integer prop (prop < NumSquares) & 
+          applied_purchase(player, prop, Pred(t)) 
+    then = Diff(capital(player, Pred(t)), propertyValue(playerAt(player, Pred(t))))
+  else if exists Integer renter (renter<NumPlayers & 
+                                 applied_payRent(renter, player, Pred(t)))
+    then = Sum(capital(player, Pred(t)), rentDue(rentPayerFor(player, Pred(t)), player, Pred(t)))
+  //Need to use rentPayerFor(..) because existentially bound variables under the
+  //"if... " do not retain their bindings for the "then..."
+  // else if exists Integer owner (owner<NumPlayers & rentDue(player, owner, Pred(t)) 
+  //        & applied_payRent(player, Pred(t)) )
+  //        	 then = Diff(capital(player, Pred(t)), rentDue(player, owner, Pred(t)))
+  // doesn't work because scope doesn't extend beyond "if.."
+  else if exists Integer owner (owner < NumPlayers) & 
+          applied_payRent(player, owner, Pred(t))
+    then = Diff(capital(player, Pred(t)), propertyRent(playerAt(player, Pred(t))))
+  else = capital(player, Pred(t))
+};
+
+//Set to NumPlayers (meaning not owned by any player) by default
+//Changed by purchase action. Auctioning of property not modeled.
+random Integer propertyOwner(Integer propertyNum, Timestep t) {
+  if t=0 then = NumPlayers
+  else if (exists Integer p (p < NumPlayers) & whosTurn(Pred(t)) = p &
+           applied_purchase(p, propertyNum, Pred(t))) 
+    then ~ Iota({Integer p: p < NumPlayers & whosTurn(Pred(t)) = p & applied_purchase(p, propertyNum, Pred(t))})
+  else = propertyOwner(propertyNum, Pred(t))
+};
+
+//Rent is not due if t=0 or if already paid this turn. It is equal to the
+//property value if not already paid. 
+random Integer rentDue(Integer currentPlayer, Integer owner, Timestep t) {
+  if t == @0 then = 0
+  else if applied_payRent(currentPlayer, owner, Pred(t)) then = 0
+  else if exists Timestep tstep (timeOfLastTurnAdvance(t) < tstep) &
+          (tstep < t) & applied_payRent(currentPlayer, owner, tstep) then = 0		
+  else if whosTurn(t) = currentPlayer & 
+          propertyOwner(playerAt(currentPlayer, Pred(t)), Pred(t)) = owner & 
+          owner!=currentPlayer 
+    then = propertyRent(playerAt(currentPlayer, Pred(t)))
+  else=rentDue(currentPlayer, owner, Pred(t))
+};
+
+//Use Iota function to extract rent. Needed to determine capital of a player if 
+//another player paid it rent. (See capital(player, t))
+random Integer rentPayerFor(Integer player, Timestep t) {
+  ~ Iota({Integer renter: renter<NumPlayers & applied_payRent(renter, player, t)})
+};
+
+//Replace with another property value function
+fixed Integer propertyValue(Integer sq) = 5;
+fixed Integer propertyRent(Integer sq) = 5;
+random Integer numberRentsPaid(Integer player, Timestep t) {
+	if t == @0 then = 0
+	else if exists Integer owner (owner < NumPlayers & 
+                                applied_payRent(player, owner, Pred(t))) 
+    then = Succ(numberRentsPaid(player, Pred(t)))
+	else = numberRentsPaid(player, Pred(t))
+};
+
+random Integer numberRentsObtained(Integer player, Timestep t) {
+	if t = 0 then = 0
+	else if exists Integer renter (renter < NumPlayers & applied_payRent(renter, player, Pred(t))) 
+	       then = Succ(numberRentsObtained(player, Pred(t)))
+	else = numberRentsObtained(player, Pred(t))
+};
 
 //obs LessThan(capital(1, MaxTime), 450) = true;
 
@@ -240,7 +216,8 @@ query NumPlayers;
 
 
 // Query to test if player 2 paid rent at any time in the game
-//query exists NaturalNum t exists NaturalNum o (t<MaxTime & o<NumPlayers & applied_payRent(2,o,t));
+//query exists Timestep t exists Integer o (t<MaxTime & o<NumPlayers & applied_payRent(2,o,t));
 //Doesn't work. (Loop on o & t)
 
-query exists NaturalNum t (t<MaxTime & (exists NaturalNum o o<NumPlayers & applied_payRent(2,o,t)));
+query exists Timestep t (t < MaxTime & (exists Integer o (o < NumPlayers) & 
+                                                         applied_payRent(2,o,t)));
