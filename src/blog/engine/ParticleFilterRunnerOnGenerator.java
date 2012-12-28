@@ -240,9 +240,9 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		properties.setProperty("numMoves", "1");
 		boolean randomize = true;
 		
-		String modelFile = "example/hmm.dblog";
+		String modelFile = "logistics/logistics.mblog";
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("S(t)");
+		Collection queryStrings = Util.list("value(t)");
 
 		Util.initRandom(randomize);
 		Model model = new Model();
@@ -273,7 +273,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		int i=0;
 		while (moveOn()){
 			i++;
-			if (i>5)
+			if (i>50)
 				break;
 		}
 	}
