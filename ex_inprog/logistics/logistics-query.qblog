@@ -1,0 +1,96 @@
+//query BoxIn(b1, c3, 5);
+//query BoxIn(b1, c2, 5);
+//query BoxIn(b1, c3, 0);
+
+//query TruckIn(c1, t1, 0);
+//query TruckIn(c2, t1, 0);
+//query TruckIn(c3, t1, 0);
+
+//query arg_drive_1(1);
+//query arg_load_1(0);
+//query arg_load_2(0);
+//query foo();
+//query BoxIn(b1,c1,0);
+//query TruckIn(c1,t1,0);
+//query foo(b1, c1, t1, 0);
+
+/*
+query arg_load_1(0);
+query arg_load_2(0);
+query arg_load_1(1);
+query arg_load_2(1);
+query arg_load_1(2);
+query arg_load_2(2);
+query arg_load_1(3);
+query arg_load_2(3);
+*/
+/*
+query arg_load_1(0);
+query arg_load_2(0);
+query arg_load_1(1);
+query arg_load_2(1);
+query arg_load_1(2);
+query arg_load_2(2);
+query arg_unload_1(0);
+query arg_unload_2(0);
+query arg_unload_1(1);
+query arg_unload_2(1);
+query arg_unload_1(2);
+query arg_unload_2(2);
+query arg_drive_1(0);
+query arg_drive_2(0);
+query arg_drive_1(1);
+query arg_drive_2(1);
+query arg_drive_1(2);
+query arg_drive_2(2);
+query actionName(0);
+query actionName(1);
+query actionName(2);
+query actionName(3);
+query actionName(4);
+query actionName(5);
+*/
+query value(15);
+/*
+query actionName(21);
+query qstate(0);
+query qstate(1);
+query qstate(2);
+//query actionName(2);
+query qstate(3);
+//query actionName(3);
+query qstate(4);
+//query actionName(4);
+query qstate(5);
+//query actionName(5);
+query qstate(6);
+//query actionName(6);
+//query arg_unload_1(6);
+//query arg_unload_2(6);
+query qstate(7);
+query qstate(8);
+query qstate(9);
+query qstate(10);
+query qstate(11);
+query qstate(12);
+query qstate(13);
+query qstate(14);
+query qstate(15);
+query qstate(16);
+query qstate(17);
+query qstate(18);
+query qstate(19);
+query qstate(20);
+query qstate(21);
+*/
+//query foo();
+
+/*
+query arg_load_1(3);
+query arg_load_2(3);
+query arg_load_1(4);
+query arg_load_2(4);
+query arg_load_1(5);
+query arg_load_2(6);
+
+*/

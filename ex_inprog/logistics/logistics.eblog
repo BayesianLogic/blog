@@ -1,0 +1,20 @@
+obs pass (20) = true;
+//obs pass(20) = false;
+//obs UniqueDrive(3) = true;
+
+
+//obs UniqueUnload(3) = true;
+
+
+//obs UniqueLoad(3) = true;
+
+//obs UniqueLoad(0) = true;
+//obs UniqueLoad(1) = true;
+//obs UniqueLoad(2) = true;
+//obs UniqueLoad(3) = true;
+//obs UniqueLoad(4) = true;
+//obs UniqueLoad(5) = true;
+//obs UniqueLoad(6) = true;
+//obs UniqueLoad(7) = true;
+//obs UniqueLoad(8) = true;
+//obs UniqueLoad(9) = true;
