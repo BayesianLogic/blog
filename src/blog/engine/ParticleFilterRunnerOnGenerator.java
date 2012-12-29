@@ -38,6 +38,10 @@ import blog.world.PartialWorld;
  * printed to standard output) in both generator and particle filter.
  * 
  * @author Rodrigo
+ * 
+ * Must ensure that evidence is supplied in the correct order
+ * to-do: add skeleton for checking timestep
+ * 
  */
 public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 //check
