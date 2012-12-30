@@ -72,6 +72,7 @@ import blog.model.FormulaQuery;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.FunctionSignature;
+import blog.model.ImplicFormula;
 import blog.model.ImplicitSetSpec;
 import blog.model.ListSpec;
 import blog.model.MapSpec;
@@ -447,28 +448,24 @@ public class Semant {
 					List<ArgSpec> args = transExprList(fc.args, false);
 					Class cls = getClassWithName(fc.func.toString());
 					((NonRandomFunction) fun).setInterpretation(cls, args);
-				} 
-                else if (e.body instanceof DoubleExpr) {
+				} else if (e.body instanceof DoubleExpr) {
 					List<Object> args = new ArrayList<Object>();
-                    args.add(((DoubleExpr) e.body).value);
-                    ConstantInterp constant = new ConstantInterp(args);
+					args.add(((DoubleExpr) e.body).value);
+					ConstantInterp constant = new ConstantInterp(args);
 					((NonRandomFunction) fun).setInterpretation(constant);
-				}
-                else if (e.body instanceof IntExpr) {
+				} else if (e.body instanceof IntExpr) {
 					List<Object> args = new ArrayList<Object>();
-                    args.add(((IntExpr) e.body).value);
-                    ConstantInterp constant = new ConstantInterp(args);
+					args.add(((IntExpr) e.body).value);
+					ConstantInterp constant = new ConstantInterp(args);
 					((NonRandomFunction) fun).setInterpretation(constant);
-				}
-                else if (e.body instanceof StringExpr) {
+				} else if (e.body instanceof StringExpr) {
 					List<Object> args = new ArrayList<Object>();
-                    args.add(((StringExpr) e.body).value);
-                    ConstantInterp constant = new ConstantInterp(args);
+					args.add(((StringExpr) e.body).value);
+					ConstantInterp constant = new ConstantInterp(args);
 					((NonRandomFunction) fun).setInterpretation(constant);
-				}
-                else {
+				} else {
 					// TODO: Implement more general fixed functions
-                }
+				}
 			} else {
 				// note will do type checking later
 				Object funcBody = transExpr(e.body);
@@ -528,8 +525,7 @@ public class Semant {
 		if (body instanceof Term || body instanceof Formula) {
 			cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
 					.<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
-		} 
-        else if (body instanceof Clause) {
+		} else if (body instanceof Clause) {
 			cl.add((Clause) body);
 		} else if (e instanceof IfExpr) {
 			cl = (List<Clause>) body;
@@ -1053,6 +1049,16 @@ public class Semant {
 						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			return new DisjFormula((Formula) left, (Formula) right);
+		case OpExpr.IMPLY:
+			if (left instanceof Term) {
+				left = new EqualityFormula((Term) left,
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+			}
+			if (right instanceof Term) {
+				right = new EqualityFormula((Term) right,
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+			}
+			return new ImplicFormula((Formula) left, (Formula) right);
 		case OpExpr.NOT:
 			return new NegFormula((Formula) right);
 		case OpExpr.SUB:
