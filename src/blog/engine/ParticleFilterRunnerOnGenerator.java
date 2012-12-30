@@ -62,7 +62,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		eviOutputStream = System.out;
 
 		in = new BufferedReader(new InputStreamReader(eviInputStream));
-		Util.setVerbose(true);
+		Util.setVerbose(false);
 	}
 	
 	private UnaryProcedure afterMoveForward = new UnaryProcedure() {
@@ -108,6 +108,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 			particleFilter.take(evidence);
 			particleFilter.answer(queries);
 			afterEvidenceAndQueries();
+			
 			return true;
 		}
 		return false;
@@ -121,7 +122,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 
 		Evidence evidence = new Evidence();
 		String evistr = "";
-		
+		System.out.println("Enter evi for: "+evidenceGenerator.lastTimeStep);
 		try {
 			evistr = in.readLine();
 		} catch (IOException e) {
@@ -243,16 +244,18 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		Properties properties = new Properties();
-		properties.setProperty("numParticles", "1000");
+		properties.setProperty("numParticles", "1");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
-		boolean randomize = true;
+		boolean verbose = true;
+		boolean randomize = false;
 		
 		String modelFile = "ex_inprog/logistics/logistics.mblog";
 		Collection linkStrings = Util.list();
 		Collection queryStrings = Util.list("value(t)");
 
 		Util.initRandom(randomize);
+		Util.setVerbose(verbose);
 		Model model = new Model();
 		Evidence evidence = new Evidence();
 		ArrayList<Query> queries = new ArrayList<Query>();
@@ -262,12 +265,12 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 
 
 		
-		Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(), false, false);
-		Util.initRandom(true);
+		Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(), verbose, false);
 		new ParticleFilterRunnerOnGenerator(model,
 				linkStrings, queryStrings, properties).run();
 		
 	}
+	//need to fix the error message for empty evidence string inputs
 	private boolean parseAndTranslateEvidence(Evidence e, Reader reader) {
 		Parse parse = new Parse(reader, null);
 		Semant sem = new Semant(model, e, new ArrayList<Query>(), new ErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
@@ -281,8 +284,8 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		int i=0;
 		while (moveOn()){
 			i++;
-			if (i>50)
-				break;
+			//if (i>15)
+			//	break;
 		}
 	}
 	

@@ -76,7 +76,7 @@ random Truck arg_unload_2(Timestep t){
   else
     = null
 };
-
+/*
 random Boolean pass(Timestep t){
   if (true) then
     = exists Timestep x ((x<=t) & BoxIn(b3, c3, x) & BoxIn(b1, c3, x) & BoxIn(b2, c3, x) )
@@ -84,6 +84,16 @@ random Boolean pass(Timestep t){
     = false
 };
 
+*/
+//there was a problem here previously
+random Boolean pass(Timestep t){
+  if (t==@0) then
+    = false
+  else if (BoxIn(b3, c3, t) & BoxIn(b1, c3, t) & BoxIn(b2, c3, t)) then
+    = true
+  else
+    = pass(Prev(t))
+};
 
 random String actionName(Timestep t){
   if (true & exists Box b exists Truck tr (applied_Load(b,tr,t) & true)) then
