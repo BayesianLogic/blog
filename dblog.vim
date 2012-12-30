@@ -11,7 +11,7 @@ endif
 syn keyword dblogKeywords type distinct random origin fixed param query obs
 syn keyword dblogKeywords guaranteed
 syn keyword dblogType Real R3Vector Timestep Boolean Integer 
-syn keyword dblogStatement if then else null true false
+syn keyword dblogStatement if then else null true false forall exists
 syn keyword dblogDistribution TabularCPD Dirichlet UniformVector UniformReal
 syn keyword dblogDistribution MultivarGaussian Poisson UnivarGaussian Gaussian
 syn keyword dblogDistribution Categorical UniformChoice Bernoulli Geometric
