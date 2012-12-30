@@ -62,9 +62,9 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		eviOutputStream = System.out;
 
 		in = new BufferedReader(new InputStreamReader(eviInputStream));
-		
+		Util.setVerbose(true);
 	}
-
+	
 	private UnaryProcedure afterMoveForward = new UnaryProcedure() {
 		public void evaluate(Object queriesObj) {
 			afterMove.evaluate(queriesObj);
@@ -149,9 +149,13 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 			evistr = "";
 		*/
 		parseAndTranslateEvidence(evidence, new StringReader((String) evistr));
-
+		
+		
+		
 		evidence.checkTypesAndScope(model);
 		evidence.compile();
+		
+		checkEvidenceMatchesTimestep(evidence);
 		
 		return evidence; 
 		
@@ -244,7 +248,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		properties.setProperty("numMoves", "1");
 		boolean randomize = true;
 		
-		String modelFile = "logistics/logistics.mblog";
+		String modelFile = "ex_inprog/logistics/logistics.mblog";
 		Collection linkStrings = Util.list();
 		Collection queryStrings = Util.list("value(t)");
 
@@ -281,4 +285,13 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 				break;
 		}
 	}
+	
+	/**
+	 * Check that the evidence provided has the correct timestep associated
+	 * @param evidence
+	 */
+	private void checkEvidenceMatchesTimestep(Evidence evidence){
+		/*do nothing*/	
+	}
+	
 }
