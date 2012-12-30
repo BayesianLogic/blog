@@ -25,7 +25,7 @@ random Boolean applied_move(Integer p, Timestep t) {
 random Boolean applied_throwDice(Integer p, Timestep t) {
   if t == @0 then = false
   else if exists Timestep tstep ((timeOfLastTurnAdvance(t) < tstep) & 
-          (tstep<t) & applied_throwDice(p,tstep)) then = false
+          (tstep < t) & applied_throwDice(p,tstep)) then = false
   else if !(whosTurn(t) == p) 
       then = false
   else = true
@@ -142,7 +142,7 @@ random Timestep timeOfLastTurnAdvance(Timestep t) {
 };
 
 random Integer capital(Integer player, Timestep t) {
-  if t == 0 then = 500
+  if t == @0 then = 500
   else if exists Integer prop (prop < NumSquares) & 
           applied_purchase(player, prop, Prev(t)) 
     then = capital(player, Prev(t)) - propertyValue(playerAt(player, Prev(t)))
