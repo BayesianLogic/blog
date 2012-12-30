@@ -512,6 +512,8 @@ operation_expr ::= expression:e1 PLUS expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.AND, e2); :}
   | expression:e1 OR expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.OR, e2); :}
+  | expression:e1 RIGHTARROW expression:e2
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.IMPLY, e2); :}
   | expression:e1 LBRACKET expression:e2 RBRACKET
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.SUB, e2); :}
   | unary_operation_expr:e {: RESULT = e; :}
@@ -574,15 +576,20 @@ semi_colon_separated_expression_list ::=
 
 map_construct_expression ::= LBRACE expression_pair_list:e RBRACE
     {: RESULT = new MapInitExpr(currLineno(), currColno(), e); :}
+  | LBRACE expression:e1 RIGHTARROW expression:e2 RBRACE
+    {: RESULT = new MapInitExpr(currLineno(), currColno(), 
+                new ExprTupleList(e1, e2, null)); :}
   ;
 
+// to avoid conflict with Imply expression
 expression_pair_list ::=
     expression:e1 RIGHTARROW expression:e2 COMMA expression_pair_list:e3
     {: RESULT = new ExprTupleList(e1, e2, e3); :}
-  | expression:e1 RIGHTARROW expression:e2
-    {: RESULT = new ExprTupleList(e1, e2, null); :}
+  | expression:e1 RIGHTARROW expression:e2 COMMA 
+    expression:e3 RIGHTARROW expression:e4
+    {: RESULT = new ExprTupleList(e1, e2, new ExprTupleList(e3, e4, null)); :}
   ;
-
+  
 number_expr ::= NUMSIGN set_expr:e
     {: RESULT = new NumberExpr(currLineno(), currColno(), e); :}
   | NUMSIGN type:ty

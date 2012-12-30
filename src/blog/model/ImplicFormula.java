@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, Regents of the University of California
+ * Copyright (c) 2005, 2012 Regents of the University of California
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,13 @@
 
 package blog.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import blog.Substitution;
 import blog.sample.EvalContext;
