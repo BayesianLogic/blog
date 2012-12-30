@@ -17,7 +17,7 @@ random Integer NumPlayers ~ Poisson(6);
 //Must move if dice was thrown at the previous timestep
 random Boolean applied_move(Integer p, Timestep t) {
   if t == @0 then = false 
-  else if whosTurn(t) = p & applied_throwDice(p,Pred(t)) then = true
+  else if whosTurn(t) == p & applied_throwDice(p,Pred(t)) then = true
   else = false
 };
 
@@ -26,7 +26,8 @@ random Boolean applied_throwDice(Integer p, Timestep t) {
   if t == @0 then = false
   else if exists Timestep tstep ((timeOfLastTurnAdvance(t) < tstep) & 
           (tstep<t) & applied_throwDice(p,tstep)) then = false
-  else if !whosTurn(t) = p then = false
+  else if !(whosTurn(t) == p) 
+      then = false
   else = true
 };
 
@@ -68,23 +69,22 @@ random Boolean axnApplied(Timestep t) {
 };
 
 random Boolean axnsUntil(Timestep t) {
-	= forall Integer n (n < t -> axnApplied(n))
+	//= forall Integer n (n < t -> axnApplied(n))
+	= forall Integer n ((n < t) & axnApplied(n))
 };
-
 
 //player p's position at timestep t
 random Integer playerAt(Integer p, Timestep t) {
   if t == @0 then = 0
   else if p == whosTurn(Pred(t)) & applied_move(p,Pred(t)) 
-    then ~ AddModN[](playerAt(p, Pred(t)), diceVal1(Pred(t)), 
-                     diceVal2(Pred(t)), NumSquares)
-  else = playerAt(p, Pred(t))
+    then = (playerAt(p, Pred(t)) + diceVal1(Pred(t)) +  diceVal2(Pred(t))) % NumSquares 
+    else = playerAt(p, Pred(t))
 };
 
 //Value of the dice1. Set to a new value if throwDice occured at previous timestep.
 random Integer diceVal1(Timestep t) { 
   if t == @0 then = 0
-  else if exists Integer p (p < NumPlayers & p = whosTurn(Pred(t)) 
+  else if exists Integer p (p < NumPlayers & p == whosTurn(Pred(t)) 
        & applied_throwDice(p, Pred(t))) 
     then ~ UniformInt(1,6)
   else = diceVal1(Pred(t))
@@ -93,9 +93,9 @@ random Integer diceVal1(Timestep t) {
 //Similar to diceVal1
 random Integer diceVal2(Timestep t) {
   if t == @0 then = 0
-  else if (exists Integer p (p < NumPlayers & p = whosTurn(Pred(t)) & 
+  else if exists Integer p (p < NumPlayers & p == whosTurn(Pred(t)) & 
            applied_throwDice(p, Pred(t))) 
-    then ~ UniformInt(1,6)
+    then ~ UniformInt(1, 6)
   else = diceVal2(Pred(t))
 };
 
@@ -125,8 +125,11 @@ random Boolean obligationsDone(Timestep t) {
           (exists Integer p p < NumPlayers & whosTurn(t) == p & 
           applied_move(p,tstep)) 
     then = 
-      forall Integer p ((p < NumPlayers & whosTurn(t) == p) ->
-        (forall Integer owner (owner < NumPlayers & owner != p) -> 
+      //forall Integer p ((p < NumPlayers & whosTurn(t) == p) ->
+      //  (forall Integer owner (owner < NumPlayers & owner != p) -> 
+      //    (rentDue(p,owner,t) == 0)))
+      forall Integer p ((p < NumPlayers & whosTurn(t) == p) & 
+        (forall Integer owner (owner < NumPlayers & owner != p) & 
           (rentDue(p,owner,t) == 0)))
 };
 
@@ -161,10 +164,10 @@ random Integer capital(Integer player, Timestep t) {
 //Set to NumPlayers (meaning not owned by any player) by default
 //Changed by purchase action. Auctioning of property not modeled.
 random Integer propertyOwner(Integer propertyNum, Timestep t) {
-  if t=0 then = NumPlayers
-  else if (exists Integer p (p < NumPlayers) & whosTurn(Pred(t)) = p &
+  if t == @0 then = NumPlayers
+  else if (exists Integer p (p < NumPlayers) & whosTurn(Pred(t)) == p &
            applied_purchase(p, propertyNum, Pred(t))) 
-    then ~ Iota({Integer p: p < NumPlayers & whosTurn(Pred(t)) = p & applied_purchase(p, propertyNum, Pred(t))})
+    then ~ Iota({Integer p: p < NumPlayers & whosTurn(Pred(t)) == p & applied_purchase(p, propertyNum, Pred(t))})
   else = propertyOwner(propertyNum, Pred(t))
 };
 
