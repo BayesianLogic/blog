@@ -33,7 +33,7 @@ import java.io.*;
 public class OnlineParticleFilterTest extends TestCase {
 
 	// Configuration:
-	private double delta = 0.15; // the allowed difference between
+	private double delta = 0.000001; // the allowed difference between
 																// expected and computed values
 
 	public static void main(String[] args) throws Exception {
@@ -63,7 +63,7 @@ public class OnlineParticleFilterTest extends TestCase {
 
 	/** Sets particle filter properties to default values before every test. */
 	public void setUp() {
-		Util.initRandom(true);
+		Util.initRandom(false);
 		setDefaultParticleFilterProperties();
 	}
 
@@ -150,7 +150,7 @@ public class OnlineParticleFilterTest extends TestCase {
 		Collection queryStrings = Util.list("S(t)");
 		
 		Util.initRandom(false);
-		
+		Util.setVerbose(false);
 		///
 	    PipedInputStream pin = new PipedInputStream();
 	    PipedOutputStream pout = new PipedOutputStream(pin);
@@ -166,22 +166,22 @@ public class OnlineParticleFilterTest extends TestCase {
 
 	    out.println("obs O(@0) = ResultC;");
 	    runner.moveOn();
-	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.07193351165456906, 0.07193351165456906*delta);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.07123248769406526, 0.07123248769406526*delta);
 	    out.println("obs O(@1) = ResultA;");
 	    runner.moveOn();
-	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.8673596826330409, 0.8673596826330409*delta);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.8740065285267652, 0.8740065285267652*delta);
 	    out.println("obs O(@2) = ResultA;");
 	    runner.moveOn();
-	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "T"), 0.09414839367669668, 0.09414839367669668*delta);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "T"), 0.09701200417538186, 0.09701200417538186*delta);
 	    out.println("obs O(@3) = ResultA;");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "G"), 0.08214118198875539, 0.08214118198875539*delta);
 	    out.println("obs O(@4) = ResultG;");
 	    runner.moveOn();
-	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.027222704894296935, 0.027222704894296935*delta);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.026816361556063043, 0.026816361556063043*delta);
 	    out.println(" ");
 	    runner.moveOn();
-	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "C"), 0.26617348418917625, 0.26617348418917625*delta);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "C"), 0.2968928775743654, 0.2968928775743654*delta);
 	}
 
 	private void setModel(String newModelString) throws Exception {
@@ -200,7 +200,7 @@ public class OnlineParticleFilterTest extends TestCase {
 		Collection linkStrings = Util.list();
 		Collection queryStrings = Util.list();
 
-		Util.initRandom(true);
+		Util.initRandom(false);
 
 	    PipedInputStream pin = new PipedInputStream();
 	    PipedOutputStream pout = new PipedOutputStream(pin);
@@ -259,7 +259,7 @@ public class OnlineParticleFilterTest extends TestCase {
 		Collection linkStrings = Util.list();
 		Collection queryStrings = Util.list("Burglary(h1, t)");
 
-		Util.initRandom(true);
+		Util.initRandom(false);
 
 	    PipedInputStream pin = new PipedInputStream();
 	    PipedOutputStream pout = new PipedOutputStream(pin);
