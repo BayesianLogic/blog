@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import blog.ConstantInterp;
 import blog.absyn.Absyn;
 import blog.absyn.ArrayTy;
 import blog.absyn.BooleanExpr;
@@ -446,9 +447,28 @@ public class Semant {
 					List<ArgSpec> args = transExprList(fc.args, false);
 					Class cls = getClassWithName(fc.func.toString());
 					((NonRandomFunction) fun).setInterpretation(cls, args);
-				} else {
-					// TODO: Implement more general fixed functions
+				} 
+                else if (e.body instanceof DoubleExpr) {
+					List<Object> args = new ArrayList<Object>();
+                    args.add(((DoubleExpr) e.body).value);
+                    ConstantInterp constant = new ConstantInterp(args);
+					((NonRandomFunction) fun).setInterpretation(constant);
 				}
+                else if (e.body instanceof IntExpr) {
+					List<Object> args = new ArrayList<Object>();
+                    args.add(((IntExpr) e.body).value);
+                    ConstantInterp constant = new ConstantInterp(args);
+					((NonRandomFunction) fun).setInterpretation(constant);
+				}
+                else if (e.body instanceof StringExpr) {
+					List<Object> args = new ArrayList<Object>();
+                    args.add(((StringExpr) e.body).value);
+                    ConstantInterp constant = new ConstantInterp(args);
+					((NonRandomFunction) fun).setInterpretation(constant);
+				}
+                else {
+					// TODO: Implement more general fixed functions
+                }
 			} else {
 				// note will do type checking later
 				Object funcBody = transExpr(e.body);
