@@ -1005,13 +1005,17 @@ public class Semant {
 		case OpExpr.NEQ:
 			return new NegFormula(new EqualityFormula((Term) left, (Term) right));
 		case OpExpr.LT:
-			return new ComparisonFormula((Term) left, (Term) right, OpExpr.LT);
+			return new ComparisonFormula((Term) left, (Term) right,
+					ComparisonFormula.Operator.LT);
 		case OpExpr.LEQ:
-			return new ComparisonFormula((Term) left, (Term) right, OpExpr.LEQ);
+			return new ComparisonFormula((Term) left, (Term) right,
+					ComparisonFormula.Operator.LEQ);
 		case OpExpr.GT:
-			return new ComparisonFormula((Term) left, (Term) right, OpExpr.GT);
+			return new ComparisonFormula((Term) left, (Term) right,
+					ComparisonFormula.Operator.GT);
 		case OpExpr.GEQ:
-			return new ComparisonFormula((Term) left, (Term) right, OpExpr.GEQ);
+			return new ComparisonFormula((Term) left, (Term) right,
+					ComparisonFormula.Operator.GEQ);
 		case OpExpr.AND:
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,
