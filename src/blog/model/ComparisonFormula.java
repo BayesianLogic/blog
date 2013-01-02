@@ -53,20 +53,28 @@ import blog.sample.EvalContext;
  */
 public class ComparisonFormula extends Formula {
 
-	public static final int GT = 1;
-	public static final int LT = 2;
-	public static final int GTE = 3;
-	public static final int LTE = 4;
+	public enum Operator {
+		LT("<"), LEQ("<="), GT(">"), GEQ(">=");
+		private final String name;
+
+		Operator(String name) {
+			this.name = name;
+		}
+
+		public String toString() {
+			return name;
+		}
+	}
 
 	/**
 	 * Creates a Comparison Term with the two given left and right terms and
 	 * comparison type. The possible comparison type values are given as static
 	 * constants in OpExpr.
 	 */
-	public ComparisonFormula(Term l, Term r, int t) {
+	public ComparisonFormula(Term l, Term r, Operator t) {
 		left = l;
 		right = r;
-		compType = t;
+		compator = t;
 	}
 
 	public Object evaluate(EvalContext context) {
@@ -86,14 +94,14 @@ public class ComparisonFormula extends Formula {
 			return null;
 		}
 
-		switch (compType) {
+		switch (compator) {
 		case LT:
 			return Boolean.valueOf(((Comparable) t1Value).compareTo(t2Value) < 0);
-		case LTE:
+		case LEQ:
 			return Boolean.valueOf(((Comparable) t1Value).compareTo(t2Value) <= 0);
 		case GT:
 			return Boolean.valueOf(((Comparable) t1Value).compareTo(t2Value) > 0);
-		case GTE:
+		case GEQ:
 			return Boolean.valueOf(((Comparable) t1Value).compareTo(t2Value) >= 0);
 		}
 		return null;
@@ -159,7 +167,7 @@ public class ComparisonFormula extends Formula {
 
 	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
 		return new ComparisonFormula((Term) left.getSubstResult(subst, boundVars),
-				(Term) right.getSubstResult(subst, boundVars), compType);
+				(Term) right.getSubstResult(subst, boundVars), compator);
 	}
 
 	public ArgSpec replace(Term t, ArgSpec another) {
@@ -167,7 +175,7 @@ public class ComparisonFormula extends Formula {
 		Term newEq2 = (Term) right.replace(t, another);
 		if (newEq1 != left || newEq2 != right)
 			return compileAnotherIfCompiled(new ComparisonFormula(newEq1, newEq2,
-					compType));
+					compator));
 		return this;
 	}
 
@@ -193,11 +201,11 @@ public class ComparisonFormula extends Formula {
 
 	// TODO: convert the integer code of the comparison to a string
 	public String toString() {
-		return "(" + left.toString() + " " + compType + " " + right.toString()
+		return "(" + left.toString() + " " + compator + " " + right.toString()
 				+ ")";
 	}
 
 	private Term left;
 	private Term right;
-	private int compType;
+	private Operator compator;
 }
