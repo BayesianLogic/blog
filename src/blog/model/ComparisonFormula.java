@@ -34,37 +34,44 @@
  */
 package blog.model;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 import blog.Substitution;
-import blog.absyn.OpExpr;
-import blog.bn.BayesNetVar;
-import blog.bn.DerivedVar;
-import blog.bn.RandFuncAppVar;
-import blog.common.Util;
 import blog.sample.EvalContext;
 
 /**
+ * @see BuiltInFunction.java
+ * 
+ *      A term consisting of two terms and a comparison between them.
+ *      Comparison terms
+ *      are inserted in the model by transExpr.
  * @author rbharath
- *
- * A term consisting of two terms and a comparison between them. Comparison terms
- * are inserted in the model by transExpr.
+ * @author leili
+ * @date 2013/1/1
  */
 public class ComparisonFormula extends Formula {
-    /**
-     * Creates a Comparison Term with the two given left and right terms and 
-     * comparison type. The possible comparison type values are given as static
-     * constants in OpExpr.
-     */
-    public ComparisonFormula(Term l, Term r, int t) {
-        left = l;
-        right = r;
-        compType = t;
-    }
-    
-    public Object evaluate(EvalContext context) {
+
+	public static final int GT = 1;
+	public static final int LT = 2;
+	public static final int GTE = 3;
+	public static final int LTE = 4;
+
+	/**
+	 * Creates a Comparison Term with the two given left and right terms and
+	 * comparison type. The possible comparison type values are given as static
+	 * constants in OpExpr.
+	 */
+	public ComparisonFormula(Term l, Term r, int t) {
+		left = l;
+		right = r;
+		compType = t;
+	}
+
+	public Object evaluate(EvalContext context) {
 		Object t1Value = left.evaluate(context);
-		if (t1Value == null) {
+		if (t1Value == null || (!(t1Value instanceof Comparable))) {
 			return null;
 		}
 
@@ -73,36 +80,27 @@ public class ComparisonFormula extends Formula {
 			return null;
 		}
 
-//		if (t1Value == t2Value) {
-//			return Boolean.TRUE; // even if they're both a GenericObject
-//		}
 		if ((t1Value instanceof GenericObject)
 				|| (t2Value instanceof GenericObject)) {
 			// Can't tell what GenericObject is equal to, besides itself
 			return null;
 		}
 
-		// TODO: complete comparisons for all operators
-		if (compType == OpExpr.LT) {
-			if (!(t1Value instanceof Comparable)) {
-				return null;
-			}
-			Comparable leftVal = (Comparable) t1Value;
-			return Boolean.valueOf(leftVal.compareTo(t2Value) < 0);
+		switch (compType) {
+		case LT:
+			return Boolean.valueOf(((Comparable) t1Value).compareTo(t2Value) < 0);
+		case LTE:
+			return Boolean.valueOf(((Comparable) t1Value).compareTo(t2Value) <= 0);
+		case GT:
+			return Boolean.valueOf(((Comparable) t1Value).compareTo(t2Value) > 0);
+		case GTE:
+			return Boolean.valueOf(((Comparable) t1Value).compareTo(t2Value) >= 0);
 		}
-		else if (compType == OpExpr.GT) {
-			if (!(t1Value instanceof Comparable)) {
-				return null;
-			}
-			Comparable leftVal = (Comparable) t1Value;
-			return Boolean.valueOf(leftVal.compareTo(t2Value) > 0);
-		}
-		
 		return null;
-    }
+	}
 
-	public Set getSatisfiersIfExplicit(EvalContext context,
-			LogicalVar subject, GenericObject genericObj) {
+	public Set getSatisfiersIfExplicit(EvalContext context, LogicalVar subject,
+			GenericObject genericObj) {
 		Set result = null;
 		context.assign(subject, genericObj);
 
@@ -132,12 +130,12 @@ public class ComparisonFormula extends Formula {
 		context.unassign(subject);
 		return result;
 
-    }
+	}
 
-    public boolean checkTypesAndScope(Model model, Map scope) {
-        if ((left == null) || (right == null)) {
-            return false;
-        }
+	public boolean checkTypesAndScope(Model model, Map scope) {
+		if ((left == null) || (right == null)) {
+			return false;
+		}
 
 		Term eq1InScope = left.getTermInScope(model, scope);
 		Term eq2InScope = right.getTermInScope(model, scope);
@@ -157,27 +155,29 @@ public class ComparisonFormula extends Formula {
 					+ "formula are of disjoint types");
 			return false;
 		}
-    }
-    
-    public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
+	}
+
+	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
 		return new ComparisonFormula((Term) left.getSubstResult(subst, boundVars),
 				(Term) right.getSubstResult(subst, boundVars), compType);
-    }
+	}
 
-    public ArgSpec replace(Term t, ArgSpec another) {
+	public ArgSpec replace(Term t, ArgSpec another) {
 		Term newEq1 = (Term) left.replace(t, another);
 		Term newEq2 = (Term) right.replace(t, another);
 		if (newEq1 != left || newEq2 != right)
-			return compileAnotherIfCompiled(new ComparisonFormula(newEq1, newEq2, compType));
+			return compileAnotherIfCompiled(new ComparisonFormula(newEq1, newEq2,
+					compType));
 		return this;
-    }
+	}
 
-    public boolean containsRandomSymbol() {
-        return false;
-    }
-    
+	public boolean containsRandomSymbol() {
+		return false;
+	}
+
 	/**
-	 * Returns the term that, according to this comparison formula, is the basis for
+	 * Returns the term that, according to this comparison formula, is the basis
+	 * for
 	 * comparison of <code>subject</code>. Returns null if <code>subject</code> is
 	 * not one of the terms in this comparison.
 	 */
@@ -190,14 +190,14 @@ public class ComparisonFormula extends Formula {
 		}
 		return null;
 	}
-	
+
 	// TODO: convert the integer code of the comparison to a string
 	public String toString() {
-		return "(" + left.toString() + " " + compType + " " + right.toString() + ")";
+		return "(" + left.toString() + " " + compType + " " + right.toString()
+				+ ")";
 	}
 
-    private Term left;
-    private Term right;
-    private int compType;
+	private Term left;
+	private Term right;
+	private int compType;
 }
-
