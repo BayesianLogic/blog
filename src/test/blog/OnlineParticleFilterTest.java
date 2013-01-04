@@ -14,7 +14,7 @@ import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.Util;
 import blog.engine.ParticleFilter;
-import blog.engine.ParticleFilterRunnerOnGenerator;
+import blog.engine.ParticleFilterRunnerOnline;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -24,6 +24,8 @@ import blog.model.ValueEvidenceStatement;
 
 
 import java.io.*;
+
+import org.junit.Test;
 /**
  * Unit testing for the {@link ParticleFilter}. Because sampling can potentially
  * fail no matter the error margin, tests sometimes fail. This should be rare,
@@ -36,13 +38,14 @@ public class OnlineParticleFilterTest extends TestCase {
 	private double delta = 0.000001; // the allowed difference between
 																// expected and computed values
 
-	public static void main(String[] args) throws Exception {
-	    PipedInputStream pin = new PipedInputStream();
+	//public static void main(String[] args) throws Exception {
+	/*
+		PipedInputStream pin = new PipedInputStream();
 	    PipedOutputStream pout = new PipedOutputStream(pin);
 	 
 	    PrintStream out = new PrintStream(pout);
 	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
-	 /*
+	 
 	    System.out.println("Writing to output stream...");
 	    out.println("Hello World!");
 	    out.flush();
@@ -54,12 +57,12 @@ public class OnlineParticleFilterTest extends TestCase {
 	    
 	    System.out.println("Text written: " + in.readLine());
 	    */
-		junit.textui.TestRunner.run(OnlineParticleFilterTest.class);
+		//junit.textui.TestRunner.run(OnlineParticleFilterTest.class);
 	    //OnlineParticleFilterTest x = new OnlineParticleFilterTest();
 	    //x.testCalculation();
 	    //x.test_getEvidence();
 	    //x.test_getQuery1();
-	}
+	//}
 
 	/** Sets particle filter properties to default values before every test. */
 	public void setUp() {
@@ -139,7 +142,7 @@ public class OnlineParticleFilterTest extends TestCase {
 		+	"      T -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.85})},"
 		+	"     S(t));";
 	
-
+	@Test 
 	public void testCalculation() throws Exception {
 		Properties properties = new Properties();
 		properties.setProperty("numParticles", "10000");
@@ -158,7 +161,7 @@ public class OnlineParticleFilterTest extends TestCase {
 	    PrintStream out = new PrintStream(pout);
 	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
 	    setModel(hmmModelString);
-	    ParticleFilterRunnerOnGenerator runner = new ParticleFilterRunnerOnGenerator(model, linkStrings, queryStrings, properties);
+	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
 	    runner.eviInputStream = pin;
 	    runner.in = new BufferedReader(new InputStreamReader(pin));
 	    
@@ -191,6 +194,7 @@ public class OnlineParticleFilterTest extends TestCase {
 		Main.stringSetup(model, evidence, queries, newModelString);
 	}
 	
+	@Test
 	public void test_getEvidence() throws Exception {
 		Properties properties = new Properties();
 		properties.setProperty("numParticles", "1000");
@@ -208,7 +212,7 @@ public class OnlineParticleFilterTest extends TestCase {
 	    PrintStream out = new PrintStream(pout);
 	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
 	    setModel(burglaryModelString);
-	    ParticleFilterRunnerOnGenerator runner = new ParticleFilterRunnerOnGenerator(model, linkStrings, queryStrings, properties);
+	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
 	    runner.eviInputStream = pin;
 	    runner.in = new BufferedReader(new InputStreamReader(pin));
 	    
@@ -249,7 +253,7 @@ public class OnlineParticleFilterTest extends TestCase {
 	    assertTrue(truthvalue.booleanValue());
 	}
 
-
+	@Test
 	public void test_getQuery1() throws Exception {
 		Properties properties = new Properties();
 		properties.setProperty("numParticles", "1000");
@@ -268,7 +272,7 @@ public class OnlineParticleFilterTest extends TestCase {
 	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
 
 		
-	    ParticleFilterRunnerOnGenerator runner = new ParticleFilterRunnerOnGenerator(model, linkStrings, queryStrings, properties);
+	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
 	    runner.eviInputStream = pin;
 	    runner.in = new BufferedReader(new InputStreamReader(pin));
 	    
