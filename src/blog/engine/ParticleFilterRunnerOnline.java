@@ -30,25 +30,16 @@ import blog.world.PartialWorld;
 
 /**
  * ParticleFilterRunnerOnGenerator extends {@link #ParticleFilterRunner} in
- * order to solve the problem of how to generate evidence for it. This is done
- * by obtaining evidence from a {@link TemporalEvidenceGenerator} . The user
- * must provide a set of link variables that are read from the generator as a
- * query and provided to the particle filter as evidence. The user must also
- * provide a (possibly empty) set of queries to be monitored (distribution
- * printed to standard output) in both generator and particle filter.
- * 
- * @author Rodrigo
- * 
- * Must ensure that evidence is supplied in the correct order
- * to-do: add skeleton for checking timestep
+ * order to obtain evidence from an external stream input
+ * @author Cheng
+ * @since Jan 03 2013
  * 
  */
-public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
-//check
+public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	public BufferedReader in;
 	public InputStream eviInputStream;
 	public PrintStream eviOutputStream;
-	public ParticleFilterRunnerOnGenerator(Model model, Collection linkStrings,
+	public ParticleFilterRunnerOnline(Model model, Collection linkStrings,
 			Collection queryStrings, Properties particleFilterProperties) {
 		super(model, particleFilterProperties);
 		this.particleFilterProperties = particleFilterProperties;
@@ -74,19 +65,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 	/** Default afterMove event. */
 	private UnaryProcedure monitorGeneratorWorld = new UnaryProcedure() {
 		public void evaluate(Object queriesObj) {
-			Collection queries = (Collection) queriesObj;
-
-			System.out.println("Generator model: " + getCurrentPartialWorld());
-
-			for (Iterator it = queries.iterator(); it.hasNext();) {
-				ArgSpecQuery generatorQuery = (ArgSpecQuery) it.next();
-				BayesNetVar queryVar = generatorQuery.getVariable();
-
-				System.out.println("Value of "
-						+ generatorQuery.toString().replaceAll("DerivedVar ", "")
-						+ " in generator world: "
-						+ getCurrentPartialWorld().getValue(queryVar));
-			}
+			
 		}
 	};
 
@@ -159,17 +138,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 		checkEvidenceMatchesTimestep(evidence);
 		
 		return evidence; 
-		
-		//Evidence evidence=null;
-		//try {
-			//evidence = BLOGUtil.parseEvidence_NE(br.readLine(), model);
-		//} catch (IOException e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
-		//evidence.checkTypesAndScope(model);
-		//evidence.compile();
-		//return hackyEvidence;
+
 	}
 
 	/**
@@ -180,11 +149,6 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 	public Collection getQueries() {
 		return getQueriesForLatestTimestep();
 	}
-
-	//public boolean moveOn() {
-	//	queriesCacheInvalid = true;
-	//	return super.moveOn();
-	//}
 
 	protected void afterEvidenceAndQueries() {
 		Collection queries = evidenceGenerator.getLatestQueries();
@@ -266,7 +230,7 @@ public class ParticleFilterRunnerOnGenerator extends ParticleFilterRunner {
 
 		
 		Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(), verbose, false);
-		new ParticleFilterRunnerOnGenerator(model,
+		new ParticleFilterRunnerOnline(model,
 				linkStrings, queryStrings, properties).run();
 		
 	}
