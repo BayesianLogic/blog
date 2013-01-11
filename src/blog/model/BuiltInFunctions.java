@@ -78,7 +78,7 @@ public class BuiltInFunctions {
 	public static final String PRED_NAME = "Pred";
 	public static final String PREV_NAME = "Prev";
 	public static final String IS_EMPTY_NAME = "IsEmptyString";
-	public static final String CONCAT_NAME = "Concat";
+	// public static final String CONCAT_NAME = "Concat"; //Concat replaced by +
 
 	/**
 	 * Constant that always denotes Model.NULL.
@@ -555,7 +555,7 @@ public class BuiltInFunctions {
 				return arg1.concat(arg2);
 			}
 		};
-		CONCAT = new NonRandomFunction(CONCAT_NAME, argTypes, retType, concatInterp);
+		CONCAT = new NonRandomFunction(PLUS_NAME, argTypes, retType, concatInterp);
 		addFunction(CONCAT);
 
 		// Add non-random functions from string to Boolean
