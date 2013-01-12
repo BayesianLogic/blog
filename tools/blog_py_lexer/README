@@ -1,0 +1,12 @@
+blog-lexer
+==========
+
+A pygments lexer for BLOG
+
+
+To install:
+  python setup install
+
+
+This package requires pygments package. You may install by 
+  easy_install Pygments
