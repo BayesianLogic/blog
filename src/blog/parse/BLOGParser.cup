@@ -126,7 +126,7 @@ terminal java.lang.String ID;
 terminal PARFACTOR, FACTOR, FOR; // Not Yet Implemented
 terminal ERROR, ELSEIF; // Not Yet Implemented
 terminal AT; // time operator
-terminal PLUS, MINUS, MULT, DIV, MOD; //arithmetic operator
+terminal PLUS, MINUS, MULT, DIV, MOD, POWER; //arithmetic operator
 terminal LT, GT, LEQ, GEQ; // relational_expression
 terminal EQEQ, NEQ; // equality compare
 terminal EQ; // assignment operator
@@ -175,7 +175,7 @@ precedence left AND, OR;
 precedence left NOT;
 precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
 precedence left PLUS, MINUS;
-precedence left MULT, DIV, MOD;
+precedence left MULT, DIV, MOD, POWER;
 precedence left LBRACKET;
 
 
@@ -496,6 +496,8 @@ operation_expr ::= expression:e1 PLUS expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.DIV, e2); :}
   | expression:e1 MOD expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.MOD, e2); :}
+  | expression:e1 POWER expression:e2
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.POWER, e2); :}
   | expression:e1 LT expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.LT, e2); :}
   | expression:e1 GT expression:e2

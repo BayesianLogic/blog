@@ -65,6 +65,7 @@ public class BuiltInFunctions {
 	public static final String MULT_NAME = "__MULT";
 	public static final String DIV_NAME = "__DIV";
 	public static final String MOD_NAME = "__MOD";
+	public static final String POWER_NAME = "__POWER";
 	public static final String SUB_MAT_NAME = "__SUB_MAT";
 	public static final String SUB_VEC_NAME = "__SUB_VEC";
 	public static final String GT_NAME = "__GREATERTHAN";
@@ -77,7 +78,7 @@ public class BuiltInFunctions {
 	public static final String PRED_NAME = "Pred";
 	public static final String PREV_NAME = "Prev";
 	public static final String IS_EMPTY_NAME = "IsEmptyString";
-	public static final String CONCAT_NAME = "Concat";
+	// public static final String CONCAT_NAME = "Concat"; //Concat replaced by +
 
 	/**
 	 * Constant that always denotes Model.NULL.
@@ -185,6 +186,11 @@ public class BuiltInFunctions {
 	 * The function on reals <code>x<code>, <code>y</code> that returns x * y.
 	 */
 	public static NonRandomFunction RMULT;
+
+	/**
+	 * The function on reals <code>x<code>, <code>y</code> that returns x ^ y.
+	 */
+	public static NonRandomFunction POWER;
 
 	/**
 	 * The function on reals <code>x<code>, <code>y</code> that returns x / y.
@@ -421,11 +427,6 @@ public class BuiltInFunctions {
 		addFunction(PLUS);
 
 		// Multiply non-random functions from (integer x integer) to integer
-		argTypes.clear();
-		argTypes.add(BuiltInTypes.INTEGER);
-		argTypes.add(BuiltInTypes.INTEGER);
-		retType = BuiltInTypes.INTEGER;
-
 		FunctionInterp multInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
 				Integer arg1 = (Integer) args.get(0);
@@ -447,11 +448,6 @@ public class BuiltInFunctions {
 		addFunction(MINUS);
 
 		// Divide non-random functions from (integer x integer) to integer
-		argTypes.clear();
-		argTypes.add(BuiltInTypes.INTEGER);
-		argTypes.add(BuiltInTypes.INTEGER);
-		retType = BuiltInTypes.INTEGER;
-
 		FunctionInterp divInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
 				Integer arg1 = (Integer) args.get(0);
@@ -463,11 +459,6 @@ public class BuiltInFunctions {
 		addFunction(DIV);
 
 		// Mod non-random functions from (integer x integer) to integer
-		argTypes.clear();
-		argTypes.add(BuiltInTypes.INTEGER);
-		argTypes.add(BuiltInTypes.INTEGER);
-		retType = BuiltInTypes.INTEGER;
-
 		FunctionInterp modInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
 				Integer arg1 = (Integer) args.get(0);
@@ -524,6 +515,16 @@ public class BuiltInFunctions {
 		RDIV = new NonRandomFunction(DIV_NAME, argTypes, retType, rdivInterp);
 		addFunction(RDIV);
 
+		FunctionInterp powerInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				Number arg1 = (Number) args.get(0);
+				Number arg2 = (Number) args.get(1);
+				return new Double(Math.pow(arg1.doubleValue(), arg2.doubleValue()));
+			}
+		};
+		POWER = new NonRandomFunction(POWER_NAME, argTypes, retType, powerInterp);
+		addFunction(POWER);
+
 		// Add non-random functions from timestep to timestep
 		argTypes.clear();
 		argTypes.add(BuiltInTypes.TIMESTEP);
@@ -554,7 +555,7 @@ public class BuiltInFunctions {
 				return arg1.concat(arg2);
 			}
 		};
-		CONCAT = new NonRandomFunction(CONCAT_NAME, argTypes, retType, concatInterp);
+		CONCAT = new NonRandomFunction(PLUS_NAME, argTypes, retType, concatInterp);
 		addFunction(CONCAT);
 
 		// Add non-random functions from string to Boolean
