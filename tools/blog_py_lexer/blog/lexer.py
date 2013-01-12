@@ -25,11 +25,11 @@ class BlogLexer(RegexLexer):
   tokens = {
     'root' : [
       (r'([a-zA-Z]+[0-9]*)(\()', bygroups(Name.Function, Punctuation)),
-      ('('+gen_regex(types)+')\\b', Keyword.Type),
-      ('('+gen_regex(distribs)+')\\b', Name.Class),
-      ('('+gen_regex(keywords)+')\\b', Keyword),
-      ('(' + gen_regex(operators) +')', Operator),
-      ('(' + gen_regex(wordops) +')', Operator.Word)
+      (r'('+gen_regex(types)+')\\b', Keyword.Type),
+      (r'('+gen_regex(distribs)+')\\b', Name.Class),
+      (r'('+gen_regex(keywords)+')\\b', Keyword),
+      (gen_regex(operators), Operator),
+      (r'(' + gen_regex(wordops) +')\\b', Operator.Word),
       (r'(true|false|null)\b', Keyword.Constant),
       (r'([a-zA-Z_]\w*)\b', Name),
       (r'"(\\\\|\\"|[^"])*"', String),
