@@ -7,13 +7,17 @@ class BlogLexer(RegexLexer):
   filenames = ['*.blog', '*.dblog']
   operators = ['\\-\\>','=','~',':', '\\+', '\\-', '\\*', '/', '\\[', ']', 
          '\\{', '}', '!', '\\<', '\\>', '\\<=', '\\>=', '==', '!=', 
-         '&', '\\|', '#', '\\^']
+         '&', '\\|', '#', '\\^', '%']
+  wordops = ['Prev', 'IsEmptyString']
   deliminators = [',', ';', '\\(', '\\)']
   keywords = ['extern','import','fixed','distinct','random','origin',
         'param','type', 'forall', 'exists', 'obs', 'query', 
         'if', 'then', 'else']
-  types = ['Integer','Real','Boolean','NaturalNum','List','Map',
-       'TabularCPD','Categorical','Distribution','Gaussian']
+  types = ['Integer','Real','Boolean','NaturalNum','List','Map']
+  distribs = ['TabularCPD','Categorical','Distribution','Gaussian',
+             'UniformChoice', 'MultivarGaussian', 'Poisson',
+             'Bernoulli', 'Binomial', 'Beta', 'Dirichlet',
+             'Exponential', 'UniformInt', 'UniformReal']
 
   def gen_regex(ops):
     return "|".join(ops)
@@ -21,9 +25,11 @@ class BlogLexer(RegexLexer):
   tokens = {
     'root' : [
       (r'([a-zA-Z]+[0-9]*)(\()', bygroups(Name.Function, Punctuation)),
-      ('('+gen_regex(types)+r')', Name.Class),
-      ('('+gen_regex(keywords)+')\\b', Token.Keyword),
-      (gen_regex(operators), Token.Operator),
+      ('('+gen_regex(types)+')\\b', Keyword.Type),
+      ('('+gen_regex(distribs)+')\\b', Name.Class),
+      ('('+gen_regex(keywords)+')\\b', Keyword),
+      ('(' + gen_regex(operators) +')', Operator),
+      ('(' + gen_regex(wordops) +')', Operator.Word)
       (r'(true|false|null)\b', Keyword.Constant),
       (r'([a-zA-Z_]\w*)\b', Name),
       (r'"(\\\\|\\"|[^"])*"', String),
