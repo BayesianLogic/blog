@@ -26,23 +26,23 @@ random Component AssociatedComponent(Pixel);
 
 #Pixel(X=x, Y=y, Time=t)=1;
 
-AssociatedComponnet(pixel) ~ TabularCPD[[0.7, 0.1, 0.2]]();
+AssociatedComponent(pixel) ~ TabularCPD[[0.7, 0.1, 0.2]]();
 
 Intensity(pixel) {
-    if AssociatedComponnet(pixel) = Road then 
-        ~ MultivarGaussian[3, [240, 240, 240], 
+    if AssociatedComponent(pixel) = Road then 
+        ~ MultivarGaussian(3, [240, 240, 240], 
                               [10, 0, 0; 
                                 0, 10, 0; 
-                                0, 0, 10]]()
-    elseif AssociatedComponnet(pixel) = Shadow then
-        ~ MultivarGaussian[3, [10, 10, 10], 
+                                0, 0, 10])
+    elseif AssociatedComponent(pixel) = Shadow then
+        ~ MultivarGaussian(3, [10, 10, 10], 
                               [10, 0, 0; 
                                 0, 10, 0; 
-                                0, 0, 10]]()
-    elseif AssociatedComponnet(pixel) = Vehicle then
-        ~ MultivarGaussian[3, [100, 100, 100], 
+                                0, 0, 10])
+    elseif AssociatedComponent(pixel) = Vehicle then
+        ~ MultivarGaussian(3, [100, 100, 100], 
                               [10, 0, 0; 
                                 0, 10, 0; 
-                                0, 0, 10]]()
+                                0, 0, 10])
 }
 
