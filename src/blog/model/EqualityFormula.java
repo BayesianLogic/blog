@@ -233,7 +233,8 @@ public class EqualityFormula extends Formula {
 			return true;
 		} else {
 			System.err.println(getLocation() + ": Terms in equality/inequality "
-					+ "formula are of disjoint types");
+					+ "formula are of disjoint types " + t1.toString() + " and "
+                    + t2.toString());
 			return false;
 		}
 	}
