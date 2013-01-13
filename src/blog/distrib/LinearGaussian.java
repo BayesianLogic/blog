@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, Regents of the University of California
+ * Copyright (c) 2012, 2013 Regents of the University of California
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -35,13 +35,12 @@
 
 package blog.distrib;
 
-import blog.*;
+import java.util.Iterator;
+import java.util.List;
+
 import blog.common.numerical.JamaMatrixLib;
 import blog.common.numerical.MatrixLib;
 import blog.model.Type;
-
-import java.util.*;
-import Jama.*;
 
 /**
  * Multivariate Gaussian distribution whose mean is an affine function of some
@@ -122,14 +121,15 @@ public class LinearGaussian extends AbstractCondProbDistrib {
 
 	public Object sampleVal(List args, Type childType) {
 		MatrixLib v = getParentVector(args);
-		MultivarGaussian distrib = new MultivarGaussian(mu.plus(W.timesMat(v)), Sigma);
+		MultivarGaussian distrib = new MultivarGaussian(mu.plus(W.timesMat(v)),
+				Sigma);
 		return distrib.sampleVal();
 	}
 
 	private MatrixLib getParentVector(List args) {
-//		MatrixLib v = new MatrixLib(c, 1);
+		// MatrixLib v = new MatrixLib(c, 1);
 		double[][] vect = new double[c][1];
-		
+
 		int curRow = 0;
 		for (Iterator iter = args.iterator(); iter.hasNext();) {
 			Object arg = iter.next();
@@ -144,8 +144,8 @@ public class LinearGaussian extends AbstractCondProbDistrib {
 						"Error in LinearGaussian CPD: sum of dimensions of "
 								+ "parents exceeds number of columns in W.");
 			}
-			
-			for (int i = curRow; i < curRow + parent.rowLen(); i++) { 
+
+			for (int i = curRow; i < curRow + parent.rowLen(); i++) {
 				vect[i][0] = parent.elementAt(i - curRow, 0);
 			}
 			curRow += parent.rowLen();
