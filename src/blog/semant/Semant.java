@@ -1017,6 +1017,9 @@ public class Semant {
 		case OpExpr.MOD:
 			funcname = BuiltInFunctions.MOD_NAME;
 			break;
+		case OpExpr.POWER:
+			funcname = BuiltInFunctions.POWER_NAME;
+			break;
 		case OpExpr.EQ:
 			return new EqualityFormula((Term) left, (Term) right);
 		case OpExpr.NEQ:

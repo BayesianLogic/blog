@@ -206,6 +206,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 "*"     { return symbol(BLOGTokenConstants.MULT); }
 "/"     { return symbol(BLOGTokenConstants.DIV); }
 "%"     { return symbol(BLOGTokenConstants.MOD); }
+"^"     { return symbol(BLOGTokenConstants.POWER); }
 "<"     { return symbol(BLOGTokenConstants.LT); }
 ">"     { return symbol(BLOGTokenConstants.GT); }
 "<="    { return symbol(BLOGTokenConstants.LEQ); }
