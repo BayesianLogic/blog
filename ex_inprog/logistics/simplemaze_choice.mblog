@@ -1,0 +1,72 @@
+
+/*
+Describe a simple maze game of 3 squares shaped as follows:
+ _____________________
+|         |          |
+|    2    |  3(end)  |
+|_________|__________|
+|         |
+| 1(start)|
+|_________|
+
+arriving at 3 gives a reward of 10
+Reward is discounted by 0.9 per timestep
+
+
+*/
+
+type Action;
+
+distinct Action up, down, left, right;
+
+//choice Boolean applied_action (Action a, Timestep t);
+
+
+
+random Action action_at_time(Timestep t){
+  ~ UniformChoice({Action a})
+};
+
+
+random Boolean applied_action (Action a, Timestep t){
+  if (a == action_at_time (t)) then
+    = true
+  else
+    = false
+};
+
+random Integer pos (Timestep t) {
+  if (t == @0) then
+    = 1
+  else if (pos (Prev(t)) == 1 & applied_action (up, Prev(t))) then
+    = 2
+  else if (pos (Prev(t)) == 2 & applied_action (right, Prev(t))) then
+    = 3
+  else
+    = pos (Prev(t))
+};
+
+
+random Real reward(Timestep t){
+  if ((pos(Prev(t)) != 3) & (pos(t) == 3)) then 
+    = 10.0
+  else
+    = 0.0
+};
+
+random Real discount(Timestep t){
+  if(t == @0) then 
+    = 1.0
+  else
+    = (discount(Prev(t)) * 0.9) /*gamma = 0.9*/
+};
+
+random Real value(Timestep t){
+  if(t == @0) then
+    =reward(@0)
+  else
+    = (value(Prev(t))) + ( reward(t) * discount(t))
+};
+
+obs pos (@50) = 3;
+query value(@50);
