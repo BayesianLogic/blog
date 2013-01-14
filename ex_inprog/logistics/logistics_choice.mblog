@@ -1,0 +1,98 @@
+// declare logistics problem objects and actions as BLOG objects
+type Box;  type Truck;  type City;
+
+// declare the individual objects
+distinct Box b3, b2, b1;
+distinct Truck t1, t2;
+distinct City c1, c2, c3;
+
+choice Boolean applied_Load(Box b, Truck tr, Timestep t);
+
+
+
+choice Boolean applied_Unload(Box b, Truck tr, Timestep t);
+
+choice Boolean applied_Drive(City c, Truck tr, Timestep t);
+
+
+};
+
+random Boolean pass(Timestep t){
+  if (t==@0) then
+    = false
+  else if (BoxIn(b3, c3, t) & BoxIn(b1, c3, t) & BoxIn(b2, c3, t)) then
+    = true
+  else
+    = pass(Prev(t))
+};
+
+
+random Real reward(Timestep t){
+  if(exists Box b exists Truck tr (applied_Unload(b,tr,t) & (TruckIn(c3,tr,t)))) then 
+    = 10.0
+  else
+    = 0.0
+};
+
+/*
+works only if RTimes is implemented (see BuiltInFunctions.java)
+*/
+random Real discount(Timestep t){
+  if(t==@0) then 
+    = 1.0
+  else
+    = (discount(Prev(t)) * 0.9) /*gamma = 0.9*/
+};
+
+random Real value(Timestep t){
+  if(t == @0) then
+    =reward(@0)
+  else
+    = (value(Prev(t))) + ( reward(t) * discount(t))
+};
+
+random Boolean BoxIn(Box b, City c, Timestep t) {
+  if (t == @0) then
+    if (c == c1) then 
+      = true
+    else
+      = false
+  else
+    = (exists Truck tr (applied_Unload(b, tr, (Prev(t))) & TruckIn (c, tr, (Prev(t)))))
+      | (BoxIn(b, c, (Prev(t))) & !(exists Truck tr (true & applied_Load(b, tr, (Prev(t))))))
+};
+
+
+random Boolean TruckIn(City c, Truck tr, Timestep t) {
+  if (t == @0) then
+    if (c == c1) then 
+      = true
+    else
+      = false
+  else
+    = applied_Drive(c, tr, (Prev(t)))
+      | (TruckIn(c, tr, (Prev(t))) & !(exists City c2 (true & applied_Drive(c2, tr, (Prev(t))) & c2 != c)))
+};
+
+random Boolean BoxOn(Box b, Truck tr, Timestep t) {
+  if (t == @0) then
+    = false
+  else
+    = (exists City c (applied_Load(b, tr, (Prev(t))) & BoxIn(b, c, (Prev(t))) & TruckIn(c, tr, (Prev(t)))))
+      | (BoxOn(b, tr, (Prev(t))) & !(true & applied_Unload(b, tr, (Prev(t)))))
+};
+
+
+/* 
+ * 
+ * 
+ * 
+ * 
+ * q(0) -> q(1) 
+ * q(1) -> q(2)
+ * q(2) -> q(3)
+ * 
+ * 
+ */
+obs pass (@20) = true;
+query value(@15);
