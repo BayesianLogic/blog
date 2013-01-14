@@ -1,6 +1,11 @@
 package test.blog;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Properties;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import blog.BLOGUtil;
 import blog.common.Util;
@@ -9,15 +14,14 @@ import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 
-import junit.framework.TestCase;
+public class BLOGTest {
 
-public class BLOGTest extends TestCase {
-
+	@Before
 	protected void setUp() throws Exception {
-		super.setUp();
 		Util.initRandom(true);
 	}
 
+	@Test
 	public void testInference() {
 		String modelDescription;
 		Properties properties;
