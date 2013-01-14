@@ -53,7 +53,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		eviOutputStream = System.out;
 
 		in = new BufferedReader(new InputStreamReader(eviInputStream));
-		Util.setVerbose(true);
+		Util.setVerbose(false);
 	}
 	
 	private UnaryProcedure afterMoveForward = new UnaryProcedure() {
