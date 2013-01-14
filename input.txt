@@ -1,0 +1,5 @@
+obs JohnCalls(h1, @0) = true;obs MaryCalls(h2, @0) = true;
+obs JohnCalls(h1, @0) = true;obs MaryCalls(foo(@0), @0) = true;
+obs Alarm(h2,@1) = true;
+obs Burglary(foo(@0),@1) = true;
+obs foo(@2) = h3; obs Earthquake(@2) = true;
