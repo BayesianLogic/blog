@@ -9,7 +9,9 @@ distinct State A, C, G, T;
 type Output;
 distinct Output ResultA, ResultC, ResultG, ResultT;
 
-random State S(Timestep t) {
+
+
+choice State S(Timestep t) {
     if t == @0 then ~ Categorical({A -> 0.3,
                  C -> 0.2, 
                  G -> 0.1, 
@@ -22,22 +24,15 @@ random State S(Timestep t) {
       S(Prev(t)))
 };
 
-random Output O(Timestep t)
-   ~ TabularCPD(
-     {A -> ~ Categorical({ResultA -> 0.85, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.05}),
-      C -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.85, ResultG -> 0.05, ResultT -> 0.05}),
-      G -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.85, ResultT -> 0.05}),
-      T -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.85})},
-     S(t));
 
 /* Evidence for the Hidden Markov Model.
  */
 
-obs O(@0) = ResultC;
-obs O(@1) = ResultA;
-obs O(@2) = ResultA;
-obs O(@3) = ResultA;
-obs O(@4) = ResultG;
+obs S(@0) = C;
+obs S(@1) = A;
+obs S(@2) = A;
+obs S(@3) = A;
+obs S(@4) = G;
 
 /* Queries for the Hiddem Markov Model, given the evidence.  
  * Note that we can query S(5) even though our observations only 

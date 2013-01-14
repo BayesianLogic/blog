@@ -209,6 +209,18 @@ public class OnlineParticleFilterTest extends TestCase {
 	    PipedInputStream pin = new PipedInputStream();
 	    PipedOutputStream pout = new PipedOutputStream(pin);
 	 
+	    /*
+	    File f = new File("input.txt");
+	    f.createNewFile();
+	    PrintStream out = new PrintStream(new FileOutputStream("input.txt"));
+	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
+	    setModel(burglaryModelString);
+	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
+	    runner.eviInputStream = pin;
+	    runner.in = new BufferedReader(new InputStreamReader(new FileInputStream("input.txt")));
+	     
+	    */
+	    
 	    PrintStream out = new PrintStream(pout);
 	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
 	    setModel(burglaryModelString);
