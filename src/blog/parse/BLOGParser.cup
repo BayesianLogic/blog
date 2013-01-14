@@ -135,12 +135,15 @@ terminal NOT, AND, OR; // logical operator
 terminal COMMA, SEMI, COLON, DOT, NUMSIGN, RIGHTARROW; //seperators
 terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET; // paired seperators
 
+/*added by cheng*/
+terminal CHOICE;
+
 nonterminal program;
 nonterminal StmtList opt_statement_lst, statement_lst;
 nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   rand_func_decl, number_stmt, origin_func_decl,
   distinct_decl, distribution_decl, parameter_decl,
-  evidence_stmt, query_stmt;
+  evidence_stmt, query_stmt, /*added by cheng*/ choice_func_decl;
 nonterminal Stmt evidence, value_evidence, symbol_evidence, query;
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
   quantified_formula, distribution_expr,
@@ -258,6 +261,10 @@ declaration_stmt ::=
   | parameter_decl : e {: RESULT = e; :}
   | distribution_decl :e {: RESULT = e; :}
 /*  | parfactor : e {: RESULT = e; :}  */
+
+
+  /*added by cheng*/
+  | choice_func_decl:e {: RESULT = e; :}
   ;
 
 type_decl ::= TYPE ID:typename SEMI
@@ -352,6 +359,16 @@ rand_func_decl ::=
     RANDOM type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
     dependency_statement_body:body SEMI
     {: RESULT = new RandomFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type, body); :}
+  ;
+  
+/*added by cheng*/
+/**
+ * declaration of choice function
+ */
+choice_func_decl ::=
+    CHOICE type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
+    dependency_statement_body:body SEMI
+    {: RESULT = new ChoiceFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type, body); :}
   ;
 
 /**
