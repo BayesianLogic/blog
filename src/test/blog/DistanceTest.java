@@ -1,7 +1,11 @@
-package blog.common;
+package test.blog;
 
 import junit.framework.TestCase;
 import java.util.*;
+
+import blog.common.Distance;
+import blog.common.UnaryFunction;
+import blog.common.Util;
 
 public class DistanceTest extends TestCase {
 
