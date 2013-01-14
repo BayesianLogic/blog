@@ -142,6 +142,7 @@ public class OnlineParticleFilterTest extends TestCase {
 		+	"      T -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.85})},"
 		+	"     S(t));";
 	
+	
 	@Test 
 	public void testCalculation() throws Exception {
 		Properties properties = new Properties();

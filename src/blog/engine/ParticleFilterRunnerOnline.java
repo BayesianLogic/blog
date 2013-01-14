@@ -208,13 +208,13 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		Properties properties = new Properties();
-		properties.setProperty("numParticles", "1");
+		properties.setProperty("numParticles", "1000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
-		boolean verbose = true;
+		boolean verbose = false;
 		boolean randomize = false;
 		
-		String modelFile = "ex_inprog/logistics/logistics.mblog";
+		String modelFile = "ex_inprog/logistics/simplemaze_choice.mblog";
 		Collection linkStrings = Util.list();
 		Collection queryStrings = Util.list("value(t)");
 
