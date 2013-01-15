@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import blog.ConstantInterp;
 import blog.absyn.Absyn;
 import blog.absyn.ArrayTy;
 import blog.absyn.BooleanExpr;
@@ -61,6 +60,7 @@ import blog.model.CardinalitySpec;
 import blog.model.Clause;
 import blog.model.ComparisonFormula;
 import blog.model.ConjFormula;
+import blog.model.ConstantInterp;
 import blog.model.DependencyModel;
 import blog.model.DisjFormula;
 import blog.model.EqualityFormula;
@@ -470,7 +470,7 @@ public class Semant {
 				// note will do type checking later
 				Object funcBody = transExpr(e.body);
 				ArgSpec funcValue = (ArgSpec) funcBody;
-				((NonRandomFunction) fun).setInterpretation(blog.ConstantInterp.class,
+				((NonRandomFunction) fun).setInterpretation(blog.model.ConstantInterp.class,
 						Collections.singletonList(funcValue));
 			}
 		} else if (e instanceof RandomFuncDec) {

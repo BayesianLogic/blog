@@ -41,6 +41,7 @@ import blog.common.CartesianProduct;
 import blog.model.ArgSpec;
 import blog.model.FuncAppTerm;
 import blog.model.LogicalVar;
+import blog.model.Substitution;
 import blog.model.Term;
 import ve.Potential;
 import ve.MultiArrayPotential;
