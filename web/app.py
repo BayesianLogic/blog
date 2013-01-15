@@ -20,11 +20,17 @@ with open(EXAMPLE_BLOG_PATH) as f:
 def run_process(script_name):
     command = ["./run.sh", "--displaycbn", script_name]
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    output = p.communicate()[0]
-    returncode = p.returncode
-    return output, returncode
+    output = os.linesep.join(p.communicate())
+    return output
+
+def ensure_dir(USER_STORE):
+    if not os.path.exists(USER_STORE):
+        os.makedirs(USER_STORE)
 
 def store_script(prefix, script):
+    #Check if directory exist
+    ensure_dir(USER_STORE)
+    
     #Write input into local file
     script_name = prefix+BLOG_EXTENSION
     input_handler = open(script_name, 'w')
@@ -40,9 +46,7 @@ def execute_script(script):
     prefix = USER_STORE + filename
 
     script_name = store_script(prefix, script)
-    output, returncode = run_process(script_name)
-
-    return output
+    return run_process(script_name)
 
 class blog_web_ui:
     def GET(self):
