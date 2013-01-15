@@ -37,7 +37,6 @@ package blog.model;
 
 import java.util.*;
 
-import blog.Substitution;
 import blog.bn.BayesNetVar;
 import blog.sample.EvalContext;
 

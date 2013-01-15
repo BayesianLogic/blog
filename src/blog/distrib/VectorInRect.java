@@ -46,7 +46,7 @@ import Jama.Matrix;
  * returns true on (x_1, x_2, ..., x_d) if min_1 &le; x_1 &le; max_1, ..., and
  * min_d &le; x_d &le; max_d.
  */
-public class VectorInRect extends blog.AbstractFunctionInterp {
+public class VectorInRect extends blog.model.AbstractFunctionInterp {
 	/**
 	 * Creates a new VectorInRect function interpretation with min and max values
 	 * for each dimension specified by the given parameter list.

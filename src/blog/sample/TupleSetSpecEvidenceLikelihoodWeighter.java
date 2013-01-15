@@ -1,7 +1,8 @@
-package blog;
+package blog.sample;
 
 import java.util.*;
 
+import blog.BLOGUtil;
 import blog.bn.BayesNetVar;
 import blog.common.HashMultiset;
 import blog.common.Multiset;
@@ -10,7 +11,6 @@ import blog.model.Evidence;
 import blog.model.SymbolEvidenceStatement;
 import blog.model.TupleSetSpec;
 import blog.model.ValueEvidenceStatement;
-import blog.sample.ClassicInstantiatingEvalContext;
 import blog.world.PartialWorld;
 
 

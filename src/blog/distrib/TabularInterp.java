@@ -36,9 +36,9 @@
 package blog.distrib;
 
 import java.util.*;
-import blog.AbstractFunctionInterp;
 import blog.common.HashMapWithPreimages;
 import blog.common.MapWithPreimages;
+import blog.model.AbstractFunctionInterp;
 import blog.model.Model;
 
 /**

@@ -38,7 +38,6 @@ package blog.sample;
 import java.util.List;
 import java.util.Properties;
 
-import blog.AfterSamplingListener;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;

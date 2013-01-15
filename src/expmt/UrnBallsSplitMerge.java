@@ -33,10 +33,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package expmt;
 
 import java.util.*;
 
+import blog.ObjectIdentifier;
 import blog.bn.BasicVar;
 import blog.bn.NumberVar;
 import blog.bn.RandFuncAppVar;

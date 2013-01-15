@@ -47,8 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import blog.ConstantInterp;
-import blog.FunctionInterp;
 import blog.common.Util;
 import blog.sample.EvalContext;
 

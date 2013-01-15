@@ -37,7 +37,6 @@ package blog.distrib;
 
 import java.util.*;
 
-import blog.DetCondProbDistrib;
 import blog.model.Clause;
 
 /**

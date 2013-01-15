@@ -46,6 +46,7 @@ import blog.model.Formula;
 import blog.model.FuncAppTerm;
 import blog.model.LogicalVar;
 import blog.model.Model;
+import blog.model.Substitution;
 import blog.model.Term;
 import blog.model.Type;
 import blog.sample.EvalContext;
