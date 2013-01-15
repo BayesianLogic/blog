@@ -35,11 +35,10 @@
 
 package blog.distrib;
 
-import blog.*;
+import java.util.List;
+
 import blog.common.Util;
 import blog.model.Type;
-
-import java.util.*;
 
 /**
  * Uniform distribution over a range of integers. This distribution has two
@@ -47,71 +46,71 @@ import java.util.*;
  * range is inclusive (it includes the upper and lower ends).
  */
 public class UniformInt extends AbstractCondProbDistrib {
-	/**
-	 * Interprets the parameters as a pair of integers (lower, upper) and creates
-	 * a uniform distribution over the range {lower, ..., upper}.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if params does not consist of exactly two Integer objects, or if
-	 *           lower > upper
-	 */
-	public UniformInt(List params) {
-		try {
-			lower = ((Number) params.get(0)).intValue();
-			upper = ((Number) params.get(1)).intValue();
-			if ((lower > upper) || (params.size() > 2)) {
-				throw new IllegalArgumentException();
-			}
-		} catch (RuntimeException e) {
-			throw new IllegalArgumentException(
-					"UniformInt CPD expects two integer arguments "
-							+ "[lower, upper] with lower <= upper.  Got: " + params);
-		}
-	}
+  /**
+   * Interprets the parameters as a pair of integers (lower, upper) and creates
+   * a uniform distribution over the range {lower, ..., upper}.
+   * 
+   * @throws IllegalArgumentException
+   *           if params does not consist of exactly two Integer objects, or if
+   *           lower > upper
+   */
+  public UniformInt(List params) {
+    try {
+      lower = ((Number) params.get(0)).intValue();
+      upper = ((Number) params.get(1)).intValue();
+      if ((lower > upper) || (params.size() > 2)) {
+        throw new IllegalArgumentException();
+      }
+    } catch (RuntimeException e) {
+      throw new IllegalArgumentException(
+          "UniformInt CPD expects two integer arguments "
+              + "[lower, upper] with lower <= upper.  Got: " + params);
+    }
+  }
 
-	/**
-	 * Returns 1 / (upper - lower + 1) if the given integer is in the range of
-	 * this distribution, otherwise returns zero. Takes no arguments.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if <code>args</code> is non-empty or <code>value</code> is not an
-	 *           Integer
-	 */
-	public double getProb(List args, Object value) {
-		if (!args.isEmpty()) {
-			throw new IllegalArgumentException(
-					"UniformInt CPD does not take any arguments.");
-		}
-		if (!(value instanceof Integer)) {
-			throw new IllegalArgumentException(
-					"UniformInt CPD defines distribution over objects of class "
-							+ "Integer, not " + value.getClass() + ".");
-		}
-		int x = ((Integer) value).intValue();
+  /**
+   * Returns 1 / (upper - lower + 1) if the given integer is in the range of
+   * this distribution, otherwise returns zero. Takes no arguments.
+   * 
+   * @throws IllegalArgumentException
+   *           if <code>args</code> is non-empty or <code>value</code> is not an
+   *           Integer
+   */
+  public double getProb(List args, Object value) {
+    if (!args.isEmpty()) {
+      throw new IllegalArgumentException(
+          "UniformInt CPD does not take any arguments.");
+    }
+    if (!(value instanceof Integer)) {
+      throw new IllegalArgumentException(
+          "UniformInt CPD defines distribution over objects of class "
+              + "Integer, not " + value.getClass() + ".");
+    }
+    int x = ((Integer) value).intValue();
 
-		if ((x >= lower) && (x <= upper)) {
-			return 1.0 / (upper - lower + 1);
-		}
-		return 0;
-	}
+    if ((x >= lower) && (x <= upper)) {
+      return 1.0 / (upper - lower + 1);
+    }
+    return 0;
+  }
 
-	/**
-	 * Returns a sample from this distribution.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if <code>args</code> is non-empty
-	 */
-	public Object sampleVal(List args, Type childType) {
-		if (!args.isEmpty()) {
-			throw new IllegalArgumentException(
-					"UniformInt CPD does not take any arguments.");
-		}
+  /**
+   * Returns a sample from this distribution.
+   * 
+   * @throws IllegalArgumentException
+   *           if <code>args</code> is non-empty
+   */
+  public Object sampleVal(List args, Type childType) {
+    if (!args.isEmpty()) {
+      throw new IllegalArgumentException(
+          "UniformInt CPD does not take any arguments.");
+    }
 
-		// rely on the fact that Util.random() returns a value in [0, 1)
-		double x = lower + Math.floor(Util.random() * (upper - lower + 1));
-		return new Integer((int) x);
-	}
+    // rely on the fact that Util.random() returns a value in [0, 1)
+    double x = lower + Math.floor(Util.random() * (upper - lower + 1));
+    return new Integer((int) x);
+  }
 
-	private int lower;
-	private int upper;
+  private int lower;
+  private int upper;
 }
