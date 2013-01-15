@@ -2,9 +2,6 @@ package blog.sample;
 
 import java.util.Properties;
 
-import blog.EvidenceLikelihoodWeighter;
-import blog.SymbolEvidenceLikelihoodWeighter;
-import blog.TupleSetSpecEvidenceLikelihoodWeighter;
 import blog.model.Model;
 
 /**

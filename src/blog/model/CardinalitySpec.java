@@ -37,7 +37,6 @@ package blog.model;
 
 import java.util.*;
 
-import blog.Substitution;
 import blog.common.Multiset;
 import blog.common.UnaryProcedure;
 import blog.objgen.ObjectSet;

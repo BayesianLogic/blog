@@ -3,12 +3,12 @@ package test.blog;
 import java.util.*;
 
 import blog.BLOGUtil;
-import blog.TupleSetSpecEvidenceLikelihoodWeighter;
 import blog.common.TupleIterator;
 import blog.common.Util;
 import blog.distrib.Gaussian;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.sample.TupleSetSpecEvidenceLikelihoodWeighter;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 import static blog.BLOGUtil.*;

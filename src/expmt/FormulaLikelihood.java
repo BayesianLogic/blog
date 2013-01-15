@@ -1,4 +1,4 @@
-package blog;
+package expmt;
 
 import java.util.*;
 
@@ -8,6 +8,7 @@ import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.AtomicFormula;
 import blog.model.ConjFormula;
+import blog.model.ConstantInterp;
 import blog.model.DisjFormula;
 import blog.model.EqualityFormula;
 import blog.model.Formula;
