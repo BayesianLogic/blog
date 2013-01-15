@@ -1,4 +1,4 @@
-package blog;
+package blog.sample;
 
 import blog.bn.BasicVar;
 

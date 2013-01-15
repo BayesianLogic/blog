@@ -47,6 +47,7 @@ import blog.model.EqualityFormula;
 import blog.model.Formula;
 import blog.model.LogicalVar;
 import blog.model.NegFormula;
+import blog.model.Substitution;
 import blog.model.Term;
 import blog.model.TrueFormula;
 import blog.model.Type;

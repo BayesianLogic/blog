@@ -36,7 +36,8 @@
 package blog.distrib;
 
 import java.util.*;
-import blog.AbstractFunctionInterp;
+
+import blog.model.AbstractFunctionInterp;
 
 /**
  * An interpretation for a Boolean function symbol, specified by a list of

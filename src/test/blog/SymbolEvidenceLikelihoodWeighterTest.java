@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import blog.BLOGUtil;
-import blog.LikelihoodAndWeight;
-import blog.SymbolEvidenceLikelihoodWeighter;
 import blog.bn.BasicVar;
 import blog.common.Util;
 import blog.distrib.Gaussian;
@@ -15,6 +13,8 @@ import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Term;
 import blog.model.ValueEvidenceStatement;
+import blog.sample.LikelihoodAndWeight;
+import blog.sample.SymbolEvidenceLikelihoodWeighter;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 

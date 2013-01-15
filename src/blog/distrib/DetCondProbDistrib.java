@@ -33,12 +33,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.distrib;
 
 import java.util.*;
 
 import blog.common.Util;
-import blog.distrib.AbstractCondProbDistrib;
 import blog.model.Type;
 
 
