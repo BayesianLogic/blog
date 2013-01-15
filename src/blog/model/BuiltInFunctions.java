@@ -43,9 +43,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import blog.AbstractFunctionInterp;
-import blog.ConstantInterp;
-import blog.FunctionInterp;
 import blog.common.numerical.MatrixLib;
 import blog.type.Timestep;
 

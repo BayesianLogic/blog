@@ -1,4 +1,4 @@
-package blog;
+package blog.sample;
 
 /**
  * A class for representing likelihoods coming from proposed distributions.

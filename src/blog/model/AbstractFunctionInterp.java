@@ -33,11 +33,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
-import blog.model.Type;
 
 /**
  * Abstract implementation of FunctionInterp including a getInverseTuples method

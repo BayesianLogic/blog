@@ -44,12 +44,12 @@ import java.util.ListIterator;
 import java.util.Properties;
 import java.util.Set;
 
-import blog.AfterSamplingListener;
 import blog.DBLOGUtil;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
+import blog.sample.AfterSamplingListener;
 import blog.sample.DMHSampler;
 import blog.sample.Sampler;
 

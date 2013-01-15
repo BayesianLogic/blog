@@ -2,7 +2,6 @@ package blog.sample;
 
 import java.util.*;
 
-import blog.WeightedValue;
 import blog.bn.VarWithDistrib;
 import blog.world.PartialWorld;
 

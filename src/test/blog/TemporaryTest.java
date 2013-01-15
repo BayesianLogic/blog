@@ -3,15 +3,15 @@ package test.blog;
 import java.util.*;
 
 import blog.BLOGUtil;
-import blog.TruncatedUniformAndGaussianMCMCSampler;
-import blog.WeightedValue;
-import blog.TruncatedUniformAndGaussianMCMCSampler.SampleIterator;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.sample.MHSampler;
+import blog.sample.TruncatedUniformAndGaussianMCMCSampler;
 import blog.sample.VariableGibbsProposer;
+import blog.sample.WeightedValue;
+import blog.sample.TruncatedUniformAndGaussianMCMCSampler.SampleIterator;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;
