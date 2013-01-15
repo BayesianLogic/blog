@@ -33,53 +33,51 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.model;
 
 import java.util.*;
 
-import blog.common.Util;
-
 
 /**
- * Implementation of FunctionInterp for constants (zero-ary functions). In this
- * case, the interpretation is specified by just a single value.
+ * Interface for classes that define the interpretation of a non-random function
+ * symbol. An interpretation is just a function from argument tuples to values.
+ * Implementations of this class should have a constructor that takes a List of
+ * Objects as its sole argument; these objects are parameters that define the
+ * interpretation.
  */
-public class ConstantInterp extends AbstractFunctionInterp {
+public interface FunctionInterp {
 	/**
-	 * Expects a single parameter, namely the function value.
+	 * Returns the value of this function on the given tuple of arguments.
+	 * Implementations can assume that the arguments are of the expected types and
+	 * are not Model.NULL.
 	 */
-	public ConstantInterp(List params) {
-		if (params.size() != 1) {
-			throw new IllegalArgumentException(
-					"ConstantInterp expects a single parameter.");
-		}
+	Object getValue(List args);
 
-		value = params.get(0);
-	}
+	/**
+	 * Returns the set of argument tuples that yield the given value, if this set
+	 * is finite and can be computed easily. Otherwise returns null.
+	 * 
+	 * @return Set of List of objects
+	 */
+	Set getInverseTuples(Object value);
 
-	public Object getValue(List args) {
-		if (!args.isEmpty()) {
-			throw new IllegalArgumentException("ConstantInterp expects no arguments.");
-		}
-		return value;
-	}
-
-	public Set getInverseTuples(Object v) {
-		if (value.equals(v)) {
-			return Collections.singleton(Collections.EMPTY_LIST);
-		}
-		return Collections.EMPTY_SET;
-	}
-
-	public boolean equals(Object o) {
-		if (!(o instanceof ConstantInterp))
-			return false;
-		return Util.equalsOrBothNull(value, ((ConstantInterp) o).value);
-	}
-
-	public int hashCode() {
-		return value.hashCode();
-	}
-
-	private Object value;
+	/**
+	 * Returns the set of values for argument <code>argIndex</code> that, in
+	 * combination with the given values for the other arguments, yield the given
+	 * function value. If this set cannot be computed straightforwardly, returns
+	 * null.
+	 * 
+	 * @param args
+	 *          tuple of arguments; the entry at <code>argIndex</code> is ignored
+	 * 
+	 * @param argIndex
+	 *          index of argument whose possible values are to be returned
+	 * 
+	 * @param argType
+	 *          type of the argument at index argIndex
+	 * 
+	 * @param value
+	 *          value of this function
+	 */
+	Set getInverseArgs(List args, int argIndex, Type argType, Object value);
 }

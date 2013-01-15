@@ -4,8 +4,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+import expmt.FormulaLikelihood;
+
 import blog.BLOGUtil;
-import blog.FormulaLikelihood;
 import blog.common.Util;
 import blog.model.DisjFormula;
 import blog.model.Formula;

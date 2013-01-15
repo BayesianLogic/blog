@@ -49,7 +49,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import blog.ObjectIdentifier;
-import blog.ParentRecEvalContext;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.bn.CBN;
@@ -75,6 +74,7 @@ import blog.model.RandomFunction;
 import blog.objgen.AbstractObjectSet;
 import blog.objgen.ObjectIterator;
 import blog.objgen.ObjectSet;
+import blog.sample.ParentRecEvalContext;
 
 /**
  * An implementation of the PartialWorld interface that just requires concrete

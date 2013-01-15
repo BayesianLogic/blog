@@ -1,4 +1,4 @@
-package blog;
+package blog.sample;
 
 import blog.model.Evidence;
 import blog.world.PartialWorld;

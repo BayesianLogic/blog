@@ -42,7 +42,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import blog.Substitution;
 import blog.common.HashMapDiff;
 import blog.common.UnaryProcedure;
 import blog.objgen.CompiledSetSpec;
