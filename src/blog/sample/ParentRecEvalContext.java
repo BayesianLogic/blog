@@ -33,15 +33,15 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog;
+package blog.sample;
 
 import java.util.*;
 
+import blog.ObjectIdentifier;
 import blog.bn.BasicVar;
 import blog.bn.NumberVar;
 import blog.bn.OriginVar;
 import blog.model.NonGuaranteedObject;
-import blog.sample.DefaultEvalContext;
 import blog.world.PartialWorld;
 
 /**

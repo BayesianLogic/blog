@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import blog.Substitution;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;

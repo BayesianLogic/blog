@@ -38,6 +38,7 @@ package fove;
 import java.util.*;
 import blog.*;
 import blog.model.LogicalVar;
+import blog.model.Substitution;
 import blog.model.Term;
 
 public class Propositionalization extends LiftedInfOperator {

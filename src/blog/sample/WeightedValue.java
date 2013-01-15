@@ -1,4 +1,4 @@
-package blog;
+package blog.sample;
 
 public class WeightedValue {
 	public Object value;

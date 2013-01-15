@@ -16,6 +16,7 @@ import blog.bn.BayesNetVar;
 import blog.common.*;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
+import blog.model.ConstantInterp;
 import blog.model.Evidence;
 import blog.model.FuncAppTerm;
 import blog.model.Model;
