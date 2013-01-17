@@ -109,7 +109,7 @@ random String actionName(Timestep t){
 
 
 random Real reward(Timestep t){
-  if(exists Box b exists Truck tr (applied_Unload(b,tr,t) & (TruckIn(c3,tr,t)))) then 
+  if(exists Box b exists Truck tr (applied_Unload(b,tr,t) & (TruckIn(c3,tr,t) & BoxOn(b,tr,t)))) then 
     = 10.0
   else
     = 0.0
@@ -183,7 +183,20 @@ random Boolean foo_unload(Box b, Timestep t){
     = false
 };
 
+random Integer qstate(Timestep t){
+  if (t==@0) then
+    = 0                                                                                                               // final state
+  else if (qstate(Prev(t))==1) then
+    = 2                                                                                                               // drop box
+  else if (qstate(Prev(t))==0) then
+    = 1                                                                                                               // transport box
+  else if (qstate(Prev(t))==2) then
+    = 3                                                                                                               // move truck
+  else if (qstate(Prev(t))==3) then
+    = 0    
+};
 
+/*
 random Integer qstate(Timestep t){
   if (true & forall Box b (true & BoxIn(b,c3,t))) then
     = 4                                                                                                               // final state
@@ -192,12 +205,14 @@ random Integer qstate(Timestep t){
   else if (true & exists Box b exists Truck tr (true & BoxOn(b,tr,t))) then
     = 1                                                                                                               // transport box
   else if (exists Box b exists Truck tr exists City c (BoxIn(b,c,t) & TruckIn(c,tr,t) & c!=c3) ) then
-    = 0                                                                                                               // pickup box
+    = 0                            	    runner.moveOn();
+	    out.println("obs chosen_Unload(b1, t1, @4) = true;");
+	    runner.moveOn();                                                                                   // pickup box
   else
     = 3                                                                                                               // move truck
     
 };
-
+*/
 /* 
  * 
  * 
@@ -209,5 +224,15 @@ random Integer qstate(Timestep t){
  * 
  * 
  */
-obs pass (@20) = true;
-query value(@15);
+//obs pass (@20) = true;
+query value(@2);
+query value(@3);
+query value(@4);
+query value(@5);
+query value(@6);
+query actionName(@2);
+query actionName(@3);
+query actionName(@4);
+query actionName(@5);
+query actionName(@6);
+
