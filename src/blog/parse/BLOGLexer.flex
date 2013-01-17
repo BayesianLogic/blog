@@ -217,6 +217,8 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 "|"     { return symbol(BLOGTokenConstants.OR); }
 "!"			{ return symbol(BLOGTokenConstants.NOT); }
 "@"     { return symbol(BLOGTokenConstants.AT); }
+"->"		{ return symbol(BLOGTokenConstants.RIGHTARROW); }
+"=>"    { return symbol(BLOGTokenConstants.DOUBLERIGHTARROW); }
 
 
 /* seperator */
@@ -230,7 +232,6 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 ":"			{ return symbol(BLOGTokenConstants.COLON);}
 "."     { return symbol(BLOGTokenConstants.DOT); }
 ","			{ return symbol(BLOGTokenConstants.COMMA);}
-"->"		{ return symbol(BLOGTokenConstants.RIGHTARROW);}
 "="			{ return symbol(BLOGTokenConstants.EQ); }
 "~"			{ return symbol(BLOGTokenConstants.DISTRIB); }
 "#"     { return symbol(BLOGTokenConstants.NUMSIGN); }
