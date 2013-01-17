@@ -42,4 +42,5 @@ demo:
 sync:
 	git remote prune origin
 	git pull
+	git push
 
