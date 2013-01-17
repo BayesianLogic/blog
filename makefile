@@ -39,3 +39,7 @@ jar: compile
 demo:
 	./run.sh example/poisson-ball.blog
 
+sync:
+	git remote prune origin
+	git pull
+
