@@ -156,15 +156,11 @@ public class OnlineParticleFilterTest extends TestCase {
 		Util.initRandom(false);
 		Util.setVerbose(false);
 		///
-	    PipedInputStream pin = new PipedInputStream();
-	    PipedOutputStream pout = new PipedOutputStream(pin);
-	 
-	    PrintStream out = new PrintStream(pout);
-	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
+
+	    
 	    setModel(hmmModelString);
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    runner.eviInputStream = pin;
-	    runner.in = new BufferedReader(new InputStreamReader(pin));
+	    PrintStream out = (PrintStream) runner.eviOutputStream;
 	    
 	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
 
@@ -201,15 +197,11 @@ public class OnlineParticleFilterTest extends TestCase {
 		properties.setProperty("numParticles", "1000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
-		boolean randomize = true;
 		Collection linkStrings = Util.list();
 		Collection queryStrings = Util.list();
 
 		Util.initRandom(false);
 
-	    PipedInputStream pin = new PipedInputStream();
-	    PipedOutputStream pout = new PipedOutputStream(pin);
-	 
 	    /*
 	    File f = new File("input.txt");
 	    f.createNewFile();
@@ -222,12 +214,10 @@ public class OnlineParticleFilterTest extends TestCase {
 	     
 	    */
 	    
-	    PrintStream out = new PrintStream(pout);
-	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
 	    setModel(burglaryModelString);
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    runner.eviInputStream = pin;
-	    runner.in = new BufferedReader(new InputStreamReader(pin));
+	    PrintStream out = (PrintStream) runner.eviOutputStream;
+	    
 	    
 	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
 
@@ -272,22 +262,14 @@ public class OnlineParticleFilterTest extends TestCase {
 		properties.setProperty("numParticles", "1000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
-		boolean randomize = true;
 		Collection linkStrings = Util.list();
 		Collection queryStrings = Util.list("Burglary(h1, t)");
 
 		Util.initRandom(false);
 
-	    PipedInputStream pin = new PipedInputStream();
-	    PipedOutputStream pout = new PipedOutputStream(pin);
-	 
-	    PrintStream out = new PrintStream(pout);
-	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
-
-		
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    runner.eviInputStream = pin;
-	    runner.in = new BufferedReader(new InputStreamReader(pin));
+	    PrintStream out = (PrintStream) runner.eviOutputStream;
+	    
 	    
 	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
 
@@ -313,16 +295,6 @@ public class OnlineParticleFilterTest extends TestCase {
 	    out.println(""); 
 	    runner.moveOn();
 	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @6)]");
-	}
-
-	private void assertProb(String evidenceAndQuery, String valueString,
-			double expected) throws Exception {
-		ModelEvidenceQueries meq = BLOGUtil.parseAndTranslateFromString(model,
-				evidenceAndQuery);
-		particleFilter.take(meq.evidence);
-		particleFilter.answer(meq.queries);
-		assertEquals(expected, BLOGUtil.getProbabilityByString(
-				getQuery(meq.queries), model, valueString), delta);
 	}
 
 

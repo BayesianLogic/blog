@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringReader;
@@ -38,7 +40,11 @@ import blog.world.PartialWorld;
 public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	public BufferedReader in;
 	public InputStream eviInputStream;
-	public PrintStream eviOutputStream;
+	public OutputStream eviOutputStream;
+	public PrintStream queryOutputStream;
+	
+
+	
 	public ParticleFilterRunnerOnline(Model model, Collection linkStrings,
 			Collection queryStrings, Properties particleFilterProperties) {
 		super(model, particleFilterProperties);
@@ -46,11 +52,23 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		this.queryStrings = queryStrings;
 		evidenceGenerator = new OPFevidenceGenerator(model, linkStrings,
 				queryStrings);
-		evidenceGenerator.afterMove = afterMoveForward; // this should always be so.
-		afterMove = monitorGeneratorWorld; // this is just a default and the user can change it
+		//evidenceGenerator.afterMove = afterMoveForward; // this should always be so.
+		//afterMove = monitorGeneratorWorld; // this is just a default and the user can change it
+
 		
-		eviInputStream = System.in;
-		eviOutputStream = System.out;
+		PipedInputStream pin = new PipedInputStream();
+		PipedOutputStream pout = null;
+		try {
+			 pout = new PipedOutputStream(pin);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		eviInputStream = pin;
+		eviOutputStream = new PrintStream(pout);
+		queryOutputStream = System.out;
 
 		in = new BufferedReader(new InputStreamReader(eviInputStream));
 		Util.setVerbose(false);
@@ -156,7 +174,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 
 			System.out.println("PF estimate of " + query + ":");
-			query.printResults(eviOutputStream);
+			query.printResults(queryOutputStream);
 		}
 	}
 
