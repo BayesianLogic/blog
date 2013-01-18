@@ -38,8 +38,7 @@ public class ChoiceTest extends TestCase {
 	private double delta = 0.000001; // the allowed difference between
 																// expected and computed values
 	public static void main (String[] args) throws Exception{
-		ChoiceTest x = new ChoiceTest();
-		x.test_logistics();
+		System.out.println(logisticsModelString);
 	}
 	/** Sets particle filter properties to default values before every test. */
 	public void setUp() {
@@ -74,11 +73,11 @@ public class ChoiceTest extends TestCase {
 			+ 	"};"
 			
 			+	"random Boolean applied_Load(Box b, Truck tr, Timestep t) {"
-			+	"  if (true) then = (chosen_Load(b, tr, t) & succeed_action(t))"
+			+	"  if (exists City c (BoxIn ( b, c, t) & TruckIn (c, tr, t))) then = (chosen_Load(b, tr, t) & succeed_action(t)) else = false"
 			+	"};"
 
 			+	"random Boolean applied_Unload(Box b, Truck tr, Timestep t) {"
-			+	"  if (true) then = (chosen_Unload(b, tr, t) & succeed_action(t))"
+			+	"  if (BoxOn ( b, tr, t) == true ) then = (chosen_Unload(b, tr, t) & succeed_action(t))"
 			+	"};"
 
 			+	"random Boolean applied_Drive(City c, Truck tr, Timestep t) {"
@@ -277,14 +276,14 @@ public class ChoiceTest extends TestCase {
 	@Test
 	public void test_logistics() throws Exception {
 		Properties properties = new Properties();
-		properties.setProperty("numParticles", "1000");
+		properties.setProperty("numParticles", "2000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		boolean randomize = true;
 		Collection linkStrings = Util.list();
 		Collection queryStrings = Util.list("value(t)","actionName(t)");
 
-		Util.initRandom(false);
+		Util.initRandom(true);
 		Util.setVerbose(true);
 
 	    setModel(logisticsModelString);
