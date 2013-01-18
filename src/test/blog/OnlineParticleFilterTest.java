@@ -32,7 +32,7 @@ import org.junit.Test;
  * however. If so, the user can check the indicated error to see if things look
  * ok, or run the test again.
  */
-public class OnlineParticleFilterTest extends TestCase {
+public class OnlineParticleFilterTest  {
 
 	// Configuration:
 	private double delta = 0.000001; // the allowed difference between
