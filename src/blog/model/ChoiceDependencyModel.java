@@ -20,7 +20,10 @@ import blog.sample.EvalContext;
 
 public class ChoiceDependencyModel extends DependencyModel {
 	private class ChoiceCPD implements CondProbDistrib{
-
+		Object mdv;
+		public ChoiceCPD(Object defaultVal){
+			mdv=defaultVal;
+		}
 		@Override
 		public double getProb(List args, Object childValue) {
 			return 1;
@@ -74,7 +77,7 @@ public class ChoiceDependencyModel extends DependencyModel {
 	 * satisfied clause and its argument values, then this method returns null.
 	 */
 	public Distrib getDistrib(EvalContext context) {
-		return new Distrib(new ChoiceCPD(), new ArrayList());
+		return new Distrib(new ChoiceCPD(defaultVal), new ArrayList());
 	}
 
 

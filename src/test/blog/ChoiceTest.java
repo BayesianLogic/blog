@@ -37,7 +37,9 @@ public class ChoiceTest extends TestCase {
 	// Configuration:
 	private double delta = 0.000001; // the allowed difference between
 																// expected and computed values
-	public static void main (String[] args){
+	public static void main (String[] args) throws Exception{
+		ChoiceTest x = new ChoiceTest();
+		x.test_logistics();
 	}
 	/** Sets particle filter properties to default values before every test. */
 	public void setUp() {
@@ -59,16 +61,16 @@ public class ChoiceTest extends TestCase {
 			+	"distinct Truck t1, t2;"
 			+	"distinct City c1, c2, c3;"
 
-			+	"choice Boolean chosen_Load(Box b, Truck tr, Timestep t) {"
-			+	"  if (true) then = true"
+			+	"random Boolean chosen_Load(Box b, Truck tr, Timestep t) {"
+			+	"  choice"
 			+	"};"
 
-			+	"choice Boolean chosen_Unload(Box b, Truck tr, Timestep t) {"
-			+	"  if (true) then = true"
+			+	"random Boolean chosen_Unload(Box b, Truck tr, Timestep t) {"
+			+	"  choice"
 			+	"};"
 
-			+	"choice Boolean chosen_Drive(City c, Truck tr, Timestep t) {"
-			+	"  if (true) then = true"
+			+	"random Boolean chosen_Drive(City c, Truck tr, Timestep t) {"
+			+	"  choice"
 			+ 	"};"
 			
 			+	"random Boolean applied_Load(Box b, Truck tr, Timestep t) {"
@@ -280,7 +282,7 @@ public class ChoiceTest extends TestCase {
 		properties.setProperty("numMoves", "1");
 		boolean randomize = true;
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("value(t)");
+		Collection queryStrings = Util.list("value(t)","actionName(t)");
 
 		Util.initRandom(false);
 		Util.setVerbose(true);
