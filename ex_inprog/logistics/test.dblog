@@ -1,0 +1,15 @@
+
+random Integer qstate(Timestep t) {
+  if t != @0 then
+    if t == @3 then 
+      =1
+    else
+      = qstate(Prev(t)) *3
+  else
+    = 1
+};
+
+
+query qstate(@5);
+
+
