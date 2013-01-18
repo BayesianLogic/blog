@@ -44,6 +44,8 @@ import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
 /*added by cheng*/
 import blog.absyn.ChoiceFuncDec;
+import blog.absyn.ChoiceExpr;
+
 import blog.absyn.Stmt;
 import blog.absyn.StmtList;
 import blog.absyn.StringExpr;
@@ -420,13 +422,6 @@ public class Semant {
 			OriginFunction f = new OriginFunction(name, argTy, resTy);
 			fun = f;
 		} 
-		/*added by cheng*/
-		else if (e instanceof ChoiceFuncDec) {
-			// dependency statement will added later
-			RandomFunction f = new RandomFunction(name, argTy, resTy, null);
-			f.setArgVars(argVars);
-			fun = f;
-		} 
 		model.addFunction(fun);
 	}
 
@@ -488,11 +483,6 @@ public class Semant {
 					fun.getDefaultValue());
 			((RandomFunction) fun).setDepModel(dm);
 		}
-		/*added by cheng*/
-		  else if (e instanceof ChoiceFuncDec) {
-			DependencyModel dm = new ChoiceDependencyModel(fun.getRetType(), fun.getDefaultValue());
-			((RandomFunction) fun).setDepModel(dm);
-		}
 		currFunction = null;
 	}
 
@@ -543,6 +533,10 @@ public class Semant {
 			cl.add((Clause) body);
 		} else if (e instanceof IfExpr) {
 			cl = (List<Clause>) body;
+		}
+		/*added by cheng*/
+		else if (e instanceof ChoiceExpr) {
+			return new ChoiceDependencyModel(resTy, defVal);
 		} else {
 			error(e.line, e.col, "invalid body of dependency clause");
 		}
