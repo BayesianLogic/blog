@@ -1,0 +1,49 @@
+// declare logistics problem objects and actions as BLOG objects
+type Load; type Unload; type Drive;
+type Box;  type Truck;  type City;
+
+// declare the individual objects
+guaranteed Box b1, b2, b3;
+guaranteed Truck t1, t2, t3;
+guaranteed City c1, c2, c3;
+
+random Boolean Drive(City, Truck, NaturalNum);
+
+
+random Boolean UniqueDrive(NaturalNum);
+
+random Boolean TruckIn(City, Truck, NaturalNum);
+
+
+
+
+Drive (c, tr, t) {
+
+  if tr != t1 | c != c3 then = false
+  else
+  ~ TabularCPD[[0.1]]()
+  //= false
+};
+
+
+UniqueDrive(t) {
+  //= (forall NaturalNum t forall  City c forall  Truck tr forall  City c2 forall  Truck tr2
+  //    (Drive(c, tr, t) & Drive(c2, tr2, t) -> c = c2 & tr = tr2))
+  = (forall  City c forall  Truck tr forall  City c2 forall  Truck tr2
+      ((Drive(c, tr, t) & Drive(c2, tr2, t) ) -> (c = c2 & tr = tr2)))
+};
+
+
+TruckIn(c, tr, t) {
+  if t = 0 & c = c1 then
+    = true
+  elseif t = 0 & c != c1 then
+    = false
+  else
+    = Drive(c, tr, Pred(t))
+      | TruckIn(c, tr, Pred(t))
+      & !(exists City c2 (Drive(c2, tr, Pred(t)) & c2 != c))
+};
+
+
+

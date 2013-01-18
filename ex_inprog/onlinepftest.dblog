@@ -1,0 +1,44 @@
+type House;
+distinct House h1, h2, h3;
+
+random Boolean Burglary(House h, Timestep t) {
+  if (t == @0) then
+    ~ Bernoulli(0.1)
+  else if (Burglary(h, Prev(t)) & true) then
+    ~ Bernoulli(0.001)
+  else
+    ~ Bernoulli(0.12)
+};
+
+random Boolean Earthquake(Timestep t) {
+  if (t == @0) then
+    ~ Bernoulli(0.2)
+  else if (Earthquake(Prev(t)) & true) then
+    ~ Bernoulli(0.3)
+  else
+    ~ Bernoulli(0.1)
+};
+random Boolean Alarm(House h, Timestep t) {~ TabularCPD(
+          {[true, true] -> ~ Bernoulli(0.95),
+       	   [true, false] -> ~ Bernoulli(0.94),
+				   [false, true] -> ~ Bernoulli(0.29),
+				   [false, false] -> ~ Bernoulli(0.001)},
+			     [Burglary(h, t), Earthquake(t)])
+			     };
+
+random Boolean JohnCalls(House h, Timestep t) {~ TabularCPD({true -> ~ Bernoulli(0.9),
+       	       		   	       false -> ~ Bernoulli(0.05)}, Alarm(h, t))};
+
+random Boolean MaryCalls(House h, Timestep t) {~ TabularCPD({true -> ~ Bernoulli(0.7),
+       	       		   	       false -> ~ Bernoulli(0.01)}, Alarm(h, t))};
+
+random House foo (Timestep t){
+  ~ UniformChoice({House h})
+};
+
+
+obs JohnCalls(foo(@0), @0) = true;
+obs MaryCalls(foo(@0), @0) = true;
+
+
+query Burglary(h1, @0);
