@@ -43,7 +43,6 @@ public class ChoiceDependencyModel extends DependencyModel {
 
 	public ChoiceDependencyModel(Type childType, Object defaultVal) {
 		super(new LinkedList(), childType, defaultVal);
-		// TODO Auto-generated constructor stub
 	}
 
 
@@ -54,7 +53,7 @@ public class ChoiceDependencyModel extends DependencyModel {
 	}
 
 	public Object getDefaultValue() {
-		return defaultVal;
+		return super.getDefaultValue();
 	}
 
 	/**
@@ -77,7 +76,7 @@ public class ChoiceDependencyModel extends DependencyModel {
 	 * satisfied clause and its argument values, then this method returns null.
 	 */
 	public Distrib getDistrib(EvalContext context) {
-		return new Distrib(new ChoiceCPD(defaultVal), new ArrayList());
+		return new Distrib(new ChoiceCPD(super.getDefaultValue()), new ArrayList());
 	}
 
 
@@ -107,7 +106,5 @@ public class ChoiceDependencyModel extends DependencyModel {
 		return 0;
 	}
 
-
-	private Object defaultVal;
 
 }
