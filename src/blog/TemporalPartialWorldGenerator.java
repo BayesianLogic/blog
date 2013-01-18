@@ -83,7 +83,8 @@ public class TemporalPartialWorldGenerator {
 	public PartialWorld currentPartialWorld;
 	public int lastTimeStep = -1;
 	private Collection latestQueries;
-	private TemporalQueriesInstantiator queryInstantiator;
+	protected TemporalQueriesInstantiator queryInstantiator;
+	//Cheng: changed visibility of queryInstantiator to protected.
 
 	/**
 	 * If present, this function is evaluated on the query map (indexed by
