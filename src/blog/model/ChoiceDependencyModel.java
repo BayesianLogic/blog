@@ -36,7 +36,7 @@ public class ChoiceDependencyModel extends DependencyModel {
 
 		@Override
 		public Object sampleVal(List args, Type childType) {
-			return Boolean.FALSE;
+			return mdv;
 		}
 	
 	}
