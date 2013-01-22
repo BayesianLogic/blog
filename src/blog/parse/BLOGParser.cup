@@ -138,6 +138,9 @@ terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET; // paired seperator
 /*added by cheng*/
 terminal CHOICE;
 
+/*added by cheng*/
+terminal CHOICE;
+
 nonterminal program;
 nonterminal StmtList opt_statement_lst, statement_lst;
 nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,

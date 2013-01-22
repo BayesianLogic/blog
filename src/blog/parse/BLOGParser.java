@@ -1913,6 +1913,15 @@ class CUP$BLOGParser$actions {
           return CUP$BLOGParser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
+          case 55: // dependency_statement_body ::= CHOICE 
+            {
+              Expr RESULT = null;
+		 RESULT = new ChoiceExpr(currLineno(), currColno()); 
+              CUP$BLOGParser$result = new java_cup.runtime.Symbol(32/*dependency_statement_body*/, ((java_cup.runtime.Symbol)CUP$BLOGParser$stack.elementAt(CUP$BLOGParser$top-0)).left, ((java_cup.runtime.Symbol)CUP$BLOGParser$stack.elementAt(CUP$BLOGParser$top-0)).right, RESULT);
+            }
+          return CUP$BLOGParser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
           case 54: // dependency_statement_body ::= IF expression dependency_statement_body elseif_list 
             {
               Expr RESULT = null;
