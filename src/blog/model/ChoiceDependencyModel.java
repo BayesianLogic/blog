@@ -64,9 +64,13 @@ public class ChoiceDependencyModel extends DependencyModel {
 	 * If the context is not complete enough to determine the first satisfied
 	 * clause and its argument values, this method returns null.
 	 */
+	@SuppressWarnings("unused")
 	public Distrib getDistribWithBinding(EvalContext context, LogicalVar[] vars,
 			Object[] objs, Object valueWhenArgsDontExist) {
 		DependencyModel.Distrib distrib = getDistrib(context);
+		if (objs[0] instanceof blog.bn.DerivedVar){
+			int a =1;
+		}
 		return distrib;
 	}
 

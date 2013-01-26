@@ -36,10 +36,10 @@ public class ChoiceTest extends TestCase {
 
 	// Configuration:
 	private double delta = 0.000001; // the allowed difference between
-																// expected and computed values
+							/*									// expected and computed values
 	public static void main (String[] args) throws Exception{
 		System.out.println(logisticsModelString);
-	}
+	}*/
 	/** Sets particle filter properties to default values before every test. */
 	public void setUp() {
 		Util.initRandom(false);
@@ -73,8 +73,10 @@ public class ChoiceTest extends TestCase {
 			+ 	"};"
 			
 			+	"random Boolean applied_Load(Box b, Truck tr, Timestep t) {"
-			+	"  if (exists City c (BoxIn ( b, c, t) & TruckIn (c, tr, t))) then = (chosen_Load(b, tr, t) & succeed_action(t)) else = false"
+			+	"  if (exists City c (BoxIn ( b, c, t) & TruckIn (c, tr, t))) then = (chosen_Load(foo(b), tr, t) & succeed_action(t)) else = false"
 			+	"};"
+			
+			+	"random Box foo (Box b) {if true then = b};"
 
 			+	"random Boolean applied_Unload(Box b, Truck tr, Timestep t) {"
 			+	"  if (BoxOn ( b, tr, t) == true ) then = (chosen_Unload(b, tr, t) & succeed_action(t))"
