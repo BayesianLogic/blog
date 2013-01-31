@@ -44,7 +44,10 @@ import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
 /*added by cheng*/
 import blog.absyn.ChoiceFuncDec;
-import blog.absyn.ChoiceExpr;
+import blog.model.EvidenceWithChoice;
+import blog.absyn.ChoiceEvidence;
+import blog.model.ChoiceDependencyModel;
+import blog.model.ChoiceEvidenceStatement;
 
 import blog.absyn.Stmt;
 import blog.absyn.StmtList;
@@ -56,12 +59,13 @@ import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
 import blog.distrib.EqualsCPD;
+import blog.engine.ParticleFilterRunnerOnline;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
-import blog.model.ChoiceDependencyModel;
+
 import blog.model.Clause;
 import blog.model.ComparisonFormula;
 import blog.model.ConjFormula;
@@ -533,10 +537,6 @@ public class Semant {
 			cl.add((Clause) body);
 		} else if (e instanceof IfExpr) {
 			cl = (List<Clause>) body;
-		}
-		/*added by cheng*/
-		else if (e instanceof ChoiceExpr) {
-			return new ChoiceDependencyModel(resTy, defVal);
 		} else {
 			error(e.line, e.col, "invalid body of dependency clause");
 		}
@@ -554,11 +554,50 @@ public class Semant {
 			transEvi((ValueEvidence) e);
 		} else if (e instanceof SymbolEvidence) {
 			transEvi((SymbolEvidence) e);
-		} else {
+		} 
+		/*added by cheng*/
+		else if (e instanceof ChoiceEvidence){
+			transEvi((ChoiceEvidence) e);
+		}
+		else {
 			error(e.line, e.col, "Unsupported Evidence type: " + e);
 		}
 	}
 
+	/**
+	 * valid evidence format include (will be checked in semantic checking)
+	 * 
+	 * function_call = expression;
+	 * 
+	 * @param e
+	 */
+	/*added by cheng*/
+	void transEvi(ChoiceEvidence e) {
+		FuncAppTerm left = null;
+		try{
+			left = (FuncAppTerm) transExpr(e.left);
+		}
+		catch(ClassCastException ex){
+			error(e.left.line, e.left.col, "Semant.transEvi: Tried to parse choice evidence that does not have func_call as left hand side!");
+		}
+		Object value = transExpr(e.right);
+		if (!(evidence instanceof EvidenceWithChoice)){
+			error(e.left.line, e.left.col, "Semant.transEvi: cannot use choice evidence outside of particlefilterrunneronline!");
+		}
+		if (value instanceof ArgSpec) {
+			if (value != null)
+				((EvidenceWithChoice) evidence).addChoiceEvidence(new ChoiceEvidenceStatement((FuncAppTerm) left,
+						(ArgSpec) value));
+			else
+				error(e.line, e.col,
+						"type mistach for observation or translation error");
+		} else {
+			error(e.right.line, e.right.col,
+					"Invalid expression on the right side of evidence.");
+		}
+
+	}
+	
 	/**
 	 * valid evidence format include (will be checked in semantic checking)
 	 * 

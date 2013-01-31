@@ -60,17 +60,11 @@ public class ChoiceTest extends TestCase {
 			+	"distinct Truck t1, t2;"
 			+	"distinct City c1, c2, c3;"
 
-			+	"random Boolean chosen_Load(Box b, Truck tr, Timestep t) {"
-			+	"  choice"
-			+	"};"
+			+	"fixed Boolean chosen_Load(Box b, Truck tr, Timestep t) = ListInterp(3);"
 
-			+	"random Boolean chosen_Unload(Box b, Truck tr, Timestep t) {"
-			+	"  choice"
-			+	"};"
+			+	"fixed Boolean chosen_Unload(Box b, Truck tr, Timestep t) = ListInterp(3);"
 
-			+	"random Boolean chosen_Drive(City c, Truck tr, Timestep t) {"
-			+	"  choice"
-			+ 	"};"
+			+	"fixed Boolean chosen_Drive(City c, Truck tr, Timestep t) = ListInterp(3);"
 			
 			+	"random Boolean applied_Load(Box b, Truck tr, Timestep t) {"
 			+	"  if (exists City c (BoxIn ( b, c, t) & TruckIn (c, tr, t))) then = (chosen_Load(foo(b), tr, t) & succeed_action(t)) else = false"
@@ -283,7 +277,7 @@ public class ChoiceTest extends TestCase {
 		properties.setProperty("numMoves", "1");
 		boolean randomize = true;
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("value(t)","actionName(t)");
+		Collection queryStrings = Util.list("value(t)","actionName(t)", "chosen_Load(b1, t1, t)");
 
 		Util.initRandom(true);
 		Util.setVerbose(true);
@@ -292,19 +286,19 @@ public class ChoiceTest extends TestCase {
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
 	    PrintStream out = (PrintStream) runner.eviOutputStream;
 	    
-	    out.println("obs chosen_Load(b1, t1, @0) = true;");
+	    out.println("obschoice chosen_Load(b1, t1, @0) = true;");
 	    runner.moveOn();
-	    out.println("obs chosen_Drive(c3, t1, @1) = true;");
+	    out.println("obschoice chosen_Drive(c3, t1, @1) = true;");
 	    runner.moveOn();
-	    out.println("obs chosen_Unload(b1, t1, @2) = true;");
+	    out.println("obschoice chosen_Unload(b1, t1, @2) = true;");
 	    runner.moveOn();
-	    out.println("obs chosen_Drive(c1, t1, @3) = true;");
+	    out.println("obschoice chosen_Drive(c1, t1, @3) = true;");
 	    runner.moveOn();
-	    out.println("obs chosen_Load(b2, t1, @4) = true;");
+	    out.println("obschoice chosen_Load(b2, t1, @4) = true;");
 	    runner.moveOn();
-	    out.println("obs chosen_Drive(c3, t1, @5) = true;");
+	    out.println("obschoice chosen_Drive(c3, t1, @5) = true;");
 	    runner.moveOn();
-	    out.println("obs chosen_Unload(b2, t1, @6) = true;");
+	    out.println("obschoice chosen_Unload(b2, t1, @6) = true;");
 	    runner.moveOn();
 	}
 

@@ -14,6 +14,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.*;
 
+import blog.BLOGUtil;
 import blog.DBLOGUtil;
 import blog.Main;
 import blog.TemporalEvidenceGenerator;
@@ -21,9 +22,12 @@ import blog.bn.BayesNetVar;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
 import blog.model.ArgSpecQuery;
+import blog.model.ChoiceEvidenceStatement;
 import blog.model.Evidence;
+import blog.model.EvidenceWithChoice;
 import blog.model.Model;
 import blog.model.Query;
+import blog.model.ValueEvidenceStatement;
 import blog.msg.ErrorMsg;
 import blog.parse.Parse;
 import blog.semant.Semant;
@@ -117,7 +121,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	 */
 	public Evidence getEvidence() {
 
-		Evidence evidence = new Evidence();
+		EvidenceWithChoice evidence = new EvidenceWithChoice();
 		String evistr = "";
 		System.out.println("Enter evi for: "+evidenceGenerator.lastTimeStep);
 		try {
@@ -126,26 +130,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//comment out this entire if clause to actually use the inputstream
-		/*
-		if (evidenceGenerator.lastTimeStep==0){
-			evistr = "obs O(@0) = ResultC;";
-		}
-		else if (evidenceGenerator.lastTimeStep==1){
-			evistr = "obs O(@1) = ResultA;";
-		}
-		else if (evidenceGenerator.lastTimeStep==2){
-			evistr = "obs O(@2) = ResultA;";
-		}
-		else if (evidenceGenerator.lastTimeStep==3){
-			evistr = "obs O(@3) = ResultA;";
-		}
-		else if (evidenceGenerator.lastTimeStep==4){
-			evistr = "obs O(@4) = ResultG;";
-		}
-		else
-			evistr = "";
-		*/
+
 		parseAndTranslateEvidence(evidence, new StringReader((String) evistr));
 		
 		
@@ -248,8 +233,10 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 
 		
 		Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(), verbose, false);
-		new ParticleFilterRunnerOnline(model,
-				linkStrings, queryStrings, properties).run();
+		ParticleFilterRunnerOnline a = new ParticleFilterRunnerOnline(model,
+				linkStrings, queryStrings, properties);
+		a.in=new BufferedReader(new InputStreamReader(System.in));
+		a.run();
 		
 	}
 	//need to fix the error message for empty evidence string inputs
@@ -278,5 +265,8 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	private void checkEvidenceMatchesTimestep(Evidence evidence){
 		/*do nothing*/	
 	}
+	
+
+	
 	
 }
