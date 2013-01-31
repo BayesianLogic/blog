@@ -136,10 +136,8 @@ terminal COMMA, SEMI, COLON, DOT, NUMSIGN, RIGHTARROW; //seperators
 terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET; // paired seperators
 
 /*added by cheng*/
-terminal CHOICE;
+terminal OBSCHOICE;
 
-/*added by cheng*/
-terminal CHOICE;
 
 nonterminal program;
 nonterminal StmtList opt_statement_lst, statement_lst;
@@ -147,7 +145,7 @@ nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   rand_func_decl, number_stmt, origin_func_decl,
   distinct_decl, distribution_decl, parameter_decl,
   evidence_stmt, query_stmt;
-nonterminal Stmt evidence, value_evidence, symbol_evidence, query;
+nonterminal Stmt evidence, value_evidence, symbol_evidence, query, /*added by cheng*/ choice_evidence;
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
   quantified_formula, distribution_expr,
   function_call, list_construct_expression, symbol_expr,
@@ -442,9 +440,6 @@ dependency_statement_body ::= EQ expression:e
     RESULT = new IfExpr(currLineno(), currColno(), e1, e2, e3); :}
 //  | error
 //    {: error("invalid body of random function or number statement"); :}
-  /*added by cheng*/
-  | CHOICE
-    {: RESULT = new ChoiceExpr(currLineno(), currColno()); :}
   ;
 
 elseif_list ::=
@@ -642,6 +637,8 @@ implicit_set ::= LBRACE type:ty ID:id COLON expression:e RBRACE
  *            - whether the function has been declared.).
  */
 evidence_stmt ::= OBS evidence:e SEMI {: RESULT = e; :}
+                  /*added by cheng*/
+                 |OBSCHOICE choice_evidence:e SEMI {: RESULT = e; :}
   ;
 
 evidence ::=
@@ -665,6 +662,11 @@ symbol_evidence ::=
     {: RESULT = new SymbolEvidence(currLineno(), currColno(), e1, e2); :}
   ;
 
+/*added by cheng*/
+choice_evidence ::=
+    function_call:e1 EQ expression:e2 {: RESULT = new ChoiceEvidence(currLineno(), currColno(), e1, e2); :}
+  ;
+  
 query_stmt ::= QUERY  query:q SEMI
     {: RESULT = q; :}
   ;

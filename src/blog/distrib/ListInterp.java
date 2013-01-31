@@ -116,7 +116,8 @@ public class ListInterp extends AbstractFunctionInterp {
 					"ListInterp expected argument tuples of arity " + arity
 							+ ", got one of arity " + args.size());
 		}
-		return Boolean.valueOf(tuples.contains(args));
+		Boolean a =  Boolean.valueOf(tuples.contains(args));
+		return a;
 	}
 
 	public Set getInverseTuples(Object value) {
