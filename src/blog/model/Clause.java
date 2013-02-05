@@ -239,7 +239,6 @@ public class Clause {
         }
       }
     }
-
     if (this.cpdArgs == null && this.cpdParams == null) {
       // logical variable or random inputs to distribution need to go into args
       this.cpdArgs = new ArrayList<ArgSpec>();
@@ -255,7 +254,6 @@ public class Clause {
       }
       this.cpdArgsAndParams = null;
     }
-
     // for EqualsCPD, we can do additional checking
     if (correct && (cpdClass == EqualsCPD.class)) {
       if (cpdArgs.size() != 1) {
