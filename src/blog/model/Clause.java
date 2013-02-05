@@ -61,6 +61,7 @@ import blog.sample.EvalContext;
  */
 public class Clause {
 
+<<<<<<< HEAD
 	/**
 	 * Creates a new clause.
 	 * 
