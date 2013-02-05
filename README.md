@@ -34,9 +34,13 @@ Compiling Directly
 ===================
 
 1. Generate Lexer and Parser `$ ./gen_parser`
-2. Compile the code `$ ./compile.sh`
+2. Compile the code `$ make compile`
 3. Running BLOG models `$ ./run.sh <path_to_model> <params>`
 
+Git Tips
+===================
+1. make Git ignore line ending
+ git config --global core.autocrlf true
 
 
 Readme Updated: May 15, 2012
