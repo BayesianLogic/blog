@@ -17,12 +17,12 @@ public class ChoiceFuncDec extends FunctionDec {
 	 * @param r
 	 * @param b
 	 */
-	public ChoiceFuncDec(int line, int p, Symbol n, FieldList a, Ty r, Expr b) {
-		super(line, p, n, a, r, b);
+	public ChoiceFuncDec(int line, int p, Symbol n, FieldList a, Ty r) {
+		super(line, p, n, a, r, null);
 	}
 
-	public ChoiceFuncDec(int p, Symbol n, FieldList a, Ty r, Expr b) {
-		this(0, p, n, a, r, b);
+	public ChoiceFuncDec(int p, Symbol n, FieldList a, Ty r) {
+		this(0, p, n, a, r);
 	}
 
 }

@@ -296,6 +296,9 @@ public class Evidence {
 	 * @param curWorld
 	 */
 	public void setEvidenceAndEnsureSupported(PartialWorld curWorld) {
+		/*added by cheng*/
+		BLOGUtil.setChoiceInterp(this, curWorld);
+		
 		BLOGUtil.setBasicVars(this, curWorld);
 		BLOGUtil.ensureDetAndSupported(getEvidenceVars(), curWorld);
 	}

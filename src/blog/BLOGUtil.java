@@ -1,5 +1,6 @@
 package blog;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,16 +13,20 @@ import blog.bn.DerivedVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Histogram;
 import blog.common.Util;
+import blog.distrib.ListInterp;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.AtomicFormula;
+import blog.model.ChoiceEvidenceStatement;
 import blog.model.DependencyModel;
 import blog.model.EqualityFormula;
 import blog.model.Evidence;
 import blog.model.Formula;
+import blog.model.FuncAppTerm;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.model.NegFormula;
+import blog.model.NonRandomFunction;
 import blog.model.Term;
 import blog.model.ValueEvidenceStatement;
 import blog.parse.Parse;
@@ -30,6 +35,9 @@ import blog.sample.ClassicInstantiatingEvalContext;
 import blog.sample.InstantiatingEvalContext;
 import blog.semant.Semant;
 import blog.world.PartialWorld;
+
+/*added by cheng*/
+import blog.model.ChoiceFunction;
 
 /**
  * A class defining static helper methods on basic interfaces (therefore not
@@ -100,7 +108,28 @@ public class BLOGUtil {
 				world.setValue((BasicVar) var, evidence.getObservedValue(var));
 		}
 	}
-
+	
+	
+	/*added by cheng*/
+	public static void setChoiceInterp(Evidence evidence, PartialWorld world) {
+		for (BayesNetVar var : evidence.getEvidenceVars()) {
+			if (var instanceof DerivedVar){
+				if (((DerivedVar) var).getArgSpec() instanceof FuncAppTerm){
+					FuncAppTerm fat = (FuncAppTerm) ((DerivedVar) var).getArgSpec();
+					if (fat == null){
+						System.err.println("error in blogutil.setchoiceinterp");
+						System.exit(0);
+					}
+					if (fat.getFunction() instanceof ChoiceFunction){
+						ChoiceFunction f = (ChoiceFunction) fat.getFunction();
+						f.addInterp(fat);
+					}
+				}
+			}
+		}
+	}
+	
+	
 	public static double setAndGetProbability(BayesNetVar rv, Object value,
 			PartialWorld world) {
 		BLOGUtil.ensureDetAndSupported(rv, world);
