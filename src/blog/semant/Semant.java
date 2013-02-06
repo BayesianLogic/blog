@@ -48,6 +48,7 @@ import blog.model.EvidenceWithChoice;
 import blog.absyn.ChoiceEvidence;
 import blog.model.ChoiceDependencyModel;
 import blog.model.ChoiceEvidenceStatement;
+import blog.model.ChoiceFunction;
 
 import blog.absyn.Stmt;
 import blog.absyn.StmtList;
@@ -399,6 +400,13 @@ public class Semant {
 			error(e.line, e.col, "Function " + name + " overlapped");
 		}
 
+		/*added by cheng*/
+		if (e instanceof ChoiceFuncDec){
+			fun = new ChoiceFunction(name, argTy, resTy);
+			model.addFunction(fun);
+			return;
+		}
+		
 		if (e instanceof FixedFuncDec) {
 			NonRandomFunction f;
 			if (argTy.size() == 0) {
@@ -448,6 +456,12 @@ public class Semant {
 		Function fun = getFunction(name, argTy);
 		currFunction = fun;
 
+		/*added by cheng*/
+		if (e instanceof ChoiceFuncDec){
+			currFunction = null;
+			return;
+		}
+		
 		if (e instanceof FixedFuncDec) {
 			if (e.body == null) {
 				error(e.line, e.col, "empty fixed function body");

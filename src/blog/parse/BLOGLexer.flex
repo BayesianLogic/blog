@@ -194,7 +194,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 
 /*added by cheng*/
 [Oo][Bb][Ss][Cc][Hh][Oo][Ii][Cc][Ee] { return symbol(BLOGTokenConstants.OBSCHOICE); }
-	
+[Cc][Hh][Oo][Ii][Cc][Ee] { return symbol(BLOGTokenConstants.CHOICE);}	
 
 /* literals */
 "true"	{ return symbol(BLOGTokenConstants.BOOLEAN_LITERAL, new Boolean(true)); }

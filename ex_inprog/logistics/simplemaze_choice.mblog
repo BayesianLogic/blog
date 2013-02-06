@@ -19,7 +19,7 @@ type Action;
 
 distinct Action up, down, left, right;
 
-//choice Boolean applied_action (Action a, Timestep t);
+choice Boolean applied_action (Action a, Timestep t);
 
 
 
@@ -45,7 +45,7 @@ random Boolean applied_action (Action a, Timestep t){
   else
     = false
 };*/
-
+/*
 fixed Boolean applied_action (Action a, Timestep t)
   = ListInterp(2, up, @0,
                   right, @1,
@@ -53,7 +53,7 @@ fixed Boolean applied_action (Action a, Timestep t)
                   right, @3,
                   up, @4
                   );
-
+*/
 random Boolean succeed_action (Timestep t){
   ~ Categorical({true -> 0.9, false -> 0.1})
 };
@@ -88,7 +88,7 @@ random Integer pos (Timestep t) {
 random Boolean pass(Timestep t){
   if (t==@0) then
     = false
-  else if (pos(t)==3) then
+  else if (pos(t)==6) then
     = true
   else
     = pass(Prev(t))

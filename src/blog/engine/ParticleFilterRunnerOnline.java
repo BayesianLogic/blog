@@ -121,17 +121,24 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	 */
 	public Evidence getEvidence() {
 
-		EvidenceWithChoice evidence = new EvidenceWithChoice();
+		Evidence evidence = new Evidence();
 		String evistr = "";
+		String accstr= "";
 		System.out.println("Enter evi for: "+evidenceGenerator.lastTimeStep);
-		try {
-			evistr = in.readLine();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		while (true){
+			try {
+				evistr = in.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (evistr.trim().equals("fin"))
+				break;
+			else
+				accstr+=evistr;
 		}
 
-		parseAndTranslateEvidence(evidence, new StringReader((String) evistr));
+		parseAndTranslateEvidence(evidence, new StringReader((String) accstr));
 		
 		
 		
