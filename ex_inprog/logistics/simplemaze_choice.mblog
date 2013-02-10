@@ -19,7 +19,7 @@ type Action;
 
 distinct Action up, down, left, right;
 
-choice Boolean applied_action (Action a, Timestep t);
+Fixed Boolean applied_action (Action a, Timestep t) = ListInterp (2, up, @0, right, @1, down, @2, right, @3, up, @4);
 
 
 

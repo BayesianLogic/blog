@@ -160,23 +160,23 @@ public class OnlineParticleFilterTest extends TestCase {
 	    
 	    setModel(hmmModelString);
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    PrintStream out = (PrintStream) runner.eviOutputStream;
+	    PrintStream out = runner.getEviOutput();
 	    
 	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
 
-	    out.println("obs O(@0) = ResultC;");
+	    out.println("obs O(@0) = ResultC;\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.07123248769406526, 0.07123248769406526*delta);
-	    out.println("obs O(@1) = ResultA;");
+	    out.println("obs O(@1) = ResultA;\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.8740065285267652, 0.8740065285267652*delta);
-	    out.println("obs O(@2) = ResultA;");
+	    out.println("obs O(@2) = ResultA;\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "T"), 0.09701200417538186, 0.09701200417538186*delta);
-	    out.println("obs O(@3) = ResultA;");
+	    out.println("obs O(@3) = ResultA;\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "G"), 0.08214118198875539, 0.08214118198875539*delta);
-	    out.println("obs O(@4) = ResultG;");
+	    out.println("obs O(@4) = ResultG;\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.026816361556063043, 0.026816361556063043*delta);
 	    out.println(" ");
@@ -216,33 +216,37 @@ public class OnlineParticleFilterTest extends TestCase {
 	    
 	    setModel(burglaryModelString);
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    PrintStream out = (PrintStream) runner.eviOutputStream;
+	    PrintStream out = runner.getEviOutput();
 	    
 	    
 	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
 
-	    out.println("obs JohnCalls(h1, @0) = true;obs MaryCalls(h2, @0) = true;"); //multiple evidences case
-	    Evidence e = runner.getEvidence();
+	    out.println("obs JohnCalls(h1, @0) = true;obs MaryCalls(h2, @0) = true;\n"); //multiple evidences case
+	    runner.evidenceGenerator.getInput();
+	    Evidence e = runner.evidenceGenerator.getEvidence();
 	    assertEquals(e.toString(), "[JohnCalls(h1, @0) = true, MaryCalls(h2, @0) = true]");
 	    
-	    out.println("obs JohnCalls(h1, @0) = true;obs MaryCalls(foo(@0), @0) = true;"); //now move on, note that getEvidence "consumed" 
+	    out.println("obs JohnCalls(h1, @0) = true;obs MaryCalls(foo(@0), @0) = true;\n"); //now move on, note that getEvidence "consumed" 
 	    runner.moveOn();																//the previous println to out, so i must println again
 	    
 	    
-	    out.println("obs Alarm(h2,@1) = true;"); //simple case
-	    e = runner.getEvidence();
+	    out.println("obs Alarm(h2,@1) = true;\n"); //simple case
+	    runner.evidenceGenerator.getInput();
+	    e = runner.evidenceGenerator.getEvidence();
 	    assertTrue(e.getValueEvidence().toArray()[0] instanceof ValueEvidenceStatement);
 	    assertEquals(e.toString(), "[Alarm(h2, @1) = true]");
 	    assertEquals(e.getValueEvidence().toArray()[0].toString(), "Alarm(h2, @1) = true");
 
-	    out.println("obs Burglary(foo(@0),@1) = true;"); //derived variables case
-	    e = runner.getEvidence();
+	    out.println("obs Burglary(foo(@0),@1) = true;\n"); //derived variables case
+	    runner.evidenceGenerator.getInput();
+	    e = runner.evidenceGenerator.getEvidence();
 	    assertEquals(e.toString(),"[/*DerivedVar*/ Burglary(foo(@0), @1) = true]");
 	    ValueEvidenceStatement v = (ValueEvidenceStatement) Util.getFirst(e.getValueEvidence());
 	    assertEquals(v.toString(),"/*DerivedVar*/ Burglary(foo(@0), @1) = true");
 	    
-	    out.println("obs foo(@2) = h3; obs Earthquake(@2) = true;"); //checking if compiled
-	    e = runner.getEvidence();
+	    out.println("obs foo(@2) = h3; obs Earthquake(@2) = true;\n"); //checking if compiled
+	    runner.evidenceGenerator.getInput();
+	    e = runner.evidenceGenerator.getEvidence();
 	    v = (ValueEvidenceStatement) Util.getFirst(e.getValueEvidence());
 	    java.lang.reflect.Field iscompiled = ValueEvidenceStatement.class.getDeclaredField("compiled");
 	    iscompiled.setAccessible(true);
@@ -268,7 +272,7 @@ public class OnlineParticleFilterTest extends TestCase {
 		Util.initRandom(false);
 
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    PrintStream out = (PrintStream) runner.eviOutputStream;
+	    PrintStream out = runner.getEviOutput();
 	    
 	    
 	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();

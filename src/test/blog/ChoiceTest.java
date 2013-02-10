@@ -161,10 +161,10 @@ public class ChoiceTest extends TestCase {
 			"type Action;"	
 		+	"distinct Action up, down, left, right;"
 					
-		+	"choice Boolean applied_action (Action a, Timestep t){if true then = true};"
+		+	"choice Boolean applied_action (Action a, Timestep t);"
 		
 		+	"random Boolean succeed_action (Timestep t){"
-		+	"  ~ Categorical({true -> 0.9, false -> 0.1})"
+		+	"  ~ Categorical({true -> 0.9, false -> 0.0})"
 		+	"};"
 			
 		+	"random Integer pos (Timestep t) {"
@@ -233,7 +233,7 @@ public class ChoiceTest extends TestCase {
 		LinkedList queries = new LinkedList();
 		Main.stringSetup(model, evidence, queries, newModelString);
 	}
-	/*
+	
 	@Test
 	public void test_maze() throws Exception {
 		Properties properties = new Properties();
@@ -242,33 +242,57 @@ public class ChoiceTest extends TestCase {
 		properties.setProperty("numMoves", "1");
 		boolean randomize = true;
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("pos(t)", "applied_action(up,t)");
+		Collection queryStrings = Util.list("pos(t)", "applied_action(up,t)","applied_action(down,@2)");
 
 		Util.initRandom(false);
 		Util.setVerbose(true);
 
-	    PipedInputStream pin = new PipedInputStream();
-	    PipedOutputStream pout = new PipedOutputStream(pin);
-	    
-	    PrintStream out = new PrintStream(pout);
-	    BufferedReader in = new BufferedReader(new InputStreamReader(pin));
 	    setModel(mazeModelString);
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    runner.eviInputStream = pin;
-	    runner.in = new BufferedReader(new InputStreamReader(pin));
+	    PrintStream out = runner.getEviOutput();
 	    
-	    out.println("obs applied_action(up, @0) = true;");
+	    out.println("obs applied_action(up, @0) = true;\n");
+	    runner.evidenceGenerator.getInput();
+	    Evidence e = runner.evidenceGenerator.getEvidence();
+	    ValueEvidenceStatement v = (ValueEvidenceStatement) Util.getFirst(e.getValueEvidence());
+	    assertTrue(e.getValueEvidence().size()==1);
+	    java.lang.reflect.Field iscompiled = ValueEvidenceStatement.class.getDeclaredField("compiled");
+	    iscompiled.setAccessible(true);
+	    Boolean truthvalue = (Boolean) iscompiled.get(v);
+	    assertTrue(truthvalue.booleanValue());
+	    assertEquals(e.toString(),"[/*DerivedVar*/ applied_action(up, @0) = true]");
+	    
+	    out.println("obs applied_action(up, @0) = true;\n");
 	    runner.moveOn();
-	    out.println("obs applied_action(right, @1) = true;");
+	    //basic check
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "1"), 1, 0);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "true"), 1, 0);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), 0, 0);
+	    
+	    //now test entering two evidence at the same time
+	    out.println("obs applied_action(right, @1) = true;\n obs applied_action(down, @2) = true;\n");
 	    runner.moveOn();
-	    out.println("obs applied_action(down, @2) = true;");
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "2"), 1, 0);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "false"), 1, 0);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), 1, 0);
+	    out.println("");
 	    runner.moveOn();
-	    out.println("obs applied_action(right, @3) = true;");
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "3"), 1, 0);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "false"), 1, 0);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), 1, 0);
+	    
+	    out.println("obs applied_action(right, @3) = true;\n query applied_action(right,@3);\n"); //test providing queries
 	    runner.moveOn();
-	    out.println("obs applied_action(up, @4) = true;");
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "4"), 1, 0);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "false"), 1, 0);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 3), model, "false"), 0, 0);
+	    
+	    out.println("obs applied_action(up, @4) = true;\n");
 	    runner.moveOn();
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "5"), 1, 0);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "true"), 1, 0);
 	}
-*/
+/*
 	@Test
 	public void test_logistics() throws Exception {
 		Properties properties = new Properties();
@@ -301,7 +325,7 @@ public class ChoiceTest extends TestCase {
 	    out.println("obs chosen_Unload(b2, t1, @6) = true;");
 	    runner.moveOn();
 	}
-
+*/
 
 	/**
 	 * Helper function that gets a collection assumed to contain a single query
@@ -310,6 +334,16 @@ public class ChoiceTest extends TestCase {
 	private ArgSpecQuery getQuery(Collection singleton) {
 		return (ArgSpecQuery) Util.getFirst(singleton);
 	}
+	private ArgSpecQuery getQuery(Collection singleton, int j) {
+		int i =0;
+		Iterator x = singleton.iterator();
+		while (i!=j){
+			x.next();
+			i++;
+		}
+		return (ArgSpecQuery) x.next();
+	}
+
 
 	private static Properties properties;
 	private static ParticleFilter particleFilter;
