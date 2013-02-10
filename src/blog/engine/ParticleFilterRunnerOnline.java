@@ -42,10 +42,11 @@ import blog.world.PartialWorld;
  * 
  */
 public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
-	public BufferedReader in;
-	public InputStream eviInputStream;
-	public OutputStream eviOutputStream;
-	public PrintStream queryOutputStream;
+	private BufferedReader eviReader; //evidence is read from here
+	private InputStream eviInputStream;
+	private PrintStream eviOutputStream; //evidence should be printed to here
+	private PrintStream queryOutputStream; 
+	private BufferedReader queryReader; //query is read from here
 	
 
 	
@@ -54,13 +55,21 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		super(model, particleFilterProperties);
 		this.particleFilterProperties = particleFilterProperties;
 		this.queryStrings = queryStrings;
-		evidenceGenerator = new OPFevidenceGenerator(model, linkStrings,
-				queryStrings);
+
 		//evidenceGenerator.afterMove = afterMoveForward; // this should always be so.
 		//afterMove = monitorGeneratorWorld; // this is just a default and the user can change it
 
+		setUpStreams();
+		
+		Util.setVerbose(false);
+		
+		evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviReader);
+	}
+	
+	private void setUpStreams(){
 		
 		PipedInputStream pin = new PipedInputStream();
+		eviInputStream = pin;
 		PipedOutputStream pout = null;
 		try {
 			 pout = new PipedOutputStream(pin);
@@ -68,16 +77,30 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		eviInputStream = pin;
 		eviOutputStream = new PrintStream(pout);
-		queryOutputStream = System.out;
+		eviReader = new BufferedReader(new InputStreamReader(eviInputStream));
 
-		in = new BufferedReader(new InputStreamReader(eviInputStream));
-		Util.setVerbose(false);
+
+		
+		
+		pin = new PipedInputStream();
+		try {
+			pout = new PipedOutputStream(pin);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		queryOutputStream = new PrintStream(pout); //System.out;
+		queryReader = new BufferedReader(new InputStreamReader(pin));
+
 	}
 	
+	public PrintStream getEviOutput (){
+		return eviOutputStream;
+	}
+	public BufferedReader getQueryOutput (){
+		return queryReader;
+	}
 	private UnaryProcedure afterMoveForward = new UnaryProcedure() {
 		public void evaluate(Object queriesObj) {
 			afterMove.evaluate(queriesObj);
@@ -105,7 +128,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		Evidence evidence;
 		Collection queries;
 		beforeEvidenceAndQueries();
-		if ((evidence = getEvidence()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
+		if ((evidence = evidenceGenerator.getEvidence()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
 			particleFilter.take(evidence);
 			particleFilter.answer(queries);
 			afterEvidenceAndQueries();
@@ -115,41 +138,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		return false;
 	}
 	
-	/**
-	 * Implements method used by {@link ParticleFilterRunner} to obtain evidence
-	 * for current time step.
-	 */
-	public Evidence getEvidence() {
 
-		Evidence evidence = new Evidence();
-		String evistr = "";
-		String accstr= "";
-		System.out.println("Enter evi for: "+evidenceGenerator.lastTimeStep);
-		while (true){
-			try {
-				evistr = in.readLine();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if (evistr.trim().equals("fin"))
-				break;
-			else
-				accstr+=evistr;
-		}
-
-		parseAndTranslateEvidence(evidence, new StringReader((String) accstr));
-		
-		
-		
-		evidence.checkTypesAndScope(model);
-		evidence.compile();
-		
-		checkEvidenceMatchesTimestep(evidence);
-		
-		return evidence; 
-
-	}
 
 	/**
 	 * Provides the query instantiations according to current time step, for use
@@ -167,6 +156,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 
 			System.out.println("PF estimate of " + query + ":");
 			query.printResults(queryOutputStream);
+			query.printResults(System.out);
 		}
 	}
 
@@ -242,17 +232,11 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(), verbose, false);
 		ParticleFilterRunnerOnline a = new ParticleFilterRunnerOnline(model,
 				linkStrings, queryStrings, properties);
-		a.in=new BufferedReader(new InputStreamReader(System.in));
+		a.eviReader=new BufferedReader(new InputStreamReader(System.in));
 		a.run();
 		
 	}
-	//need to fix the error message for empty evidence string inputs
-	private boolean parseAndTranslateEvidence(Evidence e, Reader reader) {
-		Parse parse = new Parse(reader, null);
-		Semant sem = new Semant(model, e, new ArrayList<Query>(), new ErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
-		sem.transProg(parse.getParseResult());
-		return true;
-	}
+
 	
 
 	/** Runs until there are no evidence or queries anymore. */
@@ -264,15 +248,14 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 			//	break;
 		}
 	}
-	
-	/**
-	 * Check that the evidence provided has the correct timestep associated
-	 * @param evidence
-	 */
-	private void checkEvidenceMatchesTimestep(Evidence evidence){
-		/*do nothing*/	
+
+	@Override
+	public Evidence getEvidence() {
+		System.err.println("particlefilterrunneronline.getEvidence should not have been called");
+		return evidenceGenerator.getEvidence();
 	}
 	
+
 
 	
 	
