@@ -90,7 +90,12 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		queryOutputStream = new PrintStream(pout); //System.out;
+		try {
+			queryOutputStream = new PrintStream("test.txt");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} //System.out;
 		queryReader = new BufferedReader(new InputStreamReader(pin));
 
 	}
@@ -154,9 +159,9 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 
-			System.out.println("PF estimate of " + query + ":");
+			//System.out.println("PF estimate of " + query + ":");
 			query.printResults(queryOutputStream);
-			query.printResults(System.out);
+			query.printResults(System.out);//strange bug here needs fixing
 		}
 	}
 
