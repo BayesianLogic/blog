@@ -60,11 +60,11 @@ public class ChoiceTest extends TestCase {
 			+	"distinct Truck t1, t2;"
 			+	"distinct City c1, c2, c3;"
 
-			+	"Choice Boolean chosen_Load(Box b, Truck tr, Timestep t);"
+			+	"choice Boolean chosen_Load(Box b, Truck tr, Timestep t);"
 
-			+	"Choice Boolean chosen_Unload(Box b, Truck tr, Timestep t);"
+			+	"choice Boolean chosen_Unload(Box b, Truck tr, Timestep t);"
 
-			+	"Choice Boolean chosen_Drive(City c, Truck tr, Timestep t);"
+			+	"choice Boolean chosen_Drive(City c, Truck tr, Timestep t);"
 			
 			+	"random Boolean applied_Load(Box b, Truck tr, Timestep t) {"
 			+	"  if (exists City c (BoxIn ( b, c, t) & TruckIn (c, tr, t))) then = (chosen_Load(foo(b), tr, t) & succeed_action(t)) else = false"
@@ -234,6 +234,58 @@ public class ChoiceTest extends TestCase {
 		Main.stringSetup(model, evidence, queries, newModelString);
 	}
 	
+
+
+	@Test
+	public void test_logistics() throws Exception {
+		Properties properties = new Properties();
+		properties.setProperty("numParticles", "2000");
+		properties.setProperty("useDecayedMCMC", "false");
+		properties.setProperty("numMoves", "1");
+		boolean randomize = true;
+		Collection linkStrings = Util.list();
+		Collection queryStrings = Util.list("value(t)","actionName(t)");
+
+		Util.initRandom(true);
+		Util.setVerbose(true);
+
+	    setModel(logisticsModelString);
+	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
+	    PrintStream out = runner.getEviOutput();
+	    
+	    out.println("obs chosen_Load(b1, t1, @0) = true;\n query applied_Load(b1,t1,@0);\n");
+	    runner.moveOn();
+	    Double a = BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "\"load\"");
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "0.0"), 1, 0);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), 0.9, 0.5);
+	    
+	    
+	    out.println("obs chosen_Drive(c3, t1, @1) = true;\n obs succeed_action(@1)=true;\n query applied_Drive(c3,t1,@1);\n"); //normal evidence
+	    runner.moveOn();
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "\"drive\""), 1, 0);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "0.0"), 1, 0);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), 1, 0.000001);
+	    
+	    
+	    
+	    out.println("obs chosen_Unload(b1, t1, @2) = true;\n obs succeed_action(@2)=true;\n");
+	    runner.moveOn();
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "0.0"), 1-a, (1-a)*0.111);
+	    
+	    out.println("obs chosen_Drive(c1, t1, @3) = true;\n query BoxIn(b1,c3,@3);\n");
+	    runner.moveOn();
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), a, a*0.111);
+
+	    
+	    out.println("obs chosen_Load(b2, t1, @4) = true;\n");
+	    runner.moveOn();
+	    out.println("obs chosen_Drive(c3, t1, @5) = true;\n");
+	    runner.moveOn();
+	    out.println("obs chosen_Unload(b2, t1, @6) = true;\n");
+	    runner.moveOn();
+
+	}
+
 	@Test
 	public void test_maze() throws Exception {
 		Properties properties = new Properties();
@@ -292,41 +344,6 @@ public class ChoiceTest extends TestCase {
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "5"), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "true"), 1, 0);
 	}
-/*
-	@Test
-	public void test_logistics() throws Exception {
-		Properties properties = new Properties();
-		properties.setProperty("numParticles", "2000");
-		properties.setProperty("useDecayedMCMC", "false");
-		properties.setProperty("numMoves", "1");
-		boolean randomize = true;
-		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("value(t)","actionName(t)", "chosen_Drive(c3, t1, @1)");
-
-		Util.initRandom(true);
-		Util.setVerbose(true);
-
-	    setModel(logisticsModelString);
-	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    PrintStream out = (PrintStream) runner.eviOutputStream;
-	    
-	    out.println("obs chosen_Load(b1, t1, @0) = true;");
-	    runner.moveOn();
-	    out.println("obs chosen_Drive(c3, t1, @1) = true;");
-	    runner.moveOn();
-	    out.println("obs chosen_Unload(b1, t1, @2) = true;");
-	    runner.moveOn();
-	    out.println("obs chosen_Drive(c1, t1, @3) = true;");
-	    runner.moveOn();
-	    out.println("obs chosen_Load(b2, t1, @4) = true;");
-	    runner.moveOn();
-	    out.println("obs chosen_Drive(c3, t1, @5) = true;");
-	    runner.moveOn();
-	    out.println("obs chosen_Unload(b2, t1, @6) = true;");
-	    runner.moveOn();
-	}
-*/
-
 	/**
 	 * Helper function that gets a collection assumed to contain a single query
 	 * and returns that query.
