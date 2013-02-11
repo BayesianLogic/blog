@@ -46,7 +46,7 @@ public class TestOperator {
         + "fixed Integer z = x + y; query z;";
     Main.runFromString(code, args);
   }
-  
+
   @Test
   public void testMultiplication() {
     String code = "fixed Real x = 1; fixed Real y = 2; "
