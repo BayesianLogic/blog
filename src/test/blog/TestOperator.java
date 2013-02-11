@@ -58,7 +58,7 @@ public class TestOperator {
 
   @Test
   public void testBoolean() {
-    String code = "fixed Boolean x = true; \n fixed Boolean y =! x;";
+    String code = "fixed Boolean x = true; \n fixed Boolean y =! x; \n query y;";
     Main.runFromString(code, args);
   }
 
