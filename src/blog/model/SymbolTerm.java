@@ -35,7 +35,10 @@
 
 package blog.model;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
@@ -164,7 +167,7 @@ public class SymbolTerm extends Term {
 
 	public boolean containsRandomSymbol() {
 		checkCompiled();
-		return (func instanceof RandomFunction);
+    return isLogicalVar() || (func instanceof RandomFunction);
 	}
 
 	public Set getFreeVars() {
@@ -226,11 +229,12 @@ public class SymbolTerm extends Term {
     }
 
 	private void checkCompiled() {
-        /* Taking this out to handle terms like F(t), where t is time
-		if ((func == null) && (var == null)) {
-			throw new IllegalStateException("SymbolTerm \"" + this
-					+ "\" has not been succesfully " + "compiled.");
-		}
+    /*
+     * Taking this out to handle terms like F(t), where t is time
+     * if ((func == null) && (var == null)) {
+     * throw new IllegalStateException("SymbolTerm \"" + this
+     * + "\" has not been succesfully " + "compiled.");
+     * }
         */
         return;
 	}
@@ -246,3 +250,4 @@ public class SymbolTerm extends Term {
 
 	private static Object[] NO_ARGS = new Object[0];
 }
+
