@@ -164,31 +164,31 @@ public class ChoiceTest extends TestCase {
 		+	"choice Boolean applied_action (Action a, Timestep t);"
 		
 		+	"random Boolean succeed_action (Timestep t){"
-		+	"  ~ Categorical({true -> 0.9, false -> 0.0})"
+		+	"  ~ Categorical({true -> 0.9, false -> 0.1})"
 		+	"};"
 			
 		+	"random Integer pos (Timestep t) {"
 		+	"  if (t == @0) then"
 		+	"    = 1"
-		+	"  else if (pos (Prev(t)) == 1 & applied_action (up, Prev(t)) & succeed_action(t)) then"
+		+	"  else if (pos (Prev(t)) == 1 & applied_action (up, Prev(t)) & succeed_action(Prev(t))) then"
 		+	"    = 2"
-		+	"  else if (pos (Prev(t)) == 2 & applied_action (right, Prev(t)) & succeed_action(t)) then"
+		+	"  else if (pos (Prev(t)) == 2 & applied_action (right, Prev(t)) & succeed_action(Prev(t))) then"
 		+	"    = 3"
-		+	"  else if (pos (Prev(t)) == 2 & applied_action (down, Prev(t)) & succeed_action(t)) then"
+		+	"  else if (pos (Prev(t)) == 2 & applied_action (down, Prev(t)) & succeed_action(Prev(t))) then"
 		+	"    = 1"
-		+	"  else if (pos (Prev(t)) == 3 & applied_action (left, Prev(t)) & succeed_action(t)) then"
+		+	"  else if (pos (Prev(t)) == 3 & applied_action (left, Prev(t)) & succeed_action(Prev(t))) then"
 		+	"    = 2"
-		+	"  else if (pos (Prev(t)) == 3 & applied_action (down, Prev(t)) & succeed_action(t)) then"
+		+	"  else if (pos (Prev(t)) == 3 & applied_action (down, Prev(t)) & succeed_action(Prev(t))) then"
 		+	"    = 4"
-		+	"  else if (pos (Prev(t)) == 4 & applied_action (up, Prev(t)) & succeed_action(t)) then"
+		+	"  else if (pos (Prev(t)) == 4 & applied_action (up, Prev(t)) & succeed_action(Prev(t))) then"
 		+	"    = 3"
-		+	"  else if (pos (Prev(t)) == 4 & applied_action (right, Prev(t)) & succeed_action(t)) then"
+		+	"  else if (pos (Prev(t)) == 4 & applied_action (right, Prev(t)) & succeed_action(Prev(t))) then"
 		+	"    = 5"
-		+	"  else if (pos (Prev(t)) == 5 & applied_action (left, Prev(t)) & succeed_action(t)) then"
+		+	"  else if (pos (Prev(t)) == 5 & applied_action (left, Prev(t)) & succeed_action(Prev(t))) then"
 		+	"    = 4"
-		+	"  else if (pos (Prev(t)) == 5 & applied_action (up, Prev(t)) & succeed_action(t)) then"
+		+	"  else if (pos (Prev(t)) == 5 & applied_action (up, Prev(t)) & succeed_action(Prev(t))) then"
 		+	"    = 6"
-		+	"  else if (pos (Prev(t)) == 6 & applied_action (down, Prev(t)) & succeed_action(t)) then"
+		+	"  else if (pos (Prev(t)) == 6 & applied_action (down, Prev(t)) & succeed_action(Prev(t))) then"
 		+	"    = 5"
 		+	"  else"
 		+	"    = pos (Prev(t))"
@@ -330,7 +330,7 @@ public class ChoiceTest extends TestCase {
 	    assertTrue(truthvalue.booleanValue());
 	    assertEquals(e.toString(),"[/*DerivedVar*/ applied_action(up, @0) = true]");
 	    
-	    out.println("obs applied_action(up, @0) = true;\n");
+	    out.println("obs applied_action(up, @0) = true;\n obs succeed_action(@0)=true;\n");
 	    runner.moveOn();
 	    //basic check
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "1"), 1, 0);
@@ -338,7 +338,7 @@ public class ChoiceTest extends TestCase {
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), 0, 0);
 	    
 	    //now test entering two evidence at the same time
-	    out.println("obs applied_action(right, @1) = true;\n obs applied_action(down, @2) = true;\n");
+	    out.println("obs applied_action(right, @1) = true;\n obs applied_action(down, @2) = true;\n obs succeed_action(@1)=true;\n obs succeed_action(@2)=true;\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "2"), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "false"), 1, 0);
@@ -349,16 +349,23 @@ public class ChoiceTest extends TestCase {
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "false"), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), 1, 0);
 	    
-	    out.println("obs applied_action(right, @3) = true;\n query applied_action(right,@3);\n"); //test providing queries
+	    out.println("obs applied_action(right, @3) = true;\n query applied_action(right,@3);\n obs succeed_action(@3)=true;\n"); //test providing queries
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "4"), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "false"), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 3), model, "false"), 0, 0);
 	    
-	    out.println("obs applied_action(up, @4) = true;\n");
+	    out.println("obs applied_action(up, @4) = true;\n obs succeed_action(@4)=true;\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "5"), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "true"), 1, 0);
+	    
+	    
+	    out.println("obs succeed_action(@5)=true;\n");
+	    runner.moveOn();
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "6"), 1, 0);
+	    
+	    
 	}
 	/**
 	 * Helper function that gets a collection assumed to contain a single query
