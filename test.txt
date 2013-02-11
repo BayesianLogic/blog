@@ -1,0 +1,38 @@
+Distribution of values for pos(@0)
+	1.0	1
+Distribution of values for applied_action(up, @0)
+	1.0	true
+Distribution of values for applied_action(down, @2)
+	1.0	false
+Distribution of values for pos(@1)
+	1.0	2
+Distribution of values for applied_action(up, @1)
+	1.0	false
+Distribution of values for applied_action(down, @2)
+	1.0	true
+Distribution of values for pos(@2)
+	1.0	3
+Distribution of values for applied_action(up, @2)
+	1.0	false
+Distribution of values for applied_action(down, @2)
+	1.0	true
+Distribution of values for pos(@3)
+	1.0	4
+Distribution of values for applied_action(up, @3)
+	1.0	false
+Distribution of values for applied_action(down, @2)
+	1.0	true
+Distribution of values for applied_action(right, @3)
+	1.0	true
+Distribution of values for pos(@4)
+	1.0	5
+Distribution of values for applied_action(up, @4)
+	1.0	true
+Distribution of values for applied_action(down, @2)
+	1.0	true
+Distribution of values for pos(@5)
+	1.0	6
+Distribution of values for applied_action(up, @5)
+	1.0	false
+Distribution of values for applied_action(down, @2)
+	1.0	true

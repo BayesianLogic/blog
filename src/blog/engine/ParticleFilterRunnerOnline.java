@@ -66,7 +66,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviReader);
 	}
 	
-	private void setUpStreams(){
+	public void setUpStreams(){
 		
 		PipedInputStream pin = new PipedInputStream();
 		eviInputStream = pin;
@@ -97,6 +97,14 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 			e.printStackTrace();
 		} //System.out;
 		queryReader = new BufferedReader(new InputStreamReader(pin));
+
+	}
+	
+public void setUpStreams(InputStream pin, PrintStream pout){
+		eviInputStream = pin;
+		eviReader = new BufferedReader(new InputStreamReader(eviInputStream));
+
+		evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviReader);
 
 	}
 	
@@ -221,7 +229,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		
 		String modelFile = "ex_inprog/logistics/simplemaze_choice.mblog";
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("value(t)");
+		Collection queryStrings = Util.list("succeed_action(@0)");
 
 		Util.initRandom(randomize);
 		Util.setVerbose(verbose);
@@ -238,6 +246,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		ParticleFilterRunnerOnline a = new ParticleFilterRunnerOnline(model,
 				linkStrings, queryStrings, properties);
 		a.eviReader=new BufferedReader(new InputStreamReader(System.in));
+		a.setUpStreams(System.in, System.out);
 		a.run();
 		
 	}
