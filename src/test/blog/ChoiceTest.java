@@ -270,19 +270,35 @@ public class ChoiceTest extends TestCase {
 	    
 	    out.println("obs chosen_Unload(b1, t1, @2) = true;\n obs succeed_action(@2)=true;\n");
 	    runner.moveOn();
-	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "0.0"), 1-a, (1-a)*0.111);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "0.0"), 1-a, (1-a)*0.111*1.5);
 	    
 	    out.println("obs chosen_Drive(c1, t1, @3) = true;\n query BoxIn(b1,c3,@3);\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), a, a*0.111);
 
 	    
-	    out.println("obs chosen_Load(b2, t1, @4) = true;\n");
+	    out.println("obs chosen_Load(b2, t1, @4) = true;\n query chosen_Load(b3, t1, @4);\n");
 	    runner.moveOn();
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "false"), 1, 0);
+	    
 	    out.println("obs chosen_Drive(c3, t1, @5) = true;\n");
 	    runner.moveOn();
 	    out.println("obs chosen_Unload(b2, t1, @6) = true;\n");
 	    runner.moveOn();
+	    
+	    out.println("obs chosen_Drive(c1, t1, @7) = true;\n obs chosen_Load(b3, t2, @8) = true;\n");
+	    runner.moveOn();
+	    
+	    out.println("query applied_Load(b3,t2,@8);\n");
+	    runner.moveOn();
+
+	    
+	    out.println("obs chosen_Drive(c3, t2, @9) = true;\n query chosen_Drive(c3,t2,@9);\n query succeed_action(@9);\n query applied_Drive(c3,t2,@9);\n");
+	    runner.moveOn();
+	    out.println("obs chosen_Unload(b3, t2, @10) = true;\n");
+	    runner.moveOn();
+
+	    //assertTrue(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "16.901")>0.1);
 
 	}
 
