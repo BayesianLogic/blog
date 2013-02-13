@@ -16,6 +16,7 @@ import blog.common.Util;
 import blog.engine.ParticleFilter;
 import blog.engine.ParticleFilterRunnerOnline;
 import blog.model.ArgSpecQuery;
+import blog.model.ChoiceEvidenceStatement;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
@@ -253,14 +254,14 @@ public class ChoiceTest extends TestCase {
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
 	    PrintStream out = runner.getEviOutput();
 	    
-	    out.println("obs chosen_Load(b1, t1, @0) = true;\n query applied_Load(b1,t1,@0);\n");
+	    out.println("obschoice chosen_Load(b1, t1, @0) = true;\n query applied_Load(b1,t1,@0);\n");
 	    runner.moveOn();
 	    Double a = BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "\"load\"");
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "0.0"), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), 0.9, 0.5);
 	    
 	    
-	    out.println("obs chosen_Drive(c3, t1, @1) = true;\n obs succeed_action(@1)=true;\n query applied_Drive(c3,t1,@1);\n"); //normal evidence
+	    out.println("obschoice chosen_Drive(c3, t1, @1) = true;\n obs succeed_action(@1)=true;\n query applied_Drive(c3,t1,@1);\n"); //normal evidence
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "\"drive\""), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "0.0"), 1, 0);
@@ -268,34 +269,34 @@ public class ChoiceTest extends TestCase {
 	    
 	    
 	    
-	    out.println("obs chosen_Unload(b1, t1, @2) = true;\n obs succeed_action(@2)=true;\n");
+	    out.println("obschoice chosen_Unload(b1, t1, @2) = true;\n obs succeed_action(@2)=true;\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "0.0"), 1-a, (1-a)*0.111*1.5);
 	    
-	    out.println("obs chosen_Drive(c1, t1, @3) = true;\n query BoxIn(b1,c3,@3);\n");
+	    out.println("obschoice chosen_Drive(c1, t1, @3) = true;\n query BoxIn(b1,c3,@3);\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), a, a*0.111);
 
 	    
-	    out.println("obs chosen_Load(b2, t1, @4) = true;\n query chosen_Load(b3, t1, @4);\n");
+	    out.println("obschoice chosen_Load(b2, t1, @4) = true;\n query chosen_Load(b3, t1, @4);\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "false"), 1, 0);
 	    
-	    out.println("obs chosen_Drive(c3, t1, @5) = true;\n");
+	    out.println("obschoice chosen_Drive(c3, t1, @5) = true;\n");
 	    runner.moveOn();
-	    out.println("obs chosen_Unload(b2, t1, @6) = true;\n");
+	    out.println("obschoice chosen_Unload(b2, t1, @6) = true;\n");
 	    runner.moveOn();
 	    
-	    out.println("obs chosen_Drive(c1, t1, @7) = true;\n obs chosen_Load(b3, t2, @8) = true;\n");
+	    out.println("obschoice chosen_Drive(c1, t1, @7) = true;\n obschoice chosen_Load(b3, t2, @8) = true;\n");
 	    runner.moveOn();
 	    
 	    out.println("query applied_Load(b3,t2,@8);\n");
 	    runner.moveOn();
 
 	    
-	    out.println("obs chosen_Drive(c3, t2, @9) = true;\n query chosen_Drive(c3,t2,@9);\n query succeed_action(@9);\n query applied_Drive(c3,t2,@9);\n");
+	    out.println("obschoice chosen_Drive(c3, t2, @9) = true;\n query chosen_Drive(c3,t2,@9);\n query succeed_action(@9);\n query applied_Drive(c3,t2,@9);\n");
 	    runner.moveOn();
-	    out.println("obs chosen_Unload(b3, t2, @10) = true;\n");
+	    out.println("obschoice chosen_Unload(b3, t2, @10) = true;\n");
 	    runner.moveOn();
 
 	    //assertTrue(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "16.901")>0.1);
@@ -319,18 +320,18 @@ public class ChoiceTest extends TestCase {
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
 	    PrintStream out = runner.getEviOutput();
 	    
-	    out.println("obs applied_action(up, @0) = true;\n");
+	    out.println("obschoice applied_action(up, @0) = true;\n");
 	    runner.evidenceGenerator.getInput();
 	    Evidence e = runner.evidenceGenerator.getEvidence();
-	    ValueEvidenceStatement v = (ValueEvidenceStatement) Util.getFirst(e.getValueEvidence());
-	    assertTrue(e.getValueEvidence().size()==1);
-	    java.lang.reflect.Field iscompiled = ValueEvidenceStatement.class.getDeclaredField("compiled");
+	    ChoiceEvidenceStatement v = (ChoiceEvidenceStatement) Util.getFirst(e.getChoiceEvidence());
+	    assertTrue(e.getChoiceEvidence().size()==1);
+	    java.lang.reflect.Field iscompiled = ChoiceEvidenceStatement.class.getDeclaredField("compiled");
 	    iscompiled.setAccessible(true);
 	    Boolean truthvalue = (Boolean) iscompiled.get(v);
 	    assertTrue(truthvalue.booleanValue());
 	    assertEquals(e.toString(),"[/*DerivedVar*/ applied_action(up, @0) = true]");
 	    
-	    out.println("obs applied_action(up, @0) = true;\n obs succeed_action(@0)=true;\n");
+	    out.println("obschoice applied_action(up, @0) = true;\n obs succeed_action(@0)=true;\n");
 	    runner.moveOn();
 	    //basic check
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "1"), 1, 0);
@@ -338,7 +339,7 @@ public class ChoiceTest extends TestCase {
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), 0, 0);
 	    
 	    //now test entering two evidence at the same time
-	    out.println("obs applied_action(right, @1) = true;\n obs applied_action(down, @2) = true;\n obs succeed_action(@1)=true;\n obs succeed_action(@2)=true;\n");
+	    out.println("obschoice applied_action(right, @1) = true;\n obschoice applied_action(down, @2) = true;\n obs succeed_action(@1)=true;\n obs succeed_action(@2)=true;\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "2"), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "false"), 1, 0);
@@ -349,13 +350,13 @@ public class ChoiceTest extends TestCase {
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "false"), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), 1, 0);
 	    
-	    out.println("obs applied_action(right, @3) = true;\n query applied_action(right,@3);\n obs succeed_action(@3)=true;\n"); //test providing queries
+	    out.println("obschoice applied_action(right, @3) = true;\n query applied_action(right,@3);\n obs succeed_action(@3)=true;\n"); //test providing queries
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "4"), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "false"), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 3), model, "false"), 0, 0);
 	    
-	    out.println("obs applied_action(up, @4) = true;\n obs succeed_action(@4)=true;\n");
+	    out.println("obschoice applied_action(up, @4) = true;\n obs succeed_action(@4)=true;\n");
 	    runner.moveOn();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "5"), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "true"), 1, 0);

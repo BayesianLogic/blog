@@ -46,7 +46,6 @@ import blog.absyn.RandomFuncDec;
 import blog.absyn.ChoiceFuncDec;
 import blog.model.EvidenceWithChoice;
 import blog.absyn.ChoiceEvidence;
-import blog.model.ChoiceDependencyModel;
 import blog.model.ChoiceEvidenceStatement;
 import blog.model.ChoiceFunction;
 
@@ -595,16 +594,9 @@ public class Semant {
 			error(e.left.line, e.left.col, "Semant.transEvi: Tried to parse choice evidence that does not have func_call as left hand side!");
 		}
 		Object value = transExpr(e.right);
-		if (!(evidence instanceof EvidenceWithChoice)){
-			error(e.left.line, e.left.col, "Semant.transEvi: cannot use choice evidence outside of particlefilterrunneronline!");
-		}
 		if (value instanceof ArgSpec) {
-			if (value != null)
-				((EvidenceWithChoice) evidence).addChoiceEvidence(new ChoiceEvidenceStatement((FuncAppTerm) left,
-						(ArgSpec) value));
-			else
-				error(e.line, e.col,
-						"type mistach for observation or translation error");
+			evidence.addChoiceEvidence(new ChoiceEvidenceStatement((FuncAppTerm) left,
+					(ArgSpec) value));
 		} else {
 			error(e.right.line, e.right.col,
 					"Invalid expression on the right side of evidence.");

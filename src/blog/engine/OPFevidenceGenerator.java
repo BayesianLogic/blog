@@ -113,7 +113,8 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		
 		
 		ev.checkTypesAndScope(model);
-		ev.compile();
+		if (ev.compile()!=0)
+			System.exit(1);
 		
 		for (Query query : q){
 			if (!query.checkTypesAndScope(model)){

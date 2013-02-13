@@ -253,7 +253,7 @@ public class Evidence {
 
 	/** Indicates whether evidence is empty or not. */
 	public boolean isEmpty() {
-		return getValueEvidence().isEmpty() && getSymbolEvidence().isEmpty();
+		return getValueEvidence().isEmpty() && getSymbolEvidence().isEmpty() /*added by cheng*/ && getChoiceEvidence().isEmpty();
 	}
 
 	/**
@@ -267,6 +267,12 @@ public class Evidence {
 
 		for (Iterator iter = valueEvidence.iterator(); iter.hasNext();) {
 			ValueEvidenceStatement stmt = (ValueEvidenceStatement) iter.next();
+			System.out.println(stmt);
+		}
+		
+		/*added by cheng*/
+		for (Iterator iter = choiceEvidence.iterator(); iter.hasNext();) {
+			ChoiceEvidenceStatement stmt = (ChoiceEvidenceStatement) iter.next();
 			System.out.println(stmt);
 		}
 	}
@@ -360,6 +366,16 @@ public class Evidence {
 				correct = false;
 			}
 		}
+		
+		/*added by cheng*/
+		for (Iterator iter = choiceEvidence.iterator(); iter.hasNext();) {
+			ChoiceEvidenceStatement stmt = (ChoiceEvidenceStatement) iter.next();
+			if (!stmt.checkTypesAndScope(model)) {
+				correct = false;
+			}
+		}
+		
+		
 
 		return correct;
 	}
@@ -392,6 +408,16 @@ public class Evidence {
 			}
 			errors += thisStmtErrors;
 		}
+		
+		/*added by cheng*/
+		for (Iterator iter = choiceEvidence.iterator(); iter.hasNext();) {
+			ChoiceEvidenceStatement stmt = (ChoiceEvidenceStatement) iter.next();
+			int thisStmtErrors = stmt.compile(callStack);
+			if (thisStmtErrors == 0) {
+				recordEvidence(stmt.getObservedVar(), stmt.getObservedValue(), stmt);
+			}
+			errors += thisStmtErrors;
+		}
 
 		return errors;
 	}
@@ -399,6 +425,9 @@ public class Evidence {
 	public Evidence replace(Term t, ArgSpec another) {
 		List newSymbolEvidence = new LinkedList();
 		List newValueEvidence = new LinkedList();
+		/*added by cheng*/
+		List newChoiceEvidence = new LinkedList();
+		
 		boolean replacement = false;
 		for (Iterator it = getSymbolEvidence().iterator(); it.hasNext();) {
 			SymbolEvidenceStatement ses = (SymbolEvidenceStatement) it.next();
@@ -414,10 +443,20 @@ public class Evidence {
 				replacement = true;
 			newValueEvidence.add(newVes);
 		}
+		/*added by cheng*/
+		for (Iterator it = getChoiceEvidence().iterator(); it.hasNext();) {
+			ChoiceEvidenceStatement ces = (ChoiceEvidenceStatement) it.next();
+			ChoiceEvidenceStatement newCes = ces.replace(t, another);
+			if (newCes != ces)
+				replacement = true;
+			newChoiceEvidence.add(newCes);
+		}
 		if (replacement) {
 			Evidence newEvidence = new Evidence();
 			newEvidence.valueEvidence.addAll(newValueEvidence);
 			newEvidence.symbolEvidence.addAll(newSymbolEvidence);
+			/*added by cheng*/
+			newEvidence.choiceEvidence.addAll(newChoiceEvidence);
 			if (compiled)
 				newEvidence.compile();
 			return newEvidence;
@@ -429,9 +468,25 @@ public class Evidence {
 		List list = new LinkedList();
 		list.addAll(getValueEvidence());
 		list.addAll(getSymbolEvidence());
+		/*added by cheng*/
+		list.addAll(getChoiceEvidence());
 		return list.toString();
 	}
 
+	/*added by cheng*/
+	public void addChoiceEvidence(ChoiceEvidenceStatement ev){
+		choiceEvidence.add(ev);
+	}
+	public Collection getChoiceEvidence() {
+		return Collections.unmodifiableCollection(choiceEvidence);
+	}
+	private List<ChoiceEvidenceStatement> choiceEvidence = new ArrayList<ChoiceEvidenceStatement>();
+	
+	
+	
+	
+	
+	
 	// List of SymbolEvidenceStatement
 	private List<SymbolEvidenceStatement> symbolEvidence = new ArrayList<SymbolEvidenceStatement>();
 
