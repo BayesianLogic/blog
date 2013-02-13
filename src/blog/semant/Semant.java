@@ -48,6 +48,7 @@ import blog.absyn.StringExpr;
 import blog.absyn.SymbolArrayList;
 import blog.absyn.SymbolEvidence;
 import blog.absyn.SymbolExpr;
+import blog.absyn.TupleSetExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
@@ -90,6 +91,7 @@ import blog.model.SymbolEvidenceStatement;
 import blog.model.SymbolTerm;
 import blog.model.Term;
 import blog.model.TrueFormula;
+import blog.model.TupleSetSpec;
 import blog.model.Type;
 import blog.model.UniversalFormula;
 import blog.model.ValueEvidenceStatement;
@@ -747,6 +749,8 @@ public class Semant {
 			return transExpr((ImplicitSetExpr) e);
 		} else if (e instanceof ExplicitSetExpr) {
 			return transExpr((ExplicitSetExpr) e);
+		} else if (e instanceof TupleSetExpr) {
+			return transExpr((TupleSetExpr) e);
 		} else if (e instanceof IfExpr) {
 			return transExpr((IfExpr) e);
 		} else if (e instanceof OpExpr) {
@@ -771,11 +775,6 @@ public class Semant {
 		Term t = new FuncAppTerm(BuiltInFunctions.NULL, Collections.EMPTY_LIST);
 		t.setLocation(e.line);
 		return t;
-	}
-
-	ExplicitSetSpec transExpr(ExplicitSetExpr e) {
-		// TODO
-		return null;
 	}
 
 	ArgSpec transExpr(SymbolExpr e) {
@@ -950,6 +949,11 @@ public class Semant {
 		t.setLocation(e.line);
 		return t;
 	}
+	
+	ExplicitSetSpec transExpr(ExplicitSetExpr e) {
+		// TODO
+		return null;
+	}
 
 	ImplicitSetSpec transExpr(ImplicitSetExpr e) {
 		Type typ = getNameType(e.typ);
@@ -972,6 +976,49 @@ public class Semant {
 			}
 		}
 		return new ImplicitSetSpec(vn, typ, cond);
+	}
+	
+	TupleSetSpec transExpr(TupleSetExpr e) {
+		List<Term> tupleTerms = new ArrayList<Term>();
+		List<Type> varTypes = new ArrayList<Type>();
+		List<String> varNames = new ArrayList<String>();
+		Formula cond = null;
+		
+		while (e.setTuple != null) {
+			Object tuple = transExpr(e.setTuple.head);
+			if (tuple instanceof Term) {
+				tupleTerms.add((Term) tuple);
+			} else {
+				error(e.cond.line, e.cond.col,
+							"Invalid expression as term in tuple set: term (number, string, boolean, or function call) expected");
+			}
+			e.setTuple = e.setTuple.next;
+		}
+		
+		// TODO: TRANSLATE THE VARIABLE LIST AND TYPES
+		while (e.enumVars != null) {
+			Object varType = this.getType(e.enumVars.typ);
+			Object varName = e.enumVars.var.toString();
+			if (varType instanceof Type && varName instanceof String) {
+				varTypes.add((Type) varType);
+				varNames.add((String) varName);
+			} else {
+				error(e.cond.line, e.cond.col,
+							"Invalid expression as logical variable in implicit set: logical variable expected");
+			}
+			e.enumVars = e.enumVars.next;
+		}
+		
+		if (e.cond != null) {
+			Object c = transExpr(e.cond);
+			if (c instanceof Formula) {
+				cond = (Formula) c;
+			} else {
+				error(e.cond.line, e.cond.col,
+							"Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
+			}
+		}
+		return new TupleSetSpec(tupleTerms, varTypes, varNames, cond);
 	}
 
 	/**
