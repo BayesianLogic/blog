@@ -227,9 +227,9 @@ public void setUpStreams(InputStream pin, PrintStream pout){
 		boolean verbose = false;
 		boolean randomize = false;
 		
-		String modelFile = "ex_inprog/logistics/simplemaze_choice.mblog";
+		String modelFile = "ex_inprog/logistics/aircraft_decision.dblog";
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("succeed_action(@0)");
+		Collection queryStrings = Util.list();
 
 		Util.initRandom(randomize);
 		Util.setVerbose(verbose);
@@ -238,7 +238,7 @@ public void setUpStreams(InputStream pin, PrintStream pout){
 		ArrayList<Query> queries = new ArrayList<Query>();
 		ArrayList<Object> readersAndOrigins = new ArrayList<Object>();
 		readersAndOrigins.add(new Object[] {new FileReader(modelFile), "blank"});
-
+		
 
 
 		

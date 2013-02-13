@@ -93,8 +93,6 @@ public class ChoiceEvidenceStatement {
 		if (leftSide instanceof Term) {
 			Type left = ((Term) leftSide).getType();
 			if (output instanceof Term) {
-				// TODO: decide whether to have ArgSpec be typed as well. we should
-				// (leili)
 				Type right = ((Term) output).getType();
 				if ((left != null) && (right != null) && !right.isSubtypeOf(left)) {
 					System.err.println("Term " + leftSide + ", of type " + left
@@ -137,16 +135,16 @@ public class ChoiceEvidenceStatement {
 			Util.fatalError("ChoiceEvidenceStatement.compile: " +
 					"left side" + leftSide +" is not a fixed function, and will not work with obschoice");
 		
-		if (rightValue != null) {
-
-			// This statement is saying that a particular variable is
-			// equal to rightValue.
-			observedVar = leftSide.getVariable();
-			observedValue = rightValue;
-		} else {
-			Util.fatalError("ChoiceEvidenceStatement.compile: This should not be happening");
+		if (!(leftSide instanceof FuncAppTerm && ((FuncAppTerm) leftSide).getFunction() instanceof ChoiceFunction)){
+			System.err.println("ChoiceEvidenceStatement.compile: only applicable to choice functions");
+			System.exit(0);
 		}
-
+		if (rightValue != Boolean.TRUE){
+			System.err.println("ChoiceEvidenceStatement.compile: misues of choicefunction for non-boolean evidence");
+			System.exit(0);
+		}
+		observedVar = leftSide.getVariable();
+		observedValue = rightValue;
 		return errors;
 	}
 

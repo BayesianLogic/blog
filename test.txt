@@ -1,38 +1,21 @@
-Distribution of values for pos(@0)
-	1.0	1
-Distribution of values for applied_action(up, @0)
-	1.0	true
-Distribution of values for applied_action(down, @2)
-	1.0	false
-Distribution of values for pos(@1)
-	1.0	2
-Distribution of values for applied_action(up, @1)
-	1.0	false
-Distribution of values for applied_action(down, @2)
-	1.0	true
-Distribution of values for pos(@2)
-	1.0	3
-Distribution of values for applied_action(up, @2)
-	1.0	false
-Distribution of values for applied_action(down, @2)
-	1.0	true
-Distribution of values for pos(@3)
-	1.0	4
-Distribution of values for applied_action(up, @3)
-	1.0	false
-Distribution of values for applied_action(down, @2)
-	1.0	true
-Distribution of values for applied_action(right, @3)
-	1.0	true
-Distribution of values for pos(@4)
-	1.0	5
-Distribution of values for applied_action(up, @4)
-	1.0	true
-Distribution of values for applied_action(down, @2)
-	1.0	true
-Distribution of values for pos(@5)
-	1.0	6
-Distribution of values for applied_action(up, @5)
-	1.0	false
-Distribution of values for applied_action(down, @2)
-	1.0	true
+Distribution of values for Burglary(h1, @0)
+	0.895	false
+	0.105	true
+Distribution of values for Burglary(h1, @1)
+	0.911	false
+	0.089	true
+Distribution of values for Burglary(h1, @2)
+	0.901	false
+	0.099	true
+Distribution of values for Burglary(h1, @3)
+	0.878	false
+	0.122	true
+Distribution of values for Burglary(h1, @4)
+	0.907	false
+	0.093	true
+Distribution of values for Burglary(h1, @5)
+	0.897	false
+	0.103	true
+Distribution of values for Burglary(h1, @6)
+	0.898	false
+	0.102	true

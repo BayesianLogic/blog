@@ -19,41 +19,12 @@ type Action;
 
 distinct Action up, down, left, right;
 
-choice Boolean applied_action (Action a, Timestep t) = ;
+choice Boolean applied_action (Action a, Timestep t) ;
 
 
 
-random Action action_at_time(Timestep t){
-/*  if(t==@0) then
-    = up
-  else if (t==@1) then
-    =right
-  else if (t==@2) then
-    = down
-  else if (t==@3) then
-    = right
-  else if (t==@4) then
-    =up
-  else*/
-  ~ UniformChoice({Action a})
-};
 
-/*
-random Boolean applied_action (Action a, Timestep t){
-  if (a == action_at_time (t)) then
-    = true
-  else
-    = false
-};*/
-/*
-fixed Boolean applied_action (Action a, Timestep t)
-  = ListInterp(2, up, @0,
-                  right, @1,
-                  down, @2,
-                  right, @3,
-                  up, @4
-                  );
-*/
+
 random Boolean succeed_action (Timestep t){
   ~ Categorical({true -> 0.9, false -> 0.1})
 };
