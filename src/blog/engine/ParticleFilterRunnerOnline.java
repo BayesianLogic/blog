@@ -135,23 +135,30 @@ public void setUpStreams(InputStream pin, PrintStream pout){
 	}
 
 	//Cheng: overrode the moveOn in particleFilterRunner, mainly to gain access to evidenceGenerator
-	public boolean moveOn() {
+	public boolean advancePhase1() {
 		queriesCacheInvalid = true;
 		
 		Evidence evidence;
 		Collection queries;
 		beforeEvidenceAndQueries();
-		if ((evidence = evidenceGenerator.getEvidence()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
+		evidenceGenerator.updateObservationQuery();
+		if ((evidence = evidenceGenerator.getLatestObservation()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
 			particleFilter.take(evidence);
 			particleFilter.answer(queries);
 			afterEvidenceAndQueries();
-			
 			return true;
 		}
 		return false;
 	}
-	
-
+	public boolean advancePhase2() {
+		Evidence evidence;
+		evidenceGenerator.updateDecision();
+		if ((evidence = evidenceGenerator.getLatestDecision()) != null) {	
+			particleFilter.take(evidence);
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * Provides the query instantiations according to current time step, for use
@@ -227,9 +234,9 @@ public void setUpStreams(InputStream pin, PrintStream pout){
 		boolean verbose = false;
 		boolean randomize = false;
 		
-		String modelFile = "ex_inprog/logistics/aircraft_decision.dblog";
+		String modelFile = "ex_inprog/logistics/simplemaze_choice.mblog";
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list();
+		Collection queryStrings = Util.list("pos(t)");
 
 		Util.initRandom(randomize);
 		Util.setVerbose(verbose);
@@ -256,7 +263,7 @@ public void setUpStreams(InputStream pin, PrintStream pout){
 	/** Runs until there are no evidence or queries anymore. */
 	public void run() {
 		int i=0;
-		while (moveOn()){
+		while (advancePhase1()&&advancePhase2()){
 			i++;
 			//if (i>15)
 			//	break;
