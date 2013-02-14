@@ -116,7 +116,8 @@ init with {:
 terminal ELSE, IF, THEN;
 terminal TYPE, RANDOM, FIXED, ORIGIN, DISTINCT,
         QUERY, OBS, PARAM, LIST, MAP, DISTRIBUTION;
-terminal EXISTS, FORALL, FOR; // enumerators
+terminal EXISTS, FORALL;
+terminal FOR;
 terminal NULL;
 terminal java.lang.Number INT_LITERAL, DOUBLE_LITERAL;
 terminal java.lang.Boolean BOOLEAN_LITERAL;
