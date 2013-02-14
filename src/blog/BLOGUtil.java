@@ -112,6 +112,12 @@ public class BLOGUtil {
 	
 	/*added by cheng*/
 	public static void setChoiceInterp(Evidence evidence, PartialWorld world) {
+		setChoiceInterp(evidence, new ClassicInstantiatingEvalContext(world));
+	}
+	
+
+	
+	public static void setChoiceInterp(Evidence evidence, InstantiatingEvalContext context) {
 		for (BayesNetVar var : evidence.getEvidenceVars()) {
 			if (var instanceof DerivedVar){
 				if (((DerivedVar) var).getArgSpec() instanceof FuncAppTerm){
@@ -122,14 +128,12 @@ public class BLOGUtil {
 					}
 					if (fat.getFunction() instanceof ChoiceFunction){
 						ChoiceFunction f = (ChoiceFunction) fat.getFunction();
-						f.addInterp(fat);
+						f.addInterp(fat, context);
 					}
 				}
 			}
 		}
 	}
-	
-	
 	public static double setAndGetProbability(BayesNetVar rv, Object value,
 			PartialWorld world) {
 		BLOGUtil.ensureDetAndSupported(rv, world);

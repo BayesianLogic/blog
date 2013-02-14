@@ -131,9 +131,9 @@ public class ChoiceEvidenceStatement {
 		Object rightValue = output.getValueIfNonRandom();
 		
 		/*added by cheng*/
-		if (leftValue == null)
-			Util.fatalError("ChoiceEvidenceStatement.compile: " +
-					"left side" + leftSide +" is not a fixed function, and will not work with obschoice");
+		//if (leftValue == null)
+		//	Util.fatalError("ChoiceEvidenceStatement.compile: " +
+		//			"left side" + leftSide +" is not a fixed function, and will not work with obschoice");
 		
 		if (!(leftSide instanceof FuncAppTerm && ((FuncAppTerm) leftSide).getFunction() instanceof ChoiceFunction)){
 			System.err.println("ChoiceEvidenceStatement.compile: only applicable to choice functions");

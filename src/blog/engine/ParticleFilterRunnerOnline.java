@@ -150,6 +150,11 @@ public void setUpStreams(InputStream pin, PrintStream pout){
 		}
 		return false;
 	}
+	
+	//decide applied_Load(argload(@0), t1, @0)=true;
+	//
+	
+	
 	public boolean advancePhase2() {
 		Evidence evidence;
 		evidenceGenerator.updateDecision();
@@ -234,9 +239,9 @@ public void setUpStreams(InputStream pin, PrintStream pout){
 		boolean verbose = false;
 		boolean randomize = false;
 		
-		String modelFile = "ex_inprog/logistics/simplemaze_choice.mblog";
+		String modelFile = "ex_inprog/logistics/logistics_choice.mblog";
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("pos(t)");
+		Collection queryStrings = Util.list("value(t)");
 
 		Util.initRandom(randomize);
 		Util.setVerbose(verbose);

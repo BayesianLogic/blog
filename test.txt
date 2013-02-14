@@ -1,2 +1,8 @@
 Distribution of values for value(@0)
 	1.0	0.0
+Distribution of values for #{Box b : (BoxIn(b, c3, @3) = true)}
+	1.0	0
+Distribution of values for value(@1)
+	1.0	0.0
+Distribution of values for #{Box b : (BoxIn(b, c1, @3) = true)}
+	1.0	0
