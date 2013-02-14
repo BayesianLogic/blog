@@ -19,7 +19,7 @@ type Action;
 
 distinct Action up, down, left, right;
 
-choice Boolean applied_action (Action a, Timestep t) ;
+decision Boolean applied_action (Action a, Timestep t);
 
 
 

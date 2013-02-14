@@ -82,9 +82,38 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 	 */
 	public void moveOn(int t) {
 		List<Query> q = (List<Query>) getQueries(lastTimeStep = t);
-		getInput(new Evidence(), q);
+		//System.out.println("Enter observations/queries for: "+lastTimeStep);
+		//getInput(new Evidence(), q);
 		moveOn(q);
+		
 	}
+	public void updateObservationQuery(){
+		System.out.println("Enter observations/queries for: "+ lastTimeStep);
+		List<Query> q = (List<Query>) getLatestQueries();
+		Evidence ev = new Evidence();
+		getInput(ev, q);
+		if ( !ev.getChoiceEvidence().isEmpty() ){
+			System.err.println("OPFevidenceGenerator.getObservation: do not enter decisions in observation/query phase");
+			System.exit(1);
+		}
+		latestObservation = ev;
+	}
+	public void updateDecision(){
+		System.out.println("Enter decision for: "+ lastTimeStep);
+		List<Query> q = Util.list();
+		Evidence ev = new Evidence();
+		getInput(ev, q);
+		if (!q.isEmpty()){
+			System.err.println("OPFevidenceGenerator.getDecision: do not enter queries in decision phase");
+			System.exit(1);
+		}
+		if ( !ev.getValueEvidence().isEmpty() || !ev.getSymbolEvidence().isEmpty() ){
+			System.err.println("OPFevidenceGenerator.getDecision: do not enter observations in decision phase");
+			System.exit(1);
+		}
+		latestDecision = ev;
+	}
+	
 	public void getInput (){
 		Evidence ev = new Evidence();
 		List<Query> q = Util.list();
@@ -94,7 +123,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 	private void getInput (Evidence ev, List<Query> q){
 		String eviquerystr = "";
 		String accstr= "";
-		System.out.println("Enter evi for: "+lastTimeStep);
+
 		while (true){
 			try {
 				eviquerystr = in.readLine();
@@ -107,6 +136,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 			else
 				accstr+=eviquerystr;
 		}
+		
 
 		parseAndTranslateEvidence(ev, q, new StringReader((String) accstr));
 		
@@ -128,7 +158,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		}
 		
 		checkEvidenceMatchesTimestep(ev);
-		latestEvidence = ev;
+
 	}
 	
 	
@@ -136,10 +166,15 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 	 * Implements method used by {@link ParticleFilterRunner} to obtain evidence
 	 * for current time step.
 	 */
-	public Evidence getEvidence() {
-		return latestEvidence; 
+	public Evidence getLatestObservation() {
+		return latestObservation; 
 
 	}
+	public Evidence getLatestDecision() {
+		return latestDecision; 
+
+	}
+	
 	//need to fix the error message for empty evidence string inputs
 	private boolean parseAndTranslateEvidence(Evidence e, List<Query> q, Reader reader) {
 		Parse parse = new Parse(reader, null);
@@ -156,6 +191,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		/*do nothing*/	
 	}
 	
-	Evidence latestEvidence;
+	Evidence latestObservation;
+	Evidence latestDecision;
 	BufferedReader in;
 }
