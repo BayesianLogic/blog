@@ -356,9 +356,9 @@ public class ChoiceTest extends TestCase {
 	    PrintStream out = runner.getEviOutput();
 	    
 	    out.println("decide applied_action(up, @0) = true;\n");
-	    runner.evidenceGenerator.getInput();
-	    runner.evidenceGenerator.updateObservationQuery();
-	    Evidence e = runner.evidenceGenerator.getLatestObservation();
+	    //runner.evidenceGenerator.getInput();
+	    runner.evidenceGenerator.updateDecision();
+	    Evidence e = runner.evidenceGenerator.getLatestDecision();
 	    ChoiceEvidenceStatement v = (ChoiceEvidenceStatement) Util.getFirst(e.getChoiceEvidence());
 	    assertTrue(e.getChoiceEvidence().size()==1);
 	    java.lang.reflect.Field iscompiled = ChoiceEvidenceStatement.class.getDeclaredField("compiled");
@@ -377,7 +377,7 @@ public class ChoiceTest extends TestCase {
 	    
 	    
 	    //now test entering two evidence at the same time
-	    out.println("obs succeed_action(@1)=true;\n obs succeed_action(@2)=true;\n query applied_action(up,@0); applied_action(down,@2);\n");
+	    out.println("obs succeed_action(@1)=true;\n obs succeed_action(@2)=true;\n query applied_action(up,@0); query applied_action(down,@2);\n");
 	    runner.advancePhase1();
 	    
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "true"), 1, 0);
@@ -388,7 +388,7 @@ public class ChoiceTest extends TestCase {
 	    out.println("decide applied_action(right, @1) = true;\n decide applied_action(down, @2) = true;\n");
 	    runner.advancePhase2();
 
-	    out.println("query applied_action(up,@1); applied_action(down,@2);\n");
+	    out.println("query applied_action(up,@1); query applied_action(down,@2);\n");
 	    runner.advancePhase1();
 	    
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "false"), 1, 0);
@@ -399,7 +399,7 @@ public class ChoiceTest extends TestCase {
 	    out.println("");
 	    runner.advancePhase2();
 	    
-	    out.println("query applied_action(up,@1); applied_action(down,@2);\n"); //test providing queries
+	    out.println("query applied_action(up,@1); query applied_action(down,@2);\n"); //test providing queries
 	    runner.advancePhase1();
 	    
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "false"), 1, 0);
@@ -410,7 +410,7 @@ public class ChoiceTest extends TestCase {
 	    out.println("decide applied_action(right, @3) = true;\n");
 	    runner.advancePhase2();
 	    
-	    out.println("obs succeed_action(@4)=true;\n query applied_action(up,@3); applied_action(down,@2);\n query applied_action(right,@3);\n obs succeed_action(@3)=true;\n");
+	    out.println("obs succeed_action(@4)=true;\n query applied_action(up,@3);query  applied_action(down,@2);\n query applied_action(right,@3);\n obs succeed_action(@3)=true;\n");
 	    runner.advancePhase1();
 	    
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "false"), 1, 0);
@@ -418,10 +418,10 @@ public class ChoiceTest extends TestCase {
 	    
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "5"), 1, 0);
 
-	    out.println("decide applied_action(up, @4) = true;");
+	    out.println("decide applied_action(up, @4) = true;\n");
 	    runner.advancePhase2();	    
 	    
-	    out.println("obs succeed_action(@5)=true;\n query applied_action(up,@4); applied_action(down,@2);\n ");
+	    out.println("obs succeed_action(@5)=true;\n query applied_action(up,@4);query applied_action(down,@2);\n ");
 	    runner.advancePhase1();
 
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "true"), 1, 0);

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import blog.distrib.ListInterp;
+import blog.sample.InstantiatingEvalContext;
 
 public class ChoiceFunction extends NonRandomFunction {
 
@@ -12,11 +13,11 @@ public class ChoiceFunction extends NonRandomFunction {
 		this.setInterpretation(new ListInterp(arg_types.size()));
 	}
 
-	public void addInterp (FuncAppTerm fat){
+	public void addInterp (FuncAppTerm fat, InstantiatingEvalContext context){
 		ArgSpec[] args = fat.getArgs();
 		Object[] argValues = new Object[args.length];
 		for (int i = 0; i < args.length; ++i) {
-			argValues[i] = args[i].getValueIfNonRandom();
+			argValues[i] = args[i].evaluate(context);
 		}
 		((ListInterp) getInterpretation()).add(Arrays.asList(argValues));
 		return;

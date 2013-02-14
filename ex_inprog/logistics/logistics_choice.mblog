@@ -2,25 +2,36 @@
 type Box;  type Truck;  type City;
 
 // declare the individual objects
-distinct Box b3, b2, b1;
+//distinct Box b3, b2, b1;
+
+#Box = 5;
+distinct Box b1;
 distinct Truck t1, t2;
 distinct City c1, c2, c3;
 
-choice Boolean applied_Load(Box b, Truck tr, Timestep t);
+decision Boolean applied_Load(Box b, Truck tr, Timestep t);
 
 
 
-choice Boolean applied_Unload(Box b, Truck tr, Timestep t);
-
-choice Boolean applied_Drive(City c, Truck tr, Timestep t);
+decision Boolean applied_Unload(Box b, Truck tr, Timestep t);
 
 
+
+decision Boolean applied_Drive(City c, Truck tr, Timestep t);
+
+random Box argload (Timestep t){
+  ~ UniformChoice({Box b : BoxIn (b, c1, t) == true })
 };
+
+random Box argunload (Truck tr, Timestep t){
+  ~ UniformChoice({Box b : BoxOn (b, t1, t) == true })
+};
+
 
 random Boolean pass(Timestep t){
   if (t==@0) then
     = false
-  else if (BoxIn(b3, c3, t) & BoxIn(b1, c3, t) & BoxIn(b2, c3, t)) then
+  else if (exists Box b (BoxIn(b, c3, t)) == true ) then
     = true
   else
     = pass(Prev(t))
@@ -28,7 +39,7 @@ random Boolean pass(Timestep t){
 
 
 random Real reward(Timestep t){
-  if(exists Box b exists Truck tr (applied_Unload(b,tr,t) & (TruckIn(c3,tr,t)))) then 
+  if(exists Box b exists Truck tr (applied_Unload(b,tr,Prev(t)) & (TruckIn(c3,tr,Prev(t))))) then 
     = 10.0
   else
     = 0.0
