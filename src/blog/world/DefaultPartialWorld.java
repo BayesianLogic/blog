@@ -44,6 +44,8 @@ import blog.common.HashMultiMap;
 import blog.common.IndexedHashMultiMap;
 import blog.common.IndexedMultiMap;
 import blog.common.MultiMap;
+import blog.distrib.ListInterp;
+import blog.model.FunctionSignature;
 import blog.bn.DefaultCBN;
 
 
@@ -82,11 +84,21 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
 		varToUninstParent = new HashMapWithPreimages();
 		varToLogProb = new HashMap();
 		derivedVarToValue = new HashMap();
+		
+		/*added by cheng*/
+		decisionToInterp = new HashMap();
+		
 	}
 
 	public Object clone() {
 		DefaultPartialWorld newWorld = new DefaultPartialWorld();
 		cloneFields(newWorld);
 		return newWorld;
+	}
+
+	public ListInterp getDecisionInterp(FunctionSignature sig) {
+		if (!decisionToInterp.containsKey(sig))
+			decisionToInterp.put(sig, new ListInterp(sig.argTypes.length));
+		return (ListInterp) decisionToInterp.get(sig); 
 	}
 }

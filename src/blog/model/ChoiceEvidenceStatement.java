@@ -127,7 +127,6 @@ public class ChoiceEvidenceStatement {
 		errors += leftSide.compile(callStack);
 		errors += output.compile(callStack);
 
-		Object leftValue = leftSide.getValueIfNonRandom();
 		Object rightValue = output.getValueIfNonRandom();
 		
 		/*added by cheng*/

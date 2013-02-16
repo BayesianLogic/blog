@@ -241,7 +241,7 @@ public void setUpStreams(InputStream pin, PrintStream pout){
 		
 		String modelFile = "ex_inprog/logistics/logistics_choice.mblog";
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("value(t)");
+		Collection queryStrings = Util.list("value(t)","#{Box b: BoxIn(b, c3, t)==true}","#{Box b: BoxIn(b, c1, t)==true}");
 
 		Util.initRandom(randomize);
 		Util.setVerbose(verbose);
