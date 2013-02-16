@@ -1,6 +1,7 @@
 package blog.engine;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -241,7 +242,7 @@ public void setUpStreams(InputStream pin, PrintStream pout){
 		
 		String modelFile = "ex_inprog/logistics/logistics_choice.mblog";
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("value(t)","#{Box b: BoxIn(b, c3, t)==true}","#{Box b: BoxIn(b, c1, t)==true}");
+		Collection queryStrings = Util.list("value(t)","#{Box b: BoxIn(b, c3, t)==true}","#{Box b: BoxIn(b, c1, t)==true}", "#{Box b: applied_Load(b, t1, t)==true}");
 
 		Util.initRandom(randomize);
 		Util.setVerbose(verbose);
@@ -258,7 +259,8 @@ public void setUpStreams(InputStream pin, PrintStream pout){
 		ParticleFilterRunnerOnline a = new ParticleFilterRunnerOnline(model,
 				linkStrings, queryStrings, properties);
 		a.eviReader=new BufferedReader(new InputStreamReader(System.in));
-		a.setUpStreams(System.in, System.out);
+		FileInputStream evidenceIn = new FileInputStream("ex_inprog/logistics/logistics_choice.evidence");
+		a.setUpStreams(evidenceIn, System.out);
 		a.run();
 		
 	}

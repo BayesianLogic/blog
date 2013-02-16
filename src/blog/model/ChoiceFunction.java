@@ -2,6 +2,9 @@ package blog.model;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import blog.world.DefaultPartialWorld;
 import blog.bn.RandFuncAppVar;
 import blog.distrib.ListInterp;
@@ -20,15 +23,42 @@ public class ChoiceFunction extends Function {
 		for (int i = 0; i < args.length; ++i) {
 			argValues[i] = args[i].evaluate(context);
 		}
-		((DefaultPartialWorld)context.getPartialWorld()).getDecisionInterp(this.getSig()).add(Arrays.asList(argValues));
+		Set interpInContext = ((DefaultPartialWorld)context.getPartialWorld()).getDecisionInterp();
+		//DefaultPartialWorld thisWorld = ((DefaultPartialWorld)context.getPartialWorld());
+		interpInContext.add(new InterpToken(this, argValues));
 		return;
 	}
 	
 	public Object getValueInContext(Object[] args, EvalContext context,
 			boolean stable) {
-		ListInterp interpInContext = ((DefaultPartialWorld)context.getPartialWorld()).getDecisionInterp(this.getSig());
-
-		return interpInContext.getValue(Arrays.asList(args));
+		Set interpInContext = ((DefaultPartialWorld)context.getPartialWorld()).getDecisionInterp();
+		//DefaultPartialWorld thisWorld = ((DefaultPartialWorld)context.getPartialWorld());
+		return Boolean.valueOf(interpInContext.contains(new InterpToken(this, args)));
 	}
+
 	
+	class InterpToken {
+		ChoiceFunction f;
+		Object[] args;
+		
+		public InterpToken(ChoiceFunction f, Object[] args) {
+			this.f = f;
+			this.args = args;
+		}
+		public boolean equals(Object obj) {
+			if (obj instanceof InterpToken) {
+				InterpToken other = (InterpToken) obj;
+				return ((f == other.f) && Arrays.equals(args, other.args));
+			}
+			return false;
+		}
+		public int hashCode() {
+			int code = f.hashCode();
+			for (int i = 0; i < args.length; ++i) {
+				code ^= args[i].hashCode();
+			}
+			return code;
+		}
+		
+	}
 }
