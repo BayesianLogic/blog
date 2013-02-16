@@ -52,6 +52,8 @@ import blog.common.IndexedMultiMap;
 import blog.common.IndexedSet;
 import blog.common.MapWithPreimages;
 import blog.common.MultiMap;
+import blog.distrib.ListInterp;
+import blog.model.FunctionSignature;
 import blog.model.POP;
 import blog.model.RandomFunction;
 import blog.objgen.ObjectSet;
@@ -513,4 +515,5 @@ public interface PartialWorld {
 	 * Double objects that have value -1.
 	 */
 	static final Double UNDET = new Double(-1.0);
+
 }
