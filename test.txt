@@ -1,34 +1,64 @@
-Distribution of values for pos(@0)
-	1.0	1
-Distribution of values for pos(@1)
-	1.0	2
-Distribution of values for applied_action(up, @0)
-	1.0	true
-Distribution of values for applied_action(down, @2)
-	1.0	false
-Distribution of values for pos(@2)
-	1.0	3
-Distribution of values for applied_action(up, @1)
-	1.0	false
-Distribution of values for applied_action(down, @2)
-	1.0	true
-Distribution of values for pos(@3)
-	1.0	4
-Distribution of values for applied_action(up, @1)
-	1.0	false
-Distribution of values for applied_action(down, @2)
-	1.0	true
-Distribution of values for pos(@4)
-	1.0	5
-Distribution of values for applied_action(up, @3)
-	1.0	false
-Distribution of values for applied_action(down, @2)
-	1.0	true
-Distribution of values for applied_action(right, @3)
-	1.0	true
-Distribution of values for pos(@5)
+Distribution of values for value(@0)
+	1.0	0.0
+Distribution of values for #{Box b : (BoxIn(b, c3, @0) = true)}
+	1.0	0
+Distribution of values for #{Box b : (BoxIn(b, c1, @0) = true)}
 	1.0	6
-Distribution of values for applied_action(up, @4)
-	1.0	true
-Distribution of values for applied_action(down, @2)
-	1.0	true
+Distribution of values for #{Box b : (applied_Load(b, t1, @0) = true)}
+	1.0	0
+Distribution of values for value(@1)
+	1.0	0.0
+Distribution of values for #{Box b : (BoxIn(b, c3, @1) = true)}
+	1.0	0
+Distribution of values for #{Box b : (BoxIn(b, c1, @1) = true)}
+	1.0	5
+Distribution of values for #{Box b : (applied_Load(b, t1, @1) = true)}
+	1.0	0
+Distribution of values for value(@2)
+	1.0	0.0
+Distribution of values for #{Box b : (BoxIn(b, c3, @2) = true)}
+	1.0	0
+Distribution of values for #{Box b : (BoxIn(b, c1, @2) = true)}
+	1.0	5
+Distribution of values for #{Box b : (applied_Load(b, t1, @2) = true)}
+	1.0	0
+Distribution of values for value(@3)
+	1.0	7.290000000000001
+Distribution of values for #{Box b : (BoxIn(b, c3, @3) = true)}
+	1.0	1
+Distribution of values for #{Box b : (BoxIn(b, c1, @3) = true)}
+	1.0	5
+Distribution of values for #{Box b : (applied_Load(b, t1, @3) = true)}
+	1.0	0
+Distribution of values for value(@4)
+	1.0	7.290000000000001
+Distribution of values for #{Box b : (BoxIn(b, c3, @4) = true)}
+	1.0	1
+Distribution of values for #{Box b : (BoxIn(b, c1, @4) = true)}
+	1.0	5
+Distribution of values for #{Box b : (applied_Load(b, t1, @4) = true)}
+	1.0	0
+Distribution of values for value(@5)
+	1.0	7.290000000000001
+Distribution of values for #{Box b : (BoxIn(b, c3, @5) = true)}
+	1.0	1
+Distribution of values for #{Box b : (BoxIn(b, c1, @5) = true)}
+	1.0	4
+Distribution of values for #{Box b : (applied_Load(b, t1, @5) = true)}
+	1.0	0
+Distribution of values for value(@6)
+	1.0	7.290000000000001
+Distribution of values for #{Box b : (BoxIn(b, c3, @6) = true)}
+	1.0	1
+Distribution of values for #{Box b : (BoxIn(b, c1, @6) = true)}
+	1.0	4
+Distribution of values for #{Box b : (applied_Load(b, t1, @6) = true)}
+	1.0	0
+Distribution of values for value(@7)
+	1.0	12.072969000000002
+Distribution of values for #{Box b : (BoxIn(b, c3, @7) = true)}
+	1.0	2
+Distribution of values for #{Box b : (BoxIn(b, c1, @7) = true)}
+	1.0	4
+Distribution of values for #{Box b : (applied_Load(b, t1, @7) = true)}
+	1.0	0

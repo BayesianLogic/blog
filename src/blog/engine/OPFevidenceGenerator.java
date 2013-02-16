@@ -158,6 +158,8 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		}
 		
 		checkEvidenceMatchesTimestep(ev);
+		
+		System.out.println("Evidence Entered:\n"+accstr);
 
 	}
 	
