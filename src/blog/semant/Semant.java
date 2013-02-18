@@ -951,8 +951,14 @@ public class Semant {
 	}
 	
 	ExplicitSetSpec transExpr(ExplicitSetExpr e) {
-		// TODO
-		return null;
+		List terms = new ArrayList();
+		
+		ExprList currTerm = e.values;
+		while (currTerm != null) {
+			terms.add(transExpr(currTerm.head));
+			currTerm = currTerm.next;
+		}
+		return new ExplicitSetSpec(terms);
 	}
 
 	ImplicitSetSpec transExpr(ImplicitSetExpr e) {
