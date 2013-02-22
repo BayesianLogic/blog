@@ -333,6 +333,8 @@ public class Evidence {
 
 		for (Iterator iter = evidenceVars.iterator(); iter.hasNext();) {
 			BayesNetVar var = (BayesNetVar) iter.next();
+			Object a = getObservedValue(var);
+			Object b = var.getValue(curWorld);
 			if (getObservedValue(var).equals(var.getValue(curWorld))) {
 				evidenceLogSum += curWorld.getLogProbOfValue(var);
 			} else {
