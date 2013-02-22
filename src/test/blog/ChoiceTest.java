@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Set;
-
 import junit.framework.TestCase;
 import blog.BLOGUtil;
 import blog.Main;
@@ -160,6 +159,114 @@ public class ChoiceTest extends TestCase {
 
 
 			;
+	
+	private static final String logisticsModelStringRandomBoxes = 
+			  "type Box;  type Truck;  type City;"
+			+	"#Box ~ Poisson(5);"
+			+	"distinct Truck t1, t2;"
+			+	"distinct City c1, c2, c3;"
+
+			+	"decision Boolean chosen_Load(Box b, Truck tr, Timestep t);"
+
+			+	"decision Boolean chosen_Unload(Box b, Truck tr, Timestep t);"
+
+			+	"decision Boolean chosen_Drive(City c, Truck tr, Timestep t);"
+			+   "random Box argload (Timestep t){  ~ UniformChoice({Box b : BoxIn (b, c1, t) == true })};"
+			+	"random Box argunload (Truck tr, Timestep t){  ~ UniformChoice({Box b : BoxOn (b, t1, t) == true })};"
+			+	"random Boolean applied_Load(Box b, Truck tr, Timestep t) {"
+			+	"  if (exists City c (BoxIn ( b, c, t) & TruckIn (c, tr, t))) then = (chosen_Load(foo(b), tr, t) & succeed_action(t)) else = false"
+			+	"};"
+			
+			+	"random Box foo (Box b) {if true then = b};"
+
+			+	"random Boolean applied_Unload(Box b, Truck tr, Timestep t) {"
+			+	"  if (BoxOn ( b, tr, t) == true ) then = (chosen_Unload(b, tr, t) & succeed_action(t))"
+			+	"};"
+
+			+	"random Boolean applied_Drive(City c, Truck tr, Timestep t) {"
+			+	"  if (true) then = (chosen_Drive(c, tr, t) & succeed_action(t))"
+			+ 	"};"
+			
+			+	"random Boolean succeed_action (Timestep t){"
+			+		"~ Categorical({true -> 0.9, false -> 0.1})"
+			+	"};"
+			+	"random Boolean pass(Timestep t){"
+			+	"  if (t==@0) then"
+			+	"    = false"
+			+	"  else if (forall Box b BoxIn(b, c3, t)==true) then"
+			+	"    = true"
+			+	"  else"
+			+	"    = pass(Prev(t))"
+			+	"};"
+
+			+	"random String actionName(Timestep t){"
+			+	"  if (true & exists Box b exists Truck tr (applied_Load(b,tr,t) & true)) then"
+			+	"    =\"load\""
+			+	"  else if (true & exists Box b exists Truck tr (true & applied_Unload(b,tr,t))) then"
+			+	"    =\"unload\""
+			+	"  else if (true & exists Truck tr exists City c (true & applied_Drive(c,tr,t))) then"
+			+	"    =\"drive\""
+			+	"  else"
+			+	"    =\"na\""
+			+	"};"
+
+			+	"random Real reward(Timestep t){"
+			+	"  if (t==@0) then"
+			+	"	 = 0.0"
+			+	"  else if (exists Box b exists Truck tr (applied_Unload(b,tr,Prev(t)) & (TruckIn(c3,tr,Prev(t)) & BoxOn(b,tr,Prev(t))) )) then "
+			+	"    = 10.0"
+			+	"  else"
+			+	"    = 0.0"
+			+	"};"
+
+			+	"random Real discount(Timestep t){"
+			+	"  if(t==@0) then "
+			+	"    = 1.0"
+			+	"  else"
+			+	"    = (discount(Prev(t)) * 0.9) /*gamma = 0.9*/"
+			+	"};"
+
+			+	"random Real value(Timestep t){"
+			+	"  if(t == @0) then"
+			+	"    =reward(@0)"
+			+	"  else"
+			+	"    = (value(Prev(t))) + ( reward(t) * discount(t))"
+			+	"};"
+
+			+	"random Boolean BoxIn(Box b, City c, Timestep t) {"
+			+	"  if (t == @0) then"
+			+	"    if (c == c1) then "
+			+	"      = true"
+			+	"    else"
+			+	"      = false"
+			+	"  else"
+			+	"    = (exists Truck tr (applied_Unload(b, tr, (Prev(t))) & TruckIn (c, tr, (Prev(t)))))"
+			+	"      | (BoxIn(b, c, (Prev(t))) & !(exists Truck tr (true & applied_Load(b, tr, (Prev(t))))))"
+			+	"};"
+
+			+	"random Boolean TruckIn(City c, Truck tr, Timestep t) {"
+			+	"  if (t == @0) then"
+			+	"    if (c == c1) then "
+			+	"      = true"
+			+	"    else"
+			+	"      = false"
+			+	"  else"
+			+	"    = applied_Drive(c, tr, (Prev(t)))"
+			+	"      | (TruckIn(c, tr, (Prev(t))) & !(exists City c2 (true & applied_Drive(c2, tr, (Prev(t))) & c2 != c)))"
+			+	"};"
+
+			+	"random Boolean BoxOn(Box b, Truck tr, Timestep t) {"
+			+	"  if (t == @0) then"
+			+	"    = false"
+			+	"  else"
+			+	"    = (exists City c (applied_Load(b, tr, (Prev(t))) & BoxIn(b, c, (Prev(t))) & TruckIn(c, tr, (Prev(t)))))"
+			+	"      | (BoxOn(b, tr, (Prev(t))) & !(true & applied_Unload(b, tr, (Prev(t)))))"
+			+	"};"
+
+
+
+			;
+	
 	private static final String mazeModelString = 
 			"type Action;"	
 		+	"distinct Action up, down, left, right;"
@@ -237,7 +344,6 @@ public class ChoiceTest extends TestCase {
 		Main.stringSetup(model, evidence, queries, newModelString);
 	}
 	
-
 
 	@Test
 	public void test_logistics() throws Exception {
@@ -333,7 +439,16 @@ public class ChoiceTest extends TestCase {
 	    runner.advancePhase1();
 	    out.println("");
 	    runner.advancePhase2();
+	    boolean ltf = false;
 	    
+	    Set x = getQuery(runner.evidenceGenerator.getLatestQueries(), 0).getHistogram().entrySet();
+	    for (Object o : x){
+	    	if (((Double) ((Histogram.Entry) o).getElement()).doubleValue()>15){
+	    		ltf = true;
+	    		break;
+	    	}
+	    }
+	    assertTrue(ltf);
 	    //assertTrue(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "16.901")>0.1);
 
 	}
@@ -431,6 +546,8 @@ public class ChoiceTest extends TestCase {
 	    runner.advancePhase2();
 	    
 	}
+	
+	
 	/**
 	 * Helper function that gets a collection assumed to contain a single query
 	 * and returns that query.
