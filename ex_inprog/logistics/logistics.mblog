@@ -2,7 +2,8 @@
 type Box;  type Truck;  type City;
 
 // declare the individual objects
-distinct Box b3, b2, b1;
+#Box ~ Poisson(5);
+//distinct Box b3, b2, b1;
 distinct Truck t1, t2;
 distinct City c1, c2, c3;
 
@@ -89,7 +90,7 @@ random Boolean pass(Timestep t){
 random Boolean pass(Timestep t){
   if (t==@0) then
     = false
-  else if (BoxIn(b3, c3, t) & BoxIn(b1, c3, t) & BoxIn(b2, c3, t)) then
+  else if (!(exists Box b (BoxIn(b, c3, t)) != true )) then
     = true
   else
     = pass(Prev(t))
@@ -225,6 +226,7 @@ random Integer qstate(Timestep t){
  * 
  */
 //obs pass (@20) = true;
+obs {Box b : BoxIn(b, c1, @0) == true} = {b1, b2, b3};
 query value(@2);
 query value(@3);
 query value(@4);
