@@ -6,11 +6,12 @@ type Blip;
 origin Aircraft Source(Blip);
 
 // Number Declarations
-#Aircraft ~ Poisson(5);
-#Blip(Source=a) ~ Poisson(4);
+#Aircraft ~ Poisson(1);
+#Blip(Source=a) ~ Poisson(2);
+#Blip ~Poisson(2);
 
 // Evidence
-obs #Blip = 3;
+obs #Blip = 2;
 
 // Query
 query #{Aircraft a};
