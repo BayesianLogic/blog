@@ -180,7 +180,7 @@ public class RandomChoiceTest extends TestCase {
 	@Test
 	public void test_random_logistics() throws Exception {
 		Properties properties = new Properties();
-		properties.setProperty("numParticles", "100");
+		properties.setProperty("numParticles", "1000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		boolean randomize = true;
