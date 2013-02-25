@@ -17,7 +17,7 @@ import blog.distrib.ListInterp;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.AtomicFormula;
-import blog.model.ChoiceEvidenceStatement;
+import blog.model.DecisionEvidenceStatement;
 import blog.model.DependencyModel;
 import blog.model.EqualityFormula;
 import blog.model.Evidence;
@@ -37,7 +37,7 @@ import blog.semant.Semant;
 import blog.world.PartialWorld;
 
 /*added by cheng*/
-import blog.model.ChoiceFunction;
+import blog.model.DecisionFunction;
 
 /**
  * A class defining static helper methods on basic interfaces (therefore not
@@ -126,8 +126,8 @@ public class BLOGUtil {
 						System.err.println("error in blogutil.setchoiceinterp");
 						System.exit(0);
 					}
-					if (fat.getFunction() instanceof ChoiceFunction){
-						ChoiceFunction f = (ChoiceFunction) fat.getFunction();
+					if (fat.getFunction() instanceof DecisionFunction){
+						DecisionFunction f = (DecisionFunction) fat.getFunction();
 						f.addInterp(fat, context);
 					}
 				}

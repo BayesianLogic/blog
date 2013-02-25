@@ -40,7 +40,7 @@ import blog.model.NonRandomFunction;
 			BLOGUtil.ensureDetAndSupported(getEvidenceVars(), curWorld);
 		}
 		private void setFixedFuncInterp(PartialWorld world) {
-			for (ChoiceEvidenceStatement ces : choiceEvidence) {
+			for (DecisionEvidenceStatement ces : choiceEvidence) {
 				FuncAppTerm fat = (FuncAppTerm) ces.getLeftSide();
 				NonRandomFunction f = (NonRandomFunction) fat.getFunction();
 				ArgSpec[] args = fat.getArgs();
@@ -51,7 +51,7 @@ import blog.model.NonRandomFunction;
 				((ListInterp) f.getInterpretation()).add(Arrays.asList(argValues));
 			}
 		}
-		public void addChoiceEvidence(ChoiceEvidenceStatement evid) {
+		public void addChoiceEvidence(DecisionEvidenceStatement evid) {
 			choiceEvidence.add(evid);
 		}
  
@@ -60,7 +60,7 @@ import blog.model.NonRandomFunction;
 			boolean correct = true;
 
 			for (Iterator iter = choiceEvidence.iterator(); iter.hasNext();) {
-				ChoiceEvidenceStatement stmt = (ChoiceEvidenceStatement) iter.next();
+				DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 				if (!stmt.checkTypesAndScope(model)) {
 					correct = false;
 				}
@@ -73,7 +73,7 @@ import blog.model.NonRandomFunction;
 			LinkedHashSet callStack = new LinkedHashSet();
 
 			for (Iterator iter = choiceEvidence.iterator(); iter.hasNext();) {
-				ChoiceEvidenceStatement stmt = (ChoiceEvidenceStatement) iter.next();
+				DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 				int thisStmtErrors = stmt.compile(callStack);
 				errors += thisStmtErrors;
 			}
@@ -81,6 +81,6 @@ import blog.model.NonRandomFunction;
 			return errors+super.compile();
 		}
 		// List of ValueEvidenceStatement
-		private List<ChoiceEvidenceStatement> choiceEvidence = new ArrayList<ChoiceEvidenceStatement>();
+		private List<DecisionEvidenceStatement> choiceEvidence = new ArrayList<DecisionEvidenceStatement>();
 
 	}

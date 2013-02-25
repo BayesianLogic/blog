@@ -7,7 +7,7 @@ import blog.symbol.Symbol;
  * @author cheng
  * @date Jan 10, 2012
  */
-public class ChoiceFuncDec extends FunctionDec {
+public class DecisionFuncDec extends FunctionDec {
 
 	/**
 	 * for constant
@@ -17,11 +17,11 @@ public class ChoiceFuncDec extends FunctionDec {
 	 * @param r
 	 * @param b
 	 */
-	public ChoiceFuncDec(int line, int p, Symbol n, FieldList a, Ty r) {
+	public DecisionFuncDec(int line, int p, Symbol n, FieldList a, Ty r) {
 		super(line, p, n, a, r, null);
 	}
 
-	public ChoiceFuncDec(int p, Symbol n, FieldList a, Ty r) {
+	public DecisionFuncDec(int p, Symbol n, FieldList a, Ty r) {
 		this(0, p, n, a, r);
 	}
 

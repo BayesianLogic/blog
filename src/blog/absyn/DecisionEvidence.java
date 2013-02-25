@@ -2,17 +2,17 @@ package blog.absyn;
 
 /*added by cheng*/
 
-public class ChoiceEvidence extends EvidenceStmt {
+public class DecisionEvidence extends EvidenceStmt {
 	public FuncCallExpr left;
 	public Expr right;
 
-	public ChoiceEvidence(int line, int p, Expr s, Expr t) {
+	public DecisionEvidence(int line, int p, Expr s, Expr t) {
 		super(line, p);
 		left = (FuncCallExpr) s;
 		right = t;
 	}
 
-	public ChoiceEvidence(int p, FuncCallExpr s, Expr t) {
+	public DecisionEvidence(int p, FuncCallExpr s, Expr t) {
 		this(0, p, s, t);
 	}
 

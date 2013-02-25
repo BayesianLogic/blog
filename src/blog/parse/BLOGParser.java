@@ -1065,7 +1065,7 @@ class CUP$BLOGParser$actions {
 		int e2left = ((java_cup.runtime.Symbol)CUP$BLOGParser$stack.elementAt(CUP$BLOGParser$top-0)).left;
 		int e2right = ((java_cup.runtime.Symbol)CUP$BLOGParser$stack.elementAt(CUP$BLOGParser$top-0)).right;
 		Expr e2 = (Expr)((java_cup.runtime.Symbol) CUP$BLOGParser$stack.elementAt(CUP$BLOGParser$top-0)).value;
-		 RESULT = new ChoiceEvidence(currLineno(), currColno(), e1, e2); 
+		 RESULT = new DecisionEvidence(currLineno(), currColno(), e1, e2); 
               CUP$BLOGParser$result = new java_cup.runtime.Symbol(21/*choice_evidence*/, ((java_cup.runtime.Symbol)CUP$BLOGParser$stack.elementAt(CUP$BLOGParser$top-2)).left, ((java_cup.runtime.Symbol)CUP$BLOGParser$stack.elementAt(CUP$BLOGParser$top-0)).right, RESULT);
             }
           return CUP$BLOGParser$result;
@@ -2366,7 +2366,7 @@ class CUP$BLOGParser$actions {
 		int otlleft = ((java_cup.runtime.Symbol)CUP$BLOGParser$stack.elementAt(CUP$BLOGParser$top-1)).left;
 		int otlright = ((java_cup.runtime.Symbol)CUP$BLOGParser$stack.elementAt(CUP$BLOGParser$top-1)).right;
 		FieldList otl = (FieldList)((java_cup.runtime.Symbol) CUP$BLOGParser$stack.elementAt(CUP$BLOGParser$top-1)).value;
-		 RESULT = new ChoiceFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type); 
+		 RESULT = new DecisionFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type); 
               CUP$BLOGParser$result = new java_cup.runtime.Symbol(16/*choice_func_decl*/, ((java_cup.runtime.Symbol)CUP$BLOGParser$stack.elementAt(CUP$BLOGParser$top-4)).left, ((java_cup.runtime.Symbol)CUP$BLOGParser$stack.elementAt(CUP$BLOGParser$top-0)).right, RESULT);
             }
           return CUP$BLOGParser$result;

@@ -272,7 +272,7 @@ public class Evidence {
 		
 		/*added by cheng*/
 		for (Iterator iter = choiceEvidence.iterator(); iter.hasNext();) {
-			ChoiceEvidenceStatement stmt = (ChoiceEvidenceStatement) iter.next();
+			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 			System.out.println(stmt);
 		}
 	}
@@ -371,7 +371,7 @@ public class Evidence {
 		
 		/*added by cheng*/
 		for (Iterator iter = choiceEvidence.iterator(); iter.hasNext();) {
-			ChoiceEvidenceStatement stmt = (ChoiceEvidenceStatement) iter.next();
+			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 			if (!stmt.checkTypesAndScope(model)) {
 				correct = false;
 			}
@@ -413,7 +413,7 @@ public class Evidence {
 		
 		/*added by cheng*/
 		for (Iterator iter = choiceEvidence.iterator(); iter.hasNext();) {
-			ChoiceEvidenceStatement stmt = (ChoiceEvidenceStatement) iter.next();
+			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 			int thisStmtErrors = stmt.compile(callStack);
 			if (thisStmtErrors == 0) {
 				recordEvidence(stmt.getObservedVar(), stmt.getObservedValue(), stmt);
@@ -447,8 +447,8 @@ public class Evidence {
 		}
 		/*added by cheng*/
 		for (Iterator it = getChoiceEvidence().iterator(); it.hasNext();) {
-			ChoiceEvidenceStatement ces = (ChoiceEvidenceStatement) it.next();
-			ChoiceEvidenceStatement newCes = ces.replace(t, another);
+			DecisionEvidenceStatement ces = (DecisionEvidenceStatement) it.next();
+			DecisionEvidenceStatement newCes = ces.replace(t, another);
 			if (newCes != ces)
 				replacement = true;
 			newChoiceEvidence.add(newCes);
@@ -476,13 +476,13 @@ public class Evidence {
 	}
 
 	/*added by cheng*/
-	public void addChoiceEvidence(ChoiceEvidenceStatement ev){
+	public void addChoiceEvidence(DecisionEvidenceStatement ev){
 		choiceEvidence.add(ev);
 	}
 	public Collection getChoiceEvidence() {
 		return Collections.unmodifiableCollection(choiceEvidence);
 	}
-	private List<ChoiceEvidenceStatement> choiceEvidence = new ArrayList<ChoiceEvidenceStatement>();
+	private List<DecisionEvidenceStatement> choiceEvidence = new ArrayList<DecisionEvidenceStatement>();
 	
 	
 	
