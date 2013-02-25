@@ -1044,6 +1044,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 
 	/*added by cheng*/
 	protected Set decisionToInterp;
+	abstract Set getDecisionInterp();
 	
 	/**
 	 * Map from objects to the instantiated BasicVars that have them as values.
