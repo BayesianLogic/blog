@@ -185,6 +185,12 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		return true;
 	}
 	
+	public Evidence getEvidence(){
+		System.err.println("OPFevidenceGenerator.getEvidence should not be called");
+		
+		return null;
+	}
+	
 	/**
 	 * Check that the evidence provided has the correct timestep associated
 	 * @param evidence

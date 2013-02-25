@@ -165,22 +165,32 @@ public class OnlineParticleFilterTest extends TestCase {
 	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
 
 	    out.println("obs O(@0) = ResultC;\n");
-	    runner.moveOn();
+	    runner.advancePhase1();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.07123248769406526, 0.07123248769406526*delta);
+	    out.println("");
+	    runner.advancePhase2();
 	    out.println("obs O(@1) = ResultA;\n");
-	    runner.moveOn();
+	    runner.advancePhase1();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.8740065285267652, 0.8740065285267652*delta);
+	    out.println("");
+	    runner.advancePhase2();
 	    out.println("obs O(@2) = ResultA;\n");
-	    runner.moveOn();
+	    runner.advancePhase1();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "T"), 0.09701200417538186, 0.09701200417538186*delta);
+	    out.println("");
+	    runner.advancePhase2();
 	    out.println("obs O(@3) = ResultA;\n");
-	    runner.moveOn();
+	    runner.advancePhase1();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "G"), 0.08214118198875539, 0.08214118198875539*delta);
+	    out.println("");
+	    runner.advancePhase2();
 	    out.println("obs O(@4) = ResultG;\n");
-	    runner.moveOn();
+	    runner.advancePhase1();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "A"), 0.026816361556063043, 0.026816361556063043*delta);
-	    out.println(" ");
-	    runner.moveOn();
+	    out.println("");
+	    runner.advancePhase2();
+	    out.println("");
+	    runner.advancePhase1();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries()), model, "C"), 0.2968928775743654, 0.2968928775743654*delta);
 	}
 
@@ -222,36 +232,47 @@ public class OnlineParticleFilterTest extends TestCase {
 	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
 
 	    out.println("obs JohnCalls(h1, @0) = true;obs MaryCalls(h2, @0) = true;\n"); //multiple evidences case
-	    runner.evidenceGenerator.getInput();
-	    Evidence e = runner.evidenceGenerator.getEvidence();
+	    runner.advancePhase1();
+	    Evidence e = runner.evidenceGenerator.getLatestObservation();
 	    assertEquals(e.toString(), "[JohnCalls(h1, @0) = true, MaryCalls(h2, @0) = true]");
 	    
 	    out.println("obs JohnCalls(h1, @0) = true;obs MaryCalls(foo(@0), @0) = true;\n"); //now move on, note that getEvidence "consumed" 
-	    runner.moveOn();																//the previous println to out, so i must println again
+	    runner.advancePhase1();															//the previous println to out, so i must println again
 	    
+	    out.println("");
+	    runner.advancePhase2();
 	    
 	    out.println("obs Alarm(h2,@1) = true;\n"); //simple case
-	    runner.evidenceGenerator.getInput();
-	    e = runner.evidenceGenerator.getEvidence();
+	    runner.advancePhase1();
+	    e = runner.evidenceGenerator.getLatestObservation();
 	    assertTrue(e.getValueEvidence().toArray()[0] instanceof ValueEvidenceStatement);
 	    assertEquals(e.toString(), "[Alarm(h2, @1) = true]");
 	    assertEquals(e.getValueEvidence().toArray()[0].toString(), "Alarm(h2, @1) = true");
 
+	    out.println("");
+	    runner.advancePhase2();
+	    
 	    out.println("obs Burglary(foo(@0),@1) = true;\n"); //derived variables case
-	    runner.evidenceGenerator.getInput();
-	    e = runner.evidenceGenerator.getEvidence();
+	    runner.advancePhase1();
+	    e = runner.evidenceGenerator.getLatestObservation();
 	    assertEquals(e.toString(),"[/*DerivedVar*/ Burglary(foo(@0), @1) = true]");
 	    ValueEvidenceStatement v = (ValueEvidenceStatement) Util.getFirst(e.getValueEvidence());
 	    assertEquals(v.toString(),"/*DerivedVar*/ Burglary(foo(@0), @1) = true");
 	    
+	    out.println("");
+	    runner.advancePhase2();
+	    
 	    out.println("obs foo(@2) = h3; obs Earthquake(@2) = true;\n"); //checking if compiled
-	    runner.evidenceGenerator.getInput();
-	    e = runner.evidenceGenerator.getEvidence();
+	    runner.advancePhase1();
+	    e = runner.evidenceGenerator.getLatestObservation();
 	    v = (ValueEvidenceStatement) Util.getFirst(e.getValueEvidence());
 	    java.lang.reflect.Field iscompiled = ValueEvidenceStatement.class.getDeclaredField("compiled");
 	    iscompiled.setAccessible(true);
 	    Boolean truthvalue = (Boolean) iscompiled.get(v);
 	    assertTrue(truthvalue.booleanValue());
+	    
+	    out.println("");
+	    runner.advancePhase2();
 	    
 	    v = (ValueEvidenceStatement) Util.getLast(e.getValueEvidence());
 	    iscompiled = ValueEvidenceStatement.class.getDeclaredField("compiled");
@@ -280,25 +301,37 @@ public class OnlineParticleFilterTest extends TestCase {
 	    //assertEquals(e.toString(), "[JohnCalls(h1, @0) = true, MaryCalls(h2, @0) = true]");
 	    
 	    out.println(""); 
-	    runner.moveOn();															
-	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @0)]");
-	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @0)]");
-	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @0)]");//check that calling getQueries() multiple times works
+	    runner.advancePhase1();															
+	    assertEquals(runner.evidenceGenerator.getLatestQueries().toString(),"[Burglary(h1, @0)]");
+	    assertEquals(runner.evidenceGenerator.getLatestQueries().toString(),"[Burglary(h1, @0)]");
+	    assertEquals(runner.evidenceGenerator.getLatestQueries().toString(),"[Burglary(h1, @0)]");//check that calling getQueries() multiple times works
+	    out.println("");
+	    runner.advancePhase2();
 	    out.println(""); 
-	    runner.moveOn();
-	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @1)]");
+	    runner.advancePhase1();
+	    assertEquals(runner.evidenceGenerator.getLatestQueries().toString(),"[Burglary(h1, @1)]");
 	    out.println(""); 
-	    runner.moveOn();
+	    runner.advancePhase2();
 	    out.println(""); 
-	    runner.moveOn();
+	    runner.advancePhase1();
+	    out.println("");
+	    runner.advancePhase2();
 	    out.println(""); 
-	    runner.moveOn();
+	    runner.advancePhase1();
+	    out.println("");
+	    runner.advancePhase2();
+	    out.println("");
+	    runner.advancePhase1();
+	    out.println("");
+	    runner.advancePhase2();
 	    out.println(""); 
-	    runner.moveOn();
-	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @5)]");
+	    runner.advancePhase1();
+	    assertEquals(runner.evidenceGenerator.getLatestQueries().toString(),"[Burglary(h1, @5)]");
+	    out.println("");
+	    runner.advancePhase2();
 	    out.println(""); 
-	    runner.moveOn();
-	    assertEquals(runner.getQueries().toString(),"[Burglary(h1, @6)]");
+	    runner.advancePhase1();
+	    assertEquals(runner.evidenceGenerator.getLatestQueries().toString(),"[Burglary(h1, @6)]");
 	}
 
 
