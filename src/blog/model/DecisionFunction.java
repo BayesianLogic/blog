@@ -11,9 +11,9 @@ import blog.distrib.ListInterp;
 import blog.sample.EvalContext;
 import blog.sample.InstantiatingEvalContext;
 
-public class ChoiceFunction extends Function {
+public class DecisionFunction extends Function {
 
-	public ChoiceFunction(String fname, List arg_types, Type ret_type) {
+	public DecisionFunction(String fname, List arg_types, Type ret_type) {
 		super(fname, arg_types, ret_type);
 	}
 
@@ -38,10 +38,10 @@ public class ChoiceFunction extends Function {
 
 	
 	class InterpToken {
-		ChoiceFunction f;
+		DecisionFunction f;
 		Object[] args;
 		
-		public InterpToken(ChoiceFunction f, Object[] args) {
+		public InterpToken(DecisionFunction f, Object[] args) {
 			this.f = f;
 			this.args = args;
 		}

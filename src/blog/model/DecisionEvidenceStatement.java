@@ -17,7 +17,7 @@ import blog.world.PartialWorld;
  * restricted to be zero-ary functions, so we don't have to worry about
  * evaluating arguments on the righthand side.
  */
-public class ChoiceEvidenceStatement {
+public class DecisionEvidenceStatement {
 
 	/**
 	 * Creates a ValueEvidenceStatement of the form: <code>leftSide</code> =
@@ -29,7 +29,7 @@ public class ChoiceEvidenceStatement {
 	 * @param output
 	 *          a argspec denoting the value
 	 */
-	public ChoiceEvidenceStatement(FuncAppTerm leftSide, ArgSpec output) {
+	public DecisionEvidenceStatement(FuncAppTerm leftSide, ArgSpec output) {
 		this.leftSide = leftSide;
 		this.output = output;
 	}
@@ -134,7 +134,7 @@ public class ChoiceEvidenceStatement {
 		//	Util.fatalError("ChoiceEvidenceStatement.compile: " +
 		//			"left side" + leftSide +" is not a fixed function, and will not work with obschoice");
 		
-		if (!(leftSide instanceof FuncAppTerm && ((FuncAppTerm) leftSide).getFunction() instanceof ChoiceFunction)){
+		if (!(leftSide instanceof FuncAppTerm && ((FuncAppTerm) leftSide).getFunction() instanceof DecisionFunction)){
 			System.err.println("ChoiceEvidenceStatement.compile: only applicable to choice functions");
 			System.exit(0);
 		}
@@ -176,11 +176,11 @@ public class ChoiceEvidenceStatement {
 	 * Returns a ValueEvidenceStatement resulting from replacing a term by another
 	 * in this ValueEvidenceStatement, or same if there is no replacement.
 	 */
-	public ChoiceEvidenceStatement replace(Term t, ArgSpec another) {
+	public DecisionEvidenceStatement replace(Term t, ArgSpec another) {
 		FuncAppTerm newLeftSide = (FuncAppTerm) leftSide.replace(t, another);
 		Term newOutput = (Term) output.replace(t, another);
 		if (newOutput != leftSide || newOutput != output) {
-			ChoiceEvidenceStatement newVES = new ChoiceEvidenceStatement(newLeftSide,
+			DecisionEvidenceStatement newVES = new DecisionEvidenceStatement(newLeftSide,
 					newOutput);
 			if (compiled)
 				newVES.compile(new LinkedHashSet());

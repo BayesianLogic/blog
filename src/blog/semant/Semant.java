@@ -43,11 +43,11 @@ import blog.absyn.QuantifiedFormulaExpr;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
 /*added by cheng*/
-import blog.absyn.ChoiceFuncDec;
+import blog.absyn.DecisionFuncDec;
 import blog.model.EvidenceWithChoice;
-import blog.absyn.ChoiceEvidence;
-import blog.model.ChoiceEvidenceStatement;
-import blog.model.ChoiceFunction;
+import blog.absyn.DecisionEvidence;
+import blog.model.DecisionEvidenceStatement;
+import blog.model.DecisionFunction;
 
 import blog.absyn.Stmt;
 import blog.absyn.StmtList;
@@ -400,8 +400,8 @@ public class Semant {
 		}
 
 		/*added by cheng*/
-		if (e instanceof ChoiceFuncDec){
-			fun = new ChoiceFunction(name, argTy, resTy);
+		if (e instanceof DecisionFuncDec){
+			fun = new DecisionFunction(name, argTy, resTy);
 			model.addFunction(fun);
 			return;
 		}
@@ -456,7 +456,7 @@ public class Semant {
 		currFunction = fun;
 
 		/*added by cheng*/
-		if (e instanceof ChoiceFuncDec){
+		if (e instanceof DecisionFuncDec){
 			currFunction = null;
 			return;
 		}
@@ -569,8 +569,8 @@ public class Semant {
 			transEvi((SymbolEvidence) e);
 		} 
 		/*added by cheng*/
-		else if (e instanceof ChoiceEvidence){
-			transEvi((ChoiceEvidence) e);
+		else if (e instanceof DecisionEvidence){
+			transEvi((DecisionEvidence) e);
 		}
 		else {
 			error(e.line, e.col, "Unsupported Evidence type: " + e);
@@ -585,7 +585,7 @@ public class Semant {
 	 * @param e
 	 */
 	/*added by cheng*/
-	void transEvi(ChoiceEvidence e) {
+	void transEvi(DecisionEvidence e) {
 		FuncAppTerm left = null;
 		try{
 			left = (FuncAppTerm) transExpr(e.left);
@@ -595,7 +595,7 @@ public class Semant {
 		}
 		Object value = transExpr(e.right);
 		if (value instanceof ArgSpec) {
-			evidence.addChoiceEvidence(new ChoiceEvidenceStatement((FuncAppTerm) left,
+			evidence.addChoiceEvidence(new DecisionEvidenceStatement((FuncAppTerm) left,
 					(ArgSpec) value));
 		} else {
 			error(e.right.line, e.right.col,

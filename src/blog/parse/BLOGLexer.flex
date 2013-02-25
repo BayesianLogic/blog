@@ -193,8 +193,8 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 
 
 /*added by cheng*/
-[Dd][Ee][Cc][Ii][Dd][Ee] { return symbol(BLOGTokenConstants.OBSCHOICE); }
-[Dd][Ee][Cc][Ii][Ss][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.CHOICE);}	
+[Dd][Ee][Cc][Ii][Dd][Ee] { return symbol(BLOGTokenConstants.OBSDECISION); }
+[Dd][Ee][Cc][Ii][Ss][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DECISION);}	
 
 /* literals */
 "true"	{ return symbol(BLOGTokenConstants.BOOLEAN_LITERAL, new Boolean(true)); }
