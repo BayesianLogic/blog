@@ -96,6 +96,7 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
 		return newWorld;
 	}
 
+	/*added by cheng*/
 	public Set getDecisionInterp() {
 		return decisionToInterp; 
 	}
