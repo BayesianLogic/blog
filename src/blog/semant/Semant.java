@@ -48,6 +48,7 @@ import blog.absyn.StringExpr;
 import blog.absyn.SymbolArrayList;
 import blog.absyn.SymbolEvidence;
 import blog.absyn.SymbolExpr;
+import blog.absyn.TupleSetExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
@@ -90,6 +91,7 @@ import blog.model.SymbolEvidenceStatement;
 import blog.model.SymbolTerm;
 import blog.model.Term;
 import blog.model.TrueFormula;
+import blog.model.TupleSetSpec;
 import blog.model.Type;
 import blog.model.UniversalFormula;
 import blog.model.ValueEvidenceStatement;
@@ -731,53 +733,51 @@ public class Semant {
     return t;
   }
 
-  Object transExpr(Expr e) {
-    if (e instanceof DistributionExpr) {
-      return transExpr((DistributionExpr) e);
-    } else if (e instanceof BooleanExpr) {
-      return transExpr((BooleanExpr) e);
-    } else if (e instanceof DoubleExpr) {
-      return transExpr((DoubleExpr) e);
-    } else if (e instanceof IntExpr) {
-      return transExpr((IntExpr) e);
-    } else if (e instanceof StringExpr) {
-      return transExpr((StringExpr) e);
-    } else if (e instanceof NumberExpr) {
-      return transExpr((NumberExpr) e);
-    } else if (e instanceof ImplicitSetExpr) {
-      return transExpr((ImplicitSetExpr) e);
-    } else if (e instanceof ExplicitSetExpr) {
-      return transExpr((ExplicitSetExpr) e);
-    } else if (e instanceof IfExpr) {
-      return transExpr((IfExpr) e);
-    } else if (e instanceof OpExpr) {
-      return transExpr((OpExpr) e);
-    } else if (e instanceof FuncCallExpr) {
-      return transExpr((FuncCallExpr) e);
-    } else if (e instanceof ListInitExpr) {
-      return transExpr((ListInitExpr) e);
-    } else if (e instanceof MapInitExpr) {
-      return transExpr((MapInitExpr) e);
-    } else if (e instanceof SymbolExpr) {
-      return transExpr((SymbolExpr) e);
-    } else if (e instanceof NullExpr) {
-      return transExpr((NullExpr) e);
-    } else if (e instanceof QuantifiedFormulaExpr) {
-      return transExpr((QuantifiedFormulaExpr) e);
-    }
-    return null;
-  }
+	Object transExpr(Expr e) {
+		if (e instanceof DistributionExpr) {
+			return transExpr((DistributionExpr) e);
+		} else if (e instanceof BooleanExpr) {
+			return transExpr((BooleanExpr) e);
+		} else if (e instanceof DoubleExpr) {
+			return transExpr((DoubleExpr) e);
+		} else if (e instanceof IntExpr) {
+			return transExpr((IntExpr) e);
+		} else if (e instanceof StringExpr) {
+			return transExpr((StringExpr) e);
+		} else if (e instanceof NumberExpr) {
+			return transExpr((NumberExpr) e);
+		} else if (e instanceof ImplicitSetExpr) {
+			return transExpr((ImplicitSetExpr) e);
+		} else if (e instanceof ExplicitSetExpr) {
+			return transExpr((ExplicitSetExpr) e);
+		} else if (e instanceof TupleSetExpr) {
+			return transExpr((TupleSetExpr) e);
+		} else if (e instanceof IfExpr) {
+			return transExpr((IfExpr) e);
+		} else if (e instanceof OpExpr) {
+			return transExpr((OpExpr) e);
+		} else if (e instanceof FuncCallExpr) {
+			return transExpr((FuncCallExpr) e);
+		} else if (e instanceof ListInitExpr) {
+			return transExpr((ListInitExpr) e);
+		} else if (e instanceof MapInitExpr) {
+			return transExpr((MapInitExpr) e);
+		} else if (e instanceof SymbolExpr) {
+			return transExpr((SymbolExpr) e);
+		} else if (e instanceof NullExpr) {
+			return transExpr((NullExpr) e);
+		} else if (e instanceof QuantifiedFormulaExpr) {
+			return transExpr((QuantifiedFormulaExpr) e);
+		}
+		return null;
+	}
 
-  ArgSpec transExpr(NullExpr e) {
-    Term t = new FuncAppTerm(BuiltInFunctions.NULL, Collections.EMPTY_LIST);
-    t.setLocation(e.line);
-    return t;
-  }
 
-  ExplicitSetSpec transExpr(ExplicitSetExpr e) {
-    // TODO
-    return null;
-  }
+	ArgSpec transExpr(NullExpr e) {
+		Term t = new FuncAppTerm(BuiltInFunctions.NULL, Collections.EMPTY_LIST);
+		t.setLocation(e.line);
+		return t;
+	}
 
   ArgSpec transExpr(SymbolExpr e) {
     Term t = new SymbolTerm(e.name.toString());
@@ -945,35 +945,85 @@ public class Semant {
     return t;
   }
 
-  ArgSpec transExpr(StringExpr e) {
-    Term t = new FuncAppTerm(BuiltInFunctions.getLiteral("\"" + e.value + "\"",
-        BuiltInTypes.STRING, e.value));
-    t.setLocation(e.line);
-    return t;
-  }
 
-  ImplicitSetSpec transExpr(ImplicitSetExpr e) {
-    Type typ = getNameType(e.typ);
-    String vn;
-    if (e.var != null) {
-      vn = e.var.toString();
-    } else {
-      vn = "_";
-    }
-    Formula cond = TrueFormula.TRUE;
-    if (e.cond != null) {
-      Object c = transExpr(e.cond);
-      if (c instanceof Formula) {
-        cond = (Formula) c;
-      } else {
-        error(
-            e.cond.line,
-            e.cond.col,
-            "Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
-      }
-    }
-    return new ImplicitSetSpec(vn, typ, cond);
-  }
+	ArgSpec transExpr(StringExpr e) {
+		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral("\"" + e.value + "\"",
+				BuiltInTypes.STRING, e.value));
+		t.setLocation(e.line);
+		return t;
+	}
+	
+	ExplicitSetSpec transExpr(ExplicitSetExpr e) {
+		// TODO
+		return null;
+	}
+
+
+	ImplicitSetSpec transExpr(ImplicitSetExpr e) {
+		Type typ = getNameType(e.typ);
+		String vn;
+		if (e.var != null) {
+			vn = e.var.toString();
+		} else {
+			vn = "_";
+		}
+		Formula cond = TrueFormula.TRUE;
+		if (e.cond != null) {
+			Object c = transExpr(e.cond);
+			if (c instanceof Formula) {
+				cond = (Formula) c;
+			} else {
+				error(
+						e.cond.line,
+						e.cond.col,
+						"Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
+			}
+		}
+		return new ImplicitSetSpec(vn, typ, cond);
+	}
+	
+	TupleSetSpec transExpr(TupleSetExpr e) {
+		List<Term> tupleTerms = new ArrayList<Term>();
+		List<Type> varTypes = new ArrayList<Type>();
+		List<String> varNames = new ArrayList<String>();
+		Formula cond = null;
+		
+		while (e.setTuple != null) {
+			Object tuple = transExpr(e.setTuple.head);
+			if (tuple instanceof Term) {
+				tupleTerms.add((Term) tuple);
+			} else {
+				error(e.cond.line, e.cond.col,
+							"Invalid expression as term in tuple set: term (number, string, boolean, or function call) expected");
+			}
+			e.setTuple = e.setTuple.next;
+		}
+		
+		// TODO: TRANSLATE THE VARIABLE LIST AND TYPES
+		while (e.enumVars != null) {
+			Object varType = this.getType(e.enumVars.typ);
+			Object varName = e.enumVars.var.toString();
+			if (varType instanceof Type && varName instanceof String) {
+				varTypes.add((Type) varType);
+				varNames.add((String) varName);
+			} else {
+				error(e.cond.line, e.cond.col,
+							"Invalid expression as logical variable in implicit set: logical variable expected");
+			}
+			e.enumVars = e.enumVars.next;
+		}
+		
+		if (e.cond != null) {
+			Object c = transExpr(e.cond);
+			if (c instanceof Formula) {
+				cond = (Formula) c;
+			} else {
+				error(e.cond.line, e.cond.col,
+							"Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
+			}
+		}
+		return new TupleSetSpec(tupleTerms, varTypes, varNames, cond);
+	}
 
   /**
    * number expression translated to CardinalitySpec
