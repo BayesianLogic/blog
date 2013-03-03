@@ -779,12 +779,6 @@ public class Semant {
 		return t;
 	}
 
-  ArgSpec transExpr(SymbolExpr e) {
-    Term t = new SymbolTerm(e.name.toString());
-    t.setLocation(e.line);
-    return t;
-  }
-
   ArgSpec transExpr(FuncCallExpr e) {
     List<ArgSpec> args = transExprList(e.args, true);
     List<Type> argTypes = new ArrayList<Type>();
@@ -964,7 +958,6 @@ public class Semant {
 		return new ExplicitSetSpec(terms);
 	}
 
-
 	ImplicitSetSpec transExpr(ImplicitSetExpr e) {
 		Type typ = getNameType(e.typ);
 		String vn;
@@ -998,6 +991,153 @@ public class Semant {
 			Object tuple = transExpr(e.setTuple.head);
 			if (tuple instanceof Term) {
 				tupleTerms.add((Term) tuple);
+			} else {
+				error(e.cond.line, e.cond.col,
+							"Invalid expression as term in tuple set: term (number, string, boolean, or function call) expected");
+			}
+			e.setTuple = e.setTuple.next;
+		}
+		
+		// TODO: TRANSLATE THE VARIABLE LIST AND TYPES
+		while (e.enumVars != null) {
+			Object varType = this.getType(e.enumVars.typ);
+			Object varName = e.enumVars.var.toString();
+			if (varType instanceof Type && varName instanceof String) {
+				varTypes.add((Type) varType);
+				varNames.add((String) varName);
+			} else {
+				error(e.cond.line, e.cond.col,
+							"Invalid expression as logical variable in implicit set: logical variable expected");
+			}
+			e.enumVars = e.enumVars.next;
+		}
+		
+		if (e.cond != null) {
+			Object c = transExpr(e.cond);
+			if (c instanceof Formula) {
+				cond = (Formula) c;
+			} else {
+				error(e.cond.line, e.cond.col,
+							"Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
+			}
+		}
+		return new TupleSetSpec(tupleTerms, varTypes, varNames, cond);
+	}
+
+	/**
+	 * number expression translated to CardinalitySpec
+	 * 
+	 * @param e
+	 * @return
+	 */
+	CardinalitySpec transExpr(NumberExpr e) {
+		Object r = transExpr(e.values);
+		if (r instanceof ImplicitSetSpec) {
+			return new CardinalitySpec((ImplicitSetSpec) r);
+		} else {
+			error(e.line, e.col, "Number expression expecting implicit set");
+		}
+		return null;
+	}
+
+	Object transExpr(OpExpr e) {
+		Object left = null, right = null;
+		Term term;
+		if (e.left != null) {
+			left = transExpr(e.left);
+		}
+		if (e.right != null) {
+			right = transExpr(e.right);
+		}
+		String funcname = null;
+
+		switch (e.oper) {
+		case OpExpr.PLUS:
+			funcname = BuiltInFunctions.PLUS_NAME;
+			break;
+		case OpExpr.MINUS:
+			funcname = BuiltInFunctions.MINUS_NAME;
+			break;
+		case OpExpr.MULT:
+			funcname = BuiltInFunctions.MULT_NAME;
+			break;
+		case OpExpr.DIV:
+			funcname = BuiltInFunctions.DIV_NAME;
+			break;
+		case OpExpr.MOD:
+			funcname = BuiltInFunctions.MOD_NAME;
+			break;
+		case OpExpr.POWER:
+			funcname = BuiltInFunctions.POWER_NAME;
+			break;
+		case OpExpr.EQ:
+			return new EqualityFormula((Term) left, (Term) right);
+		case OpExpr.NEQ:
+			return new NegFormula(new EqualityFormula((Term) left, (Term) right));
+		case OpExpr.LT:
+			return new ComparisonFormula((Term) left, (Term) right,
+					ComparisonFormula.Operator.LT);
+		case OpExpr.LEQ:
+			return new ComparisonFormula((Term) left, (Term) right,
+					ComparisonFormula.Operator.LEQ);
+		case OpExpr.GT:
+			return new ComparisonFormula((Term) left, (Term) right,
+					ComparisonFormula.Operator.GT);
+		case OpExpr.GEQ:
+			return new ComparisonFormula((Term) left, (Term) right,
+					ComparisonFormula.Operator.GEQ);
+		case OpExpr.AND:
+			if (left instanceof Term) {
+				left = new EqualityFormula((Term) left,
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+			}
+			if (right instanceof Term) {
+				right = new EqualityFormula((Term) right,
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+			}
+			return new ConjFormula((Formula) left, (Formula) right);
+		case OpExpr.OR:
+			if (left instanceof Term) {
+				left = new EqualityFormula((Term) left,
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+			}
+			if (right instanceof Term) {
+				right = new EqualityFormula((Term) right,
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+			}
+			return new DisjFormula((Formula) left, (Formula) right);
+		case OpExpr.IMPLY:
+			if (left instanceof Term) {
+				left = new EqualityFormula((Term) left,
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+			}
+			if (right instanceof Term) {
+				right = new EqualityFormula((Term) right,
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+			}
+			return new ImplicFormula((Formula) left, (Formula) right);
+		case OpExpr.NOT:
+			return new NegFormula((Formula) right);
+		case OpExpr.SUB:
+			Function func;
+			if (left instanceof SymbolTerm) {
+				if (e.right instanceof IntExpr) {
+					String objectname = ((SymbolTerm) left).getName() + '['
+							+ ((IntExpr) e.right).value + ']';
+					Function object = getFunction(objectname, Collections.EMPTY_LIST);
+					if (object != null)
+						return new FuncAppTerm(object);
+				}
+				Object symbolMapping = model
+						.getFuncsWithName(((SymbolTerm) left).getName()).iterator().next();
+				if (((Function) symbolMapping).getRetType().getName()
+						.equals("Array_Real_1")) {
+					func = (Function) BuiltInFunctions.getFuncsWithName(
+							BuiltInFunctions.SUB_VEC_NAME).get(0);
+				} else {
+					func = (Function) BuiltInFunctions.getFuncsWithName(
+							BuiltInFunctions.SUB_MAT_NAME).get(0);
+				}
 			} else {
 				error(e.cond.line, e.cond.col,
 							"Invalid expression as term in tuple set: term (number, string, boolean, or function call) expected");
