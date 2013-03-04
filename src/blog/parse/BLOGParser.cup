@@ -117,13 +117,14 @@ terminal ELSE, IF, THEN;
 terminal TYPE, RANDOM, FIXED, ORIGIN, DISTINCT,
         QUERY, OBS, PARAM, LIST, MAP, DISTRIBUTION;
 terminal EXISTS, FORALL;
+terminal FOR;
 terminal NULL;
 terminal java.lang.Number INT_LITERAL, DOUBLE_LITERAL;
 terminal java.lang.Boolean BOOLEAN_LITERAL;
 terminal java.lang.Character CHAR_LITERAL;
 terminal java.lang.String STRING_LITERAL;
 terminal java.lang.String ID;
-terminal PARFACTOR, FACTOR, FOR; // Not Yet Implemented
+terminal PARFACTOR, FACTOR; // Not Yet Implemented
 terminal ERROR, ELSEIF; // Not Yet Implemented
 terminal AT; // time operator
 terminal PLUS, MINUS, MULT, DIV, MOD, POWER; //arithmetic operator
@@ -150,6 +151,7 @@ nonterminal Expr dependency_statement_body;
 nonterminal SetExpr set_expr;
 nonterminal ExplicitSetExpr explicit_set;
 nonterminal ImplicitSetExpr implicit_set;
+nonterminal TupleSetExpr tuple_set;
 nonterminal ExprList semi_colon_separated_expression_list,
   opt_expression_list, expression_list;
 nonterminal ExprTupleList expression_pair_list;
@@ -600,6 +602,7 @@ number_expr ::= NUMSIGN set_expr:e
 
 set_expr ::= explicit_set:e {: RESULT = e; :}
   | implicit_set:e {: RESULT = e; :}
+  | tuple_set:e {: RESULT = e; :}
   ;
 
 explicit_set ::= LBRACE opt_expression_list:e RBRACE
@@ -612,6 +615,11 @@ implicit_set ::= LBRACE type:ty ID:id COLON expression:e RBRACE
     {: RESULT = new ImplicitSetExpr(currLineno(), currColno(), ty, sym(id), null); :}
   ;
 
+tuple_set ::= LBRACE expression_list:elst FOR type_var_lst:vars COLON expression:e RBRACE
+    {: RESULT = new TupleSetExpr(currLineno(), currColno(), elst, vars, e); :}
+  | LBRACE expression_list:elst FOR type_var_lst:vars RBRACE
+    {: RESULT = new TupleSetExpr(currLineno(), currColno(), elst, vars, null); :}
+  ;
 
 ///no implementation for PARFACTOR
 

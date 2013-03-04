@@ -44,6 +44,7 @@ import blog.model.ArgSpec;
 import blog.model.AtomicFormula;
 import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
+import blog.model.ComparisonFormula;
 import blog.model.EqualityFormula;
 import blog.model.Formula;
 import blog.model.FuncAppTerm;
@@ -362,13 +363,13 @@ public class ObjGenGraph extends AbstractDGraph {
 	 */
 	private void addBound(Formula phi, Term subject, IntegerNode node) {
 		// See if phi is an atomic formula or the negation thereof
-		AtomicFormula psi = null;
+		ComparisonFormula psi = null;
 		boolean positive = true;
-		if (phi instanceof AtomicFormula) {
-			psi = (AtomicFormula) phi;
+		if (phi instanceof ComparisonFormula) {
+			psi = (ComparisonFormula) phi;
 		} else if ((phi instanceof NegFormula)
 				&& (((NegFormula) phi).getNeg() instanceof AtomicFormula)) {
-			psi = (AtomicFormula) ((NegFormula) phi).getNeg();
+			psi = (ComparisonFormula) ((NegFormula) phi).getNeg();
 			positive = false;
 		}
 		if (psi == null) {
@@ -378,19 +379,14 @@ public class ObjGenGraph extends AbstractDGraph {
 		// See if it uses one of the functions we recognize, and if one
 		// of the arguments is <code>subject</code> and the other does not
 		// contain <code>var</code>.
-		ArgSpec psiTerm = psi.getTerm();
-		Function f = (psiTerm instanceof FuncAppTerm) ? ((FuncAppTerm) psiTerm)
-				.getFunction() : null;
+		ComparisonFormula.Operator f = psi.getCompareOp();
 		boolean isFirstArg = true;
 		Term bound = null;
-		if ((f == BuiltInFunctions.LT) || (f == BuiltInFunctions.LEQ)
-				|| (f == BuiltInFunctions.GT) || (f == BuiltInFunctions.GEQ)) {
-			Term[] args = (Term[]) ((FuncAppTerm) psiTerm).getArgs();
-			if (subject.equals(args[0])) {
-				bound = args[1];
-			} else if (subject.equals(args[1])) {
+		if ((f == ComparisonFormula.Operator.LT) || (f == ComparisonFormula.Operator.LEQ)
+				|| (f == ComparisonFormula.Operator.GT) || (f == ComparisonFormula.Operator.GEQ)) {
+			bound = psi.getCompareTerm(subject);
+			if (!psi.isSubjectFirst(subject)) {
 				isFirstArg = false;
-				bound = args[0];
 			}
 		}
 		if ((bound == null) || containsFreeVar(bound)) {
@@ -398,8 +394,8 @@ public class ObjGenGraph extends AbstractDGraph {
 		}
 
 		// Go through the logic of what's being asserted
-		boolean strict = ((f == BuiltInFunctions.LT) || (f == BuiltInFunctions.GT));
-		boolean upper = ((f == BuiltInFunctions.LT) || (f == BuiltInFunctions.LEQ));
+		boolean strict = ((f == ComparisonFormula.Operator.LT) || (f == ComparisonFormula.Operator.GT));
+		boolean upper = ((f == ComparisonFormula.Operator.LT) || (f == ComparisonFormula.Operator.LEQ));
 		if (!positive) {
 			upper = !upper;
 		}
