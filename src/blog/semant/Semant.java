@@ -777,6 +777,12 @@ public class Semant {
 		t.setLocation(e.line);
 		return t;
 	}
+	
+	ArgSpec transExpr(SymbolExpr e) {
+		Term t = new SymbolTerm(e.name.toString());
+		t.setLocation(e.line);
+		return t;
+	}
 
 	ArgSpec transExpr(FuncCallExpr e) {
 		List<ArgSpec> args = transExprList(e.args, true);
