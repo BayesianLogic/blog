@@ -42,9 +42,9 @@ import blog.absyn.ParameterDec;
 import blog.absyn.QuantifiedFormulaExpr;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
-/*added by cheng*/
+
+
 import blog.absyn.DecisionFuncDec;
-import blog.model.EvidenceWithChoice;
 import blog.absyn.DecisionEvidence;
 import blog.model.DecisionEvidenceStatement;
 import blog.model.DecisionFunction;
@@ -59,7 +59,6 @@ import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
 import blog.distrib.EqualsCPD;
-import blog.engine.ParticleFilterRunnerOnline;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.BuiltInFunctions;
@@ -398,8 +397,8 @@ public class Semant {
 				(Type[]) argTy.toArray(new Type[argTy.size()])).isEmpty())) {
 			error(e.line, e.col, "Function " + name + " overlapped");
 		}
-
-		/*added by cheng*/
+		
+		//parsing declaration for decision function
 		if (e instanceof DecisionFuncDec){
 			fun = new DecisionFunction(name, argTy, resTy);
 			model.addFunction(fun);
@@ -455,7 +454,7 @@ public class Semant {
 		Function fun = getFunction(name, argTy);
 		currFunction = fun;
 
-		/*added by cheng*/
+		//DecisionFunctions have no body
 		if (e instanceof DecisionFuncDec){
 			currFunction = null;
 			return;
@@ -568,7 +567,6 @@ public class Semant {
 		} else if (e instanceof SymbolEvidence) {
 			transEvi((SymbolEvidence) e);
 		} 
-		/*added by cheng*/
 		else if (e instanceof DecisionEvidence){
 			transEvi((DecisionEvidence) e);
 		}
@@ -580,11 +578,10 @@ public class Semant {
 	/**
 	 * valid evidence format include (will be checked in semantic checking)
 	 * 
-	 * function_call = expression;
+	 * decision_function_call = expression;
 	 * 
 	 * @param e
 	 */
-	/*added by cheng*/
 	void transEvi(DecisionEvidence e) {
 		FuncAppTerm left = null;
 		try{
@@ -595,7 +592,7 @@ public class Semant {
 		}
 		Object value = transExpr(e.right);
 		if (value instanceof ArgSpec) {
-			evidence.addChoiceEvidence(new DecisionEvidenceStatement((FuncAppTerm) left,
+			evidence.addDecisionEvidence(new DecisionEvidenceStatement((FuncAppTerm) left,
 					(ArgSpec) value));
 		} else {
 			error(e.right.line, e.right.col,

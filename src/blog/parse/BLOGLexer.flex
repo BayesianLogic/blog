@@ -192,7 +192,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Dd][Ii][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DISTRIBUTION); }
 
 
-/*added by cheng*/
+/*keywords for decisions*/
 [Dd][Ee][Cc][Ii][Dd][Ee] { return symbol(BLOGTokenConstants.OBSDECISION); }
 [Dd][Ee][Cc][Ii][Ss][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DECISION);}	
 

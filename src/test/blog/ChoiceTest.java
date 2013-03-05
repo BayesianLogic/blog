@@ -474,8 +474,8 @@ public class ChoiceTest extends TestCase {
 	    //runner.evidenceGenerator.getInput();
 	    runner.evidenceGenerator.updateDecision();
 	    Evidence e = runner.evidenceGenerator.getLatestDecision();
-	    DecisionEvidenceStatement v = (DecisionEvidenceStatement) Util.getFirst(e.getChoiceEvidence());
-	    assertTrue(e.getChoiceEvidence().size()==1);
+	    DecisionEvidenceStatement v = (DecisionEvidenceStatement) Util.getFirst(e.getDecisionEvidence());
+	    assertTrue(e.getDecisionEvidence().size()==1);
 	    java.lang.reflect.Field iscompiled = DecisionEvidenceStatement.class.getDeclaredField("compiled");
 	    iscompiled.setAccessible(true);
 	    Boolean truthvalue = (Boolean) iscompiled.get(v);

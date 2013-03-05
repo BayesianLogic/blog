@@ -7,31 +7,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.*;
 
-import blog.BLOGUtil;
 import blog.DBLOGUtil;
 import blog.Main;
-import blog.TemporalEvidenceGenerator;
-import blog.bn.BayesNetVar;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
 import blog.model.ArgSpecQuery;
-import blog.model.DecisionEvidenceStatement;
 import blog.model.Evidence;
-import blog.model.EvidenceWithChoice;
 import blog.model.Model;
 import blog.model.Query;
-import blog.model.ValueEvidenceStatement;
-import blog.msg.ErrorMsg;
-import blog.parse.Parse;
-import blog.semant.Semant;
 import blog.world.PartialWorld;
 
 

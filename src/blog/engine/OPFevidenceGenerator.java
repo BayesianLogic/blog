@@ -92,7 +92,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		List<Query> q = (List<Query>) getLatestQueries();
 		Evidence ev = new Evidence();
 		getInput(ev, q);
-		if ( !ev.getChoiceEvidence().isEmpty() ){
+		if ( !ev.getDecisionEvidence().isEmpty() ){
 			System.err.println("OPFevidenceGenerator.getObservation: do not enter decisions in observation/query phase");
 			System.exit(1);
 		}

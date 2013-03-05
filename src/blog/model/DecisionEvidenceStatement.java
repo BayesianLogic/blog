@@ -91,6 +91,17 @@ public class DecisionEvidenceStatement {
 		output = outputInScope;
 
 		if (leftSide instanceof Term) {
+			if (leftSide instanceof FuncAppTerm){
+				if (((FuncAppTerm)leftSide).getFunction() instanceof DecisionFunction);
+				else{
+					System.err.println("FuncAppTerm " + leftSide + "is not a decision function");
+					return false;
+				}
+			}
+			else{
+				System.err.println("Term " + leftSide + "must be a funcappterm");
+				return false;
+			}
 			Type left = ((Term) leftSide).getType();
 			if (output instanceof Term) {
 				Type right = ((Term) output).getType();

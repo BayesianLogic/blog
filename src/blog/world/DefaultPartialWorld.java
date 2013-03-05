@@ -86,7 +86,7 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
 		derivedVarToValue = new HashMap();
 		
 		/*added by cheng*/
-		decisionToInterp = new HashSet();
+		decisionInterp = new HashSet();
 		
 	}
 
@@ -96,8 +96,5 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
 		return newWorld;
 	}
 
-	/*added by cheng*/
-	public Set getDecisionInterp() {
-		return decisionToInterp; 
-	}
+
 }

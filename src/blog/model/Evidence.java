@@ -253,7 +253,7 @@ public class Evidence {
 
 	/** Indicates whether evidence is empty or not. */
 	public boolean isEmpty() {
-		return getValueEvidence().isEmpty() && getSymbolEvidence().isEmpty() /*added by cheng*/ && getChoiceEvidence().isEmpty();
+		return getValueEvidence().isEmpty() && getSymbolEvidence().isEmpty() /*added by cheng*/ && getDecisionEvidence().isEmpty();
 	}
 
 	/**
@@ -271,7 +271,7 @@ public class Evidence {
 		}
 		
 		/*added by cheng*/
-		for (Iterator iter = choiceEvidence.iterator(); iter.hasNext();) {
+		for (Iterator iter = decisionEvidence.iterator(); iter.hasNext();) {
 			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 			System.out.println(stmt);
 		}
@@ -370,7 +370,7 @@ public class Evidence {
 		}
 		
 		/*added by cheng*/
-		for (Iterator iter = choiceEvidence.iterator(); iter.hasNext();) {
+		for (Iterator iter = decisionEvidence.iterator(); iter.hasNext();) {
 			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 			if (!stmt.checkTypesAndScope(model)) {
 				correct = false;
@@ -412,7 +412,7 @@ public class Evidence {
 		}
 		
 		/*added by cheng*/
-		for (Iterator iter = choiceEvidence.iterator(); iter.hasNext();) {
+		for (Iterator iter = decisionEvidence.iterator(); iter.hasNext();) {
 			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 			int thisStmtErrors = stmt.compile(callStack);
 			if (thisStmtErrors == 0) {
@@ -446,7 +446,7 @@ public class Evidence {
 			newValueEvidence.add(newVes);
 		}
 		/*added by cheng*/
-		for (Iterator it = getChoiceEvidence().iterator(); it.hasNext();) {
+		for (Iterator it = getDecisionEvidence().iterator(); it.hasNext();) {
 			DecisionEvidenceStatement ces = (DecisionEvidenceStatement) it.next();
 			DecisionEvidenceStatement newCes = ces.replace(t, another);
 			if (newCes != ces)
@@ -458,7 +458,7 @@ public class Evidence {
 			newEvidence.valueEvidence.addAll(newValueEvidence);
 			newEvidence.symbolEvidence.addAll(newSymbolEvidence);
 			/*added by cheng*/
-			newEvidence.choiceEvidence.addAll(newChoiceEvidence);
+			newEvidence.decisionEvidence.addAll(newChoiceEvidence);
 			if (compiled)
 				newEvidence.compile();
 			return newEvidence;
@@ -471,18 +471,22 @@ public class Evidence {
 		list.addAll(getValueEvidence());
 		list.addAll(getSymbolEvidence());
 		/*added by cheng*/
-		list.addAll(getChoiceEvidence());
+		list.addAll(getDecisionEvidence());
 		return list.toString();
 	}
 
-	/*added by cheng*/
-	public void addChoiceEvidence(DecisionEvidenceStatement ev){
-		choiceEvidence.add(ev);
+	/**adds a decision evidence to the evidence*/ 
+	public void addDecisionEvidence(DecisionEvidenceStatement ev){
+		decisionEvidence.add(ev);
 	}
-	public Collection getChoiceEvidence() {
-		return Collections.unmodifiableCollection(choiceEvidence);
+	
+	/**returns a unmodifiable list of all decision evidence statements*/
+	public Collection getDecisionEvidence() {
+		return Collections.unmodifiableCollection(decisionEvidence);
 	}
-	private List<DecisionEvidenceStatement> choiceEvidence = new ArrayList<DecisionEvidenceStatement>();
+	
+	// List of DecisionEvidenceStatement
+	private List<DecisionEvidenceStatement> decisionEvidence = new ArrayList<DecisionEvidenceStatement>();
 	
 	
 	

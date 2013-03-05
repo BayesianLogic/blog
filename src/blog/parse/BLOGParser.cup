@@ -135,7 +135,7 @@ terminal NOT, AND, OR, DOUBLERIGHTARROW; // logical operator
 terminal COMMA, SEMI, COLON, DOT, NUMSIGN, RIGHTARROW; //seperators
 terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET; // paired seperators
 
-/*added by cheng*/
+/*terminals for decisions*/
 terminal OBSDECISION;
 terminal DECISION;
 
@@ -145,8 +145,8 @@ nonterminal StmtList opt_statement_lst, statement_lst;
 nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   rand_func_decl, number_stmt, origin_func_decl,
   distinct_decl, distribution_decl, parameter_decl,
-  evidence_stmt, query_stmt /*added by cheng*/, decision_func_decl;
-nonterminal Stmt evidence, value_evidence, symbol_evidence, query, /*added by cheng*/ decision_evidence;
+  evidence_stmt, query_stmt, decision_func_decl; //declaration for decision functions
+nonterminal Stmt evidence, value_evidence, symbol_evidence, query, decision_evidence; //evidence for decision function
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
   quantified_formula, distribution_expr,
   function_call, list_construct_expression, symbol_expr,
@@ -264,7 +264,6 @@ declaration_stmt ::=
   | parameter_decl : e {: RESULT = e; :}
   | distribution_decl :e {: RESULT = e; :}
 /*  | parfactor : e {: RESULT = e; :}  */
-/*added by cheng*/
   | decision_func_decl:e {: RESULT = e; :}
   ;
 
@@ -341,7 +340,6 @@ type_var_lst ::= type:ty ID:id COMMA type_var_lst:tl
     {: RESULT = new FieldList(sym(id), ty, null); :}
   ;
 
-/*added by cheng*/
 decision_func_decl ::=
     DECISION type:ret_type ID:fname opt_parenthesized_type_var_lst:otl SEMI
     {: RESULT = new DecisionFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type); :}
@@ -645,9 +643,10 @@ implicit_set ::= LBRACE type:ty ID:id COLON expression:e RBRACE
  *	      - whether the numbers of the function's parameters and arguments
  *		  passed to it match;
  *            - whether the function has been declared.).
+ *    * a decision evidence statement, stating that the value of a particular decision function
+ *    on the specified tuple of arguments.
  */
 evidence_stmt ::= OBS evidence:e SEMI {: RESULT = e; :}
-                  /*added by cheng*/
                  |OBSDECISION decision_evidence:e SEMI {: RESULT = e; :}
   ;
 
@@ -672,7 +671,7 @@ symbol_evidence ::=
     {: RESULT = new SymbolEvidence(currLineno(), currColno(), e1, e2); :}
   ;
 
-/*added by cheng*/
+//decision_function(arg1...argn) = value;
 decision_evidence ::=
     function_call:e1 EQ expression:e2 {: RESULT = new DecisionEvidence(currLineno(), currColno(), e1, e2); :}
   ;
