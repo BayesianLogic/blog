@@ -107,7 +107,6 @@ public class BLOGUtil {
 		}
 	}
 	
-	
 	public static void setChoiceInterp(Evidence evidence, PartialWorld world) {
 		setChoiceInterp(evidence, new ClassicInstantiatingEvalContext(world));
 	}
