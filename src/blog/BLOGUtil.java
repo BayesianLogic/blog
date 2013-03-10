@@ -35,8 +35,6 @@ import blog.sample.ClassicInstantiatingEvalContext;
 import blog.sample.InstantiatingEvalContext;
 import blog.semant.Semant;
 import blog.world.PartialWorld;
-
-/*added by cheng*/
 import blog.model.DecisionFunction;
 
 /**
@@ -110,7 +108,6 @@ public class BLOGUtil {
 	}
 	
 	
-	/*added by cheng*/
 	public static void setChoiceInterp(Evidence evidence, PartialWorld world) {
 		setChoiceInterp(evidence, new ClassicInstantiatingEvalContext(world));
 	}
