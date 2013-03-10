@@ -1009,6 +1009,10 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 */
 	public void cloneFields(AbstractPartialWorld newWorld) {
 		newWorld.basicVarToValue = (Map) ((HashMap) basicVarToValue).clone();
+		
+		/*added by cheng*/
+		newWorld.decisionInterp = (Set) ((HashSet) decisionInterp).clone();
+		
 		newWorld.objToUsesAsValue = (MultiMap) ((HashMultiMap) objToUsesAsValue)
 				.clone();
 		newWorld.objToUsesAsArg = (MultiMap) ((HashMultiMap) objToUsesAsArg)
@@ -1038,6 +1042,14 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 */
 	protected Map basicVarToValue;
 
+	/**
+	 * Set of objects containing DecisionFuncAppVar objects which evaluate to true
+	 */
+	protected Set decisionInterp;
+	/*added by cheng*/
+	public Set getDecisionInterp() {
+		return decisionInterp; 
+	}
 	/**
 	 * Map from objects to the instantiated BasicVars that have them as values.
 	 */

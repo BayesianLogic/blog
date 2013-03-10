@@ -61,7 +61,8 @@ public interface EvalContext {
 	 * only? Sounds like it could be done for DerivedVars as well.
 	 */
 	Object getValue(BasicVar var);
-
+	
+	
 	/**
 	 * Returns the set of objects that satisfy the given POP in this world. The
 	 * objects may be represented as actual objects or identifiers, depending on

@@ -45,7 +45,9 @@ import blog.bn.BasicVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
+import blog.distrib.ListInterp;
 import blog.model.DependencyModel;
+import blog.model.FunctionSignature;
 import blog.world.PartialWorld;
 
 /**
@@ -220,4 +222,6 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 	protected LinkedHashMap respVarsAndContexts; // VarWithDistrib to EvalContext
 
 	protected double logProb = 0;
+
+	
 }

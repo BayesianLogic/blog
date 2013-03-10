@@ -44,6 +44,8 @@ import blog.common.HashMultiMap;
 import blog.common.IndexedHashMultiMap;
 import blog.common.IndexedMultiMap;
 import blog.common.MultiMap;
+import blog.distrib.ListInterp;
+import blog.model.FunctionSignature;
 import blog.bn.DefaultCBN;
 
 
@@ -82,6 +84,10 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
 		varToUninstParent = new HashMapWithPreimages();
 		varToLogProb = new HashMap();
 		derivedVarToValue = new HashMap();
+		
+		/*added by cheng*/
+		decisionInterp = new HashSet();
+		
 	}
 
 	public Object clone() {
@@ -89,4 +95,6 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
 		cloneFields(newWorld);
 		return newWorld;
 	}
+
+
 }

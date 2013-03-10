@@ -164,6 +164,8 @@ public class ValueEvidenceStatement {
 
 		Object leftValue = leftSide.getValueIfNonRandom();
 		Object rightValue = output.getValueIfNonRandom();
+		
+		
 		if (rightValue != null) {
 			if (leftValue != null) {
 				if (leftValue.equals(rightValue)) {

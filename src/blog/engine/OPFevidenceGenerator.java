@@ -1,14 +1,25 @@
 package blog.engine;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import blog.BLOGUtil;
 import blog.DBLOGUtil;
 import blog.TemporalEvidenceGenerator;
+import blog.common.Util;
 import blog.model.ArgSpecQuery;
+import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
+import blog.msg.ErrorMsg;
+import blog.parse.Parse;
+import blog.semant.Semant;
 
 /**
  * 
@@ -19,9 +30,9 @@ import blog.model.Query;
 
 public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 
-	public OPFevidenceGenerator(Model model, Collection linkStrings,
-			Collection queryStrings) {
-		super(model, linkStrings, queryStrings);
+	public OPFevidenceGenerator(Model model, Collection queryStrings, BufferedReader in) {
+		super(model, Util.list(), queryStrings);
+		this.in = in;
 	}
 	
 	
@@ -48,7 +59,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		}
 		if (errors > 0) {
 			System.err.println("Encountered " + errors
-					+ " errors in compilation of queries in OPFevidenceGenerator.getQuery().");
+					+ " errors in compilation of queries in OPFevidenceGenerator.getQueries().");
 			System.exit(1);
 		}
 		
@@ -70,9 +81,125 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 	 * query templates for the given value of t.
 	 */
 	public void moveOn(int t) {
-		moveOn(getQueries(lastTimeStep = t));
+		List<Query> q = (List<Query>) getQueries(lastTimeStep = t);
+		//System.out.println("Enter observations/queries for: "+lastTimeStep);
+		//getInput(new Evidence(), q);
+		moveOn(q);
+		
 	}
+	public void updateObservationQuery(){
+		System.out.println("Enter observations/queries for: "+ lastTimeStep);
+		List<Query> q = (List<Query>) getLatestQueries();
+		Evidence ev = new Evidence();
+		getInput(ev, q);
+		if ( !ev.getDecisionEvidence().isEmpty() ){
+			System.err.println("OPFevidenceGenerator.getObservation: do not enter decisions in observation/query phase");
+			System.exit(1);
+		}
+		latestObservation = ev;
+	}
+	public void updateDecision(){
+		System.out.println("Enter decision for: "+ lastTimeStep);
+		List<Query> q = Util.list();
+		Evidence ev = new Evidence();
+		getInput(ev, q);
+		if (!q.isEmpty()){
+			System.err.println("OPFevidenceGenerator.getDecision: do not enter queries in decision phase");
+			System.exit(1);
+		}
+		if ( !ev.getValueEvidence().isEmpty() || !ev.getSymbolEvidence().isEmpty() ){
+			System.err.println("OPFevidenceGenerator.getDecision: do not enter observations in decision phase");
+			System.exit(1);
+		}
+		latestDecision = ev;
+	}
+	
+	public void getInput (){
+		Evidence ev = new Evidence();
+		List<Query> q = Util.list();
+		getInput (new Evidence(), Util.list());
+	}
+	
+	private void getInput (Evidence ev, List<Query> q){
+		String eviquerystr = "";
+		String accstr= "";
 
+		while (true){
+			try {
+				eviquerystr = in.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (eviquerystr.trim().equals(""))
+				break;
+			else
+				accstr+=eviquerystr;
+		}
+		
 
+		parseAndTranslateEvidence(ev, q, new StringReader((String) accstr));
+		
+		
+		
+		ev.checkTypesAndScope(model);
+		if (ev.compile()!=0)
+			System.exit(1);
+		
+		for (Query query : q){
+			if (!query.checkTypesAndScope(model)){
+				System.err.println("OPFevidencegenerator.getinput: error checking query");
+				System.exit(1);
+			}
+			if (query.compile()!=0){
+				System.err.println("OPFevidencegenerator.getinput: error compiling query");
+				System.exit(1);
+			}
+		}
+		
+		checkEvidenceMatchesTimestep(ev);
+		
+		System.out.println("Evidence Entered:\n"+accstr);
 
+	}
+	
+	
+	/**
+	 * Implements method used by {@link ParticleFilterRunner} to obtain evidence
+	 * for current time step.
+	 */
+	public Evidence getLatestObservation() {
+		return latestObservation; 
+
+	}
+	public Evidence getLatestDecision() {
+		return latestDecision; 
+
+	}
+	
+	//need to fix the error message for empty evidence string inputs
+	private boolean parseAndTranslateEvidence(Evidence e, List<Query> q, Reader reader) {
+		Parse parse = new Parse(reader, null);
+		Semant sem = new Semant(model, e, q, new ErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
+		sem.transProg(parse.getParseResult());
+		return true;
+	}
+	
+	public Evidence getEvidence(){
+		System.err.println("OPFevidenceGenerator.getEvidence should not be called");
+		
+		return null;
+	}
+	
+	/**
+	 * Check that the evidence provided has the correct timestep associated
+	 * @param evidence
+	 */
+	private void checkEvidenceMatchesTimestep(Evidence evidence){
+		/*do nothing*/	
+	}
+	
+	Evidence latestObservation;
+	Evidence latestDecision;
+	BufferedReader in;
 }
