@@ -253,7 +253,7 @@ public class Evidence {
 
 	/** Indicates whether evidence is empty or not. */
 	public boolean isEmpty() {
-		return getValueEvidence().isEmpty() && getSymbolEvidence().isEmpty() /*added by cheng*/ && getDecisionEvidence().isEmpty();
+		return getValueEvidence().isEmpty() && getSymbolEvidence().isEmpty() && getDecisionEvidence().isEmpty();
 	}
 
 	/**
@@ -270,7 +270,6 @@ public class Evidence {
 			System.out.println(stmt);
 		}
 		
-		/*added by cheng*/
 		for (Iterator iter = decisionEvidence.iterator(); iter.hasNext();) {
 			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 			System.out.println(stmt);
@@ -302,7 +301,6 @@ public class Evidence {
 	 * @param curWorld
 	 */
 	public void setEvidenceAndEnsureSupported(PartialWorld curWorld) {
-		/*added by cheng*/
 		BLOGUtil.setChoiceInterp(this, curWorld);
 		
 		BLOGUtil.setBasicVars(this, curWorld);
@@ -369,7 +367,6 @@ public class Evidence {
 			}
 		}
 		
-		/*added by cheng*/
 		for (Iterator iter = decisionEvidence.iterator(); iter.hasNext();) {
 			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 			if (!stmt.checkTypesAndScope(model)) {
@@ -411,7 +408,6 @@ public class Evidence {
 			errors += thisStmtErrors;
 		}
 		
-		/*added by cheng*/
 		for (Iterator iter = decisionEvidence.iterator(); iter.hasNext();) {
 			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 			int thisStmtErrors = stmt.compile(callStack);
@@ -427,7 +423,6 @@ public class Evidence {
 	public Evidence replace(Term t, ArgSpec another) {
 		List newSymbolEvidence = new LinkedList();
 		List newValueEvidence = new LinkedList();
-		/*added by cheng*/
 		List newChoiceEvidence = new LinkedList();
 		
 		boolean replacement = false;
@@ -445,7 +440,6 @@ public class Evidence {
 				replacement = true;
 			newValueEvidence.add(newVes);
 		}
-		/*added by cheng*/
 		for (Iterator it = getDecisionEvidence().iterator(); it.hasNext();) {
 			DecisionEvidenceStatement ces = (DecisionEvidenceStatement) it.next();
 			DecisionEvidenceStatement newCes = ces.replace(t, another);
@@ -457,7 +451,6 @@ public class Evidence {
 			Evidence newEvidence = new Evidence();
 			newEvidence.valueEvidence.addAll(newValueEvidence);
 			newEvidence.symbolEvidence.addAll(newSymbolEvidence);
-			/*added by cheng*/
 			newEvidence.decisionEvidence.addAll(newChoiceEvidence);
 			if (compiled)
 				newEvidence.compile();
@@ -470,7 +463,6 @@ public class Evidence {
 		List list = new LinkedList();
 		list.addAll(getValueEvidence());
 		list.addAll(getSymbolEvidence());
-		/*added by cheng*/
 		list.addAll(getDecisionEvidence());
 		return list.toString();
 	}

@@ -165,16 +165,6 @@ public class ValueEvidenceStatement {
 		Object leftValue = leftSide.getValueIfNonRandom();
 		Object rightValue = output.getValueIfNonRandom();
 		
-		/*added by cheng
-		if (leftSide instanceof FuncAppTerm && ((FuncAppTerm) leftSide).getFunction() instanceof ChoiceFunction){
-			if (rightValue != Boolean.TRUE){
-				System.err.println("ValueEvidenceStatement.compile: misues of choicefunction for non-boolean evidence");
-				System.exit(0);
-			}
-			observedVar = leftSide.getVariable();
-			observedValue = rightValue;
-			return errors;
-		}*/
 		
 		if (rightValue != null) {
 			if (leftValue != null) {
@@ -188,8 +178,6 @@ public class ValueEvidenceStatement {
 							+ leftValue.getClass() + "), is equal to " + output
 							+ ", which has the distinct non-random " + "value " + rightValue
 							+ " (" + rightValue.getClass() + ").", false);
-					/*added by cheng*/
-					System.exit(1);
 				}
 			}
 
