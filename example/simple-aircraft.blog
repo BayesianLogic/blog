@@ -6,9 +6,9 @@ type Blip;
 origin Aircraft Source(Blip);
 
 // Number Declarations
-#Aircraft ~ Poisson(1);
+#Aircraft ~ Poisson(2);
 #Blip(Source=a) ~ Poisson(2);
-#Blip ~Poisson(2);
+//#Blip ~ Poisson(2);
 
 // Evidence
 obs #Blip = 2;

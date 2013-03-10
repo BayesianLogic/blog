@@ -3,13 +3,13 @@ package blog.sample.modular;
 public class ECSSSampler {
 
 	public static void main(String[] args) {
-		double[][] prob = new double[5][7];
+		double[][] prob = new double[2][7];
 		double p = 1.0/6;
 		prob[0] = new double[]{0, p, p, p, p, p, p};
 		prob[1] = new double[]{0, p, p, p, p, p, p};
-		prob[2] = new double[]{0, p, p, p, p, p, p};
-		prob[3] = new double[]{0, p, p, p, p, p, p};
-		prob[4] = new double[]{0, 1, 0, 0, 0, 0, 0};
+		//prob[2] = new double[]{0, p, p, p, p, p, p};
+		//prob[3] = new double[]{0, p, p, p, p, p, p};
+		//prob[4] = new double[]{0, 1, 0, 0, 0, 0, 0};
 		
 		                     
 		
@@ -21,8 +21,8 @@ public class ECSSSampler {
 		}*/
 		
 		int[] bench = new int[5];
-		for (int i = 0; i < 100000; i++) {
-			int[] result = ecss(6, 6, prob);
+		for (int i = 0; i < 1; i++) {
+			int[] result = ecss(5, 6, prob).getVals();
 			for (int j = 0; j < result.length; j++) {
 				if (result[j] == 2) {
 					bench[j]++;
@@ -42,7 +42,7 @@ public class ECSSSampler {
 	 * @param max the maximum value that the values can take
 	 * @param prob 2d double array. first dimension is for each of the variables, and second is probably of getting i'th value
 	 */
-	public static int[] ecss(int sum, int max, double[][] prob){
+	public static ECSSResult ecss(int sum, int max, double[][] prob){
 
 		int numVars = prob.length;
 		
@@ -63,7 +63,7 @@ public class ECSSSampler {
 			int m = numVars - i - 1;
 			for (int t = 0; t <= sum; t++) {
 				double ss = 0;
-				for (int j = 0; j < t; j++) {
+				for (int j = 0; j <= t; j++) {
 					ss += prob[m][j] * A[i][t-j]; 
 				}
 				A[i+1][t] = ss;
@@ -71,7 +71,8 @@ public class ECSSSampler {
 			}
 		}
 		
-		/*for (int i = 0; i < A.length; i++) {
+		/*
+		for (int i = 0; i < A.length; i++) {
 			for (int j = 0; j <= sum; j++) {
 				System.out.format("%.4f ", A[i][j]);
 			}
@@ -97,7 +98,8 @@ public class ECSSSampler {
 		}
 		vals[numVars-1] = curSum;
 		
-		return vals;
+		
+		return new ECSSResult(vals, A[A.length-1][sum]);
 		
 	}
 	

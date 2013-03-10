@@ -45,15 +45,16 @@ public class GeraldECSSSampler extends LWSampler {
 	
 	@Override
 	public void nextSample() {
-		System.out.println("New Sample ==== ");
 		this.curWorld = new GeraldECSSWorld(model, evidence);
 		
-		weight = 1;
+		weight = ((GeraldECSSWorld)this.curWorld).getWeight();
+		
 		
 		if (!evidence.isTrue(curWorld)) {
 			weight = 0;
 		}
-		System.out.println("Weight: " + weight);
+		
+		//System.out.println("Weight: " + weight);
 		
 		++totalNumSamples;
 		++numSamplesThisTrial;
@@ -132,40 +133,42 @@ class GeraldECSSWorld extends DefaultPartialWorld {
 			List<NumberVar> vars = readyVars.remove(0);
 			
 			// Sampling one at a time, so perform parent based sampling
-			if (vars.size() == 1) {
-				NumberVar var = vars.remove(0);
-				DependencyModel.Distrib distrib = var.getDistrib(new ClassicInstantiatingEvalContext(this));
-				CondProbDistrib cpd = distrib.getCPD();
-				
-				List args = distrib.getArgValues();
-				Type varType = var.getType();
-				Object value = cpd.sampleVal(args, varType);
-				System.out.println("Setting " + var + " to " + value);
-				this.setValue(var, value);
-				
-				// DECISION: Chose arraylist for ease of selection. pretty arbitrary decision
-				List<NumberVar> nvs;
-				Type type = var.pop().type();
-				if (typeToNVs.containsKey(type)) {
-					nvs = typeToNVs.get(type);
+			if (!cardEvidence.containsKey(vars.get(0).pop().type())) {
+				if (vars.size() == 1) {
+					NumberVar var = vars.remove(0);
+					DependencyModel.Distrib distrib = var.getDistrib(new ClassicInstantiatingEvalContext(this));
+					CondProbDistrib cpd = distrib.getCPD();
+					
+					List args = distrib.getArgValues();
+					Type varType = var.getType();
+					Object value = cpd.sampleVal(args, varType);
+					this.setValue(var, value);
+					
+					// DECISION: Chose arraylist for ease of selection. pretty arbitrary decision
+					List<NumberVar> nvs;
+					Type type = var.pop().type();
+					if (typeToNVs.containsKey(type)) {
+						nvs = typeToNVs.get(type);
+					} else {
+						nvs = new ArrayList<NumberVar>();
+						typeToNVs.put(type, nvs);
+					}
+					nvs.add(var);
+					
+					removePOP(var.pop());
+					
+					// since it is sampled, now go to type to unsampled and check if set is empty.
+					
+					
+					// if type to unsampled is now empty, thet type is now fully sampled, so check "type to dependent pops" and push new
 				} else {
-					nvs = new ArrayList<NumberVar>();
-					typeToNVs.put(type, nvs);
+					// gerald: will it ever get to this state? if it has more than 1 variable, then that means there must be evidence
+					// TODO: implement what to do when there is more than 1 variable to sample and there is no evidence on them
 				}
-				nvs.add(var);
-				
-				removePOP(var.pop());
-				
-				// since it is sampled, now go to type to unsampled and check if set is empty.
-				
-				
-				// if type to unsampled is now empty, thet type is now fully sampled, so check "type to dependent pops" and push new
-			
 			} else {
 				//sample using ecss
 				double[][] prob = new double[vars.size()][MAX_INT + 1];
 				int i = 0;
-				System.out.println("About to sample using ECSS");
 				for (NumberVar var : vars) {
 					DependencyModel.Distrib distrib = var.getDistrib(new ClassicInstantiatingEvalContext(this));
 					CondProbDistrib cpd = distrib.getCPD();
@@ -173,12 +176,13 @@ class GeraldECSSWorld extends DefaultPartialWorld {
 					for (int j = 0; j <= MAX_INT; j++) {
 						prob[i][j] = cpd.getProb(args, j);
 					}
-					System.out.println("HI");
 					i++;
 				}
 				
 				Type type = vars.get(0).pop().type();
-				int[] values = ECSSSampler.ecss(cardEvidence.get(type), MAX_INT, prob); 
+				ECSSResult ecssResult= ECSSSampler.ecss(cardEvidence.get(type), MAX_INT, prob); 
+				int[] values = ecssResult.getVals();
+				this.setWeight(ecssResult.getWeight());
 				
 				i = 0;
 				for (NumberVar var : vars) {
@@ -186,9 +190,14 @@ class GeraldECSSWorld extends DefaultPartialWorld {
 					i++;
 				}
 				
-				// update unsampled
+				// remove all unique POP's
+				Set<POP> removedPOPs = new HashSet<POP>();
 				for (NumberVar var : vars) {
-					removePOP(var.pop());
+					POP pop = var.pop();
+					if (!removedPOPs.contains(pop)) {
+						removePOP(pop);
+						removedPOPs.add(pop);
+					}
 				}
 				
 				
@@ -228,7 +237,9 @@ class GeraldECSSWorld extends DefaultPartialWorld {
 				System.out.println("UNIMPLEMENTED ERROR: How to handle multiple origin funcs");
 			}	
 		}
-		readyVars.add(vars);
+		if (vars.size() > 0) {
+			readyVars.add(vars);
+		}
 		
 	}
 	
@@ -262,7 +273,17 @@ class GeraldECSSWorld extends DefaultPartialWorld {
 		}
 	}
 	
+	public double getWeight() {
+		return this.weight;
+	}
+	
+	private void setWeight(double weight) {
+		this.weight = weight;
+	}
+	
 	public static final int MAX_INT = 100;
+	
+	private double weight;
 	
 	private Model model;
 	private Evidence evidence;
