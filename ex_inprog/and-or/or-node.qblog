@@ -1,4 +1,0 @@
-query  #{ParentNode p};
-query #{ChildNode1 c};
-query #{ChildNode2 c};
-query #{ChildNode3 c};

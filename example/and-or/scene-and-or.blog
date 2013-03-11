@@ -1,0 +1,97 @@
+/* scene-and-or.blog
+ * -----------------
+ * Represents an and-or tree for representation of scenes
+ * @author dheeraj
+ * @date 2013-01-02
+ */
+
+type World;
+type Scene;
+type Cow;
+type Person;
+type Bike;
+type Cart;
+
+origin World ParentWorld(Scene);
+origin Scene ParentScene(Cow);
+origin Scene ParentScene(Person);
+origin Scene ParentScene(Cart);
+origin Scene ParentScene(Bike);
+
+distinct World theWorld;
+
+
+#Scene(ParentWorld = w) {
+    if w != null then
+        = 1
+    else
+        = 0
+};
+
+random Integer WhichScene(World w) {
+    if w != null then
+        ~ UniformInt(1, 2)
+    else
+        = 0
+};
+
+random Boolean IsStreet(Scene s) {
+    if (s != null & ParentWorld(s) != null & WhichScene(ParentWorld(s)) == 1) then
+        = true
+    else
+        = false
+};
+
+random Boolean IsFarm(Scene s) {
+    if (s != null & ParentWorld(s) != null & WhichScene(ParentWorld(s)) == 2) then
+        = true
+    else
+        = false
+};
+
+#Person(ParentScene = s) {
+    if (s != null & IsStreet(s)) then
+        ~ UniformInt(5, 10)
+    else if (s != null & IsFarm(s)) then
+        ~ UniformInt(1,3)
+    else
+        = 0
+};
+
+#Bike(ParentScene = s) {
+    if (s != null & IsStreet(s)) then
+        ~ UniformInt(0, 3)
+    else
+        = 0
+};
+
+#Cow(ParentScene = s){
+    if (s != null & IsFarm(s)) then
+        ~ UniformInt(1, 5)
+    else
+        = 0
+};
+
+#Cart(ParentScene = s){
+    if (s != null & IsFarm(s)) then
+        ~UniformInt(0, 3)
+    else
+        = 0
+};
+
+/* Evidence */
+//obs {Cart c}  = {C1};
+//obs {Person p}  = {P1, P2, P3, P4, P5, P6};
+
+/* Queries */
+//query #{World w};
+//query #{Scene s};
+query #{Scene s: IsStreet(s) == true};
+query #{Scene s: IsFarm(s) == true};
+query #{Cow c};
+query #{Person p};
+//query #{PersonPose p};
+//query #{PersonPose p: IsFrontal(p) = true};
+//query #{PersonPose p: IsSideway(p) = true};
+query #{Bike b};
+query #{Cart c};

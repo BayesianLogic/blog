@@ -63,6 +63,8 @@ public class BuiltInTypes {
 	public static final String ARRAY_TYPE_NAME = "Array";
 	public static final String TIMESTEP_TYPE_NAME = "Timestep";
 	public static final String BOOLEAN_TYPE_NAME = "Boolean";
+	public static final String SET_TYPE_NAME = "Set";
+	public static final String MAP_TYPE_NAME = "Map";
 
 	/**
 	 * Supertype for all built-in types. Used to determine whether a type is
@@ -142,6 +144,18 @@ public class BuiltInTypes {
 	public static final Type ARRAY = new Type(ARRAY_TYPE_NAME, BUILT_IN, true);
 
 	public static final Type ARRAY_REAL = new Type(ARRAY_REAL_TYPE_NAME, ARRAY);
+
+    	/**
+	 * Type for object sets.  Objects of this type are represented as
+	 * java.util.ArrayList objects.
+	 */
+	public static final Type SET = new Type(SET_TYPE_NAME, BUILT_IN);
+	
+	/**
+	 * Type for mappings between any two types.  Objects of this type
+	 * are represented as java.util.Map objects.
+	 */
+	public static final Type MAP = new Type(MAP_TYPE_NAME, BUILT_IN);
 
 	// /**
 	// * Type for lists of elements of a given type. Objects of this type
