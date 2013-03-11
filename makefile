@@ -44,3 +44,5 @@ sync:
 	git pull
 	git push
 
+log:
+	git log --stat --name-only --date=short --abbrev-commit > ChangeLog

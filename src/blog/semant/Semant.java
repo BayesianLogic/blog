@@ -59,7 +59,6 @@ import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
 import blog.model.Clause;
-import blog.model.ComparisonFormula;
 import blog.model.ConjFormula;
 import blog.model.ConstantInterp;
 import blog.model.DependencyModel;
@@ -787,6 +786,7 @@ public class Semant {
 	ArgSpec transExpr(FuncCallExpr e) {
 		List<ArgSpec> args = transExprList(e.args, true);
 		List<Type> argTypes = new ArrayList<Type>();
+		// TODO put type checking code here
 		for (ArgSpec as : args) {
 			// argTypes.add(as.get)
 			// to add type for this argspec
@@ -836,7 +836,6 @@ public class Semant {
 		}
 		Formula quantFormula = (Formula) quantExpr;
 		Type quantType = getType(e.type);
-
 		if (e.quantifier == QuantifiedFormulaExpr.FORALL) {
 			return new UniversalFormula(e.var.toString(), quantType, quantFormula);
 		} else if (e.quantifier == QuantifiedFormulaExpr.EXISTS) {
@@ -1085,17 +1084,17 @@ public class Semant {
 		case OpExpr.NEQ:
 			return new NegFormula(new EqualityFormula((Term) left, (Term) right));
 		case OpExpr.LT:
-			return new ComparisonFormula((Term) left, (Term) right,
-			    ComparisonFormula.Operator.LT);
+			funcname = BuiltInFunctions.LT_NAME;
+			break;
 		case OpExpr.LEQ:
-			return new ComparisonFormula((Term) left, (Term) right,
-			    ComparisonFormula.Operator.LEQ);
+			funcname = BuiltInFunctions.LEQ_NAME;
+			break;
 		case OpExpr.GT:
-			return new ComparisonFormula((Term) left, (Term) right,
-			    ComparisonFormula.Operator.GT);
+			funcname = BuiltInFunctions.GT_NAME;
+			break;
 		case OpExpr.GEQ:
-			return new ComparisonFormula((Term) left, (Term) right,
-			    ComparisonFormula.Operator.GEQ);
+			funcname = BuiltInFunctions.GEQ_NAME;
+			break;
 		case OpExpr.AND:
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,

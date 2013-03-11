@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import Jama.Matrix;
 import blog.common.Util;
 import blog.common.numerical.MatrixLib;
@@ -192,6 +191,27 @@ public class Categorical extends AbstractCondProbDistrib {
 						termIndex++;
 					}
 					expectProbsAsArg = false;
+				}  else if (obj instanceof MatrixLib) {
+					MatrixLib mapping = (MatrixLib) obj;
+					int numElements = mapping.colLen();
+					
+					probs = new double[numElements];
+					values = new Object[numElements];
+					for (int i = 0; i < numElements; i++) {
+						probs[i] = mapping.elementAt(0, i);
+						values[i] = i;
+					}
+					expectProbsAsArg = false;
+				} else if (obj instanceof ArrayList) {
+					ArrayList mapping = (ArrayList) obj;
+					int numElements = mapping.size();
+					
+					probs = new double[numElements];
+					values = new Object[numElements];
+					for (int i = 0; i < numElements; i++) {
+						probs[i] = (Double) mapping.get(i);
+						values[i] = i;
+					}
 				} else {
 					// TODO
 					Util.fatalError("Categorical with " + obj + " not supported yet");
