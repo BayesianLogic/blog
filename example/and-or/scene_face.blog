@@ -172,7 +172,7 @@ fixed Integer xMin = 5;
 fixed Integer xMax = 11; 
 fixed Integer yMin = 5;
 fixed Integer yMax = 11; 
-fixed Integer xc  = 7;
+fixed Integer xc = 7;
 fixed Integer yc = 7;
 
 random Boolean Zintercept(Person o, Integer x, Integer y) {
@@ -226,7 +226,8 @@ query #{Car c};
 query #{Cow c};
 query #{Person p};
 query Color2D(8, 7);
-query Color2D(8, 11);
+//query Color2D(8, 11);
+query Z(8, 11);
 //query {Integer i: i <= Zmax & i >= Zmin & (exists Person p (Z0(p) == i))};
 
 query Z(11, 8);

@@ -59,6 +59,8 @@ import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
 import blog.model.Clause;
+import blog.model.ComparisonFormula;
+import blog.model.ComparisonFormula.Operator;
 import blog.model.ConjFormula;
 import blog.model.ConstantInterp;
 import blog.model.DependencyModel;
@@ -1084,17 +1086,13 @@ public class Semant {
 		case OpExpr.NEQ:
 			return new NegFormula(new EqualityFormula((Term) left, (Term) right));
 		case OpExpr.LT:
-			funcname = BuiltInFunctions.LT_NAME;
-			break;
+			return new ComparisonFormula((Term) left, (Term) right, Operator.LT);
 		case OpExpr.LEQ:
-			funcname = BuiltInFunctions.LEQ_NAME;
-			break;
+			return new ComparisonFormula((Term) left, (Term) right, Operator.LEQ);
 		case OpExpr.GT:
-			funcname = BuiltInFunctions.GT_NAME;
-			break;
+			return new ComparisonFormula((Term) left, (Term) right, Operator.GT);
 		case OpExpr.GEQ:
-			funcname = BuiltInFunctions.GEQ_NAME;
-			break;
+			return new ComparisonFormula((Term) left, (Term) right, Operator.GEQ);
 		case OpExpr.AND:
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,
