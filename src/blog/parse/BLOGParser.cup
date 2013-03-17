@@ -131,22 +131,17 @@ terminal LT, GT, LEQ, GEQ; // relational_expression
 terminal EQEQ, NEQ; // equality compare
 terminal EQ; // assignment operator
 terminal DISTRIB;
-terminal NOT, AND, OR, DOUBLERIGHTARROW; // logical operator
+terminal NOT, AND, OR; // logical operator
 terminal COMMA, SEMI, COLON, DOT, NUMSIGN, RIGHTARROW; //seperators
 terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET; // paired seperators
-
-/*terminals for decisions*/
-terminal OBSDECISION;
-terminal DECISION;
-
 
 nonterminal program;
 nonterminal StmtList opt_statement_lst, statement_lst;
 nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   rand_func_decl, number_stmt, origin_func_decl,
   distinct_decl, distribution_decl, parameter_decl,
-  evidence_stmt, query_stmt, decision_func_decl; //declaration for decision functions
-nonterminal Stmt evidence, value_evidence, symbol_evidence, query, decision_evidence; //evidence for decision function
+  evidence_stmt, query_stmt;
+nonterminal Stmt evidence, value_evidence, symbol_evidence, query;
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
   quantified_formula, distribution_expr,
   function_call, list_construct_expression, symbol_expr,
@@ -176,7 +171,6 @@ nonterminal String class_name;
 precedence left ELSE;
 precedence nonassoc EQ, DISTRIB;
 precedence right RIGHTARROW;
-precedence left DOUBLERIGHTARROW;
 precedence left AND, OR;
 precedence left NOT;
 precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
@@ -264,7 +258,6 @@ declaration_stmt ::=
   | parameter_decl : e {: RESULT = e; :}
   | distribution_decl :e {: RESULT = e; :}
 /*  | parfactor : e {: RESULT = e; :}  */
-  | decision_func_decl:e {: RESULT = e; :}
   ;
 
 type_decl ::= TYPE ID:typename SEMI
@@ -339,12 +332,6 @@ type_var_lst ::= type:ty ID:id COMMA type_var_lst:tl
   | type:ty ID:id
     {: RESULT = new FieldList(sym(id), ty, null); :}
   ;
-
-decision_func_decl ::=
-    DECISION type:ret_type ID:fname opt_parenthesized_type_var_lst:otl SEMI
-    {: RESULT = new DecisionFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type); :}
-  ;
-
 
 
 /* A nonrandom function declaration may declare a nonrandom constant or
@@ -527,7 +514,7 @@ operation_expr ::= expression:e1 PLUS expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.AND, e2); :}
   | expression:e1 OR expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.OR, e2); :}
-  | expression:e1 DOUBLERIGHTARROW expression:e2
+  | expression:e1 RIGHTARROW expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.IMPLY, e2); :}
   | expression:e1 LBRACKET expression:e2 RBRACKET
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.SUB, e2); :}
@@ -591,14 +578,18 @@ semi_colon_separated_expression_list ::=
 
 map_construct_expression ::= LBRACE expression_pair_list:e RBRACE
     {: RESULT = new MapInitExpr(currLineno(), currColno(), e); :}
+  | LBRACE expression:e1 RIGHTARROW expression:e2 RBRACE
+    {: RESULT = new MapInitExpr(currLineno(), currColno(), 
+                new ExprTupleList(e1, e2, null)); :}
   ;
 
 // to avoid conflict with Imply expression
 expression_pair_list ::=
     expression:e1 RIGHTARROW expression:e2 COMMA expression_pair_list:e3
     {: RESULT = new ExprTupleList(e1, e2, e3); :}
-  | expression:e1 RIGHTARROW expression:e2 
-    {: RESULT = new ExprTupleList(e1, e2, null); :}
+  | expression:e1 RIGHTARROW expression:e2 COMMA 
+    expression:e3 RIGHTARROW expression:e4
+    {: RESULT = new ExprTupleList(e1, e2, new ExprTupleList(e3, e4, null)); :}
   ;
   
 number_expr ::= NUMSIGN set_expr:e
@@ -643,11 +634,8 @@ implicit_set ::= LBRACE type:ty ID:id COLON expression:e RBRACE
  *	      - whether the numbers of the function's parameters and arguments
  *		  passed to it match;
  *            - whether the function has been declared.).
- *    * a decision evidence statement, stating that the value of a particular decision function
- *    on the specified tuple of arguments.
  */
 evidence_stmt ::= OBS evidence:e SEMI {: RESULT = e; :}
-                 |OBSDECISION decision_evidence:e SEMI {: RESULT = e; :}
   ;
 
 evidence ::=
@@ -671,11 +659,6 @@ symbol_evidence ::=
     {: RESULT = new SymbolEvidence(currLineno(), currColno(), e1, e2); :}
   ;
 
-//decision_function(arg1...argn) = value;
-decision_evidence ::=
-    function_call:e1 EQ expression:e2 {: RESULT = new DecisionEvidence(currLineno(), currColno(), e1, e2); :}
-  ;
-  
 query_stmt ::= QUERY  query:q SEMI
     {: RESULT = q; :}
   ;

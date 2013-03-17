@@ -190,11 +190,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Ll][Ii][Ss][Tt] { return symbol(BLOGTokenConstants.LIST); }
 [Mm][Aa][Pp] { return symbol(BLOGTokenConstants.MAP); }
 [Dd][Ii][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DISTRIBUTION); }
-
-
-/*keywords for decisions*/
-[Dd][Ee][Cc][Ii][Dd][Ee] { return symbol(BLOGTokenConstants.OBSDECISION); }
-[Dd][Ee][Cc][Ii][Ss][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DECISION);}	
+	
 
 /* literals */
 "true"	{ return symbol(BLOGTokenConstants.BOOLEAN_LITERAL, new Boolean(true)); }
@@ -221,8 +217,6 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 "|"     { return symbol(BLOGTokenConstants.OR); }
 "!"			{ return symbol(BLOGTokenConstants.NOT); }
 "@"     { return symbol(BLOGTokenConstants.AT); }
-"->"		{ return symbol(BLOGTokenConstants.RIGHTARROW); }
-"=>"    { return symbol(BLOGTokenConstants.DOUBLERIGHTARROW); }
 
 
 /* seperator */
@@ -236,6 +230,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 ":"			{ return symbol(BLOGTokenConstants.COLON);}
 "."     { return symbol(BLOGTokenConstants.DOT); }
 ","			{ return symbol(BLOGTokenConstants.COMMA);}
+"->"		{ return symbol(BLOGTokenConstants.RIGHTARROW);}
 "="			{ return symbol(BLOGTokenConstants.EQ); }
 "~"			{ return symbol(BLOGTokenConstants.DISTRIB); }
 "#"     { return symbol(BLOGTokenConstants.NUMSIGN); }
