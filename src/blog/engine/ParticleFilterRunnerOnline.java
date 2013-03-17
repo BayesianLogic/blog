@@ -16,6 +16,10 @@ import blog.DBLOGUtil;
 import blog.Main;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
+import blog.engine.onlinePF.Communicator;
+import blog.engine.onlinePF.FileCommunicator;
+import blog.engine.onlinePF.OPFevidenceGenerator;
+import blog.engine.onlinePF.PipedCommunicator;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -31,11 +35,8 @@ import blog.world.PartialWorld;
  * 
  */
 public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
-	private BufferedReader eviReader; //evidence is read from here
-	private InputStream eviInputStream;
-	private PrintStream eviOutputStream; //evidence should be printed to here
-	private PrintStream queryOutputStream; 
-	private BufferedReader queryReader; //query is read from here
+	private Communicator eviCommunicator; //evidence is read from here
+	private Communicator queryCommunicator; //query is read from here
 	
 
 	
@@ -52,56 +53,27 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		
 		Util.setVerbose(false);
 		
-		evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviReader);
+		evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
 	}
 	
 	public void setUpStreams(){
-		
-		PipedInputStream pin = new PipedInputStream();
-		eviInputStream = pin;
-		PipedOutputStream pout = null;
-		try {
-			 pout = new PipedOutputStream(pin);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		eviOutputStream = new PrintStream(pout);
-		eviReader = new BufferedReader(new InputStreamReader(eviInputStream));
-
-
-		
-		
-		pin = new PipedInputStream();
-		try {
-			pout = new PipedOutputStream(pin);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			queryOutputStream = new PrintStream("test.txt");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} //System.out;
-		queryReader = new BufferedReader(new InputStreamReader(pin));
+		eviCommunicator = new PipedCommunicator();
+		queryCommunicator = new FileCommunicator("f.txt");
 
 	}
+	/*
+	public void setUpStreams(InputStream pin, PrintStream pout){
+		eviCommunicator = new PipedCommunicator();
+
+		evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
+
+	}*/
 	
-public void setUpStreams(InputStream pin, PrintStream pout){
-		eviInputStream = pin;
-		eviReader = new BufferedReader(new InputStreamReader(eviInputStream));
-
-		evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviReader);
-
+	public Communicator getEviCommunicator (){
+		return eviCommunicator;
 	}
-	
-	public PrintStream getEviOutput (){
-		return eviOutputStream;
-	}
-	public BufferedReader getQueryOutput (){
-		return queryReader;
+	public Communicator getQueryCommunicator (){
+		return queryCommunicator;
 	}
 	private UnaryProcedure afterMoveForward = new UnaryProcedure() {
 		public void evaluate(Object queriesObj) {
@@ -169,7 +141,9 @@ public void setUpStreams(InputStream pin, PrintStream pout){
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 
 			//System.out.println("PF estimate of " + query + ":");
-			query.printResults(queryOutputStream);
+			query.printResults(queryCommunicator.p);
+			queryCommunicator.printInput("-----");
+			queryCommunicator.p.flush();
 			query.printResults(System.out);//strange bug here needs fixing
 		}
 	}
@@ -246,10 +220,12 @@ public void setUpStreams(InputStream pin, PrintStream pout){
 		Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(), verbose, false);
 		ParticleFilterRunnerOnline a = new ParticleFilterRunnerOnline(model,
 				linkStrings, queryStrings, properties);
-		a.eviReader=new BufferedReader(new InputStreamReader(System.in));
+		/*
+		a.eviCommunicator=new BufferedReader(new InputStreamReader(System.in));
 		FileInputStream evidenceIn = new FileInputStream("ex_inprog/logistics/logistics_choice.evidence");
 		a.setUpStreams(evidenceIn, System.out);
 		a.run();
+		*/
 		
 	}
 

@@ -139,7 +139,7 @@ public class Particle {
 		return copy;
 	}
 
-	protected void setWorld(PartialWorld curWorld) {
+	public void setWorld(PartialWorld curWorld) {
 		this.curWorld = curWorld;
 	}
 
