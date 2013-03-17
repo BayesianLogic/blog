@@ -13,8 +13,8 @@ import blog.Main;
 import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.Util;
-import blog.engine.ParticleFilter;
 import blog.engine.ParticleFilterRunnerOnline;
+import blog.engine.ParticleFilter;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -160,7 +160,7 @@ public class OnlineParticleFilterTest extends TestCase {
 	    
 	    setModel(hmmModelString);
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    PrintStream out = runner.getEviOutput();
+	    PrintStream out = runner.getEviCommunicator().p;
 	    
 	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
 
@@ -226,7 +226,7 @@ public class OnlineParticleFilterTest extends TestCase {
 	    
 	    setModel(burglaryModelString);
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    PrintStream out = runner.getEviOutput();
+	    PrintStream out = runner.getEviCommunicator().p;
 	    
 	    
 	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();
@@ -293,7 +293,7 @@ public class OnlineParticleFilterTest extends TestCase {
 		Util.initRandom(false);
 
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    PrintStream out = runner.getEviOutput();
+	    PrintStream out = runner.getEviCommunicator().p;
 	    
 	    
 	    OnlineParticleFilterTest x = new OnlineParticleFilterTest();

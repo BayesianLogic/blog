@@ -15,8 +15,8 @@ import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.Util;
 import blog.engine.Particle;
-import blog.engine.ParticleFilter;
 import blog.engine.ParticleFilterRunnerOnline;
+import blog.engine.ParticleFilter;
 import blog.model.ArgSpecQuery;
 import blog.model.DecisionEvidenceStatement;
 import blog.model.Evidence;
@@ -193,7 +193,7 @@ public class RandomChoiceTest extends TestCase {
 	    setModel(logisticsModelStringRandomBoxes);
 	    
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    PrintStream out = runner.getEviOutput();
+	    PrintStream out = runner.getEviCommunicator().p;
 	    
 	    out.println("query #{Box b: BoxIn(b, c1, @0)==true};\nquery #{Box b};\n");
 	    runner.advancePhase1();

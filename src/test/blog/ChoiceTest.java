@@ -12,8 +12,8 @@ import blog.Main;
 import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.Util;
-import blog.engine.ParticleFilter;
 import blog.engine.ParticleFilterRunnerOnline;
+import blog.engine.ParticleFilter;
 import blog.model.ArgSpecQuery;
 import blog.model.DecisionEvidenceStatement;
 import blog.model.Evidence;
@@ -360,7 +360,7 @@ public class ChoiceTest extends TestCase {
 
 	    setModel(logisticsModelString);
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    PrintStream out = runner.getEviOutput();
+	    PrintStream out = runner.getEviCommunicator().p;
 	    
 	    out.println("");
 	    runner.advancePhase1();
@@ -468,7 +468,7 @@ public class ChoiceTest extends TestCase {
 
 	    setModel(mazeModelString);
 	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
-	    PrintStream out = runner.getEviOutput();
+	    PrintStream out = runner.getEviCommunicator().p;
 	    
 	    out.println("decide applied_action(up, @0) = true;\n");
 	    //runner.evidenceGenerator.getInput();
