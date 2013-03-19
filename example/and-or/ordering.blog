@@ -1,0 +1,35 @@
+fixed Integer maxIntervals = 3;
+fixed Integer minVal = 0;
+fixed Integer maxVal = 5;
+
+random Integer Start(Integer n)
+    ~ UniformInt(minVal, maxVal);
+
+
+random Boolean nooverlap
+    = (forall Integer i
+      	  (i < maxIntervals =>
+	      (forall Integer j
+	          (i != j & j < maxIntervals) =>
+		      ((Start(i) < maxVal & Start(j) < maxVal) &
+		       (Start(i) < Start(j) - 1 | Start(i) > Start(j) + 1))
+	      )
+          )
+      );
+
+
+//obstrue nooverlap();
+obs nooverlap = true;
+
+query {Start(i) for Integer i: i < maxIntervals};
+
+//obs {Interval i} = {I1, I2, I3, I4, I5};
+//obs nooverlap = true;
+
+//query Start({Interval i: Index(i) = 0});
+//query {Start(i) for Interval i:Index(i)=0};
+//query {Start(i) for Interval i:Index(i)=1};
+
+//query #{Integer i: Index(i) == 0};
+//query #{Integer i: Index(i) < 10};
+query #{Integer i: i < 10};

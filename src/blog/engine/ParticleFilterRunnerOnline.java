@@ -108,6 +108,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		//comment out this entire if clause to actually use the inputstream
 		/*
 		if (evidenceGenerator.lastTimeStep==0){
@@ -241,7 +242,6 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		sem.transProg(parse.getParseResult());
 		return true;
 	}
-	
 
 	/** Runs until there are no evidence or queries anymore. */
 	public void run() {

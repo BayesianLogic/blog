@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import blog.common.numerical.MatrixLib;
+import blog.objgen.ObjectSet;
 import blog.type.Timestep;
 
 /**
@@ -76,6 +77,9 @@ public class BuiltInFunctions {
 	public static final String PREV_NAME = "Prev";
 	public static final String IS_EMPTY_NAME = "IsEmptyString";
 	// public static final String CONCAT_NAME = "Concat"; //Concat replaced by +
+	public static final String MIN_NAME = "min";
+	public static final String MAX_NAME = "max";
+	public static final String ROUND_NAME = "round";
 
 	/**
 	 * Constant that always denotes Model.NULL.
@@ -232,6 +236,21 @@ public class BuiltInFunctions {
 	 * returns the <code>i</code>th element of <code>vec</code>.
 	 */
 	public static NonRandomFunction SUB_VEC;
+
+	/**
+	 * a function on Set <code>x</code> returns the minimal value from the set
+	 */
+	public static NonRandomFunction MIN;
+
+	/**
+	 * a function on Set <code>x</code> returns the maximal value from the set
+	 */
+	public static NonRandomFunction MAX;
+
+	/**
+	 * a function on Real <code>x</code> returns the nearest integer to <code>x</code>
+	 */
+	public static NonRandomFunction ROUND;
 
 	/**
 	 * A function that takes a string and returns true if the string is empty.
@@ -643,5 +662,67 @@ public class BuiltInFunctions {
 		TIMES_MAT = new NonRandomFunction(MULT_NAME, argTypes, retType,
 				matTimesInterp);
 		addFunction(TIMES_MAT);
-	}
+
+		argTypes.clear();
+		argTypes.add(BuiltInTypes.SET);
+		retType = BuiltInTypes.INTEGER;
+		FunctionInterp minInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				// TODO
+				ObjectSet s = (ObjectSet) args.get(0);
+				Iterator oi = s.iterator();
+				if (!oi.hasNext())
+					return Model.NULL;
+				
+				Comparable o = (Comparable) oi.next();
+				while (oi.hasNext()) {
+					Comparable no = (Comparable) oi.next();
+					if (no.compareTo(o) < 0)
+						o = no;
+				}
+				
+				return o;
+			}
+		};
+	
+		MIN = new NonRandomFunction(MIN_NAME, argTypes, retType, minInterp);
+		addFunction(MIN);
+	
+		FunctionInterp maxInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				// TODO
+				ObjectSet s = (ObjectSet) args.get(0);
+				Iterator oi = s.iterator();
+				if (!oi.hasNext())
+					return Model.NULL;
+				
+				Comparable o = (Comparable) oi.next();
+				while (oi.hasNext()) {
+					Comparable no = (Comparable) oi.next();
+					if (no.compareTo(o) > 0)
+						o = no;
+				}
+				
+				return o;
+			}
+		};
+	
+		MAX = new NonRandomFunction(MAX_NAME, argTypes, retType, maxInterp);
+		addFunction(MAX);
+	
+		// Add non-random functions from Real to Integer
+		argTypes.clear();
+		argTypes.add(BuiltInTypes.REAL);
+		retType = BuiltInTypes.INTEGER;
+	
+		FunctionInterp roundInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				Double num = (Double) args.get(0);
+				return Math.round(num);
+			}
+		};
+		
+		ROUND = new NonRandomFunction(ROUND_NAME, argTypes, retType, roundInterp);
+		addFunction(ROUND);
+	};
 }
