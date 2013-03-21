@@ -19,6 +19,16 @@ public interface MatrixLib {
 	public double elementAt(int x, int y);
 	
 	/**
+	 * Sets the value of the given element of this matrix
+	 * 
+	 * @param x the x-index
+	 * @param y the y-index
+	 * @param val the value to set mat[x][y] to
+	 * @return null
+	 */
+	public void setElement(int x, int y, double val);
+	
+	/**
 	 * Returns the contents of this matrix
 	 */
 	public String toString();
