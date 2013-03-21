@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2006, Regents of the University of California
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -12,11 +12,11 @@
  * * Redistributions in binary form must reproduce the above copyright
  *   notice, this list of conditions and the following disclaimer in
  *   the documentation and/or other materials provided with the
- *   distribution.  
+ *   distribution.
  *
  * * Neither the name of the University of California, Berkeley nor
  *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior 
+ *   products derived from this software without specific prior
  *   written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -43,7 +43,7 @@ import blog.sample.EvalContext;
 
 /**
  * @see BuiltInFunction.java
- * 
+ *
  *      A term consisting of two terms and a comparison between them.
  *      Comparison terms
  *      are inserted in the model by transExpr.
@@ -52,7 +52,7 @@ import blog.sample.EvalContext;
  * @date 2013/1/1
  */
 public class ComparisonFormula extends Formula {
-	
+  
   public enum Operator {
     LT("<"), LEQ("<="), GT(">"), GEQ(">=");
     private final String name;

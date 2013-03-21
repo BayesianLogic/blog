@@ -1,0 +1,83 @@
+type Object;
+
+fixed Integer Xmin = 1;
+fixed Integer Ymin = 1;
+fixed Integer Zmin = 1;
+fixed Integer Xmax = 20;
+fixed Integer Ymax = 20;
+fixed Integer Zmax = 20;
+
+fixed Integer xMin = 5;
+fixed Integer xMax = 11;
+fixed Integer yMin = 5;
+fixed Integer yMax = 11;
+fixed Integer xc  = 7;
+fixed Integer yc = 7;
+
+// SIZE OF THE OBJECT IN 3D
+random Integer sizeX(Object O) = 3;
+random Integer sizeY(Object O) = 3;
+random Integer sizeZ(Object O) = 3;
+
+// LOCATION OF THE OBJECTS IN 3D
+random Integer X0(Object o) ~ UniformInt(Xmin, Xmax);
+random Integer Y0(Object o) ~ UniformInt(Ymin, Ymax);
+random Integer Z0(Object o) ~ UniformInt(Zmin, Zmax);
+
+random Integer X1(Object o) = X0(o) + sizeX(o);
+random Integer Y1(Object o) = Y0(o) + sizeY(o);
+random Integer Z1(Object o) = Z0(o) + sizeZ(o);
+
+
+random Integer Zintercept(Object o, Integer x, Integer y) {
+    if ((X0(o) <= xc + Z1(o) * (xc - x)) & (X1(o) >= xc + Z1(o) * (xc - x)) & (Y0(o) <= yc + Z1(o) * (yc - y)) & (Y1(o) >= yc + Z1(o) * (yc - y))) then
+        = Z0(o)
+            
+    else if ((x <= xc) & (X0(o) >= xc + Z0(o) * (xc - x)) & (X0(o) <= xc + Z1(o) * (xc - x)) & ((X0(o) - xc) * (y - yc) <= (Y0(o) - yc) * (xc - x)) & ((X0(o) - xc) * (y - yc) >= (Y1(o) - yc) * (xc - x))) then
+        = Z0(o) // need to change
+
+    else if ((y <= yc) & (Y0(o) >= yc + Z0(o) * (yc - y)) & (Y0(o) <= yc + Z1(o) * (yc - y)) & ((Y0(o) - yc) * (x - xc) <= (X0(o) - xc) * (yc - y)) & ((Y0(o) - yc) * (x - xc) >= (X1(o) - xc) * (yc - y))) then
+        = Z0(o) // need to change
+       
+    else if ((x > xc) & (X1(o) >= xc + Z1(o) * (xc - x)) & (X1(o) <= xc + Z0(o) * (xc - x)) & ((xc - X1(o)) * (yc - y) <= (Y1(o) - yc) * (x - xc)) & ((xc - X1(o)) * (yc - y) >= (Y0(o) - yc) * (x - xc))) then
+        = Z0(o) // need to change
+        
+    else if ((y > yc) & (Y1(o) >= yc + Z1(o) * (yc - y)) & (Y1(o) <= yc + Z0(o) * (yc - y)) & ((yc - Y1(o)) * (xc - x) <= (X1(o) - xc) * (y - yc)) & ((yc - Y1(o)) * (xc - x) >= (X0(o) - xc) * (y - yc))) then
+        = Z0(o) // need to change
+
+    else 
+        = 0
+};
+
+
+random Integer Z(Integer x, Integer y) {
+    if ((x <= xMax) & (x >= xMin) & (y <= yMax) & (y >= yMin)) then
+        = min({Integer Z: Z < Zmax & (exists Object o (Zintercept(o,x,y) == Z))})
+    else
+        = 0
+};
+
+
+distinct Object o1;
+
+obs X0(o1) = 5;
+obs Y0(o1) = 5;
+obs Z0(o1) = 5;
+
+/*distinct Object o1, o2;
+
+obs X0(o1) = 5;
+obs Y0(o1) = 5;
+obs Z0(o1) = 5;
+
+obs X0(o2) = 5;
+obs Y0(o2) = 5;
+obs Z0(o2) = 10;
+*/
+
+
+//query #{Object o};
+query #{Object o: X0(o) > 0};
+query {Integer X: X < Xmax & (exists Object o (X0(o) == X))};
+query {Integer z: z < Zmax & (exists Object o (z == Zintercept(o, 7, 7)))};
+query {Integer z: z < Zmax & z == Z(7, 7)};

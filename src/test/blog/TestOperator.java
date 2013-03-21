@@ -53,7 +53,7 @@ public class TestOperator {
         + "fixed Real square = x * x; query square;";
     Main.runFromString(code, args);
   }
-
+  
   @Test
   public void testMultiInFunction() {
     String code = "random Integer qstate(Integer t) {\n" + "\n"
@@ -68,5 +68,5 @@ public class TestOperator {
     String code = "fixed Boolean x = true; \n fixed Boolean y =! x; \n query y;";
     Main.runFromString(code, args);
   }
-
+  
 }
