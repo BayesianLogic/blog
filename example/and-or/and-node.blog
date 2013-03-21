@@ -1,0 +1,45 @@
+type ParentNode;
+type ChildNode1;
+type ChildNode2;
+type ChildNode3;
+
+distinct ParentNode pNode[2];
+
+origin ParentNode WhichParentNode(ChildNode1);
+origin ParentNode WhichParentNode(ChildNode2);
+origin ParentNode WhichParentNode(ChildNode3);
+
+random Boolean IsNodeActive(ParentNode p) {
+    if (p != null) then
+        ~ Bernoulli(0.6)
+    else
+        = false
+};
+
+#ChildNode1(WhichParentNode = p) {
+    if (p != null & IsNodeActive(p)) then
+        ~ UniformInt(0, 2)
+    else
+        = 0
+};
+
+#ChildNode2(WhichParentNode = p) {
+    if (p != null & IsNodeActive(p)) then
+        ~ UniformInt(3, 5)
+    else
+        = 0
+};
+
+#ChildNode3(WhichParentNode = p) {
+    if (p != null & IsNodeActive(p)) then
+        ~ UniformInt(6, 9)
+    else
+        = 0
+};
+
+obs IsNodeActive(pNode[0]) = true;
+
+query IsNodeActive(pNode[0]);
+query #{ChildNode1 c};
+query #{ChildNode2 c};
+query #{ChildNode3 c};

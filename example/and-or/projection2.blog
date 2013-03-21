@@ -1,0 +1,107 @@
+type Object;
+
+fixed Integer Xmin = 1;
+fixed Integer Ymin = 1;
+fixed Integer Zmin = 1;
+fixed Integer Xmax = 20;
+fixed Integer Ymax = 20;
+fixed Integer Zmax = 20;
+
+fixed Integer xMin = 5;
+fixed Integer xMax = 11;
+fixed Integer yMin = 5;
+fixed Integer yMax = 11;
+fixed Integer xc  = 7;
+fixed Integer yc = 7;
+
+// SIZE OF THE OBJECT IN 3D
+random Integer sizeX(Object O) {
+    if (O != null) then
+        = 3
+    else
+        = 0
+};
+
+random Integer sizeY(Object O) {
+    if (O != null) then
+        = 3
+    else
+        = 0
+};
+
+random Integer sizeZ(Object O) {
+    if (O != null) then
+        = 3
+    else
+        = 0
+};
+
+// LOCATION OF THE OBJECTS IN 3D
+random Integer X0(Object o) {
+    ~ UniformInt(Xmin, Xmax)
+};
+
+random Integer Z0(Object o) {
+    ~ UniformInt(Zmin, Zmax)
+};
+
+random Integer Y0(Object o) {
+    ~ UniformInt(Ymin, Ymax)
+};
+
+
+random Integer X1(Object o) {
+    = X0(o) + sizeX(o)
+};
+
+random Integer Y1(Object o) {
+    = Y0(o) + sizeY(o)
+};
+
+random Integer Z1(Object o) {
+    = Z0(o) - sizeZ(o)
+};
+
+random Integer Zintercept(Object o, Integer x, Integer y) {
+    /*if (o!=null & (X0(o) <= myAdd(xc,Mult(Z1(o),Diff(xc,x)))) & (X1(o) >= myAdd(xc,Mult(Z1(o),Diff(xc,x)))) & (Y0(o) <= myAdd(yc,Mult(Z1(o),Diff(yc,y)))) & (Y1(o) >= myAdd(yc,Mult(Z1(o),Diff(yc,y))))   ) then
+        = Z1(o)
+    elseif (o!=null &  (x<=xc) &  (X0(o) >= myAdd(xc,Mult(Z0(o),Diff(xc,x)))) & (X0(o) <= myAdd(xc,Mult(Z1(o),Diff(xc,x)))) &  (Mult(Diff(X0(o),xc),Diff(y,yc)) <= Mult(Diff(Y0(o),yc),Diff(xc,x))) & (Mult(Diff(X0(o),xc),Diff(y,yc)) >= Mult(Diff(Y1(o),yc),Diff(xc,x))) ) then
+        = Z1(o) // need to change
+    elseif (o!=null &  (y<=yc) &  (Y0(o) >= myAdd(yc,Mult(Z0(o),Diff(yc,y)))) & (Y0(o) <= myAdd(yc,Mult(Z1(o),Diff(yc,y)))) &  (Mult(Diff(Y0(o),yc),Diff(x,xc)) <= Mult(Diff(X0(o),xc),Diff(yc,y))) &     (Mult(Diff(Y0(o),yc),Diff(x,xc)) >= Mult(Diff(X1(o),xc),Diff(yc,y))) ) then
+         = Z1(o) // need to change
+    elseif (o!=null &  (x>xc) &  (X1(o) >= myAdd(xc,Mult(Z1(o),Diff(xc,x)))) & (X1(o) <= myAdd(xc,Mult(Z0(o),Diff(xc,x)))) &  (Mult(Diff(xc,X1(o)),Diff(yc,y)) <= Mult(Diff(Y1(o),yc),Diff(x,xc))) &     (Mult(Diff(xc,X1(o)),Diff(yc,y)) >= Mult(Diff(Y0(o),yc),Diff(x,xc))) ) then
+        = Z1(o) // need to change
+    elseif (o!=null &  (y>yc) &  (Y1(o) >= myAdd(yc,Mult(Z1(o),Diff(yc,y)))) & (Y1(o) <= myAdd(yc,Mult(Z0(o),Diff(yc,y)))) &  (Mult(Diff(yc,Y1(o)),Diff(xc,x)) <= Mult(Diff(X1(o),xc),Diff(y,yc)))  &  (Mult(Diff(yc,Y1(o)),Diff(xc,x)) >= Mult(Diff(X0(o),xc),Diff(y,yc))) ) then
+    = Z1(o) // need to change*/
+    //else
+        = 0
+};
+
+
+random Integer Z(Integer x, Integer y) {
+    if ((x <= xMax) & (x >= xMin) & (y <= yMax) & (y >= yMin)) then
+        //~SetMin({Integer Z: Z < Zmax & (exists Object o (Zintercept(o, x, y) == Z))})
+        //~SetMin({Integer Z: Z < Zmax & Z > 3})
+        = 1
+    else
+        = 0
+};
+
+
+
+
+#Object = 1;
+
+obs {Object o} = {o1};
+obs X0(o1) = 5;
+obs Y0(o1) = 5;
+obs Z0(o1) = 5;
+
+query #{Object o};
+query #{Object o: X0(o) > 0};
+//query {Integer X: X < Xmax & (exists Object o (X0(o) == X))};
+//query {Integer X: X < Xmax & (exists Object o (X1(o) == X))};
+//query {Integer z: z < Zmax & (exists Object o (z == Zintercept(o, 7, 7)))};
+//query {Integer z: z < Zmax & z == Z(7, 7)};
+//query {Integer z: z < Zmax & (exists Object o (z == Zintercept(o, 11, 11)))};
+//query {Integer z: z < Zmax & z == Z(7, 7)};

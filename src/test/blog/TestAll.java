@@ -12,6 +12,7 @@ public class TestAll {
 				LWImportanceSamplerTest.class, MiscTest.class,
 				ParticleFilterTest.class, SymbolEvidenceLikelihoodWeighterTest.class,
 				TupleSetSpecEvidenceLikelihoodWeighterTest.class,
-				test.blog.DistanceTest.class);
+				test.blog.DistanceTest.class, test.blog.TestOperator.class,
+				test.blog.TestBuiltInFunctions.class, test.blog.TestComparison.class);
 	}
 }

@@ -1,7 +1,0 @@
-//query Start({Interval i: Index(i) = 0});
-//query {Start(i) for Interval i:Index(i)=0};
-//query {Start(i) for Interval i:Index(i)=1};
-
-query #{Interval i: Index(i) = 0};
-query #{Interval i: Index(i)<10};
-query #{NaturalNum i: i<10};

@@ -1,5 +1,0 @@
-/* Evidence file asserting that all the drawn balls appeared blue.
- */
-
-//obs {Cart c}  = {C1};
-//obs {Person p}  = {P1, P2, P3, P4, P5, P6};
