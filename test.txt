@@ -1,0 +1,178 @@
+Distribution of values for value(@0)
+	1.0	0.0
+Distribution of values for #{Box b : (BoxIn(b, c1, @0) = true)}
+	0.005	3
+	0.017	4
+	0.033	5
+	0.064	6
+	0.097	7
+	0.106	8
+	0.128	9
+	0.12	10
+	0.141	11
+	0.1	12
+	0.071	13
+	0.043	14
+	0.034	15
+	0.015	16
+	0.015	17
+	0.008	18
+	0.001	19
+	0.002	20
+Distribution of values for #{Box b : true}
+	0.005	3
+	0.017	4
+	0.033	5
+	0.064	6
+	0.097	7
+	0.106	8
+	0.128	9
+	0.12	10
+	0.141	11
+	0.1	12
+	0.071	13
+	0.043	14
+	0.034	15
+	0.015	16
+	0.015	17
+	0.008	18
+	0.001	19
+	0.002	20
+Distribution of values for value(@1)
+	1.0	0.0
+Distribution of values for #{Box b : (BoxIn(b, c1, @1) = true)}
+	0.005	2
+	0.017	3
+	0.033	4
+	0.064	5
+	0.097	6
+	0.106	7
+	0.128	8
+	0.12	9
+	0.141	10
+	0.1	11
+	0.071	12
+	0.043	13
+	0.034	14
+	0.015	15
+	0.015	16
+	0.008	17
+	0.001	18
+	0.002	19
+Distribution of values for #{Box b : (BoxIn(b, c3, @1) = true)}
+	1.0	0
+Distribution of values for value(@2)
+	1.0	0.0
+Distribution of values for #{Box b : (BoxIn(b, c1, @2) = true)}
+	0.006	2
+	0.019	3
+	0.03	4
+	0.064	5
+	0.109	6
+	0.107	7
+	0.125	8
+	0.122	9
+	0.139	10
+	0.093	11
+	0.069	12
+	0.033	13
+	0.032	14
+	0.018	15
+	0.016	16
+	0.012	17
+	0.002	18
+	0.004	19
+Distribution of values for #{Box b : (BoxIn(b, c3, @2) = true)}
+	1.0	0
+Distribution of values for value(@3)
+	1.0	7.290000000000001
+Distribution of values for #{Box b : (BoxIn(b, c1, @3) = true)}
+	0.01	2
+	0.016	3
+	0.036	4
+	0.069	5
+	0.094	6
+	0.102	7
+	0.106	8
+	0.135	9
+	0.15	10
+	0.098	11
+	0.066	12
+	0.033	13
+	0.032	14
+	0.02	15
+	0.018	16
+	0.009	17
+	0.003	18
+	0.003	19
+Distribution of values for #{Box b : (BoxIn(b, c3, @3) = true)}
+	1.0	1
+Distribution of values for value(@4)
+	1.0	7.290000000000001
+Distribution of values for #{Box b : (BoxIn(b, c1, @4) = true)}
+	0.011	2
+	0.02	3
+	0.02	4
+	0.066	5
+	0.087	6
+	0.103	7
+	0.101	8
+	0.132	9
+	0.146	10
+	0.114	11
+	0.069	12
+	0.049	13
+	0.029	14
+	0.021	15
+	0.013	16
+	0.01	17
+	0.004	18
+	0.005	19
+Distribution of values for #{Box b : (BoxIn(b, c3, @4) = true)}
+	1.0	1
+Distribution of values for value(@5)
+	1.0	7.290000000000001
+Distribution of values for #{Box b : (BoxIn(b, c1, @5) = true)}
+	0.011	1
+	0.018	2
+	0.014	3
+	0.058	4
+	0.092	5
+	0.11	6
+	0.09	7
+	0.119	8
+	0.143	9
+	0.131	10
+	0.073	11
+	0.055	12
+	0.035	13
+	0.019	14
+	0.009	15
+	0.014	16
+	0.002	17
+	0.007	18
+Distribution of values for #{Box b : (BoxIn(b, c3, @5) = true)}
+	1.0	1
+Distribution of values for value(@6)
+	1.0	7.290000000000001
+Distribution of values for #{Box b : (BoxIn(b, c1, @6) = true)}
+	0.011	1
+	0.018	2
+	0.014	3
+	0.059	4
+	0.083	5
+	0.128	6
+	0.082	7
+	0.13	8
+	0.137	9
+	0.146	10
+	0.064	11
+	0.045	12
+	0.036	13
+	0.017	14
+	0.006	15
+	0.015	16
+	0.001	17
+	0.008	18
+Distribution of values for #{Box b : (BoxIn(b, c3, @6) = true)}
+	1.0	1

@@ -233,14 +233,13 @@ public class DBLOGUtil {
 			statementsByTimestep.add(maxTimestep, statement);
 		}
 		for (it = evidence.getDecisionEvidence().iterator(); it.hasNext();) {
-				DecisionEvidenceStatement statement = (DecisionEvidenceStatement) it.next();
-				TreeSet timesteps = (TreeSet) getTimestepTermsIn(statement.getLeftSide(),
-						new TreeSet(new TimestepTermComparator()));
-				getTimestepTermsIn(statement.getOutput(), timesteps);
-				Object maxTimestep = timesteps.isEmpty() ? null : timesteps.last();
-				statementsByTimestep.add(maxTimestep, statement);
-			}
-
+			DecisionEvidenceStatement statement = (DecisionEvidenceStatement) it.next();
+			TreeSet timesteps = (TreeSet) getTimestepTermsIn(statement.getLeftSide(),
+					new TreeSet(new TimestepTermComparator()));
+			getTimestepTermsIn(statement.getOutput(), timesteps);
+			Object maxTimestep = timesteps.isEmpty() ? null : timesteps.last();
+			statementsByTimestep.add(maxTimestep, statement);
+		}
 		return statementsByTimestep;
 	}
 

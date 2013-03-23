@@ -98,9 +98,10 @@ public class Evidence {
 			if (statement instanceof ValueEvidenceStatement)
 				result.addValueEvidence((ValueEvidenceStatement) statement);
 			else if (statement instanceof SymbolEvidenceStatement)
- 				result.addSymbolEvidence((SymbolEvidenceStatement) statement);
- 			else
- 				result.addDecisionEvidence((DecisionEvidenceStatement) statement);
+				result.addSymbolEvidence((SymbolEvidenceStatement) statement);
+			else
+				result.addDecisionEvidence((DecisionEvidenceStatement) statement);
+
 		}
 		result.compile();
 		return result;
