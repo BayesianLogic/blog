@@ -19,46 +19,30 @@
  */
 
 type Component;
-type Pixel;
 
-random R3Vector Weight(Timestep);
+#Component ~ UniformInt(1, 15);
 
-origin Timestep Time(Pixel);
-origin NaturalNum X(Pixel);
-origin NaturalNum Y(Pixel);
-random R3Vector Intensity(Pixel);
-random Component AssociatedComponent(Pixel);
+random Real[] Weight ~ Dirichlet(#Component, 0.2);
 
-#Component ~ Poisson(5);
-#Pixel(X=x, Y=y, Time=t)=1;
+fixed Real[][] variance = [10000, 0, 0;
+      	       		   0, 10000, 0;
+			   0, 0, 10000];
 
 // the prior posts uniform distribution over a box of 3D space.
-random R3Vector Mean(Component c, Timestep t) {
+random Real[] Mean(Component c, Timestep t) {
 	// UniformVector(x_lower, x_upper, y_lower, y_upper, z_lower, z_upper)
-    if t=@1 then ~ UniformVector(0, 255, 0, 255, 0, 255)
+    if (t == @1) then ~ UniformVector(0, 255, 0, 255, 0, 255)
 	// MultivarGaussian(dimension, mean, covariance)
-    else ~ MultivarGaussian(3, Mean(c, Prev(t)), 
-                                [10, 0, 0; 
-                                  0, 10, 0; 
-                                  0, 0, 10])
+    else ~ MultivarGaussian(Mean(c, Prev(t)), variance)
 };
 
-/**
- * TODO: need to use Dirichlet distribution, however, Dirichlet is not 
- * implemented in BLOG right now. 
- * need implementation of Dirichlet distribution
- */
-random R3Vector Weight {
-	~ Dirichlet(#{Component c}, (1.0/#{Component c}))
-};
-
-//ideally, we would hope to set this probability in the same way as
-// Mean(Component)
-random Component AssociatedComponent(Pixel p) ~ TabularCPD[](Weight);
+random Component AssociatedComponent(Integer x, Integer y, Timestep t)
+    ~ Categorical(Weight);
 
 // the parameters can be set in Mean(Component)
-random R3Vector Intensity(Pixel pixel) 
-	~ MultivarGaussian(3, Mean(AssociatedComponent(pixel))
-                       [10, 0, 0; 
-                         0, 10, 0;  
-                         0, 0, 10]);
+random Real[] Intensity(Integer x, Integer y, Timestep t) 
+    ~ MultivarGaussian(Mean(AssociatedComponent(x, y, t), t), variance);
+
+obs Intensity(1, 1, @1) = [135; 85; 170];
+
+query AssociatedComponent(1, 1, @1);
