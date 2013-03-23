@@ -4,8 +4,9 @@ type Box;  type Truck;  type City;
 // declare the individual objects
 //distinct Box b3, b2, b1;
 
-#Box ~ Poisson(5);
-distinct Box b1, b2 b3;
+//#Box ~ Poisson(5);
+
+distinct Box b1, b2, b3;
 distinct Truck t1, t2;
 distinct City c1, c2, c3;
 
@@ -106,6 +107,15 @@ random Boolean BoxOn(Box b, Truck tr, Timestep t) {
  * 
  */
  
-obs {Box b: BoxIn(b, c1, @0)==true} = {b1};
-obs pass (@20) = true;
-query value(@15);
+//obs {Box b: BoxIn(b, c1, @0)==true} = {b1};
+//obs pass (@20) = true;
+
+query value(@5);
+
+
+
+decide applied_Load(argload(@0), t1, @0) = true;
+decide applied_Drive(c3, t1, @1) = true;
+decide applied_Unload(argunload(t1, @2), t1, @2) = true;
+
+
