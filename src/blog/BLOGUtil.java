@@ -114,7 +114,10 @@ public class BLOGUtil {
 
 	
 	public static void setChoiceInterp(Evidence evidence, InstantiatingEvalContext context) {
-		for (BayesNetVar var : evidence.getEvidenceVars()) {
+		
+		for (Object tmp : evidence.getDecisionEvidence()){
+			DecisionEvidenceStatement des = (DecisionEvidenceStatement) tmp;
+			BayesNetVar var = des.getObservedVar();
 			if (var instanceof DerivedVar){
 				if (((DerivedVar) var).getArgSpec() instanceof FuncAppTerm){
 					FuncAppTerm fat = (FuncAppTerm) ((DerivedVar) var).getArgSpec();
@@ -129,6 +132,22 @@ public class BLOGUtil {
 				}
 			}
 		}
+		/*
+		for (BayesNetVar var : evidence.getEvidenceVars()) {
+			if (var instanceof DerivedVar){
+				if (((DerivedVar) var).getArgSpec() instanceof FuncAppTerm){
+					FuncAppTerm fat = (FuncAppTerm) ((DerivedVar) var).getArgSpec();
+					if (fat == null){
+						System.err.println("error in blogutil.setchoiceinterp");
+						System.exit(0);
+					}
+					if (fat.getFunction() instanceof DecisionFunction){
+						DecisionFunction f = (DecisionFunction) fat.getFunction();
+						f.addInterp(fat, context);
+					}
+				}
+			}
+		}*/
 	}
 	public static double setAndGetProbability(BayesNetVar rv, Object value,
 			PartialWorld world) {

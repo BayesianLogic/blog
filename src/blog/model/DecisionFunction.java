@@ -76,6 +76,23 @@ public class DecisionFunction extends Function {
 			this.f = f;
 			this.args = args;
 		}
+		public String toString() {
+			if (args.length == 0) {
+				return f.toString();
+			}
+
+			StringBuffer buf = new StringBuffer();
+			buf.append(f);
+			buf.append("(");
+			buf.append(args[0]);
+			for (int i = 1; i < args.length; ++i) {
+				buf.append(", ");
+				buf.append(args[i]);
+			}
+			buf.append(")");
+			return buf.toString();
+		}
+
 		public boolean equals(Object obj) {
 			if (obj instanceof DecisionFuncAppVar) {
 				DecisionFuncAppVar other = (DecisionFuncAppVar) obj;

@@ -205,11 +205,11 @@ public class RandomChoiceTest extends TestCase {
 	    for (int i=0;i<5; i++){
 		    out.println(String.format("decide chosen_Load(argload(@%d), t1, @%d) = true;\n", i*4,  i*4));
 		    runner.advancePhase2();
-		    out.println(String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\n",i*4+1,i*4+1));
+		    out.println(String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\nquery #{Box b : BoxOn(b, t1, @%d)==true };\n",i*4+1,i*4+1,i*4+1));
 		    runner.advancePhase1();
 		    for (Iterator iter = runner.particleFilter.particles.iterator(); iter.hasNext();){
 		    	Particle p = (Particle) iter.next();
-		    	String qs = String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\n",i*4+1,i*4+1);
+		    	String qs = String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\nquery #{Box b : BoxOn(b, t1, @%d)==true };\n",i*4+1,i*4+1,i*4+1);
 				qs = "query #{Box b};" + qs;
 		    	Parse parse = new Parse(new StringReader(qs), null);
 				List q = Util.list();
@@ -223,11 +223,15 @@ public class RandomChoiceTest extends TestCase {
 			    }
 			    a = getQuery(q, 1).getHistogram().entrySet();
 			    for (Object o : a){
-			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), (numberOfBoxes-i-1));
+			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), Math.max((numberOfBoxes-i-1),0));
 			    }
-			    a = getQuery(runner.evidenceGenerator.getLatestQueries(), 2).getHistogram().entrySet();
+			    a = getQuery(q, 3).getHistogram().entrySet();
 			    for (Object o : a){
-			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), (i));
+			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), numberOfBoxes-i-1>=0?1:0);
+			    }
+			    a = getQuery(q, 2).getHistogram().entrySet();
+			    for (Object o : a){
+			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), Math.min(i,numberOfBoxes));
 			    }
 		    }
 		    Set a = getQuery(runner.evidenceGenerator.getLatestQueries(), 1).getHistogram().entrySet();
@@ -245,12 +249,12 @@ public class RandomChoiceTest extends TestCase {
 		    //	break;
 		    out.println(String.format("decide chosen_Drive(c3, t1, @%d) = true;\n", i*4+1,i*4+1));
 		    runner.advancePhase2();
-		    out.println(String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\n",i*4+2,i*4+2));
+		    out.println(String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\nquery #{Box b : BoxOn(b, t1, @%d)==true };\n",i*4+2,i*4+2,i*4+2));
 		    runner.advancePhase1();
 		    
 		    for (Iterator iter = runner.particleFilter.particles.iterator(); iter.hasNext();){
 		    	Particle p = (Particle) iter.next();
-		    	String qs = String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\n",i*4+2,i*4+2);
+		    	String qs = String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\nquery #{Box b : BoxOn(b, t1, @%d)==true };\n",i*4+2,i*4+2,i*4+2);
 				qs = "query #{Box b};" + qs;
 		    	Parse parse = new Parse(new StringReader(qs), null);
 				List q = Util.list();
@@ -264,11 +268,15 @@ public class RandomChoiceTest extends TestCase {
 			    }
 			    a = getQuery(q, 1).getHistogram().entrySet();
 			    for (Object o : a){
-			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), (numberOfBoxes-i-1));
+			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), Math.max(0, (numberOfBoxes-i-1)));
 			    }
-			    a = getQuery(runner.evidenceGenerator.getLatestQueries(), 2).getHistogram().entrySet();
+			    a = getQuery(q, 3).getHistogram().entrySet();
 			    for (Object o : a){
-			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), (i));
+			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), numberOfBoxes-i-1>=0?1:0);
+			    }
+			    a = getQuery(q, 2).getHistogram().entrySet();
+			    for (Object o : a){
+			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), Math.min(i,numberOfBoxes));
 			    }
 		    }
 		    a = getQuery(runner.evidenceGenerator.getLatestQueries(), 1).getHistogram().entrySet();
@@ -284,11 +292,11 @@ public class RandomChoiceTest extends TestCase {
 		    //	break;
 		    out.println(String.format("decide chosen_Unload(argunload(t1,@%d), t1, @%d) = true;\n", i*4+2,i*4+2));
 		    runner.advancePhase2();
-		    out.println(String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\n",i*4+3,i*4+3));
+		    out.println(String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\nquery #{Box b : BoxOn(b, t1, @%d)==true };\n",i*4+3,i*4+3,i*4+3));
 		    runner.advancePhase1();
 		    for (Iterator iter = runner.particleFilter.particles.iterator(); iter.hasNext();){
 		    	Particle p = (Particle) iter.next();
-		    	String qs = String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\n",i*4+3,i*4+3);
+		    	String qs = String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\nquery #{Box b : BoxOn(b, t1, @%d)==true };\n",i*4+3,i*4+3,i*4+3);
 				qs = "query #{Box b};" + qs;
 		    	Parse parse = new Parse(new StringReader(qs), null);
 				List q = Util.list();
@@ -302,11 +310,20 @@ public class RandomChoiceTest extends TestCase {
 			    }
 			    a = getQuery(q, 1).getHistogram().entrySet();
 			    for (Object o : a){
-			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), (numberOfBoxes-i-1));
+			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), Math.max(0, (numberOfBoxes-i-1)));
 			    }
-			    a = getQuery(runner.evidenceGenerator.getLatestQueries(), 2).getHistogram().entrySet();
+			    a = getQuery(q, 3).getHistogram().entrySet();
 			    for (Object o : a){
-			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), (i+1));
+			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), 0);
+			    }
+			    a = getQuery(q, 2).getHistogram().entrySet();
+			    for (Object o : a){
+			    	if (((Integer) ((Histogram.Entry) o).getElement()).intValue()!= Math.min(i+1,numberOfBoxes)){
+			    		int let = ((Integer) ((Histogram.Entry) o).getElement()).intValue();
+			    		int rit = Math.min(i+1,numberOfBoxes);
+			    		int xx = 1;
+			    	}
+			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), Math.min(i+1,numberOfBoxes));
 			    }
 		    }
 		    a = getQuery(runner.evidenceGenerator.getLatestQueries(), 1).getHistogram().entrySet();
@@ -323,11 +340,11 @@ public class RandomChoiceTest extends TestCase {
 		    //	break;
 		    out.println(String.format("decide chosen_Drive(c1, t1, @%d) = true;\n", i*4+3,i*4+3));
 		    runner.advancePhase2();
-		    out.println(String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\n",(i+1)*4,(i+1)*4));
+		    out.println(String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\nquery #{Box b : BoxOn(b, t1, @%d)==true };\n",(i+1)*4,(i+1)*4,(i+1)*4));
 		    runner.advancePhase1();
 		    for (Iterator iter = runner.particleFilter.particles.iterator(); iter.hasNext();){
 		    	Particle p = (Particle) iter.next();
-		    	String qs = String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\n",(i+1)*4,(i+1)*4);
+		    	String qs = String.format("query #{Box b: BoxIn(b, c1, @%d)==true};\nquery #{Box b : BoxIn(b, c3, @%d)==true };\nquery #{Box b : BoxOn(b, t1, @%d)==true };\n",(i+1)*4,(i+1)*4,(i+1)*4);
 				qs = "query #{Box b};" + qs;
 		    	Parse parse = new Parse(new StringReader(qs), null);
 				List q = Util.list();
@@ -341,11 +358,15 @@ public class RandomChoiceTest extends TestCase {
 			    }
 			    a = getQuery(q, 1).getHistogram().entrySet();
 			    for (Object o : a){
-			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), (numberOfBoxes-i-1));
+			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), Math.max(0, (numberOfBoxes-i-1)));
 			    }
-			    a = getQuery(runner.evidenceGenerator.getLatestQueries(), 2).getHistogram().entrySet();
+			    a = getQuery(q, 3).getHistogram().entrySet();
 			    for (Object o : a){
-			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), (i+1));
+			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), 0);
+			    }
+			    a = getQuery(q, 2).getHistogram().entrySet();
+			    for (Object o : a){
+			    	assertEquals(((Integer) ((Histogram.Entry) o).getElement()).intValue(), Math.min(i+1,numberOfBoxes));
 			    }
 		    }
 		    

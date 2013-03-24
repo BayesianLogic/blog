@@ -411,7 +411,7 @@ public class Evidence {
 			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 			int thisStmtErrors = stmt.compile(callStack);
 			if (thisStmtErrors == 0) {
-				recordEvidence(stmt.getObservedVar(), stmt.getObservedValue(), stmt);
+				//recordEvidence(stmt.getObservedVar(), stmt.getObservedValue(), stmt);
 			}
 			errors += thisStmtErrors;
 		}
