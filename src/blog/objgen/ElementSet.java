@@ -90,8 +90,7 @@ class ElementSet extends AbstractObjectSet {
     if (satisfiers == Formula.ALL_OBJECTS) {
       // we know each POP app is included with no exceptions
       popAppExceptions = MultiMap.EMPTY_MULTI_MAP;
-    }
-    if (satisfiers == Formula.NOT_EXPLICIT) {
+    } else if (satisfiers == Formula.NOT_EXPLICIT) {
       // do nothing here, will enumarate later
     } else if (satisfiers != null) {
       for (Iterator iter = satisfiers.iterator(); iter.hasNext();) {
