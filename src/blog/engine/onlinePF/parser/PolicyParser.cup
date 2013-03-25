@@ -1,0 +1,131 @@
+package blog.engine.onlinePF.parser;
+import java_cup.runtime.*;
+import blog.engine.onlinePF.absyn.*;
+
+/* Terminal declarations; a few have types for associated lexemes.  The
+ * token ERROR is never used in the parser; thus, it is a parse error when
+ * the lexer returns it. For the terminals' interpretations, consult with
+ * PolicyLexer.flex.
+ */
+terminal NULL;
+terminal ELSE, IF, ELSEIF;
+terminal java.lang.Number INT_LITERAL, DOUBLE_LITERAL;
+terminal java.lang.Boolean BOOLEAN_LITERAL;
+terminal java.lang.String STRING_LITERAL;
+terminal LT, GT, LEQ, GEQ; // relational_expression
+terminal EQEQ, NEQ; // equality compare
+terminal SEMI; //seperators
+terminal LPAREN, RPAREN, LBRACE, RBRACE; // paired seperators
+
+nonterminal program;
+nonterminal Stmt statement, if_stmt, action_stmt, elseif_stmt;
+nonterminal StmtList statement_lst;
+nonterminal Expr operation_expr;
+
+
+/*
+ * Precedence declarations.  The later the precedence declaration, the
+ * higher the precedence.
+ */
+precedence left ELSE;
+precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
+
+
+action code {:
+
+
+    int currLineno() {
+	return ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum();
+    }
+
+
+    int currColno() {
+	return ((ScannerWithLocInfo)parser.getScanner()).getCurColNum();
+    }
+
+
+
+
+:}
+
+parser code {:
+  Absyn parseResult; //variable to store the final parsing result
+  blog.msg.ErrorMsg errorMsg; //for error
+
+  public Absyn getParseResult() {
+    return parseResult;
+  }
+
+  public PolicyParser(Scanner s, blog.msg.ErrorMsg msg) {
+    this(s);
+    errorMsg = msg;
+  }
+
+:}
+
+
+/* Grammar *******************************************************************/
+
+start with program;
+
+
+/* The start nonterminal */
+program ::= statement_lst : e {: parser.parseResult = e; :}
+                ;
+
+/* Represents a non-empty list of statements terminated by semicolons. */
+statement_lst ::= statement:e SEMI statement_lst:slst
+    {: if (e==null) RESULT = slst;
+       else RESULT = new StmtList(e, slst);
+    :}
+  | statement:e SEMI{: RESULT = new StmtList(e, null); :}
+  | error
+	{: System.err.println(
+		"Possible cause: forgotten semicolons" );
+		RESULT = null; :}
+;
+
+/* A statement can be a declaration, an observation (assertion of some
+ * evidence), or a query.
+ */
+statement ::= if_stmt : e {: RESULT = e; :}
+            ;
+
+
+/**
+ * if statement
+ */
+if_stmt ::= IF:a LPAREN operation_expr:e1 RPAREN LBRACE action_stmt:e2 RBRACE elseif_stmt:e3
+  {: RESULT = new IfStmt(currLineno(), currColno(), e1, e2, e3); :}
+  ;
+
+elseif_stmt ::=
+    ELSEIF:eif LPAREN operation_expr:e1 RPAREN LBRACE action_stmt:e2 RBRACE elseif_stmt:e3
+    {: RESULT = new IfStmt(eifleft, e1, e2, e3); :} 
+  | ELSE action_stmt:e
+    {: RESULT = e; :}
+  | {: RESULT = null; :}
+  ;
+
+action_stmt ::= 
+    if_stmt:e
+    {: RESULT = e; :}
+  | STRING_LITERAL:e
+    {: RESULT = new ActionStmt(currLineno(), currColno(), e); :}
+  ;
+
+operation_expr ::=
+    STRING_LITERAL:e1 LT DOUBLE_LITERAL:e2
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.LT, e2); :}
+  | STRING_LITERAL:e1 GT DOUBLE_LITERAL:e2
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.GT, e2); :}
+  | STRING_LITERAL:e1 LEQ DOUBLE_LITERAL:e2
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.LEQ, e2); :}
+  | STRING_LITERAL:e1 GEQ DOUBLE_LITERAL:e2
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.GEQ, e2); :}
+  | STRING_LITERAL:e1 EQEQ DOUBLE_LITERAL:e2
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.EQ, e2); :}
+  | STRING_LITERAL:e1 NEQ DOUBLE_LITERAL:e2
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.NEQ, e2); :}
+  ;
+

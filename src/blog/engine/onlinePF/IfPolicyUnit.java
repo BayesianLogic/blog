@@ -15,7 +15,8 @@ public class IfPolicyUnit {
 		pclause uni = new pclause("pos(t)", "do this(t)", IfPolicyUnit.comparator.ge, 0.5);
 		a.clauses.add(uni);
 		String qr = "Distribution of values for pos(@0)\n		True	1\n	False 0 \n-----\n	Distribution of values for pos(@1)\n		True	2\n	-----\n";
-		uni.applies(qr, 0);
+		if (uni.applies(qr, 0))
+			System.out.println("works");
 	}
 	List<pclause> clauses = new ArrayList<pclause>();
 	
@@ -59,7 +60,7 @@ public class IfPolicyUnit {
 		}
 		public Double getQueryResult(String queryResults, String queryString){
 			String[] qrArr = queryResults.split("-----");
-			Pattern pattern = Pattern.compile(Pattern.quote("pos(@0)")+"\\s*(True\\s*(\\d+(\\.\\d+)?))?\\s*(False\\s*(\\d+(\\.\\d+)?))?");
+			Pattern pattern = Pattern.compile(Pattern.quote(getQueryString(this.queryTemplate,0))+"\\s*(True\\s*(\\d+(\\.\\d+)?))?\\s*(False\\s*(\\d+(\\.\\d+)?))?");
 			
 			for (String s: qrArr){
 				Matcher matcher = pattern.matcher(s);
