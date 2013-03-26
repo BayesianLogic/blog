@@ -42,12 +42,15 @@ import java.util.Map;
 
 import blog.ObjectIdentifier;
 import blog.bn.BasicVar;
+import blog.bn.RandFuncAppVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
 import blog.distrib.ListInterp;
 import blog.model.DependencyModel;
+import blog.model.Function;
 import blog.model.FunctionSignature;
+import blog.model.RandomFunction;
 import blog.world.PartialWorld;
 
 /**
@@ -200,8 +203,18 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 
 		/*
 		 * if (Util.verbose()) { System.out.println("Instantiated: " + var); }
-		 */
+		 */	
 
+		//sampling of observability values
+		if (var instanceof RandFuncAppVar){
+			RandFuncAppVar referencedVar = (RandFuncAppVar) var;
+			RandomFunction obf = referencedVar.func().getObservableFun();
+			if (obf != null){
+				RandFuncAppVar observableVar = new RandFuncAppVar(obf, referencedVar.args(), false);
+				this.getValue(observableVar);
+			}
+		}
+		
 		return newValue;
 	}
 

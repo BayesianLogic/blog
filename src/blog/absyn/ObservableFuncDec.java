@@ -16,8 +16,10 @@ public class ObservableFuncDec extends FunctionDec {
 	 * @param r
 	 * @param b
 	 */
+	public String referenceFuncName;
 	public ObservableFuncDec(int line, int p, Symbol n, FieldList a, Ty r, Expr b) {
 		super(line, p, Symbol.symbol("observable_"+n.toString()), a, r, b);
+		referenceFuncName = n.toString();
 	}
 	
 }

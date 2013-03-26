@@ -48,6 +48,7 @@ import blog.absyn.DecisionFuncDec;
 import blog.absyn.DecisionEvidence;
 import blog.model.DecisionEvidenceStatement;
 import blog.model.DecisionFunction;
+import blog.absyn.ObservableFuncDec;
 
 import blog.absyn.Stmt;
 import blog.absyn.StmtList;
@@ -405,6 +406,16 @@ public class Semant {
 			return;
 		}
 		
+		//observable functions are really just random functions
+		if (e instanceof ObservableFuncDec){
+			//reference to function will be added in transfuncbody
+			RandomFunction f = new RandomFunction(name, argTy, resTy, null);
+			f.setArgVars(argVars);
+			fun = f;
+			model.addFunction(fun);
+		}
+		
+		
 		if (e instanceof FixedFuncDec) {
 			NonRandomFunction f;
 			if (argTy.size() == 0) {
@@ -499,6 +510,16 @@ public class Semant {
 					fun.getDefaultValue());
 			((RandomFunction) fun).setDepModel(dm);
 		}
+		
+		//handling of observablefuncdec
+		else if (e instanceof ObservableFuncDec) {
+			//body is made just like a random function
+			DependencyModel dm = transDependency(e.body, fun.getRetType(),
+					fun.getDefaultValue());
+			((RandomFunction) fun).setDepModel(dm);
+			model.addObservableFunction(((RandomFunction) fun), ((ObservableFuncDec)e).referenceFuncName);
+		}
+		
 		currFunction = null;
 	}
 

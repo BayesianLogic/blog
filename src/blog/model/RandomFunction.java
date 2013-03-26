@@ -232,4 +232,16 @@ public class RandomFunction extends Function {
 	private LogicalVar[] argVars = null;
 	private DependencyModel depmodel = null;
 	private boolean compiled = false;
+	
+	/**
+	 * the following correspond to observable functions
+	 */
+	/*added by cheng*/
+	private RandomFunction observableFun = null;
+	public RandomFunction getObservableFun (){
+		return observableFun;
+	}
+	public void setObservableFun (RandomFunction f){
+		observableFun = f;
+	}
 }

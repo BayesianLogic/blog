@@ -68,7 +68,7 @@ public class Parse {
 			t = fc.readInput();
 		}
 		
-		QueryResult q = new QueryResult(qr, 0);
+		QueryResult q = new QueryResult(null, qr, 0);
 		String x = p.getDecisions(q);
 		if (!x.equals("decide applied_action(up,@0)=true;"))
 			System.err.print("brokeeeeeeeeeeeeeeeeeeeee");
