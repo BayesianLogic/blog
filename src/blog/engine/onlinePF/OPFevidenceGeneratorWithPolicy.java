@@ -31,11 +31,11 @@ public class OPFevidenceGeneratorWithPolicy extends OPFevidenceGenerator{
 	@Override
 	public void updateDecision(){
 		String qr = resultCommunicator.readInput();
-		QueryResult q = new QueryResult(qr, lastTimeStep);
+		QueryResult q = new QueryResult(model, qr, lastTimeStep);
 		String decision = pm.getDecisions(q);
 		in.printInput(decision);
 		in.printInput("");
-		super.updateObservationQuery();
+		super.updateDecision();
 	}
 
 }

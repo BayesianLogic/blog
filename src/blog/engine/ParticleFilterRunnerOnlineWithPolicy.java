@@ -56,7 +56,7 @@ public class ParticleFilterRunnerOnlineWithPolicy extends ParticleFilterRunnerOn
 			queryResultCommunicator.printInputNL("-----");
 			query.printResults(System.out);//strange bug here needs fixing
 		}
-		queryResultCommunicator.printInput("\n");
+		queryResultCommunicator.printInput("");
 		queryResultCommunicator.p.flush();
 	}
 	
