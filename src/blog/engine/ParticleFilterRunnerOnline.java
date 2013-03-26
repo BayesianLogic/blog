@@ -1,19 +1,12 @@
 package blog.engine;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
 import java.util.*;
 
 import blog.DBLOGUtil;
 import blog.Main;
+import blog.common.Histogram;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
 import blog.engine.onlinePF.Communicator;
@@ -35,8 +28,8 @@ import blog.world.PartialWorld;
  * 
  */
 public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
-	private Communicator eviCommunicator; //evidence is read from here
-	private Communicator queryCommunicator; //query is read from here
+	protected Communicator eviCommunicator; //evidence is read from here
+	protected Communicator queryResultCommunicator; //query is read from here
 	
 
 	
@@ -58,7 +51,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	
 	public void setUpStreams(){
 		eviCommunicator = new PipedCommunicator();
-		queryCommunicator = new FileCommunicator("f.txt");
+		queryResultCommunicator = new FileCommunicator("f.txt");
 
 	}
 	/*
@@ -73,7 +66,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		return eviCommunicator;
 	}
 	public Communicator getQueryCommunicator (){
-		return queryCommunicator;
+		return queryResultCommunicator;
 	}
 	private UnaryProcedure afterMoveForward = new UnaryProcedure() {
 		public void evaluate(Object queriesObj) {
@@ -141,11 +134,25 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 
 			//System.out.println("PF estimate of " + query + ":");
-			query.printResults(queryCommunicator.p);
-			queryCommunicator.printInput("-----");
-			queryCommunicator.p.flush();
+			queryResultCommunicator.printInput(printQueryString(query));
+			//query.printResults(queryCommunicator.p);
+			queryResultCommunicator.printInput("-----");
+			queryResultCommunicator.p.flush();
 			query.printResults(System.out);//strange bug here needs fixing
 		}
+	}
+	
+	public String printQueryString(ArgSpecQuery q) {
+		String rtn = "";
+		rtn += q.getArgSpec().toString();
+		Histogram histogram = q.getHistogram();
+		List<Histogram.Entry> entries = new ArrayList<Histogram.Entry>(histogram.entrySet());
+		for (Iterator<Histogram.Entry> iter = entries.iterator(); iter.hasNext();) {
+			Histogram.Entry entry = iter.next();
+			double prob = entry.getWeight() / histogram.getTotalWeight();
+			rtn += ("\t[" + entry.getElement() + ":" + String.format("%.9f", prob) + "]");
+		}
+		return rtn;
 	}
 
 	/**

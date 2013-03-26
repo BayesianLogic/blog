@@ -102,7 +102,7 @@ if_stmt ::= IF:a LPAREN operation_expr:e1 RPAREN LBRACE action_stmt:e2 RBRACE el
 elseif_stmt ::=
     ELSEIF:eif LPAREN operation_expr:e1 RPAREN LBRACE action_stmt:e2 RBRACE elseif_stmt:e3
     {: RESULT = new IfStmt(eifleft, e1, e2, e3); :} 
-  | ELSE action_stmt:e
+  | ELSE LBRACE action_stmt:e RBRACE
     {: RESULT = e; :}
   | {: RESULT = null; :}
   ;
@@ -116,16 +116,16 @@ action_stmt ::=
 
 operation_expr ::=
     STRING_LITERAL:e1 LT DOUBLE_LITERAL:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.LT, e2); :}
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.Op.LT, e2); :}
   | STRING_LITERAL:e1 GT DOUBLE_LITERAL:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.GT, e2); :}
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.Op.GT, e2); :}
   | STRING_LITERAL:e1 LEQ DOUBLE_LITERAL:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.LEQ, e2); :}
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.Op.LEQ, e2); :}
   | STRING_LITERAL:e1 GEQ DOUBLE_LITERAL:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.GEQ, e2); :}
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.Op.GEQ, e2); :}
   | STRING_LITERAL:e1 EQEQ DOUBLE_LITERAL:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.EQ, e2); :}
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.Op.EQ, e2); :}
   | STRING_LITERAL:e1 NEQ DOUBLE_LITERAL:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.NEQ, e2); :}
+    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.Op.NEQ, e2); :}
   ;
 

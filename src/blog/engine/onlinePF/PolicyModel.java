@@ -6,43 +6,41 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import blog.engine.onlinePF.parser.Parse;
+import blog.engine.onlinePF.parser.Semant;
+
 /**
  * A model that represents the policy
  * @author cheng
  *
  */
 public class PolicyModel {
-	public List<String> queryTemplates = new ArrayList<String>();
-	public List<IfPolicyUnit> decisionMakers;
-	public Communicator com;
+	public List<DecisionUnit> decisionUnits = new ArrayList<DecisionUnit>();
 	
 	/**Gets the queries for latest Timestep t*/
 	public String getQueries (int t){
 		String rtn = "";
-		for (Iterator<String> i = queryTemplates.iterator(); i.hasNext();){
-			String qt = i.next();
-			String q = getString(qt, t);
-			rtn += q;
+		for (Iterator<DecisionUnit> i = decisionUnits.iterator(); i.hasNext();){
+			rtn += i.next().getQueries(t);
 		}
 		return rtn;
 	}
 	
-	public String getDecisions (int t){
+	public String getDecisions (QueryResult q){
 		String rtn = "";
-		String queryResults = com.readInput();
-		for (IfPolicyUnit u : decisionMakers){
-			rtn += u.getDecisionString(queryResults, t);
+		for (DecisionUnit u : decisionUnits){
+			rtn += u.getDecision(q);
 		}
 		return rtn;
 	}
 	
-	/**same format as OPFevidenceGenerator*/
-	private static Pattern pattern = Pattern.compile("\\bt\\b");
-
-	/** Replaces identifier "t" in given string by given time step. */
-	public static String getString(String template, int t) {
-		Matcher matcher = pattern.matcher(template);
-		return matcher.replaceAll("@" + t);
+	public static PolicyModel policyFromFile(String fileName){
+		Parse parse = Parse.parseFile(fileName);
+		Semant s = new Semant();
+		s.transPolicy(parse.getParseResult());
+		PolicyModel p = s.pm;
+		return p;
 	}
+	
 
 }

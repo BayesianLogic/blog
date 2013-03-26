@@ -38,5 +38,10 @@ public class PipedCommunicator extends Communicator {
 		}
 		return null;
 	}
+	@Override
+	public void printInputNL(String message) {
+		p.print(message);
+		
+	}
 
 }

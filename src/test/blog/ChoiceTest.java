@@ -394,7 +394,7 @@ public class ChoiceTest extends TestCase {
 	    out.println("query succeed_action(@2);\n query BoxIn(b1,c3,@3);\n");
 	    runner.advancePhase1();
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), a, a*0.111);
-	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "0.0"), 1-a, (1-a)*0.111*1.5);
+	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 0), model, "0.0"), 1-a, (1-a)*0.111*3);
 
 	    out.println("decide chosen_Drive(c1, t1, @3) = true;\n ");
 	    runner.advancePhase2();

@@ -32,6 +32,11 @@ public class FileCommunicator extends Communicator{
 		p.println(message);
 		
 	}
+	
+	public void printInputNL(String message) {
+		p.print(message);
+		
+	}
 
 	@Override
 	public String readInput() {
@@ -43,5 +48,7 @@ public class FileCommunicator extends Communicator{
 		}
 		return null;
 	}
+	
+	
 
 }
