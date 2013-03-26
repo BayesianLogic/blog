@@ -1,0 +1,22 @@
+/**
+ * stochastic volatility model for stock price
+ * @author: leili
+ * @date: 2012-09-12
+ */
+
+fixed Real[][] Q = [1, 0; 0, 1];
+fixed Real[] mu0 = [0; 0]; 
+random Real[] state(Timestep t) {
+    if (t == @0) then ~ MultivarGaussian(mu0, Q)
+    else ~ MultivarGaussian(state(Prev(t)), Q)
+};
+
+fixed Real[] C = [1, 0];
+fixed Real[][] R = Q;
+random Real price(Timestep t) 
+    ~ UnivarGaussian((C * state(t))[0], 1);
+
+obs price(@4) = -5;
+obs price(@5) = 15;
+
+query state(@1);
