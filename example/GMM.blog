@@ -9,13 +9,17 @@ type Component;
 
 #Component ~ Poisson(3);
 
+fixed Real[] mean_of_means = [0; 0];
+fixed Real[][] var_of_means = [100, 0; 0, 100];
+
+fixed Real[][] var_obs = [4, 0; 0, 4];
+
 /*
  * Here we use a MultivarGaussian distribution with three parameters: 
  * the dimension, mean, and covariance matrix.
  */
 random Real[] Theta(Component c) {
-   ~  MultivarGaussian(2, [0; 0], [100, 0; 
-                                 0, 100])
+   ~  MultivarGaussian(mean_of_means, var_of_means)
 };
 
 random Component Z(Integer n) {
@@ -29,8 +33,7 @@ random Component Z(Integer n) {
  */
 random Real[] X(Integer n) {
 	if Z(n) != null 
-        then ~ MultivarGaussian(2, Theta(Z(n)), [4, 0; 
-                                                 0, 4])
+        then ~ MultivarGaussian(Theta(Z(n)), var_obs)
 };
 
 /* Evidence for the Gaussian mixture model.  These are 

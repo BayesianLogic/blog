@@ -20,6 +20,11 @@ public class JamaMatrixLib implements MatrixLib {
 	}
 	
 	@Override
+	public void setElement(int x, int y, double val) {
+		values.set(x, y, val);
+	}
+	
+	@Override
 	public String toString() {
 		return values.toString();
 	}

@@ -11,7 +11,7 @@ type Blip;
 
 random Real Position(Timestep t) {
     if t == @0 then ~ UniformReal(-10, 10)
-    else ~ Gaussian(Position(Prev(t)), 2)
+    else ~ UnivarGaussian(Position(Prev(t)), 2)
 };
 
 origin Aircraft Source(Blip);
@@ -19,8 +19,8 @@ origin Timestep Time(Blip);
 
 // num of blips from aircraft is 0 or 1
 #Blip(Source = a, Time = t) 
-    if ((Position(t) > -7) & (Position(t) < 7))
-        then ~ Bernoulli(0.95)
+    if ((Position(t) > -7.0) & (Position(t) < 7.0))
+        then ~ Categorical({1 -> 0.95, 0 -> 0.05})
         else = 0;
 
 // num false alarms has Poisson distrib.
@@ -30,7 +30,7 @@ random Real ApparentPos(Blip b) {
     if (Source(b) == null)
     // if false alarm (no source)
         then ~ UniformReal(-10, 10)
-        else ~ Gaussian(Position(Time(b)), 1)
+        else ~ UnivarGaussian(Position(Time(b)), 1)
 };
 
 obs {Blip b : Time(b) == @0} = {B1, B2, B3};
