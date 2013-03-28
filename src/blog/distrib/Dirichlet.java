@@ -92,6 +92,18 @@ public class Dirichlet extends AbstractCondProbDistrib {
 			gammas[i] = new Gamma(alpha[i], 1);
 		}
 	}
+	
+	/**
+	 * Helper for sampleVal() to reconstruct gamma functions
+	 */
+	private void reconstructGammas(int vec_size) {
+		int numParams = vec_size;
+		gammas = new Gamma[numParams];
+		for (int i = 0; i < numParams; i++) {
+			gammas[i] = new Gamma(alpha[0], 1);
+		}
+	}
+
 
 	/**
 	 * Returns the probability of a vector of values from this distribution.
@@ -110,8 +122,9 @@ public class Dirichlet extends AbstractCondProbDistrib {
 		
 		double prob = 1.0;
 		for (int i = 0; i < mat.colLen(); i++) {
+			double count_term = (args.size() != 0) ? alpha[0] : alpha[i];
 			double x = mat.elementAt(0, i);
-			prob *= Math.pow(x, alpha[i] - 1);
+			prob *= Math.pow(x, count_term - 1);
 		}
 		prob /= normalize(alpha);
 		
@@ -135,8 +148,9 @@ public class Dirichlet extends AbstractCondProbDistrib {
 		
 		double prob = 0.0;
 		for (int i = 0; i < mat.colLen(); i++) {
+			double count_term = (args.size() != 0) ? alpha[0] : alpha[i];
 			double x = mat.elementAt(0, i);
-			prob += Math.log(x) * (alpha[i] - 1);
+			prob += Math.log(x) * (count_term - 1);
 		}
 		prob -= Math.log(normalize(alpha));
 		
@@ -147,17 +161,23 @@ public class Dirichlet extends AbstractCondProbDistrib {
 	 * Returns a list of doubles sampled from this distribution.
 	 */
 	public Object sampleVal(List args, Type childType) {
-		double sum = 0.0;		
-		double[][] samples = new double[1][alpha.length];
+		double sum = 0.0;
+		int vec_size = alpha.length;
+		if (args.size() != 0) {
+			vec_size = (Integer) args.get(0);
+			reconstructGammas(vec_size);
+		}
+		
+		double[][] samples = new double[1][vec_size];
 		List<Object> dummy = new ArrayList<Object>();
-		for (int i = 0; i < alpha.length; i++) {
+		for (int i = 0; i < vec_size; i++) {
 			Gamma component = gammas[i];
 			double sample = (Double) component.sampleVal(dummy, childType);
 			sum += sample;
 			samples[0][i] = sample;
 		}
 		
-		for (int i = 0; i < alpha.length; i++) {
+		for (int i = 0; i < vec_size; i++) {
 			samples[0][i] /= sum;
 		}
 		return new JamaMatrixLib(samples);

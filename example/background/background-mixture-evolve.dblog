@@ -1,0 +1,48 @@
+/**
+ * background mixture models
+ * This BLOG program describe the model for image background 
+ * segmentation. 
+ * See the paper:
+ *   Image segmentation in video sequences: A probabilistic approach
+ *   Nir Friedman, Stuart Russell, UAI 1997
+ * In particular, each pixel is drawn from a mixture of road, shadow
+ * vehicle components. Each component is modeled as a Gaussian 
+ * distribution. 
+ *
+ * This version assumes a simple dynamics for the mean of each 
+ * component.
+ *
+ * author: leili
+ */
+
+type Component;
+
+distinct Component Road, Shadow, Vehicle;
+
+fixed Real[][] variance = [10000, 0, 0;
+      	       		   0, 10000, 0;
+			   0, 0, 10000];
+
+// the prior posts uniform distribution over a box of 3D space.
+random Real[] Mean(Component c, Timestep t) {
+    if (t == @1) then ~ UniformVector(0, 255, 0, 255, 0, 255)
+    else ~ MultivarGaussian(Mean(c, Prev(t)), variance)
+};
+
+random Real[] Weight ~ Dirichlet(0.33, 0.33, 0.33);
+
+random Integer AssociatedComponent(Integer x, Integer y, Timestep t)
+    ~ Categorical(Weight);
+
+fixed Component IntToComponent(Integer c)
+    = TabularInterp(1, 0, Road,
+      		       1, Shadow,
+		       2, Vehicle);
+
+// the parameters can be set in Mean(Component)
+random Real[] Intensity(Integer x, Integer y, Timestep t)
+    ~ MultivarGaussian(Mean(IntToComponent(AssociatedComponent(x, y, t)), t), variance);
+
+obs Intensity(1, 1, @1) = [135; 85; 170];
+
+query IntToComponent(AssociatedComponent(1, 1, @1));
