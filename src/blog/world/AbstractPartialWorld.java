@@ -1045,10 +1045,21 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 * Set of objects containing DecisionFuncAppVar objects which evaluate to true
 	 */
 	protected Set decisionInterp;
-
 	public Set getDecisionInterp() {
 		return decisionInterp; 
 	}
+	
+	/**
+	 * Storage for observability variables, for easy reference.
+	 */
+	protected HashMap<BayesNetVar, BayesNetVar> observableToReferenced;
+	public HashMap<BayesNetVar, BayesNetVar> getObservableMap(){
+		return observableToReferenced;
+	}
+	
+	
+	
+	
 	/**
 	 * Map from objects to the instantiated BasicVars that have them as values.
 	 */

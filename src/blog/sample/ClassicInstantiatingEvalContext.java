@@ -51,6 +51,7 @@ import blog.model.DependencyModel;
 import blog.model.Function;
 import blog.model.FunctionSignature;
 import blog.model.RandomFunction;
+import blog.world.AbstractPartialWorld;
 import blog.world.PartialWorld;
 
 /**
@@ -210,8 +211,10 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 			RandFuncAppVar referencedVar = (RandFuncAppVar) var;
 			RandomFunction obf = referencedVar.func().getObservableFun();
 			if (obf != null){
+				//note that this processed can be improved
 				RandFuncAppVar observableVar = new RandFuncAppVar(obf, referencedVar.args(), false);
-				this.getValue(observableVar);
+				Map o2r = ((AbstractPartialWorld) world).getObservableMap();
+				o2r.put(observableVar, referencedVar);
 			}
 		}
 		

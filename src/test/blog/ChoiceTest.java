@@ -69,7 +69,9 @@ public class ChoiceTest extends TestCase {
 			+	"random Boolean applied_Load(Box b, Truck tr, Timestep t) {"
 			+	"  if (exists City c (BoxIn ( b, c, t) & TruckIn (c, tr, t))) then = (chosen_Load(foo(b), tr, t) & succeed_action(t)) else = false"
 			+	"};"
-			
+			+	"observable Boolean applied_Load(Box b, Truck tr, Timestep t) {"
+			+	"  if (exists City c (BoxIn ( b, c, t) & TruckIn (c, tr, t))) then = (chosen_Load(foo(b), tr, t) & succeed_action(t)) else = false"
+			+	"};"
 			+	"random Box foo (Box b) {if true then = b};"
 
 			+	"random Boolean applied_Unload(Box b, Truck tr, Timestep t) {"

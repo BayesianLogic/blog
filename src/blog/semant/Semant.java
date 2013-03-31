@@ -60,6 +60,7 @@ import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
 import blog.distrib.EqualsCPD;
+import blog.engine.onlinePF.ObservableRandomFunction;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.BuiltInFunctions;
@@ -409,10 +410,11 @@ public class Semant {
 		//observable functions are really just random functions
 		if (e instanceof ObservableFuncDec){
 			//reference to function will be added in transfuncbody
-			RandomFunction f = new RandomFunction(name, argTy, resTy, null);
+			RandomFunction f = new ObservableRandomFunction(name, argTy, resTy, null);
 			f.setArgVars(argVars);
 			fun = f;
 			model.addFunction(fun);
+			return;
 		}
 		
 		

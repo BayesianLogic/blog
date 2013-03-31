@@ -46,6 +46,7 @@ import blog.common.IndexedMultiMap;
 import blog.common.MultiMap;
 import blog.distrib.ListInterp;
 import blog.model.FunctionSignature;
+import blog.bn.BayesNetVar;
 import blog.bn.DefaultCBN;
 
 
@@ -87,6 +88,7 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
 		
 		/*added by cheng*/
 		decisionInterp = new HashSet();
+		observableToReferenced = new HashMap<BayesNetVar, BayesNetVar>();
 		
 	}
 

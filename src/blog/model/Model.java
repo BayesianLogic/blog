@@ -797,4 +797,7 @@ public class Model {
 	 * A map from observable functions to the actual random functions that they refer to
 	 */
 	private Map<FunctionSignature, RandomFunction> observableToFunc = new HashMap<FunctionSignature, RandomFunction>();
+	public RandomFunction getRandomFuncByObservableSig (FunctionSignature fs){
+		return observableToFunc.get(fs);
+	}
 }
