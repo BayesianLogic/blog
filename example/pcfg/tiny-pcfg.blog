@@ -99,8 +99,7 @@ random ParseNode NthChild(ParseNode node, Integer n) {
 
 random String TextStartingAtNthChild(ParseNode p, Integer n) {
     if (NthChild(p, Succ(n)) == null) then = NodeText(NthChild(p, n))
-    else = Concat(NodeText(NthChild(p, n)), 
-                  TextStartingAtNthChild(p, Succ(n)))
+    else = NodeText(NthChild(p, n)) + TextStartingAtNthChild(p, Succ(n))
 };
 
 random String NodeText(ParseNode node) {
