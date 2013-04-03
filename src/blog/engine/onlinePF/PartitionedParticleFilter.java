@@ -1,3 +1,37 @@
+/*
+ * Copyright (c) 2005, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in
+ *   the documentation and/or other materials provided with the
+ *   distribution.  
+ *
+ * * Neither the name of the University of California, Berkeley nor
+ *   the names of its contributors may be used to endorse or promote
+ *   products derived from this software without specific prior 
+ *   written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 package blog.engine.onlinePF;
 
@@ -8,6 +42,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -68,9 +103,13 @@ public class PartitionedParticleFilter extends InferenceEngine {
 					+ numParticlesStr); // do not dump stack.
 		}
 
+		String useDecayedMCMCStr = properties
+				.getProperty("useDecayedMCMC", "false");
+		// if (useDecayedMCMC) numParticles = 1;
+
 		String numMovesStr = properties.getProperty("numMoves", "1");
 		try {
-			Integer.parseInt(numMovesStr);
+			numMoves = Integer.parseInt(numMovesStr);
 		} catch (NumberFormatException e) {
 			Util.fatalErrorWithoutStack("Invalid number of moves: " + numMovesStr);
 		}
@@ -92,8 +131,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		System.out.println("Evidence: " + evidence);
 		System.out.println("Query: " + queries);
 		resetAndTakeInitialEvidence();
-		for (Iterator<ObservabilitySignature> i = partitionedParticles.keySet().iterator(); i.hasNext();)
-			answer(queries, partitionedParticles.get(i.next()));
+		answer(queries);
 	}
 
 	/**
@@ -110,31 +148,35 @@ public class PartitionedParticleFilter extends InferenceEngine {
 
 	private void reset() {
 		System.out.println("Using " + numParticles + " particles...");
-		int numTimeSlicesInMemory = 1;
+		int numTimeSlicesInMemory =  1;
 		if (evidence == null)
 			evidence = new Evidence();
 		if (queries == null)
-			queries = new LinkedList<Query>();
-		partitionedParticles = new HashMap<ObservabilitySignature, List<Particle>>();
-		ArrayList<Particle> firstPartition = new ArrayList<Particle>();
-		partitionedParticles.put(new ObservabilitySignature(makeParticle(idTypes, numTimeSlicesInMemory)),firstPartition);
+			queries = new LinkedList();
+		particles = new ArrayList();
+		partitions = new HashMap();
+		
+		List a = new ArrayList();
+		partitions.put(new ObservabilitySignature(makeParticle(idTypes, numTimeSlicesInMemory)), a);
+		
 		for (int i = 0; i < numParticles; i++) {
 			Particle newParticle = makeParticle(idTypes, numTimeSlicesInMemory);
-			firstPartition.add(newParticle);
+			particles.add(newParticle);
+			a.add(newParticle);
 		}
 		needsToBeResampledBeforeFurtherSampling = false;
 	}
 
-	private List<Evidence> evidenceInOrderOfMaxTimestep;
+	private List evidenceInOrderOfMaxTimestep;
 
 	private void takeInitialEvidence() {
 		if (evidenceInOrderOfMaxTimestep == null)
-			evidenceInOrderOfMaxTimestep = DBLOGUtil.splitEvidenceByMaxTimestep(evidence);
+			evidenceInOrderOfMaxTimestep = DBLOGUtil
+					.splitEvidenceByMaxTimestep(evidence);
 
-		for (Iterator<Evidence> it = evidenceInOrderOfMaxTimestep.iterator(); it.hasNext();) {
+		for (Iterator it = evidenceInOrderOfMaxTimestep.iterator(); it.hasNext();) {
 			Evidence evidenceSlice = (Evidence) it.next();
-			for (Iterator<ObservabilitySignature> i = partitionedParticles.keySet().iterator(); i.hasNext();)
-				take(evidenceSlice, partitionedParticles.get(i.next()));
+			take(evidenceSlice);
 		}
 	}
 
@@ -143,86 +185,134 @@ public class PartitionedParticleFilter extends InferenceEngine {
 	 * extensions using specialized particles (don't forget to specialize
 	 * {@link Particle#copy()} for it to return an object of its own class).
 	 */
-	protected HashableParticle makeParticle(Set idTypes, int numTimeSlicesInMemory) {
-		return new HashableParticle(idTypes, numTimeSlicesInMemory, particleSampler);
+	protected Particle makeParticle(Set idTypes, int numTimeSlicesInMemory) {
+		return new Particle(idTypes, numTimeSlicesInMemory, particleSampler);
 	}
 
 	/** Takes more evidence. */
-	public void take(Evidence evidence, List<Particle> partition) {
-		if (partition == null)
+	public void take(Evidence evidence) {
+		if (particles == null)
+			// Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
 			resetAndTakeInitialEvidence();
+		boolean a  = this.particles.equals(particles);
+		
+		if (!evidence.isEmpty()) { // must be placed after check on particles ==
+																// null because after this method the filter
+																// should be ready to take queries.
 
-		if (!evidence.isEmpty()) {
 			if (needsToBeResampledBeforeFurtherSampling) {
+				move();
 				resample();
 			}
-
-			for (Iterator<Particle> it = partition.iterator(); it.hasNext();) {
+			for (Object canonical : partitions.keySet()){
+			List particles = (List) partitions.get(canonical);
+			for (Iterator it = particles.iterator(); it.hasNext();) {
 				Particle p = (Particle) it.next();
 				p.take(evidence);
 			}
 
-			ListIterator<Particle> particleIt = partition.listIterator();
+			double sum = 0;
+			ListIterator particleIt = particles.listIterator();
 			while (particleIt.hasNext()) {
 				Particle particle = (Particle) particleIt.next();
 				if (particle.getLatestWeight() == 0.0) {
 					particleIt.remove();
-				} else {
-				}
+				} else
+					sum += particle.getLatestWeight();
 			}
 
-			if (partition.size() == 0)
+			if (particles.size() == 0)
 				throw new IllegalArgumentException("All particles have zero weight");
 			needsToBeResampledBeforeFurtherSampling = true;
+			}
 		}
 	}
 
 	/**
 	 * Answer queries according to current distribution represented by filter.
 	 */
-	public void answer(Collection<Query> queries, List<Particle> partition) {
-		if (partition == null)
+	public void answer(Collection queries) {
+		if (particles == null)
+			// Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
 			resetAndTakeInitialEvidence();
-		for (Iterator<Particle> it = partition.iterator(); it.hasNext();) {
+
+		// System.out.println("PF: Updating queries with PF with " +
+		// particles.size() + " particles.");
+		for (Object canonical : partitions.keySet()){
+		
+		List particles = (List) partitions.get(canonical);
+		for (Iterator it = particles.iterator(); it.hasNext();) {
 			Particle p = (Particle) it.next();
 			p.answer(queries);
 		}
+		}
 	}
 
-	public void answer(Query query, List<Particle> partition) {
-		answer(Util.list(query), partition);
+	public void answer(Query query) {
+		answer(Util.list(query));
 	}
 
-	private void resample(ObservabilitySignature obs) {
-		List<Particle> partition = partitionedParticles.get(obs);
-		double[] weights = new double[partition.size()];
-		boolean[] alreadySampled = new boolean[partition.size()];
+	private void resample() {
+		double[] weights = new double[particles.size()];
+		boolean[] alreadySampled = new boolean[particles.size()];
 		double sum = 0.0;
-		List<Particle> newParticles = new ArrayList<Particle>();
+		List newParticles = new ArrayList();
 
-		for (int i = 0; i < partition.size(); i++) {
-			weights[i] = ((Particle) partition.get(i)).getLatestWeight();
+		for (int i = 0; i < particles.size(); i++) {
+			weights[i] = ((Particle) particles.get(i)).getLatestWeight();
 			sum += weights[i];
 		}
 
 		if (sum == 0.0) {
 			throw new IllegalArgumentException("All particles have zero weight");
 		}
-		
+		// else
+		// System.out.println("PF.resample: sum of all particle weights is " + sum);
+
 		for (int i = 0; i < numParticles; i++) {
 			int selection = Util.sampleWithWeights(weights, sum);
 			if (!alreadySampled[selection]) {
-				newParticles.add(partition.get(selection));
+				newParticles.add(particles.get(selection));
 				alreadySampled[selection] = true;
 			} else
-				newParticles.add(((Particle) partition.get(selection)).copy());
+				newParticles.add(((Particle) particles.get(selection)).copy());
 		}
 
-		partition = newParticles;
+		particles = newParticles;
+		repartition();
 	}
+
+	private void repartition(){
+		partitions.clear();
+		for(Iterator i = particles.iterator(); i.hasNext();){
+			Particle p = (Particle) i.next();
+			if (!(p instanceof Particle)){
+				int x= 1+1;
+			}
+			ObservabilitySignature os = new ObservabilitySignature(p);
+			if (partitions.containsKey(os)){
+				List partition = (List) partitions.get(os);
+				partition.add(p);
+			}
+			else{
+				List partition = new ArrayList();
+				partitions.put(os, partition);
+				partition.add(p);
+			}
+		}
+	}
+	
+
+	private void move() {
+	}
+
 	private Set idTypes; // of Type
+
 	private int numParticles;
-	public HashMap<ObservabilitySignature, List<Particle>> partitionedParticles; // of Particles
+	public List particles; // of Particles
+	public Map partitions;
+	private int numMoves;
 	private boolean needsToBeResampledBeforeFurtherSampling = false;
 	private Sampler particleSampler;
+	private AfterSamplingListener afterSamplingListener;
 }

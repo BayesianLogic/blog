@@ -4,6 +4,7 @@ import java.util.*;
 
 import blog.common.EZIterator;
 import blog.engine.ParticleFilter;
+import blog.engine.onlinePF.PartitionedParticleFilter;
 import blog.model.Evidence;
 import blog.model.Model;
 
@@ -30,9 +31,9 @@ public abstract class ParticleFilterRunner {
 	 * Makes particle filter to be used (default {@link ParticleFilter}. Useful
 	 * for extensions using specialized particle filters.
 	 */
-	protected ParticleFilter makeParticleFilter(Model model,
+	protected PartitionedParticleFilter makeParticleFilter(Model model,
 			Properties particleFilterProperties) {
-		return new ParticleFilter(model, particleFilterProperties);
+		return new PartitionedParticleFilter(model, particleFilterProperties);
 	}
 
 	public boolean moveOn() {
@@ -84,5 +85,5 @@ public abstract class ParticleFilterRunner {
 	public Model model;
 
 	/** The associated particle filter. */
-	public ParticleFilter particleFilter;
+	public PartitionedParticleFilter particleFilter;
 }

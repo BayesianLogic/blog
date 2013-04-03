@@ -213,6 +213,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 			if (obf != null){
 				//note that this processed can be improved
 				RandFuncAppVar observableVar = new RandFuncAppVar(obf, referencedVar.args(), false);
+				this.getValue(observableVar);
 				Map o2r = ((AbstractPartialWorld) world).getObservableMap();
 				o2r.put(observableVar, referencedVar);
 			}

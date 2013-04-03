@@ -388,6 +388,7 @@ public class ChoiceTest extends TestCase {
 	    
 	    out.println("query actionName(@1);\n query applied_Drive(c3,t1,@1);\n obs succeed_action(@2)=true;\n");
 	    runner.advancePhase1();
+	    getQuery(runner.evidenceGenerator.getLatestQueries(), 1).printResults(System.out);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 1), model, "\"drive\""), 1, 0);
 	    assertEquals(BLOGUtil.getProbabilityByString(getQuery(runner.evidenceGenerator.getLatestQueries(), 2), model, "true"), 1, 0.000001);
 	    out.println("decide chosen_Unload(b1, t1, @2) = true;\n");
