@@ -8,7 +8,6 @@ LIB_FILES=lib/java_cup.jar \
  lib/Jama.jar
 
 MISC_FILE=compile.sh \
- dblog.vim \
  makefile \
  gen_parser.sh \
  parse.sh \
