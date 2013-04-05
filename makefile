@@ -39,6 +39,10 @@ jar: compile
 demo:
 	./run.sh example/poisson-ball.blog
 
+buildparser: 
+	./gen_parser.sh
+	./compile
+
 sync:
 	git remote prune origin
 	git pull
