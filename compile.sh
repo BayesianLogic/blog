@@ -6,7 +6,7 @@ then
     debug=" -g";
 else
     debug="";
-fi    
+fi
 
 mkdir -p bin
 
