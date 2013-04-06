@@ -1,19 +1,16 @@
 BLOG=blog
 
-LIB_FILES=lib/java_cup.jar \
- lib/JFlex-1.4.3.jar \
- lib/commons-math3-3.0.jar \
- lib/commons-math-2.2.jar \
- lib/junit-4.10.jar \
- lib/Jama.jar
+RUN_FILE=run.sh \
+ run.bat \
+ README \
+ path_sep.sh
 
 MISC_FILE=compile.sh \
+ compile.bat \
  makefile \
  gen_parser.sh \
- parse.sh \
- path_sep.sh \
- README \
- run.sh 
+ parse.sh 
+ 
 
 TAGNAME=$(shell git describe --exact-match --abbrev=0)
 TARGETNAME=${TAGNAME}
@@ -23,15 +20,19 @@ compile:
 
 tar: zip
 
-zip: compile
+zip: 
 	mkdir -p tmp/${TARGETNAME}
-	cp -r src tmp/${TARGETNAME}/
+	cp ${RUN_FILE} tmp/${TAGNAME}/
 	cp -r lib tmp/${TARGETNAME}/
+	jar cfe ${BLOG}.jar blog.Main -C bin . 
+	mv ${BLOG}.jar tmp/${TAGNAME}/
+	cd tmp; zip -r ${TARGETNAME}-bin.zip ${TARGETNAME}
+	cp -r src tmp/${TARGETNAME}/
 	cp -r example tmp/${TAGNAME}/
 	cp ${MISC_FILE} tmp/${TAGNAME}/
 	cd tmp; zip -r ${TARGETNAME}.zip ${TARGETNAME}
-	jar cf ${TARGETNAME}.jar -C bin . 
 	mv tmp/${TARGETNAME}.zip ./
+	mv tmp/${TARGETNAME}-bin.zip ./
 	rm -r -f tmp
 
 jar: compile
