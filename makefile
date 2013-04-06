@@ -12,7 +12,7 @@ MISC_FILE=compile.sh \
  gen_parser.sh \
  parse.sh \
  path_sep.sh \
- README.md \
+ README \
  run.sh 
 
 TAGNAME=$(shell git describe --exact-match --abbrev=0)
@@ -23,13 +23,14 @@ compile:
 
 tar: zip
 
-zip:
+zip: compile
 	mkdir -p tmp/${TARGETNAME}
 	cp -r src tmp/${TARGETNAME}/
 	cp -r lib tmp/${TARGETNAME}/
 	cp -r example tmp/${TAGNAME}/
 	cp ${MISC_FILE} tmp/${TAGNAME}/
 	cd tmp; zip -r ${TARGETNAME}.zip ${TARGETNAME}
+	jar cf ${TARGETNAME}.jar -C bin . 
 	mv tmp/${TARGETNAME}.zip ./
 	rm -r -f tmp
 
