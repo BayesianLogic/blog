@@ -24,7 +24,7 @@ zip:
 	mkdir -p tmp/${TARGETNAME}
 	cp ${RUN_FILE} tmp/${TAGNAME}/
 	cp -r lib tmp/${TARGETNAME}/
-	jar cfe ${BLOG}.jar blog.Main -C bin . 
+	jar cfe ${TARGETNAME}.jar blog.Main -C bin . 
 	mv ${BLOG}.jar tmp/${TAGNAME}/
 	cd tmp; zip -r ${TARGETNAME}-bin.zip ${TARGETNAME}
 	cp -r src tmp/${TARGETNAME}/
