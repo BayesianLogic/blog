@@ -2,7 +2,7 @@ BLOG=blog
 
 RUN_FILE=run.sh \
  run.bat \
- README \
+ README.md \
  path_sep.sh
 
 MISC_FILE=compile.sh \
