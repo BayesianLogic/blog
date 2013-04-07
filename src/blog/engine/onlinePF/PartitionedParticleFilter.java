@@ -176,7 +176,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 
 		for (Iterator it = evidenceInOrderOfMaxTimestep.iterator(); it.hasNext();) {
 			Evidence evidenceSlice = (Evidence) it.next();
-			take(evidenceSlice);
+			take(Util.list(evidenceSlice));
 		}
 	}
 
@@ -189,23 +189,26 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		return new Particle(idTypes, numTimeSlicesInMemory, particleSampler);
 	}
 
+
 	/** Takes more evidence. */
-	public void take(Evidence evidence) {
+	public void take(List<Evidence> listOfEvidence) {
 		if (particles == null)
 			// Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
 			resetAndTakeInitialEvidence();
-		boolean a  = this.particles.equals(particles);
-		
-		if (!evidence.isEmpty()) { // must be placed after check on particles ==
-																// null because after this method the filter
-																// should be ready to take queries.
 
-			if (needsToBeResampledBeforeFurtherSampling) {
-				move();
-				resample();
-			}
-			for (Object canonical : partitions.keySet()){
+		if (needsToBeResampledBeforeFurtherSampling) {
+			move();
+			resample();
+		}
+		if (listOfEvidence.size() != partitions.size()){
+			System.err.println("partitionedparticlefilter.take: evidence list length differs from number of partitions");
+			System.exit(1);
+		}
+
+		Iterator<Evidence> eit = listOfEvidence.iterator();
+		for (Object canonical : partitions.keySet()){
 			List particles = (List) partitions.get(canonical);
+			Evidence evidence = eit.next();
 			for (Iterator it = particles.iterator(); it.hasNext();) {
 				Particle p = (Particle) it.next();
 				p.take(evidence);
@@ -224,27 +227,32 @@ public class PartitionedParticleFilter extends InferenceEngine {
 			if (particles.size() == 0)
 				throw new IllegalArgumentException("All particles have zero weight");
 			needsToBeResampledBeforeFurtherSampling = true;
-			}
+
 		}
 	}
-
-	/**
-	 * Answer queries according to current distribution represented by filter.
-	 */
-	public void answer(Collection queries) {
+	
+	public void answer(List<Collection> listOfQueries) {
 		if (particles == null)
 			// Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
 			resetAndTakeInitialEvidence();
-
+		if (listOfQueries.size() != partitions.size()){
+			System.err.println("partitionedparticlefilter.answer: evidence list length differs from number of partitions");
+			System.exit(1);
+		}
 		// System.out.println("PF: Updating queries with PF with " +
 		// particles.size() + " particles.");
+		Iterator<Collection> qit = listOfQueries.iterator();
 		for (Object canonical : partitions.keySet()){
-		
-		List particles = (List) partitions.get(canonical);
-		for (Iterator it = particles.iterator(); it.hasNext();) {
-			Particle p = (Particle) it.next();
-			p.answer(queries);
+			Collection queries = qit.next();
+			List particles = (List) partitions.get(canonical);
+			for (Iterator it = particles.iterator(); it.hasNext();) {
+				Particle p = (Particle) it.next();
+				p.answer(queries);
+			}
 		}
+		if (needsToBeResampledBeforeFurtherSampling) {
+			move();
+			resample();
 		}
 	}
 
@@ -279,7 +287,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		}
 
 		particles = newParticles;
-		repartition();
+		//repartition(); no longer repartition here.
 	}
 
 	private void repartition(){

@@ -31,9 +31,9 @@ public abstract class ParticleFilterRunner {
 	 * Makes particle filter to be used (default {@link ParticleFilter}. Useful
 	 * for extensions using specialized particle filters.
 	 */
-	protected PartitionedParticleFilter makeParticleFilter(Model model,
+	protected ParticleFilter makeParticleFilter(Model model,
 			Properties particleFilterProperties) {
-		return new PartitionedParticleFilter(model, particleFilterProperties);
+		return new ParticleFilter(model, particleFilterProperties);
 	}
 
 	public boolean moveOn() {
@@ -85,5 +85,5 @@ public abstract class ParticleFilterRunner {
 	public Model model;
 
 	/** The associated particle filter. */
-	public PartitionedParticleFilter particleFilter;
+	public ParticleFilter particleFilter;
 }

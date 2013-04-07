@@ -349,7 +349,7 @@ decision_func_decl ::=
   
 
 observable_func_decl ::=
-    OBSERVABLE type:ret_type ID:fname opt_parenthesized_type_var_lst :tl
+    RANDOM type:ret_type OBSERVABLE LPAREN ID:fname opt_parenthesized_type_var_lst :tl RPAREN
     dependency_statement_body:body SEMI
     {: RESULT = new ObservableFuncDec(currLineno(), currColno(), sym(fname), tl, ret_type, body); :}
   ;
