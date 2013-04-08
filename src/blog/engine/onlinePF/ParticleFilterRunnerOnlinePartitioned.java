@@ -104,8 +104,9 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		beforeEvidenceAndQueries();
 		evidenceGenerator.updateObservationQuery();
 		if ((evidence = evidenceGenerator.getLatestObservation()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
-			particleFilter.take(Util.list(evidence));
-			particleFilter.answer(Util.list(queries));
+			particleFilter.take(evidence);
+			particleFilter.answer(queries);
+			particleFilter.repartition(); //IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!
 			afterEvidenceAndQueries();
 			return true;
 		}
@@ -118,11 +119,17 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	
 	public boolean advancePhase2() {
 		Evidence evidence;
+		//evidenceGenerator.updateDecision(particleFilter.getPartitions().keySet().size());
 		evidenceGenerator.updateDecision();
-		if ((evidence = evidenceGenerator.getLatestDecision()) != null) {	
-			particleFilter.take(Util.list(evidence));
-			return true;
-		}
+		//Iterator it = evidenceGenerator.getLatestDecision().iterator();
+		//for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
+			if ((evidence = (Evidence) evidenceGenerator.getLatestDecision()) != null) {
+				particleFilter.take(evidence);
+				//particleFilter.takeWithPartition(evidence, os);
+				return true;
+			}
+		//}
+		
 		return false;
 	}
 
@@ -135,17 +142,22 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		return getQueriesForLatestTimestep();
 	}
 
+	/**
+	 * Formatting does not work well with policy, for proper version see particlefilterrunneronlinewithpolicy
+	 */
 	protected void afterEvidenceAndQueries() {
 		Collection queries = evidenceGenerator.getLatestQueries();
-		for (Iterator it = queries.iterator(); it.hasNext();) {
-			ArgSpecQuery query = (ArgSpecQuery) it.next();
-
-			//System.out.println("PF estimate of " + query + ":");
-			queryResultCommunicator.printInput(printQueryString(query));
-			//query.printResults(queryCommunicator.p);
-			queryResultCommunicator.printInput("-----");
-			queryResultCommunicator.p.flush();
-			query.printResults(System.out);//strange bug here needs fixing
+		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
+			particleFilter.answerWithPartition(queries, os);
+			for (Iterator it = queries.iterator(); it.hasNext();) {
+				ArgSpecQuery query = (ArgSpecQuery) it.next();
+				//System.out.println("PF estimate of " + query + ":");
+				queryResultCommunicator.printInput(printQueryString(query));
+				//query.printResults(queryCommunicator.p);
+				queryResultCommunicator.printInput("-----");
+				queryResultCommunicator.p.flush();
+				query.printResults(System.out);//strange bug here needs fixing
+			}
 		}
 	}
 	

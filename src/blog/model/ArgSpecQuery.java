@@ -173,9 +173,6 @@ public class ArgSpecQuery extends AbstractQuery {
 		// System.out.println("ArqSpecQuery.updateStats: World is " +
 		// System.identityHashCode(world));
 		Object value = getArgSpec().evaluate(world);
-		int x;
-		if (weight !=1)
-		 x = 1;
 		// System.out.println("ArqSpecQuery.updateStats: " + argSpec +
 		// " determined as " + value);
 		// System.out.println("ArgSpecQuery: increasing weight of " + value + " by "

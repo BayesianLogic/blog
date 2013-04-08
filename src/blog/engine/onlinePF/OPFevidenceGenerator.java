@@ -115,6 +115,8 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		latestDecision = ev;
 	}
 	
+
+	
 	public void getInput (){
 		Evidence ev = new Evidence();
 		List<Query> q = Util.list();

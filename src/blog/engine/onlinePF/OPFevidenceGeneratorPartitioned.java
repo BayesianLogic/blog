@@ -99,22 +99,27 @@ public class OPFevidenceGeneratorPartitioned extends TemporalEvidenceGenerator {
 		}
 		latestObservation = ev;
 	}
-	public void updateDecision(){
-		System.out.println("Enter decision for: "+ lastTimeStep);
-		List<Query> q = Util.list();
-		Evidence ev = new Evidence();
-		getInput(ev, q);
-		if (!q.isEmpty()){
-			System.err.println("OPFevidenceGenerator.getDecision: do not enter queries in decision phase");
-			System.exit(1);
+	/**
+	 * Updates the decision for each observability signature
+	 * @param os
+	 */
+	public void updateDecision(int numberExpectedDecisions){
+		for (int i = 0; i<numberExpectedDecisions; i++){
+			System.out.println("Enter decision for: "+ lastTimeStep);
+			List<Query> q = Util.list();
+			Evidence ev = new Evidence();
+			getInput(ev, q);
+			if (!q.isEmpty()){
+				System.err.println("OPFevidenceGenerator.getDecision: do not enter queries in decision phase");
+				System.exit(1);
+			}
+			if ( !ev.getValueEvidence().isEmpty() || !ev.getSymbolEvidence().isEmpty() ){
+				System.err.println("OPFevidenceGenerator.getDecision: do not enter observations in decision phase");
+				System.exit(1);
+			}
+			latestDecision.add(ev);
 		}
-		if ( !ev.getValueEvidence().isEmpty() || !ev.getSymbolEvidence().isEmpty() ){
-			System.err.println("OPFevidenceGenerator.getDecision: do not enter observations in decision phase");
-			System.exit(1);
-		}
-		latestDecision = ev;
 	}
-	
 	
 	private void getInput (Evidence ev, List<Query> q){
 		String eviquerystr = "";
@@ -163,7 +168,7 @@ public class OPFevidenceGeneratorPartitioned extends TemporalEvidenceGenerator {
 		return latestObservation; 
 
 	}
-	public Evidence getLatestDecision() {
+	public List<Evidence> getLatestDecision() {
 		return latestDecision; 
 
 	}
@@ -191,6 +196,6 @@ public class OPFevidenceGeneratorPartitioned extends TemporalEvidenceGenerator {
 	}
 	
 	Evidence latestObservation;
-	Evidence latestDecision;
+	List<Evidence> latestDecision = new ArrayList<Evidence>();
 	Communicator in;
 }

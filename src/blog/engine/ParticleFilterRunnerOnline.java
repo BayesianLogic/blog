@@ -102,6 +102,10 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 			afterEvidenceAndQueries();
 			return true;
 		}
+		else{
+			System.err.println("particlefilterrunneronline: null error");
+			System.exit(1);
+		}
 		return false;
 	}
 	
@@ -115,6 +119,10 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		if ((evidence = evidenceGenerator.getLatestDecision()) != null) {	
 			particleFilter.take(evidence);
 			return true;
+		}
+		else{
+			System.err.println("particlefilterrunneronline: null error");
+			System.exit(1);
 		}
 		return false;
 	}

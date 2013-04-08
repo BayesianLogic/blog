@@ -176,7 +176,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 
 		for (Iterator it = evidenceInOrderOfMaxTimestep.iterator(); it.hasNext();) {
 			Evidence evidenceSlice = (Evidence) it.next();
-			take(Util.list(evidenceSlice));
+			take(evidenceSlice);
 		}
 	}
 
@@ -191,6 +191,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 
 
 	/** Takes more evidence. */
+	/*
 	public void take(List<Evidence> listOfEvidence) {
 		if (particles == null)
 			// Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
@@ -230,36 +231,96 @@ public class PartitionedParticleFilter extends InferenceEngine {
 
 		}
 	}
+	*/
+
+	public void take(Evidence evidence) {
+		if (particles == null)
+			resetAndTakeInitialEvidence();
+		if (!evidence.isEmpty()) { 
+			if (needsToBeResampledBeforeFurtherSampling) {
+				move();
+				resample();
+			}
+			for (Iterator it = particles.iterator(); it.hasNext();) {
+				Particle p = (Particle) it.next();
+				p.take(evidence);
+			}
+			double sum = 0;
+			ListIterator particleIt = particles.listIterator();
+			while (particleIt.hasNext()) {
+				Particle particle = (Particle) particleIt.next();
+				if (particle.getLatestWeight() == 0.0) {
+					particleIt.remove();
+				} else
+					sum += particle.getLatestWeight();
+			}
+			if (particles.size() == 0)
+				throw new IllegalArgumentException("All particles have zero weight");
+			needsToBeResampledBeforeFurtherSampling = true;
+		}
+	}
+
 	
-	public void answer(List<Collection> listOfQueries) {
+	public void answer(Collection queries) {
+		//System.err.println("partitionedparticlefilter.answer() should not have been called");
+		//System.exit(1);
 		if (particles == null)
 			// Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
 			resetAndTakeInitialEvidence();
-		if (listOfQueries.size() != partitions.size()){
-			System.err.println("partitionedparticlefilter.answer: evidence list length differs from number of partitions");
+		for (Iterator it = particles.iterator(); it.hasNext();) {
+			Particle p = (Particle) it.next();
+			p.answer(queries);
+		}
+	}
+	
+	/**
+	 * Irreversibly zeroes out the collection of queries and update the histogram using only 
+	 * particles corresponding to the given observability signature.
+	 * @param queries
+	 * @param os
+	 */
+	public void answerWithPartition(Collection<Query> queries, ObservabilitySignature os){
+		for (Query q: queries)
+			q.zeroOut();
+		List<Particle> partition = (List) partitions.get(os);
+		for (Particle p: partition)
+			p.updateQueriesStats(queries);
+	}
+
+
+	public void takeWithPartition(Evidence evidence, ObservabilitySignature os) {
+		List particles = (List) partitions.get(os);
+		
+		if (particles == null){
+			System.err.println("partitionedparticlefilter.takewithpartition: particles should not be null");
 			System.exit(1);
 		}
-		// System.out.println("PF: Updating queries with PF with " +
-		// particles.size() + " particles.");
-		Iterator<Collection> qit = listOfQueries.iterator();
-		for (Object canonical : partitions.keySet()){
-			Collection queries = qit.next();
-			List particles = (List) partitions.get(canonical);
+		if (!evidence.isEmpty()) { 
+			if (needsToBeResampledBeforeFurtherSampling) {
+				move();
+				resample();
+			}
 			for (Iterator it = particles.iterator(); it.hasNext();) {
 				Particle p = (Particle) it.next();
-				p.answer(queries);
+				p.take(evidence);
 			}
-		}
-		if (needsToBeResampledBeforeFurtherSampling) {
-			move();
-			resample();
+			double sum = 0;
+			ListIterator particleIt = particles.listIterator();
+			while (particleIt.hasNext()) {
+				Particle particle = (Particle) particleIt.next();
+				if (particle.getLatestWeight() == 0.0) {
+					particleIt.remove();
+				} else
+					sum += particle.getLatestWeight();
+			}
+			if (particles.size() == 0)
+				throw new IllegalArgumentException("All particles have zero weight");
+			needsToBeResampledBeforeFurtherSampling = true;
 		}
 	}
 
-	public void answer(Query query) {
-		answer(Util.list(query));
-	}
-
+	
+	
 	private void resample() {
 		double[] weights = new double[particles.size()];
 		boolean[] alreadySampled = new boolean[particles.size()];
@@ -290,7 +351,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		//repartition(); no longer repartition here.
 	}
 
-	private void repartition(){
+	public void repartition(){
 		partitions.clear();
 		for(Iterator i = particles.iterator(); i.hasNext();){
 			Particle p = (Particle) i.next();
@@ -310,6 +371,10 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		}
 	}
 	
+	public Map getPartitions(){
+		return partitions;
+	}
+	
 
 	private void move() {
 	}
@@ -318,7 +383,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 
 	private int numParticles;
 	public List particles; // of Particles
-	public Map partitions;
+	private Map partitions;
 	private int numMoves;
 	private boolean needsToBeResampledBeforeFurtherSampling = false;
 	private Sampler particleSampler;
