@@ -1,0 +1,19 @@
+// Type Declarations
+type Aircraft;
+type Blip;
+
+// Origin Declarations
+origin Aircraft Source(Blip);
+origin Timestep Time(Blip);
+
+// Number Declarations
+#Aircraft ~ Poisson(5);
+#Blip(Source=a, Time=t) ~ Poisson(4);
+
+// Evidence
+obs #{Blip b:Time=@0}= 3;
+obs #{Blip b:Time=@1}= 4;
+obs #{Blip b:Time=@3}= 5;
+
+// Query
+query #{Aircraft a};
