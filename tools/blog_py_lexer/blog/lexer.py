@@ -7,12 +7,12 @@ class BlogLexer(RegexLexer):
   filenames = ['*.blog', '*.dblog']
   operators = ['\\-\\>','=','~',':', '\\+', '\\-', '\\*', '/', '\\[', ']', 
          '\\{', '}', '!', '\\<', '\\>', '\\<=', '\\>=', '==', '!=', 
-         '&', '\\|', '#', '\\^', '%']
+         '&', '\\|', '=\\>', '#', '\\^', '%']
   wordops = ['Prev', 'IsEmptyString']
   deliminators = [',', ';', '\\(', '\\)']
   keywords = ['extern','import','fixed','distinct','random','origin',
         'param','type', 'forall', 'exists', 'obs', 'query', 
-        'if', 'then', 'else']
+        'if', 'then', 'else', 'for']
   types = ['Integer','Real','Boolean','NaturalNum','List','Map']
   distribs = ['TabularCPD','Categorical','Distribution','Gaussian',
              'UniformChoice', 'MultivarGaussian', 'Poisson',

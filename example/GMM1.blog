@@ -1,0 +1,28 @@
+/**
+ * A Gaussian mixture model by leili
+ */
+
+type Component;
+type DataPoint;
+
+origin Integer Index(DataPoint);
+
+#Component ~ Poisson(3);
+#DataPoint(Index = n) = 1;
+
+fixed Real[] mean_of_means = [0; 0];
+fixed Real[][] var_of_means = [100, 0; 0, 100];
+
+fixed Real[][] var_obs = [4, 0; 0, 4];
+
+random Real[] Theta(Component c) 
+    ~ MultivarGaussian(mean_of_means, var_of_means);
+
+random Component AssociatedComponent(DataPoint d) ~ UniformChoice({Component c});
+
+random Real[] ObservedPos(DataPoint d) {
+    if AssociatedComponent(d) != null 
+        then ~ MultivarGaussian(Theta(AssociatedComponent(d)), var_obs)
+};
+
+query #Component;

@@ -1,20 +1,34 @@
-Getting Code
-=====================
+FOR BASIC USER
+===============================
+Compiling/Install
+----------------------
+Under Linux/MAC OSX
+  make compile
 
-1. `cd` into the directory where you want your code to be
-2. Run `$ git clone git@github.com:amatsukawa/dblog.git`
+Under Windows
+  compile.bat
 
+Usage
+----------------------
+Under Linux/MAC OSX
+ run.sh <path_to_blog_file> <params>
+
+Under Windows
+ run.bat <path_to_blog_file> <params>
+
+FOR ADVANCED USER and DEVELOPER
+===============================
 Generating Lexer and Parser
-====================
+----------------------
 
 You only need to do this if you modified `BLOGLexer.flex` or `BLOGParser.cup`
 
 1. Run `$ ./gen_parser`
 
 Working with Eclipse
-=====================
+--------------------
 
-Instructions for setting up Eclipse for outbids:
+Instructions for setting up Eclipse for blog:
 
 1. Create `New Java Project` 
 2. Point to `Location` to outbids folder
@@ -31,12 +45,16 @@ Running a BLOG model:
 4. In the `Arguments` tab, pass in the path to the BLOG model, and any parameters
 
 Compiling Directly
-===================
+------------------
 
-1. Generate Lexer and Parser `$ ./gen_parser`
-2. Compile the code `$ ./compile.sh`
-3. Running BLOG models `$ ./run.sh <path_to_model> <params>`
+0. (needed only if you change parser) Generate Lexer and Parser `$ ./gen_parser`
+1. Compile the code `$ make compile`
+2. Running BLOG models `$ ./run.sh <path_to_model> <params>`
+
+Git Tips
+-------------------
+1. make Git ignore line ending
+ git config --global core.autocrlf true
 
 
-
-Readme Updated: May 15, 2012
+Readme Updated: April 05, 2013

@@ -48,6 +48,7 @@ import blog.absyn.StringExpr;
 import blog.absyn.SymbolArrayList;
 import blog.absyn.SymbolEvidence;
 import blog.absyn.SymbolExpr;
+import blog.absyn.TupleSetExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
@@ -59,6 +60,7 @@ import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
 import blog.model.Clause;
 import blog.model.ComparisonFormula;
+import blog.model.ComparisonFormula.Operator;
 import blog.model.ConjFormula;
 import blog.model.ConstantInterp;
 import blog.model.DependencyModel;
@@ -90,6 +92,7 @@ import blog.model.SymbolEvidenceStatement;
 import blog.model.SymbolTerm;
 import blog.model.Term;
 import blog.model.TrueFormula;
+import blog.model.TupleSetSpec;
 import blog.model.Type;
 import blog.model.UniversalFormula;
 import blog.model.ValueEvidenceStatement;
@@ -157,7 +160,7 @@ public class Semant {
 			return true;
 		} else {
 			error(line, col, "Function/Symbol " + name
-					+ " without argument has already been declared.");
+			    + " without argument has already been declared.");
 			return false;
 		}
 	}
@@ -344,7 +347,7 @@ public class Semant {
 		Type resTy = getType(e.result);
 		if (resTy == null) {
 			error(e.line, e.col, "Symbol at line " + e.result.line + " col "
-					+ e.result.col + " does not have a type!");
+			    + e.result.col + " does not have a type!");
 			return;
 		}
 		List<Type> argTy = new ArrayList<Type>();
@@ -386,7 +389,7 @@ public class Semant {
 		}
 
 		if (!(model.getOverlappingFuncs(name,
-				(Type[]) argTy.toArray(new Type[argTy.size()])).isEmpty())) {
+		    (Type[]) argTy.toArray(new Type[argTy.size()])).isEmpty())) {
 			error(e.line, e.col, "Function " + name + " overlapped");
 		}
 
@@ -406,13 +409,13 @@ public class Semant {
 		} else if (e instanceof OriginFuncDec) {
 			if (argTy.size() != 1) {
 				error(e.line, e.col,
-						"Incorrect number of arguments: origin function expecting exactly One argument");
+				    "Incorrect number of arguments: origin function expecting exactly One argument");
 			}
 			if (e.body != null) {
 				error(
-						e.line,
-						e.col,
-						"Invalid origin function definition: the body of origin functions should be empty");
+				    e.line,
+				    e.col,
+				    "Invalid origin function definition: the body of origin functions should be empty");
 			}
 			OriginFunction f = new OriginFunction(name, argTy, resTy);
 			fun = f;
@@ -470,12 +473,13 @@ public class Semant {
 				// note will do type checking later
 				Object funcBody = transExpr(e.body);
 				ArgSpec funcValue = (ArgSpec) funcBody;
-				((NonRandomFunction) fun).setInterpretation(blog.model.ConstantInterp.class,
-						Collections.singletonList(funcValue));
+				((NonRandomFunction) fun).setInterpretation(
+				    blog.model.ConstantInterp.class,
+				    Collections.singletonList(funcValue));
 			}
 		} else if (e instanceof RandomFuncDec) {
 			DependencyModel dm = transDependency(e.body, fun.getRetType(),
-					fun.getDefaultValue());
+			    fun.getDefaultValue());
 			((RandomFunction) fun).setDepModel(dm);
 		}
 
@@ -524,7 +528,7 @@ public class Semant {
 		List<Clause> cl = new ArrayList<Clause>(1);
 		if (body instanceof Term || body instanceof Formula) {
 			cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-					.<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
+			    .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
 		} else if (body instanceof Clause) {
 			cl.add((Clause) body);
 		} else if (e instanceof IfExpr) {
@@ -572,10 +576,10 @@ public class Semant {
 				value = (ArgSpec) transExpr(e.right);
 			} else {
 				error(e.right.line, e.right.col,
-						"Number evidence expecting integer(natural number) on the right side");
+				    "Number evidence expecting integer(natural number) on the right side");
 			}
 			evidence.addValueEvidence(new ValueEvidenceStatement(
-					(CardinalitySpec) left, value));
+			    (CardinalitySpec) left, value));
 		} else if (left instanceof ArgSpec) {
 			// general value expression
 			Object value = transExpr(e.right);
@@ -587,17 +591,17 @@ public class Semant {
 				// let us use the type checking in Evidence,
 				if (value != null)
 					evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
-							(ArgSpec) value));
+					    (ArgSpec) value));
 				else
 					error(e.line, e.col,
-							"type mistach for observation or translation error");
+					    "type mistach for observation or translation error");
 			} else {
 				error(e.right.line, e.right.col,
-						"Invalid expression on the right side of evidence.");
+				    "Invalid expression on the right side of evidence.");
 			}
 		} else {
 			error(e.left.line, e.left.col,
-					"Invalid expression on the left side of evidence.");
+			    "Invalid expression on the left side of evidence.");
 		}
 	}
 
@@ -618,12 +622,12 @@ public class Semant {
 				value = getSymbolList(((ExplicitSetExpr) e.right).values);
 			} else {
 				error(
-						e.right.line,
-						e.right.col,
-						"Invalid expression on right side of symbol evidence: explicit set of symbols expected");
+				    e.right.line,
+				    e.right.col,
+				    "Invalid expression on right side of symbol evidence: explicit set of symbols expected");
 			}
 			SymbolEvidenceStatement sevid = new SymbolEvidenceStatement(leftset,
-					value);
+			    value);
 			if (!evidence.addSymbolEvidence(sevid)) {
 				error(e.right.line, e.right.col, "Duplicate names in symbol evidence.");
 			}
@@ -637,9 +641,9 @@ public class Semant {
 			// leftset), createSpecFromInt(value.size())));
 		} else {
 			error(
-					e.left.line,
-					e.left.col,
-					"Invalid expression on left side of symbool evidence: implicit set of symbols expected");
+			    e.left.line,
+			    e.left.col,
+			    "Invalid expression on left side of symbool evidence: implicit set of symbols expected");
 		}
 	}
 
@@ -660,10 +664,10 @@ public class Semant {
 				error(fl.line, fl.col, "function undefined: " + name);
 			} else if (!(f instanceof OriginFunction)) {
 				error(fl.line, fl.col, "Function " + name + " with argument type "
-						+ typ.getName() + " has not been declared as an origin function.");
+				    + typ.getName() + " has not been declared as an origin function.");
 			} else if (fs.contains(f)) {
 				error(fl.line, fl.col, "Origin function " + name
-						+ " used more than once");
+				    + " used more than once");
 			} else {
 				fs.add((OriginFunction) f);
 			}
@@ -676,10 +680,10 @@ public class Semant {
 		}
 
 		POP pop = new POP(typ, fs, transDependency(e.body,
-				BuiltInTypes.NATURAL_NUM, new Integer(0)));
+		    BuiltInTypes.NATURAL_NUM, new Integer(0)));
 		if (typ.getPOPWithOriginFuncs(pop.getOriginFuncSet()) != null) {
 			error(e.line, e.col, "number statement #" + typ.getName()
-					+ " uses same origin functions as earlier number statement.");
+			    + " uses same origin functions as earlier number statement.");
 		} else {
 			typ.addPOP(pop);
 		}
@@ -724,8 +728,8 @@ public class Semant {
 	ArgSpec transExpr(DoubleExpr e) {
 		// TODO is there a better way than using function?
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
-				String.valueOf(e.value), BuiltInTypes.REAL, e.value),
-				Collections.EMPTY_LIST);
+		    String.valueOf(e.value), BuiltInTypes.REAL, e.value),
+		    Collections.EMPTY_LIST);
 		t.setLocation(e.line);
 		return t;
 	}
@@ -747,6 +751,8 @@ public class Semant {
 			return transExpr((ImplicitSetExpr) e);
 		} else if (e instanceof ExplicitSetExpr) {
 			return transExpr((ExplicitSetExpr) e);
+		} else if (e instanceof TupleSetExpr) {
+			return transExpr((TupleSetExpr) e);
 		} else if (e instanceof IfExpr) {
 			return transExpr((IfExpr) e);
 		} else if (e instanceof OpExpr) {
@@ -772,12 +778,7 @@ public class Semant {
 		t.setLocation(e.line);
 		return t;
 	}
-
-	ExplicitSetSpec transExpr(ExplicitSetExpr e) {
-		// TODO
-		return null;
-	}
-
+	
 	ArgSpec transExpr(SymbolExpr e) {
 		Term t = new SymbolTerm(e.name.toString());
 		t.setLocation(e.line);
@@ -787,13 +788,14 @@ public class Semant {
 	ArgSpec transExpr(FuncCallExpr e) {
 		List<ArgSpec> args = transExprList(e.args, true);
 		List<Type> argTypes = new ArrayList<Type>();
+		// TODO put type checking code here
 		for (ArgSpec as : args) {
 			// argTypes.add(as.get)
 			// to add type for this argspec
 		}
 
 		Term t = new FuncAppTerm(e.func.toString(), args.toArray(new ArgSpec[args
-				.size()]));
+		    .size()]));
 		t.setLocation(e.line);
 		return t;
 	}
@@ -836,7 +838,6 @@ public class Semant {
 		}
 		Formula quantFormula = (Formula) quantExpr;
 		Type quantType = getType(e.type);
-
 		if (e.quantifier == QuantifiedFormulaExpr.FORALL) {
 			return new UniversalFormula(e.var.toString(), quantType, quantFormula);
 		} else if (e.quantifier == QuantifiedFormulaExpr.EXISTS) {
@@ -865,7 +866,7 @@ public class Semant {
 		} else {
 			// should be ArgSpec
 			clauses.add(new Clause(test, EqualsCPD.class, Collections
-					.<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
+			    .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
 		}
 	}
 
@@ -899,7 +900,7 @@ public class Semant {
 		} else {
 			// should be ArgSpec
 			clauses.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-					.<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
+			    .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
 		}
 	}
 
@@ -914,10 +915,10 @@ public class Semant {
 			test = (Formula) cond;
 		} else if (cond instanceof Term) {
 			test = new EqualityFormula((Term) cond,
-					BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+			    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 		} else {
 			error(e.test.line, e.test.col,
-					"Cannot use non-Boolean value as predicate for if clause");
+			    "Cannot use non-Boolean value as predicate for if clause");
 			System.exit(1);
 		}
 
@@ -932,23 +933,34 @@ public class Semant {
 
 	ArgSpec transExpr(BooleanExpr e) {
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
-				String.valueOf(e.value), BuiltInTypes.BOOLEAN, e.value));
+		    String.valueOf(e.value), BuiltInTypes.BOOLEAN, e.value));
 		t.setLocation(e.line);
 		return t;
 	}
 
 	ArgSpec transExpr(IntExpr e) {
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
-				String.valueOf(e.value), BuiltInTypes.INTEGER, e.value));
+		    String.valueOf(e.value), BuiltInTypes.INTEGER, e.value));
 		t.setLocation(e.line);
 		return t;
 	}
 
 	ArgSpec transExpr(StringExpr e) {
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral("\"" + e.value + "\"",
-				BuiltInTypes.STRING, e.value));
+		    BuiltInTypes.STRING, e.value));
 		t.setLocation(e.line);
 		return t;
+	}
+
+	ExplicitSetSpec transExpr(ExplicitSetExpr e) {
+		List terms = new ArrayList();
+
+		ExprList currTerm = e.values;
+		while (currTerm != null) {
+			terms.add(transExpr(currTerm.head));
+			currTerm = currTerm.next;
+		}
+		return new ExplicitSetSpec(terms);
 	}
 
 	ImplicitSetSpec transExpr(ImplicitSetExpr e) {
@@ -966,12 +978,61 @@ public class Semant {
 				cond = (Formula) c;
 			} else {
 				error(
-						e.cond.line,
-						e.cond.col,
-						"Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
+				    e.cond.line,
+				    e.cond.col,
+				    "Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
 			}
 		}
 		return new ImplicitSetSpec(vn, typ, cond);
+	}
+
+	TupleSetSpec transExpr(TupleSetExpr e) {
+		List<Term> tupleTerms = new ArrayList<Term>();
+		List<Type> varTypes = new ArrayList<Type>();
+		List<String> varNames = new ArrayList<String>();
+		Formula cond = null;
+
+		while (e.setTuple != null) {
+			Object tuple = transExpr(e.setTuple.head);
+			if (tuple instanceof Term) {
+				tupleTerms.add((Term) tuple);
+			} else {
+				error(
+				    e.cond.line,
+				    e.cond.col,
+				    "Invalid expression as term in tuple set: term (number, string, boolean, or function call) expected");
+			}
+			e.setTuple = e.setTuple.next;
+		}
+
+		// TODO: TRANSLATE THE VARIABLE LIST AND TYPES
+		while (e.enumVars != null) {
+			Object varType = this.getType(e.enumVars.typ);
+			Object varName = e.enumVars.var.toString();
+			if (varType instanceof Type && varName instanceof String) {
+				varTypes.add((Type) varType);
+				varNames.add((String) varName);
+			} else {
+				error(
+				    e.cond.line,
+				    e.cond.col,
+				    "Invalid expression as logical variable in implicit set: logical variable expected");
+			}
+			e.enumVars = e.enumVars.next;
+		}
+
+		if (e.cond != null) {
+			Object c = transExpr(e.cond);
+			if (c instanceof Formula) {
+				cond = (Formula) c;
+			} else {
+				error(
+				    e.cond.line,
+				    e.cond.col,
+				    "Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
+			}
+		}
+		return new TupleSetSpec(tupleTerms, varTypes, varNames, cond);
 	}
 
 	/**
@@ -1025,72 +1086,72 @@ public class Semant {
 		case OpExpr.NEQ:
 			return new NegFormula(new EqualityFormula((Term) left, (Term) right));
 		case OpExpr.LT:
-			return new ComparisonFormula((Term) left, (Term) right,
-					ComparisonFormula.Operator.LT);
+			return new ComparisonFormula((Term) left, (Term) right, Operator.LT);
 		case OpExpr.LEQ:
-			return new ComparisonFormula((Term) left, (Term) right,
-					ComparisonFormula.Operator.LEQ);
+			return new ComparisonFormula((Term) left, (Term) right, Operator.LEQ);
 		case OpExpr.GT:
-			return new ComparisonFormula((Term) left, (Term) right,
-					ComparisonFormula.Operator.GT);
+			return new ComparisonFormula((Term) left, (Term) right, Operator.GT);
 		case OpExpr.GEQ:
-			return new ComparisonFormula((Term) left, (Term) right,
-					ComparisonFormula.Operator.GEQ);
+			return new ComparisonFormula((Term) left, (Term) right, Operator.GEQ);
 		case OpExpr.AND:
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,
-						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			if (right instanceof Term) {
 				right = new EqualityFormula((Term) right,
-						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			return new ConjFormula((Formula) left, (Formula) right);
 		case OpExpr.OR:
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,
-						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			if (right instanceof Term) {
 				right = new EqualityFormula((Term) right,
-						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			return new DisjFormula((Formula) left, (Formula) right);
 		case OpExpr.IMPLY:
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,
-						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			if (right instanceof Term) {
 				right = new EqualityFormula((Term) right,
-						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			return new ImplicFormula((Formula) left, (Formula) right);
 		case OpExpr.NOT:
+			if (right instanceof Term) {
+				right = new EqualityFormula((Term) right,
+				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+			}
 			return new NegFormula((Formula) right);
 		case OpExpr.SUB:
 			Function func;
 			if (left instanceof SymbolTerm) {
 				if (e.right instanceof IntExpr) {
 					String objectname = ((SymbolTerm) left).getName() + '['
-							+ ((IntExpr) e.right).value + ']';
+					    + ((IntExpr) e.right).value + ']';
 					Function object = getFunction(objectname, Collections.EMPTY_LIST);
 					if (object != null)
 						return new FuncAppTerm(object);
 				}
 				Object symbolMapping = model
-						.getFuncsWithName(((SymbolTerm) left).getName()).iterator().next();
+				    .getFuncsWithName(((SymbolTerm) left).getName()).iterator().next();
 				if (((Function) symbolMapping).getRetType().getName()
-						.equals("Array_Real_1")) {
+				    .equals("Array_Real_1")) {
 					func = (Function) BuiltInFunctions.getFuncsWithName(
-							BuiltInFunctions.SUB_VEC_NAME).get(0);
+					    BuiltInFunctions.SUB_VEC_NAME).get(0);
 				} else {
 					func = (Function) BuiltInFunctions.getFuncsWithName(
-							BuiltInFunctions.SUB_MAT_NAME).get(0);
+					    BuiltInFunctions.SUB_MAT_NAME).get(0);
 				}
 			} else {
 				func = (Function) BuiltInFunctions.getFuncsWithName(
-						BuiltInFunctions.SUB_VEC_NAME).get(0);
+				    BuiltInFunctions.SUB_VEC_NAME).get(0);
 			}
 			term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
 			return term;
@@ -1098,14 +1159,14 @@ public class Semant {
 			if (e.left == null && e.right instanceof IntExpr) {
 				Timestep t = Timestep.at(((IntExpr) e.right).value);
 				term = new FuncAppTerm(BuiltInFunctions.getLiteral(t.toString(),
-						BuiltInTypes.TIMESTEP, t));
+				    BuiltInTypes.TIMESTEP, t));
 				term.setLocation(e.line);
 				return term;
 			}
 
 		default:
 			error(e.getLine(), e.getCol(),
-					"The operation could not be applied" + e.toString());
+			    "The operation could not be applied" + e.toString());
 			return null;
 		}
 

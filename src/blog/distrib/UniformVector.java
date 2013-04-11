@@ -37,6 +37,8 @@ package blog.distrib;
 
 import blog.*;
 import blog.common.Util;
+import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixLib;
 import blog.model.Type;
 import Jama.*;
 import java.util.*;
@@ -92,12 +94,12 @@ public class UniformVector extends AbstractCondProbDistrib {
 	}
 
 	public double getProb(List args, Object value) {
-		Matrix x = checkArgs(args, value);
+		MatrixLib x = checkArgs(args, value);
 		return inBox(x) ? densityInBox : 0;
 	}
 
 	public double getLogProb(List args, Object value) {
-		Matrix x = checkArgs(args, value);
+		MatrixLib x = checkArgs(args, value);
 		return inBox(x) ? logDensityInBox : Double.NEGATIVE_INFINITY;
 	}
 
@@ -108,40 +110,40 @@ public class UniformVector extends AbstractCondProbDistrib {
 							+ args.size() + ".");
 		}
 
-		Matrix sample = new Matrix(dim, 1);
+		MatrixLib sample = new JamaMatrixLib(new double[dim][1]);
 		for (int i = 0; i < dim; ++i) {
-			sample.set(i, 0, mins[i] + (Util.random() * (maxes[i] - mins[i])));
+			sample.setElement(i, 0, mins[i] + (Util.random() * (maxes[i] - mins[i])));
 		}
 		return sample;
 	}
 
-	private Matrix checkArgs(List args, Object value) {
+	private MatrixLib checkArgs(List args, Object value) {
 		if (args.size() != 0) {
 			throw new IllegalArgumentException(
 					"Uniform vector distribution takes 0 arguments, " + " not "
 							+ args.size() + ".");
 		}
 
-		if (!((value instanceof Matrix) && (((Matrix) value).getColumnDimension() == 1))) {
+		if (!((value instanceof MatrixLib) && (((MatrixLib) value).colLen() == 1))) {
 			throw new IllegalArgumentException(
 					"The value passed to the uniform vector distribution's "
 							+ "getProb method must be a column vector.");
 		}
-		Matrix x = (Matrix) value;
+		MatrixLib x = (MatrixLib) value;
 
-		if (x.getRowDimension() != dim) {
+		if (x.rowLen() != dim) {
 			throw new IllegalArgumentException(
 					"The vector passed to the uniform vector distribution's "
 							+ "getProb method must be " + dim + "-dimensional, not "
-							+ x.getRowDimension() + "-dimensional");
+							+ x.rowLen() + "-dimensional");
 		}
 
 		return x;
 	}
 
-	private boolean inBox(Matrix x) {
+	private boolean inBox(MatrixLib x) {
 		for (int i = 0; i < dim; ++i) {
-			double val = x.get(i, 0);
+			double val = x.elementAt(i, 0);
 			if ((val < mins[i]) || (val > maxes[i])) {
 				return false;
 			}

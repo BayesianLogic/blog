@@ -203,7 +203,7 @@ public class ConjFormula extends Formula {
 			Set conjSat = conj.getSatisfiersIfExplicit(context, subject, genericObj);
 			satByAllObjs[i] = (conjSat == Formula.ALL_OBJECTS);
 
-			if ((conjSat != null) && (conjSat != Formula.ALL_OBJECTS)) {
+			if ((conjSat != null) && (conjSat != Formula.ALL_OBJECTS) && (conjSat != Formula.NOT_EXPLICIT)) {
 				// We have explicit set of objects satisfying this conjunct.
 				// Formula satisfiers are those that satisfy all other
 				// conjuncts too.

@@ -1,0 +1,16 @@
+type Person;
+distinct Person P[10];
+fixed Real mu = 10;
+fixed Real sigma = 1;
+random Real skill(Person p) ~ Gaussian(mu, sigma);
+random Boolean lazy(Person p) ~ Bernoulli(0.1);
+random Real strength(Person p) {
+	if lazy(p) then = skill(p) / 2
+	else = skill(p)
+}
+random Boolean win() {
+	if (strength(P[0]) + strength(P[1]) + strength(P[2]) + strength(P[3]) + strength(P[4]) > strength(P[5]) + strength(P[6]) + strength(P[7]) + strength(P[8]) + strength(P[9])) then = true
+	else = false
+}
+obstrue win;
+query skill(P[0]);

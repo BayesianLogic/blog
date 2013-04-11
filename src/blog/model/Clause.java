@@ -342,7 +342,7 @@ public class Clause {
 							+ "parameters should be passed as arguments.");
 					++errors;
 				} else {
-					paramValues.add(param.getValueIfNonRandom());
+					paramValues.add(val);
 				}
 			}
 		}
