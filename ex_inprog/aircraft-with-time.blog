@@ -11,6 +11,17 @@ origin Timestep Time(Blip);
 #Blip(Source=a, Time=t) ~ Bernoulli(0.8);
 #Blip(Time=t) ~ Poisson(10);
 
+// Position
+random Real PosAircraft(Aircraft a, Timestep t) {
+	if t == @0 then UniformReal(0, 1)
+	else Gaussian(PosAircraft(a, t-1), 1);
+}
+
+random Real PosBlip(Blip b, Timestep t) {
+	if Source(b) == null then ~ UniformReal(0, 1)
+	else Gaussian(PosAircraft(Source(b), t));
+}
+
 // Evidence
 obs #{Blip b:Time=@0}= 3;
 obs #{Blip b:Time=@1}= 4;
