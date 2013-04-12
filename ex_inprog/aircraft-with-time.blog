@@ -8,7 +8,8 @@ origin Timestep Time(Blip);
 
 // Number Declarations
 #Aircraft ~ Poisson(5);
-#Blip(Source=a, Time=t) ~ Poisson(4);
+#Blip(Source=a, Time=t) ~ Bernoulli(0.8);
+#Blip(Time=t) ~ Poisson(10);
 
 // Evidence
 obs #{Blip b:Time=@0}= 3;
