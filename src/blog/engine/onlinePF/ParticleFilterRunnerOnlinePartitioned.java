@@ -53,7 +53,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		
 		Util.setVerbose(false);
 		
-		evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
+		evidenceGenerator = new OPFevidenceGeneratorPartitioned(model, queryStrings, eviCommunicator);
 	}
 	
 	public void setUpStreams(){
@@ -119,16 +119,22 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	
 	public boolean advancePhase2() {
 		Evidence evidence;
+		if(particleFilter.getPartitions().keySet().size()!=1){
+			System.err.println("error in particlefilterrunneronlinepartitioned.advancephase2");
+			System.exit(1);
+		}
+		
 		//evidenceGenerator.updateDecision(particleFilter.getPartitions().keySet().size());
-		evidenceGenerator.updateDecision();
-		//Iterator it = evidenceGenerator.getLatestDecision().iterator();
-		//for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
-			if ((evidence = (Evidence) evidenceGenerator.getLatestDecision()) != null) {
+		//evidenceGenerator.updateDecision();
+		evidenceGenerator.updateDecisions(particleFilter.getPartitions().keySet().size());
+		Iterator<Evidence> it = evidenceGenerator.getLatestDecisions().iterator();
+		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
+			if ((evidence = it.next()) != null) {
 				particleFilter.take(evidence);
 				//particleFilter.takeWithPartition(evidence, os);
 				return true;
 			}
-		//}
+		}
 		
 		return false;
 	}
@@ -203,7 +209,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	}
 
 	/** The evidence generator . */
-	public OPFevidenceGenerator evidenceGenerator;
+	public OPFevidenceGeneratorPartitioned evidenceGenerator;
 
 	/** Properties for construction of particle filter. */
 	protected Properties particleFilterProperties;

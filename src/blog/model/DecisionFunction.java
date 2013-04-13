@@ -58,6 +58,14 @@ public class DecisionFunction extends Function {
 			boolean stable) {
 		Set interpInContext = ((DefaultPartialWorld)context.getPartialWorld()).getDecisionInterp();
 		//DefaultPartialWorld thisWorld = ((DefaultPartialWorld)context.getPartialWorld());
+		for (int i = 0; i < args.length; ++i) {
+			if (args[i] == Model.NULL) {
+				return Model.NULL;
+			}
+			if (args[i] instanceof GenericObject) {
+				return null; // can't determine value on generic object
+			}
+		}
 		return Boolean.valueOf(interpInContext.contains(new DecisionFuncAppVar(this, args)));
 	}
 
@@ -89,6 +97,16 @@ public class DecisionFunction extends Function {
 				code ^= args[i].hashCode();
 			}
 			return code;
+		}
+		
+		public String toString(){
+			String rtn = f.toString();
+			rtn += "(";
+			for (Object o: args)
+				rtn += (o.toString()+",");
+			rtn +=")";
+			return rtn;
+			
 		}
 		
 	}
