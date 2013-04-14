@@ -62,7 +62,7 @@ public class SimpleObservableTest extends TestCase {
 			+	"distinct Move rock, paper, scissors;"
 			+	"decision Boolean chosen_Move(Move m, Timestep t);"
 			+	"random Boolean applied_Move(Move m, Timestep t){if (true) then = chosen_Move(m, t)};"
-			+	"random Move my_Move(Timestep t) {~ UniformChoice({Move m: (chosen_Move (m, t) == true)})};"
+			+	"random Move my_Move(Timestep t) {~ UniformChoice({Move m: (applied_Move (m, t) == true)})};"
 			+	"random Boolean observable(opponent_Move(Timestep t)){~ Categorical({true -> 0.9})};"
 			+	"random Move opponent_Move(Timestep t){~ UniformChoice({Move m})};"
 			+	"random Integer reward (Timestep t) {"
@@ -139,12 +139,14 @@ public class SimpleObservableTest extends TestCase {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}*/
-			
+			/*
 	    	out.println("");
 	    	runner.advancePhase1();
 	    	out.println("decide chosen_Move(rock, @0) = true;");
 	    	out.println("");
+	    	
 	    	runner.advancePhase2();
+	    	*/
 	    	out.println("query opponent_Move(@0);");
 	    	out.println("");
 	    	runner.advancePhase1();
@@ -161,16 +163,16 @@ public class SimpleObservableTest extends TestCase {
 	    	}
 	    	*/
 	    	
+	    	out.println("decide chosen_Move(scissors, @1) = true;");
+	    	out.println("");
 	    	out.println("decide chosen_Move(rock, @1) = true;");
 	    	out.println("");
 	    	out.println("decide chosen_Move(paper, @1) = true;");
 	    	out.println("");
-	    	out.println("decide chosen_Move(scissors, @1) = true;");
-	    	out.println("");
 	    	runner.advancePhase2();
 	    	//out.println("decide chosen_Move(paper, @1) = true;");
 	    	//out.println("");
-	    	out.println("query value(@0);");
+	    	out.println("query my_Move(@0);");
 	    	out.println("");
 	    	runner.advancePhase1();
 	    	out.close();

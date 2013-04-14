@@ -104,6 +104,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		beforeEvidenceAndQueries();
 		evidenceGenerator.updateObservationQuery();
 		if ((evidence = evidenceGenerator.getLatestObservation()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
+			//particleFilter.resample(); //resample moved here
 			particleFilter.take(evidence);
 			particleFilter.answer(queries);
 			particleFilter.repartition(); //IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!
@@ -133,11 +134,11 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			if ((evidence = it.next()) != null) {
 				//particleFilter.take(evidence);
 				particleFilter.takeWithPartition(evidence, os);
-				return true;
 			}
 		}
+		return true;
 		
-		return false;
+		//return false;
 	}
 
 	/**

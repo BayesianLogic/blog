@@ -296,10 +296,10 @@ public class PartitionedParticleFilter extends InferenceEngine {
 			System.exit(1);
 		}
 		if (!evidence.isEmpty()) { 
-			if (needsToBeResampledBeforeFurtherSampling) {
-				move();
-				resample();
-			}
+			//if (needsToBeResampledBeforeFurtherSampling) {
+			//	move();
+			//	resample();
+			//}
 			for (Iterator it = particles.iterator(); it.hasNext();) {
 				Particle p = (Particle) it.next();
 				p.take(evidence);
@@ -315,13 +315,13 @@ public class PartitionedParticleFilter extends InferenceEngine {
 			}
 			if (particles.size() == 0)
 				throw new IllegalArgumentException("All particles have zero weight");
-			needsToBeResampledBeforeFurtherSampling = true;
+			//needsToBeResampledBeforeFurtherSampling = true;
 		}
 	}
 
 	
 	
-	private void resample() {
+	public void resample() {
 		double[] weights = new double[particles.size()];
 		boolean[] alreadySampled = new boolean[particles.size()];
 		double sum = 0.0;
