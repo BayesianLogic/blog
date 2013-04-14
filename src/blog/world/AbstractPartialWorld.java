@@ -1029,6 +1029,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		newWorld.dirtyVars = (Set) ((LinkedHashSet) dirtyVars).clone();
 		newWorld.listeners = (List) ((ArrayList) listeners).clone();
 		newWorld.idTypes = new HashSet(idTypes);
+		
+		newWorld.observableToReferenced = (HashMap<BayesNetVar, BayesNetVar>) observableToReferenced.clone(); //clone the observability map
 	}
 
 	public String toString() {

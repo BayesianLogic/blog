@@ -359,6 +359,10 @@ public class PartitionedParticleFilter extends InferenceEngine {
 				int x= 1+1;
 			}
 			ObservabilitySignature os = new ObservabilitySignature(p);
+			if (os.observedValues.size()==0){
+				System.err.println("error");
+				ObservabilitySignature osd = new ObservabilitySignature(p);
+			}
 			if (partitions.containsKey(os)){
 				List partition = (List) partitions.get(os);
 				partition.add(p);
@@ -383,7 +387,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 
 	private int numParticles;
 	public List particles; // of Particles
-	private Map partitions;
+	public Map partitions;
 	private int numMoves;
 	private boolean needsToBeResampledBeforeFurtherSampling = false;
 	private Sampler particleSampler;

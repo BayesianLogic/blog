@@ -12,7 +12,7 @@ import blog.world.PartialWorld;
 import blog.world.AbstractPartialWorld;
 
 public class ObservabilitySignature {
-	private HashMap<BayesNetVar, Object> observedValues = new HashMap<BayesNetVar, Object>();
+	public HashMap<BayesNetVar, Object> observedValues = new HashMap<BayesNetVar, Object>();
 	
 	public ObservabilitySignature(Particle p){
 		PartialWorld world = p.getLatestWorld();
@@ -47,6 +47,9 @@ public class ObservabilitySignature {
 				return false;
 		}
 		return true;
+	}
+	public String toString(){
+		return observedValues.toString();
 	}
 	
 }

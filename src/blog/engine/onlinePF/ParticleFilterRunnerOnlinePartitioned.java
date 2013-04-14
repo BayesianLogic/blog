@@ -119,19 +119,20 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	
 	public boolean advancePhase2() {
 		Evidence evidence;
+		/*
 		if(particleFilter.getPartitions().keySet().size()!=1){
 			System.err.println("error in particlefilterrunneronlinepartitioned.advancephase2");
 			System.exit(1);
 		}
-		
+		*/
 		//evidenceGenerator.updateDecision(particleFilter.getPartitions().keySet().size());
 		//evidenceGenerator.updateDecision();
 		evidenceGenerator.updateDecisions(particleFilter.getPartitions().keySet().size());
 		Iterator<Evidence> it = evidenceGenerator.getLatestDecisions().iterator();
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
 			if ((evidence = it.next()) != null) {
-				particleFilter.take(evidence);
-				//particleFilter.takeWithPartition(evidence, os);
+				//particleFilter.take(evidence);
+				particleFilter.takeWithPartition(evidence, os);
 				return true;
 			}
 		}
@@ -153,8 +154,14 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	 */
 	protected void afterEvidenceAndQueries() {
 		Collection queries = evidenceGenerator.getLatestQueries();
+		//print out the overall results
+		for (Iterator it = queries.iterator(); it.hasNext();) {
+			ArgSpecQuery query = (ArgSpecQuery) it.next();
+			query.printResults(System.out);
+		}
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
 			particleFilter.answerWithPartition(queries, os);
+			System.out.println("NEW SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");
 			for (Iterator it = queries.iterator(); it.hasNext();) {
 				ArgSpecQuery query = (ArgSpecQuery) it.next();
 				//System.out.println("PF estimate of " + query + ":");
@@ -162,7 +169,11 @@ public class ParticleFilterRunnerOnlinePartitioned{
 				//query.printResults(queryCommunicator.p);
 				queryResultCommunicator.printInput("-----");
 				queryResultCommunicator.p.flush();
-				query.printResults(System.out);//strange bug here needs fixing
+				
+				System.out.println(printQueryString(query));
+				//query.printResults(queryCommunicator.p);
+				System.out.println("-----");
+				//query.printResults(System.out);//strange bug here needs fixing
 			}
 		}
 	}
