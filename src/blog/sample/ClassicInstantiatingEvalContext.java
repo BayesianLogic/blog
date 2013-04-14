@@ -208,6 +208,9 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 
 		//sampling of observability values
 		if (var instanceof RandFuncAppVar){
+			//if observable function
+			
+			//else
 			RandFuncAppVar referencedVar = (RandFuncAppVar) var;
 			RandomFunction obf = referencedVar.func().getObservableFun();
 			if (obf != null){

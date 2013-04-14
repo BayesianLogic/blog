@@ -254,7 +254,7 @@ public class Model {
 			throw new IllegalStateException("Can't add observableFunction with signature "
 					+ obsFun.getSig() + "because the referenced function is not found");
 		}
-		if (observableToFunc.containsKey(referencedFun.getSig()))
+		if (observableToFunc.containsKey(obsFun.getSig()))
 			throw new IllegalStateException("Can't add observableFunction with signature "
 					+ obsFun.getSig() + " because there is already a observable function defined");
 		if (referencedFun == null || !(referencedFun instanceof RandomFunction)){
