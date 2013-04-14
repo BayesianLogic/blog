@@ -362,7 +362,7 @@ public class ChoiceTest extends TestCase {
 		Util.setVerbose(true);
 
 	    setModel(logisticsModelString);
-	    ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties);
+	    ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
 	    PrintStream out = runner.getEviCommunicator().p;
 	    
 	    out.println("");

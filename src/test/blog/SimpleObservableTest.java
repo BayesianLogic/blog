@@ -50,7 +50,7 @@ public class SimpleObservableTest extends TestCase {
 
 	private static void setDefaultParticleFilterProperties() {
 		properties = new Properties();
-		properties.setProperty("numParticles", "10");
+		properties.setProperty("numParticles", "1000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		Util.initRandom(true);
@@ -70,9 +70,9 @@ public class SimpleObservableTest extends TestCase {
 			+	"	    if (my_Move(t)==rock)"
 			+	"	      then = 0"
 			+	"	    else if (my_Move(t)==paper)"
-			+	"	      then = -1"
+			+	"	      then = 1"
 			+	"	    else "
-			+	"	      = 1"
+			+	"	      = -1"
 			+	"	  else if (opponent_Move(t)==paper) then"
 			+	"	    if (my_Move(t)==rock)"
 			+	"	      then = -1"
@@ -163,16 +163,16 @@ public class SimpleObservableTest extends TestCase {
 	    	}
 	    	*/
 	    	
-	    	out.println("decide chosen_Move(scissors, @1) = true;");
+	    	out.println("decide chosen_Move(scissors, @0) = true;");
 	    	out.println("");
-	    	out.println("decide chosen_Move(rock, @1) = true;");
+	    	out.println("decide chosen_Move(rock, @0) = true;");
 	    	out.println("");
-	    	out.println("decide chosen_Move(paper, @1) = true;");
+	    	out.println("decide chosen_Move(paper, @0) = true;");
 	    	out.println("");
 	    	runner.advancePhase2();
 	    	//out.println("decide chosen_Move(paper, @1) = true;");
 	    	//out.println("");
-	    	out.println("query my_Move(@0);");
+	    	out.println("query value(@0);");
 	    	out.println("");
 	    	runner.advancePhase1();
 	    	out.close();
