@@ -162,10 +162,12 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	protected void afterEvidenceAndQueries() {
 		Collection queries = evidenceGenerator.getLatestQueries();
 		//print out the overall results
+		/*
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 			query.printResults(System.out);
 		}
+		*/
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
 			particleFilter.answerWithPartition(queries, os);
 			System.out.println("NEW SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");
