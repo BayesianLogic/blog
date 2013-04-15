@@ -1,16 +1,56 @@
 type Person;
-distinct Person P[10];
+distinct Person James, David, Christopher, 
+  George, Ronald, John, Richard, Daniel, 
+  Kenneth, Anthony, Robert, Charles, Paul, 
+  Steven, Kevin, Michael, Joseph, Mark, Edward, 
+  Jason, William, Thomas, Donald, Brian, Jeff;
+distinct Person Mary, Jennifer, Lisa, Sandra, Michelle,
+  Patricia, Maria, Nancy, Donna, Laura, Linda, Susan,
+  Karen, Carol, Sarah, Barbara, Margaret, Betty, Ruth,
+  Kimberly, Elizabeth, Dorothy, Helen, Sharon, Deborah;
 fixed Real mu = 10;
-fixed Real sigma = 1;
+fixed Real sigma = 2;
 random Real skill(Person p) ~ Gaussian(mu, sigma);
-random Boolean lazy(Person p) ~ Bernoulli(0.1);
-random Real strength(Person p) {
-	if lazy(p) then = skill(p) / 2
-	else = skill(p)
-}
-random Boolean win() {
-	if (strength(P[0]) + strength(P[1]) + strength(P[2]) + strength(P[3]) + strength(P[4]) > strength(P[5]) + strength(P[6]) + strength(P[7]) + strength(P[8]) + strength(P[9])) then = true
-	else = false
-}
-obstrue win;
-query skill(P[0]);
+
+fixed Person Player(Integer i, Integer k) // k-th player in i-th match 
+  = TabularInterp(2, 
+    1, 1, James,
+    1, 2, David,
+    1, 3, George,
+    1, 4, Ronald,
+    1, 5, John,
+    1, 6, Richard,
+
+    2, 1, Charles,
+    2, 2, David,
+    2, 3, Jeff,
+    2, 4, Ronald,
+    2, 5, Kevin,
+    2, 6, Anthony,
+
+    3, 1, Kevin,
+    3, 2, Robert,
+    3, 3, Jeff,
+    3, 4, Paul,
+    3, 5, Charles,
+    3, 6, Anthony
+  );
+
+random Boolean lazy(Person p, Integer i) 
+  ~ Bernoulli(0.1);
+
+random Real strength(Person p, Integer i) 
+	if lazy(p, i) then = skill(p) / 2
+	else = skill(p);
+
+random Boolean win(Integer i)
+	if (strength(Player(i, 1), i) + strength(Player(i, 2), i)
+	  + strength(Player(i, 3), i) > strength(Player(i, 4), i)
+	  + strength(Player(i, 5), i) + strength(Player(i, 6), i)) 
+	then = true
+	else = false;
+
+query win(1);
+query win(2);
+query win(3);
+query skill(James);
