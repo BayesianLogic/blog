@@ -19,6 +19,7 @@ import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
+import blog.model.RandomFunction;
 import blog.world.PartialWorld;
 
 
@@ -52,6 +53,10 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		setUpStreams();
 		
 		Util.setVerbose(false);
+		
+		for (RandomFunction orf: (List<RandomFunction>) model.getObsFun()){
+			queryStrings.add(((ObservableRandomFunction) orf).queryString);
+		}
 		
 		evidenceGenerator = new OPFevidenceGeneratorPartitioned(model, queryStrings, eviCommunicator);
 	}
@@ -106,6 +111,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		if ((evidence = evidenceGenerator.getLatestObservation()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
 			//particleFilter.resample(); //resample moved here
 			particleFilter.take(evidence);
+			
 			particleFilter.answer(queries);
 			particleFilter.repartition(); //IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!
 			afterEvidenceAndQueries();

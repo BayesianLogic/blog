@@ -800,4 +800,13 @@ public class Model {
 	public RandomFunction getRandomFuncByObservableSig (FunctionSignature fs){
 		return observableToFunc.get(fs);
 	}
+	public List<RandomFunction> getObsFun(){
+		ArrayList<RandomFunction> rtn = new ArrayList<RandomFunction>();
+		for (FunctionSignature fs : observableToFunc.keySet()){
+			RandomFunction f = (RandomFunction) this.getFunction(fs);
+			rtn.add(f);
+		}
+		return rtn;
+	}
+	
 }
