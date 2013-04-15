@@ -103,7 +103,7 @@ public class QueryResult {
 					q2p.put(q, Double.valueOf(pot));
 				}
 				else {
-					System.err.println("NOTHING MATCHESSSSSSSSSSSSSS: QueryResult.parseQueryResult, offending string is: "+s);
+					//System.err.println("NOTHING MATCHESSSSSSSSSSSSSS: QueryResult.parseQueryResult, offending string is: "+s);
 				}
 			}
 		}

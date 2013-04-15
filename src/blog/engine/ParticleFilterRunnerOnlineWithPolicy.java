@@ -53,7 +53,7 @@ public class ParticleFilterRunnerOnlineWithPolicy extends ParticleFilterRunnerOn
 		+	"decision Boolean applied_action (Action a, Timestep t);"
 		
 		+	"random Boolean succeed_action (Timestep t){"
-		+	"  ~ Categorical({true -> 0.9, false -> 0.1})"
+		+	"  ~ Categorical({true -> 0.99, false -> 0.01})"
 		+	"};"
 			
 		+	"random Integer pos (Timestep t) {"

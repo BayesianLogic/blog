@@ -1,0 +1,6 @@
+if ("opponent_Move(t)==rock" >= 0.5) 
+  {"chosen_Move(paper,t)"} 
+elseif ("opponent_Move(t)==paper">=0.5)
+  {"chosen_Move(scissors,t)"} 
+else
+  {"chosen_Move(rock,t)"} ;

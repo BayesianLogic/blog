@@ -58,7 +58,9 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			queryStrings.add(((ObservableRandomFunction) orf).queryString);
 		}
 		
-		evidenceGenerator = new OPFevidenceGeneratorPartitioned(model, queryStrings, eviCommunicator);
+		//evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
+		PolicyModel pm = PolicyModel.policyFromFile("/home/saasbook/git/dblog/src/blog/engine/onlinePF/parser/rockpaperscissors_policy");
+		evidenceGenerator = new OPFevidenceGeneratorWithPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
 	}
 	
 	public void setUpStreams(){
@@ -134,10 +136,9 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		*/
 		//evidenceGenerator.updateDecision(particleFilter.getPartitions().keySet().size());
 		//evidenceGenerator.updateDecision();
-		evidenceGenerator.updateDecisions(particleFilter.getPartitions().keySet().size());
-		Iterator<Evidence> it = evidenceGenerator.getLatestDecisions().iterator();
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
-			if ((evidence = it.next()) != null) {
+		evidenceGenerator.updateDecision();
+			if ((evidence = evidenceGenerator.getLatestDecision()) != null) {
 				//particleFilter.take(evidence);
 				particleFilter.takeWithPartition(evidence, os);
 			}
@@ -162,28 +163,36 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	protected void afterEvidenceAndQueries() {
 		Collection queries = evidenceGenerator.getLatestQueries();
 		//print out the overall results
-		/*
+		
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 			query.printResults(System.out);
 		}
-		*/
+		
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
 			particleFilter.answerWithPartition(queries, os);
-			System.out.println("NEW SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");
+			//System.out.println("SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");
 			for (Iterator it = queries.iterator(); it.hasNext();) {
 				ArgSpecQuery query = (ArgSpecQuery) it.next();
 				//System.out.println("PF estimate of " + query + ":");
-				queryResultCommunicator.printInput(printQueryString(query));
 				//query.printResults(queryCommunicator.p);
+				
+				/*
+				queryResultCommunicator.printInput(printQueryString(query));
 				queryResultCommunicator.printInput("-----");
 				queryResultCommunicator.p.flush();
+				*/
 				
-				System.out.println(printQueryString(query));
+				queryResultCommunicator.printInputNL(printQueryString(query));
+				queryResultCommunicator.printInputNL("-----");
+				
+				//System.out.println(printQueryString(query));
 				//query.printResults(queryCommunicator.p);
-				System.out.println("-----");
+				//System.out.println("-----");
 				//query.printResults(System.out);//strange bug here needs fixing
 			}
+			queryResultCommunicator.printInput("");
+			queryResultCommunicator.p.flush();
 		}
 	}
 	
@@ -229,7 +238,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	}
 
 	/** The evidence generator . */
-	public OPFevidenceGeneratorPartitioned evidenceGenerator;
+	public OPFevidenceGenerator evidenceGenerator;
 
 	/** Properties for construction of particle filter. */
 	protected Properties particleFilterProperties;

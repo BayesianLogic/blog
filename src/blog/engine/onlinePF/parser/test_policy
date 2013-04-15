@@ -8,4 +8,6 @@ elseif ("pos(t)==4">=0.5)
   {"applied_action(right,t)"}
 elseif ("pos(t)==5">=0.5)
   {"applied_action(up,t)"} 
+elseif ("pos(t)==6">=0.5)
+  {"applied_action(up,t)"} 
 else {"applied_action(down,t)"};

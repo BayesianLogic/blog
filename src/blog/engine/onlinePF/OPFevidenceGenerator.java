@@ -89,7 +89,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		
 	}
 	public void updateObservationQuery(){
-		System.out.println("Enter observations/queries for: "+ lastTimeStep);
+		//System.out.println("Enter observations/queries for: "+ lastTimeStep);
 		List<Query> q = (List<Query>) getLatestQueries();
 		Evidence ev = new Evidence();
 		getInput(ev, q);
@@ -100,7 +100,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		latestObservation = ev;
 	}
 	public void updateDecision(){
-		System.out.println("Enter decision for: "+ lastTimeStep);
+		//System.out.println("Enter decision for: "+ lastTimeStep);
 		List<Query> q = Util.list();
 		Evidence ev = new Evidence();
 		getInput(ev, q);
@@ -157,7 +157,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		
 		checkEvidenceMatchesTimestep(ev);
 		
-		System.out.println("Evidence Entered:\n"+accstr);
+		//System.out.println("Evidence Entered:\n"+accstr);
 
 	}
 	

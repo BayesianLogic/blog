@@ -63,9 +63,9 @@ public class SimpleObservableTest extends TestCase {
 			+	"decision Boolean chosen_Move(Move m, Timestep t);"
 			+	"random Boolean applied_Move(Move m, Timestep t){if (true) then = chosen_Move(m, t)};"
 			+	"random Move my_Move(Timestep t) {~ UniformChoice({Move m: (applied_Move (m, t) == true)})};"
-			+	"random Boolean observable(opponent_Move(Timestep t)){~ Categorical({true -> 0.9})};"
-			+	"random Integer irrelevant (Move m, Timestep t){if (true) then = 1};"
-			+	"random Boolean observable(irrelevant(Move m, Timestep t)){if (true) then = true};"
+			+	"random Boolean observable(opponent_Move(Timestep t)){~ Categorical({true -> 1.0})};"
+			//+	"random Integer irrelevant (Move m, Timestep t){if (true) then = 1};"
+			//+	"random Boolean observable(irrelevant(Move m, Timestep t)){if (true) then = true};"
 			+	"random Move opponent_Move(Timestep t){~ UniformChoice({Move m})};"
 			+	"random Integer reward (Timestep t) {"
 			+	"	  if (opponent_Move(t)==rock) then"
@@ -100,9 +100,9 @@ public class SimpleObservableTest extends TestCase {
 
 			+	"random Real value(Timestep t){"
 			+	"  if(t == @0) then"
-			+	"    =reward(@0)"
+			+	"    = 0"
 			+	"  else"
-			+	"    = (value(Prev(t))) + ( reward(t) * discount(t))"
+			+	"    = (value(Prev(t))) + ( reward(Prev(t)) * discount(t))"
 			+	"};"
 
 
@@ -122,16 +122,20 @@ public class SimpleObservableTest extends TestCase {
 	public static void main(String[] args){
 	//public void test_random_logistics() throws Exception {
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list();
+		Collection queryStrings = Util.list("value(t)");
 		setDefaultParticleFilterProperties();
 	    setModel(logisticsModelStringRandomBoxes);
 	    
 	    ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties);
-	    PrintStream out = runner.getEviCommunicator().p;
+	    //PrintStream out = runner.getEviCommunicator().p;
 	    
-	    //Thread t = new Thread(new PFRunnerThreadWrapper(runner));
+	    runner.run();
+	    /*
+	    Thread t = new Thread(new PFRunnerThreadWrapper(runner));
 	    BufferedReader br = new BufferedReader (new InputStreamReader (System.in));
-	    //t.start();
+	    t.start();
+	    */
+	    
 	    //while(t.isAlive()){
 	    	//String s = "";
 	    	/*
@@ -149,9 +153,9 @@ public class SimpleObservableTest extends TestCase {
 	    	
 	    	runner.advancePhase2();
 	    	*/
-	    	out.println("query opponent_Move(@0);");
-	    	out.println("");
-	    	runner.advancePhase1();
+	    	//out.println("query opponent_Move(@0);");
+	    	//out.println("");
+	    	//runner.advancePhase1();
 	    	/*
 	    	while (true){
 	    		String s = null;
@@ -164,7 +168,7 @@ public class SimpleObservableTest extends TestCase {
 		    	out.println(s);
 	    	}
 	    	*/
-	    	
+	    	/*
 	    	out.println("decide chosen_Move(scissors, @0) = true;");
 	    	out.println("");
 	    	out.println("decide chosen_Move(rock, @0) = true;");
@@ -178,7 +182,7 @@ public class SimpleObservableTest extends TestCase {
 	    	out.println("");
 	    	runner.advancePhase1();
 	    	out.close();
-	    	
+	    	*/
 	    	//out.println("\n");
 	    	//out.println("\n");
 	    	//out.println("\n");
