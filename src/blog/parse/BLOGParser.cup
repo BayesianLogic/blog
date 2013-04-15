@@ -433,6 +433,8 @@ dependency_statement_body ::= EQ expression:e
   | /* not recommended to add {}, just for compactibility of old syntax */
     LBRACE dependency_statement_body:e RBRACE
     {: RESULT = e; :}
+  | LBRACE dependency_statement_body:e SEMI RBRACE
+    {: error("extra semicolon inside braces!"); :}
   | IF:a expression:e1 dependency_statement_body:e2 elseif_list:e3
     {: error("missing THEN in dependency statement clause, proceed anyway");
     RESULT = new IfExpr(currLineno(), currColno(), e1, e2, e3); :}
