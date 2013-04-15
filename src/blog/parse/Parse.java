@@ -55,7 +55,7 @@ public class Parse {
 
 	public static Parse parseString(String content) {
 		blog.msg.ErrorMsg errorMsg = new blog.msg.ErrorMsg("STRING"
-				+ content.hashCode());
+		    + content.hashCode());
 		java.io.Reader inp;
 		try {
 			inp = new java.io.StringReader(content);
