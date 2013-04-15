@@ -1,3 +1,17 @@
+/**
+ * Tug of war
+ * 
+ * The strength of each person is drawn from a normal distribution. 
+ * A person is lazy 10% of the time. The pulling power of a person 
+ * is half her strength if she is being lazy and otherwise is her 
+ * full strength. The pulling power of a team is the sum of the 
+ * pulling power of the individuals on the team. The team with the 
+ * greater pulling power wins.
+ * 
+ * @author Lei Li
+ * @date 2013/03/30
+ */
+
 type Person;
 distinct Person James, David, Christopher, 
   George, Ronald, John, Richard, Daniel, 
@@ -50,7 +64,8 @@ random Boolean win(Integer i)
 	then = true
 	else = false;
 
-query win(1);
+obs win(1) = true;
+
 query win(2);
 query win(3);
 query skill(James);
