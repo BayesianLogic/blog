@@ -63,7 +63,7 @@ public class SimpleObservableTest extends TestCase {
 			+	"decision Boolean chosen_Move(Move m, Timestep t);"
 			+	"random Boolean applied_Move(Move m, Timestep t){if (true) then = chosen_Move(m, t)};"
 			+	"random Move my_Move(Timestep t) {~ UniformChoice({Move m: (applied_Move (m, t) == true)})};"
-			+	"random Boolean observable(opponent_Move(Timestep t)){~ Categorical({true -> 1.0})};"
+			+	"random Boolean observable(opponent_Move(Timestep t)){~ Categorical({true -> 0.9, false -> 0.1})};"
 			//+	"random Integer irrelevant (Move m, Timestep t){if (true) then = 1};"
 			//+	"random Boolean observable(irrelevant(Move m, Timestep t)){if (true) then = true};"
 			+	"random Move opponent_Move(Timestep t){~ UniformChoice({Move m})};"
