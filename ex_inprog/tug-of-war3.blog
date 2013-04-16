@@ -1,0 +1,65 @@
+/**
+ * Tug of war
+ * 
+ * The strength of each person is drawn from a normal distribution. 
+ * A person is lazy 10% of the time. The pulling power of a person 
+ * is half her strength if she is being lazy and otherwise is her 
+ * full strength. The pulling power of a team is the sum of the 
+ * pulling power of the individuals on the team. The team with the 
+ * greater pulling power wins.
+ * 
+ * This version uses lambda expression and reduce function.
+ * 
+ * @author Lei Li
+ * @date 2013/03/30
+ */
+
+type Person;
+distinct Person James, David, Christopher, 
+  George, Ronald, John, Richard, Daniel, 
+  Kenneth, Anthony, Robert, Charles, Paul, 
+  Steven, Kevin, Michael, Joseph, Mark, Edward, 
+  Jason, William, Thomas, Donald, Brian, Jeff;
+distinct Person Mary, Jennifer, Lisa, Sandra, Michelle,
+  Patricia, Maria, Nancy, Donna, Laura, Linda, Susan,
+  Karen, Carol, Sarah, Barbara, Margaret, Betty, Ruth,
+  Kimberly, Elizabeth, Dorothy, Helen, Sharon, Deborah;
+fixed Real mu = 10;
+fixed Real sigma = 2;
+random Real skill(Person p) ~ Gaussian(mu, sigma);
+
+random Person[] Team1(Integer i) // 1st team of i-th match 
+  = ~ UniformChoice({Person p}, 3);
+
+random Person[] Team2(Integer i) // 2nd team of i-th match 
+  = ~ UniformChoice({Person p}, 3);
+
+random Boolean lazy(Person p, Integer i) 
+  ~ Bernoulli(0.1); // person p at i-th match
+
+random Real strength(Person p, Integer i) 
+	if lazy(p, i) then = skill(p) / 2
+	else = skill(p);
+
+random Real power(Person[] ps, i)
+  = reduce(__PLUS, map(lambda x : strength(x, i), ps));
+
+random Boolean Team1Win(Integer i)
+	if (power(Team1(i), i) > power(Team2(i), i)) 
+	then = true
+	else = false;
+
+obs Team1(1) = [James, David, Christopher];
+obs Team2(1) = [George, Ronald, John];
+
+obs Team1(2) = [James, David, Anthony];
+obs Team2(2) = [Christopher, Joseph, John];
+
+obs Team1(3) = [Daniel, Jeff, Christopher];
+obs Team2(3) = [George, David, James];
+
+obs Team1Win(1) = true;
+
+query Team1Win(2);
+query Team1Win(3);
+query skill(James);
