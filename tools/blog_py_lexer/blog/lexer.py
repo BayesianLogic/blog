@@ -7,7 +7,7 @@ class BlogLexer(RegexLexer):
   filenames = ['*.blog', '*.dblog']
   operators = ['\\-\\>','=','~',':', '\\+', '\\-', '\\*', '/', '\\[', ']', 
          '\\{', '}', '!', '\\<', '\\>', '\\<=', '\\>=', '==', '!=', 
-         '&', '\\|', '=\\>', '#', '\\^', '%']
+         '&', '\\|', '=\\>', '#', '\\^', '%', '@']
   wordops = ['Prev', 'IsEmptyString']
   deliminators = [',', ';', '\\(', '\\)']
   keywords = ['extern','import','fixed','distinct','random','origin',
@@ -24,6 +24,8 @@ class BlogLexer(RegexLexer):
 
   tokens = {
     'root' : [
+      (r'//.*?\n', Comment.Single),
+      (r'(?s)/\*.*?\*/', Comment.Multiline),
       (r'([a-zA-Z]+[0-9]*)(\()', bygroups(Name.Function, Punctuation)),
       (r'('+gen_regex(types)+')\\b', Keyword.Type),
       (r'('+gen_regex(distribs)+')\\b', Name.Class),
@@ -36,8 +38,6 @@ class BlogLexer(RegexLexer):
       (gen_regex(deliminators), Punctuation),
       (r'\d+\.\d+', Number.Float),
       (r'\d+', Number.Integer),
-      (r'//.*?\n', Comment.Single),
-      (r'/\*.*?\*/', Comment.Multiline),
       (r'\s+', Text),
     ]
   }
@@ -58,7 +58,12 @@ def run_tests():
     "fixed List<NaturalNum> a = List(1, 2, 3, 4, 5, 6);",
     "fixed Map<Boolean, Real> map1 = {true -> 0.3, false -> 0.7};",
     "Categorical<Boolean> cpd1 =Categorical({true -> 0.3, false -> 0.7});",
-    "List"
+    "List", 
+    "/*abc */",
+    """
+/* Evidence for the Hidden Markov Model.
+ */
+"""
   ]
   lexer = BlogLexer()
   for test in tests:
