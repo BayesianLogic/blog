@@ -16,7 +16,7 @@ import blog.engine.onlinePF.parser.Semant;
  */
 public class PolicyModel {
 	public List<DecisionUnit> decisionUnits = new ArrayList<DecisionUnit>();
-	
+	FileCommunicator f = new FileCommunicator("policies.txt");  
 	/**Gets the queries for latest Timestep t*/
 	public String getQueries (int t){
 		String rtn = "";
@@ -31,6 +31,7 @@ public class PolicyModel {
 		for (DecisionUnit u : decisionUnits){
 			rtn += u.getDecision(q);
 		}
+		f.printInput(rtn);
 		return rtn;
 	}
 	
@@ -42,5 +43,11 @@ public class PolicyModel {
 		return p;
 	}
 	
-
+	public static PolicyModel policyFromString(String policyModel){
+		Parse parse = Parse.parseString(policyModel);
+		Semant s = new Semant();
+		s.transPolicy(parse.getParseResult());
+		PolicyModel p = s.pm;
+		return p;
+	}
 }

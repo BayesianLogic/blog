@@ -41,7 +41,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 
 	
 	public ParticleFilterRunnerOnlinePartitioned(Model model, Collection linkStrings,
-			Collection queryStrings, Properties particleFilterProperties) {
+			Collection queryStrings, Properties particleFilterProperties, PolicyModel pm) {
 		this.model = model;
 		particleFilter = new PartitionedParticleFilter(model, particleFilterProperties);
 		this.particleFilterProperties = particleFilterProperties;
@@ -59,7 +59,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		}
 		
 		//evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
-		PolicyModel pm = PolicyModel.policyFromFile("/home/saasbook/git/dblog/src/blog/engine/onlinePF/parser/rockpaperscissors_policy");
+		
 		evidenceGenerator = new OPFevidenceGeneratorWithPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
 	}
 	
@@ -164,9 +164,13 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		Collection queries = evidenceGenerator.getLatestQueries();
 		//print out the overall results
 		
+		int i = 0;
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
-			query.printResults(System.out);
+			//query.printResults(System.out);
+			if (i==0)
+				System.err.println(averageQueryResult(query));
+			i++;
 		}
 		
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
@@ -209,6 +213,17 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		return rtn;
 	}
 
+	public Double averageQueryResult(ArgSpecQuery q) {
+		Double rtn = (double) 0;
+		Histogram histogram = q.getHistogram();
+		List<Histogram.Entry> entries = new ArrayList<Histogram.Entry>(histogram.entrySet());
+		for (Iterator<Histogram.Entry> iter = entries.iterator(); iter.hasNext();) {
+			Histogram.Entry entry = iter.next();
+			double prob = entry.getWeight() / histogram.getTotalWeight();
+			rtn = rtn + ((Number)entry.getElement()).doubleValue()* ((Number) entry.getWeight()).doubleValue() / ((Number) histogram.getTotalWeight()).doubleValue();
+		}
+		return rtn;
+	}
 	/**
 	 * Returns the collection of queries instantiated for current time step.
 	 */
@@ -280,7 +295,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		
 		Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(), verbose, false);
 		ParticleFilterRunnerOnlinePartitioned a = new ParticleFilterRunnerOnlinePartitioned(model,
-				linkStrings, queryStrings, properties);
+				linkStrings, queryStrings, properties, null);
 		/*
 		a.eviCommunicator=new BufferedReader(new InputStreamReader(System.in));
 		FileInputStream evidenceIn = new FileInputStream("ex_inprog/logistics/logistics_choice.evidence");
