@@ -36,7 +36,7 @@ class BlogLexer(RegexLexer):
       (r'([a-zA-Z_]\w*)\b', Name),
       (r'"(\\\\|\\"|[^"])*"', String),
       (gen_regex(deliminators), Punctuation),
-      (r'\d+\.\d+', Number.Float),
+      (r'\d*\.\d+', Number.Float),
       (r'\d+', Number.Integer),
       (r'\s+', Text),
     ]
