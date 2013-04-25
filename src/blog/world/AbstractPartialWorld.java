@@ -1058,6 +1058,27 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	public HashMap<BayesNetVar, BayesNetVar> getObservableMap(){
 		return observableToReferenced;
 	}
+	/**
+	 * checks if two partial worlds are equal, minus decision function
+	 * and observation function values
+	 */
+	public boolean innerStateEquals(AbstractPartialWorld otherWorld) {
+		boolean rtn = true;
+		
+		rtn = rtn && (otherWorld.basicVarToValue == (Map) ((HashMap) basicVarToValue));
+		for (Object o : basicVarToValue.keySet()){
+			BasicVar v = (BasicVar) o;
+			if (v instanceof RandFuncAppVar){
+				if (((RandFuncAppVar) v).func().getObservableFun() != null)
+					continue;
+			}
+			else {
+				rtn = rtn && (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v)));
+			}
+		}
+		
+		return rtn;
+	}
 	
 	
 	
