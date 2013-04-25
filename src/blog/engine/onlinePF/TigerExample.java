@@ -43,7 +43,7 @@ public class TigerExample {
 		+	"		= getState(Prev(t))};"
 		+	"random Integer reward (Timestep t){"
 		+	"	if (t == @0) then" 
-		+	"		= -1"
+		+	"		= 0"
 		+	"	else if (chosen_Move(Listen,Prev(t)) == true) then"
 		+	"		= -1"
 		+	"	else if ((getState(Prev(t)) == sl & chosen_Move(openLeft, Prev(t))) | (getState(Prev(t)) == sr & chosen_Move(openRight, Prev(t)))) then"
@@ -58,9 +58,9 @@ public class TigerExample {
 			;
 			
 	public static String tigerPolicyFile =
-			"if (\"getState(t)==sl\" >= 0.86)"
+			"if (\"getState(t)==sl\" >= 0.5)"
 		+	"	{\"chosen_Move(openRight,t)\"}"
-		+	"elseif (\"getState(t)==sr\" >= 0.86)"
+		+	"elseif (\"getState(t)==sr\" >= 0.5)"
 		+	"	{\"chosen_Move(openLeft,t)\"}"
 		+	"else"
 		+	"	{\"chosen_Move(Listen,t)\"};"
@@ -76,7 +76,7 @@ public class TigerExample {
 	}
 	private static void setDefaultParticleFilterProperties() {
 		properties = new Properties();
-		properties.setProperty("numParticles", "10000");
+		properties.setProperty("numParticles", "5000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		Util.initRandom(true);

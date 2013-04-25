@@ -9,6 +9,7 @@ import blog.Main;
 import blog.common.Histogram;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
+import blog.engine.Particle;
 import blog.engine.ParticleFilter;
 import blog.engine.ParticleFilterRunner;
 import blog.engine.onlinePF.Communicator;
@@ -112,14 +113,29 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		evidenceGenerator.updateObservationQuery();
 		if ((evidence = evidenceGenerator.getLatestObservation()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
 			//particleFilter.resample(); //resample moved here
-			particleFilter.take(evidence);
+			takeAndAnswer(evidence, queries);
 			
-			particleFilter.answer(queries);
-			particleFilter.repartition(); //IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!
+			
+			while (!particleFilter.checkPartition(10)){
+				particleFilter.resetLastEvidence(2);
+				particleFilter.repartition();
+				System.out.println("Went below minimal threshold at timestep: " + evidenceGenerator.lastTimeStep);
+				System.out.println("New number of particles: " + particleFilter.numParticles);
+				takeAndAnswer(evidence,queries);
+			}
+			
+			
 			afterEvidenceAndQueries();
 			return true;
 		}
 		return false;
+	}
+	
+	private void takeAndAnswer(Evidence evidence, Collection queries){
+		particleFilter.take(evidence);
+		particleFilter.answer(queries);
+		particleFilter.repartition(); //IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!
+			
 	}
 	
 	//decide applied_Load(argload(@0), t1, @0)=true;
@@ -136,13 +152,23 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		*/
 		//evidenceGenerator.updateDecision(particleFilter.getPartitions().keySet().size());
 		//evidenceGenerator.updateDecision();
+		//HashSet<String> tmp = new HashSet<String>();
+		
+		
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
 		evidenceGenerator.updateDecision();
 			if ((evidence = evidenceGenerator.getLatestDecision()) != null) {
 				//particleFilter.take(evidence);
 				particleFilter.takeWithPartition(evidence, os);
 			}
+
 		}
+		/*
+		for (Particle p : (List<Particle>) particleFilter.particles){
+			if (!tmp.contains(p.foodecisionstring))
+				tmp.add(p.foodecisionstring);
+		}
+		System.out.println("Num moves sequences: " + tmp.size());*/
 		return true;
 		
 		//return false;
@@ -165,11 +191,14 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		//print out the overall results
 		
 		int i = 0;
+		//System.out.println(particleFilter.partitions.size());
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 			//query.printResults(System.out);
+			
 			if (i==0)
 				System.err.println(averageQueryResult(query));
+				
 			i++;
 		}
 		

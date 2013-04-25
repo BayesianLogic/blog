@@ -205,7 +205,7 @@ public class ParticleFilter extends InferenceEngine {
 
 			for (Iterator it = particles.iterator(); it.hasNext();) {
 				Particle p = (Particle) it.next();
-
+				String s = p.curWorld.toString();
 				if (beforeParticleTakesEvidence != null)
 					beforeParticleTakesEvidence.evaluate(p, evidence, this);
 				p.take(evidence);

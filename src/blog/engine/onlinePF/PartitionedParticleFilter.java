@@ -236,13 +236,20 @@ public class PartitionedParticleFilter extends InferenceEngine {
 	public void take(Evidence evidence) {
 		if (particles == null)
 			resetAndTakeInitialEvidence();
+		cachedParticlesBeforeTakingEvidence = new ArrayList();
+		for (Iterator it = particles.iterator(); it.hasNext();) {
+			Particle p = (Particle) it.next();
+			cachedParticlesBeforeTakingEvidence.add(p.copy());
+		}
 		if (!evidence.isEmpty()) { 
 			if (needsToBeResampledBeforeFurtherSampling) {
 				move();
 				resample();
 			}
+			cachedParticlesBeforeTakingEvidence = new ArrayList();
 			for (Iterator it = particles.iterator(); it.hasNext();) {
 				Particle p = (Particle) it.next();
+				cachedParticlesBeforeTakingEvidence.add(p.copy());
 				p.take(evidence);
 			}
 			double sum = 0;
@@ -260,6 +267,20 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		}
 	}
 
+	/**
+	 * resets evidence and also expand the number of particles
+	 * @param expansionFactor
+	 */
+	@SuppressWarnings("unchecked")
+	public void resetLastEvidence(int expansionFactor){
+		particles = new ArrayList();//cachedParticlesBeforeTakingEvidence;
+		for (int i = 0; i< numParticles; i++){
+			for (int j = 0; j< expansionFactor; j++)
+				particles.add(((Particle)cachedParticlesBeforeTakingEvidence.get(i)).copy());
+		}
+		numParticles = numParticles * expansionFactor;
+		
+	}
 	
 	public void answer(Collection queries) {
 		//System.err.println("partitionedparticlefilter.answer() should not have been called");
@@ -303,6 +324,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 			for (Iterator it = particles.iterator(); it.hasNext();) {
 				Particle p = (Particle) it.next();
 				p.take(evidence);
+				//p.foo_take_decisionstring(evidence.toString());
 			}
 			double sum = 0;
 			ListIterator particleIt = particles.listIterator();
@@ -351,6 +373,25 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		//repartition(); no longer repartition here.
 	}
 
+	/**
+	 * Checks each bucket to see if the number of particles meets the minimum requirement
+	 * @return
+	 */
+	public boolean checkPartition(int threshold){
+		System.out.println("number of partition: "+ partitions.size());
+		for (Object o : partitions.keySet()){
+			//System.out.println(((List)(partitions.get(o))).size());
+			if (((List)(partitions.get(o))).size()<threshold){
+				System.out.println(o);
+				Object x = partitions.get(o);
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	
+	
 	public void repartition(){
 		partitions.clear();
 		for(Iterator i = particles.iterator(); i.hasNext();){
@@ -385,11 +426,12 @@ public class PartitionedParticleFilter extends InferenceEngine {
 
 	private Set idTypes; // of Type
 
-	private int numParticles;
+	int numParticles;
 	public List particles; // of Particles
 	public Map partitions;
 	private int numMoves;
 	private boolean needsToBeResampledBeforeFurtherSampling = false;
 	private Sampler particleSampler;
 	private AfterSamplingListener afterSamplingListener;
+	public List cachedParticlesBeforeTakingEvidence;
 }
