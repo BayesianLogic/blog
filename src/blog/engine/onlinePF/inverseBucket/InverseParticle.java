@@ -1,5 +1,7 @@
 package blog.engine.onlinePF.inverseBucket;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 import blog.world.AbstractPartialWorld;
 import blog.world.DefaultPartialWorld;
@@ -32,5 +34,23 @@ public class InverseParticle extends Particle{
 		return copy;
 	}
 
+	public boolean equals (Object o){
+		return ((AbstractPartialWorld) curWorld).innerStateEquals((AbstractPartialWorld)(((InverseParticle)o).curWorld));
+	}
+	public int hashCode(){
+		return ((AbstractPartialWorld) curWorld).hashCode();
+	}
+	
+	/**
+	 * 
+	 * @param queries the list of queries to be answered
+	 * @param weight the weight for this particle (actually the weight for
+	 * a particular observation sequence in the state for this particle
+	 */
+	public void updateQueriesStats(Collection<Query> queries, Double weight) {
+		for (Query q : queries) {
+			q.updateStats(getLatestWorld(), weight);
+		}
+	}
 
 }

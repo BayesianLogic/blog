@@ -7,6 +7,7 @@ import java.util.Map;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.engine.Particle;
+import blog.engine.onlinePF.inverseBucket.InverseParticle;
 import blog.model.RandomFunction;
 import blog.world.PartialWorld;
 import blog.world.AbstractPartialWorld;
@@ -14,10 +15,39 @@ import blog.world.AbstractPartialWorld;
 public class ObservabilitySignature {
 	public HashMap<BayesNetVar, Object> observedValues = new HashMap<BayesNetVar, Object>();
 
+	/**
+	 * returns a clone of the original (this)
+	 * @return
+	 */
+	public ObservabilitySignature copy (){
+		ObservabilitySignature rtn = new ObservabilitySignature();
+		for (BayesNetVar os : this.observedValues.keySet()){
+			observedValues.put(os, this.observedValues.get(os));
+		}
+		return rtn;
+	}
+	
+	/**
+	 * updates observability signature with new (i.e. next timestep) observability values
+	 * from a particle
+	 * @param p
+	 */
+	public void update (Particle p){
+		AbstractPartialWorld world = ((AbstractPartialWorld) p.getLatestWorld());
+		Map<BayesNetVar, BayesNetVar> o2r = world.getObservableMap();
+		for (BayesNetVar bnv : o2r.keySet()) {
+			Boolean myObs = (Boolean) world.getValue(bnv);
+			if (myObs.booleanValue()){
+				BayesNetVar referenced = o2r.get(bnv);
+				if (!observedValues.containsKey(referenced))
+					observedValues.put(referenced, world.getValue(referenced));
+			}
+		}
+	}
 	
 	public ObservabilitySignature(Particle p){
 		PartialWorld world = p.getLatestWorld();
-		Map<BayesNetVar, BayesNetVar> o2r = ((AbstractPartialWorld)world).getObservableMap();
+		Map<BayesNetVar, BayesNetVar> o2r = ((AbstractPartialWorld)world).getObservableMap(); //observability to referenced
 		for (Iterator i = o2r.keySet().iterator(); i.hasNext();){
 			BayesNetVar bnv = (BayesNetVar) i.next();
 			Boolean myObs = (Boolean) world.getValue(bnv);
@@ -26,6 +56,12 @@ public class ObservabilitySignature {
 				observedValues.put(referenced, world.getValue(referenced));
 			}
 		}
+	}
+	
+	/**
+	 * empty observability signature
+	 */
+	public ObservabilitySignature(){
 	}
 		
 	public int hashCode(){

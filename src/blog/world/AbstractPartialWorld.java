@@ -1043,6 +1043,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 */
 	protected Map basicVarToValue;
 
+	//start of change
 	/**
 	 * Set of objects containing DecisionFuncAppVar objects which evaluate to true
 	 */
@@ -1082,11 +1083,16 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	public boolean equals (Object o){
 		return this.innerStateEquals((AbstractPartialWorld) o);
 	}
+	/**
+	 * only basic vars are considered
+	 */
 	public int hashCode (){
 		int rtn = 0;
 		for (Object o : basicVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
 			if (v instanceof RandFuncAppVar){
+				if ((((RandFuncAppVar) v).func()) instanceof ObservableRandomFunction)
+					continue;
 				if (((RandFuncAppVar) v).func().getObservableFun() != null)
 					continue;
 			}
@@ -1096,7 +1102,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		}
 		return rtn;
 	}
-	
+	//end of change
 	
 	
 	
