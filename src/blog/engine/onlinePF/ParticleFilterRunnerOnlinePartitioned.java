@@ -21,6 +21,7 @@ import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
 import blog.model.RandomFunction;
+import blog.world.AbstractPartialWorld;
 import blog.world.PartialWorld;
 
 
@@ -201,7 +202,14 @@ public class ParticleFilterRunnerOnlinePartitioned{
 				
 			i++;
 		}
-		
+		HashSet<AbstractPartialWorld> h = new HashSet<AbstractPartialWorld>();;
+		for (Particle p : (List<Particle>)particleFilter.particles){
+			h.add((AbstractPartialWorld) p.curWorld);
+		}
+		System.out.println("number of states: " + h.size());
+		for (Object o : h){
+			int x = 1+1;
+		}
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
 			particleFilter.answerWithPartition(queries, os);
 			//System.out.println("SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");

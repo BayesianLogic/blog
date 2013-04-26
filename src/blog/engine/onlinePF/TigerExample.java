@@ -58,9 +58,9 @@ public class TigerExample {
 			;
 			
 	public static String tigerPolicyFile =
-			"if (\"getState(t)==sl\" >= 0.5)"
+			"if (\"getState(t)==sl\" >= 0.9)"
 		+	"	{\"chosen_Move(openRight,t)\"}"
-		+	"elseif (\"getState(t)==sr\" >= 0.5)"
+		+	"elseif (\"getState(t)==sr\" >= 0.9)"
 		+	"	{\"chosen_Move(openLeft,t)\"}"
 		+	"else"
 		+	"	{\"chosen_Move(Listen,t)\"};"

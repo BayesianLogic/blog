@@ -123,6 +123,38 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		getInput (new Evidence(), Util.list());
 	}
 	
+	public List<Query> getFreshQueries(){
+		if (latestQueryString == null){
+			System.err.println("latestQueryString uninitialized!");
+			System.exit(1);
+		}
+		else{
+			List<Query> rtn = new ArrayList<Query>();
+			Evidence tmp = new Evidence();
+			parseAndTranslateEvidence(tmp, rtn, new StringReader((String) latestQueryString));
+			
+			tmp.checkTypesAndScope(model);
+			if (tmp.compile()!=0)
+				System.exit(1);
+			
+			for (Query query : rtn){
+				if (!query.checkTypesAndScope(model)){
+					System.err.println("OPFevidencegenerator.getFreshQueries: error checking query");
+					System.exit(1);
+				}
+				if (query.compile()!=0){
+					System.err.println("OPFevidencegenerator.getFreshQueries: error compiling query");
+					System.exit(1);
+				}
+			}
+			
+			checkEvidenceMatchesTimestep(tmp);
+			return rtn;
+		}
+		return null;//should never reach this part
+		
+	}
+	
 	private void getInput (Evidence ev, List<Query> q){
 		String eviquerystr = "";
 		String accstr= "";
@@ -137,7 +169,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		
 
 		parseAndTranslateEvidence(ev, q, new StringReader((String) accstr));
-		
+		latestQueryString = accstr;
 		
 		
 		ev.checkTypesAndScope(model);
@@ -200,4 +232,5 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 	Evidence latestObservation;
 	Evidence latestDecision;
 	Communicator in;
+	public String latestQueryString = null;
 }

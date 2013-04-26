@@ -75,7 +75,7 @@ import blog.objgen.AbstractObjectSet;
 import blog.objgen.ObjectIterator;
 import blog.objgen.ObjectSet;
 import blog.sample.ParentRecEvalContext;
-
+import blog.engine.onlinePF.ObservableRandomFunction;//added by cheng
 /**
  * An implementation of the PartialWorld interface that just requires concrete
  * subclasses to initialize some protected variables.
@@ -1065,7 +1065,25 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	public boolean innerStateEquals(AbstractPartialWorld otherWorld) {
 		boolean rtn = true;
 		
-		rtn = rtn && (otherWorld.basicVarToValue == (Map) ((HashMap) basicVarToValue));
+		//rtn = rtn && (otherWorld.basicVarToValue == (Map) ((HashMap) basicVarToValue));
+		for (Object o : basicVarToValue.keySet()){
+			BasicVar v = (BasicVar) o;
+			if (v instanceof RandFuncAppVar){
+				if ((((RandFuncAppVar) v).func()) instanceof ObservableRandomFunction)
+					continue;
+				if (((RandFuncAppVar) v).func().getObservableFun() != null)
+					continue;
+			}
+			rtn = rtn && (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v)));
+		}
+		
+		return rtn;
+	}
+	public boolean equals (Object o){
+		return this.innerStateEquals((AbstractPartialWorld) o);
+	}
+	public int hashCode (){
+		int rtn = 0;
 		for (Object o : basicVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
 			if (v instanceof RandFuncAppVar){
@@ -1073,10 +1091,9 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 					continue;
 			}
 			else {
-				rtn = rtn && (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v)));
+				rtn = rtn ^ v.hashCode();
 			}
 		}
-		
 		return rtn;
 	}
 	
