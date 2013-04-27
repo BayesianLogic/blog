@@ -1,4 +1,4 @@
-package mark.blog.example;
+package benchmark.blog;
 
 /**
  * compute urn ball example, using exact method
