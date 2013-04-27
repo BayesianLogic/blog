@@ -1,4 +1,4 @@
-package mark.blog.example;
+package benchmark.blog;
 
 import java.util.HashMap;
 import java.util.Map;
