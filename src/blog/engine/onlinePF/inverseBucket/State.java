@@ -86,6 +86,7 @@ public class State {
 			for (int i = 0; i< totalParticlesGenerated; i++){
 				InverseParticle p = canonicalParticle.copy();
 				p.take(actionEvidence);
+				p.take(EnclosingSC.nextTimestepEvidence);
 				p.answer(EnclosingSC.nextTimestepQueries);
 				Map<ObservabilitySignature, Double> OStoCountForThisAction = getUpdatedOStoCount(p);
 				EnclosingSC.nextStateCollection.addParticle(p, OStoCountForThisAction, ratio);

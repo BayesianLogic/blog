@@ -42,8 +42,7 @@ public class StateCollection {
 	 * OStoQuery and OStoAction have empty evidence and query respectively.
 	 * The other arguments are for creating particles.
 	 */
-	public StateCollection (int numParticles, Set idTypes, int numTimeSlicesInMemory, Sampler sampler){
-		InverseParticle p = makeParticle(idTypes, numTimeSlicesInMemory, sampler);
+	public StateCollection (int numParticles, InverseParticle p){
 		IPtoState.put(p, new State(p, this));
 		ObservabilitySignature os = new ObservabilitySignature(p);
 		OStoAction.put(os, new Evidence());
@@ -55,8 +54,12 @@ public class StateCollection {
 	/**
 	 * updated the actions for one observability signature
 	 */
-	public void updateActionForOS(Evidence ev, ObservabilitySignature os){
-		OStoAction.put(os, ev);
+	public void setActionForOS(Evidence actionEvidence, ObservabilitySignature os){
+		if (OStoAction.containsKey(os)){
+			System.err.println("StateCollection.updateActionForOS : given os has already been seen");
+			System.exit(1);
+		}
+		OStoAction.put(os, actionEvidence);
 		//System.err.print("updateActionForObservabilitySignature is not implemented");
 		//System.exit(1);
 	}
@@ -64,6 +67,9 @@ public class StateCollection {
 	 * called after updateActionForOS is done for all os
 	 * essentially advancephase1() for the next timestep
 	 */
+	public void setNextEvidence(Evidence ev){
+		nextTimestepEvidence = ev;
+	}
 	public void setNextQuery(List<Query> queries){
 		nextTimestepQueries = queries;
 	}
@@ -78,6 +84,15 @@ public class StateCollection {
 	}
 	
 	/**
+	 * answer the given queries in general
+	 */
+	public void answerQuery (List<Query> queries){
+		for (InverseParticle p : IPtoState.keySet()){
+			p.updateQueriesStats(queries, IPtoState.get(p).totalCount);
+		}
+	}
+	
+	/**
 	 * Constructor that does not do anything, completely empty maps
 	 */
 	public StateCollection (){
@@ -88,25 +103,13 @@ public class StateCollection {
 	 * OStoAction must be filled up - done separately before
 	 * OStoAction must be filled up with actual evidence (dummy Evidence has already been put in place) - see above
 	 * nextStateCollection must be initialized - check
-	 * @return the StateCollection that is the result of performing certain actions
 	 */
-	public StateCollection doActionAndAnswerQueriesForAllStates(){
+	public void doActionAndAnswerQueriesForAllStates(){
 		nextStateCollection = new StateCollection();
 		for (InverseParticle p : IPtoState.keySet()){
 			IPtoState.get(p).doActionsAndAnswerQueries();
 		}
 		
-		return nextStateCollection;
-	}
-	
-	public void answer (OPFevidenceGenerator eviGen){
-		
-	}
-	/**
-	 * this method should be moved into the particle filter later
-	 */
-	protected InverseParticle makeParticle(Set idTypes, int numTimeSlicesInMemory, Sampler sampler) {
-		return new InverseParticle(idTypes, numTimeSlicesInMemory, sampler);
 	}
 	
 	/**
@@ -151,4 +154,5 @@ public class StateCollection {
 	public Double totalCount;
 	public StateCollection nextStateCollection;
 	public List<Query> nextTimestepQueries;
+	public Evidence nextTimestepEvidence;
 }
