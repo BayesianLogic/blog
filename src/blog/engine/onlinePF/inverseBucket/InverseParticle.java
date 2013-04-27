@@ -31,6 +31,7 @@ public class InverseParticle extends Particle{
 		DefaultPartialWorld newWorld = (DefaultPartialWorld) ((DefaultPartialWorld) curWorld)
 				.clone();
 		copy.setWorld(newWorld);
+		this.weight = 1;
 		return copy;
 	}
 

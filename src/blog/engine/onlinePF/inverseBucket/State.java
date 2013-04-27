@@ -43,7 +43,28 @@ public class State {
 			totalCount += additionalCount;
 		}
 	}
+	public void doActionsAndAnswerQueries(){
+		if (EnclosingSC.nextStateCollection == null){
+			System.err.println("State.doActions(): EnclosingSC.nextStateCollection is null");
+			System.exit(1);
+		}
+		for (ObservabilitySignature os : OStoCount.keySet()){
+			for (int i = 0; i< OStoCount.get(os); i++){
+				InverseParticle np = canonicalParticle.copy();
+				np.take(EnclosingSC.OStoAction.get(os));
+				np.take(EnclosingSC.nextTimestepEvidence);
+				np.answer(EnclosingSC.nextTimestepQueries);
+				Map<ObservabilitySignature, Double> newCounts = new HashMap<ObservabilitySignature, Double>();
+				ObservabilitySignature newOS = os.copy();
+				newOS.update(np);
+				
+				newCounts.put(newOS, np.getLatestWeight());
+				EnclosingSC.nextStateCollection.addParticle(np, newCounts);
+			}
+		}
+	}
 	
+	/*
 	public void doActionsAndAnswerQueries(){
 		if (EnclosingSC.nextStateCollection == null){
 			System.err.println("State.doActions(): EnclosingSC.nextStateCollection is null");
@@ -77,12 +98,12 @@ public class State {
 			Double totalParticlesGenerated = Math.ceil(ActionToCount.get(actionString));
 			Double ratio = ActionToCount.get(actionString)/totalParticlesGenerated;
 			Evidence actionEvidence = ActionToActualEvidence.get(actionString);
-			/*
-			Map<ObservabilitySignature, Double> OStoCountForThisAction = getUpdatedOS() = new HashMap<ObservabilitySignature, Double>();
-			for (ObservabilitySignature os : ActionToOSList.get(actionString)){
-				OStoCountForThisAction.put(os, OStoCount.get(os));
-			}
-			*/
+			
+			//Map<ObservabilitySignature, Double> OStoCountForThisAction = getUpdatedOS() = new HashMap<ObservabilitySignature, Double>();
+			//for (ObservabilitySignature os : ActionToOSList.get(actionString)){
+			//	OStoCountForThisAction.put(os, OStoCount.get(os));
+			//}
+			
 			for (int i = 0; i< totalParticlesGenerated; i++){
 				InverseParticle p = canonicalParticle.copy();
 				p.take(actionEvidence);
@@ -93,6 +114,7 @@ public class State {
 			}
 		}
 	}
+	*/
 	
 	/**
 	 * produces a new map of os to count, because the canonical particle has already updated its observability signature
@@ -108,6 +130,8 @@ public class State {
 		}
 		return rtn;
 	}
+
+	
 	
 	public boolean equals (Object o){
 		return canonicalParticle.equals(((State)o).canonicalParticle);

@@ -153,5 +153,5 @@ public class InverseParticleFilter extends InferenceEngine {
 	private Sampler particleSampler;
 	private AfterSamplingListener afterSamplingListener;
 	public List cachedParticlesBeforeTakingEvidence;
-	private StateCollection sc;
+	public StateCollection sc;
 }

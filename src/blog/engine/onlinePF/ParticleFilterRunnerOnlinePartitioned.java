@@ -116,7 +116,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			//particleFilter.resample(); //resample moved here
 			takeAndAnswer(evidence, queries);
 			
-			
+			/*
 			while (!particleFilter.checkPartition(10)){
 				particleFilter.resetLastEvidence(2);
 				particleFilter.repartition();
@@ -124,7 +124,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 				System.out.println("New number of particles: " + particleFilter.numParticles);
 				takeAndAnswer(evidence,queries);
 			}
-			
+			*/
 			
 			afterEvidenceAndQueries();
 			return true;
@@ -202,14 +202,17 @@ public class ParticleFilterRunnerOnlinePartitioned{
 				
 			i++;
 		}
+		/*
 		HashSet<AbstractPartialWorld> h = new HashSet<AbstractPartialWorld>();;
 		for (Particle p : (List<Particle>)particleFilter.particles){
 			h.add((AbstractPartialWorld) p.curWorld);
 		}
+		
 		System.out.println("number of states: " + h.size());
 		for (Object o : h){
 			int x = 1+1;
 		}
+		*/
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
 			particleFilter.answerWithPartition(queries, os);
 			//System.out.println("SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");

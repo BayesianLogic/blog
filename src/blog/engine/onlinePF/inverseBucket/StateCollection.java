@@ -128,7 +128,7 @@ public class StateCollection {
 	 * method that takes a inverseParticle, and its associated
 	 * distribution of observabilitySignatures, and adds it to the internal maps
 	 */
-	public void addParticle(InverseParticle p, Map<ObservabilitySignature, Double> oscounts, Double scalingFactor){
+	public void addParticle(InverseParticle p, Map<ObservabilitySignature, Double> oscounts){
 		if (IPtoState.containsKey(p)){
 			IPtoState.get(p).addOSCounts(oscounts);
 		}
@@ -138,24 +138,11 @@ public class StateCollection {
 			IPtoState.put(p, newState);
 		}
 		for (ObservabilitySignature os : oscounts.keySet()){
-			if (OStoAction.containsKey(os)){
-				//if (!(OStoCount.containsKey(os)) || !OStoQuery.containsKey(os)){
-				//	System.err.println("StateCollection.addParticle(): discrepency in keyset for action maps");
-				//	System.exit(1);
-				//}
-				//OStoCount.put(os, OStoCount.get(os) + oscounts.get(os));
-			}
-			else{
-				//OStoCount.put(os, oscounts.get(os));
+			if (!OStoAction.containsKey(os)){
 				OStoAction.put(os, new Evidence());
-				//OStoQuery.put(os, new ArrayList<Query>());
 			}
 			totalCount += oscounts.get(os);
 		}
-		
-		//remember to add to statetostate - check
-		//remember to clone the OS and update them - check
-		//remember to update all maps, as well as totalcount - check
 	}
 	
 	

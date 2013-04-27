@@ -3,7 +3,10 @@ package blog.engine.onlinePF;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import blog.DBLOGUtil;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.engine.Particle;
@@ -22,7 +25,7 @@ public class ObservabilitySignature {
 	public ObservabilitySignature copy (){
 		ObservabilitySignature rtn = new ObservabilitySignature();
 		for (BayesNetVar os : this.observedValues.keySet()){
-			observedValues.put(os, this.observedValues.get(os));
+			rtn.observedValues.put(os, this.observedValues.get(os));
 		}
 		return rtn;
 	}
@@ -32,8 +35,13 @@ public class ObservabilitySignature {
 	 * from a particle
 	 * @param p
 	 */
+	private static Pattern checkPattern = Pattern.compile("getSound\\(@1\\)=noiseLeft");
 	public void update (Particle p){
 		AbstractPartialWorld world = ((AbstractPartialWorld) p.getLatestWorld());
+		
+		Matcher matcher = checkPattern.matcher(this.toString());
+		boolean matches = matcher.find();
+		//System.err.println(this.toString());
 		Map<BayesNetVar, BayesNetVar> o2r = world.getObservableMap();
 		for (BayesNetVar bnv : o2r.keySet()) {
 			Boolean myObs = (Boolean) world.getValue(bnv);
@@ -43,10 +51,14 @@ public class ObservabilitySignature {
 					observedValues.put(referenced, world.getValue(referenced));
 			}
 		}
-		if (!dictionary.containsKey(this)){
-			dictionary.put(this, index);
-			myIndex = index;
-			index++;
+		
+		Matcher matcher2 = checkPattern.matcher(this.toString());
+		boolean matches2 = matcher2.find();
+		//if (this.toString().equals("{getSound(@1)=noiseLeft}"))
+		//	System.exit(1);
+		//System.err.println(this.toString());
+		if (matches && (!matches2)){
+			System.err.println("Error found");
 		}
 	}
 	
@@ -60,11 +72,6 @@ public class ObservabilitySignature {
 				BayesNetVar referenced = o2r.get(bnv);
 				observedValues.put(referenced, world.getValue(referenced));
 			}
-		}
-		if (!dictionary.containsKey(this)){
-			dictionary.put(this, index);
-			myIndex = index;
-			index++;
 		}
 	}
 	
@@ -96,11 +103,8 @@ public class ObservabilitySignature {
 		return true;
 	}
 	public String toString(){
-		return ""+ myIndex;
-		//return observedValues.toString();
+		//return ""+ myIndex;
+		return observedValues.toString();
 	}
-	static int index = 0;
-	private int myIndex;
-	static Map<ObservabilitySignature, Integer> dictionary = new HashMap<ObservabilitySignature, Integer> (); 
 	
 }

@@ -145,7 +145,6 @@ public class InverseParticleFilterRunner{
 			if ((evidence = evidenceGenerator.getLatestDecision()) != null) {
 				particleFilter.takeActionWithPartition(evidence, os);
 			}
-
 		}
 		return true;
 	}
@@ -177,8 +176,16 @@ public class InverseParticleFilterRunner{
 				
 			i++;
 		}
+		System.out.println("number of observations: " + particleFilter.sc.OStoAction.size());
+		System.out.println("number of states: " + particleFilter.sc.IPtoState.size());
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
 			particleFilter.getQueryResultFromPartition(queries, os);
+			Double count = 0.0;
+			for (InverseParticle ip: particleFilter.sc.IPtoState.keySet()){
+				if (particleFilter.sc.IPtoState.get(ip).OStoCount.containsKey(os))
+					count += particleFilter.sc.IPtoState.get(ip).OStoCount.get(os);
+			}
+			System.out.println("ObservationSignature is : " + os + "with count: " + count);
 			//System.out.println("SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");
 			for (Iterator it = queries.iterator(); it.hasNext();) {
 				ArgSpecQuery query = (ArgSpecQuery) it.next();
@@ -194,7 +201,8 @@ public class InverseParticleFilterRunner{
 				queryResultCommunicator.printInputNL(printQueryString(query));
 				queryResultCommunicator.printInputNL("-----");
 				
-				//System.out.println(printQueryString(query));
+				
+				System.out.println(printQueryString(query));
 				//query.printResults(queryCommunicator.p);
 				//System.out.println("-----");
 				//query.printResults(System.out);//strange bug here needs fixing

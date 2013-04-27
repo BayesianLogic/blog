@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import blog.DBLOGUtil;
 import blog.ObjectIdentifier;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
@@ -1065,7 +1066,13 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 */
 	public boolean innerStateEquals(AbstractPartialWorld otherWorld) {
 		boolean rtn = true;
-		
+		/*
+		int maxTimestep = -1;
+		for (Object o : basicVarToValue.keySet()){
+			BasicVar v = (BasicVar) o;
+			maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
+		}
+		*/
 		//rtn = rtn && (otherWorld.basicVarToValue == (Map) ((HashMap) basicVarToValue));
 		for (Object o : basicVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
@@ -1075,7 +1082,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				if (((RandFuncAppVar) v).func().getObservableFun() != null)
 					continue;
 			}
-			rtn = rtn && (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v)));
+			//if (DBLOGUtil.getTimestepIndex(v) == maxTimestep)
+				rtn = rtn && (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v)));
 		}
 		
 		return rtn;
@@ -1087,7 +1095,15 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 * only basic vars are considered
 	 */
 	public int hashCode (){
+		
 		int rtn = 0;
+		/*
+		int maxTimestep = -1;
+		for (Object o : basicVarToValue.keySet()){
+			BasicVar v = (BasicVar) o;
+			maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
+		}
+		*/
 		for (Object o : basicVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
 			if (v instanceof RandFuncAppVar){
@@ -1096,9 +1112,13 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				if (((RandFuncAppVar) v).func().getObservableFun() != null)
 					continue;
 			}
-			else {
+			//if (DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+				int a = v.hashCode();
 				rtn = rtn ^ v.hashCode();
-			}
+				Object b = basicVarToValue.get(v);
+				int c = b.hashCode();
+				rtn = rtn ^ basicVarToValue.get(v).hashCode();
+			//}
 		}
 		return rtn;
 	}
