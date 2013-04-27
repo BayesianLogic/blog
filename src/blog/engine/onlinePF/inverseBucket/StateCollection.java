@@ -43,22 +43,32 @@ public class StateCollection {
 	 * The other arguments are for creating particles.
 	 */
 	public StateCollection (int numParticles, InverseParticle p){
-		IPtoState.put(p, new State(p, this));
+		State originalState = new State(p, this);
 		ObservabilitySignature os = new ObservabilitySignature(p);
+		HashMap<ObservabilitySignature, Double> tmpOSCountMap = new HashMap <ObservabilitySignature, Double> ();
+		tmpOSCountMap.put(os, new Double(numParticles));
+		originalState.addOSCounts(tmpOSCountMap);
+		IPtoState.put(p, originalState);
+		
 		OStoAction.put(os, new Evidence());
+		nextTimestepEvidence = new Evidence();
+		nextTimestepQueries = new ArrayList<Query>();
+		
 		//OStoQuery.put(os, new ArrayList<Query>());
 		//OStoCount.put(os, new Double(numParticles));
-		totalCount = 0.0;
+		totalCount = new Double(numParticles);
 	}
 	
 	/**
 	 * updated the actions for one observability signature
 	 */
 	public void setActionForOS(Evidence actionEvidence, ObservabilitySignature os){
+		/*
 		if (OStoAction.containsKey(os)){
 			System.err.println("StateCollection.updateActionForOS : given os has already been seen");
 			System.exit(1);
 		}
+		*/
 		OStoAction.put(os, actionEvidence);
 		//System.err.print("updateActionForObservabilitySignature is not implemented");
 		//System.exit(1);
@@ -77,16 +87,18 @@ public class StateCollection {
 	/**
 	 * answer the given queries for given observation signature.
 	 */
-	public void answerQuery (List<Query> queries, ObservabilitySignature os){
+	public void getQueryResult (List<Query> queries, ObservabilitySignature os){
 		for (InverseParticle p : IPtoState.keySet()){
-			p.updateQueriesStats(queries, IPtoState.get(p).OStoCount.get(os));
+			State s = IPtoState.get(p);
+			if (s.OStoCount.containsKey(os))
+				p.updateQueriesStats(queries, s.OStoCount.get(os));
 		}
 	}
 	
 	/**
 	 * answer the given queries in general
 	 */
-	public void answerQuery (List<Query> queries){
+	public void getQueryResult (List<Query> queries){
 		for (InverseParticle p : IPtoState.keySet()){
 			p.updateQueriesStats(queries, IPtoState.get(p).totalCount);
 		}
@@ -151,7 +163,7 @@ public class StateCollection {
 	
 	
 	
-	public Double totalCount;
+	public Double totalCount = 0.0;
 	public StateCollection nextStateCollection;
 	public List<Query> nextTimestepQueries;
 	public Evidence nextTimestepEvidence;

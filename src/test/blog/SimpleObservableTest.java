@@ -18,6 +18,7 @@ import blog.engine.ParticleFilter;
 import blog.engine.onlinePF.ParticleFilterRunnerOnlinePartitioned;
 import blog.engine.onlinePF.PartitionedParticleFilter;
 import blog.engine.onlinePF.PolicyModel;
+import blog.engine.onlinePF.inverseBucket.InverseParticleFilterRunner;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -64,9 +65,10 @@ public class SimpleObservableTest extends TestCase {
 			+	"decision Boolean chosen_Move(Move m, Timestep t);"
 			+	"random Boolean applied_Move(Move m, Timestep t){if (true) then = chosen_Move(m, t)};"
 			+	"random Move my_Move(Timestep t) {~ UniformChoice({Move m: (applied_Move (m, t) == true)})};"
-			+	"random Boolean observable(opponent_Move(Timestep t)){~ Categorical({true -> 0.9, false -> 0.1})};"
-			+	"random Integer irrelevant (Move m, Timestep t){if (true) then = 1};"
-			+	"random Boolean observable(irrelevant(Move m, Timestep t)){if (true) then = true};"
+			+	"random Boolean observable(spied_opponent_Move(Timestep t)){~ Categorical({true -> 0.9, false -> 0.1})};"
+//			+	"random Integer irrelevant (Move m, Timestep t){if (true) then = 1};"
+//			+	"random Boolean observable(irrelevant(Move m, Timestep t)){if (true) then = true};"
+			+	"random Move spied_opponent_Move(Timestep t){if (true) then = opponent_Move(t)};"
 			+	"random Move opponent_Move(Timestep t){~ UniformChoice({Move m})};"
 			+	"random Integer reward (Timestep t) {"
 			+	"	  if (opponent_Move(t)==rock) then"
@@ -127,7 +129,7 @@ public class SimpleObservableTest extends TestCase {
 		setDefaultParticleFilterProperties();
 	    setModel(logisticsModelStringRandomBoxes);
 	    PolicyModel pm = PolicyModel.policyFromFile("/home/saasbook/git/dblog/src/blog/engine/onlinePF/parser/rockpaperscissors_policy");
-	    ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
+	    InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
 	    //PrintStream out = runner.getEviCommunicator().p;
 	    
 	    runner.run();

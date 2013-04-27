@@ -88,7 +88,7 @@ public class State {
 				p.take(actionEvidence);
 				p.take(EnclosingSC.nextTimestepEvidence);
 				p.answer(EnclosingSC.nextTimestepQueries);
-				Map<ObservabilitySignature, Double> OStoCountForThisAction = getUpdatedOStoCount(p);
+				Map<ObservabilitySignature, Double> OStoCountForThisAction = getUpdatedOStoCount(p, totalParticlesGenerated);
 				EnclosingSC.nextStateCollection.addParticle(p, OStoCountForThisAction, ratio);
 			}
 		}
@@ -99,12 +99,12 @@ public class State {
 	 * @param p the particle which contains the observability values that must be added to each os in OStoCount
 	 * @return
 	 */
-	public Map<ObservabilitySignature, Double> getUpdatedOStoCount (InverseParticle p){
+	public Map<ObservabilitySignature, Double> getUpdatedOStoCount (InverseParticle p, Double numParticles){
 		Map<ObservabilitySignature, Double> rtn = new HashMap<ObservabilitySignature, Double>();
 		for (ObservabilitySignature os : OStoCount.keySet()){
 			ObservabilitySignature updatedOS = os.copy();
 			updatedOS.update(p);
-			rtn.put(updatedOS, OStoCount.get(os));
+			rtn.put(updatedOS, OStoCount.get(os)/numParticles);
 		}
 		return rtn;
 	}

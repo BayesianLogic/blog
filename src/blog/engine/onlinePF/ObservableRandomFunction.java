@@ -48,6 +48,6 @@ public class ObservableRandomFunction extends RandomFunction{
 	}
 	
 	String referencedName;
-	final String queryString; //used to force blog to query all function application arguments
+	public final String queryString; //used to force blog to query all function application arguments
 
 }

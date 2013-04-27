@@ -43,6 +43,11 @@ public class ObservabilitySignature {
 					observedValues.put(referenced, world.getValue(referenced));
 			}
 		}
+		if (!dictionary.containsKey(this)){
+			dictionary.put(this, index);
+			myIndex = index;
+			index++;
+		}
 	}
 	
 	public ObservabilitySignature(Particle p){
@@ -55,6 +60,11 @@ public class ObservabilitySignature {
 				BayesNetVar referenced = o2r.get(bnv);
 				observedValues.put(referenced, world.getValue(referenced));
 			}
+		}
+		if (!dictionary.containsKey(this)){
+			dictionary.put(this, index);
+			myIndex = index;
+			index++;
 		}
 	}
 	
@@ -86,7 +96,11 @@ public class ObservabilitySignature {
 		return true;
 	}
 	public String toString(){
-		return observedValues.toString();
+		return ""+ myIndex;
+		//return observedValues.toString();
 	}
+	static int index = 0;
+	private int myIndex;
+	static Map<ObservabilitySignature, Integer> dictionary = new HashMap<ObservabilitySignature, Integer> (); 
 	
 }

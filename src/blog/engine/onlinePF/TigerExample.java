@@ -7,6 +7,7 @@ import java.util.Properties;
 import blog.Main;
 import blog.common.Util;
 import blog.engine.ParticleFilter;
+import blog.engine.onlinePF.inverseBucket.InverseParticleFilterRunner;
 import blog.model.Evidence;
 import blog.model.Model;
 
@@ -71,7 +72,7 @@ public class TigerExample {
 		setDefaultParticleFilterProperties();
 	    setModel(tigerModelFile);
 	    PolicyModel pm = PolicyModel.policyFromString(tigerPolicyFile);
-	    ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
+	    InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
 	    runner.run();
 	}
 	private static void setDefaultParticleFilterProperties() {
