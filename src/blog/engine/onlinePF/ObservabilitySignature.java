@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import blog.DBLOGUtil;
+import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.engine.Particle;
@@ -35,31 +36,24 @@ public class ObservabilitySignature {
 	 * from a particle
 	 * @param p
 	 */
-	private static Pattern checkPattern = Pattern.compile("getSound\\(@1\\)=noiseLeft");
 	public void update (Particle p){
 		AbstractPartialWorld world = ((AbstractPartialWorld) p.getLatestWorld());
-		
-		Matcher matcher = checkPattern.matcher(this.toString());
-		boolean matches = matcher.find();
+		int maxTimestep = -1;
+		for (Object o : world.basicVarToValueMap().keySet()){
+			BasicVar v = (BasicVar) o;
+			maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
+		}
 		//System.err.println(this.toString());
 		Map<BayesNetVar, BayesNetVar> o2r = world.getObservableMap();
 		for (BayesNetVar bnv : o2r.keySet()) {
 			Boolean myObs = (Boolean) world.getValue(bnv);
 			if (myObs.booleanValue()){
 				BayesNetVar referenced = o2r.get(bnv);
-				if (!observedValues.containsKey(referenced))
+				if (!observedValues.containsKey(referenced) && DBLOGUtil.getTimestepIndex(bnv) == maxTimestep)
 					observedValues.put(referenced, world.getValue(referenced));
 			}
 		}
 		
-		Matcher matcher2 = checkPattern.matcher(this.toString());
-		boolean matches2 = matcher2.find();
-		//if (this.toString().equals("{getSound(@1)=noiseLeft}"))
-		//	System.exit(1);
-		//System.err.println(this.toString());
-		if (matches && (!matches2)){
-			System.err.println("Error found");
-		}
 	}
 	
 	public ObservabilitySignature(Particle p){

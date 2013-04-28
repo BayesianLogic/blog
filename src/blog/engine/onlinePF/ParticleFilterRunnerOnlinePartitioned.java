@@ -197,22 +197,22 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 			//query.printResults(System.out);
 			
-			if (i==0)
-				System.err.println(averageQueryResult(query));
+			//if (i==0)
+			//	System.err.println(averageQueryResult(query));
 				
 			i++;
 		}
-		/*
+		
 		HashSet<AbstractPartialWorld> h = new HashSet<AbstractPartialWorld>();;
 		for (Particle p : (List<Particle>)particleFilter.particles){
 			h.add((AbstractPartialWorld) p.curWorld);
 		}
 		
-		System.out.println("number of states: " + h.size());
+		System.out.println(h.size());
 		for (Object o : h){
 			int x = 1+1;
 		}
-		*/
+		
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
 			particleFilter.answerWithPartition(queries, os);
 			//System.out.println("SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");

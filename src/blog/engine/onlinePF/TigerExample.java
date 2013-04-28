@@ -59,9 +59,9 @@ public class TigerExample {
 			;
 			
 	public static String tigerPolicyFile =
-			"if (\"getState(t)==sl\" >= 0.9)"
+			"if (\"getState(t)==sl\" >= 0.95)"
 		+	"	{\"chosen_Move(openRight,t)\"}"
-		+	"elseif (\"getState(t)==sr\" >= 0.9)"
+		+	"elseif (\"getState(t)==sr\" >= 0.95)"
 		+	"	{\"chosen_Move(openLeft,t)\"}"
 		+	"else"
 		+	"	{\"chosen_Move(Listen,t)\"};"
@@ -72,13 +72,13 @@ public class TigerExample {
 		setDefaultParticleFilterProperties();
 	    setModel(tigerModelFile);
 	    PolicyModel pm = PolicyModel.policyFromString(tigerPolicyFile);
-	    InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
-	    //ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
+	    //InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
+	    ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
 	    runner.run();
 	}
 	private static void setDefaultParticleFilterProperties() {
 		properties = new Properties();
-		properties.setProperty("numParticles", "10000");
+		properties.setProperty("numParticles", "30000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		Util.initRandom(true);
