@@ -1066,7 +1066,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 */
 	public boolean innerStateEquals(AbstractPartialWorld otherWorld) {
 		boolean rtn = true;
-		
+		//System.out.println("Relevant variables:");
 		int maxTimestep = -1;
 		for (Object o : basicVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
@@ -1082,8 +1082,10 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				if (((RandFuncAppVar) v).func().getObservableFun() != null)
 					continue;
 			}
-			if (DBLOGUtil.getTimestepIndex(v) == maxTimestep)
+			if (DBLOGUtil.getTimestepIndex(v) == maxTimestep){
 				rtn = rtn && (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v)));
+				//System.out.println(v);
+			}
 		}
 		
 		return rtn;

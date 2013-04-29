@@ -145,6 +145,13 @@ public class InverseParticleFilterRunner{
 			if ((evidence = evidenceGenerator.getLatestDecision()) != null) {
 				particleFilter.takeActionWithPartition(evidence, os);
 			}
+			Double count = 0.0;
+			for (InverseParticle ip: particleFilter.sc.IPtoState.keySet()){
+				if (particleFilter.sc.IPtoState.get(ip).OStoCount.containsKey(os))
+					count += particleFilter.sc.IPtoState.get(ip).OStoCount.get(os);
+			}
+			System.out.println("ObservationSignature is : " + os + "with count: " + count);
+			System.out.println("Action is :" + evidence.getDecisionEvidence());
 		}
 		return true;
 	}
@@ -171,13 +178,18 @@ public class InverseParticleFilterRunner{
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 			//query.printResults(System.out);
 			
-			//if (i==0)
-			//	System.err.println(averageQueryResult(query));
+			if (i==0)
+				System.err.println(averageQueryResult(query));
 				
 			i++;
 		}
 		//System.out.println("number of observations: " + particleFilter.sc.OStoAction.size());
-		System.out.println(/*"number of states: " + */particleFilter.sc.IPtoState.size());
+		//System.out.println(/*"number of states: " + */particleFilter.sc.IPtoState.size());
+		//System.err.println(this.evidenceGenerator.lastTimeStep);
+		if (this.evidenceGenerator.lastTimeStep==11){
+			System.out.println("terminating early");
+			System.exit(1);
+		}
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
 			particleFilter.getQueryResultFromPartition(queries, os);
 			Double count = 0.0;
@@ -186,6 +198,7 @@ public class InverseParticleFilterRunner{
 					count += particleFilter.sc.IPtoState.get(ip).OStoCount.get(os);
 			}
 			//System.out.println("ObservationSignature is : " + os + "with count: " + count);
+			//System.out.println("Action is :");
 			//System.out.println("SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");
 			for (Iterator it = queries.iterator(); it.hasNext();) {
 				ArgSpecQuery query = (ArgSpecQuery) it.next();

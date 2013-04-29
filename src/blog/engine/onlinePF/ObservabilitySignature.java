@@ -49,8 +49,10 @@ public class ObservabilitySignature {
 			Boolean myObs = (Boolean) world.getValue(bnv);
 			if (myObs.booleanValue()){
 				BayesNetVar referenced = o2r.get(bnv);
-				if (!observedValues.containsKey(referenced) && DBLOGUtil.getTimestepIndex(bnv) == maxTimestep)
+				if (!observedValues.containsKey(referenced) && DBLOGUtil.getTimestepIndex(bnv) == maxTimestep){
 					observedValues.put(referenced, world.getValue(referenced));
+					//System.out.println(bnv);
+				}
 			}
 		}
 		

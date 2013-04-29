@@ -72,13 +72,13 @@ public class TigerExample {
 		setDefaultParticleFilterProperties();
 	    setModel(tigerModelFile);
 	    PolicyModel pm = PolicyModel.policyFromString(tigerPolicyFile);
-	    //InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
-	    ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
+	    InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
+	    //ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
 	    runner.run();
 	}
 	private static void setDefaultParticleFilterProperties() {
 		properties = new Properties();
-		properties.setProperty("numParticles", "30000");
+		properties.setProperty("numParticles", "1000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		Util.initRandom(true);

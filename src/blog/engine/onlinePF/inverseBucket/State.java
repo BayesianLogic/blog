@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import blog.DBLOGUtil;
+import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.engine.onlinePF.ObservabilitySignature;
 import blog.model.Evidence;
@@ -46,6 +50,8 @@ public class State {
 	public void doActionsAndAnswerQueries(){
 		/////
 		Map<String, Map<ObservabilitySignature, Double>> actionToOSCounts = this.ActionToOSCounts();
+		Map<String, Double> actionToTotalCounts = this.ActionToTotalCounts();
+		Map<String, Evidence> actionToActualEvidence = this.ActionToEvidence();
 		/////
 		
 		
@@ -53,21 +59,31 @@ public class State {
 			System.err.println("State.doActions(): EnclosingSC.nextStateCollection is null");
 			System.exit(1);
 		}
-		for (ObservabilitySignature os : OStoCount.keySet()){
-			for (int i = 0; i< OStoCount.get(os); i++){
+		//for (ObservabilitySignature os : OStoCount.keySet()){
+		for (String str : actionToTotalCounts.keySet()){
+			for (int i = 0; i< Math.ceil(actionToTotalCounts.get(str)); i++){
+				Evidence ev = actionToActualEvidence.get(str);
 				InverseParticle np = canonicalParticle.copy();
-				np.take(EnclosingSC.OStoAction.get(os));
+				np.take(ev);
 				np.take(EnclosingSC.nextTimestepEvidence);
 				np.answer(EnclosingSC.nextTimestepQueries);
 				
-				//Map<ObservabilitySignature, Double> newCounts = actionToOSCounts.get(EnclosingSC.OStoAction.get(os).toString());//new HashMap<ObservabilitySignature, Double>();
-				Map<ObservabilitySignature, Double> newCounts = new HashMap<ObservabilitySignature, Double>();
-				//newCounts = getUpdatedOStoCount(np, newCounts);
-				ObservabilitySignature newOS = os.copy();
-				newOS.update(np);
+				Map<ObservabilitySignature, Double> newCounts = actionToOSCounts.get(str);//new HashMap<ObservabilitySignature, Double>();
+				//Map<ObservabilitySignature, Double> newCounts = new HashMap<ObservabilitySignature, Double>();
+				newCounts = getUpdatedOStoCount(np, newCounts);
+				//ObservabilitySignature newOS = os.copy();
+				//newOS.update(np);
 				
-				newCounts.put(newOS, np.getLatestWeight());
+				//newCounts.put(newOS, np.getLatestWeight());
 				EnclosingSC.nextStateCollection.addParticle(np, newCounts);
+				Pattern timestepPattern = Pattern.compile("@\\d+");
+				Matcher matcher = timestepPattern.matcher(ev.toString());
+				if (matcher.find() && Integer.parseInt(matcher.group().substring(1))==8){
+					System.err.print("found");
+					if (!ev.toString().equals("[/*DerivedVar*/ chosen_Move(Listen, @8) = true]")){
+						System.out.println("found");
+					}
+				}
 			}
 		}
 	}
@@ -155,12 +171,65 @@ public class State {
 				OSCounts.put(thisOS, OSCounts.get(thisOS)/trueCount);
 			}
 			
-			ActionToCount.put(actionStr, trueCount); 
+			//ActionToCount.put(actionStr, trueCount); 
 		}
 		
 		return ActionToOSList;
 	}
 
+	/**
+	 * generate a map of actions to observability values
+	 */
+	public Map<String, Double> ActionToTotalCounts(){
+		Map<String, Map<ObservabilitySignature, Double>> ActionToOSList = new HashMap<String, Map<ObservabilitySignature, Double>>();
+		Map<String, Double> ActionToCount = new HashMap<String, Double>();
+		
+		for (ObservabilitySignature os : OStoCount.keySet()){
+			Evidence actionEvidence = this.EnclosingSC.OStoAction.get(os);
+			String actionStr = actionEvidence.toString();
+			if (ActionToOSList.containsKey(actionStr)){
+				Map<ObservabilitySignature, Double> osList = ActionToOSList.get(actionStr);
+				osList.put(os, OStoCount.get(os));
+				ActionToCount.put(actionStr, ActionToCount.get(actionStr) + OStoCount.get(os));
+			}
+			else{
+				HashMap<ObservabilitySignature, Double> newOSList = new HashMap<ObservabilitySignature, Double>();
+				newOSList.put(os, OStoCount.get(os));
+				ActionToOSList.put(actionStr, newOSList);
+				ActionToCount.put(actionStr, OStoCount.get(os));
+			}
+			
+		}
+		for (String actionStr : ActionToCount.keySet()){
+			Double trueCount = Math.ceil(ActionToCount.get(actionStr));
+			
+			Map<ObservabilitySignature, Double> OSCounts = ActionToOSList.get(actionStr);
+			for (ObservabilitySignature thisOS : OSCounts.keySet()){
+				OSCounts.put(thisOS, OSCounts.get(thisOS)/trueCount);
+			}
+			
+			//ActionToCount.put(actionStr, trueCount); 
+		}
+		return ActionToCount;
+	}
+		
+		public Map<String, Evidence> ActionToEvidence(){
+			Map<String, Map<ObservabilitySignature, Double>> ActionToOSList = new HashMap<String, Map<ObservabilitySignature, Double>>();
+			Map<String, Evidence> ActionToCount = new HashMap<String, Evidence>();
+			
+			for (ObservabilitySignature os : OStoCount.keySet()){
+				Evidence actionEvidence = this.EnclosingSC.OStoAction.get(os);
+				String actionStr = actionEvidence.toString();
+				if (ActionToOSList.containsKey(actionStr)){
+				}
+				else{
+					ActionToCount.put(actionStr, actionEvidence);
+				}
+				
+			}
+		
+		return ActionToCount;
+		}
 	
 	
 	/**
