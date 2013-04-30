@@ -150,8 +150,8 @@ public class InverseParticleFilterRunner{
 				if (particleFilter.sc.IPtoState.get(ip).OStoCount.containsKey(os))
 					count += particleFilter.sc.IPtoState.get(ip).OStoCount.get(os);
 			}
-			System.out.println("ObservationSignature is : " + os + "with count: " + count);
-			System.out.println("Action is :" + evidence.getDecisionEvidence());
+			//System.out.println("ObservationSignature is : " + os + "with count: " + count);
+			//System.out.println("Action is :" + evidence.getDecisionEvidence());
 		}
 		return true;
 	}
@@ -186,10 +186,12 @@ public class InverseParticleFilterRunner{
 		//System.out.println("number of observations: " + particleFilter.sc.OStoAction.size());
 		//System.out.println(/*"number of states: " + */particleFilter.sc.IPtoState.size());
 		//System.err.println(this.evidenceGenerator.lastTimeStep);
+		/*
 		if (this.evidenceGenerator.lastTimeStep==11){
 			System.out.println("terminating early");
 			System.exit(1);
 		}
+		*/
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
 			particleFilter.getQueryResultFromPartition(queries, os);
 			Double count = 0.0;

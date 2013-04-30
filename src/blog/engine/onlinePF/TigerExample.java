@@ -78,7 +78,7 @@ public class TigerExample {
 	}
 	private static void setDefaultParticleFilterProperties() {
 		properties = new Properties();
-		properties.setProperty("numParticles", "1000");
+		properties.setProperty("numParticles", "10000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		Util.initRandom(true);

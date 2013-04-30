@@ -76,14 +76,42 @@ public class State {
 				
 				//newCounts.put(newOS, np.getLatestWeight());
 				EnclosingSC.nextStateCollection.addParticle(np, newCounts);
-				Pattern timestepPattern = Pattern.compile("@\\d+");
-				Matcher matcher = timestepPattern.matcher(ev.toString());
-				if (matcher.find() && Integer.parseInt(matcher.group().substring(1))==8){
-					System.err.print("found");
-					if (!ev.toString().equals("[/*DerivedVar*/ chosen_Move(Listen, @8) = true]")){
-						System.out.println("found");
-					}
-				}
+				//Pattern timestepPattern = Pattern.compile("@\\d+");
+				//Matcher matcher = timestepPattern.matcher(ev.toString());
+				//if (matcher.find() && Integer.parseInt(matcher.group().substring(1))==8){
+				//	System.err.print("found");
+				//	if (!ev.toString().equals("[/*DerivedVar*/ chosen_Move(Listen, @8) = true]")){
+				//		System.out.println("found");
+				//	}
+				//}
+			}
+		}
+	}
+	public void doActionsAndAnswerQueries2(){
+		/////
+		Map<String, Map<ObservabilitySignature, Double>> actionToOSCounts = this.ActionToOSCounts();
+		/////
+
+
+		if (EnclosingSC.nextStateCollection == null){
+			System.err.println("State.doActions(): EnclosingSC.nextStateCollection is null");
+			System.exit(1);
+		}
+		for (ObservabilitySignature os : OStoCount.keySet()){
+			for (int i = 0; i< OStoCount.get(os); i++){
+				InverseParticle np = canonicalParticle.copy();
+				np.take(EnclosingSC.OStoAction.get(os));
+				np.take(EnclosingSC.nextTimestepEvidence);
+				np.answer(EnclosingSC.nextTimestepQueries);
+
+				//Map<ObservabilitySignature, Double> newCounts = actionToOSCounts.get(EnclosingSC.OStoAction.get(os).toString());//new HashMap<ObservabilitySignature, Double>();
+				Map<ObservabilitySignature, Double> newCounts = new HashMap<ObservabilitySignature, Double>();
+				//newCounts = getUpdatedOStoCount(np, newCounts);
+				ObservabilitySignature newOS = os.copy();
+				newOS.update(np);
+
+				newCounts.put(newOS, np.getLatestWeight());
+				EnclosingSC.nextStateCollection.addParticle(np, newCounts);
 			}
 		}
 	}
