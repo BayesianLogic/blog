@@ -119,7 +119,10 @@ public class StateCollection {
 	public void doActionAndAnswerQueriesForAllStates(){
 		nextStateCollection = new StateCollection();
 		for (InverseParticle p : IPtoState.keySet()){
-			IPtoState.get(p).doActionsAndAnswerQueries2();
+			if (UniversalBenchmarkTool.particleCoupling)
+				IPtoState.get(p).doActionsAndAnswerQueries();
+			else
+				IPtoState.get(p).doActionsAndAnswerQueries2();
 		}
 		
 	}

@@ -8,6 +8,7 @@ import blog.Main;
 import blog.common.Util;
 import blog.engine.ParticleFilter;
 import blog.engine.onlinePF.inverseBucket.InverseParticleFilterRunner;
+import blog.engine.onlinePF.inverseBucket.UniversalBenchmarkTool;
 import blog.model.Evidence;
 import blog.model.Model;
 
@@ -73,6 +74,7 @@ public class TigerExample {
 	    setModel(tigerModelFile);
 	    PolicyModel pm = PolicyModel.policyFromString(tigerPolicyFile);
 	    InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
+	    UniversalBenchmarkTool.runTimeTimer.startTimer();
 	    //ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
 	    runner.run();
 	}

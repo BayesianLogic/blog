@@ -184,7 +184,7 @@ public class InverseParticleFilterRunner{
 			i++;
 		}
 		//System.out.println("number of observations: " + particleFilter.sc.OStoAction.size());
-		System.out.println(/*"number of states: " + */particleFilter.sc.IPtoState.size());
+		//System.out.println(/*"number of states: " + */particleFilter.sc.IPtoState.size());
 		//System.err.println(this.evidenceGenerator.lastTimeStep);
 		/*
 		if (this.evidenceGenerator.lastTimeStep==11){
@@ -192,13 +192,18 @@ public class InverseParticleFilterRunner{
 			System.exit(1);
 		}
 		*/
+		UniversalBenchmarkTool.numStateData.add(particleFilter.sc.IPtoState.keySet().size());
+		UniversalBenchmarkTool.timingData.add(UniversalBenchmarkTool.runTimeTimer.elapsedTime());
+		System.out.println(UniversalBenchmarkTool.numStateData);
+		System.out.println(UniversalBenchmarkTool.timingData);
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
 			particleFilter.getQueryResultFromPartition(queries, os);
 			Double count = 0.0;
+			/*
 			for (InverseParticle ip: particleFilter.sc.IPtoState.keySet()){
 				if (particleFilter.sc.IPtoState.get(ip).OStoCount.containsKey(os))
 					count += particleFilter.sc.IPtoState.get(ip).OStoCount.get(os);
-			}
+			}*/
 			//System.out.println("ObservationSignature is : " + os + "with count: " + count);
 			//System.out.println("Action is :");
 			//System.out.println("SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");
