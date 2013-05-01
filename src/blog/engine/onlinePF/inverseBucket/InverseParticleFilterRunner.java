@@ -178,13 +178,13 @@ public class InverseParticleFilterRunner{
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 			//query.printResults(System.out);
 			
-			if (i==0)
-				System.err.println(averageQueryResult(query));
+			//if (i==0)
+			//	System.err.println(averageQueryResult(query));
 				
 			i++;
 		}
 		//System.out.println("number of observations: " + particleFilter.sc.OStoAction.size());
-		//System.out.println(/*"number of states: " + */particleFilter.sc.IPtoState.size());
+		System.out.println(/*"number of states: " + */particleFilter.sc.IPtoState.size());
 		//System.err.println(this.evidenceGenerator.lastTimeStep);
 		/*
 		if (this.evidenceGenerator.lastTimeStep==11){

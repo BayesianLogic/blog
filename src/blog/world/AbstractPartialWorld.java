@@ -1082,9 +1082,19 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				if (((RandFuncAppVar) v).func().getObservableFun() != null)
 					continue;
 			}
-			if (DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+			//if (DBLOGUtil.getTimestepIndex(v) == maxTimestep){
 				rtn = rtn && (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v)));
 				//System.out.println(v);
+			//}
+		}
+		
+		for (BayesNetVar v : this.observableToReferenced.keySet()){
+			Boolean myObs = (Boolean) getValue(v);
+			if (!myObs.booleanValue()){
+				v = observableToReferenced.get(v);
+				//if (DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+					rtn = rtn && (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v)));
+				//}
 			}
 		}
 		
@@ -1114,14 +1124,29 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				if (((RandFuncAppVar) v).func().getObservableFun() != null)
 					continue;
 			}
-			if (DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+			//if (DBLOGUtil.getTimestepIndex(v) == maxTimestep){
 				int a = v.hashCode();
 				rtn = rtn ^ v.hashCode();
 				Object b = basicVarToValue.get(v);
 				int c = b.hashCode();
 				rtn = rtn ^ basicVarToValue.get(v).hashCode();
-			}
+			//}
 		}
+		
+		for (BayesNetVar v : this.observableToReferenced.keySet()){
+			Boolean myObs = (Boolean) getValue(v);
+			//if (!myObs.booleanValue()){
+				v = observableToReferenced.get(v);
+				if (DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+					int a = v.hashCode();
+					rtn = rtn ^ v.hashCode();
+					Object b = basicVarToValue.get(v);
+					int c = b.hashCode();
+					rtn = rtn ^ basicVarToValue.get(v).hashCode();
+				}
+			//}
+		}
+		
 		return rtn;
 	}
 	//end of change
