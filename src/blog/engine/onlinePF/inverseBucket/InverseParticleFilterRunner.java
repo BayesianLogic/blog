@@ -178,8 +178,9 @@ public class InverseParticleFilterRunner{
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 			//query.printResults(System.out);
 			
-			//if (i==0)
-			//	System.err.println(averageQueryResult(query));
+			if (i==0)
+				UniversalBenchmarkTool.valueData.add(averageQueryResult(query));
+				//System.err.println(averageQueryResult(query));
 				
 			i++;
 		}
@@ -194,8 +195,10 @@ public class InverseParticleFilterRunner{
 		*/
 		UniversalBenchmarkTool.numStateData.add(particleFilter.sc.IPtoState.keySet().size());
 		UniversalBenchmarkTool.timingData.add(UniversalBenchmarkTool.runTimeTimer.elapsedTime());
+		
 		System.out.println(UniversalBenchmarkTool.numStateData);
 		System.out.println(UniversalBenchmarkTool.timingData);
+		System.out.println(UniversalBenchmarkTool.valueData);
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
 			particleFilter.getQueryResultFromPartition(queries, os);
 			Double count = 0.0;

@@ -57,6 +57,8 @@ import blog.common.Util;
 import blog.type.Timestep;
 import fove.Parfactor;
 
+import blog.engine.onlinePF.ObservableRandomFunction;
+
 /**
  * This class contains all the information available about the structure of the
  * model. In particular, it keeps lists of user-defined types and functions.
@@ -265,6 +267,7 @@ public class Model {
 		observableToFunc.put(obsFun.getSig(), (RandomFunction) referencedFun);
 		
 		((RandomFunction) referencedFun).setObservableFun(obsFun);
+		((ObservableRandomFunction )obsFun).setReferencedFun (referencedFun);
 	}
 	
 	/** Removes function from model. */

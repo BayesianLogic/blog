@@ -1069,7 +1069,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		boolean rtn = true;
 		//System.out.println("Relevant variables:");
 		int maxTimestep = -1;
-		if (UniversalBenchmarkTool.rememberHistory){
+		if (!UniversalBenchmarkTool.rememberHistory){
 			for (Object o : basicVarToValue.keySet()){
 				BasicVar v = (BasicVar) o;
 				maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
@@ -1085,13 +1085,9 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				if (((RandFuncAppVar) v).func().getObservableFun() != null)
 					continue;
 			}
-			if (!UniversalBenchmarkTool.rememberHistory){
-				if (DBLOGUtil.getTimestepIndex(v) == maxTimestep){
-					rtn = rtn && (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v)));
-				}
-			}
-			else
+			if (UniversalBenchmarkTool.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
 				rtn = rtn && (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v)));
+			}
 		}
 		
 		if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.nonObservableVariables){
@@ -1118,9 +1114,11 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		int rtn = 0;
 		
 		int maxTimestep = -1;
-		for (Object o : basicVarToValue.keySet()){
-			BasicVar v = (BasicVar) o;
-			maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
+		if (!UniversalBenchmarkTool.rememberHistory){
+			for (Object o : basicVarToValue.keySet()){
+				BasicVar v = (BasicVar) o;
+				maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
+			}
 		}
 		
 		for (Object o : basicVarToValue.keySet()){
@@ -1145,7 +1143,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				Boolean myObs = (Boolean) getValue(v);
 				if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || !myObs.booleanValue()){
 					v = observableToReferenced.get(v);
-					if (DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+					if (UniversalBenchmarkTool.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
 						int a = v.hashCode();
 						rtn = rtn ^ v.hashCode();
 						Object b = basicVarToValue.get(v);

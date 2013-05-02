@@ -3,6 +3,7 @@ package blog.engine.onlinePF;
 import java.util.List;
 
 import blog.model.DependencyModel;
+import blog.model.Function;
 import blog.model.RandomFunction;
 import blog.model.Type;
 
@@ -35,19 +36,29 @@ public class ObservableRandomFunction extends RandomFunction{
 					functionCall += ", t";
 			}
 		}
+		
 		functionCall+=")";
-		rtn += ("(" + functionCall + " == null | true)");
+		this.functionCall = functionCall;
+		this.rtn = rtn;
+		rtn += ("(" + functionCall + " == null| true)");
 		rtn +=")";
 		queryString = rtn; 
 	}
 	
-	private String makeQueryString(){
-		String rtn = "";
-		
-		return rtn;
-	}
-	
 	String referencedName;
-	public final String queryString; //used to force blog to query all function application arguments
+	RandomFunction referencedFun;
+	private String functionCall;
+	private String rtn;
+	public String queryString; //used to force blog to query all function application arguments
+	public void setReferencedFun(Function referencedFun) {
+		this.referencedFun = (RandomFunction) referencedFun;
+		String checkVal = referencedFun.getRetType().getDefaultValue().toString();
+		if (checkVal.equals("<null>")){
+			checkVal = "null";
+		}
+		rtn += ("(" + functionCall + " == " + checkVal + "| true)");
+		rtn +=")";
+		queryString = rtn; 
+	}
 
 }
