@@ -109,7 +109,7 @@ public class InverseParticleFilterRunner{
 	}
 
 	//Cheng: overrode the moveOn in particleFilterRunner, mainly to gain access to evidenceGenerator
-	public boolean advancePhase1() {
+	public boolean advancePhase1() throws Exception {
 		queriesCacheInvalid = true;
 		
 		Evidence evidence;
@@ -167,8 +167,9 @@ public class InverseParticleFilterRunner{
 
 	/**
 	 * Formatting does not work well with policy, for proper version see particlefilterrunneronlinewithpolicy
+	 * @throws Exception 
 	 */
-	protected void afterEvidenceAndQueries() {
+	protected void afterEvidenceAndQueries() throws Exception {
 		Collection queries = evidenceGenerator.getLatestQueries();
 		//print out the overall results
 		
@@ -196,11 +197,20 @@ public class InverseParticleFilterRunner{
 		UniversalBenchmarkTool.numStateData.add(particleFilter.sc.IPtoState.keySet().size());
 		UniversalBenchmarkTool.timingData.add(UniversalBenchmarkTool.runTimeTimer.elapsedTime());
 		
-		System.out.println(UniversalBenchmarkTool.numStateData);
-		System.out.println(UniversalBenchmarkTool.timingData);
-		System.out.println(UniversalBenchmarkTool.valueData);
+
+	    Runtime runtime = Runtime.getRuntime();
+	    // Run the garbage collector
+	    runtime.gc();
+	    // Calculate the used memory
+	    long memory = runtime.totalMemory() - runtime.freeMemory();
+	    UniversalBenchmarkTool.dataOutput.printInput("Used memory is bytes: " + memory);
+
+		
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
+			UniversalBenchmarkTool.Stopwatch timer = new UniversalBenchmarkTool.Stopwatch();
+			timer.startTimer();
 			particleFilter.getQueryResultFromPartition(queries, os);
+			UniversalBenchmarkTool.specialTimingData6 += timer.elapsedTime();
 			Double count = 0.0;
 			/*
 			for (InverseParticle ip: particleFilter.sc.IPtoState.keySet()){
@@ -232,6 +242,21 @@ public class InverseParticleFilterRunner{
 			}
 			queryResultCommunicator.printInput("");
 			queryResultCommunicator.p.flush();
+		}
+
+		if (evidenceGenerator.lastTimeStep==12){
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.numStateData.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.timingData.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.valueData.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData2.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData3.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData4.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData5.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData6.toString());
+			UniversalBenchmarkTool.dataOutput.p.flush();
+			throw new Exception("Stopping run at step 12");
+			//System.exit(1);
 		}
 	}
 	
@@ -307,8 +332,9 @@ public class InverseParticleFilterRunner{
 
 	
 
-	/** Runs until there are no evidence or queries anymore. */
-	public void run() {
+	/** Runs until there are no evidence or queries anymore. 
+	 * @throws Exception */
+	public void run() throws Exception {
 		int i=0;
 		while (advancePhase1()&&advancePhase2()){
 			i++;

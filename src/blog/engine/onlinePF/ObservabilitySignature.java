@@ -12,6 +12,7 @@ import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.engine.Particle;
 import blog.engine.onlinePF.inverseBucket.InverseParticle;
+import blog.engine.onlinePF.inverseBucket.UniversalBenchmarkTool;
 import blog.model.RandomFunction;
 import blog.world.PartialWorld;
 import blog.world.AbstractPartialWorld;
@@ -78,15 +79,18 @@ public class ObservabilitySignature {
 	}
 		
 	public int hashCode(){
+		UniversalBenchmarkTool.specialTimer.startTimer();
 		int rtn = 0;
 		for (Iterator<BayesNetVar> i = observedValues.keySet().iterator(); i.hasNext();){
 			BayesNetVar bnv = i.next();
 			rtn = rtn ^ bnv.hashCode();
 			rtn = rtn ^ observedValues.get(bnv).hashCode();
 		}
+		UniversalBenchmarkTool.specialTimingData4 += (UniversalBenchmarkTool.specialTimer.elapsedTime());
 		return rtn;
 	}
 	public boolean equals(Object o){
+		UniversalBenchmarkTool.specialTimer.startTimer();
 		ObservabilitySignature other = (ObservabilitySignature) o;
 		if (this.observedValues.size() != other.observedValues.size())
 			return false;
@@ -96,6 +100,7 @@ public class ObservabilitySignature {
 			if (m.get(bnv)==null || !observedValues.get(bnv).equals(m.get(bnv)))
 				return false;
 		}
+		UniversalBenchmarkTool.specialTimingData3 += (UniversalBenchmarkTool.specialTimer.elapsedTime());
 		return true;
 	}
 	public String toString(){

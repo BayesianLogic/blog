@@ -1,0 +1,12 @@
+if ("tiger_state(t)==d1" <= 0.05)
+	{"chosen_open(d1,t)"}
+elseif ("tiger_state(t)==d2" <= 0.05)
+	{"chosen_open(d2,t)"}
+elseif ("tiger_state(t)==d3" <= 0.05)
+	{"chosen_open(d3,t)"}
+elseif ("tiger_state(t)==d4" <= 0.05)
+	{"chosen_open(d4,t)"}
+elseif ("tiger_state(t)==d5" <= 0.05)
+	{"chosen_open(d5,t)"}
+else
+	{"chosen_listen(t)"};

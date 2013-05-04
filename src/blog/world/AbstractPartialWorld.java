@@ -1066,6 +1066,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 * and observation function values
 	 */
 	public boolean innerStateEquals(AbstractPartialWorld otherWorld) {
+		UniversalBenchmarkTool.specialTimer.startTimer();
+		
 		boolean rtn = true;
 		//System.out.println("Relevant variables:");
 		int maxTimestep = -1;
@@ -1101,6 +1103,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				}
 			}
 		}
+		
+		UniversalBenchmarkTool.specialTimingData += (UniversalBenchmarkTool.specialTimer.elapsedTime());
 		return rtn;
 	}
 	public boolean equals (Object o){
@@ -1110,7 +1114,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 * only basic vars are considered
 	 */
 	public int hashCode (){
-		
+		UniversalBenchmarkTool.specialTimer.startTimer();
 		int rtn = 0;
 		
 		int maxTimestep = -1;
@@ -1153,7 +1157,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				}
 			}
 		}
-		
+		UniversalBenchmarkTool.specialTimingData2 += (UniversalBenchmarkTool.specialTimer.elapsedTime());
 		return rtn;
 	}
 	//end of change

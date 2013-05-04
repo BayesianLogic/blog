@@ -63,6 +63,7 @@ public class State {
 		for (String str : actionToTotalCounts.keySet()){
 			for (int i = 0; i< Math.ceil(actionToTotalCounts.get(str)); i++){
 				Evidence ev = actionToActualEvidence.get(str);
+				
 				InverseParticle np = canonicalParticle.copy();
 				np.take(ev);
 				np.take(EnclosingSC.nextTimestepEvidence);
@@ -99,10 +100,13 @@ public class State {
 		}
 		for (ObservabilitySignature os : OStoCount.keySet()){
 			for (int i = 0; i< OStoCount.get(os); i++){
+				
+				UniversalBenchmarkTool.specialTimer.startTimer();
 				InverseParticle np = canonicalParticle.copy();
 				np.take(EnclosingSC.OStoAction.get(os));
 				np.take(EnclosingSC.nextTimestepEvidence);
 				np.answer(EnclosingSC.nextTimestepQueries);
+				UniversalBenchmarkTool.specialTimingData5 += (UniversalBenchmarkTool.specialTimer.elapsedTime());
 
 				//Map<ObservabilitySignature, Double> newCounts = actionToOSCounts.get(EnclosingSC.OStoAction.get(os).toString());//new HashMap<ObservabilitySignature, Double>();
 				Map<ObservabilitySignature, Double> newCounts = new HashMap<ObservabilitySignature, Double>();

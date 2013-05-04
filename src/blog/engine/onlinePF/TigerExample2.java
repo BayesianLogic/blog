@@ -20,11 +20,19 @@ public class TigerExample2 {
 		Collection queryStrings = Util.list("value(t)");
 		setDefaultParticleFilterProperties();
 	    setModel("//home/saasbook//git//dblog//ex_inprog//logistics//tigerExample2.txt");
-	    PolicyModel pm = PolicyModel.policyFromFile("//home/saasbook//git//dblog//ex_inprog//logistics//tigerPolicy2.txt");
-	    InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
-	    UniversalBenchmarkTool.runTimeTimer.startTimer();
-	    //ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
-	    runner.run();
+	    
+	    for (int i = 0; i<5; i++){
+		    PolicyModel pm = PolicyModel.policyFromFile("//home/saasbook//git//dblog//ex_inprog//logistics//tigerPolicy2.txt");
+		    InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
+		    UniversalBenchmarkTool.runTimeTimer.startTimer();
+		    //ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
+		    try {
+				runner.run();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+	    }
 	}
 	private static void setDefaultParticleFilterProperties() {
 		properties = new Properties();
