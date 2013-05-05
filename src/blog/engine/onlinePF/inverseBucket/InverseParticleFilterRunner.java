@@ -180,7 +180,7 @@ public class InverseParticleFilterRunner{
 			//query.printResults(System.out);
 			
 			if (i==0){
-				UniversalBenchmarkTool.valueData.add(averageQueryResult(query));
+				UBT.valueData.add(averageQueryResult(query));
 				System.err.println(averageQueryResult(query));
 			}
 				
@@ -195,8 +195,8 @@ public class InverseParticleFilterRunner{
 			System.exit(1);
 		}
 		*/
-		UniversalBenchmarkTool.numStateData.add(particleFilter.sc.IPtoState.keySet().size());
-		UniversalBenchmarkTool.timingData.add(UniversalBenchmarkTool.runTimeTimer.elapsedTime());
+		UBT.numStateData.add(particleFilter.sc.IPtoState.keySet().size());
+		UBT.timingData.add(UBT.runTimeTimer.elapsedTime());
 		
 
 	    Runtime runtime = Runtime.getRuntime();
@@ -204,7 +204,7 @@ public class InverseParticleFilterRunner{
 	    runtime.gc();
 	    // Calculate the used memory
 	    long memory = runtime.totalMemory() - runtime.freeMemory();
-	    UniversalBenchmarkTool.dataOutput.printInput("Used memory is bytes: " + memory);
+	    UBT.dataOutput.printInput("Used memory is bytes: " + memory);
 
 	    
 	    //should probably put this in a separate function
@@ -219,13 +219,13 @@ public class InverseParticleFilterRunner{
 		particleFilter.sc.updateOSQueries();
 	    
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
-			UniversalBenchmarkTool.Stopwatch timer = new UniversalBenchmarkTool.Stopwatch();
+			UBT.Stopwatch timer = new UBT.Stopwatch();
 			timer.startTimer();
 			
-			//queries = particleFilter.getQueryResultFromPartition(os);
-			particleFilter.getQueryResultFromPartition_old(queries, os);
+			queries = particleFilter.getQueryResultFromPartition(os);
+			//particleFilter.getQueryResultFromPartition_old(queries, os);
 			
-			UniversalBenchmarkTool.specialTimingData6 += timer.elapsedTime();
+			UBT.specialTimingData6 += timer.elapsedTime();
 			Double count = 0.0;
 			/*
 			for (InverseParticle ip: particleFilter.sc.IPtoState.keySet()){
@@ -259,31 +259,31 @@ public class InverseParticleFilterRunner{
 			queryResultCommunicator.p.flush();
 		}
 
-		if (evidenceGenerator.lastTimeStep==12){
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.numStateData.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.timingData.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.valueData.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData2.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData3.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData4.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData5.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData6.toString());
-			UniversalBenchmarkTool.dataOutput.p.flush();
+		if (evidenceGenerator.lastTimeStep==20){
+			UBT.dataOutput.printInput(UBT.numStateData.toString());
+			UBT.dataOutput.printInput(UBT.timingData.toString());
+			UBT.dataOutput.printInput(UBT.valueData.toString());
+			UBT.dataOutput.printInput(UBT.specialTimingData.toString());
+			UBT.dataOutput.printInput(UBT.specialTimingData2.toString());
+			UBT.dataOutput.printInput(UBT.specialTimingData3.toString());
+			UBT.dataOutput.printInput(UBT.specialTimingData4.toString());
+			UBT.dataOutput.printInput(UBT.specialTimingData5.toString());
+			UBT.dataOutput.printInput(UBT.specialTimingData6.toString());
+			UBT.dataOutput.p.flush();
 			throw new Exception("Stopping run at step 12");
 			//System.exit(1);
 		}
 		else{
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.numStateData.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.timingData.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.valueData.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData2.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData3.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData4.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData5.toString());
-			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData6.toString());
-			UniversalBenchmarkTool.dataOutput.p.flush();
+			UBT.dataOutput.printInput(UBT.numStateData.toString());
+			UBT.dataOutput.printInput(UBT.timingData.toString());
+			UBT.dataOutput.printInput(UBT.valueData.toString());
+			UBT.dataOutput.printInput(UBT.specialTimingData.toString());
+			UBT.dataOutput.printInput(UBT.specialTimingData2.toString());
+			UBT.dataOutput.printInput(UBT.specialTimingData3.toString());
+			UBT.dataOutput.printInput(UBT.specialTimingData4.toString());
+			UBT.dataOutput.printInput(UBT.specialTimingData5.toString());
+			UBT.dataOutput.printInput(UBT.specialTimingData6.toString());
+			UBT.dataOutput.p.flush();
 		}
 			
 	}

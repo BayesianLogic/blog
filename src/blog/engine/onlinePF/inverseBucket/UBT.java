@@ -5,15 +5,15 @@ import java.util.Timer;
 
 import blog.engine.onlinePF.FileCommunicator;
 
-public class UniversalBenchmarkTool {
-	public static boolean rememberHistory = false;
+public class UBT {
+	public static boolean rememberHistory = true;
 	public static enum schemes {allVariables, nonObservableVariables, hiddenVariables};
 	public static schemes currentScheme = schemes.allVariables;
 	public static Stopwatch runTimeTimer = new Stopwatch();
 	public static ArrayList<Double> timingData = new ArrayList<Double>();
 	public static ArrayList<Integer> numStateData = new ArrayList<Integer>();
 	public static ArrayList<Double> valueData = new ArrayList<Double>();
-	public static boolean particleCoupling = true;
+	public static boolean particleCoupling = false;
 	public static Stopwatch specialTimer = new Stopwatch();
 	public static Double specialTimingData = 0.0;//timing for equals world
 	public static Double specialTimingData2 = 0.0;//timing for hashcode world

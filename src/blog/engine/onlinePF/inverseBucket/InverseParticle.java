@@ -36,14 +36,14 @@ public class InverseParticle extends Particle{
 	}
 
 	public boolean equals (Object o){
-		if (UniversalBenchmarkTool.rememberHistory)
+		if (UBT.rememberHistory)
 			return this.parent==((InverseParticle)o).parent && ((AbstractPartialWorld) curWorld).innerStateEquals((AbstractPartialWorld)(((InverseParticle)o).curWorld), this.timeStep);
 		else
 			return ((AbstractPartialWorld) curWorld).innerStateEquals((AbstractPartialWorld)(((InverseParticle)o).curWorld), this.timeStep);
 	}
 	public int hashCode(){
 		if (!cached){
-			if (UniversalBenchmarkTool.rememberHistory)
+			if (UBT.rememberHistory)
 				if (this.parent == null)
 					cachedhashcode = ((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep);
 				else
@@ -68,7 +68,7 @@ public class InverseParticle extends Particle{
 	}
 
 	private InverseParticle parent;
-	private int timeStep = 0;
+	private int timeStep = -1;
 	public int getTimestep(){
 		return timeStep;
 	}

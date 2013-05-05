@@ -9,7 +9,7 @@ import blog.Main;
 import blog.common.Util;
 import blog.engine.ParticleFilter;
 import blog.engine.onlinePF.inverseBucket.InverseParticleFilterRunner;
-import blog.engine.onlinePF.inverseBucket.UniversalBenchmarkTool;
+import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.Evidence;
 import blog.model.Model;
 
@@ -24,7 +24,7 @@ public class TigerExample2 {
 	    for (int i = 0; i<5; i++){
 		    PolicyModel pm = PolicyModel.policyFromFile("//home/saasbook//git//dblog//ex_inprog//logistics//tigerPolicy2.txt");
 		    InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
-		    UniversalBenchmarkTool.runTimeTimer.startTimer();
+		    UBT.runTimeTimer.startTimer();
 		    //ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
 		    try {
 				runner.run();
