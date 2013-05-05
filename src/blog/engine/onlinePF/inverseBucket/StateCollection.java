@@ -44,7 +44,8 @@ public class StateCollection {
 	 */
 	public StateCollection (int numParticles, InverseParticle p){
 		State originalState = new State(p, this);
-		ObservabilitySignature os = new ObservabilitySignature(p);
+		ObservabilitySignature os = new ObservabilitySignature();
+		os.update(p);
 		HashMap<ObservabilitySignature, Double> tmpOSCountMap = new HashMap <ObservabilitySignature, Double> ();
 		tmpOSCountMap.put(os, new Double(numParticles));
 		originalState.addOSCounts(tmpOSCountMap);

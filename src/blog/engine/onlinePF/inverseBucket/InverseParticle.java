@@ -16,7 +16,7 @@ import blog.sample.Sampler;
  * @author saasbook
  *
  */
-public class InverseParticle extends Particle{
+public class InverseParticle extends TimedParticle{
 
 	public InverseParticle(Set idTypes, int numTimeSlicesInMemory,
 			Sampler sampler) {
@@ -68,13 +68,7 @@ public class InverseParticle extends Particle{
 	}
 
 	private InverseParticle parent;
-	private int timeStep = -1;
-	public int getTimestep(){
-		return timeStep;
-	}
-	public void advanceTimestep(){
-		timeStep ++;
-	}
+
 	private int cachedhashcode = 0;
 	private boolean cached = false;
 }

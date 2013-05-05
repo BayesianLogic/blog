@@ -16,7 +16,7 @@ import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.RandomFunction;
 import blog.world.PartialWorld;
 import blog.world.AbstractPartialWorld;
-import blog.engine.onlinePF.inverseBucket.InverseParticle;
+import blog.engine.onlinePF.inverseBucket.TimedParticle;
 
 public class ObservabilitySignature {
 	public HashMap<BayesNetVar, Object> observedValues = new HashMap<BayesNetVar, Object>();
@@ -38,9 +38,9 @@ public class ObservabilitySignature {
 	 * from a particle
 	 * @param p
 	 */
-	public void update (Particle p){
+	public void update (TimedParticle p){
 		AbstractPartialWorld world = ((AbstractPartialWorld) p.getLatestWorld());
-		int maxTimestep = ((InverseParticle) p).getTimestep();
+		int maxTimestep = ((TimedParticle) p).getTimestep();
 		
 		//System.err.println(maxTimestep);
 		/*
@@ -56,7 +56,7 @@ public class ObservabilitySignature {
 			Boolean myObs = (Boolean) world.getValue(bnv);
 			if (myObs.booleanValue()){
 				BayesNetVar referenced = o2r.get(bnv);
-				if (!observedValues.containsKey(referenced) && DBLOGUtil.getTimestepIndex(bnv) == maxTimestep){
+				if (!observedValues.containsKey(referenced) && DBLOGUtil.getTimestepIndex(bnv) <= maxTimestep ){
 					observedValues.put(referenced, world.getValue(referenced));
 					//System.out.println(bnv);
 				}
@@ -115,5 +115,6 @@ public class ObservabilitySignature {
 		//return ""+ myIndex;
 		return observedValues.toString();
 	}
-	ObservabilitySignature parent;
+	ObservabilitySignature parent = null;
+	int myTimestep = -1;
 }

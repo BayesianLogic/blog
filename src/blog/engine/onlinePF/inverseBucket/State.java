@@ -120,7 +120,6 @@ public class State {
 				//newCounts = getUpdatedOStoCount(np, newCounts);
 				ObservabilitySignature newOS = os.copy();
 				newOS.update(np);
-
 				newCounts.put(newOS, np.getLatestWeight());
 				EnclosingSC.nextStateCollection.addParticle(np, newCounts);
 				

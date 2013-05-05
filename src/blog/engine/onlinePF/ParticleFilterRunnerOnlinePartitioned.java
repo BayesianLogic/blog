@@ -16,6 +16,7 @@ import blog.engine.onlinePF.Communicator;
 import blog.engine.onlinePF.FileCommunicator;
 import blog.engine.onlinePF.OPFevidenceGenerator;
 import blog.engine.onlinePF.PipedCommunicator;
+import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -135,6 +136,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	private void takeAndAnswer(Evidence evidence, Collection queries){
 		particleFilter.take(evidence);
 		particleFilter.answer(queries);
+		particleFilter.resample();
 		particleFilter.repartition(); //IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!
 			
 	}
@@ -204,7 +206,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		}
 		
 		HashSet<AbstractPartialWorld> h = new HashSet<AbstractPartialWorld>();;
-		for (Particle p : (List<Particle>)particleFilter.particles){
+		for (TimedParticle p : particleFilter.particles){
 			h.add((AbstractPartialWorld) p.curWorld);
 		}
 		
