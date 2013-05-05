@@ -132,11 +132,13 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 			List<Query> rtn = new ArrayList<Query>();
 			Evidence tmp = new Evidence();
 			parseAndTranslateEvidence(tmp, rtn, new StringReader((String) latestQueryString));
-			
+			/*
 			tmp.checkTypesAndScope(model);
-			if (tmp.compile()!=0)
+			if (tmp.compile()!=0){
+				System.err.println("error here");
 				System.exit(1);
-			
+			}
+			*/
 			for (Query query : rtn){
 				if (!query.checkTypesAndScope(model)){
 					System.err.println("OPFevidencegenerator.getFreshQueries: error checking query");
@@ -148,9 +150,11 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 				}
 			}
 			
-			checkEvidenceMatchesTimestep(tmp);
+			//checkEvidenceMatchesTimestep(tmp);
 			return rtn;
 		}
+		System.err.println("error in opfevidencegenerator");
+		System.exit(1);
 		return null;//should never reach this part
 		
 	}

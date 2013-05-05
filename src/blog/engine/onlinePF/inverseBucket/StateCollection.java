@@ -87,11 +87,26 @@ public class StateCollection {
 	/**
 	 * answer the given queries for given observation signature.
 	 */
-	public void getQueryResult (List<Query> queries, ObservabilitySignature os){
+	public void getQueryResult_old (List<Query> queries, ObservabilitySignature os){
 		for (InverseParticle p : IPtoState.keySet()){
 			State s = IPtoState.get(p);
 			if (s.OStoCount.containsKey(os))
 				p.updateQueriesStats(queries, s.OStoCount.get(os));
+		}
+	}
+	/**
+	 * answer the given queries for given observation signature.
+	 */
+	public List<Query> getQueryResult_new (ObservabilitySignature os){
+		return this.os_to_query.get(os);
+	}
+	
+	public void updateOSQueries (){
+		for (InverseParticle p : IPtoState.keySet()){
+			State s = IPtoState.get(p);
+			for (ObservabilitySignature os: s.OStoCount.keySet()){
+				p.updateQueriesStats(os_to_query.get(os), s.OStoCount.get(os));
+			}
 		}
 	}
 	
@@ -152,7 +167,7 @@ public class StateCollection {
 	
 	
 	
-	
+	public Map<ObservabilitySignature, List<Query>> os_to_query = new HashMap<ObservabilitySignature, List<Query>>();
 	public Double totalCount = 0.0;
 	public StateCollection nextStateCollection;
 	public List<Query> nextTimestepQueries;

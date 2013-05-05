@@ -23,9 +23,9 @@ public class TigerExample2 {
 	    
 	    for (int i = 0; i<5; i++){
 		    PolicyModel pm = PolicyModel.policyFromFile("//home/saasbook//git//dblog//ex_inprog//logistics//tigerPolicy2.txt");
-		    InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
+		    //InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
 		    UniversalBenchmarkTool.runTimeTimer.startTimer();
-		    //ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
+		    ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
 		    try {
 				runner.run();
 			} catch (Exception e) {
@@ -36,7 +36,7 @@ public class TigerExample2 {
 	}
 	private static void setDefaultParticleFilterProperties() {
 		properties = new Properties();
-		properties.setProperty("numParticles", "2000");
+		properties.setProperty("numParticles", "10000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		Util.initRandom(true);

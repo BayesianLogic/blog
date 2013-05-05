@@ -18,9 +18,6 @@ import blog.sample.Sampler;
  */
 public class InverseParticle extends Particle{
 
-	public boolean innerStateEquals (InverseParticle p){
-		return (((AbstractPartialWorld) this.curWorld).innerStateEquals((AbstractPartialWorld) p.curWorld));
-	}
 	public InverseParticle(Set idTypes, int numTimeSlicesInMemory,
 			Sampler sampler) {
 		super(idTypes, numTimeSlicesInMemory, sampler);
@@ -28,18 +25,36 @@ public class InverseParticle extends Particle{
 	
 	public InverseParticle copy(){
 		InverseParticle copy = new InverseParticle(idTypes, numTimeSlicesInMemory, sampler);
+		copy.timeStep=this.timeStep;
 		DefaultPartialWorld newWorld = (DefaultPartialWorld) ((DefaultPartialWorld) curWorld)
 				.clone();
 		copy.setWorld(newWorld);
-		this.weight = 1;
+		copy.weight = 1;
+		copy.parent=this;
+		
 		return copy;
 	}
 
 	public boolean equals (Object o){
-		return ((AbstractPartialWorld) curWorld).innerStateEquals((AbstractPartialWorld)(((InverseParticle)o).curWorld));
+		return ( (!UniversalBenchmarkTool.rememberHistory) || this.parent==((InverseParticle)o).parent) && ((AbstractPartialWorld) curWorld).innerStateEquals((AbstractPartialWorld)(((InverseParticle)o).curWorld), this.timeStep);
 	}
 	public int hashCode(){
-		return ((AbstractPartialWorld) curWorld).hashCode();
+		if (!cached){
+			cachedhashcode = (UniversalBenchmarkTool.rememberHistory && this.parent != null) ? 
+					this.parent.hashCode() ^ ((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep) :
+						((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep);
+			cached = true;
+			return cachedhashcode;
+		}
+		else
+			return cachedhashcode;
+		//return ((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep);
+		//return this.parent.hashCode() ^ ((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep);
+		/*
+		return (UniversalBenchmarkTool.rememberHistory && this.parent != null) ? 
+				this.parent.hashCode() ^ ((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep) :
+					((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep);
+					*/
 	}
 	
 	/**
@@ -54,4 +69,14 @@ public class InverseParticle extends Particle{
 		}
 	}
 
+	private InverseParticle parent;
+	private int timeStep = 0;
+	public int getTimestep(){
+		return timeStep;
+	}
+	public void advanceTimestep(){
+		timeStep ++;
+	}
+	private int cachedhashcode = 0;
+	private boolean cached = false;
 }

@@ -179,9 +179,10 @@ public class InverseParticleFilterRunner{
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 			//query.printResults(System.out);
 			
-			if (i==0)
+			if (i==0){
 				UniversalBenchmarkTool.valueData.add(averageQueryResult(query));
-				//System.err.println(averageQueryResult(query));
+				System.err.println(averageQueryResult(query));
+			}
 				
 			i++;
 		}
@@ -205,11 +206,21 @@ public class InverseParticleFilterRunner{
 	    long memory = runtime.totalMemory() - runtime.freeMemory();
 	    UniversalBenchmarkTool.dataOutput.printInput("Used memory is bytes: " + memory);
 
-		
+	    
+	    //should probably put this in a separate function
+		for (InverseParticle p : particleFilter.sc.IPtoState.keySet()){
+			State s = particleFilter.sc.IPtoState.get(p);
+			for (ObservabilitySignature os: s.OStoCount.keySet()){
+				if(!particleFilter.sc.os_to_query.containsKey(os)){
+					particleFilter.sc.os_to_query.put(os, evidenceGenerator.getFreshQueries());
+				}
+			}
+		}
+	    
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
 			UniversalBenchmarkTool.Stopwatch timer = new UniversalBenchmarkTool.Stopwatch();
 			timer.startTimer();
-			particleFilter.getQueryResultFromPartition(queries, os);
+			queries = particleFilter.getQueryResultFromPartition(os);
 			UniversalBenchmarkTool.specialTimingData6 += timer.elapsedTime();
 			Double count = 0.0;
 			/*
@@ -258,6 +269,19 @@ public class InverseParticleFilterRunner{
 			throw new Exception("Stopping run at step 12");
 			//System.exit(1);
 		}
+		else{
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.numStateData.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.timingData.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.valueData.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData2.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData3.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData4.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData5.toString());
+			UniversalBenchmarkTool.dataOutput.printInput(UniversalBenchmarkTool.specialTimingData6.toString());
+			UniversalBenchmarkTool.dataOutput.p.flush();
+		}
+			
 	}
 	
 	public String printQueryString(ArgSpecQuery q) {

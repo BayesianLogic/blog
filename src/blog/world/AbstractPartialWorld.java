@@ -149,6 +149,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		} else {
 			// checkIdentifiers(var, value); // allow any identifiers
 			basicVarToValue.put(var, value);
+			/*added by cheng*/
+			changedVarToValue.put(var, value);
 		}
 
 		dirtyVars.add(var);
@@ -1065,11 +1067,12 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 * checks if two partial worlds are equal, minus decision function
 	 * and observation function values
 	 */
-	public boolean innerStateEquals(AbstractPartialWorld otherWorld) {
+	public boolean innerStateEquals(AbstractPartialWorld otherWorld, int maxTimestep) {
 		UniversalBenchmarkTool.specialTimer.startTimer();
 		
 		boolean rtn = true;
 		//System.out.println("Relevant variables:");
+		/*
 		int maxTimestep = -1;
 		if (!UniversalBenchmarkTool.rememberHistory){
 			for (Object o : basicVarToValue.keySet()){
@@ -1077,71 +1080,87 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
 			}
 		}
-		
+		*/
 		//rtn = rtn && (otherWorld.basicVarToValue == (Map) ((HashMap) basicVarToValue));
-		for (Object o : basicVarToValue.keySet()){
+		for (Object o : changedVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
 			if (v instanceof RandFuncAppVar){
-				if ((((RandFuncAppVar) v).func()) instanceof ObservableRandomFunction)
-					continue;
 				if (((RandFuncAppVar) v).func().getObservableFun() != null)
 					continue;
+				if ((((RandFuncAppVar) v).func()) instanceof ObservableRandomFunction){
+					Boolean myObs = (Boolean) getValue(v);
+					if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables ||
+							myObs.booleanValue())
+						v = (BasicVar) observableToReferenced.get(v);
+					else
+						continue;
+				}
+
 			}
 			if (UniversalBenchmarkTool.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
-				rtn = rtn && (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v)));
+				rtn = rtn && (otherWorld.changedVarToValue.containsKey(v) && otherWorld.changedVarToValue.get(v).equals(changedVarToValue.get(v)));
 			}
 		}
-		
+		/*
 		if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.nonObservableVariables){
 			for (BayesNetVar v : this.observableToReferenced.keySet()){
 				Boolean myObs = (Boolean) getValue(v);
 				if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || !myObs.booleanValue()){
 					v = observableToReferenced.get(v);
 					if (UniversalBenchmarkTool.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
-						rtn = rtn && (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v)));
+						rtn = rtn && (otherWorld.changedVarToValue.containsKey(v) && otherWorld.changedVarToValue.get(v).equals(changedVarToValue.get(v)));
 					}
 				}
 			}
 		}
-		
+		*/
 		UniversalBenchmarkTool.specialTimingData += (UniversalBenchmarkTool.specialTimer.elapsedTime());
 		return rtn;
 	}
+	/*
 	public boolean equals (Object o){
 		return this.innerStateEquals((AbstractPartialWorld) o);
 	}
+	*/
 	/**
 	 * only basic vars are considered
 	 */
-	public int hashCode (){
+	public int innerStatehashCode (int t){
 		UniversalBenchmarkTool.specialTimer.startTimer();
 		int rtn = 0;
 		
 		int maxTimestep = -1;
 		if (!UniversalBenchmarkTool.rememberHistory){
-			for (Object o : basicVarToValue.keySet()){
+			for (Object o : changedVarToValue.keySet()){
 				BasicVar v = (BasicVar) o;
 				maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
 			}
 		}
 		
-		for (Object o : basicVarToValue.keySet()){
+		for (Object o : changedVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
 			if (v instanceof RandFuncAppVar){
-				if ((((RandFuncAppVar) v).func()) instanceof ObservableRandomFunction)
-					continue;
 				if (((RandFuncAppVar) v).func().getObservableFun() != null)
 					continue;
+				if ((((RandFuncAppVar) v).func()) instanceof ObservableRandomFunction){
+					Boolean myObs = (Boolean) getValue(v);
+					if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables ||
+							myObs.booleanValue())
+						v = (BasicVar) observableToReferenced.get(v);
+					else
+						continue;
+				}
+
 			}
 			if (UniversalBenchmarkTool.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
 				int a = v.hashCode();
 				rtn = rtn ^ v.hashCode();
-				Object b = basicVarToValue.get(v);
+				Object b = changedVarToValue.get(v);
 				int c = b.hashCode();
-				rtn = rtn ^ basicVarToValue.get(v).hashCode();
+				rtn = rtn ^ changedVarToValue.get(v).hashCode();
 			}
 		}
-		
+		/*
 		if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.nonObservableVariables){
 			for (BayesNetVar v : this.observableToReferenced.keySet()){
 				Boolean myObs = (Boolean) getValue(v);
@@ -1150,18 +1169,23 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 					if (UniversalBenchmarkTool.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
 						int a = v.hashCode();
 						rtn = rtn ^ v.hashCode();
-						Object b = basicVarToValue.get(v);
+						Object b = changedVarToValue.get(v);
 						int c = b.hashCode();
-						rtn = rtn ^ basicVarToValue.get(v).hashCode();
+						rtn = rtn ^ changedVarToValue.get(v).hashCode();
 					}
 				}
 			}
 		}
+		*/
 		UniversalBenchmarkTool.specialTimingData2 += (UniversalBenchmarkTool.specialTimer.elapsedTime());
 		return rtn;
 	}
 	//end of change
-	
+	protected Map changedVarToValue = new HashMap();
+	public Map getChangedVars (){
+		return changedVarToValue;
+	}
+	//note: currently the correctness relies on copy() not copying changedvartovalue
 	
 	
 	/**

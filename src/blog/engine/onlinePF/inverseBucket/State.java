@@ -48,6 +48,7 @@ public class State {
 		}
 	}
 	public void doActionsAndAnswerQueries(){
+	
 		/////
 		Map<String, Map<ObservabilitySignature, Double>> actionToOSCounts = this.ActionToOSCounts();
 		Map<String, Double> actionToTotalCounts = this.ActionToTotalCounts();
@@ -65,9 +66,11 @@ public class State {
 				Evidence ev = actionToActualEvidence.get(str);
 				
 				InverseParticle np = canonicalParticle.copy();
+				
 				np.take(ev);
 				np.take(EnclosingSC.nextTimestepEvidence);
 				np.answer(EnclosingSC.nextTimestepQueries);
+				np.advanceTimestep();
 				
 				Map<ObservabilitySignature, Double> newCounts = actionToOSCounts.get(str);//new HashMap<ObservabilitySignature, Double>();
 				//Map<ObservabilitySignature, Double> newCounts = new HashMap<ObservabilitySignature, Double>();
@@ -106,6 +109,8 @@ public class State {
 				np.take(EnclosingSC.OStoAction.get(os));
 				np.take(EnclosingSC.nextTimestepEvidence);
 				np.answer(EnclosingSC.nextTimestepQueries);
+				//np.advanceTimestep();
+				
 				UniversalBenchmarkTool.specialTimingData5 += (UniversalBenchmarkTool.specialTimer.elapsedTime());
 
 				//Map<ObservabilitySignature, Double> newCounts = actionToOSCounts.get(EnclosingSC.OStoAction.get(os).toString());//new HashMap<ObservabilitySignature, Double>();
@@ -116,6 +121,7 @@ public class State {
 
 				newCounts.put(newOS, np.getLatestWeight());
 				EnclosingSC.nextStateCollection.addParticle(np, newCounts);
+				np.advanceTimestep();
 			}
 		}
 	}
