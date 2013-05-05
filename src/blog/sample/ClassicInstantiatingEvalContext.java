@@ -219,6 +219,8 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 				this.getValue(observableVar);
 				Map o2r = ((AbstractPartialWorld) world).getObservableMap();
 				o2r.put(observableVar, referencedVar);
+				Map co2r = ((AbstractPartialWorld) world).getChangedObservableMap();
+				co2r.put(observableVar, referencedVar);
 			}
 		}
 		

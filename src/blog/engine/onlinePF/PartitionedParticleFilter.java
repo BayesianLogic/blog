@@ -394,6 +394,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 	
 	public void repartition(){
 		partitions.clear();
+		
 		for(Iterator i = particles.iterator(); i.hasNext();){
 			Particle p = (Particle) i.next();
 			if (!(p instanceof Particle)){
