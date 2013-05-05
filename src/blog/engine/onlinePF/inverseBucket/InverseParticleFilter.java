@@ -124,10 +124,8 @@ public class InverseParticleFilter extends InferenceEngine {
 	 * @param queries
 	 * @param os
 	 */
-	public void getQueryResultFromPartition(Collection<Query> queries, ObservabilitySignature os){
-		for (Query q: queries)
-			q.zeroOut();
-		sc.getQueryResult((List<Query>) queries, os);
+	public List<Query> getQueryResultFromPartition(ObservabilitySignature os){
+		return sc.getQueryResult(os);
 	}
 
 

@@ -97,7 +97,7 @@ public class StateCollection {
 	/**
 	 * answer the given queries for given observation signature.
 	 */
-	public List<Query> getQueryResult_new (ObservabilitySignature os){
+	public List<Query> getQueryResult (ObservabilitySignature os){
 		return this.os_to_query.get(os);
 	}
 	

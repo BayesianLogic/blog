@@ -216,11 +216,13 @@ public class InverseParticleFilterRunner{
 				}
 			}
 		}
+		particleFilter.sc.updateOSQueries();
 	    
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
 			UniversalBenchmarkTool.Stopwatch timer = new UniversalBenchmarkTool.Stopwatch();
 			timer.startTimer();
 			queries = particleFilter.getQueryResultFromPartition(os);
+			
 			UniversalBenchmarkTool.specialTimingData6 += timer.elapsedTime();
 			Double count = 0.0;
 			/*
