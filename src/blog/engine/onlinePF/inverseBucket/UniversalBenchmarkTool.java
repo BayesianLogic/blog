@@ -13,7 +13,7 @@ public class UniversalBenchmarkTool {
 	public static ArrayList<Double> timingData = new ArrayList<Double>();
 	public static ArrayList<Integer> numStateData = new ArrayList<Integer>();
 	public static ArrayList<Double> valueData = new ArrayList<Double>();
-	public static boolean particleCoupling = false;
+	public static boolean particleCoupling = true;
 	public static Stopwatch specialTimer = new Stopwatch();
 	public static Double specialTimingData = 0.0;//timing for equals world
 	public static Double specialTimingData2 = 0.0;//timing for hashcode world

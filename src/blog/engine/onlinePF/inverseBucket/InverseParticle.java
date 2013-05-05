@@ -36,25 +36,23 @@ public class InverseParticle extends Particle{
 	}
 
 	public boolean equals (Object o){
-		return ( (!UniversalBenchmarkTool.rememberHistory) || this.parent==((InverseParticle)o).parent) && ((AbstractPartialWorld) curWorld).innerStateEquals((AbstractPartialWorld)(((InverseParticle)o).curWorld), this.timeStep);
+		if (UniversalBenchmarkTool.rememberHistory)
+			return this.parent==((InverseParticle)o).parent && ((AbstractPartialWorld) curWorld).innerStateEquals((AbstractPartialWorld)(((InverseParticle)o).curWorld), this.timeStep);
+		else
+			return ((AbstractPartialWorld) curWorld).innerStateEquals((AbstractPartialWorld)(((InverseParticle)o).curWorld), this.timeStep);
 	}
 	public int hashCode(){
 		if (!cached){
-			cachedhashcode = (UniversalBenchmarkTool.rememberHistory && this.parent != null) ? 
-					this.parent.hashCode() ^ ((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep) :
-						((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep);
+			if (UniversalBenchmarkTool.rememberHistory)
+				if (this.parent == null)
+					cachedhashcode = ((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep);
+				else
+					cachedhashcode = this.parent.hashCode() ^ ((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep);
 			cached = true;
 			return cachedhashcode;
 		}
 		else
 			return cachedhashcode;
-		//return ((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep);
-		//return this.parent.hashCode() ^ ((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep);
-		/*
-		return (UniversalBenchmarkTool.rememberHistory && this.parent != null) ? 
-				this.parent.hashCode() ^ ((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep) :
-					((AbstractPartialWorld) curWorld).innerStatehashCode(this.timeStep);
-					*/
 	}
 	
 	/**

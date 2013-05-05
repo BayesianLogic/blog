@@ -127,6 +127,12 @@ public class InverseParticleFilter extends InferenceEngine {
 	public List<Query> getQueryResultFromPartition(ObservabilitySignature os){
 		return sc.getQueryResult(os);
 	}
+	
+	public void getQueryResultFromPartition_old(Collection<Query> queries, ObservabilitySignature os){
+		for (Query q: queries)
+			q.zeroOut();
+		sc.getQueryResult_old((List<Query>) queries, os);
+	}
 
 
 	public void takeActionWithPartition(Evidence evidence, ObservabilitySignature os) {

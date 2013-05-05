@@ -221,7 +221,9 @@ public class InverseParticleFilterRunner{
 		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
 			UniversalBenchmarkTool.Stopwatch timer = new UniversalBenchmarkTool.Stopwatch();
 			timer.startTimer();
-			queries = particleFilter.getQueryResultFromPartition(os);
+			
+			//queries = particleFilter.getQueryResultFromPartition(os);
+			particleFilter.getQueryResultFromPartition_old(queries, os);
 			
 			UniversalBenchmarkTool.specialTimingData6 += timer.elapsedTime();
 			Double count = 0.0;

@@ -70,7 +70,7 @@ public class State {
 				np.take(ev);
 				np.take(EnclosingSC.nextTimestepEvidence);
 				np.answer(EnclosingSC.nextTimestepQueries);
-				np.advanceTimestep();
+				
 				
 				Map<ObservabilitySignature, Double> newCounts = actionToOSCounts.get(str);//new HashMap<ObservabilitySignature, Double>();
 				//Map<ObservabilitySignature, Double> newCounts = new HashMap<ObservabilitySignature, Double>();
@@ -88,6 +88,7 @@ public class State {
 				//		System.out.println("found");
 				//	}
 				//}
+				np.advanceTimestep();
 			}
 		}
 	}

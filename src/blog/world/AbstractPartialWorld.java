@@ -1071,16 +1071,17 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		UniversalBenchmarkTool.specialTimer.startTimer();
 		
 		boolean rtn = true;
+		//maxTimestep = maxTimestep -1;
 		//System.out.println("Relevant variables:");
-		/*
-		int maxTimestep = -1;
+		
+		maxTimestep = -1;
 		if (!UniversalBenchmarkTool.rememberHistory){
 			for (Object o : basicVarToValue.keySet()){
 				BasicVar v = (BasicVar) o;
 				maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
 			}
 		}
-		*/
+		
 		//rtn = rtn && (otherWorld.basicVarToValue == (Map) ((HashMap) basicVarToValue));
 		for (Object o : changedVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
