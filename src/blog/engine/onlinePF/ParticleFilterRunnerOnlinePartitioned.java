@@ -136,7 +136,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	private void takeAndAnswer(Evidence evidence, Collection queries){
 		particleFilter.take(evidence);
 		particleFilter.answer(queries);
-		particleFilter.resample();
+		//particleFilter.resample();
 		particleFilter.repartition(); //IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!
 			
 	}

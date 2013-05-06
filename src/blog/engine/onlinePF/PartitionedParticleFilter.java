@@ -206,7 +206,8 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		}
 		if (!evidence.isEmpty()) { 
 			if (needsToBeResampledBeforeFurtherSampling) {
-				System.err.println("PartitionedParticleFilter.take: should not need to resample");
+				//System.err.println("PartitionedParticleFilter.take: should not need to resample");
+				resample();
 			}
 			cachedParticlesBeforeTakingEvidence = new ArrayList();
 			for (TimedParticle p : particles) {
