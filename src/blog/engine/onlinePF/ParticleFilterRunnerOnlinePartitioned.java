@@ -17,6 +17,7 @@ import blog.engine.onlinePF.FileCommunicator;
 import blog.engine.onlinePF.OPFevidenceGenerator;
 import blog.engine.onlinePF.PipedCommunicator;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
+import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -240,6 +241,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			queryResultCommunicator.printInput("");
 			queryResultCommunicator.p.flush();
 		}
+		System.out.println(UBT.runTimeTimer.elapsedTime());
 	}
 	
 	public String printQueryString(ArgSpecQuery q) {
