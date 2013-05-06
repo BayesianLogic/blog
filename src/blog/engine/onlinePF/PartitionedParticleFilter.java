@@ -104,13 +104,9 @@ public class PartitionedParticleFilter extends InferenceEngine {
 					+ numParticlesStr); // do not dump stack.
 		}
 
-		String useDecayedMCMCStr = properties
-				.getProperty("useDecayedMCMC", "false");
-		// if (useDecayedMCMC) numParticles = 1;
-
 		String numMovesStr = properties.getProperty("numMoves", "1");
 		try {
-			numMoves = Integer.parseInt(numMovesStr);
+			Integer.parseInt(numMovesStr);
 		} catch (NumberFormatException e) {
 			Util.fatalErrorWithoutStack("Invalid number of moves: " + numMovesStr);
 		}
@@ -125,14 +121,20 @@ public class PartitionedParticleFilter extends InferenceEngine {
 				"blog.sample.LWSampler");
 		System.out.println("Constructing sampler of class " + samplerClassName);
 		particleSampler = Sampler.make(samplerClassName, model, properties);
+		
+		resetAndTakeInitialEvidence();
 	}
 
 	/** Answers the queries provided at construction time. */
 	public void answerQueries() {
+		System.err.println("answerQueries should not be called");
+		System.exit(1);
+		/*
 		System.out.println("Evidence: " + evidence);
 		System.out.println("Query: " + queries);
 		resetAndTakeInitialEvidence();
 		answer(queries);
+		*/
 	}
 
 	/**
@@ -154,16 +156,21 @@ public class PartitionedParticleFilter extends InferenceEngine {
 			evidence = new Evidence();
 		if (queries == null)
 			queries = new LinkedList();
-		particles = new ArrayList();
-		partitions = new HashMap();
+		particles = new ArrayList<TimedParticle>();
+		partitions = new HashMap<ObservabilitySignature, List<TimedParticle>>();
 		
-		List a = new ArrayList();
-		partitions.put(new ObservabilitySignature(makeParticle(idTypes, numTimeSlicesInMemory)), a);
+		List<TimedParticle> a = new ArrayList<TimedParticle>();
+		TimedParticle tp = makeParticle(idTypes, numTimeSlicesInMemory);
+		ObservabilitySignature os = new ObservabilitySignature();
+		os.update(tp);
+		tp.setOS(os);
+		partitions.put(os, a);
 		
 		for (int i = 0; i < numParticles; i++) {
-			TimedParticle newParticle = makeParticle(idTypes, numTimeSlicesInMemory);
+			TimedParticle newParticle = tp.copy();
 			particles.add(newParticle);
 			a.add(newParticle);
+			newParticle.setOS(os);
 		}
 		needsToBeResampledBeforeFurtherSampling = false;
 	}
@@ -189,51 +196,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 	protected TimedParticle makeParticle(Set idTypes, int numTimeSlicesInMemory) {
 		return new TimedParticle(idTypes, numTimeSlicesInMemory, particleSampler);
 	}
-
-
-	/** Takes more evidence. */
-	/*
-	public void take(List<Evidence> listOfEvidence) {
-		if (particles == null)
-			// Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
-			resetAndTakeInitialEvidence();
-
-		if (needsToBeResampledBeforeFurtherSampling) {
-			move();
-			resample();
-		}
-		if (listOfEvidence.size() != partitions.size()){
-			System.err.println("partitionedparticlefilter.take: evidence list length differs from number of partitions");
-			System.exit(1);
-		}
-
-		Iterator<Evidence> eit = listOfEvidence.iterator();
-		for (Object canonical : partitions.keySet()){
-			List particles = (List) partitions.get(canonical);
-			Evidence evidence = eit.next();
-			for (Iterator it = particles.iterator(); it.hasNext();) {
-				Particle p = (Particle) it.next();
-				p.take(evidence);
-			}
-
-			double sum = 0;
-			ListIterator particleIt = particles.listIterator();
-			while (particleIt.hasNext()) {
-				Particle particle = (Particle) particleIt.next();
-				if (particle.getLatestWeight() == 0.0) {
-					particleIt.remove();
-				} else
-					sum += particle.getLatestWeight();
-			}
-
-			if (particles.size() == 0)
-				throw new IllegalArgumentException("All particles have zero weight");
-			needsToBeResampledBeforeFurtherSampling = true;
-
-		}
-	}
-	*/
-
+	
 	public void take(Evidence evidence) {
 		if (particles == null)
 			resetAndTakeInitialEvidence();
@@ -251,9 +214,9 @@ public class PartitionedParticleFilter extends InferenceEngine {
 				p.take(evidence);
 			}
 			double sum = 0;
-			ListIterator particleIt = particles.listIterator();
+			ListIterator<TimedParticle> particleIt = particles.listIterator();
 			while (particleIt.hasNext()) {
-				Particle particle = (Particle) particleIt.next();
+				TimedParticle particle = particleIt.next();
 				if (particle.getLatestWeight() == 0.0) {
 					particleIt.remove();
 				} else
@@ -264,31 +227,16 @@ public class PartitionedParticleFilter extends InferenceEngine {
 			needsToBeResampledBeforeFurtherSampling = true;
 		}
 	}
-
-	/**
-	 * resets evidence and also expand the number of particles
-	 * @param expansionFactor
-	 */
-	@SuppressWarnings("unchecked")
-	public void resetLastEvidence(int expansionFactor){
-		particles = new ArrayList();//cachedParticlesBeforeTakingEvidence;
-		for (int i = 0; i< numParticles; i++){
-			for (int j = 0; j< expansionFactor; j++)
-				particles.add((cachedParticlesBeforeTakingEvidence.get(i)).copy());
-		}
-		numParticles = numParticles * expansionFactor;
-		
-	}
 	
 	public void answer(Collection queries) {
 		//System.err.println("partitionedparticlefilter.answer() should not have been called");
 		//System.exit(1);
 		if (particles == null)
-			// Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
-			resetAndTakeInitialEvidence();
-		for (Iterator it = particles.iterator(); it.hasNext();) {
-			Particle p = (Particle) it.next();
+			Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
+		for (TimedParticle p : particles) {
 			p.answer(queries);
+			p.advanceTimestep();
+			
 		}
 	}
 	
@@ -380,23 +328,6 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		particles = newParticles;
 		//repartition(); no longer repartition here.
 	}
-
-	/**
-	 * Checks each bucket to see if the number of particles meets the minimum requirement
-	 * @return
-	 */
-	public boolean checkPartition(int threshold){
-		System.out.println("number of partition: "+ partitions.size());
-		for (Object o : partitions.keySet()){
-			//System.out.println(((List)(partitions.get(o))).size());
-			if (((List)(partitions.get(o))).size()<threshold){
-				System.out.println(o);
-				Object x = partitions.get(o);
-				return false;
-			}
-		}
-		return true;
-	}
 	
 	
 	/**
@@ -414,7 +345,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 					p.setOS(((TimedParticle) Util.getFirst(partition)).getOS());
 				}
 				else{
-					List<TimedParticle> partition = newPartitions.get(newOS);
+					List<TimedParticle> partition = new ArrayList<TimedParticle>();
 					partition.add(p);
 					newPartitions.put(newOS, partition);
 					p.setOS(newOS);
@@ -429,17 +360,12 @@ public class PartitionedParticleFilter extends InferenceEngine {
 	}
 	
 
-	private void move() {
-	}
-
 	private Set idTypes; // of Type
 
 	int numParticles;
 	public List<TimedParticle> particles; // of Particles
 	public Map<ObservabilitySignature, List<TimedParticle>> partitions;
-	private int numMoves;
 	private boolean needsToBeResampledBeforeFurtherSampling = false;
 	private Sampler particleSampler;
-	private AfterSamplingListener afterSamplingListener;
 	public List<TimedParticle> cachedParticlesBeforeTakingEvidence;
 }

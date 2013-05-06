@@ -30,6 +30,8 @@ public class ObservabilitySignature {
 		for (BayesNetVar os : this.observedValues.keySet()){
 			rtn.observedValues.put(os, this.observedValues.get(os));
 		}
+		rtn.myTimestep = this.myTimestep;
+		rtn.parent = this.parent;
 		return rtn;
 	}
 	
@@ -56,20 +58,19 @@ public class ObservabilitySignature {
 			Boolean myObs = (Boolean) world.getValue(bnv);
 			if (myObs.booleanValue()){
 				BayesNetVar referenced = o2r.get(bnv);
-				if (!observedValues.containsKey(referenced) && DBLOGUtil.getTimestepIndex(bnv) <= maxTimestep ){
+				int bnvTimestep = DBLOGUtil.getTimestepIndex(bnv);
+				if (!observedValues.containsKey(referenced) &&  bnvTimestep <= maxTimestep && bnvTimestep > myTimestep){
 					observedValues.put(referenced, world.getValue(referenced));
-					//System.out.println(bnv);
 				}
 			}
 		}
-		
+		myTimestep = maxTimestep;
 	}
 	
 	public ObservabilitySignature(Particle p){
 		PartialWorld world = p.getLatestWorld();
 		Map<BayesNetVar, BayesNetVar> o2r = ((AbstractPartialWorld)world).getObservableMap(); //observability to referenced
-		for (Iterator i = o2r.keySet().iterator(); i.hasNext();){
-			BayesNetVar bnv = (BayesNetVar) i.next();
+		for (BayesNetVar bnv : o2r.keySet()){
 			Boolean myObs = (Boolean) world.getValue(bnv);
 			if (myObs.booleanValue()){
 				BayesNetVar referenced = o2r.get(bnv);
@@ -115,6 +116,7 @@ public class ObservabilitySignature {
 		//return ""+ myIndex;
 		return observedValues.toString();
 	}
-	ObservabilitySignature parent = null;
-	int myTimestep = -1;
+	
+	private ObservabilitySignature parent = null;
+	private int myTimestep = -1;
 }
