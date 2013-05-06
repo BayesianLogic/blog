@@ -57,6 +57,7 @@ import blog.model.Query;
 import blog.sample.AfterSamplingListener;
 import blog.sample.DMHSampler;
 import blog.sample.Sampler;
+import blog.world.AbstractPartialWorld;
 
 /**
  * A Particle Filter. It works by keeping a set of {@link Particles}, each
@@ -235,6 +236,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		if (particles == null)
 			Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
 		for (TimedParticle p : particles) {
+			((AbstractPartialWorld)p.getLatestWorld()).emptyChanged();
 			p.answer(queries);
 			p.advanceTimestep();
 			
@@ -293,6 +295,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 	 * updated particles
 	 */
 	public void resample() {
+		System.err.println("resample: currently does not work because particle.copy interferes with world.getchangedobservablemap which in turn interferes with observabilitysignature.update");
 		for (ObservabilitySignature os : partitions.keySet()){
 			partitions.get(os).clear();
 		}
