@@ -6,9 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import blog.DBLOGUtil;
 import blog.bn.BayesNetVar;
-import blog.engine.Particle;
 import blog.engine.onlinePF.inverseBucket.UBT;
-import blog.world.PartialWorld;
 import blog.world.AbstractPartialWorld;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 
@@ -129,14 +127,6 @@ public class ObservabilitySignature {
 	public static int index = 0;
 	
 	/**
-	 * Empties the OSDictionary, resets index
-	 */
-	public static void emptyOSDictionaryForNewTimestep(){
-		OStoIndex.clear();
-		index = 0;
-	}
-	
-	/**
 	 * Gets the index for the given os, if not already in OSDictionary, then put it there and return index, incrementing index by 1
 	 * @param os
 	 * @return
@@ -147,12 +137,20 @@ public class ObservabilitySignature {
 		else{
 			OStoIndex.put(os, index);
 			IndextoOS.add(os);
-			index ++;
+			index = index + 1;
 			return index -1;
 		}
 	}
-	
+	public int getIndex(){
+		return myIndex;
+	}
 	public static ObservabilitySignature getOSbyIndex(int index){
-		return IndextoOS.get(index);
+		ObservabilitySignature os = IndextoOS.get(index);
+		if (os.myIndex!=index){
+			System.err.println("error with index");
+			System.exit(1);
+		}
+			
+		return os;
 	}
 }

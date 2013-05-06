@@ -158,11 +158,11 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		//HashSet<String> tmp = new HashSet<String>();
 		
 		
-		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
+		for (Integer osIndex : particleFilter.getPartitions().keySet()){
 		evidenceGenerator.updateDecision();
 			if ((evidence = evidenceGenerator.getLatestDecision()) != null) {
 				//particleFilter.take(evidence);
-				particleFilter.takeWithPartition(evidence, os);
+				particleFilter.takeWithPartition(evidence, osIndex);
 			}
 
 		}
@@ -215,8 +215,8 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			int x = 1+1;
 		}
 		
-		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
-			particleFilter.answerWithPartition(queries, os);
+		for (Integer osIndex: particleFilter.getPartitions().keySet()){
+			particleFilter.answerWithPartition(queries, osIndex);
 			//System.out.println("SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");
 			for (Iterator it = queries.iterator(); it.hasNext();) {
 				ArgSpecQuery query = (ArgSpecQuery) it.next();
