@@ -26,7 +26,7 @@ public class State {
 	 * observability signatures.
 	 */
 	InverseParticle canonicalParticle;
-	Map<ObservabilitySignature, Double> OStoCount = new HashMap<ObservabilitySignature, Double> ();
+	Map<Integer, Double> OStoCount = new HashMap<Integer, Double> ();
 	double totalCount;
 	
 	public State (InverseParticle p, StateCollection enc){
@@ -35,14 +35,14 @@ public class State {
 		totalCount = 0;
 	}
 	
-	public void addOSCounts(Map<ObservabilitySignature, Double> mapToAdd){
-		for (ObservabilitySignature os : mapToAdd.keySet()){
-			Double additionalCount = mapToAdd.get(os);
-			if (OStoCount.containsKey(os)){
-				OStoCount.put(os, OStoCount.get(os) + additionalCount);
+	public void addOSCounts(Map<Integer, Double> mapToAdd){
+		for (Integer osIndex : mapToAdd.keySet()){
+			Double additionalCount = mapToAdd.get(osIndex);
+			if (OStoCount.containsKey(osIndex)){
+				OStoCount.put(osIndex, OStoCount.get(osIndex) + additionalCount);
 			}
 			else {
-				OStoCount.put(os, additionalCount);
+				OStoCount.put(osIndex, additionalCount);
 			}
 			totalCount += additionalCount;
 		}
@@ -50,7 +50,7 @@ public class State {
 	public void doActionsAndAnswerQueries(){
 	
 		/////
-		Map<String, Map<ObservabilitySignature, Double>> actionToOSCounts = this.ActionToOSCounts();
+		Map<String, Map<Integer, Double>> actionToOSCounts = this.ActionToOSCounts();
 		Map<String, Double> actionToTotalCounts = this.ActionToTotalCounts();
 		Map<String, Evidence> actionToActualEvidence = this.ActionToEvidence();
 		/////
@@ -73,7 +73,7 @@ public class State {
 				np.advanceTimestep();
 				
 				
-				Map<ObservabilitySignature, Double> newCounts = actionToOSCounts.get(str);//new HashMap<ObservabilitySignature, Double>();
+				Map<Integer, Double> newCounts = actionToOSCounts.get(str);//new HashMap<ObservabilitySignature, Double>();
 				//Map<ObservabilitySignature, Double> newCounts = new HashMap<ObservabilitySignature, Double>();
 				newCounts = getUpdatedOStoCount(np, newCounts);
 				//ObservabilitySignature newOS = os.copy();
@@ -95,7 +95,7 @@ public class State {
 	}
 	public void doActionsAndAnswerQueries2(){
 		/////
-		Map<String, Map<ObservabilitySignature, Double>> actionToOSCounts = this.ActionToOSCounts();
+		//Map<String, Map<Integer, Double>> actionToOSCounts = this.ActionToOSCounts();
 		/////
 
 
@@ -103,12 +103,12 @@ public class State {
 			System.err.println("State.doActions(): EnclosingSC.nextStateCollection is null");
 			System.exit(1);
 		}
-		for (ObservabilitySignature os : OStoCount.keySet()){
-			for (int i = 0; i< OStoCount.get(os); i++){
+		for (Integer osIndex : OStoCount.keySet()){
+			for (int i = 0; i< OStoCount.get(osIndex); i++){
 				
 				UBT.specialTimer.startTimer();
 				InverseParticle np = canonicalParticle.copy();
-				np.take(EnclosingSC.OStoAction.get(os));
+				np.take(EnclosingSC.OStoAction.get(osIndex));
 				np.take(EnclosingSC.nextTimestepEvidence);
 				np.answer(EnclosingSC.nextTimestepQueries);
 				np.advanceTimestep();
@@ -116,11 +116,12 @@ public class State {
 				UBT.specialTimingData5 += (UBT.specialTimer.elapsedTime());
 
 				//Map<ObservabilitySignature, Double> newCounts = actionToOSCounts.get(EnclosingSC.OStoAction.get(os).toString());//new HashMap<ObservabilitySignature, Double>();
-				Map<ObservabilitySignature, Double> newCounts = new HashMap<ObservabilitySignature, Double>();
+				Map<Integer, Double> newCounts = new HashMap<Integer, Double>();
 				//newCounts = getUpdatedOStoCount(np, newCounts);
-				ObservabilitySignature newOS = os.copy();
+				ObservabilitySignature newOS = ObservabilitySignature.getOSbyIndex(osIndex).copy();
 				newOS.update(np);
-				newCounts.put(newOS, np.getLatestWeight());
+				Integer newOSIndex = newOS.getIndex();
+				newCounts.put(newOSIndex, np.getLatestWeight());
 				EnclosingSC.nextStateCollection.addParticle(np, newCounts);
 				
 			}
@@ -182,32 +183,33 @@ public class State {
 	/**
 	 * generate a map of actions to observability values
 	 */
-	public Map<String, Map<ObservabilitySignature, Double>> ActionToOSCounts(){
-		Map<String, Map<ObservabilitySignature, Double>> ActionToOSList = new HashMap<String, Map<ObservabilitySignature, Double>>();
+	public Map<String, Map<Integer, Double>> ActionToOSCounts(){
+		Map<String, Map<Integer, Double>> ActionToOSList = new HashMap<String, Map<Integer, Double>>();
 		Map<String, Double> ActionToCount = new HashMap<String, Double>();
 		
-		for (ObservabilitySignature os : OStoCount.keySet()){
-			Evidence actionEvidence = this.EnclosingSC.OStoAction.get(os);
+		for (Integer osIndex : OStoCount.keySet()){
+			Evidence actionEvidence = this.EnclosingSC.OStoAction.get(osIndex);
 			String actionStr = actionEvidence.toString();
+			Double osIndexCount = OStoCount.get(osIndex);
 			if (ActionToOSList.containsKey(actionStr)){
-				Map<ObservabilitySignature, Double> osList = ActionToOSList.get(actionStr);
-				osList.put(os, OStoCount.get(os));
-				ActionToCount.put(actionStr, ActionToCount.get(actionStr) + OStoCount.get(os));
+				Map<Integer, Double> osList = ActionToOSList.get(actionStr);
+				osList.put(osIndex, osIndexCount);
+				ActionToCount.put(actionStr, ActionToCount.get(actionStr) + osIndexCount);
 			}
 			else{
-				HashMap<ObservabilitySignature, Double> newOSList = new HashMap<ObservabilitySignature, Double>();
-				newOSList.put(os, OStoCount.get(os));
+				HashMap<Integer, Double> newOSList = new HashMap<Integer, Double>();
+				newOSList.put(osIndex, osIndexCount);
 				ActionToOSList.put(actionStr, newOSList);
-				ActionToCount.put(actionStr, OStoCount.get(os));
+				ActionToCount.put(actionStr, osIndexCount);
 			}
 			
 		}
 		for (String actionStr : ActionToCount.keySet()){
 			Double trueCount = Math.ceil(ActionToCount.get(actionStr));
 			
-			Map<ObservabilitySignature, Double> OSCounts = ActionToOSList.get(actionStr);
-			for (ObservabilitySignature thisOS : OSCounts.keySet()){
-				OSCounts.put(thisOS, OSCounts.get(thisOS)/trueCount);
+			Map<Integer, Double> OSCounts = ActionToOSList.get(actionStr);
+			for (Integer thisOSIndex : OSCounts.keySet()){
+				OSCounts.put(thisOSIndex, OSCounts.get(thisOSIndex)/trueCount);
 			}
 			
 			//ActionToCount.put(actionStr, trueCount); 
@@ -220,31 +222,31 @@ public class State {
 	 * generate a map of actions to observability values
 	 */
 	public Map<String, Double> ActionToTotalCounts(){
-		Map<String, Map<ObservabilitySignature, Double>> ActionToOSList = new HashMap<String, Map<ObservabilitySignature, Double>>();
+		Map<String, Map<Integer, Double>> ActionToOSList = new HashMap<String, Map<Integer, Double>>();
 		Map<String, Double> ActionToCount = new HashMap<String, Double>();
 		
-		for (ObservabilitySignature os : OStoCount.keySet()){
-			Evidence actionEvidence = this.EnclosingSC.OStoAction.get(os);
+		for (Integer osIndex : OStoCount.keySet()){
+			Evidence actionEvidence = this.EnclosingSC.OStoAction.get(osIndex);
 			String actionStr = actionEvidence.toString();
 			if (ActionToOSList.containsKey(actionStr)){
-				Map<ObservabilitySignature, Double> osList = ActionToOSList.get(actionStr);
-				osList.put(os, OStoCount.get(os));
-				ActionToCount.put(actionStr, ActionToCount.get(actionStr) + OStoCount.get(os));
+				Map<Integer, Double> osList = ActionToOSList.get(actionStr);
+				osList.put(osIndex, OStoCount.get(osIndex));
+				ActionToCount.put(actionStr, ActionToCount.get(actionStr) + OStoCount.get(osIndex));
 			}
 			else{
-				HashMap<ObservabilitySignature, Double> newOSList = new HashMap<ObservabilitySignature, Double>();
-				newOSList.put(os, OStoCount.get(os));
+				HashMap<Integer, Double> newOSList = new HashMap<Integer, Double>();
+				newOSList.put(osIndex, OStoCount.get(osIndex));
 				ActionToOSList.put(actionStr, newOSList);
-				ActionToCount.put(actionStr, OStoCount.get(os));
+				ActionToCount.put(actionStr, OStoCount.get(osIndex));
 			}
 			
 		}
 		for (String actionStr : ActionToCount.keySet()){
 			Double trueCount = Math.ceil(ActionToCount.get(actionStr));
 			
-			Map<ObservabilitySignature, Double> OSCounts = ActionToOSList.get(actionStr);
-			for (ObservabilitySignature thisOS : OSCounts.keySet()){
-				OSCounts.put(thisOS, OSCounts.get(thisOS)/trueCount);
+			Map<Integer, Double> OSCounts = ActionToOSList.get(actionStr);
+			for (Integer thisOSIndex : OSCounts.keySet()){
+				OSCounts.put(thisOSIndex, OSCounts.get(thisOSIndex)/trueCount);
 			}
 			
 			//ActionToCount.put(actionStr, trueCount); 
@@ -254,20 +256,20 @@ public class State {
 		
 		public Map<String, Evidence> ActionToEvidence(){
 			Map<String, Map<ObservabilitySignature, Double>> ActionToOSList = new HashMap<String, Map<ObservabilitySignature, Double>>();
-			Map<String, Evidence> ActionToCount = new HashMap<String, Evidence>();
+			Map<String, Evidence> ActionToEvidence = new HashMap<String, Evidence>();
 			
-			for (ObservabilitySignature os : OStoCount.keySet()){
-				Evidence actionEvidence = this.EnclosingSC.OStoAction.get(os);
+			for (Integer osIndex : OStoCount.keySet()){
+				Evidence actionEvidence = this.EnclosingSC.OStoAction.get(osIndex);
 				String actionStr = actionEvidence.toString();
 				if (ActionToOSList.containsKey(actionStr)){
 				}
 				else{
-					ActionToCount.put(actionStr, actionEvidence);
+					ActionToEvidence.put(actionStr, actionEvidence);
 				}
 				
 			}
 		
-		return ActionToCount;
+			return ActionToEvidence;
 		}
 	
 	
@@ -276,12 +278,13 @@ public class State {
 	 * @param p the particle which contains the observability values that must be added to each os in OStoCount
 	 * @return
 	 */
-	public Map<ObservabilitySignature, Double> getUpdatedOStoCount (InverseParticle p, Map<ObservabilitySignature, Double> original){
-		Map<ObservabilitySignature, Double> rtn = new HashMap<ObservabilitySignature, Double>();
-		for (ObservabilitySignature os : original.keySet()){
-			ObservabilitySignature updatedOS = os.copy();
+	public Map<Integer, Double> getUpdatedOStoCount (InverseParticle p, Map<Integer, Double> original){
+		Map<Integer, Double> rtn = new HashMap<Integer, Double>();
+		for (Integer osIndex : original.keySet()){
+			ObservabilitySignature updatedOS = (ObservabilitySignature.getOSbyIndex(osIndex)).copy();
 			updatedOS.update(p);
-			rtn.put(updatedOS, original.get(os));
+			Integer updatedOSIndex = updatedOS.getIndex();
+			rtn.put(updatedOSIndex, original.get(osIndex));
 		}
 		return rtn;
 	}

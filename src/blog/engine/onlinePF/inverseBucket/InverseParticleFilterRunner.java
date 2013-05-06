@@ -139,16 +139,16 @@ public class InverseParticleFilterRunner{
 	
 	public boolean advancePhase2() {
 		Evidence evidence;
-		Set foo = (Set<ObservabilitySignature>)particleFilter.getPartitionSet();
-		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
+		//Set<Integer> foo = particleFilter.getPartitionSet();
+		for (Integer osIndex: particleFilter.getPartitionSet()){
 		evidenceGenerator.updateDecision();
 			if ((evidence = evidenceGenerator.getLatestDecision()) != null) {
-				particleFilter.takeActionWithPartition(evidence, os);
+				particleFilter.takeActionWithPartition(evidence, osIndex);
 			}
 			Double count = 0.0;
 			for (InverseParticle ip: particleFilter.sc.IPtoState.keySet()){
-				if (particleFilter.sc.IPtoState.get(ip).OStoCount.containsKey(os))
-					count += particleFilter.sc.IPtoState.get(ip).OStoCount.get(os);
+				if (particleFilter.sc.IPtoState.get(ip).OStoCount.containsKey(osIndex))
+					count += particleFilter.sc.IPtoState.get(ip).OStoCount.get(osIndex);
 			}
 			//System.out.println("ObservationSignature is : " + os + "with count: " + count);
 			//System.out.println("Action is :" + evidence.getDecisionEvidence());
@@ -210,19 +210,19 @@ public class InverseParticleFilterRunner{
 	    //should probably put this in a separate function
 		for (InverseParticle p : particleFilter.sc.IPtoState.keySet()){
 			State s = particleFilter.sc.IPtoState.get(p);
-			for (ObservabilitySignature os: s.OStoCount.keySet()){
-				if(!particleFilter.sc.os_to_query.containsKey(os)){
-					particleFilter.sc.os_to_query.put(os, evidenceGenerator.getFreshQueries());
+			for (Integer osIndex: s.OStoCount.keySet()){
+				if(!particleFilter.sc.os_to_query.containsKey(osIndex)){
+					particleFilter.sc.os_to_query.put(osIndex, evidenceGenerator.getFreshQueries());
 				}
 			}
 		}
 		particleFilter.sc.updateOSQueries();
 	    
-		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
+		for (Integer osIndex: particleFilter.getPartitionSet()){
 			UBT.Stopwatch timer = new UBT.Stopwatch();
 			timer.startTimer();
 			
-			queries = particleFilter.getQueryResultFromPartition(os);
+			queries = particleFilter.getQueryResultFromPartition(osIndex);
 			//particleFilter.getQueryResultFromPartition_old(queries, os);
 			
 			UBT.specialTimingData6 += timer.elapsedTime();

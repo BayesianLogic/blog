@@ -23,7 +23,7 @@ public class StateCollection {
 	/**
 	 * obtains the action to apply to each observability signature
 	 */
-	Map<ObservabilitySignature, Evidence> OStoAction = new HashMap<ObservabilitySignature, Evidence> ();
+	Map<Integer, Evidence> OStoAction = new HashMap<Integer, Evidence> ();
 	/**
 	 * obtains the query result for each observability signature
 	 */
@@ -46,12 +46,13 @@ public class StateCollection {
 		State originalState = new State(p, this);
 		ObservabilitySignature os = new ObservabilitySignature();
 		os.update(p);
-		HashMap<ObservabilitySignature, Double> tmpOSCountMap = new HashMap <ObservabilitySignature, Double> ();
-		tmpOSCountMap.put(os, new Double(numParticles));
+		Integer osIndex = os.getIndex();
+		HashMap<Integer, Double> tmpOSCountMap = new HashMap <Integer, Double> ();
+		tmpOSCountMap.put(osIndex, new Double(numParticles));
 		originalState.addOSCounts(tmpOSCountMap);
 		IPtoState.put(p, originalState);
 		
-		OStoAction.put(os, new Evidence());
+		OStoAction.put(osIndex, new Evidence());
 		nextTimestepEvidence = new Evidence();
 		nextTimestepQueries = new ArrayList<Query>();
 		
@@ -63,14 +64,14 @@ public class StateCollection {
 	/**
 	 * updated the actions for one observability signature
 	 */
-	public void setActionForOS(Evidence actionEvidence, ObservabilitySignature os){
+	public void setActionForOS(Evidence actionEvidence, Integer osIndex){
 		/*
 		if (OStoAction.containsKey(os)){
 			System.err.println("StateCollection.updateActionForOS : given os has already been seen");
 			System.exit(1);
 		}
 		*/
-		OStoAction.put(os, actionEvidence);
+		OStoAction.put(osIndex, actionEvidence);
 		//System.err.print("updateActionForObservabilitySignature is not implemented");
 		//System.exit(1);
 	}
@@ -98,15 +99,15 @@ public class StateCollection {
 	/**
 	 * answer the given queries for given observation signature.
 	 */
-	public List<Query> getQueryResult (ObservabilitySignature os){
-		return this.os_to_query.get(os);
+	public List<Query> getQueryResult (Integer osIndex){
+		return this.os_to_query.get(osIndex);
 	}
 	
 	public void updateOSQueries (){
 		for (InverseParticle p : IPtoState.keySet()){
 			State s = IPtoState.get(p);
-			for (ObservabilitySignature os: s.OStoCount.keySet()){
-				p.updateQueriesStats(os_to_query.get(os), s.OStoCount.get(os));
+			for (Integer osIndex: s.OStoCount.keySet()){
+				p.updateQueriesStats(os_to_query.get(osIndex), s.OStoCount.get(osIndex));
 			}
 		}
 	}
@@ -147,7 +148,7 @@ public class StateCollection {
 	 * method that takes a inverseParticle, and its associated
 	 * distribution of observabilitySignatures, and adds it to the internal maps
 	 */
-	public void addParticle(InverseParticle p, Map<ObservabilitySignature, Double> oscounts){
+	public void addParticle(InverseParticle p, Map<Integer, Double> oscounts){
 		if (IPtoState.containsKey(p)){
 			IPtoState.get(p).addOSCounts(oscounts);
 		}
@@ -156,11 +157,11 @@ public class StateCollection {
 			newState.addOSCounts(oscounts);
 			IPtoState.put(p, newState);
 		}
-		for (ObservabilitySignature os : oscounts.keySet()){
-			if (!OStoAction.containsKey(os)){
-				OStoAction.put(os, new Evidence());
+		for (Integer osIndex : oscounts.keySet()){
+			if (!OStoAction.containsKey(osIndex)){
+				OStoAction.put(osIndex, new Evidence());
 			}
-			totalCount += oscounts.get(os);
+			totalCount += oscounts.get(osIndex);
 		}
 	}
 	
@@ -168,7 +169,7 @@ public class StateCollection {
 	
 	
 	
-	public Map<ObservabilitySignature, List<Query>> os_to_query = new HashMap<ObservabilitySignature, List<Query>>();
+	public Map<Integer, List<Query>> os_to_query = new HashMap<Integer, List<Query>>();
 	public Double totalCount = 0.0;
 	public StateCollection nextStateCollection;
 	public List<Query> nextTimestepQueries;

@@ -124,8 +124,8 @@ public class InverseParticleFilter extends InferenceEngine {
 	 * @param queries
 	 * @param os
 	 */
-	public List<Query> getQueryResultFromPartition(ObservabilitySignature os){
-		return sc.getQueryResult(os);
+	public List<Query> getQueryResultFromPartition(Integer osIndex){
+		return sc.getQueryResult(osIndex);
 	}
 	
 	public void getQueryResultFromPartition_old(Collection<Query> queries, ObservabilitySignature os){
@@ -135,8 +135,8 @@ public class InverseParticleFilter extends InferenceEngine {
 	}
 
 
-	public void takeActionWithPartition(Evidence evidence, ObservabilitySignature os) {
-		sc.setActionForOS(evidence, os);
+	public void takeActionWithPartition(Evidence evidence, Integer osIndex) {
+		sc.setActionForOS(evidence, osIndex);
 	}
 	
 	public void setNextEvidence(Evidence evidence){
@@ -147,7 +147,7 @@ public class InverseParticleFilter extends InferenceEngine {
 		sc.setNextQuery(queries);
 	}
 	
-	public Set<ObservabilitySignature> getPartitionSet(){
+	public Set<Integer> getPartitionSet(){
 		return sc.OStoAction.keySet();
 	}
 
