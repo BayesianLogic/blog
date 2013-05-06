@@ -1193,7 +1193,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	}
 	//end of change
 	protected Map changedVarToValue = new HashMap();
-	public Map getChangedVars (){
+	public Map getChangedBasicVars (){
 		return changedVarToValue;
 	}
 	protected HashMap<BayesNetVar, BayesNetVar> chanegdObservableToReferenced =  new HashMap();
