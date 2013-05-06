@@ -76,6 +76,7 @@ public class TigerExample {
 	    //InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
 	    UBT.runTimeTimer.startTimer();
 	    ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
+	    UBT.runTimeTimer.startTimer();
 	    runner.run();
 	}
 	private static void setDefaultParticleFilterProperties() {
