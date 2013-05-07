@@ -241,7 +241,12 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			queryResultCommunicator.printInput("");
 			queryResultCommunicator.p.flush();
 		}
-		System.out.println(UBT.runTimeTimer.elapsedTime());
+		//System.out.println(UBT.runTimeTimer.elapsedTime());
+		//UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
+		    UBT.dataOutput.printInput("" + UBT.runTimeTimer.elapsedTime());
+		    if (evidenceGenerator.lastTimeStep==12){
+		      throw new Error("reached 12");
+		    }
 	}
 	
 	public String printQueryString(ArgSpecQuery q) {
