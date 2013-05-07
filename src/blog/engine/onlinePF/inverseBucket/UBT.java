@@ -22,6 +22,7 @@ public class UBT {
 	public static Double specialTimingData5 = 0.0;//timing for copy/answer with particles
 	public static Double specialTimingData6 = 0.0;//timing for answering in each bucket
 	public static FileCommunicator dataOutput = new FileCommunicator("tiger2Data.txt");
+	//public static FileCommunicator dataOutput2 = new FileCommunicator("tiger2Data.txt");
 	public static class Stopwatch { 
 
 	    private long start;

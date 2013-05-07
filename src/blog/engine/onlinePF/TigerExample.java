@@ -73,11 +73,19 @@ public class TigerExample {
 		setDefaultParticleFilterProperties();
 	    setModel(tigerModelFile);
 	    PolicyModel pm = PolicyModel.policyFromString(tigerPolicyFile);
+
+	    for (int i = 1; i<4; i++){
+	    try{
+	    ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
 	    //InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
 	    UBT.runTimeTimer.startTimer();
-	    ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
-	    UBT.runTimeTimer.startTimer();
+	    UBT.dataOutput.printInput("#Particles: " + i*10000);
+	    //UBT.runTimeTimer.startTimer();
 	    runner.run();
+	    }
+	    catch (Error e){
+	    }
+	}
 	}
 	private static void setDefaultParticleFilterProperties() {
 		properties = new Properties();
