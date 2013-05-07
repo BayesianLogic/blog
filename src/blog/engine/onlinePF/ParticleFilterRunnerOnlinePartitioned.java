@@ -173,6 +173,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 				tmp.add(p.foodecisionstring);
 		}
 		System.out.println("Num moves sequences: " + tmp.size());*/
+		
 		return true;
 		
 		//return false;
@@ -199,10 +200,10 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 			//query.printResults(System.out);
-			
+			/*
 			if (i==0)
 				System.err.println(averageQueryResult(query));
-			
+			*/
 			i++;
 		}
 		
@@ -241,7 +242,12 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			queryResultCommunicator.printInput("");
 			queryResultCommunicator.p.flush();
 		}
-		System.out.println(UBT.runTimeTimer.elapsedTime());
+		//UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
+		UBT.dataOutput.printInput("" + UBT.runTimeTimer.elapsedTime());
+		if (evidenceGenerator.lastTimeStep==12){
+			
+			throw new Error("reached 12");
+		}
 	}
 	
 	public String printQueryString(ArgSpecQuery q) {

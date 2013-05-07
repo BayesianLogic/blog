@@ -181,7 +181,7 @@ public class InverseParticleFilterRunner{
 			
 			if (i==0){
 				UBT.valueData.add(averageQueryResult(query));
-				System.err.println(averageQueryResult(query));
+				//System.err.println(averageQueryResult(query));
 			}
 				
 			i++;
@@ -204,7 +204,7 @@ public class InverseParticleFilterRunner{
 	    runtime.gc();
 	    // Calculate the used memory
 	    long memory = runtime.totalMemory() - runtime.freeMemory();
-	    UBT.dataOutput.printInput("Used memory is bytes: " + memory);
+	    //UBT.dataOutput.printInput("Used memory is bytes: " + memory);
 
 	    
 	    //should probably put this in a separate function
@@ -259,6 +259,7 @@ public class InverseParticleFilterRunner{
 			queryResultCommunicator.p.flush();
 		}
 
+		/*
 		if (evidenceGenerator.lastTimeStep==20){
 			UBT.dataOutput.printInput(UBT.numStateData.toString());
 			UBT.dataOutput.printInput(UBT.timingData.toString());
@@ -284,8 +285,13 @@ public class InverseParticleFilterRunner{
 			UBT.dataOutput.printInput(UBT.specialTimingData5.toString());
 			UBT.dataOutput.printInput(UBT.specialTimingData6.toString());
 			UBT.dataOutput.p.flush();
+		}*/
+		//UBT.dataOutput.printInput("" + UBT.runTimeTimer.elapsedTime());
+		UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
+		if (evidenceGenerator.lastTimeStep==30){
+			UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
+			throw new Error("reached 12");
 		}
-			
 	}
 	
 	public String printQueryString(ArgSpecQuery q) {

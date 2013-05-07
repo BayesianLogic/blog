@@ -67,17 +67,25 @@ public class TigerExample {
 		+	"else"
 		+	"	{\"chosen_Move(Listen,t)\"};"
 			;
-	public static void main (String[] args) throws Exception{
+	public static void main (String[] args) throws Exception {
 		Collection linkStrings = Util.list();
 		Collection queryStrings = Util.list("value(t)");
 		setDefaultParticleFilterProperties();
 	    setModel(tigerModelFile);
 	    PolicyModel pm = PolicyModel.policyFromString(tigerPolicyFile);
-	    InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
-	    UBT.runTimeTimer.startTimer();
-	    //ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
-	    UBT.runTimeTimer.startTimer();
-	    runner.run();
+	    for (int i = 1; i < 100; i++){
+	    try{
+	    	properties.setProperty("numParticles", "" + (10000* i));
+	    	UBT.dataOutput.printInput("" + 10000* i);
+		    UBT.runTimeTimer.startTimer();
+		    InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
+		    //ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
+		    runner.run();
+	    }
+	    catch(Error  e){
+	    	System.out.println(e.getMessage());
+	    }
+	    }
 	}
 	private static void setDefaultParticleFilterProperties() {
 		properties = new Properties();
