@@ -38,7 +38,7 @@ public class Hurricane {
 	public static final String CITY_B = "B";
 	
 	// Parameters for inference algorithm
-	private static final int NUM_SAMPLES = 50000;
+	private static final int NUM_SAMPLES = 2500000;
 	
 	// Variables for model
 	private String cityFirst;

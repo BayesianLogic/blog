@@ -45,7 +45,7 @@ public class HiddenMarkovModel {
 	private Map<String, Categorical> drawNextObs;
 	
 	/* Parameters for inference algorithm */
-	private static final int NUM_SAMPLES = 50000;
+	private static final int NUM_SAMPLES = 1000000;
 	
 	/* Queries */
 	private Map<String, Double>[] stateEstimates;

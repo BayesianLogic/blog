@@ -35,7 +35,7 @@ public class CSI {
 	private Bernoulli drawXNotArg;
 	
 	// Parameters for inference algorithm
-	private static final int NUM_SAMPLES = 50000;
+	private static final int NUM_SAMPLES = 5000000;
 	
 	// Queries
 	private Map<Boolean, Integer> distribX;
