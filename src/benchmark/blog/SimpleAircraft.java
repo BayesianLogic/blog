@@ -19,7 +19,7 @@ public class SimpleAircraft {
 	private static final int NUM_BLIPS = 3;
 	
 	// Parameters for inference algorithm
-	private static final int NUM_SAMPLES = 50000;
+	private static final int NUM_SAMPLES = 1000000;
 	
 	// Distributions for sampling in model
 	private Poisson aircraftGen;
