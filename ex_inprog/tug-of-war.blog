@@ -24,9 +24,9 @@ distinct Person Mary, Jennifer, Lisa, Sandra, Michelle,
   Kimberly, Elizabeth, Dorothy, Helen, Sharon, Deborah;
 fixed Real mu = 10;
 fixed Real sigma = 2;
-random Real skill(Person p) ~ Gaussian(mu, sigma);
+random Real strength(Person p) ~ Gaussian(mu, sigma);
 
-fixed Person Player(Integer i, Integer k) // k-th player in i-th match 
+fixed Person player(Integer i, Integer k) // k-th player in i-th match 
   = TabularInterp(2, 
     1, 1, James,
     1, 2, David,
@@ -53,19 +53,19 @@ fixed Person Player(Integer i, Integer k) // k-th player in i-th match
 random Boolean lazy(Person p, Integer i) 
   ~ Bernoulli(0.1);
 
-random Real strength(Person p, Integer i) 
-	if lazy(p, i) then = skill(p) / 2
-	else = skill(p);
+random Real pulling_power(Person p, Integer i) 
+	if lazy(p, i) then = strength(p) / 2
+	else = strength(p);
 
-random Boolean win(Integer i)
-	if (strength(Player(i, 1), i) + strength(Player(i, 2), i)
-	  + strength(Player(i, 3), i) > strength(Player(i, 4), i)
-	  + strength(Player(i, 5), i) + strength(Player(i, 6), i)) 
+random Boolean team1win(Integer i)
+	if (pulling_power(player(i, 1), i) + pulling_power(player(i, 2), i)
+	  + pulling_power(player(i, 3), i) > pulling_power(player(i, 4), i)
+	  + pulling_power(player(i, 5), i) + pulling_power(player(i, 6), i)) 
 	then = true
 	else = false;
 
-obs win(1) = true;
+obs team1win(1) = true;
 
-query win(2);
-query win(3);
-query skill(James);
+query team1win(2);
+query team1win(3);
+query strength(James);
