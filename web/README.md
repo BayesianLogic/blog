@@ -7,12 +7,12 @@ Setting up Local Server
 5. `$ cd web`
 6. `$ python app.py <port>`
 
-Setting Remote Server using screen (Temporary)
+Setting Remote Server
 =====================
-1. `$ Finish all the step on local, except step 5, 6`
-2. `$ screen`
-3. `$ cd <path_to_web_folder>`
-4. `$ python app.py <port>`
-5. `$ screen -d`
-6. `$ logout `
+1. `$ start-server.sh`
+
+Setting Remote Server to start at system boot time
+=====================
+1. add the following line to /etc/rc.local
+  `cd /home/local/dblog-server/dblog/web/ && ./start-server.sh`
 
