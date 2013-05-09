@@ -26,38 +26,38 @@ distinct Person Mary, Jennifer, Lisa, Sandra, Michelle,
   Kimberly, Elizabeth, Dorothy, Helen, Sharon, Deborah;
 fixed Real mu = 10;
 fixed Real sigma = 2;
-random Real skill(Person p) ~ Gaussian(mu, sigma);
+random Real strength(Person p) ~ Gaussian(mu, sigma);
 
-random Person[] Team1(Integer i) // 1st team of i-th match 
+random Person[] team1(Integer i) // 1st team of i-th match 
   = ~ UniformChoice({Person p}, 3);
 
-random Person[] Team2(Integer i) // 2nd team of i-th match 
+random Person[] team2(Integer i) // 2nd team of i-th match 
   = ~ UniformChoice({Person p}, 3);
 
 random Boolean lazy(Person p, Integer i) 
   ~ Bernoulli(0.1); // person p at i-th match
 
-random Real strength(Person p, Integer i) 
+random Real pulling_power(Person p, Integer i) 
 	if lazy(p, i) then = skill(p) / 2
 	else = skill(p);
 
-random Boolean Team1Win(Integer i)
-	if (sum([strength(x, i) for x in Team1(i)]) 
-    > sum([strength(x, i) for x in Team2(i)])) 
+random Boolean team1win(Integer i)
+	if (sum([pulling_power(x, i) for x in team1(i)]) 
+    > sum([pulling_power(x, i) for x in team2(i)])) 
 	then = true
 	else = false;
 
-obs Team1(1) = [James, David, Christopher];
-obs Team2(1) = [George, Ronald, John];
+obs team1(1) = [James, David, Christopher];
+obs team2(1) = [George, Ronald, John];
 
-obs Team1(2) = [James, David, Anthony];
-obs Team2(2) = [Christopher, Joseph, John];
+obs team1(2) = [James, David, Anthony];
+obs team2(2) = [Christopher, Joseph, John];
 
-obs Team1(3) = [Daniel, Jeff, Christopher];
-obs Team2(3) = [George, David, James];
+obs team1(3) = [Daniel, Jeff, Christopher];
+obs team2(3) = [George, David, James];
 
-obs Team1Win(1) = true;
+obs team1win(1) = true;
 
-query Team1Win(2);
-query Team1Win(3);
-query skill(James);
+query team1win(2);
+query team1win(3);
+query strength(James);
