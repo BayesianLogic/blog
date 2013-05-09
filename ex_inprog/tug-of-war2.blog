@@ -7,6 +7,8 @@
  * full strength. The pulling power of a team is the sum of the 
  * pulling power of the individuals on the team. The team with the 
  * greater pulling power wins.
+ *
+ * This version uses sum of a list and list comprehension.
  * 
  * @author Lei Li
  * @date 2013/03/30
@@ -26,22 +28,22 @@ fixed Real mu = 10;
 fixed Real sigma = 2;
 random Real skill(Person p) ~ Gaussian(mu, sigma);
 
-random Person[] Team1(Integer i) // i-th match 
+random Person[] Team1(Integer i) // 1st team of i-th match 
   = ~ UniformChoice({Person p}, 3);
 
-random Person[] Team2(Integer i) // i-th match 
-  = ~ UniformChoice({Person p}, 3);  
+random Person[] Team2(Integer i) // 2nd team of i-th match 
+  = ~ UniformChoice({Person p}, 3);
 
 random Boolean lazy(Person p, Integer i) 
-  ~ Bernoulli(0.1);
+  ~ Bernoulli(0.1); // person p at i-th match
 
 random Real strength(Person p, Integer i) 
 	if lazy(p, i) then = skill(p) / 2
 	else = skill(p);
 
 random Boolean Team1Win(Integer i)
-	if (sum([strength(x) for x in Team1(i)]) 
-    > sum([strength(x) for x in Team2(i)])) 
+	if (sum([strength(x, i) for x in Team1(i)]) 
+    > sum([strength(x, i) for x in Team2(i)])) 
 	then = true
 	else = false;
 
