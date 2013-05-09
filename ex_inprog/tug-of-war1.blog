@@ -64,8 +64,8 @@ obs team1player2(2) = John;
 obs team2player1(2) = Mary;
 obs team2player2(2) = Lisa;
 
-obs team1player1(2) = John;
-obs team1player2(2) = Charles;
+obs team1player1(3) = John;
+obs team1player2(3) = Charles;
 
 obs team1win(1) = true;
 
