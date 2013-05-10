@@ -13,15 +13,8 @@
  */
 
 type Person;
-distinct Person James, David, Christopher, 
-  George, Ronald, John, Richard, Daniel, 
-  Kenneth, Anthony, Robert, Charles, Paul, 
-  Steven, Kevin, Michael, Joseph, Mark, Edward, 
-  Jason, William, Thomas, Donald, Brian, Jeff;
-distinct Person Mary, Jennifer, Lisa, Sandra, Michelle,
-  Patricia, Maria, Nancy, Donna, Laura, Linda, Susan,
-  Karen, Carol, Sarah, Barbara, Margaret, Betty, Ruth,
-  Kimberly, Elizabeth, Dorothy, Helen, Sharon, Deborah;
+distinct Person James, David,
+  Jason, Brian, Mary, Nancy, Susan, Karen;
 fixed Real mu = 10;
 fixed Real sigma = 2;
 random Real strength(Person p) ~ Gaussian(mu, sigma);
@@ -56,21 +49,41 @@ random Boolean team1win(Integer i)
 
 obs team1player1(1) = James;
 obs team1player2(1) = David;
-obs team2player1(1) = John;
+obs team2player1(1) = Brian;
 obs team2player2(1) = Jason;
 
 obs team1player1(2) = James;
-obs team1player2(2) = John;
+obs team1player2(2) = David;
 obs team2player1(2) = Mary;
-obs team2player2(2) = Lisa;
+obs team2player2(2) = Nancy;
 
-obs team1player1(3) = John;
-obs team1player2(3) = Charles;
+obs team1player1(3) = James;
+obs team1player2(3) = Karen;
 
 obs team1win(1) = true;
 
+/**
+ * The first query is comparing the strength of members 
+ * from two team with the evidence that one team win once. 
+ * So it is naturally that the member in the winning team 
+ * might be stronger.
+ *
+ * The second query asks about a hypothetical game 
+ * between the winner team of past game and a new team. 
+ * It is reasonable that the past winner team might have 
+ * higher chance to win again in the new game.
+ *
+ * The third query is asking what is the winning 
+ * probability of a new player joining a past winning
+ * player against an unknown team. Therefore, new players 
+ * may prefer to joining past winning players.
+ *
+ * The last query is about the probability of a new team 
+ * winning against such old+new player pair. 
+ */
+
+query strength(James) > strength(Brian); // is James stronger than Brian?
 query team1win(2); // is team1 winning in second match?
-query strength(James); // what is the strength of James? 
-query strength(James) > strength(John); // is James stronger than John?
+query team1win(3); // is team1 winning in third match?
 // query about unknown opponent
-query (!team1win(3)) & (team2player2(3) == Mary) & (team2player2(3) == Susan);
+query (!team1win(3)) & (team2player1(3) == Mary) & (team2player2(3) == Susan);
