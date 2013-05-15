@@ -1,0 +1,12 @@
+type Date;
+distinct Date Day[365];
+
+type Person;
+
+random Date Birthday(Person p) 
+  ~ UniformChoice({Date d});
+
+#Person = 13;
+
+query exists Person x exists Person y  
+  ((x != y) & (Birthday(x) == Birthday(y)));
