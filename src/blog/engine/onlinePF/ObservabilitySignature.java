@@ -1,18 +1,18 @@
 package blog.engine.onlinePF;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import blog.DBLOGUtil;
 import blog.bn.BayesNetVar;
-import blog.engine.Particle;
 import blog.engine.onlinePF.inverseBucket.UBT;
-import blog.world.PartialWorld;
 import blog.world.AbstractPartialWorld;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 
 public class ObservabilitySignature {
+
 	public HashMap<BayesNetVar, Object> observedValues = new HashMap<BayesNetVar, Object>();
 
 	
@@ -126,15 +126,44 @@ public class ObservabilitySignature {
 	 */
 	public static Map<ObservabilitySignature, Integer> OStoIndex = new HashMap<ObservabilitySignature, Integer>();
 	public static ArrayList<ObservabilitySignature> IndextoOS= new ArrayList<ObservabilitySignature> ();
+        public static Map<Integer, Integer> OStoBucketSize = new HashMap<Integer, Integer>();
+        public static void updateOStoBucketSize(Integer osIndex, Double additionalCount) {
+            /*code for updating OStoBucketSize*/
+            if (ObservabilitySignature.OStoBucketSize.containsKey(osIndex))
+                ObservabilitySignature.OStoBucketSize.put(osIndex, 
+                        ObservabilitySignature.OStoBucketSize.get(osIndex)+ additionalCount.intValue());
+            else
+                ObservabilitySignature.OStoBucketSize.put(osIndex, additionalCount.intValue());
+            //
+        }
+        
+        public static void resetBucketCount(){
+            maxBucketSize = 0;
+            minBucketSize = Integer.MAX_VALUE;
+            OStoBucketSize.clear();
+        }
+        
+    public static void updateBucketCount() {
+        for (Integer osIndex : OStoBucketSize.keySet()){
+            Integer thisBucketSize = OStoBucketSize.get(osIndex);
+            if (thisBucketSize > maxBucketSize){
+            	maxBucketSize = thisBucketSize;
+            	maxBucketIndex = osIndex;
+            }
+            if (thisBucketSize < minBucketSize){
+            	minBucketSize = thisBucketSize;
+            	minBucketIndex = osIndex;
+            }
+            //maxBucketSize = Math.max(thisBucketSize, maxBucketSize);
+            //minBucketSize = Math.min(thisBucketSize, minBucketSize);
+        }
+    }
+    
+    public static int maxBucketSize = 0;
+    public static int minBucketSize = Integer.MAX_VALUE;
+    public static int maxBucketIndex = 0;
+    public static int minBucketIndex = 0;
 	public static int index = 0;
-	
-	/**
-	 * Empties the OSDictionary, resets index
-	 */
-	public static void emptyOSDictionaryForNewTimestep(){
-		OStoIndex.clear();
-		index = 0;
-	}
 	
 	/**
 	 * Gets the index for the given os, if not already in OSDictionary, then put it there and return index, incrementing index by 1
@@ -147,12 +176,20 @@ public class ObservabilitySignature {
 		else{
 			OStoIndex.put(os, index);
 			IndextoOS.add(os);
-			index ++;
+			index = index + 1;
 			return index -1;
 		}
 	}
-	
+	public int getIndex(){
+		return myIndex;
+	}
 	public static ObservabilitySignature getOSbyIndex(int index){
-		return IndextoOS.get(index);
+		ObservabilitySignature os = IndextoOS.get(index);
+		if (os.myIndex!=index){
+			System.err.println("error with index");
+			System.exit(1);
+		}
+			
+		return os;
 	}
 }

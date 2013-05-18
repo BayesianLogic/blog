@@ -159,11 +159,11 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		//HashSet<String> tmp = new HashSet<String>();
 		
 		
-		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
+		for (Integer osIndex : particleFilter.getPartitions().keySet()){
 		evidenceGenerator.updateDecision();
 			if ((evidence = evidenceGenerator.getLatestDecision()) != null) {
 				//particleFilter.take(evidence);
-				particleFilter.takeWithPartition(evidence, os);
+				particleFilter.takeWithPartition(evidence, osIndex);
 			}
 
 		}
@@ -173,6 +173,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 				tmp.add(p.foodecisionstring);
 		}
 		System.out.println("Num moves sequences: " + tmp.size());*/
+		
 		return true;
 		
 		//return false;
@@ -202,7 +203,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			
 			if (i==0)
 				System.err.println(averageQueryResult(query));
-				
+			
 			i++;
 		}
 		
@@ -211,13 +212,14 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			h.add((AbstractPartialWorld) p.curWorld);
 		}
 		
+                
 		//System.out.println(h.size());
 		for (Object o : h){
 			int x = 1+1;
 		}
 		
-		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitions().keySet()){
-			particleFilter.answerWithPartition(queries, os);
+		for (Integer osIndex: particleFilter.getPartitions().keySet()){
+			particleFilter.answerWithPartition(queries, osIndex);
 			//System.out.println("SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");
 			for (Iterator it = queries.iterator(); it.hasNext();) {
 				ArgSpecQuery query = (ArgSpecQuery) it.next();
@@ -241,6 +243,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			queryResultCommunicator.printInput("");
 			queryResultCommunicator.p.flush();
 		}
+
 		//System.out.println(UBT.runTimeTimer.elapsedTime());
 		//UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
 		    UBT.dataOutput.printInput("" + UBT.runTimeTimer.elapsedTime());

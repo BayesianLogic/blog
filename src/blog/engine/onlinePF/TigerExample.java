@@ -67,7 +67,7 @@ public class TigerExample {
 		+	"else"
 		+	"	{\"chosen_Move(Listen,t)\"};"
 			;
-	public static void main (String[] args) throws Exception{
+	public static void main (String[] args) throws Exception {
 		Collection linkStrings = Util.list();
 		Collection queryStrings = Util.list("value(t)");
 		setDefaultParticleFilterProperties();

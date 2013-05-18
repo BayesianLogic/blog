@@ -13,7 +13,7 @@ random Boolean noise(Door d, Timestep t){
 	if (tiger_state(t) == d) then
 		~ Categorical({true -> 0.85, false -> 0.15})
 	else
-		~ Categorical({false -> 0.15, true -> 0.85})};
+		~ Categorical({false -> 0.85, true -> 0.15})};
 random Door tiger_state (Timestep t){
 	if (t == @0) then
 		~ UniformChoice({Door s})

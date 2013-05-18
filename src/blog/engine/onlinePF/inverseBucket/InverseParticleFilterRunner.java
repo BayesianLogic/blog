@@ -139,16 +139,16 @@ public class InverseParticleFilterRunner{
 	
 	public boolean advancePhase2() {
 		Evidence evidence;
-		Set foo = (Set<ObservabilitySignature>)particleFilter.getPartitionSet();
-		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
+		//Set<Integer> foo = particleFilter.getPartitionSet();
+		for (Integer osIndex: particleFilter.getPartitionSet()){
 		evidenceGenerator.updateDecision();
 			if ((evidence = evidenceGenerator.getLatestDecision()) != null) {
-				particleFilter.takeActionWithPartition(evidence, os);
+				particleFilter.takeActionWithPartition(evidence, osIndex);
 			}
 			Double count = 0.0;
 			for (InverseParticle ip: particleFilter.sc.IPtoState.keySet()){
-				if (particleFilter.sc.IPtoState.get(ip).OStoCount.containsKey(os))
-					count += particleFilter.sc.IPtoState.get(ip).OStoCount.get(os);
+				if (particleFilter.sc.IPtoState.get(ip).OStoCount.containsKey(osIndex))
+					count += particleFilter.sc.IPtoState.get(ip).OStoCount.get(osIndex);
 			}
 			//System.out.println("ObservationSignature is : " + os + "with count: " + count);
 			//System.out.println("Action is :" + evidence.getDecisionEvidence());
@@ -186,6 +186,13 @@ public class InverseParticleFilterRunner{
 				
 			i++;
 		}
+		if (UBT.debug){
+	        System.out.println("maxBucketSize: "+ ObservabilitySignature.maxBucketSize);
+	        System.out.println("OS for max: " + ObservabilitySignature.getOSbyIndex(ObservabilitySignature.maxBucketIndex));
+	        System.out.println("minBucketSize: "+ ObservabilitySignature.minBucketSize);
+	        System.out.println("OS for min: " + ObservabilitySignature.getOSbyIndex(ObservabilitySignature.minBucketIndex));
+	        System.out.println("Size Collection:" + ObservabilitySignature.OStoBucketSize.values());
+		}
 		//System.out.println("number of observations: " + particleFilter.sc.OStoAction.size());
 		//System.out.println(/*"number of states: " + */particleFilter.sc.IPtoState.size());
 		//System.err.println(this.evidenceGenerator.lastTimeStep);
@@ -209,20 +216,20 @@ public class InverseParticleFilterRunner{
 	    
 	    //should probably put this in a separate function
 		for (InverseParticle p : particleFilter.sc.IPtoState.keySet()){
-			State s = particleFilter.sc.IPtoState.get(p);
-			for (ObservabilitySignature os: s.OStoCount.keySet()){
-				if(!particleFilter.sc.os_to_query.containsKey(os)){
-					particleFilter.sc.os_to_query.put(os, evidenceGenerator.getFreshQueries());
+			HiddenState s = particleFilter.sc.IPtoState.get(p);
+			for (Integer osIndex: s.OStoCount.keySet()){
+				if(!particleFilter.sc.os_to_query.containsKey(osIndex)){
+					particleFilter.sc.os_to_query.put(osIndex, evidenceGenerator.getFreshQueries());
 				}
 			}
 		}
 		particleFilter.sc.updateOSQueries();
 	    
-		for (ObservabilitySignature os: (Set<ObservabilitySignature>)particleFilter.getPartitionSet()){
+		for (Integer osIndex: particleFilter.getPartitionSet()){
 			UBT.Stopwatch timer = new UBT.Stopwatch();
 			timer.startTimer();
 			
-			queries = particleFilter.getQueryResultFromPartition(os);
+			queries = particleFilter.getQueryResultFromPartition(osIndex);
 			//particleFilter.getQueryResultFromPartition_old(queries, os);
 			
 			UBT.specialTimingData6 += timer.elapsedTime();
@@ -258,41 +265,14 @@ public class InverseParticleFilterRunner{
 			queryResultCommunicator.printInput("");
 			queryResultCommunicator.p.flush();
 		}
-/*
-		if (evidenceGenerator.lastTimeStep==20){
-			UBT.dataOutput.printInput(UBT.numStateData.toString());
-			UBT.dataOutput.printInput(UBT.timingData.toString());
-			UBT.dataOutput.printInput(UBT.valueData.toString());
-			UBT.dataOutput.printInput(UBT.specialTimingData.toString());
-			UBT.dataOutput.printInput(UBT.specialTimingData2.toString());
-			UBT.dataOutput.printInput(UBT.specialTimingData3.toString());
-			UBT.dataOutput.printInput(UBT.specialTimingData4.toString());
-			UBT.dataOutput.printInput(UBT.specialTimingData5.toString());
-			UBT.dataOutput.printInput(UBT.specialTimingData6.toString());
-			UBT.dataOutput.p.flush();
-			throw new Exception("Stopping run at step 12");
-			//System.exit(1);
-		}
-		else{
-			UBT.dataOutput.printInput(UBT.numStateData.toString());
-			UBT.dataOutput.printInput(UBT.timingData.toString());
-			UBT.dataOutput.printInput(UBT.valueData.toString());
-			UBT.dataOutput.printInput(UBT.specialTimingData.toString());
-			UBT.dataOutput.printInput(UBT.specialTimingData2.toString());
-			UBT.dataOutput.printInput(UBT.specialTimingData3.toString());
-			UBT.dataOutput.printInput(UBT.specialTimingData4.toString());
-			UBT.dataOutput.printInput(UBT.specialTimingData5.toString());
-			UBT.dataOutput.printInput(UBT.specialTimingData6.toString());
-			UBT.dataOutput.p.flush();
-		}
-			*/
+		
 	    UBT.dataOutput.printInput("" + UBT.runTimeTimer.elapsedTime());
 		//UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
 	    
 	    if (evidenceGenerator.lastTimeStep==12){
-	      throw new Error("reached 12");
+	    	System.out.print("Reached 12, now quitting!");
+	    	throw new Error("reached 12");
 	    }
-	    
 	}
 	
 	public String printQueryString(ArgSpecQuery q) {

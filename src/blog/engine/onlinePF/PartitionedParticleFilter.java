@@ -158,14 +158,14 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		if (queries == null)
 			queries = new LinkedList();
 		particles = new ArrayList<TimedParticle>();
-		partitions = new HashMap<ObservabilitySignature, List<TimedParticle>>();
+		partitions = new HashMap<Integer, List<TimedParticle>>();
 		
 		List<TimedParticle> a = new ArrayList<TimedParticle>();
 		TimedParticle tp = makeParticle(idTypes, numTimeSlicesInMemory);
 		ObservabilitySignature os = new ObservabilitySignature();
 		os.update(tp);
 		tp.setOS(os);
-		partitions.put(os, a);
+		partitions.put(os.getIndex(), a);
 		
 		for (int i = 0; i < numParticles; i++) {
 			TimedParticle newParticle = tp.copy();
@@ -249,17 +249,17 @@ public class PartitionedParticleFilter extends InferenceEngine {
 	 * @param queries
 	 * @param os
 	 */
-	public void answerWithPartition(Collection<Query> queries, ObservabilitySignature os){
+	public void answerWithPartition(Collection<Query> queries, Integer osIndex){
 		for (Query q: queries)
 			q.zeroOut();
-		List<Particle> partition = (List) partitions.get(os);
-		for (Particle p: partition)
+		List<TimedParticle> partition = partitions.get(osIndex);
+		for (TimedParticle p: partition)
 			p.updateQueriesStats(queries);
 	}
 
 
-	public void takeWithPartition(Evidence evidence, ObservabilitySignature os) {
-		List particles = (List) partitions.get(os);
+	public void takeWithPartition(Evidence evidence, Integer osIndex) {
+		List<TimedParticle> particles = partitions.get(osIndex);
 		
 		if (particles == null){
 			System.err.println("partitionedparticlefilter.takewithpartition: particles should not be null");
@@ -296,8 +296,9 @@ public class PartitionedParticleFilter extends InferenceEngine {
 	 */
 	public void resample() {
 		System.err.println("resample: currently does not work because particle.copy interferes with world.getchangedobservablemap which in turn interferes with observabilitysignature.update");
-		for (ObservabilitySignature os : partitions.keySet()){
-			partitions.get(os).clear();
+		System.exit(1);
+		for (Integer osIndex : partitions.keySet()){
+			partitions.get(osIndex).clear();
 		}
 		double[] weights = new double[particles.size()];
 		boolean[] alreadySampled = new boolean[particles.size()];
@@ -338,20 +339,22 @@ public class PartitionedParticleFilter extends InferenceEngine {
 	 * updates partitions
 	 */
 	public void repartition(){
-		Map<ObservabilitySignature, List<TimedParticle>> newPartitions = new HashMap<ObservabilitySignature, List<TimedParticle>>();
-		for (ObservabilitySignature os : partitions.keySet()){
-			for (TimedParticle p : (List<TimedParticle>) partitions.get(os)){
+		Map<Integer, List<TimedParticle>> newPartitions = new HashMap<Integer, List<TimedParticle>>();
+		for (Integer osIndex : partitions.keySet()){
+			ObservabilitySignature os = ObservabilitySignature.getOSbyIndex(osIndex);
+			for (TimedParticle p : (List<TimedParticle>) partitions.get(osIndex)){
 				ObservabilitySignature newOS = os.copy();
 				newOS.update(p);
-				if (newPartitions.containsKey(newOS)){
-					List<TimedParticle> partition = newPartitions.get(newOS);
+				Integer newOSIndex = newOS.getIndex();
+				if (newPartitions.containsKey(newOSIndex)){
+					List<TimedParticle> partition = newPartitions.get(newOSIndex);
 					partition.add(p);
 					p.setOS(((TimedParticle) Util.getFirst(partition)).getOS());
 				}
 				else{
 					List<TimedParticle> partition = new ArrayList<TimedParticle>();
 					partition.add(p);
-					newPartitions.put(newOS, partition);
+					newPartitions.put(newOSIndex, partition);
 					p.setOS(newOS);
 				}
 			}
@@ -359,7 +362,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		partitions = newPartitions;
 	}
 	
-	public Map getPartitions(){
+	public Map<Integer, List<TimedParticle>> getPartitions(){
 		return partitions;
 	}
 	
@@ -368,7 +371,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 
 	int numParticles;
 	public List<TimedParticle> particles; // of Particles
-	public Map<ObservabilitySignature, List<TimedParticle>> partitions;
+	public Map<Integer, List<TimedParticle>> partitions;
 	private boolean needsToBeResampledBeforeFurtherSampling = false;
 	private Sampler particleSampler;
 	public List<TimedParticle> cachedParticlesBeforeTakingEvidence;
