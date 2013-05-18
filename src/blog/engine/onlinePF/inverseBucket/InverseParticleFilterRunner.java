@@ -181,11 +181,13 @@ public class InverseParticleFilterRunner{
 			
 			if (i==0){
 				UBT.valueData.add(averageQueryResult(query));
-				//System.err.println(averageQueryResult(query));
+				System.err.println(averageQueryResult(query));
 			}
 				
 			i++;
 		}
+                System.out.println("maxBucketSize: "+ ObservabilitySignature.maxBucketSize);
+                System.out.println("minBucketSize: "+ ObservabilitySignature.minBucketSize);
 		//System.out.println("number of observations: " + particleFilter.sc.OStoAction.size());
 		//System.out.println(/*"number of states: " + */particleFilter.sc.IPtoState.size());
 		//System.err.println(this.evidenceGenerator.lastTimeStep);
@@ -209,7 +211,7 @@ public class InverseParticleFilterRunner{
 	    
 	    //should probably put this in a separate function
 		for (InverseParticle p : particleFilter.sc.IPtoState.keySet()){
-			State s = particleFilter.sc.IPtoState.get(p);
+			HiddenState s = particleFilter.sc.IPtoState.get(p);
 			for (Integer osIndex: s.OStoCount.keySet()){
 				if(!particleFilter.sc.os_to_query.containsKey(osIndex)){
 					particleFilter.sc.os_to_query.put(osIndex, evidenceGenerator.getFreshQueries());

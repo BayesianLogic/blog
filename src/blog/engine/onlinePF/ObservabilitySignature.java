@@ -11,6 +11,7 @@ import blog.world.AbstractPartialWorld;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 
 public class ObservabilitySignature {
+
 	public HashMap<BayesNetVar, Object> observedValues = new HashMap<BayesNetVar, Object>();
 
 	
@@ -124,6 +125,32 @@ public class ObservabilitySignature {
 	 */
 	public static Map<ObservabilitySignature, Integer> OStoIndex = new HashMap<ObservabilitySignature, Integer>();
 	public static ArrayList<ObservabilitySignature> IndextoOS= new ArrayList<ObservabilitySignature> ();
+        public static Map<Integer, Integer> OStoBucketSize = new HashMap<Integer, Integer>();
+        public static void updateOStoBucketSize(Integer osIndex, Double additionalCount) {
+            /*code for updating OStoBucketSize*/
+            if (ObservabilitySignature.OStoBucketSize.containsKey(osIndex))
+                ObservabilitySignature.OStoBucketSize.put(osIndex, 
+                        ObservabilitySignature.OStoBucketSize.get(osIndex)+ additionalCount.intValue());
+            else
+                ObservabilitySignature.OStoBucketSize.put(osIndex, additionalCount.intValue());
+            //
+        }
+        
+        public static void resetBucketCount(){
+            maxBucketSize = 0;
+            minBucketSize = Integer.MAX_VALUE;
+            OStoBucketSize.clear();
+        }
+        
+    public static void updateBucketCount() {
+        for (Integer osIndex : OStoBucketSize.keySet()){
+            Integer thisBucketSize = OStoBucketSize.get(osIndex);
+            maxBucketSize = Math.max(thisBucketSize, maxBucketSize);
+            minBucketSize = Math.min(thisBucketSize, minBucketSize);
+        }
+    }
+        public static int maxBucketSize = 0;
+        public static int minBucketSize = Integer.MAX_VALUE;
 	public static int index = 0;
 	
 	/**

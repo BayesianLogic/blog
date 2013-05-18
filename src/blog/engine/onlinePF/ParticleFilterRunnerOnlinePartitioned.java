@@ -200,10 +200,10 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 			//query.printResults(System.out);
-			/*
+			
 			if (i==0)
 				System.err.println(averageQueryResult(query));
-			*/
+			
 			i++;
 		}
 		
@@ -212,6 +212,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			h.add((AbstractPartialWorld) p.curWorld);
 		}
 		
+                
 		//System.out.println(h.size());
 		for (Object o : h){
 			int x = 1+1;
