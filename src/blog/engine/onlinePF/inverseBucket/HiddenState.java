@@ -13,9 +13,10 @@ import blog.common.Util;
 import blog.engine.onlinePF.ObservabilitySignature;
 import blog.model.Evidence;
 
-public class State {
+public class HiddenState {
+    
 	/**
-	 * the state collection that encloses this state
+	 * the state collection 
 	 */
 	StateCollection EnclosingSC;
 	/**
@@ -29,7 +30,7 @@ public class State {
 	Map<Integer, Double> OStoCount = new HashMap<Integer, Double> ();
 	double totalCount;
 	
-	public State (InverseParticle p, StateCollection enc){
+	public HiddenState (InverseParticle p, StateCollection enc){
 		canonicalParticle = p;
 		EnclosingSC = enc;
 		totalCount = 0;
@@ -44,6 +45,8 @@ public class State {
 			else {
 				OStoCount.put(osIndex, additionalCount);
 			}
+            ObservabilitySignature.updateOStoBucketSize(osIndex, additionalCount);
+                        
 			totalCount += additionalCount;
 		}
 	}
@@ -292,10 +295,12 @@ public class State {
 	
 	
 	public boolean equals (Object o){
-		return canonicalParticle.equals(((State)o).canonicalParticle);
+		return canonicalParticle.equals(((HiddenState)o).canonicalParticle);
 	}
 	public int hashCode (){
 		return canonicalParticle.hashCode();
 	}
+
+
 	
 }

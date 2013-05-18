@@ -35,7 +35,7 @@ public class StateCollection {
 	/**
 	 * A map from State to itself
 	 */
-	Map<InverseParticle, State> IPtoState = new HashMap<InverseParticle, State> ();
+	Map<InverseParticle, HiddenState> IPtoState = new HashMap<InverseParticle, HiddenState> ();
 	/**
 	 * Constructor, initializes with the OS of a default particle in each map, 
 	 * and number of particles in OStoCount is provided
@@ -43,7 +43,7 @@ public class StateCollection {
 	 * The other arguments are for creating particles.
 	 */
 	public StateCollection (int numParticles, InverseParticle p){
-		State originalState = new State(p, this);
+		HiddenState originalState = new HiddenState(p, this);
 		ObservabilitySignature os = new ObservabilitySignature();
 		os.update(p);
 		Integer osIndex = os.getIndex();
@@ -91,7 +91,7 @@ public class StateCollection {
 	 */
 	public void getQueryResult_old (List<Query> queries, ObservabilitySignature os){
 		for (InverseParticle p : IPtoState.keySet()){
-			State s = IPtoState.get(p);
+			HiddenState s = IPtoState.get(p);
 			if (s.OStoCount.containsKey(os))
 				p.updateQueriesStats(queries, s.OStoCount.get(os));
 		}
@@ -105,7 +105,7 @@ public class StateCollection {
 	
 	public void updateOSQueries (){
 		for (InverseParticle p : IPtoState.keySet()){
-			State s = IPtoState.get(p);
+			HiddenState s = IPtoState.get(p);
 			for (Integer osIndex: s.OStoCount.keySet()){
 				p.updateQueriesStats(os_to_query.get(osIndex), s.OStoCount.get(osIndex));
 			}
@@ -134,6 +134,7 @@ public class StateCollection {
 	 * nextStateCollection must be initialized - check
 	 */
 	public void doActionAndAnswerQueriesForAllStates(){
+                ObservabilitySignature.resetBucketCount();
 		nextStateCollection = new StateCollection();
 		for (InverseParticle p : IPtoState.keySet()){
 			if (UBT.particleCoupling)
@@ -141,6 +142,7 @@ public class StateCollection {
 			else
 				IPtoState.get(p).doActionsAndAnswerQueries2();
 		}
+                ObservabilitySignature.updateBucketCount();
 		
 	}
 	
@@ -153,7 +155,7 @@ public class StateCollection {
 			IPtoState.get(p).addOSCounts(oscounts);
 		}
 		else {
-			State newState = new State(p, this);
+			HiddenState newState = new HiddenState(p, this);
 			newState.addOSCounts(oscounts);
 			IPtoState.put(p, newState);
 		}
