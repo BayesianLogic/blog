@@ -1,6 +1,7 @@
 package blog.engine.onlinePF;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -145,12 +146,23 @@ public class ObservabilitySignature {
     public static void updateBucketCount() {
         for (Integer osIndex : OStoBucketSize.keySet()){
             Integer thisBucketSize = OStoBucketSize.get(osIndex);
-            maxBucketSize = Math.max(thisBucketSize, maxBucketSize);
-            minBucketSize = Math.min(thisBucketSize, minBucketSize);
+            if (thisBucketSize > maxBucketSize){
+            	maxBucketSize = thisBucketSize;
+            	maxBucketIndex = osIndex;
+            }
+            if (thisBucketSize < minBucketSize){
+            	minBucketSize = thisBucketSize;
+            	minBucketIndex = osIndex;
+            }
+            //maxBucketSize = Math.max(thisBucketSize, maxBucketSize);
+            //minBucketSize = Math.min(thisBucketSize, minBucketSize);
         }
     }
-        public static int maxBucketSize = 0;
-        public static int minBucketSize = Integer.MAX_VALUE;
+    
+    public static int maxBucketSize = 0;
+    public static int minBucketSize = Integer.MAX_VALUE;
+    public static int maxBucketIndex = 0;
+    public static int minBucketIndex = 0;
 	public static int index = 0;
 	
 	/**

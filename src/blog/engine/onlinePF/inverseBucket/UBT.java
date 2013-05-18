@@ -6,6 +6,7 @@ import java.util.Timer;
 import blog.engine.onlinePF.FileCommunicator;
 
 public class UBT {
+	public static boolean debug = true;
 	public static boolean rememberHistory = true;
 	public static enum schemes {allVariables, nonObservableVariables, hiddenVariables};
 	public static schemes currentScheme = schemes.nonObservableVariables;

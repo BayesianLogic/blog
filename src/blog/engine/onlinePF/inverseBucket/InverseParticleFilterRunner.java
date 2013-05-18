@@ -186,8 +186,13 @@ public class InverseParticleFilterRunner{
 				
 			i++;
 		}
-                System.out.println("maxBucketSize: "+ ObservabilitySignature.maxBucketSize);
-                System.out.println("minBucketSize: "+ ObservabilitySignature.minBucketSize);
+		if (UBT.debug){
+	        System.out.println("maxBucketSize: "+ ObservabilitySignature.maxBucketSize);
+	        System.out.println("OS for max: " + ObservabilitySignature.getOSbyIndex(ObservabilitySignature.maxBucketIndex));
+	        System.out.println("minBucketSize: "+ ObservabilitySignature.minBucketSize);
+	        System.out.println("OS for min: " + ObservabilitySignature.getOSbyIndex(ObservabilitySignature.minBucketIndex));
+	        System.out.println("Size Collection:" + ObservabilitySignature.OStoBucketSize.values());
+		}
 		//System.out.println("number of observations: " + particleFilter.sc.OStoAction.size());
 		//System.out.println(/*"number of states: " + */particleFilter.sc.IPtoState.size());
 		//System.err.println(this.evidenceGenerator.lastTimeStep);

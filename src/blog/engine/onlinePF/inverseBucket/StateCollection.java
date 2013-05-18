@@ -134,7 +134,7 @@ public class StateCollection {
 	 * nextStateCollection must be initialized - check
 	 */
 	public void doActionAndAnswerQueriesForAllStates(){
-                ObservabilitySignature.resetBucketCount();
+        ObservabilitySignature.resetBucketCount();
 		nextStateCollection = new StateCollection();
 		for (InverseParticle p : IPtoState.keySet()){
 			if (UBT.particleCoupling)
@@ -142,7 +142,8 @@ public class StateCollection {
 			else
 				IPtoState.get(p).doActionsAndAnswerQueries2();
 		}
-                ObservabilitySignature.updateBucketCount();
+        if (UBT.debug)
+        	ObservabilitySignature.updateBucketCount();
 		
 	}
 	
