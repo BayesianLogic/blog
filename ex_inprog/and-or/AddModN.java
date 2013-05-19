@@ -4,7 +4,9 @@
 
 import java.util.*;
 import blog.*;
-import common.Util;
+import blog.distrib.AbstractCondProbDistrib;
+import blog.model.Type;
+//import common.Util;
 
 
 public class AddModN extends AbstractCondProbDistrib {

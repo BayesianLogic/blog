@@ -17,7 +17,7 @@ public class TigerExample2 {
 
 	public static void main (String[] args){
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("value(t)");
+		Collection queryStrings = Util.list("reward(t)");
 		setDefaultParticleFilterProperties();
 	    setModel("ex_inprog//logistics//tigerExample2.txt");
 	    
@@ -30,13 +30,14 @@ public class TigerExample2 {
 				runner.run();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				//e.printStackTrace();
+				e.printStackTrace();
+				System.exit(1);
 			}
 	    }
 	}
 	private static void setDefaultParticleFilterProperties() {
 		properties = new Properties();
-		properties.setProperty("numParticles", "30000");
+		properties.setProperty("numParticles", "300");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		Util.initRandom(true);
