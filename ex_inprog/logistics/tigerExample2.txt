@@ -24,7 +24,7 @@ random Door tiger_state (Timestep t){
 		= tiger_state(Prev(t))};
 random Integer reward (Timestep t){
 	if (t == @0) then
-		~ UniformChoice({Integer n : (n >=2 & n <= 12)})
+		~ UniformChoice({Integer n : (n <= 12)})
 	else if (chosen_listen(Prev(t)) == true) then
 		= -1
 	else if (exists Door d(tiger_state(Prev(t)) == d & chosen_open(d, Prev(t)))) then

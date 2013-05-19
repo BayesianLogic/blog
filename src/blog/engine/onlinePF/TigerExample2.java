@@ -17,7 +17,7 @@ public class TigerExample2 {
 
 	public static void main (String[] args){
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("reward(t)");
+		Collection queryStrings = Util.list("value(t)");
 		setDefaultParticleFilterProperties();
 	    setModel("ex_inprog//logistics//tigerExample2.txt");
 	    
