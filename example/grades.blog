@@ -105,7 +105,7 @@ obs GradeObtained(Fred, Stat10) = C;
 
 /* Queries for the model in grades.mblog, given the relational skeleton.
  */
-
+query Teaches (Smith, Phil80);
 query GradeObtained(John, CS106);
 query GradeObtained(Mary, CS106);
 query GradeObtained(Fred, CS106);

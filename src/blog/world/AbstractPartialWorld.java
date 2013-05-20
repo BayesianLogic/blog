@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import blog.DBLOGUtil;
 import blog.ObjectIdentifier;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
@@ -75,7 +76,8 @@ import blog.objgen.AbstractObjectSet;
 import blog.objgen.ObjectIterator;
 import blog.objgen.ObjectSet;
 import blog.sample.ParentRecEvalContext;
-
+import blog.engine.onlinePF.ObservableRandomFunction;//added by cheng
+import blog.engine.onlinePF.inverseBucket.UBT;
 /**
  * An implementation of the PartialWorld interface that just requires concrete
  * subclasses to initialize some protected variables.
@@ -147,6 +149,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		} else {
 			// checkIdentifiers(var, value); // allow any identifiers
 			basicVarToValue.put(var, value);
+			/*added by cheng*/
+			changedVarToValue.put(var, value);
 		}
 
 		dirtyVars.add(var);
@@ -1009,6 +1013,9 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 */
 	public void cloneFields(AbstractPartialWorld newWorld) {
 		newWorld.basicVarToValue = (Map) ((HashMap) basicVarToValue).clone();
+
+		newWorld.decisionInterp = (Set) ((HashSet) decisionInterp).clone();
+		
 		newWorld.objToUsesAsValue = (MultiMap) ((HashMultiMap) objToUsesAsValue)
 				.clone();
 		newWorld.objToUsesAsArg = (MultiMap) ((HashMultiMap) objToUsesAsArg)
@@ -1026,6 +1033,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		newWorld.dirtyVars = (Set) ((LinkedHashSet) dirtyVars).clone();
 		newWorld.listeners = (List) ((ArrayList) listeners).clone();
 		newWorld.idTypes = new HashSet(idTypes);
+		
+		newWorld.observableToReferenced = (HashMap<BayesNetVar, BayesNetVar>) observableToReferenced.clone(); //clone the observability map
 	}
 
 	public String toString() {
@@ -1038,6 +1047,167 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 */
 	protected Map basicVarToValue;
 
+	//start of change
+	/**
+	 * Set of objects containing DecisionFuncAppVar objects which evaluate to true
+	 */
+	protected Set decisionInterp;
+	public Set getDecisionInterp() {
+		return decisionInterp; 
+	}
+	
+	/**
+	 * Storage for observability variables, for easy reference.
+	 */
+	protected HashMap<BayesNetVar, BayesNetVar> observableToReferenced;
+	public HashMap<BayesNetVar, BayesNetVar> getObservableMap(){
+		return observableToReferenced;
+	}
+	/**
+	 * checks if two partial worlds are equal, minus decision function
+	 * and observation function values
+	 */
+	public boolean innerStateEquals(AbstractPartialWorld otherWorld, int maxTimestep) {
+		UBT.Stopwatch timer = new UBT.Stopwatch();
+		timer.startTimer();
+		
+		boolean rtn = true;
+		//int maxTimestep = maxTimestep;
+		//System.out.println("Relevant variables:");
+		/*
+		maxTimestep = -1;
+		if (!UniversalBenchmarkTool.rememberHistory){
+			for (Object o : basicVarToValue.keySet()){
+				BasicVar v = (BasicVar) o;
+				maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
+			}
+		}
+		if (maxTimestep2 != maxTimestep){
+			System.err.println("bug");
+			for (Object o : basicVarToValue.keySet()){
+				BasicVar v = (BasicVar) o;
+				maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
+			}
+			System.exit(1);
+		}
+		*/
+		//rtn = rtn && (otherWorld.basicVarToValue == (Map) ((HashMap) basicVarToValue));
+		for (Object o : changedVarToValue.keySet()){
+			BasicVar v = (BasicVar) o;
+			if (v instanceof RandFuncAppVar){
+				if (((RandFuncAppVar) v).func().getObservableFun() != null)
+					continue;
+				if ((((RandFuncAppVar) v).func()) instanceof ObservableRandomFunction){
+					Boolean myObs = (Boolean) getValue(v);
+					if (UBT.currentScheme==UBT.schemes.allVariables ||
+							myObs.booleanValue())
+						v = (BasicVar) observableToReferenced.get(v);
+					else
+						continue;
+				}
+
+			}
+			if (UBT.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+				rtn = rtn && (otherWorld.changedVarToValue.containsKey(v) && otherWorld.changedVarToValue.get(v).equals(changedVarToValue.get(v)));
+			}
+		}
+		/*
+		if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.nonObservableVariables){
+			for (BayesNetVar v : this.observableToReferenced.keySet()){
+				Boolean myObs = (Boolean) getValue(v);
+				if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || !myObs.booleanValue()){
+					v = observableToReferenced.get(v);
+					if (UniversalBenchmarkTool.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+						rtn = rtn && (otherWorld.changedVarToValue.containsKey(v) && otherWorld.changedVarToValue.get(v).equals(changedVarToValue.get(v)));
+					}
+				}
+			}
+		}
+		*/
+		UBT.specialTimingData += (timer.elapsedTime());
+		return rtn;
+	}
+	/*
+	public boolean equals (Object o){
+		return this.innerStateEquals((AbstractPartialWorld) o);
+	}
+	*/
+	/**
+	 * only basic vars are considered
+	 */
+	public int innerStatehashCode (int maxTimestep){
+		UBT.Stopwatch timer = new UBT.Stopwatch();
+		timer.startTimer();
+		int rtn = 0;
+		/*
+		int maxTimestep = -1;
+		if (!UniversalBenchmarkTool.rememberHistory){
+			for (Object o : changedVarToValue.keySet()){
+				BasicVar v = (BasicVar) o;
+				maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
+			}
+		}
+		*/
+		for (Object o : changedVarToValue.keySet()){
+			BasicVar v = (BasicVar) o;
+			if (v instanceof RandFuncAppVar){
+				if (((RandFuncAppVar) v).func().getObservableFun() != null)
+					continue;
+				if ((((RandFuncAppVar) v).func()) instanceof ObservableRandomFunction){
+					Boolean myObs = (Boolean) getValue(v);
+					if (UBT.currentScheme==UBT.schemes.allVariables ||
+							myObs.booleanValue())
+						v = (BasicVar) observableToReferenced.get(v);
+					else
+						continue;
+				}
+
+			}
+			if (UBT.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+				int a = v.hashCode();
+				rtn = rtn ^ v.hashCode();
+				Object b = changedVarToValue.get(v);
+				int c = b.hashCode();
+				rtn = rtn ^ changedVarToValue.get(v).hashCode();
+			}
+		}
+		/*
+		if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.nonObservableVariables){
+			for (BayesNetVar v : this.observableToReferenced.keySet()){
+				Boolean myObs = (Boolean) getValue(v);
+				if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || !myObs.booleanValue()){
+					v = observableToReferenced.get(v);
+					if (UniversalBenchmarkTool.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+						int a = v.hashCode();
+						rtn = rtn ^ v.hashCode();
+						Object b = changedVarToValue.get(v);
+						int c = b.hashCode();
+						rtn = rtn ^ changedVarToValue.get(v).hashCode();
+					}
+				}
+			}
+		}
+		*/
+		UBT.specialTimingData2 += (timer.elapsedTime());
+		return rtn;
+	}
+	
+	protected Map changedVarToValue = new HashMap();
+	public Map getChangedBasicVars (){
+		return changedVarToValue;
+	}
+	protected HashMap<BayesNetVar, BayesNetVar> chanegdObservableToReferenced =  new HashMap();
+	public HashMap<BayesNetVar, BayesNetVar> getChangedObservableMap(){
+		return chanegdObservableToReferenced;
+	}
+	public void emptyChanged(){
+		changedVarToValue.clear();
+		chanegdObservableToReferenced.clear();
+	}
+	
+	//note: currently the correctness relies on copy() not copying changedvartovalue
+	//end of change
+	
 	/**
 	 * Map from objects to the instantiated BasicVars that have them as values.
 	 */

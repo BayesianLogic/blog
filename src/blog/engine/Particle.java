@@ -139,7 +139,7 @@ public class Particle {
 		return copy;
 	}
 
-	protected void setWorld(PartialWorld curWorld) {
+	public void setWorld(PartialWorld curWorld) {
 		this.curWorld = curWorld;
 	}
 
@@ -164,5 +164,5 @@ public class Particle {
 	public PartialWorld curWorld = null;
 	protected double weight;
 	public int numTimeSlicesInMemory;
-	private Sampler sampler;
+	protected Sampler sampler;
 }

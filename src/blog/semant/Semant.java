@@ -42,6 +42,14 @@ import blog.absyn.ParameterDec;
 import blog.absyn.QuantifiedFormulaExpr;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
+
+
+import blog.absyn.DecisionFuncDec;
+import blog.absyn.DecisionEvidence;
+import blog.model.DecisionEvidenceStatement;
+import blog.model.DecisionFunction;
+import blog.absyn.ObservableFuncDec;
+
 import blog.absyn.Stmt;
 import blog.absyn.StmtList;
 import blog.absyn.StringExpr;
@@ -53,11 +61,13 @@ import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
 import blog.distrib.EqualsCPD;
+import blog.engine.onlinePF.ObservableRandomFunction;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
+
 import blog.model.Clause;
 import blog.model.ComparisonFormula;
 import blog.model.ComparisonFormula.Operator;
@@ -392,7 +402,25 @@ public class Semant {
 		    (Type[]) argTy.toArray(new Type[argTy.size()])).isEmpty())) {
 			error(e.line, e.col, "Function " + name + " overlapped");
 		}
-
+		
+		//parsing declaration for decision function
+		if (e instanceof DecisionFuncDec){
+			fun = new DecisionFunction(name, argTy, resTy);
+			model.addFunction(fun);
+			return;
+		}
+		
+		//observable functions are really just random functions
+		if (e instanceof ObservableFuncDec){
+			//reference to function will be added in transfuncbody
+			RandomFunction f = new ObservableRandomFunction(name, argTy, resTy, null);
+			f.setArgVars(argVars);
+			fun = f;
+			model.addFunction(fun);
+			return;
+		}
+		
+		
 		if (e instanceof FixedFuncDec) {
 			NonRandomFunction f;
 			if (argTy.size() == 0) {
@@ -419,7 +447,7 @@ public class Semant {
 			}
 			OriginFunction f = new OriginFunction(name, argTy, resTy);
 			fun = f;
-		}
+		} 
 		model.addFunction(fun);
 	}
 
@@ -442,6 +470,12 @@ public class Semant {
 		Function fun = getFunction(name, argTy);
 		currFunction = fun;
 
+		//DecisionFunctions have no body
+		if (e instanceof DecisionFuncDec){
+			currFunction = null;
+			return;
+		}
+		
 		if (e instanceof FixedFuncDec) {
 			if (e.body == null) {
 				error(e.line, e.col, "empty fixed function body");
@@ -482,7 +516,16 @@ public class Semant {
 			    fun.getDefaultValue());
 			((RandomFunction) fun).setDepModel(dm);
 		}
-
+		
+		//handling of observablefuncdec
+		else if (e instanceof ObservableFuncDec) {
+			//body is made just like a random function
+			DependencyModel dm = transDependency(e.body, fun.getRetType(),
+					fun.getDefaultValue());
+			((RandomFunction) fun).setDepModel(dm);
+			model.addObservableFunction(((RandomFunction) fun), ((ObservableFuncDec)e).referenceFuncName);
+		}
+		
 		currFunction = null;
 	}
 
@@ -550,11 +593,41 @@ public class Semant {
 			transEvi((ValueEvidence) e);
 		} else if (e instanceof SymbolEvidence) {
 			transEvi((SymbolEvidence) e);
-		} else {
+		} 
+		else if (e instanceof DecisionEvidence){
+			transEvi((DecisionEvidence) e);
+		}
+		else {
 			error(e.line, e.col, "Unsupported Evidence type: " + e);
 		}
 	}
 
+	/**
+	 * valid evidence format include (will be checked in semantic checking)
+	 * 
+	 * decision_function_call = expression;
+	 * 
+	 * @param e
+	 */
+	void transEvi(DecisionEvidence e) {
+		FuncAppTerm left = null;
+		try{
+			left = (FuncAppTerm) transExpr(e.left);
+		}
+		catch(ClassCastException ex){
+			error(e.left.line, e.left.col, "Semant.transEvi: Tried to parse choice evidence that does not have func_call as left hand side!");
+		}
+		Object value = transExpr(e.right);
+		if (value instanceof ArgSpec) {
+			evidence.addDecisionEvidence(new DecisionEvidenceStatement((FuncAppTerm) left,
+					(ArgSpec) value));
+		} else {
+			error(e.right.line, e.right.col,
+					"Invalid expression on the right side of evidence.");
+		}
+
+	}
+	
 	/**
 	 * valid evidence format include (will be checked in semantic checking)
 	 * 

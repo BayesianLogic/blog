@@ -1,30 +1,22 @@
 package blog.engine;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.*;
 
 import blog.DBLOGUtil;
 import blog.Main;
-import blog.TemporalEvidenceGenerator;
-import blog.bn.BayesNetVar;
+import blog.common.Histogram;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
+import blog.engine.onlinePF.Communicator;
+import blog.engine.onlinePF.FileCommunicator;
+import blog.engine.onlinePF.OPFevidenceGenerator;
+import blog.engine.onlinePF.PipedCommunicator;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
-import blog.msg.ErrorMsg;
-import blog.parse.Parse;
-import blog.semant.Semant;
 import blog.world.PartialWorld;
 
 
@@ -36,26 +28,46 @@ import blog.world.PartialWorld;
  * 
  */
 public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
-	public BufferedReader in;
-	public InputStream eviInputStream;
-	public PrintStream eviOutputStream;
+	protected Communicator eviCommunicator; //evidence is read from here
+	protected Communicator queryResultCommunicator; //query is read from here
+	
+
+	
 	public ParticleFilterRunnerOnline(Model model, Collection linkStrings,
 			Collection queryStrings, Properties particleFilterProperties) {
 		super(model, particleFilterProperties);
 		this.particleFilterProperties = particleFilterProperties;
 		this.queryStrings = queryStrings;
-		evidenceGenerator = new OPFevidenceGenerator(model, linkStrings,
-				queryStrings);
-		evidenceGenerator.afterMove = afterMoveForward; // this should always be so.
-		afterMove = monitorGeneratorWorld; // this is just a default and the user can change it
-		
-		eviInputStream = System.in;
-		eviOutputStream = System.out;
 
-		in = new BufferedReader(new InputStreamReader(eviInputStream));
-		Util.setVerbose(true);
+		//evidenceGenerator.afterMove = afterMoveForward; // this should always be so.
+		//afterMove = monitorGeneratorWorld; // this is just a default and the user can change it
+
+		setUpStreams();
+		
+		Util.setVerbose(false);
+		
+		evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
 	}
 	
+	public void setUpStreams(){
+		eviCommunicator = new PipedCommunicator();
+		queryResultCommunicator = new FileCommunicator("f.txt");
+
+	}
+	/*
+	public void setUpStreams(InputStream pin, PrintStream pout){
+		eviCommunicator = new PipedCommunicator();
+
+		evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
+
+	}*/
+	
+	public Communicator getEviCommunicator (){
+		return eviCommunicator;
+	}
+	public Communicator getQueryCommunicator (){
+		return queryResultCommunicator;
+	}
 	private UnaryProcedure afterMoveForward = new UnaryProcedure() {
 		public void evaluate(Object queriesObj) {
 			afterMove.evaluate(queriesObj);
@@ -77,69 +89,42 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	}
 
 	//Cheng: overrode the moveOn in particleFilterRunner, mainly to gain access to evidenceGenerator
-	public boolean moveOn() {
+	public boolean advancePhase1() {
 		queriesCacheInvalid = true;
 		
 		Evidence evidence;
 		Collection queries;
 		beforeEvidenceAndQueries();
-		if ((evidence = getEvidence()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
+		evidenceGenerator.updateObservationQuery();
+		if ((evidence = evidenceGenerator.getLatestObservation()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
 			particleFilter.take(evidence);
 			particleFilter.answer(queries);
 			afterEvidenceAndQueries();
-			
 			return true;
+		}
+		else{
+			System.err.println("particlefilterrunneronline: null error");
+			System.exit(1);
 		}
 		return false;
 	}
 	
-	/**
-	 * Implements method used by {@link ParticleFilterRunner} to obtain evidence
-	 * for current time step.
-	 */
-	public Evidence getEvidence() {
-
-		Evidence evidence = new Evidence();
-		String evistr = "";
-		System.out.println("Enter evi for: "+evidenceGenerator.lastTimeStep);
-		try {
-			evistr = in.readLine();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	//decide applied_Load(argload(@0), t1, @0)=true;
+	//
+	
+	
+	public boolean advancePhase2() {
+		Evidence evidence;
+		evidenceGenerator.updateDecision();
+		if ((evidence = evidenceGenerator.getLatestDecision()) != null) {	
+			particleFilter.take(evidence);
+			return true;
 		}
-		
-		//comment out this entire if clause to actually use the inputstream
-		/*
-		if (evidenceGenerator.lastTimeStep==0){
-			evistr = "obs O(@0) = ResultC;";
+		else{
+			System.err.println("particlefilterrunneronline: null error");
+			System.exit(1);
 		}
-		else if (evidenceGenerator.lastTimeStep==1){
-			evistr = "obs O(@1) = ResultA;";
-		}
-		else if (evidenceGenerator.lastTimeStep==2){
-			evistr = "obs O(@2) = ResultA;";
-		}
-		else if (evidenceGenerator.lastTimeStep==3){
-			evistr = "obs O(@3) = ResultA;";
-		}
-		else if (evidenceGenerator.lastTimeStep==4){
-			evistr = "obs O(@4) = ResultG;";
-		}
-		else
-			evistr = "";
-		*/
-		parseAndTranslateEvidence(evidence, new StringReader((String) evistr));
-		
-		
-		
-		evidence.checkTypesAndScope(model);
-		evidence.compile();
-		
-		checkEvidenceMatchesTimestep(evidence);
-		
-		return evidence; 
-
+		return false;
 	}
 
 	/**
@@ -156,9 +141,26 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 
-			System.out.println("PF estimate of " + query + ":");
-			query.printResults(eviOutputStream);
+			//System.out.println("PF estimate of " + query + ":");
+			queryResultCommunicator.printInput(printQueryString(query));
+			//query.printResults(queryCommunicator.p);
+			queryResultCommunicator.printInput("-----");
+			queryResultCommunicator.p.flush();
+			query.printResults(System.out);//strange bug here needs fixing
 		}
+	}
+	
+	public String printQueryString(ArgSpecQuery q) {
+		String rtn = "";
+		rtn += q.getArgSpec().toString();
+		Histogram histogram = q.getHistogram();
+		List<Histogram.Entry> entries = new ArrayList<Histogram.Entry>(histogram.entrySet());
+		for (Iterator<Histogram.Entry> iter = entries.iterator(); iter.hasNext();) {
+			Histogram.Entry entry = iter.next();
+			double prob = entry.getWeight() / histogram.getTotalWeight();
+			rtn += ("\t[" + entry.getElement() + ":" + String.format("%.9f", prob) + "]");
+		}
+		return rtn;
 	}
 
 	/**
@@ -209,15 +211,15 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		Properties properties = new Properties();
-		properties.setProperty("numParticles", "1");
+		properties.setProperty("numParticles", "1000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
-		boolean verbose = true;
+		boolean verbose = false;
 		boolean randomize = false;
 		
-		String modelFile = "ex_inprog/logistics/logistics.mblog";
+		String modelFile = "ex_inprog/logistics/logistics_choice.mblog";
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("value(t)");
+		Collection queryStrings = Util.list("value(t)","#{Box b: BoxIn(b, c3, t)==true}","#{Box b: BoxIn(b, c1, t)==true}", "#{Box b: applied_Load(b, t1, t)==true}");
 
 		Util.initRandom(randomize);
 		Util.setVerbose(verbose);
@@ -226,39 +228,42 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		ArrayList<Query> queries = new ArrayList<Query>();
 		ArrayList<Object> readersAndOrigins = new ArrayList<Object>();
 		readersAndOrigins.add(new Object[] {new FileReader(modelFile), "blank"});
-
+		
 
 
 		
 		Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(), verbose, false);
-		new ParticleFilterRunnerOnline(model,
-				linkStrings, queryStrings, properties).run();
+		ParticleFilterRunnerOnline a = new ParticleFilterRunnerOnline(model,
+				linkStrings, queryStrings, properties);
+		/*
+		a.eviCommunicator=new BufferedReader(new InputStreamReader(System.in));
+		FileInputStream evidenceIn = new FileInputStream("ex_inprog/logistics/logistics_choice.evidence");
+		a.setUpStreams(evidenceIn, System.out);
+		a.run();
+		*/
 		
 	}
-	//need to fix the error message for empty evidence string inputs
-	private boolean parseAndTranslateEvidence(Evidence e, Reader reader) {
-		Parse parse = new Parse(reader, null);
-		Semant sem = new Semant(model, e, new ArrayList<Query>(), new ErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
-		sem.transProg(parse.getParseResult());
-		return true;
-	}
+
+	
 
 	/** Runs until there are no evidence or queries anymore. */
 	public void run() {
 		int i=0;
-		while (moveOn()){
+		while (advancePhase1()&&advancePhase2()){
 			i++;
 			//if (i>15)
 			//	break;
 		}
 	}
-	
-	/**
-	 * Check that the evidence provided has the correct timestep associated
-	 * @param evidence
-	 */
-	private void checkEvidenceMatchesTimestep(Evidence evidence){
-		/*do nothing*/	
+
+	@Override
+	public Evidence getEvidence() {
+		System.err.println("particlefilterrunneronline.getEvidence should not have been called");
+		return evidenceGenerator.getEvidence();
 	}
+	
+
+
+	
 	
 }

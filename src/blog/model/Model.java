@@ -57,6 +57,8 @@ import blog.common.Util;
 import blog.type.Timestep;
 import fove.Parfactor;
 
+import blog.engine.onlinePF.ObservableRandomFunction;
+
 /**
  * This class contains all the information available about the structure of the
  * model. In particular, it keeps lists of user-defined types and functions.
@@ -229,6 +231,45 @@ public class Model {
 		functions.add(f);
 	}
 
+	/**
+	 * Adds the observable function to the model's hashmap
+	 * 
+	 * @param obsFun: the observable function corresponding to referenceFunName
+	 * @param referenceFunName the name of the random function referenced by f
+	 * @throws IllegalStateException
+	 *           if there is already a observable function with the same
+	 *           signature corresponding to the same function
+	 *           or if no function specified by obsFun's signature and referenceFunName
+	 *           has been defined
+	 */
+	public void addObservableFunction(RandomFunction obsFun, String referenceFunName) {
+		List funcsWithName = (List) functionsByName.get(referenceFunName);
+		Function referencedFun = null;
+		if (funcsWithName != null) {
+			for (Iterator iter = funcsWithName.iterator(); iter.hasNext();) {
+				Function g = (Function) iter.next();
+				if (Arrays.equals(obsFun.getArgTypes(), g.getArgTypes())) {
+					referencedFun = g;
+				}
+			}
+		} else {
+			throw new IllegalStateException("Can't add observableFunction with signature "
+					+ obsFun.getSig() + "because the referenced function is not found");
+		}
+		if (observableToFunc.containsKey(obsFun.getSig()))
+			throw new IllegalStateException("Can't add observableFunction with signature "
+					+ obsFun.getSig() + " because there is already a observable function defined");
+		if (referencedFun == null || !(referencedFun instanceof RandomFunction)){
+			throw new IllegalStateException("No random function found with given name"
+					+ referenceFunName);
+		}
+		
+		observableToFunc.put(obsFun.getSig(), (RandomFunction) referencedFun);
+		
+		((RandomFunction) referencedFun).setObservableFun(obsFun);
+		((ObservableRandomFunction )obsFun).setReferencedFun (referencedFun);
+	}
+	
 	/** Removes function from model. */
 	public void removeFunction(Function f) {
 		List funcsWithName = (List) functionsByName.get(f.getName());
@@ -754,4 +795,21 @@ public class Model {
 	protected List<Parfactor> parfactors = new ArrayList<Parfactor>();
 
 	private static int creationIndex = 0;
+	
+	/**
+	 * A map from observable functions to the actual random functions that they refer to
+	 */
+	private Map<FunctionSignature, RandomFunction> observableToFunc = new HashMap<FunctionSignature, RandomFunction>();
+	public RandomFunction getRandomFuncByObservableSig (FunctionSignature fs){
+		return observableToFunc.get(fs);
+	}
+	public List<RandomFunction> getObsFun(){
+		ArrayList<RandomFunction> rtn = new ArrayList<RandomFunction>();
+		for (FunctionSignature fs : observableToFunc.keySet()){
+			RandomFunction f = (RandomFunction) this.getFunction(fs);
+			rtn.add(f);
+		}
+		return rtn;
+	}
+	
 }

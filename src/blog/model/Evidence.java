@@ -97,8 +97,11 @@ public class Evidence {
 			Object statement = it.next();
 			if (statement instanceof ValueEvidenceStatement)
 				result.addValueEvidence((ValueEvidenceStatement) statement);
-			else
+			else if (statement instanceof SymbolEvidenceStatement)
 				result.addSymbolEvidence((SymbolEvidenceStatement) statement);
+			else
+				result.addDecisionEvidence((DecisionEvidenceStatement) statement);
+
 		}
 		result.compile();
 		return result;
@@ -253,7 +256,7 @@ public class Evidence {
 
 	/** Indicates whether evidence is empty or not. */
 	public boolean isEmpty() {
-		return getValueEvidence().isEmpty() && getSymbolEvidence().isEmpty();
+		return getValueEvidence().isEmpty() && getSymbolEvidence().isEmpty() && getDecisionEvidence().isEmpty();
 	}
 
 	/**
@@ -267,6 +270,11 @@ public class Evidence {
 
 		for (Iterator iter = valueEvidence.iterator(); iter.hasNext();) {
 			ValueEvidenceStatement stmt = (ValueEvidenceStatement) iter.next();
+			System.out.println(stmt);
+		}
+		
+		for (Iterator iter = decisionEvidence.iterator(); iter.hasNext();) {
+			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
 			System.out.println(stmt);
 		}
 	}
@@ -296,6 +304,7 @@ public class Evidence {
 	 * @param curWorld
 	 */
 	public void setEvidenceAndEnsureSupported(PartialWorld curWorld) {
+		BLOGUtil.setChoiceInterp(this, curWorld);
 		BLOGUtil.setBasicVars(this, curWorld);
 		BLOGUtil.ensureDetAndSupported(getEvidenceVars(), curWorld);
 	}
@@ -357,6 +366,15 @@ public class Evidence {
 				correct = false;
 			}
 		}
+		
+		for (Iterator iter = decisionEvidence.iterator(); iter.hasNext();) {
+			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
+			if (!stmt.checkTypesAndScope(model)) {
+				correct = false;
+			}
+		}
+		
+		
 
 		return correct;
 	}
@@ -389,6 +407,15 @@ public class Evidence {
 			}
 			errors += thisStmtErrors;
 		}
+		
+		for (Iterator iter = decisionEvidence.iterator(); iter.hasNext();) {
+			DecisionEvidenceStatement stmt = (DecisionEvidenceStatement) iter.next();
+			int thisStmtErrors = stmt.compile(callStack);
+			if (thisStmtErrors == 0) {
+				recordEvidence(stmt.getObservedVar(), stmt.getObservedValue(), stmt);
+			}
+			errors += thisStmtErrors;
+		}
 
 		return errors;
 	}
@@ -396,6 +423,8 @@ public class Evidence {
 	public Evidence replace(Term t, ArgSpec another) {
 		List newSymbolEvidence = new LinkedList();
 		List newValueEvidence = new LinkedList();
+		List newChoiceEvidence = new LinkedList();
+		
 		boolean replacement = false;
 		for (Iterator it = getSymbolEvidence().iterator(); it.hasNext();) {
 			SymbolEvidenceStatement ses = (SymbolEvidenceStatement) it.next();
@@ -411,10 +440,18 @@ public class Evidence {
 				replacement = true;
 			newValueEvidence.add(newVes);
 		}
+		for (Iterator it = getDecisionEvidence().iterator(); it.hasNext();) {
+			DecisionEvidenceStatement ces = (DecisionEvidenceStatement) it.next();
+			DecisionEvidenceStatement newCes = ces.replace(t, another);
+			if (newCes != ces)
+				replacement = true;
+			newChoiceEvidence.add(newCes);
+		}
 		if (replacement) {
 			Evidence newEvidence = new Evidence();
 			newEvidence.valueEvidence.addAll(newValueEvidence);
 			newEvidence.symbolEvidence.addAll(newSymbolEvidence);
+			newEvidence.decisionEvidence.addAll(newChoiceEvidence);
 			if (compiled)
 				newEvidence.compile();
 			return newEvidence;
@@ -426,9 +463,28 @@ public class Evidence {
 		List list = new LinkedList();
 		list.addAll(getValueEvidence());
 		list.addAll(getSymbolEvidence());
+		list.addAll(getDecisionEvidence());
 		return list.toString();
 	}
 
+	/**adds a decision evidence to the evidence*/ 
+	public void addDecisionEvidence(DecisionEvidenceStatement ev){
+		decisionEvidence.add(ev);
+	}
+	
+	/**returns a unmodifiable list of all decision evidence statements*/
+	public Collection getDecisionEvidence() {
+		return Collections.unmodifiableCollection(decisionEvidence);
+	}
+	
+	// List of DecisionEvidenceStatement
+	private List<DecisionEvidenceStatement> decisionEvidence = new ArrayList<DecisionEvidenceStatement>();
+	
+	
+	
+	
+	
+	
 	// List of SymbolEvidenceStatement
 	private List<SymbolEvidenceStatement> symbolEvidence = new ArrayList<SymbolEvidenceStatement>();
 

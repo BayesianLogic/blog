@@ -190,7 +190,12 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Ll][Ii][Ss][Tt] { return symbol(BLOGTokenConstants.LIST); }
 [Mm][Aa][Pp] { return symbol(BLOGTokenConstants.MAP); }
 [Dd][Ii][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DISTRIBUTION); }
-	
+
+
+/*keywords for decisions*/
+[Dd][Ee][Cc][Ii][Dd][Ee] { return symbol(BLOGTokenConstants.OBSDECISION); }
+[Dd][Ee][Cc][Ii][Ss][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DECISION);}
+[Oo][Bb][Ss][Ee][Rr][Vv][Aa][Bb][Ll][Ee] { return symbol(BLOGTokenConstants.OBSERVABLE);}
 
 /* literals */
 "true"	{ return symbol(BLOGTokenConstants.BOOLEAN_LITERAL, new Boolean(true)); }

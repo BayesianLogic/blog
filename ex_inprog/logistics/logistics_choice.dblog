@@ -1,0 +1,100 @@
+type Box;  
+type Truck;  
+type City;
+distinct Box b3, b2, b1;
+distinct Truck t1, t2;
+distinct City c1, c2, c3;
+random Boolean chosen_Load(Box b, Truck tr, Timestep t) {  if ( b==b1 & tr == t1 & t==@0) then = true else if (b == b2 & tr == t1 & t == @4) then = true else = false};
+
+
+
+random Boolean chosen_Unload(Box b, Truck tr, Timestep t) {  if (b==b1 & tr==t1 & t==@2) then = true else if (b==b2 & tr == t1 & t==@6) then = true else = false };
+random Boolean chosen_Drive(City c, Truck tr, Timestep t) {  if (c==c3 & tr == t1 & t==@1) then = true else if (c == c1 & tr == t1 & t == @3) then = true else if (c==c3 & tr==t1 & t== @5) then = true else =false};
+
+random Boolean applied_Load(Box b, Truck tr, Timestep t) {  
+  if (exists City c (BoxIn ( b, c, t) & TruckIn (c, tr, t))) then 
+    = (chosen_Load(b, tr, t) & succeed_action(t)) 
+  else 
+    = false};
+
+random Boolean applied_Unload(Box b, Truck tr, Timestep t) {  
+  if (BoxOn ( b, tr, t) == true ) then 
+    = (chosen_Unload(b, tr, t) & succeed_action(t))};
+
+random Boolean applied_Drive(City c, Truck tr, Timestep t) {  
+  if (true) then 
+    = (chosen_Drive(c, tr, t) & succeed_action(t))};
+
+random Boolean succeed_action (Timestep t){
+  ~ Categorical({true -> 0.9, false -> 0.1})};
+  
+random Boolean pass(Timestep t){  
+  if (t==@0) then    
+    = false  
+  else if (BoxIn(b3, c3, t) & BoxIn(b1, c3, t) & BoxIn(b2, c3, t)) then    
+    = true  
+  else    
+    = pass(Prev(t))};
+    
+random String actionName(Timestep t){  
+  if (true & exists Box b exists Truck tr (applied_Load(b,tr,t) & true)) then    
+    ="load"  
+  else if (true & exists Box b exists Truck tr (true & applied_Unload(b,tr,t))) then    
+    ="unload" 
+  else if (true & exists Truck tr exists City c (true & applied_Drive(c,tr,t))) then    
+    ="drive"  
+  else    
+    ="na"};
+
+random Real reward(Timestep t){  
+  if(exists Box b exists Truck tr (applied_Unload(b,tr,t) & (TruckIn(c3,tr,t) & BoxOn(b,tr,t)) )) then     
+    = 10.0  
+  else    
+    = 0.0};
+    
+random Real discount(Timestep t){  
+  if(t==@0) then     
+    = 1.0  
+  else    
+    = (discount(Prev(t)) * 0.9) /*gamma = 0.9*/};
+    
+random Real value(Timestep t){  
+  if(t == @0) then    
+    =reward(@0)  
+  else    
+    = (value(Prev(t))) + ( reward(t) * discount(t))};
+    
+random Boolean BoxIn(Box b, City c, Timestep t) {  
+  if (t == @0) then    
+    if (c == c1) then       
+      = true    
+    else      
+      = false  
+  else    
+    = (exists Truck tr (applied_Unload(b, tr, (Prev(t))) & TruckIn (c, tr, (Prev(t)))))      | (BoxIn(b, c, (Prev(t))) & !(exists Truck tr (true & applied_Load(b, tr, (Prev(t))))))};
+
+random Boolean TruckIn(City c, Truck tr, Timestep t) {  
+  if (t == @0) then    
+    if (c == c1) then       
+      = true    
+    else      
+      = false  
+  else    
+    = applied_Drive(c, tr, (Prev(t)))      | (TruckIn(c, tr, (Prev(t))) & !(exists City c2 (true & applied_Drive(c2, tr, (Prev(t))) & c2 != c)))};
+    
+random Boolean BoxOn(Box b, Truck tr, Timestep t) {  
+  if (t == @0) then    
+    = false  
+  else    
+    = (exists City c (applied_Load(b, tr, (Prev(t))) & BoxIn(b, c, (Prev(t))) & TruckIn(c, tr, (Prev(t))))) | (BoxOn(b, tr, (Prev(t))) & !(true & applied_Unload(b, tr, (Prev(t)))))};
+
+query value(@2);
+query value(@3);
+query value(@4);
+query value(@5);
+query value(@6);
+query actionName(@2);
+query actionName(@3);
+query actionName(@4);
+query actionName(@5);
+query actionName(@6);

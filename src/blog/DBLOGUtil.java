@@ -17,6 +17,7 @@ import blog.common.*;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.ConstantInterp;
+import blog.model.DecisionEvidenceStatement;
 import blog.model.Evidence;
 import blog.model.FuncAppTerm;
 import blog.model.Model;
@@ -228,6 +229,14 @@ public class DBLOGUtil {
 			SymbolEvidenceStatement statement = (SymbolEvidenceStatement) it.next();
 			TreeSet timesteps = (TreeSet) getTimestepTermsIn(statement.getSetSpec(),
 					new TreeSet(new TimestepTermComparator()));
+			Object maxTimestep = timesteps.isEmpty() ? null : timesteps.last();
+			statementsByTimestep.add(maxTimestep, statement);
+		}
+		for (it = evidence.getDecisionEvidence().iterator(); it.hasNext();) {
+			DecisionEvidenceStatement statement = (DecisionEvidenceStatement) it.next();
+			TreeSet timesteps = (TreeSet) getTimestepTermsIn(statement.getLeftSide(),
+					new TreeSet(new TimestepTermComparator()));
+			getTimestepTermsIn(statement.getOutput(), timesteps);
 			Object maxTimestep = timesteps.isEmpty() ? null : timesteps.last();
 			statementsByTimestep.add(maxTimestep, statement);
 		}
