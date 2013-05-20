@@ -46,11 +46,13 @@ import blog.bn.RandFuncAppVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
+import blog.distrib.Iota;
 import blog.distrib.ListInterp;
 import blog.model.DependencyModel;
 import blog.model.Function;
 import blog.model.FunctionSignature;
 import blog.model.RandomFunction;
+import blog.objgen.POPAppBasedSet;
 import blog.world.AbstractPartialWorld;
 import blog.world.PartialWorld;
 
@@ -177,6 +179,10 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 		// Sample new value for var
 		CondProbDistrib cpd = distrib.getCPD();
 		List cpdArgs = distrib.getArgValues();
+		if (cpd instanceof Iota && ((POPAppBasedSet)cpdArgs.get(0)).size()==0){
+			cpdArgs = distrib.getArgValues();
+			System.out.println(this.world.basicVarToValueMap().toString());
+		}
 		Object newValue = cpd.sampleVal(cpdArgs, var.getType());
 		double probForThisValue = cpd.getProb(cpdArgs, newValue);
 		double logProbForThisValue = Math.log(probForThisValue);

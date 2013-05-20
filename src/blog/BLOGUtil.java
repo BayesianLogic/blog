@@ -18,6 +18,7 @@ import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.AtomicFormula;
 import blog.model.DecisionEvidenceStatement;
+import blog.model.DecisionFunction;
 import blog.model.DependencyModel;
 import blog.model.EqualityFormula;
 import blog.model.Evidence;
