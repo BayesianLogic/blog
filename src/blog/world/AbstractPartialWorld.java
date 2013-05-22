@@ -1100,7 +1100,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				if ((((RandFuncAppVar) v).func()) instanceof ObservableRandomFunction){
 					Boolean myObs = (Boolean) getValue(v);
 					if (UBT.currentScheme==UBT.schemes.allVariables ||
-							myObs.booleanValue())
+							(UBT.currentScheme==UBT.schemes.nonObservableVariables && myObs.booleanValue()))
 						v = (BasicVar) observableToReferenced.get(v);
 					else
 						continue;
@@ -1156,7 +1156,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				if ((((RandFuncAppVar) v).func()) instanceof ObservableRandomFunction){
 					Boolean myObs = (Boolean) getValue(v);
 					if (UBT.currentScheme==UBT.schemes.allVariables ||
-							myObs.booleanValue())
+							(UBT.currentScheme==UBT.schemes.nonObservableVariables && myObs.booleanValue()))
 						v = (BasicVar) observableToReferenced.get(v);
 					else
 						continue;
