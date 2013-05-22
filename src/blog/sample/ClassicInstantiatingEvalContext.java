@@ -42,6 +42,7 @@ import java.util.Map;
 
 import blog.ObjectIdentifier;
 import blog.bn.BasicVar;
+import blog.bn.NumberVar;
 import blog.bn.RandFuncAppVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
@@ -156,7 +157,6 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 
 	protected Object instantiate(VarWithDistrib var) {
 		var.ensureStable();
-
 		/*
 		 * if (Util.verbose()) { System.out.println("Need to instantiate: " + var);
 		 * }

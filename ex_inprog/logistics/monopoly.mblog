@@ -5,18 +5,13 @@
 
 
 nonrandom Integer NumSquares = 10; // Number of properties on the board
-nonrandom Timestep MaxTime = @18; // Number of timesteps for which to simulate
+nonrandom Timestep MaxTime = @50; // Number of timesteps for which to simulate
 type Player;
 distinct Player p1, p2, p3, p4, p5, p6;
-//origin Integer Source(Player);
-//#Player(Source=i) {if (i<10) then = 1 else = 0};
-#Player = 5;
-distinct Player Player[3];
-
 nonrandom Player lastPlayer = p5;
 nonrandom Player defaultPlayer = p6;
 
-random Real lastPlayerStrat ~ Categorical({0.3 -> 0.7,0.7 -> 0.7});
+random Real lastPlayerStrat ~ Categorical({0.3->0.3, 0.7->0.7});
 
 random Player nextPlayer(Player p){
   if (p==p1) then = p2
@@ -280,17 +275,13 @@ query exists Timestep t (t<MaxTime & (exists Player o true & applied_payRent(p2,
 query numberRentsObtained(p1,MaxTime);
 //query NumPlayers2;
 
-random Player foo (){
-	if (true) then ~ UniformChoice({Player p})
-};
 
 
-query foo();
 query playerAt(p1,MaxTime);
 query capital(p2,MaxTime);
 query capital(p3,MaxTime);
 //query {Integer p: ((p<NumPlayers) & (whosTurn(Prev(@3)) == p) & applied_purchase(p, 1, Prev(@3)) )};
-//obs numberRentsObtained(p5, MaxTime) = 1;
+obs numberRentsObtained(p5, MaxTime) = 1;
 query lastPlayerStrat;
 
 
