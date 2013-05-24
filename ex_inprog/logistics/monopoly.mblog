@@ -286,7 +286,7 @@ query lastPlayerStrat;
 
 
 
-
+query {Integer i : i< 10};
 
 
 

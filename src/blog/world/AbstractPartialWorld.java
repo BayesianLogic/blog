@@ -1035,6 +1035,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		newWorld.idTypes = new HashSet(idTypes);
 		
 		newWorld.observableToReferenced = (HashMap<BayesNetVar, BayesNetVar>) observableToReferenced.clone(); //clone the observability map
+		newWorld.chanegdObservableToReferenced = (HashMap<BayesNetVar, BayesNetVar>) chanegdObservableToReferenced.clone(); //copying this map without calling empty cached causes performance problems
+		newWorld.changedVarToValue = (HashMap) changedVarToValue.clone();
 	}
 
 	public String toString() {
@@ -1192,8 +1194,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		return rtn;
 	}
 	
-	protected Map changedVarToValue = new HashMap();
-	public Map getChangedBasicVars (){
+	protected HashMap changedVarToValue = new HashMap();
+	public HashMap getChangedBasicVars (){
 		return changedVarToValue;
 	}
 	protected HashMap<BayesNetVar, BayesNetVar> chanegdObservableToReferenced =  new HashMap();

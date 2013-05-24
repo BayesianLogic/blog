@@ -52,6 +52,7 @@ public class ObservabilitySignature {
 				}
 			}
 		}
+		//world.getChangedObservableMap().clear();
 		myTimestep = maxTimestep;
 		parentIndex = myIndex;
 		myIndex = ObservabilitySignature.getOrSetIndexByOS(this);

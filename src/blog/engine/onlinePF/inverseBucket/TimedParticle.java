@@ -19,12 +19,12 @@ public class TimedParticle extends Particle{
 	public void advanceTimestep(){
 		timeStep ++;
 	}
-	private ObservabilitySignature myOS;
-	public ObservabilitySignature getOS (){
-		return myOS;
+	private Integer myOSIndex;
+	public Integer getOS (){
+		return myOSIndex;
 	}
-	public void setOS (ObservabilitySignature os){
-		myOS = os;
+	public void setOS (Integer osIndex){
+		myOSIndex = osIndex;
 	}
 	
 	public TimedParticle copy(){
@@ -34,7 +34,7 @@ public class TimedParticle extends Particle{
 				.clone();
 		copy.setWorld(newWorld);
 		copy.weight = 1;
-		copy.setOS(myOS);
+		copy.setOS(myOSIndex);
 		return copy;
 	}
 }

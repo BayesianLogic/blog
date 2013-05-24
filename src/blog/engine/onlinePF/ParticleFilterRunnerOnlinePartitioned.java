@@ -135,6 +135,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	}
 	
 	private void takeAndAnswer(Evidence evidence, Collection queries){
+		particleFilter.emptyCache();
 		particleFilter.take(evidence);
 		particleFilter.answer(queries);
 		//particleFilter.resample();

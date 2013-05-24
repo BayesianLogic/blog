@@ -130,12 +130,12 @@ public class ComparisonFormula extends Formula {
       Set vals = new HashSet();
       switch(compator) {
         case LT:
-          for (int i = 1; i < (Integer)otherOperand.evaluate(context); i++) {
+          for (int i = 0; i < (Integer)otherOperand.evaluate(context); i++) {
             vals.add(i);
           }
           return vals;
         case LEQ:
-          for (int i = 1; i <= (Integer)otherOperand.evaluate(context); i++) {
+          for (int i = 0; i <= (Integer)otherOperand.evaluate(context); i++) {
             vals.add(i);
           }
           return vals;

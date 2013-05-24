@@ -80,13 +80,13 @@ import blog.world.AbstractPartialWorld;
  * queries set by {@link #setQueries(List)} are used by {@link #answerQueries()}
  * only (again keeping the original InferenceEngine semantics).
  */
-public class PartitionedParticleFilter extends InferenceEngine {
+public class SampledPartitionedParticleFilter extends InferenceEngine {
 
 	/**
 	 * Creates a new particle filter for the given BLOG model, with configuration
 	 * parameters specified by the given properties table.
 	 */
-	public PartitionedParticleFilter(Model model, Properties properties) {
+	public SampledPartitionedParticleFilter(Model model, Properties properties) {
 		super(model);
 
 		String numParticlesStr = properties.getProperty("numParticles");
@@ -240,6 +240,7 @@ public class PartitionedParticleFilter extends InferenceEngine {
 			
 		}
 	}
+	
 	public void emptyCache(){
 		for (TimedParticle p : particles)
 			((AbstractPartialWorld)p.getLatestWorld()).emptyChanged();
@@ -297,8 +298,6 @@ public class PartitionedParticleFilter extends InferenceEngine {
 	 * updated particles
 	 */
 	public void resample() {
-		System.err.println("resample: currently does not work because particle.copy interferes with world.getchangedobservablemap which in turn interferes with observabilitysignature.update");
-		System.exit(1);
 		for (Integer osIndex : partitions.keySet()){
 			partitions.get(osIndex).clear();
 		}
@@ -321,15 +320,12 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		for (int i = 0; i < numParticles; i++) {
 			int selection = Util.sampleWithWeights(weights, sum);
 			TimedParticle selectedParticle = particles.get(selection);
-			if (!alreadySampled[selection]) {
-				newParticles.add(selectedParticle);
+			if (!alreadySampled[selection])
 				alreadySampled[selection] = true;
-				partitions.get(selectedParticle.getOS()).add(selectedParticle);
-			} else{
+			else
 				selectedParticle = selectedParticle.copy();
-				newParticles.add(selectedParticle);
-				partitions.get(selectedParticle.getOS()).add(selectedParticle);
-			}
+			newParticles.add(selectedParticle);
+			partitions.get(selectedParticle.getOS()).add(selectedParticle);
 		}
 
 		particles = newParticles;
@@ -342,17 +338,13 @@ public class PartitionedParticleFilter extends InferenceEngine {
 	 */
 	public void repartition(){
 		Map<Integer, List<TimedParticle>> newPartitions = new HashMap<Integer, List<TimedParticle>>();
-		//for each os
 		for (Integer osIndex : partitions.keySet()){
 			ObservabilitySignature os = ObservabilitySignature.getOSbyIndex(osIndex);
-			//for each particle in os's bucket
 			for (TimedParticle p : (List<TimedParticle>) partitions.get(osIndex)){
-				//get updated os for particle, and update its os
 				ObservabilitySignature newOS = os.copy();
 				newOS.update(p);
 				Integer newOSIndex = newOS.getIndex();
 				p.setOS(newOSIndex);
-				//if updated os has already been seen, 
 				if (newPartitions.containsKey(newOSIndex)){
 					List<TimedParticle> partition = newPartitions.get(newOSIndex);
 					partition.add(p);
@@ -365,6 +357,62 @@ public class PartitionedParticleFilter extends InferenceEngine {
 			}
 		}
 		partitions = newPartitions;
+	}
+	
+	/**
+	 * resamples partitions, currently only samples 1 partition
+	 * this is not the same as resampling particles
+	 * 
+	 * @param numPartitionSampled the number of partitions to be sampled
+	 * parallels number of particles in a particle filter
+	 */
+	public void resamplePartitionAndParticles(int numPartitionsSampled) {
+		particles.clear();
+		double[] weights = new double[partitions.size()];
+		Integer[] osIndexes = new Integer[partitions.size()];
+		boolean[] alreadySampled = new boolean[partitions.size()];
+		double sum = 0.0;
+		Map<Integer, List<TimedParticle>>  newPartitions = new HashMap<Integer, List<TimedParticle>> ();
+
+		int i = 0;
+		for (Integer osIndex : partitions.keySet()) {
+			osIndexes[i] = osIndex;
+			for (TimedParticle p : partitions.get(osIndex)){
+				double additionalWeight = p.getLatestWeight(); 
+				weights[i] += additionalWeight;
+				sum += additionalWeight;
+			}
+			i++;
+		}
+
+		if (sum == 0.0) {
+			throw new IllegalArgumentException("All particles have zero weight");
+		}
+		
+		for (i = 0; i < numPartitionsSampled; i++) {
+			int selection = Util.sampleWithWeights(weights, sum);
+			List<TimedParticle> particleList = partitions.get(osIndexes[selection]);
+			if (particleList == null){
+				System.err.println("errorherekk");
+			}
+			if (!alreadySampled[selection]) {
+				newPartitions.put(osIndexes[selection],partitions.get(osIndexes[selection]));
+				alreadySampled[selection] = true;
+				for (int j= 0; j < particleList.size(); j++){
+					particles.add(particleList.get(j));
+				}
+				
+			} else {
+				for (int j= 0; j < particleList.size(); j++){
+					TimedParticle newParticle = particleList.get(j).copy();
+					particleList.add(newParticle);
+					particles.add(newParticle);
+				}
+			}
+		}
+
+		partitions = newPartitions;
+		resample();
 	}
 	
 	public Map<Integer, List<TimedParticle>> getPartitions(){
