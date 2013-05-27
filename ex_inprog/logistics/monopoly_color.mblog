@@ -12,7 +12,7 @@ nonrandom Real otherPlayersStrat = 1;
 type Color;
 distinct Color c0, c1, c2, c3, c4, c5, c6, c7, c8;
 
-//random Integer numPlayers ~ UniformInt(6,12); 
+//random Integer numPlayers  ~ UniformInt(6,12); 
 nonrandom Integer numPlayers = 2;
 //nonrandom Integer numPlayers = 12;
 
@@ -220,6 +220,8 @@ random Integer capital(Integer player, Timestep t){
 		  = 500
 		else if exists Integer prop prop<NumSquares & applied_purchase(player, prop, Prev(t)) then 
 		  = capital(player, Prev(t)) - propertyValue(playerAt(player, Prev(t)))
+	  else if exists Integer buyer buyer <numPlayers & exists Integer prop prop<NumSquares & applied_purchase(buyer, prop, Prev(t)) & propertyOwner(playerAt(buyer, Prev(t)), Prev(t))==player then 
+		  = capital(player, Prev(t)) + propertyValue(propertyBuyerFor(player, t))
 		else if exists Integer renter (renter < numPlayers & applied_payRent(renter, player, Prev(t))) then 
 		  = capital(player, Prev(t)) + rentDue(rentPayerFor(player, t), player, Prev(t))
 		else if exists Integer owner (owner < numPlayers & applied_payRent(player, owner, Prev(t))) then 
@@ -227,6 +229,9 @@ random Integer capital(Integer player, Timestep t){
 		else 
 		  = capital(player, Prev(t))
 };
+
+random Integer propertyBuyerFor(Integer player, Timestep t) 
+  ~ Iota({Integer buyer : buyer <numPlayers & exists Integer prop prop<NumSquares & applied_purchase(buyer, prop, Prev(t)) & propertyOwner(playerAt(buyer, Prev(t)), Prev(t))==player });
 
 random Integer propertyOwner(Integer propertyNum, Timestep t){
 //Set to NumPlayers (meaning not owned by any player) by default
@@ -252,7 +257,7 @@ random Integer rentDue(Integer currentPlayer, Integer owner, Timestep t){
 		  = 0		
 		else if ( (whosTurn(t) == currentPlayer) & 
 		          (propertyOwner(playerAt(currentPlayer, Prev(t)), Prev(t)) == owner) & 
-		          (owner!=currentPlayer) ) then
+		          (owner!=currentPlayer) & owner != numPlayers) then
 		  = propertyRent(playerAt(currentPlayer, Prev(t)), Prev(t))
 		else
 		  = rentDue(currentPlayer, owner, Prev(t))
@@ -330,8 +335,11 @@ query numberRentsObtained(1,MaxTime);
 
 
 
+
 query playerAt(0,MaxTime);
+query capital(0,MaxTime);
 query capital(1,MaxTime);
+query capital(2,MaxTime);
 //query {Integer p: ((p<NumPlayers) & (whosTurn(Prev(@3)) == p) & applied_purchase(p, 1, Prev(@3)) )};
 //obs numberRentsObtained(5, MaxTime) = 1;
 query lastPlayerStrat;
