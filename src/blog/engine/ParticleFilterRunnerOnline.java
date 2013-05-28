@@ -135,8 +135,27 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	public Collection getQueries() {
 		return getQueriesForLatestTimestep();
 	}
-
+	public Double averageQueryResult(ArgSpecQuery q) {
+		Double rtn = (double) 0;
+		Histogram histogram = q.getHistogram();
+		List<Histogram.Entry> entries = new ArrayList<Histogram.Entry>(histogram.entrySet());
+		for (Iterator<Histogram.Entry> iter = entries.iterator(); iter.hasNext();) {
+			Histogram.Entry entry = iter.next();
+			double prob = entry.getWeight() / histogram.getTotalWeight();
+			rtn = rtn + ((Number)entry.getElement()).doubleValue()* ((Number) entry.getWeight()).doubleValue() / ((Number) histogram.getTotalWeight()).doubleValue();
+		}
+		return rtn;
+	}
 	protected void afterEvidenceAndQueries() {
+		int i = 0;
+		for (Iterator it = evidenceGenerator.getLatestQueries().iterator(); it.hasNext();) {
+			ArgSpecQuery query = (ArgSpecQuery) it.next();
+			if (i==0)
+				System.err.println("amount due is: " + averageQueryResult(query));
+			i++;
+		}
+		System.out.println("Current Timestep: " + evidenceGenerator.lastTimeStep);
+		
 		Collection queries = evidenceGenerator.getLatestQueries();
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();

@@ -5,12 +5,12 @@
 
 
 nonrandom Integer NumSquares = 10; // Number of properties on the board
-nonrandom Timestep MaxTime = @50; // Number of timesteps for which to simulate
+nonrandom Timestep MaxTime = @500; // Number of timesteps for which to simulate
 type Player;
 distinct Player p1, p2, p3, p4, p5, p6;
 nonrandom Player lastPlayer = p5;
 nonrandom Player defaultPlayer = p6;
-
+decision Boolean donothing();
 random Real lastPlayerStrat ~ Categorical({0.3->0.3, 0.7->0.7});
 
 random Player nextPlayer(Player p){

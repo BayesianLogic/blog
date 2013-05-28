@@ -4,7 +4,7 @@
  ** author siddharth srivastava **/
 
 
-nonrandom Integer NumSquares = 10; // Number of properties on the board
+nonrandom Integer NumSquares = 40; // Number of properties on the board
 nonrandom Timestep MaxTime = @500; // Number of timesteps for which to simulate
 
 random Real lastPlayerStrat = 0;//~ Categorical({0.0->1, 0.1->0.001});
@@ -265,6 +265,7 @@ random Integer propertyRent(Integer sq){
   else
     = -1 //??? hacky way to get around blog idiosyncracy
 };
+
 
 random Integer numberRentsObtained(Integer player, Timestep t){
 	if (t == @0) then 

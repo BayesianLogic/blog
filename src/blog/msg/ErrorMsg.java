@@ -38,4 +38,13 @@ public class ErrorMsg {
 	}
 
 	private boolean errorMark = true;
+	
+	public static class quietErrorMsg extends ErrorMsg{
+
+		public quietErrorMsg(String f) {
+			super(f);
+		}
+		public void error(int line, int col, String msg) {
+		}
+	}
 }

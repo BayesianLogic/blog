@@ -31,6 +31,7 @@ import blog.semant.Semant;
 
 public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 
+	public static boolean noInput = false;
 	public OPFevidenceGenerator(Model model, Collection queryStrings, Communicator in) {
 		super(model, Util.list(), queryStrings);
 		this.in = in;
@@ -160,6 +161,10 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 	}
 	
 	private void getInput (Evidence ev, List<Query> q){
+		
+		if (noInput)
+			return;
+		
 		String eviquerystr = "";
 		String accstr= "";
 
@@ -214,7 +219,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 	//need to fix the error message for empty evidence string inputs
 	private boolean parseAndTranslateEvidence(Evidence e, List<Query> q, Reader reader) {
 		Parse parse = new Parse(reader, null);
-		Semant sem = new Semant(model, e, q, new ErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
+		Semant sem = new Semant(model, e, q, new ErrorMsg.quietErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
 		sem.transProg(parse.getParseResult());
 		return true;
 	}

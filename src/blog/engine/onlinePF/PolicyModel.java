@@ -50,4 +50,8 @@ public class PolicyModel {
 		PolicyModel p = s.pm;
 		return p;
 	}
+	
+	public static PolicyModel emptyPolicy(){
+		return new PolicyModel();
+	}
 }

@@ -120,6 +120,14 @@ random Boolean applied_payRent(Integer p, Integer owner, Timestep t){
 	    = false
 };
 
+random Integer amtRentPaid (Integer p, Integer owner, Timestep t){
+  if (applied_payRent(p,owner,t)) then
+    = rentDue (p, owner, t)
+  else
+    = 0
+    
+};
+
 random Integer playerAt(Integer p, Timestep t){
 //player p's position at timestep t
 	     if (t == @0) then 
@@ -225,10 +233,13 @@ random Integer capital(Integer player, Timestep t){
 		else if exists Integer renter (renter < numPlayers & applied_payRent(renter, player, Prev(t))) then 
 		  = capital(player, Prev(t)) + rentDue(rentPayerFor(player, t), player, Prev(t))
 		else if exists Integer owner (owner < numPlayers & applied_payRent(player, owner, Prev(t))) then 
-		  = capital(player, Prev(t)) - propertyRent(playerAt(player, Prev(t)), Prev(t))
+		  = capital(player, Prev(t)) - rentDue(player, rentOwnerFor(player,t), Prev(t))
 		else 
 		  = capital(player, Prev(t))
 };
+
+random Integer rentOwnerFor(Integer player, Timestep t) 
+  ~ Iota({Integer owner : owner < numPlayers & applied_payRent(player, owner, Prev(t))});
 
 random Integer propertyBuyerFor(Integer player, Timestep t) 
   ~ Iota({Integer buyer : buyer <numPlayers & exists Integer prop prop<NumSquares & applied_purchase(buyer, prop, Prev(t)) & propertyOwner(playerAt(buyer, Prev(t)), Prev(t))==player });
@@ -301,8 +312,6 @@ random Integer numberRentsObtained(Integer player, Timestep t){
 	else 
 	  = numberRentsObtained(player, Prev(t))
 };
-
-
 
 
 

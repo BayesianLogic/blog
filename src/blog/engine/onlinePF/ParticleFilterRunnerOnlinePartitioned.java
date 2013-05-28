@@ -42,7 +42,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 
 	/** The associated particle filter. */
 	public PartitionedParticleFilter particleFilter;
-
+	public static boolean autoGenerateObs = true;
 	
 	public ParticleFilterRunnerOnlinePartitioned(Model model, Collection linkStrings,
 			Collection queryStrings, Properties particleFilterProperties, PolicyModel pm) {
@@ -58,9 +58,10 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		
 		Util.setVerbose(false);
 		
-		for (RandomFunction orf: (List<RandomFunction>) model.getObsFun()){
-			queryStrings.add(((ObservableRandomFunction) orf).queryString);
-		}
+		if (autoGenerateObs)
+			for (RandomFunction orf: (List<RandomFunction>) model.getObsFun()){
+				queryStrings.add(((ObservableRandomFunction) orf).queryString);
+			}
 		
 		//evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
 		
@@ -203,7 +204,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			//query.printResults(System.out);
 			
 			if (i==0)
-				System.err.println(averageQueryResult(query));
+				System.err.println("amount due is: " + averageQueryResult(query));
 			
 			i++;
 		}
@@ -221,7 +222,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		
 		for (Integer osIndex: particleFilter.getPartitions().keySet()){
 			particleFilter.answerWithPartition(queries, osIndex);
-			//System.out.println("SIGNATURE: {"+ os.toString()+"} ("+((List)particleFilter.partitions.get(os)).size()+")");
+			System.out.println("SIGNATURE: {"+ ObservabilitySignature.getOSbyIndex(osIndex).toString()+"} ("+particleFilter.partitions.get(osIndex).size()+")");
 			for (Iterator it = queries.iterator(); it.hasNext();) {
 				ArgSpecQuery query = (ArgSpecQuery) it.next();
 				//System.out.println("PF estimate of " + query + ":");
@@ -248,9 +249,9 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		//System.out.println(UBT.runTimeTimer.elapsedTime());
 		//UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
 		    UBT.dataOutput.printInput("" + UBT.runTimeTimer.elapsedTime());
-		    if (evidenceGenerator.lastTimeStep==12){
-		      throw new Error("reached 12");
-		    }
+		    //if (evidenceGenerator.lastTimeStep==12){
+		    //  throw new Error("reached 12");
+		    //}
 	}
 	
 	public String printQueryString(ArgSpecQuery q) {
