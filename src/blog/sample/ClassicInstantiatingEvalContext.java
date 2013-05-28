@@ -35,6 +35,7 @@
 
 package blog.sample;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -98,6 +99,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 		this.respVarsAndContexts = new LinkedHashMap();
 	}
 
+	static HashSet instantiatedVars = new HashSet();
 	/**
 	 * Creates a new InstantiatingEvalContext with the given sequence of
 	 * responsible variables.
@@ -157,6 +159,10 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 
 	protected Object instantiate(VarWithDistrib var) {
 		var.ensureStable();
+		boolean foo = instantiatedVars.contains(var);
+		
+		
+		//System.out.println(world.basicVarToValueMap().toString());
 		/*
 		 * if (Util.verbose()) { System.out.println("Need to instantiate: " + var);
 		 * }
@@ -201,7 +207,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 
 		// Actually set value
 		world.setValue(var, newValue);
-
+		instantiatedVars.add(var);
 		if (afterSamplingListener != null)
 			afterSamplingListener.evaluate(var, newValue, probForThisValue);
 

@@ -1,10 +1,14 @@
 package blog.engine.onlinePF.inverseBucket;
 
+import java.util.Map;
 import java.util.Set;
 
+import blog.bn.BasicVar;
+import blog.bn.BayesNetVar;
 import blog.engine.Particle;
 import blog.engine.onlinePF.ObservabilitySignature;
 import blog.sample.Sampler;
+import blog.world.AbstractPartialWorld;
 import blog.world.DefaultPartialWorld;
 
 public class TimedParticle extends Particle{
@@ -33,8 +37,23 @@ public class TimedParticle extends Particle{
 		DefaultPartialWorld newWorld = (DefaultPartialWorld) ((DefaultPartialWorld) curWorld)
 				.clone();
 		copy.setWorld(newWorld);
-		copy.weight = 1;
+		copy.weight = this.weight;
 		copy.setOS(myOSIndex);
 		return copy;
 	}
+	
+	public void unInstantiateObservables(ObservabilitySignature os){
+		Map<BayesNetVar, BayesNetVar> o2r = ((AbstractPartialWorld) curWorld).getChangedObservableMap();
+		for (BayesNetVar bnv : os.observables)
+			curWorld.setValue((BasicVar) bnv, null);
+		for (BayesNetVar bnv : os.unobservables)
+			curWorld.setValue((BasicVar) bnv, null);
+		for (BayesNetVar bnv : os.observedValues.keySet())
+			curWorld.setValue((BasicVar) bnv, null);
+	}
+	
+	public void setWeight(double newWeight){
+		this.weight = newWeight;
+	}
+	
 }

@@ -205,6 +205,9 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 			cachedParticlesBeforeTakingEvidence.add(p.copy());
 		}
 		if (!evidence.isEmpty()) { 
+			System.err.println("SampledPartitionedParticleFilter.take does not work right now");
+			System.exit(1);
+			/*
 			if (needsToBeResampledBeforeFurtherSampling) {
 				//System.err.println("PartitionedParticleFilter.take: should not need to resample");
 				resample();
@@ -225,7 +228,7 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 			}
 			if (particles.size() == 0)
 				throw new IllegalArgumentException("All particles have zero weight");
-			needsToBeResampledBeforeFurtherSampling = true;
+			needsToBeResampledBeforeFurtherSampling = true;*/
 		}
 	}
 	
@@ -327,7 +330,8 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 			newParticles.add(selectedParticle);
 			partitions.get(selectedParticle.getOS()).add(selectedParticle);
 		}
-
+		for (TimedParticle p : newParticles)
+			p.setWeight(1);
 		particles = newParticles;
 		//repartition(); no longer repartition here.
 	}
@@ -367,10 +371,9 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 	 * parallels number of particles in a particle filter
 	 */
 	public void resamplePartitionAndParticles(int numPartitionsSampled) {
-		particles.clear();
+		//particles.clear();
 		double[] weights = new double[partitions.size()];
 		Integer[] osIndexes = new Integer[partitions.size()];
-		boolean[] alreadySampled = new boolean[partitions.size()];
 		double sum = 0.0;
 		Map<Integer, List<TimedParticle>>  newPartitions = new HashMap<Integer, List<TimedParticle>> ();
 
@@ -388,30 +391,30 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 		if (sum == 0.0) {
 			throw new IllegalArgumentException("All particles have zero weight");
 		}
-		
+		int selection = -1;
 		for (i = 0; i < numPartitionsSampled; i++) {
-			int selection = Util.sampleWithWeights(weights, sum);
+			selection = Util.sampleWithWeights(weights, sum);
 			List<TimedParticle> particleList = partitions.get(osIndexes[selection]);
 			if (particleList == null){
 				System.err.println("errorherekk");
 			}
-			if (!alreadySampled[selection]) {
-				newPartitions.put(osIndexes[selection],partitions.get(osIndexes[selection]));
-				alreadySampled[selection] = true;
-				for (int j= 0; j < particleList.size(); j++){
-					particles.add(particleList.get(j));
-				}
-				
-			} else {
-				for (int j= 0; j < particleList.size(); j++){
-					TimedParticle newParticle = particleList.get(j).copy();
-					particleList.add(newParticle);
-					particles.add(newParticle);
-				}
-			}
 		}
-
-		partitions = newPartitions;
+		partitions.clear();
+		
+		ObservabilitySignature selectedOS = ObservabilitySignature.getOSbyIndex(osIndexes[selection]);
+		selectedOS.prepareEvidence();
+		Evidence ev = selectedOS.getEvidence();
+		ev.checkTypesAndScope(model);
+		if (ev.compile()!=0)
+			System.exit(1);
+		for (TimedParticle p : particles){
+			p.unInstantiateObservables(selectedOS);
+			int osIndex = osIndexes[selection];
+			p.take(ev);
+			p.setOS(osIndex);
+		}
+		partitions.put(osIndexes[selection], new ArrayList<TimedParticle>());
+		//partitions = newPartitions;
 		resample();
 	}
 	

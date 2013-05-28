@@ -34,7 +34,7 @@ public class SampledParticleFilterRunnerOnlinePartitioned{
 	protected Communicator eviCommunicator; //evidence is read from here
 	protected Communicator queryResultCommunicator; //query is read from here
 	/** The associated model. */
-	public Model model;
+	public static Model model;
 
 	/** The associated particle filter. */
 	public SampledPartitionedParticleFilter particleFilter;

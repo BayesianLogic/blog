@@ -1,20 +1,31 @@
 package blog.engine.onlinePF;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import blog.DBLOGUtil;
 import blog.bn.BayesNetVar;
+import blog.common.Util;
 import blog.engine.onlinePF.inverseBucket.UBT;
+import blog.parse.Parse;
+import blog.semant.Semant;
 import blog.world.AbstractPartialWorld;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
+import blog.model.Evidence;
+import blog.model.Query;
+import blog.msg.ErrorMsg;
 
 public class ObservabilitySignature {
 
 	public HashMap<BayesNetVar, Object> observedValues = new HashMap<BayesNetVar, Object>();
-
+	public HashSet<BayesNetVar> unobservables = new HashSet<BayesNetVar>();
+	public HashSet<BayesNetVar> observables = new HashSet<BayesNetVar>();
 	
 	/**
 	 * returns a clone of the original (this)
@@ -49,8 +60,12 @@ public class ObservabilitySignature {
 				int bnvTimestep = DBLOGUtil.getTimestepIndex(bnv);
 				if (!observedValues.containsKey(referenced) &&  bnvTimestep <= maxTimestep && bnvTimestep > myTimestep){
 					observedValues.put(referenced, world.getValue(referenced));
+					observables.add(bnv);
 				}
 			}
+			else
+				unobservables.add(bnv);
+				
 		}
 		//world.getChangedObservableMap().clear();
 		myTimestep = maxTimestep;
@@ -193,4 +208,37 @@ public class ObservabilitySignature {
 			
 		return os;
 	}
+	
+	public String generateObservableString(){
+		String rtn = "";
+		for (BayesNetVar referenced : observedValues.keySet()){
+			rtn += ("obs " + referenced.toString() + "=" + observedValues.get(referenced) + ";");
+		}
+		for (BayesNetVar observable : observables){
+			rtn += ("obs " + observable.toString() + "=" + "true" + ";");
+		}
+		for (BayesNetVar unobservable : unobservables){
+			rtn += ("obs " + unobservable.toString() + "=" + "false" + ";");
+		}
+		return rtn;
+		
+	}
+	
+	public void prepareEvidence(){
+		String eviString = generateObservableString();
+		myEvidence = new Evidence();
+		parseAndTranslateEvidence(myEvidence, Util.list(), new StringReader(eviString));
+	}
+	
+	private boolean parseAndTranslateEvidence(Evidence e, List<Query> q, Reader reader) {
+		Parse parse = new Parse(reader, null);
+		Semant sem = new Semant(SampledParticleFilterRunnerOnlinePartitioned.model, e, q, new ErrorMsg.quietErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
+		sem.transProg(parse.getParseResult());
+		return true;
+	}
+	public Evidence getEvidence(){
+		return myEvidence;
+	}
+	
+	private Evidence myEvidence;
 }

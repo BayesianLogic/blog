@@ -5,9 +5,9 @@
 
 
 nonrandom Integer NumSquares = 40; // Number of properties on the board
-nonrandom Timestep MaxTime = @500; // Number of timesteps for which to simulate
+nonrandom Timestep MaxTime = @50; // Number of timesteps for which to simulate
 
-nonrandom Real lastPlayerStrat = 1;
+nonrandom Real lastPlayerStrat = 0.3;
 nonrandom Real otherPlayersStrat = 1;
 type Color;
 distinct Color c0, c1, c2, c3, c4, c5, c6, c7, c8;
@@ -133,14 +133,14 @@ random Integer playerAt(Integer p, Timestep t){
 	     if (t == @0) then 
 	       = 0
 	     else if (p == whosTurn(Prev(t)) & applied_move(p, Prev(t))) then 
-	       = AddModNWrapper (playerAt(p, Prev(t)),diceVal1(Prev(t)), diceVal2(Prev(t)), NumSquares) //??? parameter and implementation of addModN
+	       = (playerAt(p, Prev(t)) + diceVal1(Prev(t)) + diceVal2(Prev(t)))%  NumSquares
 	     else 
 	       = playerAt(p, Prev(t))
 };
 
 random Integer AddModNWrapper(Integer position, Integer d1, Integer d2, Integer NumSq) {
   if ( (position + d1 + d2) < NumSq) then
-    = (position + d1 + d2)
+    = 1 + 2 % 5
   else
     = AddModNWrapper (position + d1 + d2 - NumSq, 0, 0, NumSq)
 };
@@ -220,7 +220,6 @@ random Timestep timeOfLastTurnAdvance(Timestep t) {
 	else 
 	  = timeOfLastTurnAdvance(Prev(t))
 };
-
 
 random Integer capital(Integer player, Timestep t){
     
@@ -344,15 +343,17 @@ query numberRentsObtained(1,MaxTime);
 
 
 
-
+query #{Integer pro : pro < NumSquares & propertyOwner(pro, MaxTime) == 0};
+query #{Integer pro : pro < NumSquares & propertyOwner(pro, MaxTime) == 1};
+query #{Integer pro : pro < NumSquares & propertyOwner(pro, MaxTime) == 2};
 query playerAt(0,MaxTime);
 query capital(0,MaxTime);
 query capital(1,MaxTime);
 query capital(2,MaxTime);
 //query {Integer p: ((p<NumPlayers) & (whosTurn(Prev(@3)) == p) & applied_purchase(p, 1, Prev(@3)) )};
-//obs numberRentsObtained(5, MaxTime) = 1;
+obs numberRentsObtained(1, MaxTime) = 1;
 query lastPlayerStrat;
-
+query 1 + 5 % 3;
 
 
 //query {Integer i : i< 10};
