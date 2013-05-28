@@ -21,6 +21,7 @@ import blog.model.Query;
 import blog.msg.ErrorMsg;
 import blog.parse.Parse;
 import blog.semant.Semant;
+import java.io.FileReader;
 
 /**
  * 
@@ -35,8 +36,15 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 	public OPFevidenceGenerator(Model model, Collection queryStrings, Communicator in) {
 		super(model, Util.list(), queryStrings);
 		this.in = in;
-	}
-	
+                try {
+                    br = new BufferedReader(new FileReader("randomstuff//generatedEvidence.eblog"));
+                }
+                catch (Exception e){
+                    System.err.print(e.getStackTrace());
+                    System.exit(1);
+                }
+        }
+	BufferedReader br;
 	
 	/**
 	 * This method increments the lastTimeStep,  
@@ -104,7 +112,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		//System.out.println("Enter decision for: "+ lastTimeStep);
 		List<Query> q = Util.list();
 		Evidence ev = new Evidence();
-		getInput(ev, q);
+		//getInput(ev, q);
 		if (!q.isEmpty()){
 			System.err.println("OPFevidenceGenerator.getDecision: do not enter queries in decision phase");
 			System.exit(1);
@@ -164,7 +172,7 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		
 		if (noInput)
 			return;
-		
+		/*
 		String eviquerystr = "";
 		String accstr= "";
 
@@ -174,8 +182,16 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 				break;
 			else
 				accstr+=eviquerystr;
-		}
-		
+		}*/
+                String accstr = "";
+                try{
+                    accstr = br.readLine();
+                }
+                catch (Exception e){
+                    System.err.print(e.getStackTrace());
+                    System.exit(1);
+                }
+		//accstr="";
 
 		parseAndTranslateEvidence(ev, q, new StringReader((String) accstr));
 		latestQueryString = accstr;

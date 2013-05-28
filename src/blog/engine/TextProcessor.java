@@ -10,22 +10,24 @@ import blog.engine.onlinePF.FileCommunicator;
 
 public class TextProcessor {
 	public static void main (String[] args) throws IOException{
-		BufferedReader br = new BufferedReader(new FileReader("ex_inprog//logistics//monopoly_color.mblog"));
-		FileCommunicator fc = new FileCommunicator("randomstuff//generatedModel.mblog");
+		BufferedReader br = new BufferedReader(new FileReader("ex_inprog//logistics//generatedModel2.mblog"));
+		FileCommunicator fc = new FileCommunicator("randomstuff//generatedEvidence.eblog");
 		String output;
-		while ((output = br.readLine())!=null){
-			fc.printInput(output);
+                String[]eva = new String[1001];
+                String[]evb = new String[1001];
+		for (int i = 0; i<=1000; i++){
+                        eva[i] = br.readLine();
 		}
-		
-		for (int i = 0; i <= 1000; i ++){
-			fc.printInput("query numberRentsObtained(0, @" + i+ ");");
+                for (int i = 0; i<=1000; i++){
+                        evb[i] = br.readLine();
 		}
-		for (int i = 0; i <= 1000; i ++){
-			fc.printInput("query numberRentsObtained(1, @" + i+ ");");
+                for (int i = 0; i<=1000; i++){
+			fc.printInput(eva[i]+evb[i]);
 		}
+	
 		fc.p.flush();
 		fc.p.close();
-		
+		/*
 		String[] args1 = {"generatedModel.mblog", "-e", "blog.engine.ParticleFilter", "-n", "1", "-r" };
 		blog.Main.main(args1);
 		
@@ -45,6 +47,6 @@ public class TextProcessor {
 			val = val.substring(5);
 			fc.printInput("obs " + var + "=" + val + ";");
 		}
-		
+		*/
 	}
 }

@@ -150,8 +150,8 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		int i = 0;
 		for (Iterator it = evidenceGenerator.getLatestQueries().iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
-			if (i==0)
-				System.err.println("amount due is: " + averageQueryResult(query));
+			//if (i==0)
+			//	System.err.println("amount due is: " + averageQueryResult(query));
 			i++;
 		}
 		System.out.println("Current Timestep: " + evidenceGenerator.lastTimeStep);
@@ -230,15 +230,15 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		Properties properties = new Properties();
-		properties.setProperty("numParticles", "1000");
+		properties.setProperty("numParticles", "100");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		boolean verbose = false;
-		boolean randomize = false;
+		boolean randomize = true;
 		
-		String modelFile = "ex_inprog/logistics/logistics_choice.mblog";
+		String modelFile = "ex_inprog/logistics/generatedModel2.mblog";
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("value(t)","#{Box b: BoxIn(b, c3, t)==true}","#{Box b: BoxIn(b, c1, t)==true}", "#{Box b: applied_Load(b, t1, t)==true}");
+		Collection queryStrings = Util.list("lastPlayerStrat");
 
 		Util.initRandom(randomize);
 		Util.setVerbose(verbose);
@@ -254,6 +254,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(), verbose, false);
 		ParticleFilterRunnerOnline a = new ParticleFilterRunnerOnline(model,
 				linkStrings, queryStrings, properties);
+                a.run();
 		/*
 		a.eviCommunicator=new BufferedReader(new InputStreamReader(System.in));
 		FileInputStream evidenceIn = new FileInputStream("ex_inprog/logistics/logistics_choice.evidence");

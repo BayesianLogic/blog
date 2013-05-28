@@ -1,0 +1,242 @@
+Using fixed random seed for repeatability.
+Constructing sampler of class blog.sample.LWSampler
+Using 100 particles...
+Current Timestep: 0
+Distribution of values for lastPlayerStrat
+	0.5	0.3
+	0.5	0.7
+Current Timestep: 1
+Distribution of values for lastPlayerStrat
+	0.58	0.3
+	0.42	0.7
+Current Timestep: 2
+Distribution of values for lastPlayerStrat
+	0.56	0.3
+	0.44	0.7
+Current Timestep: 3
+Distribution of values for lastPlayerStrat
+	0.62	0.3
+	0.38	0.7
+Current Timestep: 4
+Distribution of values for lastPlayerStrat
+	0.61	0.3
+	0.39	0.7
+Current Timestep: 5
+Distribution of values for lastPlayerStrat
+	0.66	0.3
+	0.34	0.7
+Current Timestep: 6
+Distribution of values for lastPlayerStrat
+	0.62	0.3
+	0.38	0.7
+Current Timestep: 7
+Distribution of values for lastPlayerStrat
+	0.6	0.3
+	0.4	0.7
+Current Timestep: 8
+Distribution of values for lastPlayerStrat
+	0.59	0.3
+	0.41	0.7
+Current Timestep: 9
+Distribution of values for lastPlayerStrat
+	0.62	0.3
+	0.38	0.7
+Current Timestep: 10
+Distribution of values for lastPlayerStrat
+	0.64	0.3
+	0.36	0.7
+Current Timestep: 11
+Distribution of values for lastPlayerStrat
+	0.68	0.3
+	0.32	0.7
+Current Timestep: 12
+Distribution of values for lastPlayerStrat
+	0.68	0.3
+	0.32	0.7
+Current Timestep: 13
+Distribution of values for lastPlayerStrat
+	0.68	0.3
+	0.32	0.7
+Current Timestep: 14
+Distribution of values for lastPlayerStrat
+	0.71	0.3
+	0.29	0.7
+Current Timestep: 15
+Distribution of values for lastPlayerStrat
+	0.66	0.3
+	0.34	0.7
+Current Timestep: 16
+Distribution of values for lastPlayerStrat
+	0.71	0.3
+	0.29	0.7
+Current Timestep: 17
+Distribution of values for lastPlayerStrat
+	0.797752808988764	0.3
+	0.20224719101123595	0.7
+Current Timestep: 18
+Distribution of values for lastPlayerStrat
+	0.82	0.3
+	0.18	0.7
+Current Timestep: 19
+Distribution of values for lastPlayerStrat
+	0.73	0.3
+	0.27	0.7
+Current Timestep: 20
+Distribution of values for lastPlayerStrat
+	0.82	0.3
+	0.18	0.7
+Current Timestep: 21
+Distribution of values for lastPlayerStrat
+	0.81	0.3
+	0.19	0.7
+Current Timestep: 22
+Distribution of values for lastPlayerStrat
+	0.82	0.3
+	0.18	0.7
+Current Timestep: 23
+Distribution of values for lastPlayerStrat
+	0.82	0.3
+	0.18	0.7
+Current Timestep: 24
+Distribution of values for lastPlayerStrat
+	0.8333333333333334	0.3
+	0.16666666666666666	0.7
+Current Timestep: 25
+Distribution of values for lastPlayerStrat
+	0.85	0.3
+	0.15	0.7
+Current Timestep: 26
+Distribution of values for lastPlayerStrat
+	0.89	0.3
+	0.11	0.7
+Current Timestep: 27
+Distribution of values for lastPlayerStrat
+	0.91	0.3
+	0.09	0.7
+Current Timestep: 28
+Distribution of values for lastPlayerStrat
+	0.92	0.3
+	0.08	0.7
+Current Timestep: 29
+Distribution of values for lastPlayerStrat
+	0.9404761904761905	0.3
+	0.05952380952380952	0.7
+Current Timestep: 30
+Distribution of values for lastPlayerStrat
+	0.9473684210526315	0.3
+	0.05263157894736842	0.7
+Current Timestep: 31
+Distribution of values for lastPlayerStrat
+	0.95	0.3
+	0.05	0.7
+Current Timestep: 32
+Distribution of values for lastPlayerStrat
+	0.9135802469135802	0.3
+	0.08641975308641975	0.7
+Current Timestep: 33
+Distribution of values for lastPlayerStrat
+	0.91	0.3
+	0.09	0.7
+Current Timestep: 34
+Distribution of values for lastPlayerStrat
+	0.87	0.3
+	0.13	0.7
+Current Timestep: 35
+Distribution of values for lastPlayerStrat
+	0.89	0.3
+	0.11	0.7
+Current Timestep: 36
+Distribution of values for lastPlayerStrat
+	0.85	0.3
+	0.15	0.7
+Current Timestep: 37
+Distribution of values for lastPlayerStrat
+	0.86	0.3
+	0.14	0.7
+Current Timestep: 38
+Distribution of values for lastPlayerStrat
+	0.8181818181818182	0.3
+	0.18181818181818182	0.7
+Current Timestep: 39
+Distribution of values for lastPlayerStrat
+	0.82	0.3
+	0.18	0.7
+Current Timestep: 40
+Distribution of values for lastPlayerStrat
+	0.82	0.3
+	0.18	0.7
+Current Timestep: 41
+Distribution of values for lastPlayerStrat
+	0.9166666666666666	0.3
+	0.08333333333333333	0.7
+Current Timestep: 42
+Distribution of values for lastPlayerStrat
+	0.92	0.3
+	0.08	0.7
+Current Timestep: 43
+Distribution of values for lastPlayerStrat
+	0.94	0.3
+	0.06	0.7
+Current Timestep: 44
+Distribution of values for lastPlayerStrat
+	0.95	0.3
+	0.05	0.7
+Current Timestep: 45
+Distribution of values for lastPlayerStrat
+	0.99	0.3
+	0.01	0.7
+Current Timestep: 46
+Distribution of values for lastPlayerStrat
+	0.98	0.3
+	0.02	0.7
+Current Timestep: 47
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 48
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 49
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 50
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 51
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 52
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 53
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 54
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 55
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 56
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 57
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 58
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 59
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 60
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 61
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 62
+Distribution of values for lastPlayerStrat
+	1.0	0.3
+Current Timestep: 63
+Distribution of values for lastPlayerStrat
+	1.0	0.3
