@@ -124,7 +124,7 @@ public class DBLOGUtil {
 		while (varIt.hasNext()) {
 			BasicVar var = (BasicVar) varIt.next();
 			int timestepIndex = getTimestepIndex(var);
-			if (timestepIndex != -1 && timestepIndex <= largest -5) {
+			if (timestepIndex != -1 && timestepIndex <= largest - nsim) {
 				world.setValue(var, null);
 			}
 		}
@@ -287,4 +287,6 @@ public class DBLOGUtil {
 				});
 		return result;
 	}
+	
+	public static int nsim = 5;
 }

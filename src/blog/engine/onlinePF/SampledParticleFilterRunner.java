@@ -30,7 +30,7 @@ import blog.world.PartialWorld;
  * @since Jan 03 2013
  * 
  */
-public class SampledParticleFilterRunnerOnlinePartitioned{
+public class SampledParticleFilterRunner{
 	protected Communicator eviCommunicator; //evidence is read from here
 	protected Communicator queryResultCommunicator; //query is read from here
 	/** The associated model. */
@@ -40,7 +40,7 @@ public class SampledParticleFilterRunnerOnlinePartitioned{
 	public SampledPartitionedParticleFilter particleFilter;
 
 	
-	public SampledParticleFilterRunnerOnlinePartitioned(Model model, Collection linkStrings,
+	public SampledParticleFilterRunner(Model model, Collection linkStrings,
 			Collection queryStrings, Properties particleFilterProperties, PolicyModel pm) {
 		this.model = model;
 		particleFilter = new SampledPartitionedParticleFilter(model, particleFilterProperties);
@@ -53,11 +53,11 @@ public class SampledParticleFilterRunnerOnlinePartitioned{
 		setUpStreams();
 		
 		Util.setVerbose(false);
-		
+		/*
 		for (RandomFunction orf: (List<RandomFunction>) model.getObsFun()){
 			queryStrings.add(((ObservableRandomFunction) orf).queryString);
 		}
-		
+		*/
 		//evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
 		
 		evidenceGenerator = new OPFevidenceGeneratorWithPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
@@ -341,7 +341,7 @@ public class SampledParticleFilterRunnerOnlinePartitioned{
 
 		
 		Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(), verbose, false);
-		SampledParticleFilterRunnerOnlinePartitioned a = new SampledParticleFilterRunnerOnlinePartitioned(model,
+		SampledParticleFilterRunner a = new SampledParticleFilterRunner(model,
 				linkStrings, queryStrings, properties, null);
 		/*
 		a.eviCommunicator=new BufferedReader(new InputStreamReader(System.in));

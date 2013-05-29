@@ -236,7 +236,7 @@ public class ObservabilitySignature {
 	
 	private boolean parseAndTranslateEvidence(Evidence e, List<Query> q, Reader reader) {
 		Parse parse = new Parse(reader, null);
-		Semant sem = new Semant(SampledParticleFilterRunnerOnlinePartitioned.model, e, q, new ErrorMsg.quietErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
+		Semant sem = new Semant(SampledParticleFilterRunner.model, e, q, new ErrorMsg.quietErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
 		sem.transProg(parse.getParseResult());
 		return true;
 	}
