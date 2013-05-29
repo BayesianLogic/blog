@@ -219,6 +219,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 		 */
 
 		//sampling of observability values
+                /*
 		if (var instanceof RandFuncAppVar){
 			//if observable function
 			
@@ -235,7 +236,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 				co2r.put(observableVar, referencedVar);
 			}
 		}
-		
+		*/
 		return newValue;
 	}
 

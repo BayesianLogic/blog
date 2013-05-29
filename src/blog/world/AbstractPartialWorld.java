@@ -150,7 +150,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			// checkIdentifiers(var, value); // allow any identifiers
 			basicVarToValue.put(var, value);
 			/*added by cheng*/
-			changedVarToValue.put(var, value);
+			//changedVarToValue.put(var, value);
 		}
 
 		dirtyVars.add(var);

@@ -52,6 +52,7 @@ import blog.model.Query;
 import blog.sample.AfterSamplingListener;
 import blog.sample.DMHSampler;
 import blog.sample.Sampler;
+import java.util.Arrays;
 
 /**
  * A Particle Filter. It works by keeping a set of {@link Particles}, each
@@ -272,6 +273,7 @@ public class ParticleFilter extends InferenceEngine {
 		double[] weights = new double[particles.size()];
 		boolean[] alreadySampled = new boolean[particles.size()];
 		double sum = 0.0;
+                
 		List newParticles = new ArrayList();
 
 		for (int i = 0; i < particles.size(); i++) {
@@ -284,7 +286,7 @@ public class ParticleFilter extends InferenceEngine {
 		}
 		// else
 		// System.out.println("PF.resample: sum of all particle weights is " + sum);
-
+System.err.println(Arrays.toString(weights));
 		for (int i = 0; i < numParticles; i++) {
 			int selection = Util.sampleWithWeights(weights, sum);
 			if (!alreadySampled[selection]) {
