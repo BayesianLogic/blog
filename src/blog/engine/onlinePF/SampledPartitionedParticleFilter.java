@@ -413,6 +413,8 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 			int osIndex = osIndexes[selection];
 			p.take(ev);
 			p.setOS(osIndex);
+			p.uninstantiatePreviousTimeslices();
+			p.removeAllDerivedVars();
 		}
 		partitions.put(osIndexes[selection], new ArrayList<TimedParticle>());
 		//partitions = newPartitions;

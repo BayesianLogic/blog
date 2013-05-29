@@ -65,7 +65,7 @@ public class SampledParticleFilterRunnerOnlinePartitioned{
 	
 	public void setUpStreams(){
 		eviCommunicator = new PipedCommunicator();
-		queryResultCommunicator = new FileCommunicator("f.txt");
+		queryResultCommunicator = new FileCommunicator("randomstuff//filecommunicator.log");
 
 	}
 	/*
@@ -244,10 +244,7 @@ public class SampledParticleFilterRunnerOnlinePartitioned{
 
 		//System.out.println(UBT.runTimeTimer.elapsedTime());
 		//UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
-		    UBT.dataOutput.printInput("" + UBT.runTimeTimer.elapsedTime());
-		    if (evidenceGenerator.lastTimeStep==12){
-		      throw new Error("reached 12");
-		    }
+		UBT.dataOutput.printInput("" + UBT.runTimeTimer.elapsedTime());
 	}
 	
 	public String printQueryString(ArgSpecQuery q) {

@@ -95,6 +95,7 @@ public class Particle {
 
 		// System.out.println("Weight: " + weight);
 		// System.out.println("Updated world: " + curWorld);
+
 	}
 
 	/**

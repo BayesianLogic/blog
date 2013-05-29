@@ -9,3 +9,4 @@ bin/
 *.swp
 /nbproject/private/
 /build/
+*.log

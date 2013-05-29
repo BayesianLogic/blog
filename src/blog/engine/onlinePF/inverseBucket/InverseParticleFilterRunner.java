@@ -71,7 +71,7 @@ public class InverseParticleFilterRunner{
 	
 	public void setUpStreams(){
 		eviCommunicator = new PipedCommunicator();
-		queryResultCommunicator = new FileCommunicator("f.txt");
+		queryResultCommunicator = new FileCommunicator("randomstuff//filecommunicator.log");
 
 	}
 	/*
