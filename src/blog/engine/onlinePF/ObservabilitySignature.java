@@ -31,15 +31,16 @@ public class ObservabilitySignature {
 	 * returns a clone of the original (this)
 	 * @return
 	 */
-	public ObservabilitySignature copy (){
+	public ObservabilitySignature spawnChild (TimedParticle p){
 		ObservabilitySignature rtn = new ObservabilitySignature();
-		for (BayesNetVar os : this.observedValues.keySet()){
-			rtn.observedValues.put(os, this.observedValues.get(os));
-		}
+		//for (BayesNetVar os : this.observedValues.keySet()){
+		//	rtn.observedValues.put(os, this.observedValues.get(os));
+		//}
 		rtn.myTimestep = this.myTimestep;
 		rtn.myIndex = myIndex;
 		rtn.parentIndex = parentIndex;
 		rtn.indexValid = true;
+		rtn.update(p);
 		return rtn;
 	}
 	
@@ -129,7 +130,10 @@ public class ObservabilitySignature {
 	}
 	public String toString(){
 		//return ""+ myIndex;
-		return observedValues.toString();
+		if (parentIndex!=-1)
+			return getOSbyIndex(parentIndex).toString() + observedValues.toString();
+		else
+			return observedValues.toString();
 	}
 	private int myTimestep = -1;
 	int parentIndex = -1;

@@ -36,6 +36,7 @@
 package blog.engine.onlinePF;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -319,7 +320,7 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 		}
 		// else
 		// System.out.println("PF.resample: sum of all particle weights is " + sum);
-
+		//System.err.println(Arrays.toString(weights));
 		for (int i = 0; i < numParticles; i++) {
 			int selection = Util.sampleWithWeights(weights, sum);
 			TimedParticle selectedParticle = particles.get(selection);
@@ -345,8 +346,8 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 		for (Integer osIndex : partitions.keySet()){
 			ObservabilitySignature os = ObservabilitySignature.getOSbyIndex(osIndex);
 			for (TimedParticle p : (List<TimedParticle>) partitions.get(osIndex)){
-				ObservabilitySignature newOS = os.copy();
-				newOS.update(p);
+				ObservabilitySignature newOS = os.spawnChild(p);
+				//newOS.update(p);
 				Integer newOSIndex = newOS.getIndex();
 				p.setOS(newOSIndex);
 				if (newPartitions.containsKey(newOSIndex)){

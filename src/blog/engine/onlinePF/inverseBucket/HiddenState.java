@@ -121,8 +121,8 @@ public class HiddenState {
 				//Map<ObservabilitySignature, Double> newCounts = actionToOSCounts.get(EnclosingSC.OStoAction.get(os).toString());//new HashMap<ObservabilitySignature, Double>();
 				Map<Integer, Double> newCounts = new HashMap<Integer, Double>();
 				//newCounts = getUpdatedOStoCount(np, newCounts);
-				ObservabilitySignature newOS = ObservabilitySignature.getOSbyIndex(osIndex).copy();
-				newOS.update(np);
+				ObservabilitySignature newOS = ObservabilitySignature.getOSbyIndex(osIndex).spawnChild(np);
+				//newOS.update(np);
 				Integer newOSIndex = newOS.getIndex();
 				newCounts.put(newOSIndex, np.getLatestWeight());
 				EnclosingSC.nextStateCollection.addParticle(np, newCounts);
@@ -284,8 +284,8 @@ public class HiddenState {
 	public Map<Integer, Double> getUpdatedOStoCount (InverseParticle p, Map<Integer, Double> original){
 		Map<Integer, Double> rtn = new HashMap<Integer, Double>();
 		for (Integer osIndex : original.keySet()){
-			ObservabilitySignature updatedOS = (ObservabilitySignature.getOSbyIndex(osIndex)).copy();
-			updatedOS.update(p);
+			ObservabilitySignature updatedOS = (ObservabilitySignature.getOSbyIndex(osIndex)).spawnChild(p);
+			//updatedOS.update(p);
 			Integer updatedOSIndex = updatedOS.getIndex();
 			rtn.put(updatedOSIndex, original.get(osIndex));
 		}

@@ -940,12 +940,34 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		// update usage of oldValue
 		if (oldValue != null) {
 			objToUsesAsValue.remove(oldValue, var);
+			changedVarToValue.remove(var);
+			if (var instanceof RandFuncAppVar){
+				RandFuncAppVar referencedVar = (RandFuncAppVar) var;
+				RandomFunction obf = referencedVar.func().getObservableFun();
+				if (obf != null){
+					RandFuncAppVar observableVar = new RandFuncAppVar(obf, referencedVar.args(), false);
+					chanegdObservableToReferenced.remove(observableVar);
+				}
+			}
+			
 		}
 
 		// update usage of newValue
 		if (newValue != null) {
 			objToUsesAsValue.add(newValue, var);
+			changedVarToValue.put(var, newValue);
+			if (var instanceof RandFuncAppVar){
+				RandFuncAppVar referencedVar = (RandFuncAppVar) var;
+				RandomFunction obf = referencedVar.func().getObservableFun();
+				if (obf != null){
+					RandFuncAppVar observableVar = new RandFuncAppVar(obf, referencedVar.args(), false);
+					this.getValue(observableVar);
+					chanegdObservableToReferenced.put(observableVar, var);
+				}
+			}
 		}
+		
+		
 	}
 
 	private void prepareForNumberVarChange(NumberVar nv, Object oldValue,

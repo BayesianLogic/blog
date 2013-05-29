@@ -348,8 +348,8 @@ public class PartitionedParticleFilter extends InferenceEngine {
 			//for each particle in os's bucket
 			for (TimedParticle p : (List<TimedParticle>) partitions.get(osIndex)){
 				//get updated os for particle, and update its os
-				ObservabilitySignature newOS = os.copy();
-				newOS.update(p);
+				ObservabilitySignature newOS = os.spawnChild(p);
+				//newOS.update(p);
 				Integer newOSIndex = newOS.getIndex();
 				p.setOS(newOSIndex);
 				//if updated os has already been seen, 
