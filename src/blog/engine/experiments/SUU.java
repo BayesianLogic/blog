@@ -38,7 +38,7 @@ public class SUU {
 		//setDefaultParticleFilterProperties();
 		setModel(modelFilePath);
 		PolicyModel pm = PolicyModel.policyFromFile(policyFilePath);
-
+		
 		SampledParticleFilterRunner runner = new SampledParticleFilterRunner(
 				model, linkStrings, queryStrings, properties, pm);
 		return runner;
@@ -50,6 +50,7 @@ public class SUU {
 		properties.setProperty("numMoves", "1");
 		Util.initRandom(true);
 		Util.setVerbose(true);
+		
 	}
 
 	private static Properties properties = 	properties = new Properties();;

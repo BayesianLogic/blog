@@ -288,5 +288,5 @@ public class DBLOGUtil {
 		return result;
 	}
 	
-	public static int nsim = 5;
+	public static int nsim = 2;
 }
