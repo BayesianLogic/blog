@@ -31,6 +31,18 @@ public class SUU {
 				model, linkStrings, queryStrings, properties, pm);
 		return runner;
 	}
+	public SampledParticleFilterRunner makeRunner(String modelFilePath, String policyFilePath, String queryFile) {
+		query_parser file = new query_parser(queryFile);
+		Collection linkStrings = Util.list();
+		Collection queryStrings = file.queries;//Util.list("capital(0, t)", "rentPaymentRequired(0, 1, t)", "rentPaymentRequired(1, 0, t)", "owner(0, t)", "observation_rent(t)");
+		//setDefaultParticleFilterProperties();
+		setModel(modelFilePath);
+		PolicyModel pm = PolicyModel.policyFromFile(policyFilePath);
+
+		SampledParticleFilterRunner runner = new SampledParticleFilterRunner(
+				model, linkStrings, queryStrings, properties, pm);
+		return runner;
+	}
 
 	private static void setDefaultParticleFilterProperties() {
 		properties.setProperty("numParticles", "1000");
