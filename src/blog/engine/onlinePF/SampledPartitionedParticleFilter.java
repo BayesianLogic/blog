@@ -244,8 +244,8 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 		for (TimedParticle p : particles) {
 			p.answer(queries);
 			p.advanceTimestep();
-			p.uninstantiatePreviousTimeslices();
-			p.removeAllDerivedVars();
+			//p.uninstantiatePreviousTimeslices();
+			//p.removeAllDerivedVars();
 		}
 		UBT.answerTime += answerTimer.elapsedTime();
 	}
