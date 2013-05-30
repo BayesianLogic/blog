@@ -22,7 +22,7 @@ public class SUU {
 	
 	public SampledParticleFilterRunner makeRunner(String modelFilePath, String policyFilePath) {
 		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("capital(0, t)", "rentDue(0, 1, t)", "rentDue(1, 0, t)");
+		Collection queryStrings = Util.list("capital(0, t)", "rentPaymentRequired(0, 1, t)", "rentPaymentRequired(1, 0, t)", "owner(0, t)", "observation_rent(t)");
 		//setDefaultParticleFilterProperties();
 		setModel(modelFilePath);
 		PolicyModel pm = PolicyModel.policyFromFile(policyFilePath);

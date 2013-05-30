@@ -1,0 +1,174 @@
+type QState;
+distinct QState move, transact, start, out_of_capital;
+
+type Color;
+distinct Color c0, c1, c2, c3, c4, c5, c6, c7, c8;
+
+random Color propertyColor(Integer n){
+	if (n == 1 | n==3) then = c1
+	else if (n == 6  | n == 8  | n == 9)  then = c2
+	else if (n == 11 | n == 13 | n == 14) then = c3
+	else if (n == 16 | n == 18 | n == 19) then = c4
+	else if (n == 21 | n == 23 | n == 24) then = c5
+	else if (n == 26 | n == 27 | n == 29) then = c6
+	else if (n == 31 | n == 32 | n == 34) then = c7
+	else if (n == 37 | n == 39) then = c8
+	else  = c0
+};
+
+random Boolean ownsAllOfColor(Integer p, Color c, Timestep t){
+       if ((c == c1 & 
+       	       	  owner(1, t) == p & owner(3, t) == p ) |
+	  (c == c2 & 
+       	       	  owner(6, t) == p & owner(8, t) == p & owner(9, t) == p) |
+          (c == c3 & 
+       	       	  owner(11, t) == p & owner(13, t) == p & owner(14, t) == p) |
+ 	  (c == c4 & 
+       	       	  owner(16, t) == p & owner(18, t) == p & owner(19, t) == p) |
+ 	  (c == c5 & 
+       	       	  owner(21, t) == p & owner(23, t) == p & owner(24, t) == p) |
+ 	  (c == c6 & 
+       	       	  owner(26, t) == p & owner(27, t) == p & owner(29, t) == p) |
+ 	  (c == c7 & 
+       	       	  owner(31, t) == p & owner(32, t) == p & owner(34, t) == p) |
+ 	  (c == c8 & 
+       	       	  owner(37, t) == p & owner(39, t) == p) )
+		  then = true
+		  else = false
+};
+
+
+
+random Boolean highBuyer ~Bernoulli(0.1);
+nonrandom Real selfPurchaseProb = 0.8;
+nonrandom Integer NumSquares = 40;
+nonrandom Integer NumPlayers = 2;
+
+random Integer nextPlayer(Integer n){
+       if n < Pred(NumPlayers) then = Succ(n)
+       else = 0
+};
+
+random Integer whosTurn(Timestep t){
+       if t == @0 then = 0
+        else if (qstate(Prev(t)) == transact) then = nextPlayer(whosTurn(Prev(t)))
+        else = whosTurn(Prev(t))
+};
+
+random QState qstate(Timestep t)  {
+       	       if t == @0 then = start
+	       else if (exists Integer n (n<NumPlayers 
+	       	    & capital(n, Prev(t)) < 5 ))
+		  then = out_of_capital
+	       else if (qstate(Prev(t)) == start) then = move
+	       else if (qstate(Prev(t)) == move) then = transact
+	       else if (qstate(Prev(t)) == transact) then = move
+};
+
+random Integer dice_value(Timestep t) ~ UniformInt(1,12);
+
+random Integer position(Integer n, Timestep t){
+       if t == @0 then = 0
+       else if (qstate(t) == move & whosTurn(t) == n) then = ((position(n, Prev(t))+ dice_value(t)) % NumSquares)
+       else = position(n, Prev(t))
+};
+
+
+random Boolean rentPaidBy(Integer n1, Timestep t){
+       if (exists Integer n2 (n2 < NumPlayers & rentPaymentRequired(n1, n2, t)))
+       	  then = true
+	  else = false
+};
+
+
+
+random Boolean rentPaymentRequired(Integer n1, Integer n2, Timestep t){
+       if (n2!=NumPlayers & qstate(t) == transact & whosTurn(t) == n1 & 
+       	  owner(position(n1, t), t) == n2 & (n1 != n2)) then = true
+	else = false
+};
+
+
+random Integer rent(Integer sq, Timestep t){
+  if ownsAllOfColor(owner(sq, t), propertyColor(sq), t)
+     then = 10
+  else = 5
+};
+
+
+random Integer cost(Integer sq, Timestep t) = 10;
+
+
+random Integer capital(Integer n1, Timestep t){
+       if t == @0 then = 505
+       else if qstate(t) == transact & whosTurn(t) == n1 
+       & exists Integer n2 (n2 < NumPlayers & rentPaymentRequired(n1, n2, t)) 
+       	  then = capital(n1, Prev(t)) - rent(position(n1, t), t)
+       else if qstate(t) == transact & exists Integer n2 (whosTurn(t) == n2 
+       & rentPaymentRequired(n2, n1, t))
+       	  then = capital(n1, Prev(t)) + rent(position(n1, t), t)
+       else if (qstate(Prev(t)) == transact & whosTurn(Prev(t)) == n1 
+       & executeBuy(n1, Prev(t))) 
+          then = capital(n1, Prev(t)) - cost(position(n1, Prev(t)), Prev(t))
+       else = capital(n1, Prev(t)) 
+};
+
+
+random Integer owner(Integer n1, Timestep t){
+       if t == @0 then = NumPlayers
+       else if qstate(Prev(t)) == transact & exists Integer player (player < NumPlayers & whosTurn(Prev(t)) == player & executeBuy(player, Prev(t)) & position(player, Prev(t)) == n1) then = whosTurn(Prev(t))
+       else = owner(n1, Prev(t))
+};
+ 
+
+random Boolean buyDecision(Integer n1, Timestep t) {
+   if (n1 == Pred(NumPlayers) & highBuyer) then ~ Bernoulli(0.75)
+   else if (n1 == Pred(NumPlayers)) then ~ Bernoulli(0.25)
+//For decisions:
+  else if n1 == 0 then = SelfPurchase(t)
+   else ~ Bernoulli(selfPurchaseProb)
+};
+
+//For decisions:
+decision Boolean SelfPurchase(Timestep t);
+decision Boolean donothing();
+
+random Boolean executeBuy(Integer n1, Timestep t){
+       if owner(position(n1, t), t) == NumPlayers & qstate(t) == transact
+       	  & whosTurn(t) == n1 & 
+	  capital(n1, t)>cost(position(n1, t), t) & buyDecision(n1, t) 
+	    then = true
+	  else = false
+};
+
+
+random Boolean observable(observation_rent(Timestep t)){
+  if (true) then = true
+};
+
+random Integer observation_rent(Timestep t){
+  if (t==@0) then
+    = 0
+  else if (rentPaidBy (0, t)) then
+    = observation_rent(Prev(t)) + 1
+  else
+    = observation_rent(Prev(t))
+};
+
+
+////For debugging and querying
+random Boolean purchased(Integer player, Timestep t){
+       if (qstate(t) == transact & whosTurn(t) == player
+       & executeBuy(player, t)) then = true
+       else = false 
+};
+
+nonrandom Timestep maxtime = @30;
+
+query capital(0, maxtime); 
+query capital(1,maxtime);
+query #{Integer sq: sq<NumSquares & owner(sq, maxtime)==0};
+query #{Integer sq: sq<NumSquares & owner(sq, maxtime)==1};
+
+query #{Timestep t: t<=maxtime & rentPaidBy(0, t)};
+query #{Timestep t: t<=maxtime & rentPaidBy(1, t)};

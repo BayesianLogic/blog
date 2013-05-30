@@ -9,7 +9,7 @@ nonrandom Timestep MaxTime = @500; // Number of timesteps for which to simulate
 decision Boolean chosen_Buy(Timestep t);
 decision Boolean donothing(Timestep t);
 
-random Boolean observable(rentDue(Integer p1, Integer p2, Timestep t)){
+random Boolean observable(applied_payRent(Integer p1, Integer p2, Timestep t)){
   if (true) then
     = true
 };
@@ -107,10 +107,8 @@ random Boolean applied_purchase(Integer player, Integer propertyNum, Timestep t)
       propertyOwner(propertyNum, t) == numPlayers & (propertyColor(propertyNum) != c0 )) then
       if (player == (numPlayers - 1) ) then
         ~ Bernoulli(lastPlayerStrat)
-      else if (chosen_Buy(t))then
-        = true
-      else    
-        ~ Bernoulli(otherPlayersStrat)
+      else 
+        = chosen_Buy(t)
   else 
   	   = false
 };

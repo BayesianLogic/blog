@@ -24,6 +24,32 @@ public class UBT {
 	public static Double specialTimingData6 = 0.0;//timing for answering in each bucket
 	public static FileCommunicator dataOutput = new FileCommunicator("randomstuff//UBTData.log");
 	//public static FileCommunicator dataOutput2 = new FileCommunicator("tiger2Data.txt");
+	public static double answerTime=0;
+	public static double emptyCacheTime=0;
+	public static double takeWithPartitionTime=0;
+	public static double resampleTime=0;
+	public static double repartitionTime=0;
+	public static double resamplePartitionAndParticlesTime=0;
+	public static void outputRunTime(){
+		timingProfile.printInput("answerTime: "+answerTime);
+		timingProfile.printInput("emptyCacheTime: "+emptyCacheTime);
+		timingProfile.printInput("takeWithPartitionTime: "+takeWithPartitionTime);
+		timingProfile.printInput("resampleTime: "+resampleTime);
+		timingProfile.printInput("repartitionTime: "+repartitionTime);
+		timingProfile.printInput("resamplePartitionAndParticlesTime: "+resamplePartitionAndParticlesTime);
+		answerTime = 0;
+		emptyCacheTime = 0;
+		takeWithPartitionTime = 0;
+		resampleTime = 0;
+		repartitionTime = 0;
+		resamplePartitionAndParticlesTime = 0;
+	}
+	public static FileCommunicator timingProfile = new FileCommunicator("randomstuff//timingProfile.log");
+	
+	
+	
+	
+	
 	public static class Stopwatch { 
 
 	    private long start;

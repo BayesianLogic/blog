@@ -52,6 +52,7 @@ import blog.common.Util;
 import blog.engine.InferenceEngine;
 import blog.engine.Particle;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
+import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -234,6 +235,8 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 	}
 	
 	public void answer(Collection queries) {
+		UBT.Stopwatch answerTimer = new UBT.Stopwatch();
+		answerTimer.startTimer();
 		//System.err.println("partitionedparticlefilter.answer() should not have been called");
 		//System.exit(1);
 		if (particles == null)
@@ -241,13 +244,18 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 		for (TimedParticle p : particles) {
 			p.answer(queries);
 			p.advanceTimestep();
-			
+			p.uninstantiatePreviousTimeslices();
+			p.removeAllDerivedVars();
 		}
+		UBT.answerTime += answerTimer.elapsedTime();
 	}
 	
 	public void emptyCache(){
+		UBT.Stopwatch emptyCacheTimer = new UBT.Stopwatch();
+		emptyCacheTimer.startTimer();
 		for (TimedParticle p : particles)
 			((AbstractPartialWorld)p.getLatestWorld()).emptyChanged();
+		UBT.emptyCacheTime += emptyCacheTimer.elapsedTime();
 	}
 	
 	/**
@@ -266,6 +274,9 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 
 
 	public void takeWithPartition(Evidence evidence, Integer osIndex) {
+		UBT.Stopwatch takeWithPartitionTimer = new UBT.Stopwatch();
+		takeWithPartitionTimer.startTimer();
+
 		List<TimedParticle> particles = partitions.get(osIndex);
 		
 		if (particles == null){
@@ -295,6 +306,7 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 				throw new IllegalArgumentException("All particles have zero weight");
 			needsToBeResampledBeforeFurtherSampling = true;
 		}
+		UBT.takeWithPartitionTime += takeWithPartitionTimer.elapsedTime();
 	}
 
 	
@@ -302,6 +314,9 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 	 * updated particles
 	 */
 	public void resample() {
+		UBT.Stopwatch resampleTimer = new UBT.Stopwatch();
+		resampleTimer.startTimer();
+		
 		for (Integer osIndex : partitions.keySet()){
 			partitions.get(osIndex).clear();
 		}
@@ -335,6 +350,7 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 			p.setWeight(1);
 		particles = newParticles;
 		//repartition(); no longer repartition here.
+		UBT.resampleTime += resampleTimer.elapsedTime();
 	}
 	
 	
@@ -342,6 +358,9 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 	 * updates partitions
 	 */
 	public void repartition(){
+		UBT.Stopwatch repartitionTimer = new UBT.Stopwatch();
+		repartitionTimer.startTimer();
+		
 		Map<Integer, List<TimedParticle>> newPartitions = new HashMap<Integer, List<TimedParticle>>();
 		for (Integer osIndex : partitions.keySet()){
 			ObservabilitySignature os = ObservabilitySignature.getOSbyIndex(osIndex);
@@ -362,6 +381,8 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 			}
 		}
 		partitions = newPartitions;
+		UBT.repartitionTime+=repartitionTimer.elapsedTime();
+		
 	}
 	
 	/**
@@ -372,6 +393,8 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 	 * parallels number of particles in a particle filter
 	 */
 	public void resamplePartitionAndParticles(int numPartitionsSampled) {
+		UBT.Stopwatch resamplePartitionAndParticlesTimer = new UBT.Stopwatch();
+		resamplePartitionAndParticlesTimer.startTimer();
 		//particles.clear();
 		double[] weights = new double[partitions.size()];
 		Integer[] osIndexes = new Integer[partitions.size()];
@@ -413,12 +436,13 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 			int osIndex = osIndexes[selection];
 			p.take(ev);
 			p.setOS(osIndex);
-			p.uninstantiatePreviousTimeslices();
-			p.removeAllDerivedVars();
+			//p.uninstantiatePreviousTimeslices();
+			//p.removeAllDerivedVars();
 		}
 		partitions.put(osIndexes[selection], new ArrayList<TimedParticle>());
 		//partitions = newPartitions;
 		resample();
+		UBT.resamplePartitionAndParticlesTime += resamplePartitionAndParticlesTimer.elapsedTime();
 	}
 	
 	public Map<Integer, List<TimedParticle>> getPartitions(){

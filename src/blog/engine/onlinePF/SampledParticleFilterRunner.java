@@ -204,7 +204,7 @@ public class SampledParticleFilterRunner{
 			
 			i++;
 		}
-		
+		UBT.outputRunTime();
 		HashSet<AbstractPartialWorld> h = new HashSet<AbstractPartialWorld>();;
 		for (TimedParticle p : particleFilter.particles){
 			h.add((AbstractPartialWorld) p.curWorld);
@@ -244,7 +244,12 @@ public class SampledParticleFilterRunner{
 
 		//System.out.println(UBT.runTimeTimer.elapsedTime());
 		//UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
-		UBT.dataOutput.printInput("" + UBT.runTimeTimer.elapsedTime());
+		UBT.dataOutput.printInput("Time for timestep "+ evidenceGenerator.lastTimeStep + " is " + UBT.runTimeTimer.elapsedTime());
+		UBT.runTimeTimer.startTimer();
+		if (evidenceGenerator.lastTimeStep == 100){
+			System.out.println(((Particle)Util.getFirst(particleFilter.particles)).getLatestWorld().basicVarToValueMap().size());
+			System.exit(0);
+		}
 	}
 	
 	public String printQueryString(ArgSpecQuery q) {
@@ -317,40 +322,6 @@ public class SampledParticleFilterRunner{
 	 */
 	public UnaryProcedure afterMove;
 
-	public static void main(String[] args) throws FileNotFoundException {
-		Properties properties = new Properties();
-		properties.setProperty("numParticles", "1000");
-		properties.setProperty("useDecayedMCMC", "false");
-		properties.setProperty("numMoves", "1");
-		boolean verbose = false;
-		boolean randomize = false;
-		
-		String modelFile = "ex_inprog/logistics/logistics_choice.mblog";
-		Collection linkStrings = Util.list();
-		Collection queryStrings = Util.list("value(t)","#{Box b: BoxIn(b, c3, t)==true}","#{Box b: BoxIn(b, c1, t)==true}", "#{Box b: applied_Load(b, t1, t)==true}");
-
-		Util.initRandom(randomize);
-		Util.setVerbose(verbose);
-		Model model = new Model();
-		Evidence evidence = new Evidence();
-		ArrayList<Query> queries = new ArrayList<Query>();
-		ArrayList<Object> readersAndOrigins = new ArrayList<Object>();
-		readersAndOrigins.add(new Object[] {new FileReader(modelFile), "blank"});
-		
-
-
-		
-		Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(), verbose, false);
-		SampledParticleFilterRunner a = new SampledParticleFilterRunner(model,
-				linkStrings, queryStrings, properties, null);
-		/*
-		a.eviCommunicator=new BufferedReader(new InputStreamReader(System.in));
-		FileInputStream evidenceIn = new FileInputStream("ex_inprog/logistics/logistics_choice.evidence");
-		a.setUpStreams(evidenceIn, System.out);
-		a.run();
-		*/
-		
-	}
 
 	
 
