@@ -91,8 +91,8 @@ random Boolean rentPaymentRequired(Integer n1, Integer n2, Timestep t){
 
 random Integer rent(Integer sq, Timestep t){
   if ownsAllOfColor(owner(sq, t), propertyColor(sq), t)
-     then = 10
-  else = 5
+     then = 16
+  else = 6
 };
 
 
@@ -153,6 +153,19 @@ random Integer observation_rent(Timestep t){
     = observation_rent(Prev(t)) + 1
   else
     = observation_rent(Prev(t))
+};
+
+random Boolean observable(observation_rent_opponent(Timestep t)){
+  if (true) then = true
+};
+
+random Integer observation_rent_opponent(Timestep t){
+  if (t==@0) then
+    = 0
+  else if (rentPaidBy (0, t)) then
+    = observation_rent_opponent(Prev(t)) + 1
+  else
+    = observation_rent_opponent(Prev(t))
 };
 
 

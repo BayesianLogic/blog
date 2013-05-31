@@ -1,6 +1,6 @@
 query capital(0, t);
 query observation_rent(t);
-
+query observation_rent_opponent(t);
 
 query {Color c: true == ownsAllOfColor(0, c, t)};
 query {Color c: true == ownsAllOfColor(1, c, t)};
