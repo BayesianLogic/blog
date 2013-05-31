@@ -248,7 +248,7 @@ public class SampledParticleFilterRunner{
 		UBT.dataOutput.printInput("Time for timestep "+ evidenceGenerator.lastTimeStep + " is " + UBT.runTimeTimer.elapsedTime());
 		UBT.runTimeTimer.startTimer();
                 UBT.worldOutput.printInput("Sample world "+ Util.getFirst(particleFilter.particles).toString());
-		if (evidenceGenerator.lastTimeStep == UBT.numtstep){
+		if (evidenceGenerator.lastTimeStep == numtstep){
 			System.out.println(((Particle)Util.getFirst(particleFilter.particles)).getLatestWorld().basicVarToValueMap().size());
 			System.exit(0);
 		}
@@ -323,9 +323,7 @@ public class SampledParticleFilterRunner{
 	 * to obtain evidence.
 	 */
 	public UnaryProcedure afterMove;
-
-
-	
+		
 
 	/** Runs until there are no evidence or queries anymore. */
 	public void run() {
@@ -344,6 +342,6 @@ public class SampledParticleFilterRunner{
 	
 
 
-	
+	public int numtstep;
 	
 }
