@@ -200,7 +200,7 @@ public class SampledParticleFilterRunner{
 			//query.printResults(System.out);
 			
 			if (i==0)
-				System.err.println(averageQueryResult(query));
+				UBT.valueOutput.printInput(""+averageQueryResult(query));//System.err.println(averageQueryResult(query));
 			
 			i++;
 		}
@@ -209,6 +209,7 @@ public class SampledParticleFilterRunner{
 		for (TimedParticle p : particleFilter.particles){
 			h.add((AbstractPartialWorld) p.curWorld);
 		}
+                
 		
                 
 		//System.out.println(h.size());
@@ -218,7 +219,7 @@ public class SampledParticleFilterRunner{
 		
 		for (Integer osIndex: particleFilter.getPartitions().keySet()){
 			particleFilter.answerWithPartition(queries, osIndex);
-			System.out.println("SIGNATURE: {"+ ObservabilitySignature.getOSbyIndex(osIndex).toString()+"} ("+((List)particleFilter.partitions.get(osIndex)).size()+")");
+			//UBT.osOutput.printInput("Timestep "+ evidenceGenerator.lastTimeStep + " SIGNATURE: {"+ ObservabilitySignature.getOSbyIndex(osIndex).toString()+"} ("+((List)particleFilter.partitions.get(osIndex)).size()+")");
 			for (Iterator it = queries.iterator(); it.hasNext();) {
 				ArgSpecQuery query = (ArgSpecQuery) it.next();
 				//System.out.println("PF estimate of " + query + ":");
@@ -246,7 +247,8 @@ public class SampledParticleFilterRunner{
 		//UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
 		UBT.dataOutput.printInput("Time for timestep "+ evidenceGenerator.lastTimeStep + " is " + UBT.runTimeTimer.elapsedTime());
 		UBT.runTimeTimer.startTimer();
-		if (evidenceGenerator.lastTimeStep == 100){
+                UBT.worldOutput.printInput("Sample world "+ Util.getFirst(particleFilter.particles).toString());
+		if (evidenceGenerator.lastTimeStep == UBT.numtstep){
 			System.out.println(((Particle)Util.getFirst(particleFilter.particles)).getLatestWorld().basicVarToValueMap().size());
 			System.exit(0);
 		}

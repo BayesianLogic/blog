@@ -23,6 +23,10 @@ public class UBT {
 	public static Double specialTimingData5 = 0.0;//timing for copy/answer with particles
 	public static Double specialTimingData6 = 0.0;//timing for answering in each bucket
 	public static FileCommunicator dataOutput = new FileCommunicator("randomstuff//UBTData.log");
+        public static FileCommunicator osOutput = new FileCommunicator("randomstuff//OS.log");
+        public static FileCommunicator worldOutput;// = new FileCommunicator("randomstuff//World.log");
+        public static FileCommunicator valueOutput;// = new FileCommunicator("randomstuff//World.log");
+        public static int numtstep;
 	//public static FileCommunicator dataOutput2 = new FileCommunicator("tiger2Data.txt");
 	public static double answerTime=0;
 	public static double emptyCacheTime=0;
