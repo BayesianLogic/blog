@@ -125,7 +125,7 @@ random Boolean buyDecision(Integer n1, Timestep t) {
    if (n1 == Pred(NumPlayers) & highBuyer) then ~ Bernoulli(0.75)
    else if (n1 == Pred(NumPlayers)) then ~ Bernoulli(0.25)
 //For decisions:
-  else if n1 == 0 then = SelfPurchase(t)
+  else if n1 == 0 then = SelfPurchase(Prev(t))
    else ~ Bernoulli(selfPurchaseProb)
 };
 
@@ -163,12 +163,13 @@ random Boolean purchased(Integer player, Timestep t){
        else = false 
 };
 
-nonrandom Timestep maxtime = @30;
+nonrandom Timestep maxtime = @1000;
 
-query capital(0, maxtime); 
-query capital(1,maxtime);
-query #{Integer sq: sq<NumSquares & owner(sq, maxtime)==0};
-query #{Integer sq: sq<NumSquares & owner(sq, maxtime)==1};
+query observation_rent(maxtime);
+//query capital(0, maxtime); 
+//query capital(1,maxtime);
+//query #{Integer sq: sq<NumSquares & owner(sq, maxtime)==0};
+//query #{Integer sq: sq<NumSquares & owner(sq, maxtime)==1};
 
-query #{Timestep t: t<=maxtime & rentPaidBy(0, t)};
-query #{Timestep t: t<=maxtime & rentPaidBy(1, t)};
+//query #{Timestep t: t<=maxtime & rentPaidBy(0, t)};
+//query #{Timestep t: t<=maxtime & rentPaidBy(1, t)};

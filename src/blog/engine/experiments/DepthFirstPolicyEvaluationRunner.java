@@ -7,9 +7,9 @@ public class DepthFirstPolicyEvaluationRunner {
 	public static void main (String[] args){
                 
 		SUU suu = new SUU();
-		suu.setNumParticle(1000);
-                if (args.length == 0){
-		SampledParticleFilterRunner runner = suu.makeRunner("ex_inprog//logistics//policies//monopoly_markov.mblog", "ex_inprog//logistics//policies//donothingpolicy");
+		suu.setNumParticle(1);
+		SampledParticleFilterRunner runner = suu.makeRunner("ex_inprog//logistics//policies//monopoly_markov.mblog", "ex_inprog//logistics//policies//donothingpolicy", "ex_inprog//logistics//policies//forced_query");
+		//SampledParticleFilterRunner runner = suu.makeRunner("ex_inprog//logistics//policies//monopoly_markov.mblog", "ex_inprog//logistics//policies//donothingpolicy");
 		//SampledParticleFilterRunner runner = suu.makeRunner("ex_inprog//logistics//policies//monopoly_color_wp.mblog", "ex_inprog//logistics//policies//monopoly_policy");
 		runner.run();
                 }
