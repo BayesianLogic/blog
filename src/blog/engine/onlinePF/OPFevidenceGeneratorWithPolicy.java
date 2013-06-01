@@ -22,19 +22,23 @@ public class OPFevidenceGeneratorWithPolicy extends OPFevidenceGenerator{
 	
 	@Override
 	public void updateObservationQuery(){
-		String s = pm.getQueries(lastTimeStep);
-		in.printInput(s);
-		in.printInput("");
+		if (!this.userInput){
+			String s = pm.getQueries(lastTimeStep);
+			in.printInput(s);
+			in.printInput("");
+		}
 		super.updateObservationQuery();
 	}
 	
 	@Override
 	public void updateDecision(){
-		String qr = resultCommunicator.readInput();
-		QueryResult q = new QueryResult(model, qr, lastTimeStep);
-		String decision = pm.getDecisions(q);
-		in.printInput(decision);
-		in.printInput("");
+		if (!this.userInput){
+			String qr = resultCommunicator.readInput();
+			QueryResult q = new QueryResult(model, qr, lastTimeStep);
+			String decision = pm.getDecisions(q);
+			in.printInput(decision);
+			in.printInput("");
+		}
 		super.updateDecision();
 	}
 

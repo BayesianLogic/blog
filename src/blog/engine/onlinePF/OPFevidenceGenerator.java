@@ -2,6 +2,7 @@ package blog.engine.onlinePF;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import blog.semant.Semant;
 
 public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 
-	public static boolean noInput = false;
+	public static boolean userInput = false;
 	public OPFevidenceGenerator(Model model, Collection queryStrings, Communicator in) {
 		super(model, Util.list(), queryStrings);
 		this.in = in;
@@ -162,18 +163,33 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 	
 	private void getInput (Evidence ev, List<Query> q){
 		
-		if (noInput)
-			return;
+
 		
 		String eviquerystr = "";
 		String accstr= "";
-
-		while (true){
-			eviquerystr = in.readInput();
-			if (eviquerystr.trim().equals(""))
-				break;
-			else
-				accstr+=eviquerystr;
+		if (userInput){
+			while (true){
+				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+				try {
+					eviquerystr = br.readLine();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (eviquerystr.trim().equals(""))
+					break;
+				else
+					accstr+=eviquerystr;
+			}
+		}
+		else{
+			while (true){
+				eviquerystr = in.readInput();
+				if (eviquerystr.trim().equals(""))
+					break;
+				else
+					accstr+=eviquerystr;
+			}
 		}
 		
 

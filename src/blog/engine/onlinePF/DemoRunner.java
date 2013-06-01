@@ -35,7 +35,7 @@ public class DemoRunner {
         setModel("ex_inprog//logistics//monopoly_color.mblog");
         PolicyModel pm = PolicyModel.emptyPolicy();//PolicyModel.policyFromString(monopolyPolicyFile);
         ParticleFilterRunnerOnlinePartitioned.autoGenerateObs = false;
-        OPFevidenceGenerator.noInput= true;
+        //OPFevidenceGenerator.noInput= true;
 
      
             ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);

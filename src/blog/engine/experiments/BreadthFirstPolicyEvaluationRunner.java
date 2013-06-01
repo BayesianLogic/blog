@@ -7,10 +7,11 @@ import blog.common.cmdline.AbstractOption;
 import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.onlinePF.FileCommunicator;
+import blog.engine.onlinePF.ParticleFilterRunnerOnlinePartitioned;
 import blog.engine.onlinePF.SampledParticleFilterRunner;
 import blog.engine.onlinePF.inverseBucket.UBT;
 
-public class DepthFirstPolicyEvaluationRunner {
+public class BreadthFirstPolicyEvaluationRunner {
 	public static HashMap<String, AbstractOption> runtimeOptions = new HashMap<String, AbstractOption>();
 
 	public static void main(String[] args) {
@@ -38,32 +39,22 @@ public class DepthFirstPolicyEvaluationRunner {
 				"Name that identifies the output files");
 		runtimeOptions.put("logname", logName);
 		List filenames = blog.common.cmdline.Parser.parse(args);
+		
 		suu.setNumParticle(((IntOption) runtimeOptions.get("numparticles")).getValue());
-
-		SampledParticleFilterRunner runner = suu.makeSampledRunner(
-				filenames,
-				((StringOption) runtimeOptions.get("policyfile")).getValue(),
-				((StringOption) runtimeOptions.get("queryfile")).getValue());
-		runner.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
 		UBT.valueOutput = new FileCommunicator("randomstuff//log" + (((StringOption) runtimeOptions.get("logname")).getValue())
 				+ ".log");
 		UBT.worldOutput = new FileCommunicator("randomstuff//world" + (((StringOption) runtimeOptions.get("logname")).getValue())
 				+ ".log");
 		UBT.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
-		// SampledParticleFilterRunner runner =
-		// suu.makeRunner("ex_inprog//logistics//policies//monopoly_markov.mblog",
-		// "ex_inprog//logistics//policies//donothingpolicy");
-		// SampledParticleFilterRunner runner =
-		// suu.makeRunner("ex_inprog//logistics//policies//monopoly_color_wp.mblog",
-		// "ex_inprog//logistics//policies//monopoly_policy");
+
+		ParticleFilterRunnerOnlinePartitioned runner = suu.makeBFRunner(
+				filenames,
+				((StringOption) runtimeOptions.get("policyfile")).getValue(),
+				((StringOption) runtimeOptions.get("queryfile")).getValue());
+		runner.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
+
 		runner.run();
 
 	}
 
-	/*
-	 * public static void main (String[] args){ SUU suu = new SUU();
-	 * suu.setNumParticle(100); SampledParticleFilterRunner runner =
-	 * suu.makeRunner("ex_inprog//logistics//policies//test.mblog",
-	 * "ex_inprog//logistics//policies//test_policy"); runner.run(); }
-	 */
 }

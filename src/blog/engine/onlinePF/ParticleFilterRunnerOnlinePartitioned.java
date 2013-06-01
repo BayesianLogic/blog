@@ -35,6 +35,7 @@ import blog.world.PartialWorld;
  * 
  */
 public class ParticleFilterRunnerOnlinePartitioned{
+	public static int numtstep;
 	protected Communicator eviCommunicator; //evidence is read from here
 	protected Communicator queryResultCommunicator; //query is read from here
 	/** The associated model. */
@@ -204,15 +205,16 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			//query.printResults(System.out);
 			
 			if (i==0)
-				System.err.println("amount due is: " + averageQueryResult(query));
+				query.printResults(UBT.valueOutput.p);//UBT.valueOutput.printInput(""+averageQueryResult(query));//System.err.println(averageQueryResult(query));
 			
 			i++;
 		}
-		
+		UBT.outputRunTime();
 		HashSet<AbstractPartialWorld> h = new HashSet<AbstractPartialWorld>();;
 		for (TimedParticle p : particleFilter.particles){
 			h.add((AbstractPartialWorld) p.curWorld);
 		}
+                
 		
                 
 		//System.out.println(h.size());
@@ -222,7 +224,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		
 		for (Integer osIndex: particleFilter.getPartitions().keySet()){
 			particleFilter.answerWithPartition(queries, osIndex);
-			System.out.println("SIGNATURE: {"+ ObservabilitySignature.getOSbyIndex(osIndex).toString()+"} ("+particleFilter.partitions.get(osIndex).size()+")");
+			//UBT.osOutput.printInput("Timestep "+ evidenceGenerator.lastTimeStep + " SIGNATURE: {"+ ObservabilitySignature.getOSbyIndex(osIndex).toString()+"} ("+((List)particleFilter.partitions.get(osIndex)).size()+")");
 			for (Iterator it = queries.iterator(); it.hasNext();) {
 				ArgSpecQuery query = (ArgSpecQuery) it.next();
 				//System.out.println("PF estimate of " + query + ":");
@@ -248,10 +250,13 @@ public class ParticleFilterRunnerOnlinePartitioned{
 
 		//System.out.println(UBT.runTimeTimer.elapsedTime());
 		//UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
-		    UBT.dataOutput.printInput("" + UBT.runTimeTimer.elapsedTime());
-		    //if (evidenceGenerator.lastTimeStep==12){
-		    //  throw new Error("reached 12");
-		    //}
+		UBT.dataOutput.printInput("Time for timestep "+ evidenceGenerator.lastTimeStep + " is " + UBT.runTimeTimer.elapsedTime());
+		UBT.runTimeTimer.startTimer();
+                UBT.worldOutput.printInput("Sample world "+ Util.getFirst(particleFilter.particles).toString());
+		if (evidenceGenerator.lastTimeStep == numtstep){
+			System.out.println(((Particle)Util.getFirst(particleFilter.particles)).getLatestWorld().basicVarToValueMap().size());
+			System.exit(0);
+		}
 	}
 	
 	public String printQueryString(ArgSpecQuery q) {

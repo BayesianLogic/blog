@@ -31,6 +31,7 @@ import blog.world.PartialWorld;
  * 
  */
 public class SampledParticleFilterRunner{
+	public static boolean vanilla = false;
 	protected Communicator eviCommunicator; //evidence is read from here
 	protected Communicator queryResultCommunicator; //query is read from here
 	/** The associated model. */
@@ -134,10 +135,15 @@ public class SampledParticleFilterRunner{
 		particleFilter.emptyCache();
 		particleFilter.take(evidence);
 		particleFilter.answer(queries);
-		//particleFilter.resample();
-		particleFilter.repartition(); //IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!
-		particleFilter.resamplePartitionAndParticles(1);
-			
+		if (!vanilla){
+			//particleFilter.resample();
+			particleFilter.repartition(); //IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!
+			particleFilter.resamplePartitionAndParticles(1);
+		}
+		else{
+			particleFilter.resample();
+		}
+		
 	}
 	
 	//decide applied_Load(argload(@0), t1, @0)=true;
@@ -200,7 +206,7 @@ public class SampledParticleFilterRunner{
 			//query.printResults(System.out);
 			
 			if (i==0)
-				UBT.valueOutput.printInput(""+averageQueryResult(query));//System.err.println(averageQueryResult(query));
+				query.printResults(UBT.valueOutput.p);//UBT.valueOutput.printInput(""+averageQueryResult(query));//System.err.println(averageQueryResult(query));
 			
 			i++;
 		}

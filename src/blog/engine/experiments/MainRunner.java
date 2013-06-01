@@ -1,16 +1,19 @@
 package blog.engine.experiments;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import blog.common.cmdline.AbstractOption;
+import blog.common.cmdline.BooleanOption;
 import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.onlinePF.FileCommunicator;
+import blog.engine.onlinePF.OPFevidenceGenerator;
 import blog.engine.onlinePF.SampledParticleFilterRunner;
 import blog.engine.onlinePF.inverseBucket.UBT;
 
-public class DepthFirstPolicyEvaluationRunner {
+public class MainRunner {
 	public static HashMap<String, AbstractOption> runtimeOptions = new HashMap<String, AbstractOption>();
 
 	public static void main(String[] args) {
@@ -20,6 +23,13 @@ public class DepthFirstPolicyEvaluationRunner {
 				.setUsageLine("Usage: runblog <file1> ... <fileN>");
 
 		SUU suu = new SUU();
+		StringOption mode = new StringOption("o", "mode",
+				"policyeval",
+				"offline, online or policyeval");
+		runtimeOptions.put("mode", mode);
+		BooleanOption dropHistory = new BooleanOption("d", "drophistory", false,
+				"Whether history should be dropped");
+		runtimeOptions.put("drop history", dropHistory);
 		IntOption numParticles = new IntOption("n", "num_particles", 1000,
 				"Use n particles");
 		runtimeOptions.put("numparticles", numParticles);
@@ -30,16 +40,52 @@ public class DepthFirstPolicyEvaluationRunner {
 				"ex_inprog//logistics//policies//donothingpolicy",
 				"Path of policy file <s>");
 		runtimeOptions.put("policyfile", policyFile);
-		StringOption hiddenQueryFile = new StringOption("q", "hidden_query_file",
+		BooleanOption breadthFirst = new BooleanOption("b", "breadthfirst", false,
+				"Breadth first policy eval?");
+		runtimeOptions.put("breadthFirst", breadthFirst);
+		StringOption queryFile = new StringOption("q", "query_file",
 				"ex_inprog//logistics//policies//forced_query",
-				"Path of hidden query file <s>");
-		runtimeOptions.put("queryfile", hiddenQueryFile);
+				"Path of query file <s>");
+		runtimeOptions.put("queryfile", queryFile);
 		StringOption logName = new StringOption("s", "logName", "0",
 				"Name that identifies the output files");
 		runtimeOptions.put("logname", logName);
-		List filenames = blog.common.cmdline.Parser.parse(args);
+		BooleanOption inverseBucket = new BooleanOption("i", "inverseBucket", false,
+				"Whether history should be dropped");
+		runtimeOptions.put("inverseBucket", inverseBucket);
+		BooleanOption userInput = new BooleanOption("v", "userInput", false,
+				"Whether history should be dropped");
+		runtimeOptions.put("userInput", userInput);
+		List<String> filenames = blog.common.cmdline.Parser.parse(args);
+		
 		suu.setNumParticle(((IntOption) runtimeOptions.get("numparticles")).getValue());
-
+		UBT.dropHistory = dropHistory.getValue();
+		
+		if(((StringOption) runtimeOptions.get("mode")).getValue().equals("offline")){
+			filenames.add("-e");
+			filenames.add("blog.engine.ParticleFilter");
+			filenames.add("-n");
+			filenames.add("" + ((IntOption) runtimeOptions.get("numparticles")).getValue());
+			filenames.add("-r");
+			String[] arguments = Arrays.copyOf((filenames.toArray()), (filenames.toArray()).length, String[].class);
+			blog.Main.main(arguments);
+			System.exit(0);
+		}
+		else if(((StringOption) runtimeOptions.get("mode")).getValue().equals("policyeval")){
+			if (breadthFirst.getValue())
+				DepthFirstPolicyEvaluationRunner.main(args);
+			else {
+				if (!inverseBucket.getValue()){
+					BreadthFirstPolicyEvaluationRunner.main(args);
+				}
+			}
+			System.exit(0);
+		}
+		else if(((StringOption) runtimeOptions.get("mode")).getValue().equals("online")){
+			SampledParticleFilterRunner.vanilla = true;
+			OPFevidenceGenerator.userInput = userInput.getValue();
+			DepthFirstPolicyEvaluationRunner.main(args);
+		}
 		SampledParticleFilterRunner runner = suu.makeSampledRunner(
 				filenames,
 				((StringOption) runtimeOptions.get("policyfile")).getValue(),

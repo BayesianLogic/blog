@@ -51,6 +51,7 @@ import blog.common.Util;
 import blog.engine.InferenceEngine;
 import blog.engine.Particle;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
+import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -237,7 +238,10 @@ public class PartitionedParticleFilter extends InferenceEngine {
 		for (TimedParticle p : particles) {
 			p.answer(queries);
 			p.advanceTimestep();
-			
+			if (UBT.dropHistory){
+				p.uninstantiatePreviousTimeslices();
+				p.removeAllDerivedVars();
+			}
 		}
 	}
 	public void emptyCache(){

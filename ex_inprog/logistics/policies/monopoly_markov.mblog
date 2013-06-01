@@ -176,9 +176,10 @@ random Boolean purchased(Integer player, Timestep t){
        else = false 
 };
 
-nonrandom Timestep maxtime = @1000;
+nonrandom Timestep maxtime = @100;
 
 query observation_rent(maxtime);
+query capital(0, maxtime);
 //query capital(0, maxtime); 
 //query capital(1,maxtime);
 //query #{Integer sq: sq<NumSquares & owner(sq, maxtime)==0};
