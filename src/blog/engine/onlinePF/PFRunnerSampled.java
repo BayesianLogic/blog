@@ -30,7 +30,7 @@ import blog.world.PartialWorld;
  * @since Jan 03 2013
  * 
  */
-public class SampledParticleFilterRunner{
+public class PFRunnerSampled{
 	public static boolean vanilla = false;
 	protected Communicator eviCommunicator; //evidence is read from here
 	protected Communicator queryResultCommunicator; //query is read from here
@@ -41,7 +41,7 @@ public class SampledParticleFilterRunner{
 	public SampledPartitionedParticleFilter particleFilter;
 
 	
-	public SampledParticleFilterRunner(Model model, Collection linkStrings,
+	public PFRunnerSampled(Model model, Collection linkStrings,
 			Collection queryStrings, Properties particleFilterProperties, PolicyModel pm) {
 		this.model = model;
 		particleFilter = new SampledPartitionedParticleFilter(model, particleFilterProperties);
@@ -59,8 +59,6 @@ public class SampledParticleFilterRunner{
 			queryStrings.add(((ObservableRandomFunction) orf).queryString);
 		}
 		*/
-		//evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
-		
 		evidenceGenerator = new OPFevidenceGeneratorWithPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
 	}
 	
@@ -76,13 +74,6 @@ public class SampledParticleFilterRunner{
 		evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
 
 	}*/
-	
-	public Communicator getEviCommunicator (){
-		return eviCommunicator;
-	}
-	public Communicator getQueryCommunicator (){
-		return queryResultCommunicator;
-	}
 	private UnaryProcedure afterMoveForward = new UnaryProcedure() {
 		public void evaluate(Object queriesObj) {
 			afterMove.evaluate(queriesObj);
@@ -138,7 +129,7 @@ public class SampledParticleFilterRunner{
 		if (!vanilla){
 			//particleFilter.resample();
 			particleFilter.repartition(); //IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!
-			particleFilter.resamplePartitionAndParticles(1);
+			particleFilter.samplePartition(1);
 		}
 		else{
 			particleFilter.resample();
@@ -207,6 +198,10 @@ public class SampledParticleFilterRunner{
 			
 			if (i==0)
 				query.printResults(UBT.valueOutput.p);//UBT.valueOutput.printInput(""+averageQueryResult(query));//System.err.println(averageQueryResult(query));
+			if (i==1)
+				query.printResults(UBT.valueOutput2.p);//UBT.valueOutput.printInput(""+averageQueryResult(query));//System.err.println(averageQueryResult(query));
+			if (i==2)
+				query.printResults(UBT.valueOutput3.p);//UBT.valueOutput.printInput(""+averageQueryResult(query));//System.err.println(averageQueryResult(query));
 			
 			i++;
 		}

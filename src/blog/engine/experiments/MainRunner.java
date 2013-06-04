@@ -10,7 +10,7 @@ import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.onlinePF.FileCommunicator;
 import blog.engine.onlinePF.OPFevidenceGenerator;
-import blog.engine.onlinePF.SampledParticleFilterRunner;
+import blog.engine.onlinePF.PFRunnerSampled;
 import blog.engine.onlinePF.inverseBucket.UBT;
 
 public class MainRunner {
@@ -72,7 +72,7 @@ public class MainRunner {
 			System.exit(0);
 		}
 		else if(((StringOption) runtimeOptions.get("mode")).getValue().equals("policyeval")){
-			if (breadthFirst.getValue())
+			if (!breadthFirst.getValue())
 				DepthFirstPolicyEvaluationRunner.main(args);
 			else {
 				if (!inverseBucket.getValue()){
@@ -82,11 +82,11 @@ public class MainRunner {
 			System.exit(0);
 		}
 		else if(((StringOption) runtimeOptions.get("mode")).getValue().equals("online")){
-			SampledParticleFilterRunner.vanilla = true;
+			PFRunnerSampled.vanilla = true;
 			OPFevidenceGenerator.userInput = userInput.getValue();
 			DepthFirstPolicyEvaluationRunner.main(args);
 		}
-		SampledParticleFilterRunner runner = suu.makeSampledRunner(
+		PFRunnerSampled runner = suu.makeSampledRunner(
 				filenames,
 				((StringOption) runtimeOptions.get("policyfile")).getValue(),
 				((StringOption) runtimeOptions.get("queryfile")).getValue());

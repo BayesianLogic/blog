@@ -8,6 +8,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import blog.BLOGUtil;
@@ -30,8 +31,40 @@ import blog.semant.Semant;
  * Defines/Redefines some methods in TemporalEvidenceGenerator to make it work for online particle filtering 
  */
 
-public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
+public abstract class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 
+	private Collection<String> hiddenQueryStrings;
+	private Collection queries;
+	public boolean queriesCacheInvalid = true;
+	
+
+	/**
+	 * Provides the query instantiations according to current time step, for use
+	 * by {@link ParticleFilterRunner}.
+	 * NOTE: this crashes if called before the first call to moveOn()
+	 */
+	public Collection getHiddenQueriesForLatestTimestep() {
+		if (queriesCacheInvalid) {
+			queries = new LinkedList();
+			for (Iterator it = hiddenQueryStrings.iterator(); it.hasNext();) {
+				String queryString = (String) it.next();
+				queries.add(getQueryForLatestTimestep(queryString));
+			}
+			queriesCacheInvalid = false;
+		}
+		return queries;
+	}
+	
+
+	/**
+	 * Returns the query obtained by instantiating a query string with the latest
+	 * time step.
+	 */
+	private ArgSpecQuery getQueryForLatestTimestep(String queryString) {
+		return DBLOGUtil.getQueryForTimestep(queryString, model,
+				lastTimeStep);
+	}
+	
 	public static boolean userInput = false;
 	public OPFevidenceGenerator(Model model, Collection queryStrings, Communicator in) {
 		super(model, Util.list(), queryStrings);
@@ -102,7 +135,6 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		latestObservation = ev;
 	}
 	public void updateDecision(){
-		//System.out.println("Enter decision for: "+ lastTimeStep);
 		List<Query> q = Util.list();
 		Evidence ev = new Evidence();
 		getInput(ev, q);
@@ -134,13 +166,6 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 			List<Query> rtn = new ArrayList<Query>();
 			Evidence tmp = new Evidence();
 			parseAndTranslateEvidence(tmp, rtn, new StringReader((String) latestQueryString));
-			/*
-			tmp.checkTypesAndScope(model);
-			if (tmp.compile()!=0){
-				System.err.println("error here");
-				System.exit(1);
-			}
-			*/
 			for (Query query : rtn){
 				if (!query.checkTypesAndScope(model)){
 					System.err.println("OPFevidencegenerator.getFreshQueries: error checking query");
@@ -151,8 +176,6 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 					System.exit(1);
 				}
 			}
-			
-			//checkEvidenceMatchesTimestep(tmp);
 			return rtn;
 		}
 		System.err.println("error in opfevidencegenerator");
@@ -162,36 +185,15 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 	}
 	
 	private void getInput (Evidence ev, List<Query> q){
-		
-
-		
 		String eviquerystr = "";
 		String accstr= "";
-		if (userInput){
-			while (true){
-				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-				try {
-					eviquerystr = br.readLine();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (eviquerystr.trim().equals(""))
-					break;
-				else
-					accstr+=eviquerystr;
-			}
+		while (true){
+			eviquerystr = in.readInput();
+			if (eviquerystr.trim().equals(""))
+				break;
+			else
+				accstr+=eviquerystr;
 		}
-		else{
-			while (true){
-				eviquerystr = in.readInput();
-				if (eviquerystr.trim().equals(""))
-					break;
-				else
-					accstr+=eviquerystr;
-			}
-		}
-		
 
 		parseAndTranslateEvidence(ev, q, new StringReader((String) accstr));
 		latestQueryString = accstr;
@@ -213,8 +215,6 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 		}
 		
 		checkEvidenceMatchesTimestep(ev);
-		
-		//System.out.println("Evidence Entered:\n"+accstr);
 
 	}
 	
@@ -242,7 +242,6 @@ public class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 	
 	public Evidence getEvidence(){
 		System.err.println("OPFevidenceGenerator.getEvidence should not be called");
-		
 		return null;
 	}
 	

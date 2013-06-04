@@ -12,6 +12,7 @@ import blog.common.Util;
 import blog.engine.onlinePF.Communicator;
 import blog.engine.onlinePF.FileCommunicator;
 import blog.engine.onlinePF.OPFevidenceGenerator;
+import blog.engine.onlinePF.OPFevidenceGeneratorInteractive;
 import blog.engine.onlinePF.PipedCommunicator;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
@@ -46,7 +47,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		
 		Util.setVerbose(false);
 		
-		evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
+		evidenceGenerator = new OPFevidenceGeneratorInteractive(model, queryStrings, eviCommunicator);//OPFevidenceGenerator(model, queryStrings, eviCommunicator);
 	}
 	
 	public void setUpStreams(){

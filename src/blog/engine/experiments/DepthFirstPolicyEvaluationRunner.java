@@ -7,7 +7,7 @@ import blog.common.cmdline.AbstractOption;
 import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.onlinePF.FileCommunicator;
-import blog.engine.onlinePF.SampledParticleFilterRunner;
+import blog.engine.onlinePF.PFRunnerSampled;
 import blog.engine.onlinePF.inverseBucket.UBT;
 
 public class DepthFirstPolicyEvaluationRunner {
@@ -40,13 +40,17 @@ public class DepthFirstPolicyEvaluationRunner {
 		List filenames = blog.common.cmdline.Parser.parse(args);
 		suu.setNumParticle(((IntOption) runtimeOptions.get("numparticles")).getValue());
 
-		SampledParticleFilterRunner runner = suu.makeSampledRunner(
+		PFRunnerSampled runner = suu.makeSampledRunner(
 				filenames,
 				((StringOption) runtimeOptions.get("policyfile")).getValue(),
 				((StringOption) runtimeOptions.get("queryfile")).getValue());
 		runner.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
 		UBT.valueOutput = new FileCommunicator("randomstuff//log" + (((StringOption) runtimeOptions.get("logname")).getValue())
-				+ ".log");
+				+ "0.log");
+		UBT.valueOutput2 = new FileCommunicator("randomstuff//log" + (((StringOption) runtimeOptions.get("logname")).getValue())
+				+ "1.log");
+		UBT.valueOutput3 = new FileCommunicator("randomstuff//log" + (((StringOption) runtimeOptions.get("logname")).getValue())
+				+ "2.log");
 		UBT.worldOutput = new FileCommunicator("randomstuff//world" + (((StringOption) runtimeOptions.get("logname")).getValue())
 				+ ".log");
 		UBT.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();

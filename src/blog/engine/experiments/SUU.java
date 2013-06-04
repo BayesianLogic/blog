@@ -9,7 +9,7 @@ import blog.Main;
 import blog.common.Util;
 import blog.engine.onlinePF.ParticleFilterRunnerOnlinePartitioned;
 import blog.engine.onlinePF.PolicyModel;
-import blog.engine.onlinePF.SampledParticleFilterRunner;
+import blog.engine.onlinePF.PFRunnerSampled;
 import blog.model.Evidence;
 import blog.model.Model;
 
@@ -33,7 +33,7 @@ public class SUU {
 				model, linkStrings, queryStrings, properties, pm);
 		return runner;
 	}*/
-	public SampledParticleFilterRunner makeSampledRunner(List modelFilePath, String policyFilePath, String queryFile) {
+	public PFRunnerSampled makeSampledRunner(List modelFilePath, String policyFilePath, String queryFile) {
 		query_parser file = new query_parser(queryFile);
 		Collection linkStrings = Util.list();
 		Collection queryStrings = file.queries;//Util.list("capital(0, t)", "rentPaymentRequired(0, 1, t)", "rentPaymentRequired(1, 0, t)", "owner(0, t)", "observation_rent(t)");
@@ -41,7 +41,7 @@ public class SUU {
 		setModel(modelFilePath);
 		PolicyModel pm = PolicyModel.policyFromFile(policyFilePath);
 		
-		SampledParticleFilterRunner runner = new SampledParticleFilterRunner(
+		PFRunnerSampled runner = new PFRunnerSampled(
 				model, linkStrings, queryStrings, properties, pm);
 		return runner;
 	}

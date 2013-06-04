@@ -160,6 +160,10 @@ public class Particle {
 	public String toString() {
 		return "(" + curWorld + "," + weight + ")";
 	}
+	
+	public void resetWeight(){
+		weight = 1;
+	}
 
 	protected Set idTypes; // of Type
 	public PartialWorld curWorld = null;

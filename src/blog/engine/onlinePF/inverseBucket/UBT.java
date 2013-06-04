@@ -50,6 +50,8 @@ public class UBT {
 		resamplePartitionAndParticlesTime = 0;
 	}
 	public static FileCommunicator timingProfile = new FileCommunicator("randomstuff//timingProfile.log");
+	public static FileCommunicator valueOutput2;
+	public static FileCommunicator valueOutput3;
 	
 	
 	

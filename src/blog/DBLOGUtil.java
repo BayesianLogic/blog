@@ -26,6 +26,7 @@ import blog.model.SymbolEvidenceStatement;
 import blog.model.ValueEvidenceStatement;
 import blog.type.Timestep;
 import blog.world.PartialWorld;
+import blog.world.AbstractPartialWorld;
 
 
 /**
@@ -116,6 +117,12 @@ public class DBLOGUtil {
 			return Integer.parseInt(matcher.group().substring(1));
 		return -1;
 	}
+	public static int getTimestepIndex(Object var) {
+		Matcher matcher = timestepPattern.matcher(var.toString());
+		if (matcher.find())
+			return Integer.parseInt(matcher.group().substring(1));
+		return -1;
+	}
 
 	public static void uninstantiateAllTemporalsWithAnIndexDifferentFrom(
 			int largest, PartialWorld world) {
@@ -126,6 +133,13 @@ public class DBLOGUtil {
 			int timestepIndex = getTimestepIndex(var);
 			if (timestepIndex != -1 && timestepIndex <= largest - nsim) {
 				world.setValue(var, null);
+			}
+		}
+		for (Iterator it = ((AbstractPartialWorld) world).getDecisionInterp().iterator(); it.hasNext();){
+			Object o = it.next();
+			int timestepIndex = getTimestepIndex(o);
+			if (timestepIndex != -1 && timestepIndex <= largest - nsim) {
+				it.remove();
 			}
 		}
 	}

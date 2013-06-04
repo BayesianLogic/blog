@@ -8,7 +8,7 @@ import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.onlinePF.FileCommunicator;
 import blog.engine.onlinePF.ParticleFilterRunnerOnlinePartitioned;
-import blog.engine.onlinePF.SampledParticleFilterRunner;
+import blog.engine.onlinePF.PFRunnerSampled;
 import blog.engine.onlinePF.inverseBucket.UBT;
 
 public class BreadthFirstPolicyEvaluationRunner {
