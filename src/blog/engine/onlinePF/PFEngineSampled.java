@@ -1,13 +1,11 @@
 package blog.engine.onlinePF;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.ListIterator;
 import java.util.Properties;
 import java.util.Set;
 
-import blog.common.Util;
 import blog.engine.Particle;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
@@ -21,10 +19,6 @@ public class PFEngineSampled extends PFEngineOnline{
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	protected TimedParticle makeParticle(Set idTypes) {
-		return new TimedParticle(idTypes, 1, particleSampler);
-	}
 
 	@Override
 	public void beforeTakingEvidence() {
@@ -33,14 +27,38 @@ public class PFEngineSampled extends PFEngineOnline{
 
 	@Override
 	public void afterAnsweringQueries() {
-		super.afterAnsweringQueries();
+		for (TimedParticle p : particles)
+			p.advanceTimestep();
+		updateOSforAllParticles();
 		retakeObservability();
+		
+		if (UBT.dropHistory)
+			dropHistory();
+		resample();
+		//super.afterAnsweringQueries();
 		
 	}
 	
 	private Integer sampleOS(){
 		return ((TimedParticle) sampleParticle()).getOS();
 	}
+	
+	@Override
+	protected TimedParticle makeParticle(Set idTypes) {
+		TimedParticle tp = new TimedParticle(idTypes, 1, particleSampler);
+		ObservabilitySignature os = new ObservabilitySignature();
+		os.update(tp);
+		tp.setOS(os.getIndex());
+		return tp;
+	}
+	public void updateOSforAllParticles(){
+		for (TimedParticle p : (List<TimedParticle>) particles){
+			ObservabilitySignature newOS = ObservabilitySignature.getOSbyIndex(p.getOS()).spawnChild(p);
+			Integer newOSIndex = newOS.getIndex();
+			p.setOS(newOSIndex);
+		}
+	}
+	
 	/**
 	 * resamples partitions, currently only samples 1 partition
 	 * this is not the same as resampling particles
@@ -53,6 +71,7 @@ public class PFEngineSampled extends PFEngineOnline{
 		resamplePartitionAndParticlesTimer.startTimer();
 
 		Integer sampledOSindex = sampleOS();
+		ObservabilitySignature foo = new ObservabilitySignature();
 		ObservabilitySignature selectedOS = ObservabilitySignature.getOSbyIndex(sampledOSindex);
 		selectedOS.prepareEvidence();
 		Evidence ev = selectedOS.getEvidence();
@@ -68,4 +87,23 @@ public class PFEngineSampled extends PFEngineOnline{
 		UBT.resamplePartitionAndParticlesTime += resamplePartitionAndParticlesTimer.elapsedTime();
 	}
 
+	public void takeDecision(Evidence evidence){
+		if (!evidence.isEmpty()) { 
+			for (Iterator it = particles.iterator(); it.hasNext();) {
+				Particle p = (Particle) it.next();
+				p.take(evidence);
+			}
+			double sum = 0;
+			ListIterator particleIt = particles.listIterator();
+			while (particleIt.hasNext()) {
+				Particle particle = (Particle) particleIt.next();
+				if (particle.getLatestWeight() == 0.0) {
+					particleIt.remove();
+				} else
+					sum += particle.getLatestWeight();
+			}
+			if (particles.size() == 0)
+				throw new IllegalArgumentException("All particles have zero weight");
+		}
+	}
 }

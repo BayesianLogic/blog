@@ -6,7 +6,7 @@ import java.util.Timer;
 import blog.engine.onlinePF.FileCommunicator;
 
 public class UBT {
-	public static boolean dropHistory = false;
+	public static boolean dropHistory = true;
 	public static boolean debug = true;
 	public static boolean rememberHistory = true;
 	public static enum schemes {allVariables, nonObservableVariables, hiddenVariables};

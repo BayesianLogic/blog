@@ -183,6 +183,7 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	
 	/**
 	 * Actually update the query stats.
+	 * zeroes out the give query first
 	 * @param queries
 	 */
 	public void updateQuery(Collection queries){

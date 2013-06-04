@@ -79,7 +79,7 @@ public class TigerExample {
 		    //ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
 		    //InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
 		    PFRunnerSampled runner = new PFRunnerSampled(model, linkStrings, queryStrings, properties, pm);
-		    properties.setProperty("numParticles", ""+1000);
+		    properties.setProperty("numParticles", ""+10);
 		    
 		    UBT.runTimeTimer.startTimer();
 		    
@@ -93,7 +93,7 @@ public class TigerExample {
 	}
 	private static void setDefaultParticleFilterProperties() {
 		properties = new Properties();
-		properties.setProperty("numParticles", "1000");
+		properties.setProperty("numParticles", "10");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		Util.initRandom(true);

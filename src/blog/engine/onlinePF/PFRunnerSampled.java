@@ -38,13 +38,13 @@ public class PFRunnerSampled{
 	public static Model model;
 
 	/** The associated particle filter. */
-	public SampledPartitionedParticleFilter particleFilter;
+	public PFEngineSampled particleFilter;
 
 	
 	public PFRunnerSampled(Model model, Collection linkStrings,
 			Collection queryStrings, Properties particleFilterProperties, PolicyModel pm) {
 		this.model = model;
-		particleFilter = new SampledPartitionedParticleFilter(model, particleFilterProperties);
+		particleFilter = new PFEngineSampled(model, particleFilterProperties);
 		this.particleFilterProperties = particleFilterProperties;
 		this.queryStrings = queryStrings;
 
@@ -54,11 +54,11 @@ public class PFRunnerSampled{
 		setUpStreams();
 		
 		Util.setVerbose(false);
-		/*
+		
 		for (RandomFunction orf: (List<RandomFunction>) model.getObsFun()){
 			queryStrings.add(((ObservableRandomFunction) orf).queryString);
 		}
-		*/
+		
 		evidenceGenerator = new OPFevidenceGeneratorWithPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
 	}
 	
@@ -106,16 +106,6 @@ public class PFRunnerSampled{
 			//particleFilter.resample(); //resample moved here
 			takeAndAnswer(evidence, queries);
 			
-			/*
-			while (!particleFilter.checkPartition(10)){
-				particleFilter.resetLastEvidence(2);
-				particleFilter.repartition();
-				System.out.println("Went below minimal threshold at timestep: " + evidenceGenerator.lastTimeStep);
-				System.out.println("New number of particles: " + particleFilter.numParticles);
-				takeAndAnswer(evidence,queries);
-			}
-			*/
-			
 			afterEvidenceAndQueries();
 			return true;
 		}
@@ -123,18 +113,10 @@ public class PFRunnerSampled{
 	}
 	
 	private void takeAndAnswer(Evidence evidence, Collection queries){
-		particleFilter.emptyCache();
+		particleFilter.beforeTakingEvidence();
 		particleFilter.take(evidence);
-		particleFilter.answer(queries);
-		if (!vanilla){
-			//particleFilter.resample();
-			particleFilter.repartition(); //IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!IMPORTANT!
-			particleFilter.samplePartition(1);
-		}
-		else{
-			particleFilter.resample();
-		}
-		
+		particleFilter.answer(queries);	
+		particleFilter.afterAnsweringQueries();
 	}
 	
 	//decide applied_Load(argload(@0), t1, @0)=true;
@@ -143,35 +125,11 @@ public class PFRunnerSampled{
 	
 	public boolean advancePhase2() {
 		Evidence evidence;
-		/*
-		if(particleFilter.getPartitions().keySet().size()!=1){
-			System.err.println("error in particlefilterrunneronlinepartitioned.advancephase2");
-			System.exit(1);
-		}
-		*/
-		//evidenceGenerator.updateDecision(particleFilter.getPartitions().keySet().size());
-		//evidenceGenerator.updateDecision();
-		//HashSet<String> tmp = new HashSet<String>();
-		
-		
-		for (Integer osIndex : particleFilter.getPartitions().keySet()){
 		evidenceGenerator.updateDecision();
 			if ((evidence = evidenceGenerator.getLatestDecision()) != null) {
-				//particleFilter.take(evidence);
-				particleFilter.takeWithPartition(evidence, osIndex);
+				particleFilter.takeDecision(evidence);
 			}
-
-		}
-		/*
-		for (Particle p : (List<Particle>) particleFilter.particles){
-			if (!tmp.contains(p.foodecisionstring))
-				tmp.add(p.foodecisionstring);
-		}
-		System.out.println("Num moves sequences: " + tmp.size());*/
-		
 		return true;
-		
-		//return false;
 	}
 
 	/**
@@ -194,15 +152,17 @@ public class PFRunnerSampled{
 		//System.out.println(particleFilter.partitions.size());
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
+			if (i==0)
+			System.err.println(averageQueryResult(query));
 			//query.printResults(System.out);
-			
+			/*
 			if (i==0)
 				query.printResults(UBT.valueOutput.p);//UBT.valueOutput.printInput(""+averageQueryResult(query));//System.err.println(averageQueryResult(query));
 			if (i==1)
 				query.printResults(UBT.valueOutput2.p);//UBT.valueOutput.printInput(""+averageQueryResult(query));//System.err.println(averageQueryResult(query));
 			if (i==2)
 				query.printResults(UBT.valueOutput3.p);//UBT.valueOutput.printInput(""+averageQueryResult(query));//System.err.println(averageQueryResult(query));
-			
+			*/
 			i++;
 		}
 		UBT.outputRunTime();
@@ -218,38 +178,18 @@ public class PFRunnerSampled{
 			int x = 1+1;
 		}
 		
-		for (Integer osIndex: particleFilter.getPartitions().keySet()){
-			particleFilter.answerWithPartition(queries, osIndex);
-			//UBT.osOutput.printInput("Timestep "+ evidenceGenerator.lastTimeStep + " SIGNATURE: {"+ ObservabilitySignature.getOSbyIndex(osIndex).toString()+"} ("+((List)particleFilter.partitions.get(osIndex)).size()+")");
-			for (Iterator it = queries.iterator(); it.hasNext();) {
-				ArgSpecQuery query = (ArgSpecQuery) it.next();
-				//System.out.println("PF estimate of " + query + ":");
-				//query.printResults(queryCommunicator.p);
-				
-				/*
-				queryResultCommunicator.printInput(printQueryString(query));
-				queryResultCommunicator.printInput("-----");
-				queryResultCommunicator.p.flush();
-				*/
-				
-				queryResultCommunicator.printInputNL(printQueryString(query));
-				queryResultCommunicator.printInputNL("-----");
-				
-				//System.out.println(printQueryString(query));
-				//query.printResults(queryCommunicator.p);
-				//System.out.println("-----");
-				//query.printResults(System.out);//strange bug here needs fixing
-			}
-			queryResultCommunicator.printInput("");
-			queryResultCommunicator.p.flush();
+		particleFilter.updateQuery(queries);
+		for (Iterator it = queries.iterator(); it.hasNext();) {
+			ArgSpecQuery query = (ArgSpecQuery) it.next();
+			queryResultCommunicator.printInputNL(printQueryString(query));
+			queryResultCommunicator.printInputNL("-----");
 		}
-
-		//System.out.println(UBT.runTimeTimer.elapsedTime());
-		//UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
+		queryResultCommunicator.printInput("");
+		queryResultCommunicator.p.flush();
 		UBT.dataOutput.printInput("Time for timestep "+ evidenceGenerator.lastTimeStep + " is " + UBT.runTimeTimer.elapsedTime());
 		UBT.runTimeTimer.startTimer();
-                UBT.worldOutput.printInput("Sample world "+ Util.getFirst(particleFilter.particles).toString());
-		if (evidenceGenerator.lastTimeStep == numtstep){
+                //UBT.worldOutput.printInput("Sample world "+ Util.getFirst(particleFilter.particles).toString());
+		if (evidenceGenerator.lastTimeStep == 15){
 			System.out.println(((Particle)Util.getFirst(particleFilter.particles)).getLatestWorld().basicVarToValueMap().size());
 			System.exit(0);
 		}

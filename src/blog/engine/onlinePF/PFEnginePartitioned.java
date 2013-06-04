@@ -98,7 +98,7 @@ public abstract class PFEnginePartitioned extends PFEngineOnline {
 	protected void initialize() {
 		super.initialize();
 		partitions = new HashMap<Integer, List<TimedParticle>>();
-		ArrayList<TimedParticle> a = new ArrayList<TimedParticle>();
+		ArrayList<TimedParticle> a = new ArrayList<TimedParticle>();		
 		partitions.put(((TimedParticle)Util.getFirst(particles)).getOS(), a);
 		for (Particle p : (particles)) {
 			TimedParticle tp = (TimedParticle) p;
@@ -112,7 +112,11 @@ public abstract class PFEnginePartitioned extends PFEngineOnline {
 	 * {@link Particle#copy()} for it to return an object of its own class).
 	 */
 	protected TimedParticle makeParticle(Set idTypes, int numTimeSlicesInMemory) {
-		return new TimedParticle(idTypes, numTimeSlicesInMemory, particleSampler);
+		TimedParticle tp = new TimedParticle(idTypes, numTimeSlicesInMemory, particleSampler);
+		ObservabilitySignature os = new ObservabilitySignature();
+		os.update(tp);
+		tp.setOS(os.getIndex());
+		return tp;
 	}
 
 	
