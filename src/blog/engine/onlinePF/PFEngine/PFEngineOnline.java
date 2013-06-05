@@ -289,7 +289,7 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	}
 	
 	public void printResultToCommunicator(Collection queries, Communicator queryResultCommunicator){
-		this.updateQuery(queries);
+		//this.updateQuery(queries);
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
 			queryResultCommunicator.printInputNL(printQueryString(query));

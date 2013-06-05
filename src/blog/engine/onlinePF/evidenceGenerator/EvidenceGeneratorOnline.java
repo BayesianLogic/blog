@@ -1,8 +1,5 @@
 package blog.engine.onlinePF.evidenceGenerator;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -11,13 +8,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import blog.BLOGUtil;
 import blog.DBLOGUtil;
-import blog.TemporalEvidenceGenerator;
+import blog.TemporalQueriesInstantiator;
 import blog.common.Util;
-import blog.common.cmdline.BooleanOption;
 import blog.engine.ParticleFilterRunner;
-import blog.engine.experiments.MainRunner;
 import blog.engine.onlinePF.Communicator;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
@@ -34,13 +28,24 @@ import blog.semant.Semant;
  * Defines/Redefines some methods in TemporalEvidenceGenerator to make it work for online particle filtering 
  */
 
-public abstract class EvidenceGeneratorOnline extends TemporalEvidenceGenerator {
+public abstract class EvidenceGeneratorOnline {
 
 	private Collection<String> hiddenQueryStrings;
 	private Collection queries;
 	public boolean queriesCacheInvalid = true;
-	
+	protected Model model;
 
+	//originally stuff from TemporalPartialWorld
+	public int lastTimeStep = -1;
+	private Collection latestQueries;
+	
+	
+	public EvidenceGeneratorOnline(Model model, Collection queryStrings, Communicator in) {
+		this.model = model;
+		queryInstantiator = new TemporalQueriesInstantiator(model, queryStrings);
+		this.in = in;
+	}
+	
 	/**
 	 * Provides the query instantiations according to current time step, for use
 	 * by {@link ParticleFilterRunner}.
@@ -68,21 +73,13 @@ public abstract class EvidenceGeneratorOnline extends TemporalEvidenceGenerator 
 				lastTimeStep);
 	}
 	
-	public EvidenceGeneratorOnline(Model model, Collection queryStrings, Communicator in) {
-		super(model, Util.list(), queryStrings);
-		this.in = in;
-	}
-	
-	
 	/**
 	 * This method increments the lastTimeStep,  
 	 * 
 	 * @return a collection of queries for the next timestep.
 	 */
 	private Collection getQueries (int timestep) {
-		Collection a = queryInstantiator.getQueries(timestep); //Cheng: changed visibility of queryInstantiator to protected
-
-		//now link query to the model
+		Collection a = queryInstantiator.getQueries(timestep); 
 		boolean correct = true;
 		int errors = 0;
 		for (Iterator iter = a.iterator(); iter.hasNext();) {
@@ -103,30 +100,20 @@ public abstract class EvidenceGeneratorOnline extends TemporalEvidenceGenerator 
 		
 		return a;
 	}
-	
 
 	/**
-	 * Augments and returns the current world based on the instantiation of the
-	 * query templates for the time step next to the last one used, or 0 if this
-	 * is the first generation.
+	 * Augments the current world based on the given queries.
 	 */
 	public void moveOn() {
-		moveOn(++lastTimeStep);
+		lastTimeStep ++;
+		List<Query> queries = (List<Query>) getQueries(lastTimeStep);
+		for (Iterator it = queries.iterator(); it.hasNext();) {
+			ArgSpecQuery query = (ArgSpecQuery) it.next();
+		}
+		latestQueries = queries;
 	}
-
-	/**
-	 * Augments and returns the current world based on the instantiation of the
-	 * query templates for the given value of t.
-	 */
-	public void moveOn(int t) {
-		List<Query> q = (List<Query>) getQueries(lastTimeStep = t);
-		//System.out.println("Enter observations/queries for: "+lastTimeStep);
-		//getInput(new Evidence(), q);
-		moveOn(q);
-		
-	}
+	
 	public void updateObservationQuery(){
-		//System.out.println("Enter observations/queries for: "+ lastTimeStep);
 		List<Query> q = (List<Query>) getLatestQueries();
 		Evidence ev = new Evidence();
 		getInput(ev, q);
@@ -241,11 +228,7 @@ public abstract class EvidenceGeneratorOnline extends TemporalEvidenceGenerator 
 		sem.transProg(parse.getParseResult());
 		return true;
 	}
-	
-	public Evidence getEvidence(){
-		System.err.println("OPFevidenceGenerator.getEvidence should not be called");
-		return null;
-	}
+
 	
 	/**
 	 * Check that the evidence provided has the correct timestep associated
@@ -254,9 +237,14 @@ public abstract class EvidenceGeneratorOnline extends TemporalEvidenceGenerator 
 	private void checkEvidenceMatchesTimestep(Evidence evidence){
 		/*do nothing*/	
 	}
-	
+	/** Provides the latest instantiated queries. */
+	public Collection getLatestQueries() {
+		return latestQueries;
+	}
+
 	Evidence latestObservation;
 	Evidence latestDecision;
 	Communicator in;
 	public String latestQueryString = null;
+	protected TemporalQueriesInstantiator queryInstantiator;
 }

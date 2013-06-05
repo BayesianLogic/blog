@@ -81,7 +81,7 @@ public class PFRunnerOnline{
 	
 	
 
-	public boolean advancePhase2() {
+	public void advancePhase2() {
 		Evidence evidence;
 		evidenceGenerator.updateDecision();
 		if ((evidence = evidenceGenerator.getLatestDecision()) == null) {
@@ -89,7 +89,6 @@ public class PFRunnerOnline{
 			System.exit(1);
 		}
 		particleFilter.takeDecision(evidenceGenerator.getLatestDecision());
-		return true;
 	}
 
 
@@ -99,7 +98,7 @@ public class PFRunnerOnline{
 	 */
 	protected void afterEvidenceAndQueries() {
 		Collection queries = evidenceGenerator.getLatestQueries();
-		
+		particleFilter.updateQuery(queries);
 		int i = 0;
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
@@ -124,14 +123,6 @@ public class PFRunnerOnline{
 	}
 
 
-
-
-	public PartialWorld getCurrentPartialWorld() {
-		return evidenceGenerator.currentPartialWorld;
-	}
-
-		
-
 	/** Runs until there are no evidence or queries anymore. */
 	public void run() {
 		int i=0;
@@ -152,7 +143,7 @@ public class PFRunnerOnline{
 	}
 
 
-	private Double averageQueryResult(ArgSpecQuery q) {
+	protected Double averageQueryResult(ArgSpecQuery q) {
 		Double rtn = (double) 0;
 		Histogram histogram = q.getHistogram();
 		List<Histogram.Entry> entries = new ArrayList<Histogram.Entry>(histogram.entrySet());

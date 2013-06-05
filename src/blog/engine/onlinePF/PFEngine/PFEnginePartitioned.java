@@ -51,9 +51,11 @@ import blog.DBLOGUtil;
 import blog.common.Util;
 import blog.engine.InferenceEngine;
 import blog.engine.Particle;
+import blog.engine.onlinePF.Communicator;
 import blog.engine.onlinePF.ObservabilitySignature;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
+import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -83,7 +85,7 @@ import blog.world.AbstractPartialWorld;
  * queries set by {@link #setQueries(List)} are used by {@link #answerQueries()}
  * only (again keeping the original InferenceEngine semantics).
  */
-public abstract class PFEnginePartitioned extends PFEngineOnline {
+public class PFEnginePartitioned extends PFEngineOnline {
 
 
 
@@ -146,26 +148,43 @@ public abstract class PFEnginePartitioned extends PFEngineOnline {
 			System.err.println("partitionedparticlefilter.takewithpartition: particles should not be null");
 			System.exit(1);
 		}
-		if (!evidence.isEmpty()) { 
-			for (Iterator it = particles.iterator(); it.hasNext();) {
-				Particle p = (Particle) it.next();
-				p.take(evidence);
-			}
-			double sum = 0;
-			ListIterator particleIt = particles.listIterator();
-			while (particleIt.hasNext()) {
-				Particle particle = (Particle) particleIt.next();
-				if (particle.getLatestWeight() == 0.0) {
-					particleIt.remove();
-				} else
-					sum += particle.getLatestWeight();
-			}
-			if (particles.size() == 0)
-				throw new IllegalArgumentException("All particles have zero weight");
+		if (!evidence.getValueEvidence().isEmpty() || !evidence.getSymbolEvidence().isEmpty()){
+			System.err.println("only decision evidence allowed");
+			System.exit(1);
 		}
+		if (!evidence.isEmpty()) 
+			for (Particle p : particles)
+				p.take(evidence);
+					
 		UBT.takeWithPartitionTime += takeWithPartitionTimer.elapsedTime();
 	}
 	
+	public void printResultToCommunicator(Collection queries, Communicator queryResultCommunicator){
+		//this.updateQuery(queries);
+		for (Integer osIndex: partitions.keySet()){
+			answerWithPartition(queries, osIndex);
+			for (Iterator it = queries.iterator(); it.hasNext();) {
+				ArgSpecQuery query = (ArgSpecQuery) it.next();
+				queryResultCommunicator.printInputNL(printQueryString(query));
+				queryResultCommunicator.printInputNL("-----");
+			}
+			queryResultCommunicator.printInput("");
+			queryResultCommunicator.p.flush();
+		}
+	}
+	
+	/**
+	 * updates query with particles from osIndex
+	 * @param queries
+	 * @param osIndex
+	 */
+	private void updateQuery(Collection queries, Integer osIndex){
+		for (Query q : (Collection<Query>)queries)
+			q.zeroOut();
+		for (TimedParticle p : particles) {
+			p.answer(queries);
+		}
+	}
 	
 	/**
 	 * updates partitions

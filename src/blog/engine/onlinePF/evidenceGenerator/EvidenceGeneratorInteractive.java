@@ -20,7 +20,7 @@ public class EvidenceGeneratorInteractive extends EvidenceGeneratorOnline{
 	
 	@Override
 	public void updateObservationQuery(){
-		System.out.println("Enter Observation/Query");
+		System.out.println("Enter Observation/Query for timestep "+ lastTimeStep);
 		String s = pm.readInput();
 		in.printInput(s);
 		in.printInput("");
@@ -29,7 +29,7 @@ public class EvidenceGeneratorInteractive extends EvidenceGeneratorOnline{
 	
 	@Override
 	public void updateDecision(){
-		System.out.println("Enter Decision");
+		System.out.println("Enter Decision "+ lastTimeStep);
 		String s = pm.readInput();
 		in.printInput(s);
 		in.printInput("");

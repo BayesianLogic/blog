@@ -42,7 +42,7 @@ public class SUU {
 		PolicyModel pm = PolicyModel.policyFromFile(policyFilePath);
 		
 		PFRunnerSampled runner = new PFRunnerSampled(
-				model, linkStrings, queryStrings, properties, pm);
+				model, queryStrings, properties, pm);
 		return runner;
 	}
 	

@@ -308,9 +308,6 @@ public class ParticleFilterRunnerOnlinePartitioned{
 				evidenceGenerator.lastTimeStep);
 	}
 
-	public PartialWorld getCurrentPartialWorld() {
-		return evidenceGenerator.currentPartialWorld;
-	}
 
 	/** The evidence generator . */
 	public EvidenceGeneratorOnline evidenceGenerator;
@@ -376,12 +373,6 @@ public class ParticleFilterRunnerOnlinePartitioned{
 			//	break;
 		}
 	}
-
-	public Evidence getEvidence() {
-		System.err.println("particlefilterrunneronline.getEvidence should not have been called");
-		return evidenceGenerator.getEvidence();
-	}
-	
 
 
 	

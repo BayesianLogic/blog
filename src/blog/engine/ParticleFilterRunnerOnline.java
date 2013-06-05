@@ -207,10 +207,6 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 				evidenceGenerator.lastTimeStep);
 	}
 
-	public PartialWorld getCurrentPartialWorld() {
-		return evidenceGenerator.currentPartialWorld;
-	}
-
 	/** The evidence generator . */
 	public EvidenceGeneratorOnline evidenceGenerator;
 
@@ -279,7 +275,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	@Override
 	public Evidence getEvidence() {
 		System.err.println("particlefilterrunneronline.getEvidence should not have been called");
-		return evidenceGenerator.getEvidence();
+		return null;
 	}
 	
 
