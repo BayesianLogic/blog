@@ -33,7 +33,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog.engine.onlinePF;
+package blog.engine.onlinePF.PFEngine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +51,7 @@ import blog.DBLOGUtil;
 import blog.common.Util;
 import blog.engine.InferenceEngine;
 import blog.engine.Particle;
+import blog.engine.onlinePF.ObservabilitySignature;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.Evidence;
@@ -178,7 +179,6 @@ public abstract class PFEnginePartitioned extends PFEngineOnline {
 			ObservabilitySignature os = ObservabilitySignature.getOSbyIndex(osIndex);
 			for (TimedParticle p : (List<TimedParticle>) partitions.get(osIndex)){
 				ObservabilitySignature newOS = os.spawnChild(p);
-				//newOS.update(p);
 				Integer newOSIndex = newOS.getIndex();
 				p.setOS(newOSIndex);
 				if (newPartitions.containsKey(newOSIndex)){
@@ -196,6 +196,8 @@ public abstract class PFEnginePartitioned extends PFEngineOnline {
 		UBT.repartitionTime+=repartitionTimer.elapsedTime();
 		
 	}
+	
+	
 
 	
 	public Map<Integer, List<TimedParticle>> getPartitions(){
@@ -212,8 +214,12 @@ public abstract class PFEnginePartitioned extends PFEngineOnline {
 
 	@Override
 	public void afterAnsweringQueries() {
-		super.afterAnsweringQueries();
+		for (TimedParticle p : particles)
+			p.advanceTimestep();
 		repartition();
-		
+		//resample();
+		//TODO: currently does not resample 
+		if (UBT.dropHistory)
+			dropHistory();
 	}
 }

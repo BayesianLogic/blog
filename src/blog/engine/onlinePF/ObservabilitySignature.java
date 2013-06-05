@@ -17,6 +17,7 @@ import blog.parse.Parse;
 import blog.semant.Semant;
 import blog.world.AbstractPartialWorld;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
+import blog.engine.onlinePF.runner.PFRunnerSampled;
 import blog.model.Evidence;
 import blog.model.Query;
 import blog.msg.ErrorMsg;

@@ -7,8 +7,8 @@ import blog.common.cmdline.AbstractOption;
 import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.onlinePF.FileCommunicator;
-import blog.engine.onlinePF.PFRunnerSampled;
 import blog.engine.onlinePF.inverseBucket.UBT;
+import blog.engine.onlinePF.runner.PFRunnerSampled;
 
 public class DepthFirstPolicyEvaluationRunner {
 	public static HashMap<String, AbstractOption> runtimeOptions = new HashMap<String, AbstractOption>();

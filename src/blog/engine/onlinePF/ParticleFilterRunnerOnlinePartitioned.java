@@ -14,8 +14,9 @@ import blog.engine.ParticleFilter;
 import blog.engine.ParticleFilterRunner;
 import blog.engine.onlinePF.Communicator;
 import blog.engine.onlinePF.FileCommunicator;
-import blog.engine.onlinePF.OPFevidenceGenerator;
 import blog.engine.onlinePF.PipedCommunicator;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorOnline;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorwPolicy;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.ArgSpecQuery;
@@ -66,7 +67,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		
 		//evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
 		
-		evidenceGenerator = new OPFevidenceGeneratorWithPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
+		evidenceGenerator = new EvidenceGeneratorwPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
 	}
 	
 	public void setUpStreams(){
@@ -312,7 +313,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	}
 
 	/** The evidence generator . */
-	public OPFevidenceGenerator evidenceGenerator;
+	public EvidenceGeneratorOnline evidenceGenerator;
 
 	/** Properties for construction of particle filter. */
 	protected Properties particleFilterProperties;

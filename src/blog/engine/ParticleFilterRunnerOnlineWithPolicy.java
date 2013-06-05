@@ -1,7 +1,7 @@
 package blog.engine;
 
-import blog.engine.onlinePF.OPFevidenceGeneratorWithPolicy;
 import blog.engine.onlinePF.PolicyModel;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorwPolicy;
 import blog.model.ArgSpecQuery;
 import blog.model.Model;
 
@@ -27,7 +27,7 @@ public class ParticleFilterRunnerOnlineWithPolicy extends ParticleFilterRunnerOn
 			Collection queryStrings, Properties particleFilterProperties, String policyFileName) {
 		super(model, linkStrings, queryStrings, particleFilterProperties);
 		PolicyModel pm = PolicyModel.policyFromFile(policyFileName);
-		evidenceGenerator = new OPFevidenceGeneratorWithPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
+		evidenceGenerator = new EvidenceGeneratorwPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
 	}
 	
 	protected void afterEvidenceAndQueries() {

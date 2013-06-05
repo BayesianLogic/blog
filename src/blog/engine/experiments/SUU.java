@@ -9,7 +9,7 @@ import blog.Main;
 import blog.common.Util;
 import blog.engine.onlinePF.ParticleFilterRunnerOnlinePartitioned;
 import blog.engine.onlinePF.PolicyModel;
-import blog.engine.onlinePF.PFRunnerSampled;
+import blog.engine.onlinePF.runner.PFRunnerSampled;
 import blog.model.Evidence;
 import blog.model.Model;
 

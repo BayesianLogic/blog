@@ -1,17 +1,19 @@
-package blog.engine.onlinePF;
+package blog.engine.onlinePF.evidenceGenerator;
 
 import java.util.Collection;
 import java.util.List;
 
 import blog.common.Util;
+import blog.engine.onlinePF.CmdCommunicator;
+import blog.engine.onlinePF.Communicator;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
 
 
-public class OPFevidenceGeneratorInteractive extends OPFevidenceGenerator{
+public class EvidenceGeneratorInteractive extends EvidenceGeneratorOnline{
 	CmdCommunicator pm = new CmdCommunicator();
-	public OPFevidenceGeneratorInteractive(Model model, Collection queryStrings,
+	public EvidenceGeneratorInteractive(Model model, Collection queryStrings,
 			Communicator eviCommunicator) {
 		super(model, queryStrings, eviCommunicator);
 	}

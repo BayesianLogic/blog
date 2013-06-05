@@ -14,8 +14,6 @@ import blog.engine.ParticleFilter;
 import blog.engine.ParticleFilterRunner;
 import blog.engine.onlinePF.Communicator;
 import blog.engine.onlinePF.FileCommunicator;
-import blog.engine.onlinePF.OPFevidenceGenerator;
-import blog.engine.onlinePF.OPFevidenceGeneratorWithPolicy;
 import blog.engine.onlinePF.ObservabilitySignature;
 import blog.engine.onlinePF.PipedCommunicator;
 import blog.engine.onlinePF.PolicyModel;
@@ -27,6 +25,8 @@ import blog.model.RandomFunction;
 import blog.world.AbstractPartialWorld;
 import blog.world.PartialWorld;
 import blog.engine.onlinePF.ObservableRandomFunction;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorOnline;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorwPolicy;
 
 
 /**
@@ -66,7 +66,7 @@ public class InverseParticleFilterRunner{
 		
 		//evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
 		
-		evidenceGenerator = new OPFevidenceGeneratorWithPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
+		evidenceGenerator = new EvidenceGeneratorwPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
 	}
 	
 	public void setUpStreams(){
@@ -328,7 +328,7 @@ public class InverseParticleFilterRunner{
 	}
 
 	/** The evidence generator . */
-	public OPFevidenceGenerator evidenceGenerator;
+	public EvidenceGeneratorOnline evidenceGenerator;
 
 	/** Properties for construction of particle filter. */
 	protected Properties particleFilterProperties;

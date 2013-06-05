@@ -11,9 +11,9 @@ import blog.common.UnaryProcedure;
 import blog.common.Util;
 import blog.engine.onlinePF.Communicator;
 import blog.engine.onlinePF.FileCommunicator;
-import blog.engine.onlinePF.OPFevidenceGenerator;
-import blog.engine.onlinePF.OPFevidenceGeneratorInteractive;
 import blog.engine.onlinePF.PipedCommunicator;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorOnline;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorInteractive;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -47,7 +47,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		
 		Util.setVerbose(false);
 		
-		evidenceGenerator = new OPFevidenceGeneratorInteractive(model, queryStrings, eviCommunicator);//OPFevidenceGenerator(model, queryStrings, eviCommunicator);
+		evidenceGenerator = new EvidenceGeneratorInteractive(model, queryStrings, eviCommunicator);//OPFevidenceGenerator(model, queryStrings, eviCommunicator);
 	}
 	
 	public void setUpStreams(){
@@ -212,7 +212,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	}
 
 	/** The evidence generator . */
-	public OPFevidenceGenerator evidenceGenerator;
+	public EvidenceGeneratorOnline evidenceGenerator;
 
 	/** Properties for construction of particle filter. */
 	protected Properties particleFilterProperties;

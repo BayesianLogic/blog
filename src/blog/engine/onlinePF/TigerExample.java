@@ -9,6 +9,7 @@ import blog.common.Util;
 import blog.engine.ParticleFilter;
 import blog.engine.onlinePF.inverseBucket.InverseParticleFilterRunner;
 import blog.engine.onlinePF.inverseBucket.UBT;
+import blog.engine.onlinePF.runner.PFRunnerSampled;
 import blog.model.Evidence;
 import blog.model.Model;
 
@@ -79,7 +80,7 @@ public class TigerExample {
 		    //ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
 		    //InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
 		    PFRunnerSampled runner = new PFRunnerSampled(model, linkStrings, queryStrings, properties, pm);
-		    properties.setProperty("numParticles", ""+10);
+		    properties.setProperty("numParticles", ""+1000);
 		    
 		    UBT.runTimeTimer.startTimer();
 		    
@@ -93,11 +94,11 @@ public class TigerExample {
 	}
 	private static void setDefaultParticleFilterProperties() {
 		properties = new Properties();
-		properties.setProperty("numParticles", "10");
+		properties.setProperty("numParticles", "1000");
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		Util.initRandom(true);
-		Util.setVerbose(true);
+		Util.setVerbose(false);
 	}	
 	private static Properties properties;
 	private static ParticleFilter particleFilter;

@@ -33,19 +33,23 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog.engine.onlinePF;
+package blog.engine.onlinePF.PFEngine;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import blog.common.Histogram;
 import blog.common.Util;
 import blog.engine.InferenceEngine;
+import blog.engine.onlinePF.Communicator;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
+import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -268,10 +272,8 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	 */
 	public void dropHistory(){
 		for (TimedParticle p : particles) {
-			if (UBT.dropHistory){
-				p.uninstantiatePreviousTimeslices();
-				p.removeAllDerivedVars();
-			}
+			p.uninstantiatePreviousTimeslices();
+			p.removeAllDerivedVars();
 		}
 	}
 	
@@ -286,10 +288,38 @@ public abstract class PFEngineOnline extends InferenceEngine {
 		UBT.emptyCacheTime += emptyCacheTimer.elapsedTime();
 	}
 	
-
+	public void printResultToCommunicator(Collection queries, Communicator queryResultCommunicator){
+		this.updateQuery(queries);
+		for (Iterator it = queries.iterator(); it.hasNext();) {
+			ArgSpecQuery query = (ArgSpecQuery) it.next();
+			queryResultCommunicator.printInputNL(printQueryString(query));
+			queryResultCommunicator.printInputNL("-----");
+		}
+		queryResultCommunicator.printInput("");
+		queryResultCommunicator.p.flush();
+	}
+	
+	protected static String printQueryString(ArgSpecQuery q) {
+		String rtn = "";
+		rtn += q.getArgSpec().toString();
+		Histogram histogram = q.getHistogram();
+		List<Histogram.Entry> entries = new ArrayList<Histogram.Entry>(histogram.entrySet());
+		for (Iterator<Histogram.Entry> iter = entries.iterator(); iter.hasNext();) {
+			Histogram.Entry entry = iter.next();
+			double prob = entry.getWeight() / histogram.getTotalWeight();
+			rtn += ("\t[" + entry.getElement() + ":" + String.format("%.9f", prob) + "]");
+		}
+		return rtn;
+	}
 	private Set idTypes; // of Type
 
 	int numParticles;
 	public List<TimedParticle> particles; // of Particles
 	protected Sampler particleSampler;
+	public void takeDecision(Evidence evidence) {
+		if (!evidence.isEmpty()){
+			System.err.println("Decision evidence is not supported");
+			System.exit(1);
+		}
+	}
 }

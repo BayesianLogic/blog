@@ -1,4 +1,4 @@
-package blog.engine.onlinePF;
+package blog.engine.onlinePF.evidenceGenerator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,7 +15,10 @@ import blog.BLOGUtil;
 import blog.DBLOGUtil;
 import blog.TemporalEvidenceGenerator;
 import blog.common.Util;
+import blog.common.cmdline.BooleanOption;
 import blog.engine.ParticleFilterRunner;
+import blog.engine.experiments.MainRunner;
+import blog.engine.onlinePF.Communicator;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -31,7 +34,7 @@ import blog.semant.Semant;
  * Defines/Redefines some methods in TemporalEvidenceGenerator to make it work for online particle filtering 
  */
 
-public abstract class OPFevidenceGenerator extends TemporalEvidenceGenerator {
+public abstract class EvidenceGeneratorOnline extends TemporalEvidenceGenerator {
 
 	private Collection<String> hiddenQueryStrings;
 	private Collection queries;
@@ -65,8 +68,7 @@ public abstract class OPFevidenceGenerator extends TemporalEvidenceGenerator {
 				lastTimeStep);
 	}
 	
-	public static boolean userInput = false;
-	public OPFevidenceGenerator(Model model, Collection queryStrings, Communicator in) {
+	public EvidenceGeneratorOnline(Model model, Collection queryStrings, Communicator in) {
 		super(model, Util.list(), queryStrings);
 		this.in = in;
 	}

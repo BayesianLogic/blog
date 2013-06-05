@@ -1,4 +1,4 @@
-package blog.engine.onlinePF;
+package blog.engine.onlinePF.PFEngine;
 
 import java.util.Iterator;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import blog.engine.Particle;
+import blog.engine.onlinePF.ObservabilitySignature;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.Evidence;
@@ -71,7 +72,6 @@ public class PFEngineSampled extends PFEngineOnline{
 		resamplePartitionAndParticlesTimer.startTimer();
 
 		Integer sampledOSindex = sampleOS();
-		ObservabilitySignature foo = new ObservabilitySignature();
 		ObservabilitySignature selectedOS = ObservabilitySignature.getOSbyIndex(sampledOSindex);
 		selectedOS.prepareEvidence();
 		Evidence ev = selectedOS.getEvidence();
@@ -89,18 +89,8 @@ public class PFEngineSampled extends PFEngineOnline{
 
 	public void takeDecision(Evidence evidence){
 		if (!evidence.isEmpty()) { 
-			for (Iterator it = particles.iterator(); it.hasNext();) {
-				Particle p = (Particle) it.next();
+			for (TimedParticle p : particles) {
 				p.take(evidence);
-			}
-			double sum = 0;
-			ListIterator particleIt = particles.listIterator();
-			while (particleIt.hasNext()) {
-				Particle particle = (Particle) particleIt.next();
-				if (particle.getLatestWeight() == 0.0) {
-					particleIt.remove();
-				} else
-					sum += particle.getLatestWeight();
 			}
 			if (particles.size() == 0)
 				throw new IllegalArgumentException("All particles have zero weight");

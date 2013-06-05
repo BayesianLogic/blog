@@ -9,9 +9,9 @@ import blog.common.cmdline.BooleanOption;
 import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.onlinePF.FileCommunicator;
-import blog.engine.onlinePF.OPFevidenceGenerator;
-import blog.engine.onlinePF.PFRunnerSampled;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorOnline;
 import blog.engine.onlinePF.inverseBucket.UBT;
+import blog.engine.onlinePF.runner.PFRunnerSampled;
 
 public class MainRunner {
 	public static HashMap<String, AbstractOption> runtimeOptions = new HashMap<String, AbstractOption>();
@@ -82,8 +82,8 @@ public class MainRunner {
 			System.exit(0);
 		}
 		else if(((StringOption) runtimeOptions.get("mode")).getValue().equals("online")){
-			PFRunnerSampled.vanilla = true;
-			OPFevidenceGenerator.userInput = userInput.getValue();
+			//PFRunnerSampled.vanilla = true; TODO: figure out what the variable vanilla is for
+			//EvidenceGeneratorOnline.userInput = userInput.getValue(); TODO: figure out what userInput is for
 			DepthFirstPolicyEvaluationRunner.main(args);
 		}
 		PFRunnerSampled runner = suu.makeSampledRunner(
