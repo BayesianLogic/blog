@@ -102,16 +102,16 @@ public class PFRunnerOnline{
 		int i = 0;
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
-			if (i==0)
-				System.err.println(averageQueryResult(query));
-			/*
+			//if (i==0)
+			//	System.err.println(averageQueryResult(query));
+			
 			if (i==0)
 				query.printResults(UBT.valueOutput.p);
 			if (i==1)
 				query.printResults(UBT.valueOutput2.p);
 			if (i==2)
 				query.printResults(UBT.valueOutput3.p);
-			*/
+			
 			i++;
 		}
 		particleFilter.printResultToCommunicator(queries, queryResultCommunicator);
@@ -119,7 +119,7 @@ public class PFRunnerOnline{
 		UBT.outputRunTime();
 		UBT.dataOutput.printInput("Time for timestep "+ evidenceGenerator.lastTimeStep + " is " + UBT.runTimeTimer.elapsedTime());
 		UBT.runTimeTimer.startTimer();
-        //UBT.worldOutput.printInput("Sample world "+ Util.getFirst(particleFilter.particles).toString());		
+        UBT.worldOutput.printInput("Sample world "+ Util.getFirst(particleFilter.particles).toString());		
 	}
 
 

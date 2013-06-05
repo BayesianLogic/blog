@@ -70,7 +70,7 @@ public class SUU {
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
 		Util.initRandom(true);
-		Util.setVerbose(true);
+		Util.setVerbose(false);
 		
 	}
 
