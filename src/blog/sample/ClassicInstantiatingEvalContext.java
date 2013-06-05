@@ -101,7 +101,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 		this.respVarsAndContexts = new LinkedHashMap();
 	}
 
-	static HashMap instantiatedVars = new HashMap();
+	//static HashMap instantiatedVars = new HashMap();
 	/**
 	 * Creates a new InstantiatingEvalContext with the given sequence of
 	 * responsible variables.
@@ -161,6 +161,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 
 	protected Object instantiate(VarWithDistrib var) {
 		var.ensureStable();
+		HashMap instantiatedVars = AbstractPartialWorld.instantiatedVars;
 		if (instantiatedVars.containsKey(var))
 			var = (VarWithDistrib) instantiatedVars.get(var);
 		else

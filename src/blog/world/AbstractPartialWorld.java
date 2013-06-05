@@ -1215,7 +1215,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		UBT.specialTimingData2 += (timer.elapsedTime());
 		return rtn;
 	}
-	
+	//for storing instantiatedVars so they are shared across worlds
+	public static HashMap instantiatedVars = new HashMap();
 	protected HashMap changedVarToValue = new HashMap();
 	public HashMap getChangedBasicVars (){
 		return changedVarToValue;
@@ -1225,6 +1226,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		return chanegdObservableToReferenced;
 	}
 	public void emptyChanged(){
+		instantiatedVars.clear();
 		changedVarToValue.clear();
 		chanegdObservableToReferenced.clear();
 	}
