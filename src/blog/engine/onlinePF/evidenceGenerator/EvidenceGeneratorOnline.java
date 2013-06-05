@@ -42,9 +42,11 @@ public abstract class EvidenceGeneratorOnline {
 	
 	public EvidenceGeneratorOnline(Model model, Collection queryStrings, Communicator in) {
 		this.model = model;
-		queryInstantiator = new TemporalQueriesInstantiator(model, queryStrings);
+		queryInstantiator = new TemporalQueriesInstantiator(model, makeQueryTemplates(queryStrings));
 		this.in = in;
 	}
+	
+
 	
 	/**
 	 * Provides the query instantiations according to current time step, for use
@@ -240,6 +242,16 @@ public abstract class EvidenceGeneratorOnline {
 	/** Provides the latest instantiated queries. */
 	public Collection getLatestQueries() {
 		return latestQueries;
+	}
+	private static LinkedList makeQueryTemplates(Collection queryStrings) {
+		LinkedList list = new LinkedList();
+		for (Iterator it = queryStrings.iterator(); it.hasNext();) {
+			String queryString = (String) it.next();
+			String template = "query " + queryString + ";";
+			list.add(template);
+		}
+
+		return list;
 	}
 
 	Evidence latestObservation;

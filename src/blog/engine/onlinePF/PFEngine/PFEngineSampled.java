@@ -22,11 +22,6 @@ public class PFEngineSampled extends PFEngineOnline{
 
 
 	@Override
-	public void beforeTakingEvidence() {
-		super.beforeTakingEvidence();		
-	}
-
-	@Override
 	public void afterAnsweringQueries() {
 		for (TimedParticle p : particles)
 			p.advanceTimestep();

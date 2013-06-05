@@ -174,19 +174,6 @@ public class PFEnginePartitioned extends PFEngineOnline {
 	}
 	
 	/**
-	 * updates query with particles from osIndex
-	 * @param queries
-	 * @param osIndex
-	 */
-	private void updateQuery(Collection queries, Integer osIndex){
-		for (Query q : (Collection<Query>)queries)
-			q.zeroOut();
-		for (TimedParticle p : particles) {
-			p.answer(queries);
-		}
-	}
-	
-	/**
 	 * updates partitions
 	 */
 	public void repartition(){
@@ -216,7 +203,17 @@ public class PFEnginePartitioned extends PFEngineOnline {
 		
 	}
 	
-	
+	/**
+	 * If particle has null OS this is most likely the cause
+	 */
+	@Override
+	protected TimedParticle makeParticle(Set idTypes) {
+		TimedParticle tp = new TimedParticle(idTypes, 1, particleSampler);
+		ObservabilitySignature os = new ObservabilitySignature();
+		os.update(tp);
+		tp.setOS(os.getIndex());
+		return tp;
+	}
 
 	
 	public Map<Integer, List<TimedParticle>> getPartitions(){
@@ -224,21 +221,27 @@ public class PFEnginePartitioned extends PFEngineOnline {
 	}
 
 	public Map<Integer, List<TimedParticle>> partitions;
+	
 
-	@Override
-	protected TimedParticle makeParticle(Set idTypes) {
-		return new TimedParticle(idTypes, 1, particleSampler);
-	}
 
 
 	@Override
 	public void afterAnsweringQueries() {
-		for (TimedParticle p : particles)
+		for (TimedParticle p : particles){
 			p.advanceTimestep();
+			updateOS(p);
+		}
+		
 		repartition();
 		//resample();
 		//TODO: currently does not resample 
 		if (UBT.dropHistory)
 			dropHistory();
+	}
+
+	private void updateOS(TimedParticle p){
+		ObservabilitySignature newOS = ObservabilitySignature.getOSbyIndex(p.getOS()).spawnChild(p);
+		Integer newOSIndex = newOS.getIndex();
+		p.setOS(newOSIndex);
 	}
 }
