@@ -8,14 +8,13 @@ import blog.common.cmdline.AbstractOption;
 import blog.common.cmdline.BooleanOption;
 import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
-import blog.engine.onlinePF.FileCommunicator;
+import blog.engine.onlinePF.Util.FileCommunicator;
 import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorOnline;
 import blog.engine.onlinePF.inverseBucket.UBT;
+import blog.engine.onlinePF.runner.PFRunnerPartitioned;
 import blog.engine.onlinePF.runner.PFRunnerSampled;
 
 public class MainRunner {
-	public static HashMap<String, AbstractOption> runtimeOptions = new HashMap<String, AbstractOption>();
-
 	public static void main(String[] args) {
 		blog.common.cmdline.Parser
 				.setProgramDesc("Bayesian Logic (BLOG) inference engine");
@@ -23,93 +22,155 @@ public class MainRunner {
 				.setUsageLine("Usage: runblog <file1> ... <fileN>");
 
 		SUU suu = new SUU();
-		StringOption mode = new StringOption("o", "mode",
+		
+		/**
+		 * The following options specify the mode,
+		 * they significantly affect how the particle filter will be used
+		 */
+		StringOption mode = new StringOption("m", "mode",
 				"policyeval",
 				"offline, online or policyeval");
-		runtimeOptions.put("mode", mode);
+		OptionsCollection.mode = mode;
+		
+		BooleanOption breadthFirst = new BooleanOption("b", "breadthfirst", false,
+				"Breadth first policy eval?");
+		OptionsCollection.breadthFirst = breadthFirst;
+		
+		BooleanOption inverseBucket = new BooleanOption("i", "inversebucket", false,
+				"Whether to use inverse bucketing");
+		OptionsCollection.inverseBucket = inverseBucket;
+		
+		BooleanOption userInput = new BooleanOption("v", "userinput", false,
+				"Whether history should be dropped");
+		OptionsCollection.userInput = userInput;
+		
+		
+		/**
+		 * The following options do not affect the main mode of operation
+		 */
 		BooleanOption dropHistory = new BooleanOption("d", "drophistory", false,
 				"Whether history should be dropped");
-		runtimeOptions.put("drop history", dropHistory);
+		OptionsCollection.dropHistory = dropHistory;
+		
 		IntOption numParticles = new IntOption("n", "num_particles", 1000,
 				"Use n particles");
-		runtimeOptions.put("numparticles", numParticles);
+		OptionsCollection.numParticles = numParticles;
+		
 		IntOption numTimesteps = new IntOption("t", "num_timesteps", 100,
 				"Run for t timesteps");
-		runtimeOptions.put("numtimesteps", numTimesteps);
+		OptionsCollection.numTimesteps = numTimesteps;
+		
+		
+		/**
+		 * The following inputs specify the file names
+		 * the model file does not require a flag
+		 */
 		StringOption policyFile = new StringOption("p", "policy_file",
 				"ex_inprog//logistics//policies//donothingpolicy",
 				"Path of policy file <s>");
-		runtimeOptions.put("policyfile", policyFile);
-		BooleanOption breadthFirst = new BooleanOption("b", "breadthfirst", false,
-				"Breadth first policy eval?");
-		runtimeOptions.put("breadthFirst", breadthFirst);
+		OptionsCollection.policyFile = policyFile;
+		
 		StringOption queryFile = new StringOption("q", "query_file",
 				"ex_inprog//logistics//policies//forced_query",
 				"Path of query file <s>");
-		runtimeOptions.put("queryfile", queryFile);
+		OptionsCollection.queryFile = queryFile;
+		
 		StringOption logName = new StringOption("s", "logName", "0",
 				"Name that identifies the output files");
-		runtimeOptions.put("logname", logName);
-		BooleanOption inverseBucket = new BooleanOption("i", "inverseBucket", false,
-				"Whether history should be dropped");
-		runtimeOptions.put("inverseBucket", inverseBucket);
-		BooleanOption userInput = new BooleanOption("v", "userInput", false,
-				"Whether history should be dropped");
-		runtimeOptions.put("userInput", userInput);
-		List<String> filenames = blog.common.cmdline.Parser.parse(args);
+		OptionsCollection.logName = logName;
 		
-		suu.setNumParticle(((IntOption) runtimeOptions.get("numparticles")).getValue());
-		UBT.dropHistory = dropHistory.getValue();
+		List<String> filenames = filenames = blog.common.cmdline.Parser.parse(args);
+		OptionsCollection.filenames = filenames;
 		
-		if(((StringOption) runtimeOptions.get("mode")).getValue().equals("offline")){
+		
+		suu.setNumParticle( OptionsCollection.numParticles.getValue());
+		UBT.dropHistory = OptionsCollection.dropHistory.getValue();
+		
+		if(OptionsCollection.mode.getValue().equals("offline")){
 			filenames.add("-e");
 			filenames.add("blog.engine.ParticleFilter");
 			filenames.add("-n");
-			filenames.add("" + ((IntOption) runtimeOptions.get("numparticles")).getValue());
+			filenames.add("" + OptionsCollection.numParticles.getValue());
 			filenames.add("-r");
 			String[] arguments = Arrays.copyOf((filenames.toArray()), (filenames.toArray()).length, String[].class);
 			blog.Main.main(arguments);
 			System.exit(0);
 		}
-		else if(((StringOption) runtimeOptions.get("mode")).getValue().equals("policyeval")){
+		else if(OptionsCollection.mode.getValue().equals("policyeval")){
 			if (!breadthFirst.getValue())
-				DepthFirstPolicyEvaluationRunner.main(args);
+				depthFirstMain();
 			else {
 				if (!inverseBucket.getValue()){
-					BreadthFirstPolicyEvaluationRunner.main(args);
+					breadthFirstMain();
 				}
 			}
 			System.exit(0);
 		}
-		else if(((StringOption) runtimeOptions.get("mode")).getValue().equals("online")){
-			//PFRunnerSampled.vanilla = true; TODO: figure out what the variable vanilla is for
-			//EvidenceGeneratorOnline.userInput = userInput.getValue(); TODO: figure out what userInput is for
-			DepthFirstPolicyEvaluationRunner.main(args);
+		else if(OptionsCollection.mode.getValue().equals("online")){
+			System.err.println("error in iteractive mode: corrupt pipe");
+			System.exit(1);
 		}
-		PFRunnerSampled runner = suu.makeSampledRunner(
-				filenames,
-				((StringOption) runtimeOptions.get("policyfile")).getValue(),
-				((StringOption) runtimeOptions.get("queryfile")).getValue());
-		runner.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
-		UBT.valueOutput = new FileCommunicator("randomstuff//log" + (((StringOption) runtimeOptions.get("logname")).getValue())
-				+ ".log");
-		UBT.worldOutput = new FileCommunicator("randomstuff//world" + (((StringOption) runtimeOptions.get("logname")).getValue())
-				+ ".log");
-		UBT.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
-		// SampledParticleFilterRunner runner =
-		// suu.makeRunner("ex_inprog//logistics//policies//monopoly_markov.mblog",
-		// "ex_inprog//logistics//policies//donothingpolicy");
-		// SampledParticleFilterRunner runner =
-		// suu.makeRunner("ex_inprog//logistics//policies//monopoly_color_wp.mblog",
-		// "ex_inprog//logistics//policies//monopoly_policy");
-		runner.run();
-
 	}
 
-	/*
-	 * public static void main (String[] args){ SUU suu = new SUU();
-	 * suu.setNumParticle(100); SampledParticleFilterRunner runner =
-	 * suu.makeRunner("ex_inprog//logistics//policies//test.mblog",
-	 * "ex_inprog//logistics//policies//test_policy"); runner.run(); }
-	 */
+
+	public static void depthFirstMain() {
+
+		SUU suu = new SUU();
+		suu.setNumParticle(OptionsCollection.numParticles.getValue());
+
+		PFRunnerSampled runner = suu.makeSampledRunner(
+				OptionsCollection.filenames,
+				OptionsCollection.policyFile.getValue(),
+				OptionsCollection.queryFile.getValue());
+		runner.numtstep = (OptionsCollection.numTimesteps).getValue();
+		UBT.valueOutput = new FileCommunicator("randomstuff//" + (OptionsCollection.logName.getValue()) + "val.log"
+				+ "0.log");
+		UBT.valueOutput2 = new FileCommunicator("randomstuff//" + (OptionsCollection.logName.getValue()) + "val.log"
+				+ "1.log");
+		UBT.valueOutput3 = new FileCommunicator("randomstuff//" + (OptionsCollection.logName.getValue()) + "val.log"
+				+ "2.log");
+		UBT.worldOutput = new FileCommunicator("randomstuff//" + (OptionsCollection.logName.getValue()) + "world.log"
+				+ ".log");
+		runner.run();
+	}
+	public static void breadthFirstMain() {
+
+		SUU suu = new SUU();
+		suu.setNumParticle(OptionsCollection.numParticles.getValue());
+
+		PFRunnerPartitioned runner = suu.makeBFRunner(
+				OptionsCollection.filenames,
+				OptionsCollection.policyFile.getValue(),
+				OptionsCollection.queryFile.getValue());
+		runner.numtstep = (OptionsCollection.numTimesteps).getValue();
+		UBT.valueOutput = new FileCommunicator("randomstuff//" + (OptionsCollection.logName.getValue()) + "val.log"
+				+ "0.log");
+		UBT.valueOutput2 = new FileCommunicator("randomstuff//" + (OptionsCollection.logName.getValue()) + "val.log"
+				+ "1.log");
+		UBT.valueOutput3 = new FileCommunicator("randomstuff//" + (OptionsCollection.logName.getValue()) + "val.log"
+				+ "2.log");
+		UBT.worldOutput = new FileCommunicator("randomstuff//" + (OptionsCollection.logName.getValue()) + "world.log"
+				+ ".log");
+		runner.run();
+	}
+	public static void interactivetMain() {
+
+		SUU suu = new SUU();
+		suu.setNumParticle(OptionsCollection.numParticles.getValue());
+
+		PFRunnerPartitioned runner = suu.makeBFRunner(
+				OptionsCollection.filenames,
+				OptionsCollection.policyFile.getValue(),
+				OptionsCollection.queryFile.getValue());
+		runner.numtstep = (OptionsCollection.numTimesteps).getValue();
+		UBT.valueOutput = new FileCommunicator("randomstuff//" + (OptionsCollection.logName.getValue()) + "val.log"
+				+ "0.log");
+		UBT.valueOutput2 = new FileCommunicator("randomstuff//" + (OptionsCollection.logName.getValue()) + "val.log"
+				+ "1.log");
+		UBT.valueOutput3 = new FileCommunicator("randomstuff//" + (OptionsCollection.logName.getValue()) + "val.log"
+				+ "2.log");
+		UBT.worldOutput = new FileCommunicator("randomstuff//" + (OptionsCollection.logName.getValue()) + "world.log"
+				+ ".log");
+		runner.run();
+	}
 }

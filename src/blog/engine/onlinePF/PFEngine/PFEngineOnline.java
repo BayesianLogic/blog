@@ -46,7 +46,7 @@ import java.util.Set;
 import blog.common.Histogram;
 import blog.common.Util;
 import blog.engine.InferenceEngine;
-import blog.engine.onlinePF.Communicator;
+import blog.engine.onlinePF.Util.Communicator;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.ArgSpecQuery;

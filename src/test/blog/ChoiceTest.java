@@ -14,7 +14,7 @@ import blog.common.Histogram;
 import blog.common.Util;
 import blog.engine.ParticleFilterRunnerOnline;
 import blog.engine.ParticleFilter;
-import blog.engine.onlinePF.ParticleFilterRunnerOnlinePartitioned;
+import blog.engine.onlinePF.unused.ParticleFilterRunnerOnlinePartitioned;
 import blog.model.ArgSpecQuery;
 import blog.model.DecisionEvidenceStatement;
 import blog.model.Evidence;

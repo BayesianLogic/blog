@@ -1,4 +1,6 @@
-package blog.engine.onlinePF;
+package blog.engine.onlinePF.absyn;
+
+
 public class ConditionChecker{
 	String queryTemplate;
 	Double threshold;

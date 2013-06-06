@@ -6,7 +6,7 @@ import java.util.List;
 import blog.common.cmdline.AbstractOption;
 import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
-import blog.engine.onlinePF.FileCommunicator;
+import blog.engine.onlinePF.Util.FileCommunicator;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.engine.onlinePF.runner.PFRunnerSampled;
 

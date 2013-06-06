@@ -4,7 +4,7 @@ import java.util.*;
 
 import blog.common.EZIterator;
 import blog.engine.ParticleFilter;
-import blog.engine.onlinePF.PartitionedParticleFilter;
+import blog.engine.onlinePF.unused.PartitionedParticleFilter;
 import blog.model.Evidence;
 import blog.model.Model;
 

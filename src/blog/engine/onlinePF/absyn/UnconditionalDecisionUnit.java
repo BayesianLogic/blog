@@ -1,4 +1,5 @@
-package blog.engine.onlinePF;
+package blog.engine.onlinePF.absyn;
+
 
 public class UnconditionalDecisionUnit extends DecisionUnit{
 	String decisionTemplate;

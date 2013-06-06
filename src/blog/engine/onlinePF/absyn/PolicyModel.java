@@ -1,4 +1,4 @@
-package blog.engine.onlinePF;
+package blog.engine.onlinePF.absyn;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import blog.engine.onlinePF.Util.FileCommunicator;
 import blog.engine.onlinePF.parser.Parse;
 import blog.engine.onlinePF.parser.Semant;
 

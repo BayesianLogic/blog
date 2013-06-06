@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import blog.engine.onlinePF.FileCommunicator;
+import blog.engine.onlinePF.Util.FileCommunicator;
 
 public class TextProcessor {
 	public static void main (String[] args) throws IOException{

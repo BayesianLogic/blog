@@ -5,7 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
-import blog.engine.onlinePF.Communicator;
+
+import blog.engine.onlinePF.Util.Communicator;
 import blog.model.Model;
 
 

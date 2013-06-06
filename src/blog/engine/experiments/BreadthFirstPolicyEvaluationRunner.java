@@ -6,10 +6,10 @@ import java.util.List;
 import blog.common.cmdline.AbstractOption;
 import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
-import blog.engine.onlinePF.FileCommunicator;
-import blog.engine.onlinePF.ParticleFilterRunnerOnlinePartitioned;
+import blog.engine.onlinePF.Util.FileCommunicator;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.engine.onlinePF.runner.PFRunnerSampled;
+import blog.engine.onlinePF.unused.ParticleFilterRunnerOnlinePartitioned;
 
 public class BreadthFirstPolicyEvaluationRunner {
 	public static HashMap<String, AbstractOption> runtimeOptions = new HashMap<String, AbstractOption>();
@@ -46,7 +46,7 @@ public class BreadthFirstPolicyEvaluationRunner {
 		UBT.worldOutput = new FileCommunicator("randomstuff//world" + (((StringOption) runtimeOptions.get("logname")).getValue())
 				+ ".log");
 		UBT.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
-
+/*
 		ParticleFilterRunnerOnlinePartitioned runner = suu.makeBFRunner(
 				filenames,
 				((StringOption) runtimeOptions.get("policyfile")).getValue(),
@@ -54,7 +54,7 @@ public class BreadthFirstPolicyEvaluationRunner {
 		runner.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
 
 		runner.run();
-
+*/
 	}
 
 }

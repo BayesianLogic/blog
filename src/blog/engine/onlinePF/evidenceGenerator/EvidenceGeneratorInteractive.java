@@ -5,7 +5,7 @@ import java.util.List;
 
 import blog.common.Util;
 import blog.engine.onlinePF.CmdCommunicator;
-import blog.engine.onlinePF.Communicator;
+import blog.engine.onlinePF.Util.Communicator;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;

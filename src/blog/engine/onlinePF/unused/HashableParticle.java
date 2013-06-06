@@ -1,4 +1,4 @@
-package blog.engine.onlinePF;
+package blog.engine.onlinePF.unused;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -7,6 +7,7 @@ import java.util.Set;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.engine.Particle;
+import blog.engine.onlinePF.ObservableRandomFunction;
 import blog.model.Model;
 import blog.model.RandomFunction;
 import blog.sample.Sampler;

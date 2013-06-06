@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 import blog.common.Util;
-import blog.engine.onlinePF.Communicator;
-import blog.engine.onlinePF.PolicyModel;
-import blog.engine.onlinePF.QueryResult;
+import blog.engine.onlinePF.Util.Communicator;
+import blog.engine.onlinePF.absyn.PolicyModel;
+import blog.engine.onlinePF.absyn.QueryResult;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;

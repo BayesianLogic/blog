@@ -12,7 +12,7 @@ import blog.DBLOGUtil;
 import blog.TemporalQueriesInstantiator;
 import blog.common.Util;
 import blog.engine.ParticleFilterRunner;
-import blog.engine.onlinePF.Communicator;
+import blog.engine.onlinePF.Util.Communicator;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -38,7 +38,7 @@ public abstract class EvidenceGeneratorOnline {
 	//originally stuff from TemporalPartialWorld
 	public int lastTimeStep = -1;
 	private Collection latestQueries;
-	
+	private Collection a;
 	
 	public EvidenceGeneratorOnline(Model model, Collection queryStrings, Communicator in) {
 		this.model = model;

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
+import blog.engine.onlinePF.Util.Communicator;
+
 public class CmdCommunicator extends Communicator{
 	private BufferedReader b;
 	public CmdCommunicator (){

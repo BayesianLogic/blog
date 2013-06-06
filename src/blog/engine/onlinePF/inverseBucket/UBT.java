@@ -3,7 +3,7 @@ package blog.engine.onlinePF.inverseBucket;
 import java.util.ArrayList;
 import java.util.Timer;
 
-import blog.engine.onlinePF.FileCommunicator;
+import blog.engine.onlinePF.Util.FileCommunicator;
 
 public class UBT {
 	public static boolean dropHistory = true;

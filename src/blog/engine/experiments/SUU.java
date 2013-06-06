@@ -7,9 +7,10 @@ import java.util.Properties;
 
 import blog.Main;
 import blog.common.Util;
-import blog.engine.onlinePF.ParticleFilterRunnerOnlinePartitioned;
-import blog.engine.onlinePF.PolicyModel;
+import blog.engine.onlinePF.absyn.PolicyModel;
+import blog.engine.onlinePF.runner.PFRunnerPartitioned;
 import blog.engine.onlinePF.runner.PFRunnerSampled;
+import blog.engine.onlinePF.unused.ParticleFilterRunnerOnlinePartitioned;
 import blog.model.Evidence;
 import blog.model.Model;
 
@@ -53,7 +54,7 @@ public class SUU {
 	 * @param queryFile
 	 * @return
 	 */
-	public ParticleFilterRunnerOnlinePartitioned makeBFRunner(List modelFilePath, String policyFilePath, String queryFile) {
+	public PFRunnerPartitioned makeBFRunner(List modelFilePath, String policyFilePath, String queryFile) {
 		query_parser file = new query_parser(queryFile);
 		Collection linkStrings = Util.list();
 		Collection queryStrings = file.queries;//Util.list("capital(0, t)", "rentPaymentRequired(0, 1, t)", "rentPaymentRequired(1, 0, t)", "owner(0, t)", "observation_rent(t)");
@@ -61,10 +62,11 @@ public class SUU {
 		setModel(modelFilePath);
 		PolicyModel pm = PolicyModel.policyFromFile(policyFilePath);
 		
-		ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(
-				model, linkStrings, queryStrings, properties, pm);
+		PFRunnerPartitioned runner = new PFRunnerPartitioned(
+				model, queryStrings, properties, pm);
 		return runner;
 	}
+
 	private static void setDefaultParticleFilterProperties() {
 		properties.setProperty("numParticles", "1000");
 		properties.setProperty("useDecayedMCMC", "false");

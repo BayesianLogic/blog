@@ -1,6 +1,6 @@
 package blog.engine;
 
-import blog.engine.onlinePF.PolicyModel;
+import blog.engine.onlinePF.absyn.PolicyModel;
 import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorwPolicy;
 import blog.model.ArgSpecQuery;
 import blog.model.Model;

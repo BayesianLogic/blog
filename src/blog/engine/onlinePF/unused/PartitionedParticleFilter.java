@@ -33,7 +33,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog.engine.onlinePF;
+package blog.engine.onlinePF.unused;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +50,7 @@ import blog.DBLOGUtil;
 import blog.common.Util;
 import blog.engine.InferenceEngine;
 import blog.engine.Particle;
+import blog.engine.onlinePF.ObservabilitySignature;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.Evidence;

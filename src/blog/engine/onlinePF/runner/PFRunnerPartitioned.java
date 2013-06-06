@@ -3,8 +3,8 @@ package blog.engine.onlinePF.runner;
 import java.util.*;
 
 import blog.engine.onlinePF.ObservableRandomFunction;
-import blog.engine.onlinePF.PolicyModel;
 import blog.engine.onlinePF.PFEngine.PFEnginePartitioned;
+import blog.engine.onlinePF.absyn.PolicyModel;
 import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorwPolicy;
 import blog.model.Evidence;
 import blog.model.Model;

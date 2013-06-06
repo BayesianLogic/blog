@@ -3,10 +3,11 @@
  */
 package blog.engine.onlinePF.parser;
 
-import blog.engine.onlinePF.FileCommunicator;
-import blog.engine.onlinePF.PolicyModel;
-import blog.engine.onlinePF.QueryResult;
+import blog.engine.onlinePF.Util.FileCommunicator;
 import blog.engine.onlinePF.absyn.Absyn;
+import blog.engine.onlinePF.absyn.PolicyModel;
+import blog.engine.onlinePF.absyn.QueryResult;
+
 import java.io.InputStream;
 
 public class Parse {

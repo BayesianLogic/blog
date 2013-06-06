@@ -6,14 +6,14 @@ import blog.common.Histogram;
 import blog.common.UnaryProcedure;
 import blog.common.Util;
 import blog.engine.Particle;
-import blog.engine.onlinePF.Communicator;
-import blog.engine.onlinePF.FileCommunicator;
-import blog.engine.onlinePF.PipedCommunicator;
-import blog.engine.onlinePF.SampledPartitionedParticleFilter;
 import blog.engine.onlinePF.PFEngine.PFEngineOnline;
+import blog.engine.onlinePF.Util.Communicator;
+import blog.engine.onlinePF.Util.FileCommunicator;
+import blog.engine.onlinePF.Util.PipedCommunicator;
 import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorOnline;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
+import blog.engine.onlinePF.unused.SampledPartitionedParticleFilter;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -46,6 +46,8 @@ public class PFRunnerOnline{
 		eviCommunicator = new PipedCommunicator();
 		queryResultCommunicator = new FileCommunicator("randomstuff//filecommunicator.log");
 	}
+	
+	
 	public PFRunnerOnline(Model model, Properties particleFilterProperties, int numtstep){
 		this.model = model;
 		this.particleFilterProperties = particleFilterProperties;
