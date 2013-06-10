@@ -7,9 +7,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
-
+/**
+ * Communicator implemented using filereaders/filewriters
+ * @author cheng
+ *
+ */
 public class FileCommunicator extends Communicator{
 	private BufferedReader b;
+	/**
+	 * Overloaded constructor
+	 * @param filename the string of the file to be used as a medium for printing/reading
+	 */
 	public FileCommunicator (String filename){
 		try {
 			p = new PrintStream(filename);

@@ -65,28 +65,11 @@ import blog.sample.Sampler;
 import blog.world.AbstractPartialWorld;
 
 /**
- * A Particle Filter. It works by keeping a set of {@link Particles}, each
- * representing a partial world, weighted by the
- * evidence. It uses the following properties: <code>numParticles</code> or
- * <code>numSamples</code>: number of particles (default is <code>1000</code>).
- * <code>useDecayedMCMC</code>: takes values <code>true</code> or
- * <code>false</code> (the default). Whether to use rejuvenation, presented by
- * W. R. Gilks and C. Berzuini.
- * "Following a moving target --- Monte Carlo inference for dynamic Bayesian models."
- * Journal of the Royal Statistical Society, Series B, 63:127--146, 2001.
- * <code>numMoves</code>: the number of moves used in specified by the property
- * given at construction time (default is <code>1</code>).
- * 
- * The ParticleFilter is an unusual {@link InferenceEngine} in that it takes
- * evidence and queries additional to the ones taken by
- * {@link #setEvidence(Evidence)} and {@link #setQueries(List)}. The evidence
- * set by {@link #setEvidence(Evidence)} is used in the very beginning of
- * inference (thus keeping the general InferenceEngine semantics for it) and the
- * queries set by {@link #setQueries(List)} are used by {@link #answerQueries()}
- * only (again keeping the original InferenceEngine semantics).
+ * Implementation of the particle filter engine that samples its own observations, keeps multiple buckets
+ * @author cheng
+ *
  */
 public class PFEnginePartitioned extends PFEngineOnline {
-
 
 
 	public PFEnginePartitioned(Model model, Properties properties) {
@@ -110,9 +93,7 @@ public class PFEnginePartitioned extends PFEngineOnline {
 	}
 
 	/**
-	 * A method making a particle (by default, {@link Particle}). Useful for
-	 * extensions using specialized particles (don't forget to specialize
-	 * {@link Particle#copy()} for it to return an object of its own class).
+	 * Makes a timed particle, and updates is observability signature
 	 */
 	protected TimedParticle makeParticle(Set idTypes, int numTimeSlicesInMemory) {
 		TimedParticle tp = new TimedParticle(idTypes, numTimeSlicesInMemory, particleSampler);
@@ -138,6 +119,12 @@ public class PFEnginePartitioned extends PFEngineOnline {
 	}
 
 
+	/**
+	 * Have all particles in the partition specified by osIndex take the evidence given
+	 * Only decision evidence is allowed to be taken this way
+	 * @param evidence (decision) evidence to be taken
+	 * @param osIndex index of ObservabilitySignature which identifies the partition to be used to take the evidence
+	 */
 	public void takeWithPartition(Evidence evidence, Integer osIndex) {
 		UBT.Stopwatch takeWithPartitionTimer = new UBT.Stopwatch();
 		takeWithPartitionTimer.startTimer();
@@ -159,13 +146,16 @@ public class PFEnginePartitioned extends PFEngineOnline {
 		UBT.takeWithPartitionTime += takeWithPartitionTimer.elapsedTime();
 	}
 	
+	/**
+	 * Overrides printResultToCommunicator in parent so that the query results for each partition is printed separately
+	 */
 	public void printResultToCommunicator(Collection queries, Communicator queryResultCommunicator){
 		//this.updateQuery(queries);
 		for (Integer osIndex: partitions.keySet()){
 			answerWithPartition(queries, osIndex);
 			for (Iterator it = queries.iterator(); it.hasNext();) {
 				ArgSpecQuery query = (ArgSpecQuery) it.next();
-				queryResultCommunicator.printInputNL(printQueryString(query));
+				queryResultCommunicator.printInputNL(formatQueryString(query));
 				queryResultCommunicator.printInputNL("-----");
 			}
 			queryResultCommunicator.printInput("");
@@ -174,7 +164,8 @@ public class PFEnginePartitioned extends PFEngineOnline {
 	}
 	
 	/**
-	 * updates partitions
+	 * After answering queries and taking evidence, the particles' ObservabilitySignatures are not out of date
+	 * updates the observabilitySignatures
 	 */
 	public void repartition(){
 		UBT.Stopwatch repartitionTimer = new UBT.Stopwatch();
@@ -204,7 +195,7 @@ public class PFEnginePartitioned extends PFEngineOnline {
 	}
 	
 	/**
-	 * If particle has null OS this is most likely the cause
+	 * Makes a timed particle, and updates is observability signature
 	 */
 	@Override
 	protected TimedParticle makeParticle(Set idTypes) {
@@ -220,11 +211,18 @@ public class PFEnginePartitioned extends PFEngineOnline {
 		return partitions;
 	}
 
+	/**
+	 * hashmap that mapes index of observability signature to list of particles with given observability signature
+	 */
 	public Map<Integer, List<TimedParticle>> partitions;
 	
 
 
 
+	/**
+	 * Overrides afterAnsweringQueries() in parent so as to call repartition() and updateOS(p) for all particles
+	 * DOES NOT resample, because evidence is always empty, so weights of particles are always 1
+	 */
 	@Override
 	public void afterAnsweringQueries() {
 		for (TimedParticle p : particles){
@@ -239,6 +237,10 @@ public class PFEnginePartitioned extends PFEngineOnline {
 			dropHistory();
 	}
 
+	/**
+	 * updates the observability signature of particle p
+	 * @param p
+	 */
 	private void updateOS(TimedParticle p){
 		ObservabilitySignature newOS = ObservabilitySignature.getOSbyIndex(p.getOS()).spawnChild(p);
 		Integer newOSIndex = newOS.getIndex();

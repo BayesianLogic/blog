@@ -69,13 +69,6 @@ import blog.world.AbstractPartialWorld;
  * <code>numMoves</code>: the number of moves used in specified by the property
  * given at construction time (default is <code>1</code>).
  * 
- * The ParticleFilter is an unusual {@link InferenceEngine} in that it takes
- * evidence and queries additional to the ones taken by
- * {@link #setEvidence(Evidence)} and {@link #setQueries(List)}. The evidence
- * set by {@link #setEvidence(Evidence)} is used in the very beginning of
- * inference (thus keeping the general InferenceEngine semantics for it) and the
- * queries set by {@link #setQueries(List)} are used by {@link #answerQueries()}
- * only (again keeping the original InferenceEngine semantics).
  */
 public abstract class PFEngineOnline extends InferenceEngine {
 
@@ -123,13 +116,16 @@ public abstract class PFEngineOnline extends InferenceEngine {
 		initialize();
 	}
 
-	/** Answers the queries provided at construction time. */
+	/** Does not work. */
 	public void answerQueries() {
 		System.err.println("answerQueries should not be called");
 		System.exit(1);
 	}
 
-
+	/**
+	 * Initializes particle filter by
+	 * - populating the particles arraylist
+	 */
 	protected void initialize() {
 		System.out.println("Using " + numParticles + " particles...");
 		if (evidence == null)
@@ -153,6 +149,10 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	 */
 	protected abstract TimedParticle makeParticle(Set idTypes);
 	
+	/**
+	 * takes evidence, does not work by default
+	 * @param evidence evidence to taken
+	 */
 	public void take(Evidence evidence) {
 		if (particles == null){ 
 			System.err.println("SampledPartitionedParticleFilter.take does not work right now");
@@ -165,8 +165,8 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	}
 	
 	/**
-	 * WARNING REMEMBER TO DROP HISTORY ADV TIMESTEP ETC
-	 * @param queries
+	 * answers the queries using existing particles
+	 * @param queries collection of queries to be answered
 	 */
 	public void answer(Collection queries) {
 		UBT.Stopwatch answerTimer = new UBT.Stopwatch();
@@ -175,12 +175,6 @@ public abstract class PFEngineOnline extends InferenceEngine {
 			Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
 		for (TimedParticle p : particles) {
 			p.answer(queries);
-			/*
-			if (UBT.dropHistory){
-				p.uninstantiatePreviousTimeslices();
-				p.removeAllDerivedVars();
-			}
-			*/
 		}
 		UBT.answerTime += answerTimer.elapsedTime();
 	}
@@ -198,9 +192,19 @@ public abstract class PFEngineOnline extends InferenceEngine {
 		}
 	}
 
+	/**
+	 * Actions to perform before evidence is taken
+	 * By default calls emptyCache only
+	 */
 	public void beforeTakingEvidence(){
 		emptyCache();
 	}
+	
+	/**
+	 * Actions to perform after answering queries
+	 * By default, increments the timestep of each particle
+	 * Also calls dropHistory if the option has been set 
+	 */
 	public void afterAnsweringQueries(){
 		for (TimedParticle p : particles)
 			p.advanceTimestep();
@@ -210,7 +214,7 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	}
 	
 	/**
-	 * updated particles
+	 * Resamples particles according to their weight
 	 */
 	public void resample() {
 		UBT.Stopwatch resampleTimer = new UBT.Stopwatch();
@@ -242,7 +246,6 @@ public abstract class PFEngineOnline extends InferenceEngine {
 		for (TimedParticle p : newParticles)
 			p.resetWeight();
 		particles = newParticles;
-		//repartition(); no longer repartition here.
 		UBT.resampleTime += resampleTimer.elapsedTime();
 	}
 	
@@ -268,7 +271,8 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	
 	
 	/**
-	 * Remember to clear listinterp!!!
+	 * Clears all variables associated with past time slices
+	 * Also clears the decisionInterps in abstractPartialWorld
 	 */
 	public void dropHistory(){
 		for (TimedParticle p : particles) {
@@ -278,7 +282,7 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	}
 	
 	/**
-	 * empties cached variables, should always be called
+	 * empties cached variables (cached variables are used for efficiently updating ObservabilitySignature), should always be called
 	 */
 	public void emptyCache(){
 		UBT.Stopwatch emptyCacheTimer = new UBT.Stopwatch();
@@ -288,18 +292,29 @@ public abstract class PFEngineOnline extends InferenceEngine {
 		UBT.emptyCacheTime += emptyCacheTimer.elapsedTime();
 	}
 	
+	/**
+	 * utility method for printing queries to a communicator
+	 * @param queries
+	 * @param queryResultCommunicator
+	 */
 	public void printResultToCommunicator(Collection queries, Communicator queryResultCommunicator){
 		//this.updateQuery(queries);
 		for (Iterator it = queries.iterator(); it.hasNext();) {
 			ArgSpecQuery query = (ArgSpecQuery) it.next();
-			queryResultCommunicator.printInputNL(printQueryString(query));
+			queryResultCommunicator.printInputNL(formatQueryString(query));
 			queryResultCommunicator.printInputNL("-----");
 		}
 		queryResultCommunicator.printInput("");
 		queryResultCommunicator.p.flush();
 	}
 	
-	protected static String printQueryString(ArgSpecQuery q) {
+	/**
+	 * produces a properly formatted representation of the query string, so
+	 * the policy model can parse it easily
+	 * @param q
+	 * @return
+	 */
+	protected static String formatQueryString(ArgSpecQuery q) {
 		String rtn = "";
 		rtn += q.getArgSpec().toString();
 		Histogram histogram = q.getHistogram();
@@ -316,6 +331,12 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	int numParticles;
 	public List<TimedParticle> particles; // of Particles
 	protected Sampler particleSampler;
+	
+	/**
+	 * Takes collection of decision evidence
+	 * does not work by default
+	 * @param evidence decisiion evidence to be taken
+	 */
 	public void takeDecision(Evidence evidence) {
 		if (!evidence.isEmpty()){
 			System.err.println("Decision evidence is not supported");

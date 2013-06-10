@@ -1,8 +1,6 @@
 package blog.engine.onlinePF.PFEngine;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Properties;
 import java.util.Set;
 
@@ -13,6 +11,11 @@ import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.Evidence;
 import blog.model.Model;
 
+/**
+ * Implementation of the particle filter engine that samples its own observations, keeps a single bucket
+ * @author cheng
+ *
+ */
 public class PFEngineSampled extends PFEngineOnline{
 
 	public PFEngineSampled(Model model, Properties properties) {
@@ -21,6 +24,12 @@ public class PFEngineSampled extends PFEngineOnline{
 	}
 
 
+	/**
+	 * Actions to perform after answering queries
+	 * Overrides the parent method in order to call 
+	 * - updateOSforAllParticles()
+	 * - retakeObservability()
+	 */
 	@Override
 	public void afterAnsweringQueries() {
 		for (TimedParticle p : particles)
@@ -35,10 +44,18 @@ public class PFEngineSampled extends PFEngineOnline{
 		
 	}
 	
+	/**
+	 * Samples a single observability signature, by sampling a single particle
+	 * according to its weight
+	 * @return the index of the sampled observability signature
+	 */
 	private Integer sampleOS(){
 		return ((TimedParticle) sampleParticle()).getOS();
 	}
 	
+	/**
+	 * Makes a timed particle, and updates is observability signature
+	 */
 	@Override
 	protected TimedParticle makeParticle(Set idTypes) {
 		TimedParticle tp = new TimedParticle(idTypes, 1, particleSampler);
@@ -47,6 +64,12 @@ public class PFEngineSampled extends PFEngineOnline{
 		tp.setOS(os.getIndex());
 		return tp;
 	}
+	
+	/**
+	 * updates the observabilitysignature for all particles
+	 * The particles themselves are up-to-date, but the observability signatures
+	 * referenced by them are not up to date.
+	 */
 	public void updateOSforAllParticles(){
 		for (TimedParticle p : (List<TimedParticle>) particles){
 			ObservabilitySignature newOS = ObservabilitySignature.getOSbyIndex(p.getOS()).spawnChild(p);
@@ -56,11 +79,11 @@ public class PFEngineSampled extends PFEngineOnline{
 	}
 	
 	/**
-	 * resamples partitions, currently only samples 1 partition
-	 * this is not the same as resampling particles
+	 * samples an observabilitySignature, then uninstantiates observability variables (at this timestep) 
+	 * for all particles. Finally, make all particles take the sampled observabilitySignature as evidence,
+	 * updating their weights accordingly (weight updates handled automatically by p.take(ev)
 	 * 
 	 * @param numPartitionSampled the number of partitions to be sampled
-	 * parallels number of particles in a particle filter
 	 */
 	public void retakeObservability() {
 		UBT.Stopwatch resamplePartitionAndParticlesTimer = new UBT.Stopwatch();
@@ -82,6 +105,10 @@ public class PFEngineSampled extends PFEngineOnline{
 		UBT.resamplePartitionAndParticlesTime += resamplePartitionAndParticlesTimer.elapsedTime();
 	}
 
+	
+	/**
+	 * Each particle takes the same decision evidence provided
+	 */
 	public void takeDecision(Evidence evidence){
 		if (!evidence.isEmpty()) { 
 			for (TimedParticle p : particles) {

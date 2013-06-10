@@ -9,7 +9,11 @@ import java.util.Collection;
 import blog.engine.onlinePF.Util.Communicator;
 import blog.model.Model;
 
-
+/**
+ * evidence generator from file
+ * @author cheng
+ *
+ */
 public class EvidenceGeneratorfFile extends EvidenceGeneratorOnline{
 
 	//br for obs/evidence

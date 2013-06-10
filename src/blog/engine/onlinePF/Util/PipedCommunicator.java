@@ -8,7 +8,10 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 
-
+/**
+ * Communicator implemented using pipedinput/output streams
+ * @author cheng
+ */
 public class PipedCommunicator extends Communicator {
 	public BufferedReader b;
 	public PipedCommunicator (){

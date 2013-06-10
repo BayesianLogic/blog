@@ -11,7 +11,11 @@ import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
 
-
+/**
+ * 
+ * @author cheng
+ *
+ */
 public class EvidenceGeneratorwPolicy extends EvidenceGeneratorOnline{
 
 	PolicyModel pm;
