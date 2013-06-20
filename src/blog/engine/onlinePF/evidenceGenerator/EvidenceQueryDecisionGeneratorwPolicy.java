@@ -16,11 +16,11 @@ import blog.model.Query;
  * @author cheng
  *
  */
-public class EvidenceGeneratorwPolicy extends EvidenceGeneratorOnline{
+public class EvidenceQueryDecisionGeneratorwPolicy extends EvidenceQueryDecisionGeneratorOnline{
 
 	PolicyModel pm;
 	Communicator resultCommunicator;
-	public EvidenceGeneratorwPolicy(Model model, Collection queryStrings,
+	public EvidenceQueryDecisionGeneratorwPolicy(Model model, Collection queryStrings,
 			Communicator eviCommunicator, Communicator resultCommunicator, PolicyModel pm) {
 		super(model, queryStrings, eviCommunicator);
 		this.pm = pm;
@@ -28,11 +28,11 @@ public class EvidenceGeneratorwPolicy extends EvidenceGeneratorOnline{
 	}
 	
 	@Override
-	public void updateObservationQuery(){
+	public void getUserObservationAndQuery(){
 		String s = pm.getQueries(lastTimeStep);
 		in.printInput(s);
 		in.printInput("");
-		super.updateObservationQuery();
+		super.getUserObservationAndQuery();
 	}
 	
 	@Override

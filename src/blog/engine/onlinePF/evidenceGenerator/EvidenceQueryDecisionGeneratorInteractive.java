@@ -11,20 +11,20 @@ import blog.model.Model;
 import blog.model.Query;
 
 
-public class EvidenceGeneratorInteractive extends EvidenceGeneratorOnline{
+public class EvidenceQueryDecisionGeneratorInteractive extends EvidenceQueryDecisionGeneratorOnline{
 	CmdCommunicator pm = new CmdCommunicator();
-	public EvidenceGeneratorInteractive(Model model, Collection queryStrings,
+	public EvidenceQueryDecisionGeneratorInteractive(Model model, Collection queryStrings,
 			Communicator eviCommunicator) {
 		super(model, queryStrings, eviCommunicator);
 	}
 	
 	@Override
-	public void updateObservationQuery(){
+	public void getUserObservationAndQuery(){
 		System.out.println("Enter Observation/Query for timestep "+ lastTimeStep);
 		String s = pm.readInput();
 		in.printInput(s);
 		in.printInput("");
-		super.updateObservationQuery();
+		super.getUserObservationAndQuery();
 	}
 	
 	@Override

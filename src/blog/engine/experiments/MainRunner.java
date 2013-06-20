@@ -9,7 +9,7 @@ import blog.common.cmdline.BooleanOption;
 import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.onlinePF.Util.FileCommunicator;
-import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorOnline;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorOnline;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.engine.onlinePF.runner.PFRunnerPartitioned;
 import blog.engine.onlinePF.runner.PFRunnerSampled;

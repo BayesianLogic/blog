@@ -9,7 +9,7 @@ import blog.engine.onlinePF.PFEngine.PFEngineOnline;
 import blog.engine.onlinePF.Util.Communicator;
 import blog.engine.onlinePF.Util.FileCommunicator;
 import blog.engine.onlinePF.Util.PipedCommunicator;
-import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorOnline;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorOnline;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
@@ -32,7 +32,7 @@ public class PFRunnerOnline{
 	public static Model model; //TODO: this is pretty hacky now to accomodate parsing in ObservabilitySignature
 	public PFEngineOnline particleFilter;
 	/** The evidence generator . */
-	public EvidenceGeneratorOnline evidenceGenerator;
+	public EvidenceQueryDecisionGeneratorOnline evidenceGenerator;
 
 	/** Properties for construction of particle filter. */
 	protected Properties particleFilterProperties;
@@ -67,8 +67,8 @@ public class PFRunnerOnline{
 	 */
 	protected void beforeEvidenceAndQueries() {
 		evidenceGenerator.queriesCacheInvalid = true;
-		evidenceGenerator.moveOn();
-		evidenceGenerator.updateObservationQuery();
+		evidenceGenerator.instantiateSOSQueries();
+		evidenceGenerator.getUserObservationAndQuery();
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class PFRunnerOnline{
 		particleFilter.answer(queries);
 		particleFilter.afterAnsweringQueries();
 		
-		afterEvidenceAndQueries();
+		postEvidenceAndQueryIO();
 	}
 	
 	
@@ -121,7 +121,7 @@ public class PFRunnerOnline{
 	 *   query result communicator
 	 * This class can be overriden to perform different tasks.
 	 */
-	protected void afterEvidenceAndQueries() {
+	protected void postEvidenceAndQueryIO() {
 		Collection queries = evidenceGenerator.getLatestQueries();
 		particleFilter.updateQuery(queries);
 		int i = 0;

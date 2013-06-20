@@ -5,7 +5,7 @@ import java.util.*;
 import blog.engine.onlinePF.ObservableRandomFunction;
 import blog.engine.onlinePF.PFEngine.PFEnginePartitioned;
 import blog.engine.onlinePF.absyn.PolicyModel;
-import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorwPolicy;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorwPolicy;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.RandomFunction;
@@ -36,7 +36,7 @@ public class PFRunnerPartitioned extends PFRunnerOnline {
 		for (RandomFunction orf: (List<RandomFunction>) model.getObsFun()){
 			queryStrings.add(((ObservableRandomFunction) orf).queryString);
 		}		
-		evidenceGenerator = new EvidenceGeneratorwPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
+		evidenceGenerator = new EvidenceQueryDecisionGeneratorwPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
 	}
 	
 	/**

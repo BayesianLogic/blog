@@ -8,7 +8,7 @@ import java.util.Set;
 
 import blog.engine.Particle;
 import blog.engine.onlinePF.ObservabilitySignature;
-import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorOnline;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorOnline;
 import blog.model.Evidence;
 import blog.model.Query;
 import blog.sample.Sampler;

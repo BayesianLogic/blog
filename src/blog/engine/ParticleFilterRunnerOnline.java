@@ -12,8 +12,8 @@ import blog.common.Util;
 import blog.engine.onlinePF.Util.Communicator;
 import blog.engine.onlinePF.Util.FileCommunicator;
 import blog.engine.onlinePF.Util.PipedCommunicator;
-import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorOnline;
-import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorInteractive;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorOnline;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorInteractive;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -47,7 +47,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		
 		Util.setVerbose(false);
 		
-		evidenceGenerator = new EvidenceGeneratorInteractive(model, queryStrings, eviCommunicator);//OPFevidenceGenerator(model, queryStrings, eviCommunicator);
+		evidenceGenerator = new EvidenceQueryDecisionGeneratorInteractive(model, queryStrings, eviCommunicator);//OPFevidenceGenerator(model, queryStrings, eviCommunicator);
 	}
 	
 	public void setUpStreams(){
@@ -86,7 +86,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	protected void beforeEvidenceAndQueries() {
 		//evidenceGenerator.moveOn(); // move generator so that evidence can be
 																// obtained.
-		evidenceGenerator.moveOn();
+		evidenceGenerator.instantiateSOSQueries();
 	}
 
 	//Cheng: overrode the moveOn in particleFilterRunner, mainly to gain access to evidenceGenerator
@@ -96,7 +96,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 		Evidence evidence;
 		Collection queries;
 		beforeEvidenceAndQueries();
-		evidenceGenerator.updateObservationQuery();
+		evidenceGenerator.getUserObservationAndQuery();
 		if ((evidence = evidenceGenerator.getLatestObservation()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
 			particleFilter.take(evidence);
 			particleFilter.answer(queries);
@@ -208,7 +208,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	}
 
 	/** The evidence generator . */
-	public EvidenceGeneratorOnline evidenceGenerator;
+	public EvidenceQueryDecisionGeneratorOnline evidenceGenerator;
 
 	/** Properties for construction of particle filter. */
 	protected Properties particleFilterProperties;

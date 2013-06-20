@@ -28,7 +28,7 @@ import blog.semant.Semant;
  * Defines/Redefines some methods in TemporalEvidenceGenerator to make it work for online particle filtering 
  */
 
-public abstract class EvidenceGeneratorOnline {
+public abstract class EvidenceQueryDecisionGeneratorOnline {
 
 	private Collection<String> hiddenQueryStrings;
 	private Collection queries;
@@ -40,7 +40,7 @@ public abstract class EvidenceGeneratorOnline {
 	private Collection latestQueries;
 	private Collection a;
 	
-	public EvidenceGeneratorOnline(Model model, Collection queryStrings, Communicator in) {
+	public EvidenceQueryDecisionGeneratorOnline(Model model, Collection queryStrings, Communicator in) {
 		this.model = model;
 		queryInstantiator = new TemporalQueriesInstantiator(model, makeQueryTemplates(queryStrings));
 		this.in = in;
@@ -106,7 +106,7 @@ public abstract class EvidenceGeneratorOnline {
 	/**
 	 * Augments the current world based on the given queries.
 	 */
-	public void moveOn() {
+	public void instantiateSOSQueries() {
 		lastTimeStep ++;
 		List<Query> queries = (List<Query>) getQueries(lastTimeStep);
 		for (Iterator it = queries.iterator(); it.hasNext();) {
@@ -115,7 +115,7 @@ public abstract class EvidenceGeneratorOnline {
 		latestQueries = queries;
 	}
 	
-	public void updateObservationQuery(){
+	public void getUserObservationAndQuery(){
 		List<Query> q = (List<Query>) getLatestQueries();
 		Evidence ev = new Evidence();
 		getInput(ev, q);

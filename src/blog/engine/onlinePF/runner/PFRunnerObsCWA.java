@@ -12,7 +12,7 @@ import blog.engine.onlinePF.ObservableRandomFunction;
 import blog.engine.onlinePF.PFEngine.PFEngineOP;
 import blog.engine.onlinePF.PFEngine.PFEngineOnline;
 import blog.engine.onlinePF.absyn.PolicyModel;
-import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorwPolicy;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorwPolicy;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.model.Evidence;
 import blog.model.FuncAppTerm;
@@ -44,7 +44,7 @@ public class PFRunnerObsCWA extends PFRunnerOnline{
 		for (RandomFunction orf: (List<RandomFunction>) model.getObsFun()){
 			queryStrings.add(((ObservableRandomFunction) orf).queryString);
 		}		
-		evidenceGenerator = new EvidenceGeneratorwPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
+		evidenceGenerator = new EvidenceQueryDecisionGeneratorwPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
 	}
 	
 	/**
@@ -61,12 +61,12 @@ public class PFRunnerObsCWA extends PFRunnerOnline{
 			System.exit(1);
 		}
 		particleFilter.beforeTakingEvidence();
-		this.augmentEvidence(evidence, queries);
+		this.includeCWA(evidence, queries);
 		particleFilter.take(evidence);
 		particleFilter.answer(queries);
 		particleFilter.afterAnsweringQueries();
 		
-		afterEvidenceAndQueries();
+		postEvidenceAndQueryIO();
 	}
 	
 	/**
@@ -77,7 +77,7 @@ public class PFRunnerObsCWA extends PFRunnerOnline{
 		return pf.particles.get(0).copy();
 	}
 	
-	private void augmentEvidence(Evidence evidence, Collection queries){
+	private void includeCWA(Evidence evidence, Collection queries){
 		TimedParticle tmp = getRepresentative(particleFilter);
 		tmp.answer(queries);
 		ObservabilitySignature newOS = ObservabilitySignature.getOSbyIndex(tmp.getOS()).spawnChild(tmp);

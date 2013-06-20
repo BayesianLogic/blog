@@ -17,8 +17,8 @@ import blog.engine.onlinePF.Util.Communicator;
 import blog.engine.onlinePF.Util.FileCommunicator;
 import blog.engine.onlinePF.Util.PipedCommunicator;
 import blog.engine.onlinePF.absyn.PolicyModel;
-import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorOnline;
-import blog.engine.onlinePF.evidenceGenerator.EvidenceGeneratorwPolicy;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorOnline;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorwPolicy;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.ArgSpecQuery;
@@ -69,7 +69,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		
 		//evidenceGenerator = new OPFevidenceGenerator(model, queryStrings, eviCommunicator);
 		
-		evidenceGenerator = new EvidenceGeneratorwPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
+		evidenceGenerator = new EvidenceQueryDecisionGeneratorwPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
 	}
 	
 	public void setUpStreams(){
@@ -108,7 +108,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	protected void beforeEvidenceAndQueries() {
 		//evidenceGenerator.moveOn(); // move generator so that evidence can be
 																// obtained.
-		evidenceGenerator.moveOn();
+		evidenceGenerator.instantiateSOSQueries();
 	}
 
 	//Cheng: overrode the moveOn in particleFilterRunner, mainly to gain access to evidenceGenerator
@@ -118,7 +118,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 		Evidence evidence;
 		Collection queries;
 		beforeEvidenceAndQueries();
-		evidenceGenerator.updateObservationQuery();
+		evidenceGenerator.getUserObservationAndQuery();
 		if ((evidence = evidenceGenerator.getLatestObservation()) != null && (queries = evidenceGenerator.getLatestQueries()) != null) {
 			//particleFilter.resample(); //resample moved here
 			takeAndAnswer(evidence, queries);
@@ -312,7 +312,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 
 
 	/** The evidence generator . */
-	public EvidenceGeneratorOnline evidenceGenerator;
+	public EvidenceQueryDecisionGeneratorOnline evidenceGenerator;
 
 	/** Properties for construction of particle filter. */
 	protected Properties particleFilterProperties;
