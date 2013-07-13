@@ -130,12 +130,17 @@ public class PFRunnerOnline{
 			//if (i==0)
 			//	System.err.println(averageQueryResult(query));
 			
-			if (i==0)
+			if (i==0){
 				query.printResults(UBT.valueOutput.p);
-			if (i==1)
+				UBT.varianceOutput.printInput("" + getQueryVariance(query));				
+			}
+			if (i==1){
 				query.printResults(UBT.valueOutput2.p);
-			if (i==2)
+				UBT.varianceOutput2.printInput("" + getQueryVariance(query));
+			}
+			if (i==2){
 				query.printResults(UBT.valueOutput3.p);
+			}
 			
 			i++;
 		}
@@ -144,7 +149,8 @@ public class PFRunnerOnline{
 		UBT.outputRunTime();
 		UBT.dataOutput.printInput("Time for timestep "+ evidenceGenerator.lastTimeStep + " is " + UBT.runTimeTimer.elapsedTime());
 		UBT.runTimeTimer.startTimer();
-        UBT.worldOutput.printInput("Sample world "+ Util.getFirst(particleFilter.particles).toString());		
+        UBT.worldOutput.printInput("Sample world "+ Util.getFirst(particleFilter.particles).toString());
+        
 	}
 
 
@@ -181,6 +187,19 @@ public class PFRunnerOnline{
 			Histogram.Entry entry = iter.next();
 			double prob = entry.getWeight() / histogram.getTotalWeight();
 			rtn = rtn + ((Number)entry.getElement()).doubleValue()* ((Number) entry.getWeight()).doubleValue() / ((Number) histogram.getTotalWeight()).doubleValue();
+		}
+		return rtn;
+	}
+	
+	protected Double getQueryVariance(ArgSpecQuery q) {
+		Double avg = averageQueryResult(q);
+		Double rtn = (double) 0;
+		Histogram histogram = q.getHistogram();
+		List<Histogram.Entry> entries = new ArrayList<Histogram.Entry>(histogram.entrySet());
+		for (Iterator<Histogram.Entry> iter = entries.iterator(); iter.hasNext();) {
+			Histogram.Entry entry = iter.next();
+			double prob = entry.getWeight() / histogram.getTotalWeight();
+			rtn = rtn + Math.pow(((Number)entry.getElement()).doubleValue() - avg, 2)* ((Number) entry.getWeight()).doubleValue() / ((Number) histogram.getTotalWeight()).doubleValue();
 		}
 		return rtn;
 	}

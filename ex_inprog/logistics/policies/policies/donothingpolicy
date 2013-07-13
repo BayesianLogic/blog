@@ -1,0 +1,4 @@
+if ("exists Integer i (i < NumSquares & propertyColor(i)==propertyColor(position(0, t)) & owner(i, t)==1)" <= 0.5)
+	{"SelfPurchase(t)"}
+else
+	{"donothing()"};

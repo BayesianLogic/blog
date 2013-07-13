@@ -1,5 +1,6 @@
 package blog.engine.onlinePF.inverseBucket;
 
+import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Timer;
 
@@ -52,7 +53,14 @@ public class UBT {
 	public static FileCommunicator timingProfile = new FileCommunicator("randomstuff//timingProfile.log");
 	public static FileCommunicator valueOutput2;
 	public static FileCommunicator valueOutput3;
-	
+	public static FileCommunicator varianceOutput;
+	public static FileCommunicator varianceOutput2;
+	public static FileCommunicator varianceOutput3;
+	//public static FileCommunicator specialIndexOutput;
+	//public static FileCommunicator particleHistogramOutput;
+	//public static FileCommunicator obsOutput;
+	//public static BufferedReader obsReader;
+	//public static boolean singleObs = false;
 	
 	
 	

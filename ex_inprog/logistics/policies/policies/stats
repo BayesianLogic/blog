@@ -1,0 +1,2 @@
+for i in {0..1}; do python getStats.py log_t200_ncor_cleanstartdonothingpolicy20$i.log log_t200_ncor_cleanstartdonothingpolicy21$i.log log_t200_ncor_cleanstartdonothingpolicy22$i.log log_t200_ncor_cleanstartdonothingpolicy23$i.log log_t200_ncor_cleanstartdonothingpolicy24$i.log log_t200_ncor_cleanstartdonothingpolicy25$i.log log_t200_ncor_cleanstartdonothingpolicy26$i.log log_t200_ncor_cleanstartdonothingpolicy27$i.log log_t200_ncor_cleanstartdonothingpolicy28$i.log log_t200_ncor_cleanstartdonothingpolicy29$i.log > aggregated_$i_cleanstartdonothingpolicy2.log; done;
+

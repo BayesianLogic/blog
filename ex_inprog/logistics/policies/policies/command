@@ -1,0 +1,1 @@
+java -Xmx3000m -jar dblog_state_est.jar -m ex_inprog/logistics/policies/policies/monopoly_dfa -q ex_inprog/logistics/policies/policies/forced_query_dfa -p  ex_inprog/logistics/policies/policies/donothingpolicy -e ex_inprog/logistics/policies/policies/evidence_dfa -n 400 -t 100 -s state_estimation

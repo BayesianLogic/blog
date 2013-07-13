@@ -1,0 +1,34 @@
+query capital(0, t);
+query capital(1, t);
+query exists Integer i (i < NumSquares & propertyColor(i)==propertyColor(position(0, t)) & owner(i, t)==1);
+query number_rents_paid(t);
+query number_rents_paid_opponent(t);
+query curSqCol(t);
+query {Color c: true == ownsAllOfColor(0, c, t)};
+query {Color c: true == ownsAllOfColor(1, c, t)};
+
+query highBuyer;
+query whosTurn(t);
+query qstate(t);
+query position(0, t);
+query position(1, t);
+query rentPaymentRequired(0, 1, t);
+query rentPaymentRequired(1, 0, t);
+query {Integer sq: sq<NumSquares & rent(sq, t) >= 5};
+
+query capital(0, t);
+query capital(1, t);
+
+query {Integer sq: sq < NumSquares & owner(sq, t)==0};
+query {Integer sq: sq < NumSquares & owner(sq, t)==1};
+query {Integer sq: sq < NumSquares & owner(sq, t)==2};
+
+query buyDecision(0, t);
+query buyDecision(1, t);
+
+
+query executeBuy(0, t);
+query executeBuy(1, t);
+
+
+

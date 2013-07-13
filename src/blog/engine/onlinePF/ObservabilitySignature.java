@@ -146,7 +146,7 @@ public class ObservabilitySignature {
 	 * This hashmap stores the possible values for observability signature
 	 */
 	public static Map<ObservabilitySignature, Integer> OStoIndex = new HashMap<ObservabilitySignature, Integer>();
-	public static ArrayList<ObservabilitySignature> IndextoOS= new ArrayList<ObservabilitySignature> ();
+	public static Map<Integer, ObservabilitySignature> IndextoOS= new HashMap<Integer, ObservabilitySignature> ();
         public static Map<Integer, Integer> OStoBucketSize = new HashMap<Integer, Integer>();
         public static void updateOStoBucketSize(Integer osIndex, Double additionalCount) {
             /*code for updating OStoBucketSize*/
@@ -196,7 +196,7 @@ public class ObservabilitySignature {
 			return OStoIndex.get(os);
 		else{
 			OStoIndex.put(os, index);
-			IndextoOS.add(os);
+			IndextoOS.put(index, os);
 			index = index + 1;
 			return index -1;
 		}
@@ -246,4 +246,20 @@ public class ObservabilitySignature {
 	}
 	
 	private Evidence myEvidence;
+	
+	/**
+	 * Clears the cached observability signatures from before.
+	 */
+	public static void dropHistory(int currentTimestep){
+		for (Iterator it = OStoIndex.keySet().iterator(); it.hasNext(); ){
+			ObservabilitySignature os = (ObservabilitySignature) it.next();
+			if (os.myTimestep < currentTimestep - 2){
+				IndextoOS.remove(OStoIndex.get(os));
+				it.remove();
+			}
+				
+		}
+		OStoBucketSize.clear();
+		
+	}
 }

@@ -37,6 +37,9 @@ public class DepthFirstPolicyEvaluationRunner {
 		StringOption logName = new StringOption("s", "logName", "0",
 				"Name that identifies the output files");
 		runtimeOptions.put("logname", logName);
+		StringOption logFolder = new StringOption("f", "logFolder", "randomstuff//",
+				"Name of output folder");
+		runtimeOptions.put("logfolder", logFolder);
 		List filenames = blog.common.cmdline.Parser.parse(args);
 		suu.setNumParticle(((IntOption) runtimeOptions.get("numparticles")).getValue());
 
@@ -45,14 +48,24 @@ public class DepthFirstPolicyEvaluationRunner {
 				((StringOption) runtimeOptions.get("policyfile")).getValue(),
 				((StringOption) runtimeOptions.get("queryfile")).getValue());
 		runner.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
-		UBT.valueOutput = new FileCommunicator("randomstuff//log" + (((StringOption) runtimeOptions.get("logname")).getValue())
+		UBT.valueOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "log" + (((StringOption) runtimeOptions.get("logname")).getValue())
 				+ "0.log");
-		UBT.valueOutput2 = new FileCommunicator("randomstuff//log" + (((StringOption) runtimeOptions.get("logname")).getValue())
+		UBT.valueOutput2 = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "log" + (((StringOption) runtimeOptions.get("logname")).getValue())
 				+ "1.log");
-		UBT.valueOutput3 = new FileCommunicator("randomstuff//log" + (((StringOption) runtimeOptions.get("logname")).getValue())
+		UBT.valueOutput3 = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "log" + (((StringOption) runtimeOptions.get("logname")).getValue())
 				+ "2.log");
-		UBT.worldOutput = new FileCommunicator("randomstuff//world" + (((StringOption) runtimeOptions.get("logname")).getValue())
+		UBT.worldOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "world" + (((StringOption) runtimeOptions.get("logname")).getValue())
 				+ ".log");
+		UBT.varianceOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "variance" + (((StringOption) runtimeOptions.get("logname")).getValue())
+				+ "0.log");
+		UBT.varianceOutput2 = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "variance" + (((StringOption) runtimeOptions.get("logname")).getValue())
+				+ "1.log");
+		UBT.varianceOutput3 = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "variance" + (((StringOption) runtimeOptions.get("logname")).getValue())
+				+ "2.log");
+		//UBT.specialIndexOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "indices" + (((StringOption) runtimeOptions.get("logname")).getValue())
+		//		+ ".log");
+		//UBT.obsOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "obs" + (((StringOption) runtimeOptions.get("logname")).getValue())
+		//		+ ".log");
 		UBT.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
 		// SampledParticleFilterRunner runner =
 		// suu.makeRunner("ex_inprog//logistics//policies//monopoly_markov.mblog",

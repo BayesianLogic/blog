@@ -1,0 +1,4 @@
+if ("exists Integer i (i < NumSquares & propertyColor(i)==propertyColor(playerAt(0, t)) & propertyOwner(i, t)==1)" <= 0.9)
+	{"chosen_Buy(t)"}
+else
+	{"donothing(t)"};
