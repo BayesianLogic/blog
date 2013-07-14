@@ -1,0 +1,113 @@
+/*
+ * BLOG model for tracking multiple objects moving about a grid
+ * author: Siddharth Srivastava
+ *
+ * Builds on aircraft-wandering.mblog
+ * Using Integer instead of Timestep to allow mathematical ops on time during 
+ * value computation.
+ */
+
+type Target;
+type Blip;
+
+#Target ~ Poisson(3);
+
+nonrandom Integer GridDimX=10;
+nonrandom Integer GridDimY=1;
+nonrandom Timestep ScanningTimeLimit=@100;
+nonrandom Integer CycleSize=10;
+nonrandom Real gamma=1.0;
+
+random Integer Max = GridDimX * GridDimY;
+generating Target Source(Blip);
+generating Timestep Time(Blip);
+
+
+/////////////////////////
+//** Target movement **//
+/////////////////////////
+
+
+/* Region(x, y) = y*GridDimX + x */
+random Integer Class(Target o, Integer t) {
+	~UniformChoice({Integer n:n<5})
+};
+
+random Integer RegionOf(Target o, Timestep t) {
+		if t == @0 then ~ UniformChoice({Integer n: n< Max})
+		else ~ NextPosDistributionWrap(GridDimX, GridDimY, RegionOf(o, Prev(t)))
+};		
+
+
+random Boolean NbrOf(Integer r1, Integer r2) ~ GridNbrOfWrap(GridDimX, GridDimY, r1, r2);
+
+#Blip(Source = o, Time = t){
+     if (t!= @0) & (exists Integer r applied_scan(r, Prev(t)) & RegionOf(o,t)==r)
+                       then ~ Categorical({0->0.15, 1->0.7, 2->0.15})
+     else = 1
+};
+
+
+/////////////////////////
+//** Value function **//
+////////////////////////
+
+random Integer numObjects ~ Cardinality({Target o: true== true});
+
+random Boolean TheEnd(Timestep t){
+	if (t == @0) then
+		= false
+	else if (apply_general_alarm(t)) then
+		= true
+	else = TheEnd(Prev(t))
+};
+
+decision Boolean apply_general_alarm(Timestep t);
+decision Boolean apply_usual_operation(Timestep t);
+
+random Real reward(Timestep t){
+	if numObjects >10 & apply_general_alarm(t) & !TheEnd(t) then = 10
+	else if numObjects <=10 & apply_general_alarm(t) & !TheEnd(t) then   = -100
+	else if numObjects >10 & apply_usual_operation(t) &!TheEnd(t) then = -100
+	else if numObjects <=10 & apply_usual_operation(t) &!TheEnd(t) then = 10
+	else  = 0
+};
+
+
+
+random Real value(Timestep t) {
+	if (t == @0) then 
+		= reward(t)
+	else 
+		= value(Prev(t)) + reward(t)
+};
+
+random Integer NumBlips(Timestep t){
+	if (true) then 
+	= #{Blip b: Time(b)==t}
+};
+
+/////////////////////////
+//** Scanning policy **//
+/////////////////////////
+
+//Random but not the last scanned region
+random Integer toScan(Timestep t){
+ 	  if t==@0 then = 1
+  	else if toScan(Prev(t)) == Max then = 1
+	  else = toScan(Prev(t)) + 1
+ };
+
+random Boolean applied_scan(Integer r, Timestep t){
+	if t<ScanningTimeLimit & r==toScan(t) then = true
+	else = false
+};
+
+
+query numObjects;
+
+query reward(ScanningTimeLimit);
+query value(ScanningTimeLimit);
+
+
+

@@ -3,13 +3,13 @@ package blog.distrib;
 import java.util.*;
 import blog.model.Type;
 
-public class NextPosDistribution extends AbstractCondProbDistrib {
+public class NextPosDistributionWrap extends AbstractCondProbDistrib {
 
 	private Integer GridDimX;
 	private Integer GridDimY;
 	private double probStayInRegion;
 
-	public NextPosDistribution(List params) {
+	public NextPosDistributionWrap(List params) {
 		probStayInRegion = 0.5;
 		GridDimX = (Integer) params.get(0);
 		GridDimY = (Integer) params.get(1);
