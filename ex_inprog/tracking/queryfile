@@ -1,0 +1,12 @@
+query value(t);
+query numObjects;
+query TheEnd(Prev(t));
+query #{Blip b: Time(b) == t};
+query numObjects;
+query exists Target o RegionOf(o, t) == -1;
+query #{Blip b: Time(b) == t};
+query numObjects;
+query TheEnd(t);
+query toScan(t);
+query {Integer r: r <= Max & applied_scan(r, t) == true};
+query {Integer r: r <= Max & applied_scan(r, t) == false};

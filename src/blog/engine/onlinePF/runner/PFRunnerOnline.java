@@ -132,11 +132,11 @@ public class PFRunnerOnline{
 			
 			if (i==0){
 				query.printResults(UBT.valueOutput.p);
-				UBT.varianceOutput.printInput("" + getQueryVariance(query));				
+				//UBT.varianceOutput.printInput("" + getQueryVariance(query));				
 			}
 			if (i==1){
 				query.printResults(UBT.valueOutput2.p);
-				UBT.varianceOutput2.printInput("" + getQueryVariance(query));
+				//UBT.varianceOutput2.printInput("" + getQueryVariance(query));
 			}
 			if (i==2){
 				query.printResults(UBT.valueOutput3.p);
@@ -171,7 +171,7 @@ public class PFRunnerOnline{
 	 * */
 	public Boolean shouldTerminate(){
 		if (evidenceGenerator.lastTimeStep == numtstep){
-			System.out.println(((Particle)Util.getFirst(particleFilter.particles)).getLatestWorld().basicVarToValueMap().size());
+			System.out.println("#var in memory"+((Particle)Util.getFirst(particleFilter.particles)).getLatestWorld().basicVarToValueMap().size());
 			return true;
 		}
 		else

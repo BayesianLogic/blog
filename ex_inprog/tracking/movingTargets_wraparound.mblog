@@ -10,12 +10,11 @@
 type Target;
 type Blip;
 
-nonrandom Integer theta = 3;
-#Target ~ Poisson(theta);
+#Target ~ Poisson(3);
 
 nonrandom Integer GridDimX=10;
 nonrandom Integer GridDimY=1;
-nonrandom Timestep ScanningTimeLimit=@100;
+nonrandom Timestep ScanningTimeLimit=@30;
 nonrandom Integer CycleSize=10;
 nonrandom Real gamma=1.0;
 
@@ -74,10 +73,10 @@ decision Boolean no_op(Timestep t);
 
 random Real reward(Timestep t){
   if (TheEnd(Prev(t)) == true) then = 0
-	else if numObjects >theta & apply_alarm(Prev(t)) then = 10
-	else if numObjects <=theta & apply_alarm(Prev(t)) then   = -100
-	else if numObjects >theta & apply_no_alarm(Prev(t)) then = -100
-	else if numObjects <=theta & apply_no_alarm(Prev(t)) then = 10
+	else if numObjects >3 & apply_alarm(Prev(t)) then = 10
+	else if numObjects <=3 & apply_alarm(Prev(t)) then   = -100
+	else if numObjects >3 & apply_no_alarm(Prev(t)) then = -100
+	else if numObjects <=3 & apply_no_alarm(Prev(t)) then = 10
 	else if no_op(Prev(t)) then = -10
 	else = 0
 };
