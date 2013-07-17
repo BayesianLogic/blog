@@ -1,0 +1,6 @@
+if ("numObjects > theta" >= 0.5)
+	{"apply_alarm(t)"}
+elseif ("numObjects <= theta" >= 0.5)
+	{"apply_no_alarm(t)"}
+else
+	{"no_op(t)"};
