@@ -1,6 +1,0 @@
-if ("numObjects > theta" >= 0.7)
-	{"apply_alarm(t)"}
-elseif ("numObjects <= theta" >= 0.7)
-	{"apply_no_alarm(t)"}
-else
-	{"no_op(t)"};

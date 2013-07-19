@@ -43,11 +43,6 @@ public class DepthFirstPolicyEvaluationRunner {
 		List filenames = blog.common.cmdline.Parser.parse(args);
 		suu.setNumParticle(((IntOption) runtimeOptions.get("numparticles")).getValue());
 
-		PFRunnerSampled runner = suu.makeSampledRunner(
-				filenames,
-				((StringOption) runtimeOptions.get("policyfile")).getValue(),
-				((StringOption) runtimeOptions.get("queryfile")).getValue());
-		runner.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
 		UBT.valueOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "log" + (((StringOption) runtimeOptions.get("logname")).getValue())
 				+ "0.log");
 		UBT.valueOutput2 = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "log" + (((StringOption) runtimeOptions.get("logname")).getValue())
@@ -62,11 +57,20 @@ public class DepthFirstPolicyEvaluationRunner {
 				+ "1.log");
 		UBT.varianceOutput3 = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "variance" + (((StringOption) runtimeOptions.get("logname")).getValue())
 				+ "2.log");
+		UBT.rootFolder=logFolder.getValue();
+		UBT.dataOutput = new FileCommunicator(UBT.rootFolder+"//UBTData.log");
+        UBT.osOutput = new FileCommunicator(UBT.rootFolder+"//OS.log");
 		//UBT.specialIndexOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "indices" + (((StringOption) runtimeOptions.get("logname")).getValue())
 		//		+ ".log");
 		//UBT.obsOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "obs" + (((StringOption) runtimeOptions.get("logname")).getValue())
 		//		+ ".log");
 		UBT.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
+		
+		PFRunnerSampled runner = suu.makeSampledRunner(
+				filenames,
+				((StringOption) runtimeOptions.get("policyfile")).getValue(),
+				((StringOption) runtimeOptions.get("queryfile")).getValue());
+		runner.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
 		// SampledParticleFilterRunner runner =
 		// suu.makeRunner("ex_inprog//logistics//policies//monopoly_markov.mblog",
 		// "ex_inprog//logistics//policies//donothingpolicy");

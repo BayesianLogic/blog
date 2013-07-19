@@ -45,7 +45,7 @@ public class PFRunnerOnline{
 	 */
 	protected void setUpStreams(){
 		eviCommunicator = new PipedCommunicator();
-		queryResultCommunicator = new FileCommunicator("randomstuff//filecommunicator.log");
+		queryResultCommunicator = new FileCommunicator(UBT.rootFolder+"//filecommunicator.log");
 	}
 	
 	/**

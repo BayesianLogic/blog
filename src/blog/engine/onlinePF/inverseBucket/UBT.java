@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import blog.engine.onlinePF.Util.FileCommunicator;
 
 public class UBT {
+	public static String rootFolder;
 	public static boolean dropHistory = true;
 	public static boolean debug = true;
 	public static boolean rememberHistory = true;
