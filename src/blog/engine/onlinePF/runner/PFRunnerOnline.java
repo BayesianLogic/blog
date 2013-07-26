@@ -45,7 +45,7 @@ public class PFRunnerOnline{
 	 */
 	protected void setUpStreams(){
 		eviCommunicator = new PipedCommunicator();
-		queryResultCommunicator = new FileCommunicator(UBT.rootFolder+"//filecommunicator.log");
+		queryResultCommunicator = new PipedCommunicator();
 	}
 	
 	/**
@@ -147,8 +147,8 @@ public class PFRunnerOnline{
 		particleFilter.printResultToCommunicator(queries, queryResultCommunicator);
 		
 		UBT.outputRunTime();
-		UBT.dataOutput.printInput("Time for timestep "+ evidenceGenerator.lastTimeStep + " is " + UBT.runTimeTimer.elapsedTime());
-		UBT.runTimeTimer.startTimer();
+		//UBT.dataOutput.printInput("Time for timestep "+ evidenceGenerator.lastTimeStep + " is " + UBT.runTimeTimer.elapsedTime());
+		//UBT.runTimeTimer.startTimer();
         UBT.worldOutput.printInput("Sample world "+ Util.getFirst(particleFilter.particles).toString());
         
 	}

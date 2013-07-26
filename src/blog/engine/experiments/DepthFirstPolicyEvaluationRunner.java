@@ -51,14 +51,14 @@ public class DepthFirstPolicyEvaluationRunner {
 				+ "2.log");
 		UBT.worldOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "world" + (((StringOption) runtimeOptions.get("logname")).getValue())
 				+ ".log");
-		UBT.varianceOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "variance" + (((StringOption) runtimeOptions.get("logname")).getValue())
-				+ "0.log");
-		UBT.varianceOutput2 = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "variance" + (((StringOption) runtimeOptions.get("logname")).getValue())
-				+ "1.log");
-		UBT.varianceOutput3 = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "variance" + (((StringOption) runtimeOptions.get("logname")).getValue())
-				+ "2.log");
+		//UBT.varianceOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "variance" + (((StringOption) runtimeOptions.get("logname")).getValue())
+		//		+ "0.log");
+		//UBT.varianceOutput2 = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "variance" + (((StringOption) runtimeOptions.get("logname")).getValue())
+		//		+ "1.log");
+		//UBT.varianceOutput3 = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "variance" + (((StringOption) runtimeOptions.get("logname")).getValue())
+		//		+ "2.log");
 		UBT.rootFolder=logFolder.getValue();
-		UBT.dataOutput = new FileCommunicator(UBT.rootFolder+"//UBTData.log");
+		//UBT.dataOutput = new FileCommunicator(UBT.rootFolder+"//UBTData.log");
         UBT.osOutput = new FileCommunicator(UBT.rootFolder+"//OS.log");
 		//UBT.specialIndexOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "indices" + (((StringOption) runtimeOptions.get("logname")).getValue())
 		//		+ ".log");

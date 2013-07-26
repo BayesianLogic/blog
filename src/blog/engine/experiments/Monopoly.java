@@ -24,7 +24,7 @@ public class Monopoly {
 	    for (int i = 0; i<5; i++){
 		    
 		    
-		    UBT.runTimeTimer.startTimer();
+		    //UBT.runTimeTimer.startTimer();
 		    //System.exit(1);
 	    }
 	}

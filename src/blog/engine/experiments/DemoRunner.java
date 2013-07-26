@@ -43,9 +43,9 @@ public class DemoRunner {
             ParticleFilterRunnerOnline runner = new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties);
             properties.setProperty("numParticles", "" + 1);
 
-            UBT.runTimeTimer.startTimer();
+            //UBT.runTimeTimer.startTimer();
 
-            UBT.dataOutput.printInput("#Particles set to 1");
+            //UBT.dataOutput.printInput("#Particles set to 1");
             //UBT.runTimeTimer.startTimer();
             runner.run();
 

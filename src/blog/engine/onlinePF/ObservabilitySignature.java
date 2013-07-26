@@ -102,7 +102,7 @@ public class ObservabilitySignature {
 			this.cachedHashcodeValid = true;
 		}
 		
-		UBT.specialTimingData4 += (timer.elapsedTime());
+		//UBT.specialTimingData4 += (timer.elapsedTime());
 		return rtn;
 	}
 	public boolean equals(Object o){
@@ -126,7 +126,7 @@ public class ObservabilitySignature {
 				}
 			}
 		}
-		UBT.specialTimingData3 += (timer.elapsedTime());
+		//UBT.specialTimingData3 += (timer.elapsedTime());
 		return rtn;
 	}
 	public String toString(){

@@ -169,14 +169,14 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	 * @param queries collection of queries to be answered
 	 */
 	public void answer(Collection queries) {
-		UBT.Stopwatch answerTimer = new UBT.Stopwatch();
-		answerTimer.startTimer();
+		//UBT.Stopwatch answerTimer = new UBT.Stopwatch();
+		//answerTimer.startTimer();
 		if (particles == null)
 			Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
 		for (TimedParticle p : particles) {
 			p.answer(queries);
 		}
-		UBT.answerTime += answerTimer.elapsedTime();
+		//UBT.answerTime += answerTimer.elapsedTime();
 	}
 	
 	/**
@@ -217,8 +217,8 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	 * Resamples particles according to their weight
 	 */
 	public void resample() {
-		UBT.Stopwatch resampleTimer = new UBT.Stopwatch();
-		resampleTimer.startTimer();
+		//UBT.Stopwatch resampleTimer = new UBT.Stopwatch();
+		//resampleTimer.startTimer();
 
 		double[] weights = new double[particles.size()];
 		boolean[] alreadySampled = new boolean[particles.size()];
@@ -246,7 +246,7 @@ public abstract class PFEngineOnline extends InferenceEngine {
 		for (TimedParticle p : newParticles)
 			p.resetWeight();
 		particles = newParticles;
-		UBT.resampleTime += resampleTimer.elapsedTime();
+		//UBT.resampleTime += resampleTimer.elapsedTime();
 	}
 	
 	/**
@@ -285,11 +285,11 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	 * empties cached variables (cached variables are used for efficiently updating ObservabilitySignature), should always be called
 	 */
 	public void emptyCache(){
-		UBT.Stopwatch emptyCacheTimer = new UBT.Stopwatch();
-		emptyCacheTimer.startTimer();
+		//UBT.Stopwatch emptyCacheTimer = new UBT.Stopwatch();
+		//emptyCacheTimer.startTimer();
 		for (TimedParticle p : particles)
 			((AbstractPartialWorld)p.getLatestWorld()).emptyChanged();
-		UBT.emptyCacheTime += emptyCacheTimer.elapsedTime();
+		//UBT.emptyCacheTime += emptyCacheTimer.elapsedTime();
 	}
 	
 	/**

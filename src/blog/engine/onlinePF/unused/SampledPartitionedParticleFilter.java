@@ -209,8 +209,8 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 	}
 	
 	public void answer(Collection queries) {
-		UBT.Stopwatch answerTimer = new UBT.Stopwatch();
-		answerTimer.startTimer();
+		//UBT.Stopwatch answerTimer = new UBT.Stopwatch();
+		//answerTimer.startTimer();
 		if (particles == null)
 			Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
 		for (TimedParticle p : particles) {
@@ -221,7 +221,7 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 				p.removeAllDerivedVars();
 			}
 		}
-		UBT.answerTime += answerTimer.elapsedTime();
+		//UBT.answerTime += answerTimer.elapsedTime();
 	}
 	
 	public void emptyCache(){
@@ -229,7 +229,7 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 		emptyCacheTimer.startTimer();
 		for (TimedParticle p : particles)
 			((AbstractPartialWorld)p.getLatestWorld()).emptyChanged();
-		UBT.emptyCacheTime += emptyCacheTimer.elapsedTime();
+		//UBT.emptyCacheTime += emptyCacheTimer.elapsedTime();
 	}
 	
 	/**
@@ -274,7 +274,7 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 			if (particles.size() == 0)
 				throw new IllegalArgumentException("All particles have zero weight");
 		}
-		UBT.takeWithPartitionTime += takeWithPartitionTimer.elapsedTime();
+		//UBT.takeWithPartitionTime += takeWithPartitionTimer.elapsedTime();
 	}
 
 	
@@ -318,7 +318,7 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 			p.setWeight(1);
 		particles = newParticles;
 		//repartition(); no longer repartition here.
-		UBT.resampleTime += resampleTimer.elapsedTime();
+		//UBT.resampleTime += resampleTimer.elapsedTime();
 	}
 	
 	
@@ -349,7 +349,7 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 			}
 		}
 		partitions = newPartitions;
-		UBT.repartitionTime+=repartitionTimer.elapsedTime();
+		//UBT.repartitionTime+=repartitionTimer.elapsedTime();
 		
 	}
 	
@@ -410,7 +410,7 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 		partitions.put(osIndexes[selection], new ArrayList<TimedParticle>());
 		//partitions = newPartitions;
 		resample();
-		UBT.resamplePartitionAndParticlesTime += resamplePartitionAndParticlesTimer.elapsedTime();
+		//UBT.resamplePartitionAndParticlesTime += resamplePartitionAndParticlesTimer.elapsedTime();
 	}
 	
 	public Map<Integer, List<TimedParticle>> getPartitions(){

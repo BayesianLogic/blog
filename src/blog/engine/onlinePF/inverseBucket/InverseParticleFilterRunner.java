@@ -180,7 +180,7 @@ public class InverseParticleFilterRunner{
 			//query.printResults(System.out);
 			
 			if (i==0){
-				UBT.valueData.add(averageQueryResult(query));
+				//UBT.valueData.add(averageQueryResult(query));
 				System.err.println(averageQueryResult(query));
 			}
 				
@@ -202,8 +202,8 @@ public class InverseParticleFilterRunner{
 			System.exit(1);
 		}
 		*/
-		UBT.numStateData.add(particleFilter.sc.IPtoState.keySet().size());
-		UBT.timingData.add(UBT.runTimeTimer.elapsedTime());
+		//UBT.numStateData.add(particleFilter.sc.IPtoState.keySet().size());
+		//UBT.timingData.add(UBT.runTimeTimer.elapsedTime());
 		
 
 	    Runtime runtime = Runtime.getRuntime();
@@ -232,7 +232,7 @@ public class InverseParticleFilterRunner{
 			queries = particleFilter.getQueryResultFromPartition(osIndex);
 			//particleFilter.getQueryResultFromPartition_old(queries, os);
 			
-			UBT.specialTimingData6 += timer.elapsedTime();
+			//UBT.specialTimingData6 += timer.elapsedTime();
 			Double count = 0.0;
 			/*
 			for (InverseParticle ip: particleFilter.sc.IPtoState.keySet()){
@@ -266,7 +266,7 @@ public class InverseParticleFilterRunner{
 			queryResultCommunicator.p.flush();
 		}
 		
-	    UBT.dataOutput.printInput("" + UBT.runTimeTimer.elapsedTime());
+	    //UBT.dataOutput.printInput("" + UBT.runTimeTimer.elapsedTime());
 		//UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
 	    
 	    if (evidenceGenerator.lastTimeStep==12){

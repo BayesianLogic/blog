@@ -253,8 +253,8 @@ public class ParticleFilterRunnerOnlinePartitioned{
 
 		//System.out.println(UBT.runTimeTimer.elapsedTime());
 		//UBT.dataOutput.printInput("" + evidenceGenerator.lastTimeStep);
-		UBT.dataOutput.printInput("Time for timestep "+ evidenceGenerator.lastTimeStep + " is " + UBT.runTimeTimer.elapsedTime());
-		UBT.runTimeTimer.startTimer();
+		//UBT.dataOutput.printInput("Time for timestep "+ evidenceGenerator.lastTimeStep + " is " + UBT.runTimeTimer.elapsedTime());
+		//UBT.runTimeTimer.startTimer();
                 UBT.worldOutput.printInput("Sample world "+ Util.getFirst(particleFilter.particles).toString());
 		if (evidenceGenerator.lastTimeStep == numtstep){
 			System.out.println(((Particle)Util.getFirst(particleFilter.particles)).getLatestWorld().basicVarToValueMap().size());

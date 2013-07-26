@@ -126,8 +126,8 @@ public class PFEnginePartitioned extends PFEngineOnline {
 	 * @param osIndex index of ObservabilitySignature which identifies the partition to be used to take the evidence
 	 */
 	public void takeWithPartition(Evidence evidence, Integer osIndex) {
-		UBT.Stopwatch takeWithPartitionTimer = new UBT.Stopwatch();
-		takeWithPartitionTimer.startTimer();
+		//UBT.Stopwatch takeWithPartitionTimer = new UBT.Stopwatch();
+		//takeWithPartitionTimer.startTimer();
 
 		List<TimedParticle> particles = partitions.get(osIndex);
 		
@@ -143,7 +143,7 @@ public class PFEnginePartitioned extends PFEngineOnline {
 			for (Particle p : particles)
 				p.take(evidence);
 					
-		UBT.takeWithPartitionTime += takeWithPartitionTimer.elapsedTime();
+		//UBT.takeWithPartitionTime += takeWithPartitionTimer.elapsedTime();
 	}
 	
 	/**
@@ -168,8 +168,8 @@ public class PFEnginePartitioned extends PFEngineOnline {
 	 * updates the observabilitySignatures
 	 */
 	public void repartition(){
-		UBT.Stopwatch repartitionTimer = new UBT.Stopwatch();
-		repartitionTimer.startTimer();
+		//UBT.Stopwatch repartitionTimer = new UBT.Stopwatch();
+		//repartitionTimer.startTimer();
 		
 		Map<Integer, List<TimedParticle>> newPartitions = new HashMap<Integer, List<TimedParticle>>();
 		for (Integer osIndex : partitions.keySet()){
@@ -190,7 +190,7 @@ public class PFEnginePartitioned extends PFEngineOnline {
 			}
 		}
 		partitions = newPartitions;
-		UBT.repartitionTime+=repartitionTimer.elapsedTime();
+		//UBT.repartitionTime+=repartitionTimer.elapsedTime();
 		
 	}
 	

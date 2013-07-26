@@ -109,14 +109,14 @@ public class HiddenState {
 		for (Integer osIndex : OStoCount.keySet()){
 			for (int i = 0; i< OStoCount.get(osIndex); i++){
 				
-				UBT.specialTimer.startTimer();
+				//UBT.specialTimer.startTimer();
 				InverseParticle np = canonicalParticle.copy();
 				np.take(EnclosingSC.OStoAction.get(osIndex));
 				np.take(EnclosingSC.nextTimestepEvidence);
 				np.answer(EnclosingSC.nextTimestepQueries);
 				np.advanceTimestep();
 				
-				UBT.specialTimingData5 += (UBT.specialTimer.elapsedTime());
+				//UBT.specialTimingData5 += (UBT.specialTimer.elapsedTime());
 
 				//Map<ObservabilitySignature, Double> newCounts = actionToOSCounts.get(EnclosingSC.OStoAction.get(os).toString());//new HashMap<ObservabilitySignature, Double>();
 				Map<Integer, Double> newCounts = new HashMap<Integer, Double>();

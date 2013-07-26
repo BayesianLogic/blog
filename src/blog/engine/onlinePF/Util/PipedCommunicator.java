@@ -15,7 +15,7 @@ import java.io.PrintStream;
 public class PipedCommunicator extends Communicator {
 	public BufferedReader b;
 	public PipedCommunicator (){
-		PipedInputStream pin = new PipedInputStream();
+		PipedInputStream pin = new PipedInputStream(10000);
 		PipedOutputStream pout = null;
 		try {
 			 pout = new PipedOutputStream(pin);

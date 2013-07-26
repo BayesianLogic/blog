@@ -25,7 +25,7 @@ public class TigerExample2 {
 	    for (int i = 0; i<5; i++){
 		    PolicyModel pm = PolicyModel.policyFromFile("ex_inprog//logistics//tigerPolicy2.txt");
 		    InverseParticleFilterRunner runner = new InverseParticleFilterRunner(model, linkStrings, queryStrings, properties, pm);
-		    UBT.runTimeTimer.startTimer();
+		    //UBT.runTimeTimer.startTimer();
 		    //ParticleFilterRunnerOnlinePartitioned runner = new ParticleFilterRunnerOnlinePartitioned(model, linkStrings, queryStrings, properties, pm);
 		    try {
 				runner.run();

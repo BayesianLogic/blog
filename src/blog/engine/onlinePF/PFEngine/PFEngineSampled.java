@@ -99,8 +99,8 @@ public class PFEngineSampled extends PFEngineOnline{
 	 * @param numPartitionSampled the number of partitions to be sampled
 	 */
 	public void retakeObservability() {
-		UBT.Stopwatch resamplePartitionAndParticlesTimer = new UBT.Stopwatch();
-		resamplePartitionAndParticlesTimer.startTimer();
+		//UBT.Stopwatch resamplePartitionAndParticlesTimer = new UBT.Stopwatch();
+		//resamplePartitionAndParticlesTimer.startTimer();
 		Evidence ev = null;
 		Integer sampledOSindex = sampleOS();
 		ObservabilitySignature selectedOS = ObservabilitySignature.getOSbyIndex(sampledOSindex);
@@ -121,7 +121,7 @@ public class PFEngineSampled extends PFEngineOnline{
 		
 		
 
-		UBT.resamplePartitionAndParticlesTime += resamplePartitionAndParticlesTimer.elapsedTime();
+		//UBT.resamplePartitionAndParticlesTime += resamplePartitionAndParticlesTimer.elapsedTime();
 	}
 
 	

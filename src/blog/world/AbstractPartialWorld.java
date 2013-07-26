@@ -1148,7 +1148,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			}
 		}
 		*/
-		UBT.specialTimingData += (timer.elapsedTime());
+		//UBT.specialTimingData += (timer.elapsedTime());
 		return rtn;
 	}
 	/*
@@ -1212,7 +1212,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			}
 		}
 		*/
-		UBT.specialTimingData2 += (timer.elapsedTime());
+		//UBT.specialTimingData2 += (timer.elapsedTime());
 		return rtn;
 	}
 	//for storing instantiatedVars so they are shared across worlds

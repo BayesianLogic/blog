@@ -137,9 +137,9 @@ public class StateCollection {
         ObservabilitySignature.resetBucketCount();
 		nextStateCollection = new StateCollection();
 		for (InverseParticle p : IPtoState.keySet()){
-			if (UBT.particleCoupling)
-				IPtoState.get(p).doActionsAndAnswerQueries();
-			else
+			//if (UBT.particleCoupling)
+			//	IPtoState.get(p).doActionsAndAnswerQueries();
+			//else
 				IPtoState.get(p).doActionsAndAnswerQueries2();
 		}
         if (UBT.debug)

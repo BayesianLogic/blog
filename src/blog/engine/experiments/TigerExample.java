@@ -85,9 +85,9 @@ public class TigerExample {
 	    	//PFRunnerPartitioned runner = new PFRunnerPartitioned(model, queryStrings, properties, pm);
 		    properties.setProperty("numParticles", ""+1000);
 		    
-		    UBT.runTimeTimer.startTimer();
+		    //UBT.runTimeTimer.startTimer();
 		    
-		    UBT.dataOutput.printInput("#Particles: " + 1000);
+		    //UBT.dataOutput.printInput("#Particles: " + 1000);
 		    //UBT.runTimeTimer.startTimer();
 		    runner.run();
 	    //}
