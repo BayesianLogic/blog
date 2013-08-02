@@ -1,11 +1,17 @@
 package blog.engine.onlinePF.parser;
 
+import java.util.ArrayList;
+
 import blog.engine.onlinePF.absyn.Absyn;
 import blog.engine.onlinePF.absyn.ActionStmt;
+import blog.engine.onlinePF.absyn.AssignExpr;
 import blog.engine.onlinePF.absyn.ConditionChecker;
 import blog.engine.onlinePF.absyn.DecisionUnit;
+import blog.engine.onlinePF.absyn.ForDecisionUnit;
 import blog.engine.onlinePF.absyn.IfDecisionUnit;
 import blog.engine.onlinePF.absyn.IfStmt;
+import blog.engine.onlinePF.absyn.ForStmt;
+import blog.engine.onlinePF.absyn.LoopAssignment;
 import blog.engine.onlinePF.absyn.OpExpr;
 import blog.engine.onlinePF.absyn.PolicyModel;
 import blog.engine.onlinePF.absyn.Stmt;
@@ -36,6 +42,9 @@ public class Semant {
 		if (st instanceof IfStmt){
 			pm.decisionUnits.add(transIfStmt((IfStmt)st));
 		}
+		else if (st instanceof ForStmt){
+			pm.decisionUnits.add(transForStmt((ForStmt)st));
+		}
 		else{
 			System.err.println("non-IfStmt supplied to transStmt in Semant.java");
 			System.exit(1);
@@ -54,6 +63,8 @@ public class Semant {
 			return transActionStmt((ActionStmt) s);
 		else if (s instanceof IfStmt)
 			return transIfStmt((IfStmt) s);
+		else if (s instanceof ForStmt)
+			return transForStmt((ForStmt) s);
 		else {
 			System.err.println("DecisionUnit: unable to find a match in transIfOrActionStmt");
 			System.exit(1);
@@ -64,6 +75,23 @@ public class Semant {
 	private UnconditionalDecisionUnit transActionStmt(ActionStmt s){
 		return new UnconditionalDecisionUnit (s.action);
 	}
+	private DecisionUnit transForStmt(ForStmt ifs){
+		LoopAssignment la = transLoopAssignment((AssignExpr) ifs.assignment);
+		DecisionUnit body = transIfOrActionStmt(ifs.body);
+		ForDecisionUnit fdu = new ForDecisionUnit(la, body);
+		return fdu;
+	}
+	private LoopAssignment transLoopAssignment (AssignExpr ase){
+		String var = ase.variable;
+		String assignments = ase.assignments;
+		ArrayList<String> parsedAssignments = new ArrayList<String>();
+		String[] strarr = assignments.split(",");
+		for (String s : strarr)
+			parsedAssignments.add(s);
+		LoopAssignment la = new LoopAssignment(var, parsedAssignments); 
+		return la;
+	}
+	
 	
 	private ConditionChecker transTest(OpExpr exp){
 		ConditionChecker.Op op = null;

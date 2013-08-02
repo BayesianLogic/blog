@@ -9,6 +9,8 @@ import blog.engine.onlinePF.absyn.*;
  */
 terminal NULL;
 terminal ELSE, IF, ELSEIF;
+terminal FOR;
+terminal ASSIGN;
 terminal java.lang.Number INT_LITERAL, DOUBLE_LITERAL;
 terminal java.lang.Boolean BOOLEAN_LITERAL;
 terminal java.lang.String STRING_LITERAL;
@@ -18,9 +20,9 @@ terminal SEMI; //seperators
 terminal LPAREN, RPAREN, LBRACE, RBRACE; // paired seperators
 
 nonterminal program;
-nonterminal Stmt statement, if_stmt, action_stmt, elseif_stmt;
+nonterminal Stmt statement, if_stmt, action_stmt, elseif_stmt, for_stmt;
 nonterminal StmtList statement_lst;
-nonterminal Expr operation_expr;
+nonterminal Expr operation_expr, assign_expr;
 
 
 /*
@@ -81,7 +83,7 @@ statement_lst ::= statement:e SEMI statement_lst:slst
   | statement:e SEMI{: RESULT = new StmtList(e, null); :}
   | error
 	{: System.err.println(
-		"Possible cause: forgotten semicolons" );
+		"null result in statement_lst" );
 		RESULT = null; :}
 ;
 
@@ -89,8 +91,15 @@ statement_lst ::= statement:e SEMI statement_lst:slst
  * evidence), or a query.
  */
 statement ::= if_stmt : e {: RESULT = e; :}
+						| for_stmt : e {: RESULT = e; :}
             ;
 
+/**
+ * for statement
+ */
+for_stmt ::= FOR:fr LPAREN assign_expr:e1 RPAREN LBRACE statement:e2 RBRACE
+  {: RESULT = new ForStmt(currLineno(), currColno(), e1, e2); :}
+  ;
 
 /**
  * if statement
@@ -114,6 +123,11 @@ action_stmt ::=
     {: RESULT = new ActionStmt(currLineno(), currColno(), e); :}
   ;
 
+assign_expr ::=
+		STRING_LITERAL:e1 ASSIGN LBRACE STRING_LITERAL:e2 RBRACE
+		{: RESULT = new AssignExpr(currLineno(), currColno(), e1, e2); :}
+		;
+		
 operation_expr ::=
     STRING_LITERAL:e1 LT DOUBLE_LITERAL:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.Op.LT, e2); :}

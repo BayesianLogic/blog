@@ -73,7 +73,7 @@ public class ParticleFilterRunnerOnlinePartitioned{
 	}
 	
 	public void setUpStreams(){
-		eviCommunicator = new PipedCommunicator();
+		eviCommunicator = new FileCommunicator("evistream");
 		queryResultCommunicator = new FileCommunicator("randomstuff//filecommunicator.log");
 
 	}
