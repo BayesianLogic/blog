@@ -20,7 +20,7 @@ terminal SEMI; //seperators
 terminal LPAREN, RPAREN, LBRACE, RBRACE; // paired seperators
 
 nonterminal program;
-nonterminal Stmt statement, if_stmt, action_stmt, elseif_stmt, for_stmt;
+nonterminal Stmt statement, if_stmt, action_stmt, elseif_stmt, for_stmt, assign_stmt;
 nonterminal StmtList statement_lst;
 nonterminal Expr operation_expr, assign_expr;
 
@@ -92,6 +92,7 @@ statement_lst ::= statement:e SEMI statement_lst:slst
  */
 statement ::= if_stmt : e {: RESULT = e; :}
 						| for_stmt : e {: RESULT = e; :}
+						| assign_stmt : e {: RESULT = e; :}
             ;
 
 /**
@@ -100,6 +101,14 @@ statement ::= if_stmt : e {: RESULT = e; :}
 for_stmt ::= FOR:fr LPAREN assign_expr:e1 RPAREN LBRACE statement:e2 RBRACE
   {: RESULT = new ForStmt(currLineno(), currColno(), e1, e2); :}
   ;
+
+/**
+ * assign statement
+ */
+assign_stmt ::=
+		STRING_LITERAL:e1 ASSIGN STRING_LITERAL:e2
+		{: RESULT = new AssignStmt(currLineno(), currColno(), e1, e2); :}
+		;
 
 /**
  * if statement

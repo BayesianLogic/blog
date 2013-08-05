@@ -11,6 +11,7 @@ import blog.engine.onlinePF.absyn.ForDecisionUnit;
 import blog.engine.onlinePF.absyn.IfDecisionUnit;
 import blog.engine.onlinePF.absyn.IfStmt;
 import blog.engine.onlinePF.absyn.ForStmt;
+import blog.engine.onlinePF.absyn.AssignStmt;
 import blog.engine.onlinePF.absyn.LoopAssignment;
 import blog.engine.onlinePF.absyn.OpExpr;
 import blog.engine.onlinePF.absyn.PolicyModel;
@@ -44,6 +45,9 @@ public class Semant {
 		}
 		else if (st instanceof ForStmt){
 			pm.decisionUnits.add(transForStmt((ForStmt)st));
+		}
+		else if (st instanceof AssignStmt){
+			transAssignStmt((AssignStmt)st);
 		}
 		else{
 			System.err.println("non-IfStmt supplied to transStmt in Semant.java");
@@ -80,6 +84,9 @@ public class Semant {
 		DecisionUnit body = transIfOrActionStmt(ifs.body);
 		ForDecisionUnit fdu = new ForDecisionUnit(la, body);
 		return fdu;
+	}
+	private void transAssignStmt(AssignStmt ifs){
+		DecisionUnit.stack.put(ifs.variable, ifs.assignment);
 	}
 	private LoopAssignment transLoopAssignment (AssignExpr ase){
 		String var = ase.variable;
