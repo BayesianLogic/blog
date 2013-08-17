@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import blog.DBLOGUtil;
 import blog.bn.BayesNetVar;
 import blog.common.Util;
@@ -19,6 +22,7 @@ import blog.world.AbstractPartialWorld;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.runner.PFRunnerSampled;
 import blog.model.Evidence;
+import blog.model.Model;
 import blog.model.Query;
 import blog.msg.ErrorMsg;
 
@@ -218,6 +222,11 @@ public class ObservabilitySignature {
 		String rtn = "";
 		for (BayesNetVar referenced : observedValues.keySet()){
 			rtn += ("obs " + referenced.toString() + "=" + observedValues.get(referenced) + ";");
+			if (isObsNum(referenced.toString())){
+				Integer numobj = (Integer) observedValues.get(referenced);
+				String setStr = Model.generateSetObservation(getTypeString(referenced.toString()), numobj);
+			}
+			
 		}
 		for (BayesNetVar observable : observables){
 			rtn += ("obs " + observable.toString() + "=" + "true" + ";");
@@ -225,6 +234,7 @@ public class ObservabilitySignature {
 		for (BayesNetVar unobservable : unobservables){
 			rtn += ("obs " + unobservable.toString() + "=" + "false" + ";");
 		}
+		rtn += "obs {Blip b} = {b1, b2, b3, b4, b5};";
 		return rtn;
 		
 	}
@@ -261,5 +271,17 @@ public class ObservabilitySignature {
 		}
 		OStoBucketSize.clear();
 		
+	}
+	private static Pattern obsnumPattern = Pattern.compile("observable_number_([a-zA-Z0-9]*)");
+
+	public static boolean isObsNum(String strrep) {
+		Matcher matcher = obsnumPattern.matcher(strrep);
+		return matcher.find();
+	}
+	
+	public static String getTypeString(String strrep) {
+		Matcher matcher = obsnumPattern.matcher(strrep);
+		matcher.find();
+		return matcher.group(1);
 	}
 }

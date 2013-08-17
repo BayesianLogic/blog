@@ -811,5 +811,34 @@ public class Model {
 		}
 		return rtn;
 	}
+	/**
+	 * A set of all observable types
+	 */
+	private List<Type> observableTypes = new ArrayList<Type>();
+	public Type addObservableType(String typeName){
+		Type type = addType (typeName);
+		observableTypes.add(type);
+		indexMap.put(type.toString(), 0);
+		return type;
+	}
+	public static HashMap<String,Integer> indexMap = new HashMap<String, Integer>();
+	public static String generateSetObservation(String typ, Integer num){
+		String rtn = "obs {" + typ + "} = {";
+		for (int i = 0; i < num; i ++)
+			rtn += ""+typ+(i+indexMap.get(typ)) +",";
+		rtn = rtn.substring(0, rtn.length()-1);
+		rtn = rtn + "};";
+		indexMap.put(typ, indexMap.get(typ)+num); 
+		return rtn;
+	}
+	
+	public List<String> typeCountQueryTemplates(){
+		ArrayList<String> ars = new ArrayList<String>();
+		for (Type typ : observableTypes){
+			ars.add("observable_number_" + typ.getName()+"(t)");
+		}
+		return ars;
+	}
+
 	
 }

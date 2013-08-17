@@ -49,6 +49,7 @@ import blog.absyn.DecisionEvidence;
 import blog.model.DecisionEvidenceStatement;
 import blog.model.DecisionFunction;
 import blog.absyn.ObservableFuncDec;
+import blog.absyn.ObservableTypeDec;
 
 import blog.absyn.Stmt;
 import blog.absyn.StmtList;
@@ -774,7 +775,10 @@ public class Semant {
 		if (Type.getType(name) != null) {
 			error(e.line, e.col, "Type " + name + " already defined!");
 		} else {
-			model.addType(name);
+			if (e instanceof ObservableTypeDec)
+				model.addObservableType(name);
+			else
+				model.addType(name);
 			// BuiltInTypes.addArrayTypes(name);
 		}
 	}

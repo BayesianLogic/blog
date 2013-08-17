@@ -114,7 +114,7 @@ public class ParticleFilterRunnerOnlineWithPolicy extends ParticleFilterRunnerOn
 		+	"};"
 		
 		;
-	
+	/*
 	public static void main(String[] args){
 		Properties properties = new Properties();
 		properties.setProperty("numParticles", "1000");
@@ -133,5 +133,5 @@ public class ParticleFilterRunnerOnlineWithPolicy extends ParticleFilterRunnerOn
 	    ParticleFilterRunnerOnlineWithPolicy runner = new ParticleFilterRunnerOnlineWithPolicy(model, linkStrings, queryStrings, properties, "/home/saasbook/git/dblog/src/blog/engine/onlinePF/parser/test_policy");
 	    runner.run();
 	}
-	
+	*/
 }

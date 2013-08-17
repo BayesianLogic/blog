@@ -147,7 +147,7 @@ nonterminal StmtList opt_statement_lst, statement_lst;
 nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   rand_func_decl, number_stmt, origin_func_decl,
   distinct_decl, distribution_decl, parameter_decl,
-  evidence_stmt, query_stmt, decision_func_decl, observable_func_decl; //declaration for decision functions
+  evidence_stmt, query_stmt, decision_func_decl, observable_func_decl,observable_type_decl; //declaration for decision functions
 nonterminal Stmt evidence, value_evidence, symbol_evidence, query, decision_evidence; //evidence for decision function
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
   quantified_formula, distribution_expr,
@@ -269,6 +269,7 @@ declaration_stmt ::=
 /*  | parfactor : e {: RESULT = e; :}  */
   | decision_func_decl:e {: RESULT = e; :}
   | observable_func_decl: e {: RESULT=e; :}
+  | observable_type_decl: e {: RESULT=e; :}
   ;
 
 type_decl ::= TYPE ID:typename SEMI
@@ -356,7 +357,10 @@ observable_func_decl ::=
     {: RESULT = new ObservableFuncDec(currLineno(), currColno(), sym(fname), tl, ret_type, body); :}
   ;
 
-
+observable_type_decl ::= OBSERVABLE TYPE ID:typename SEMI
+    {: RESULT = new ObservableTypeDec(currLineno(), currColno(), sym(typename)); :}
+  ;
+  
 /* A nonrandom function declaration may declare a nonrandom constant or
  * a non-random function.  The distinction is whether there is a
  * parenthesized list of arguments after the function/constant name.
