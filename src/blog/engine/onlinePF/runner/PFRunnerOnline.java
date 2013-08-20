@@ -44,8 +44,8 @@ public class PFRunnerOnline{
 	 * utility class used for setting up the input/output streams
 	 */
 	protected void setUpStreams(){
-		eviCommunicator = new PipedCommunicator();
-		queryResultCommunicator = new FileCommunicator(UBT.rootFolder+"//filecommunicator.log");
+		eviCommunicator = new FileCommunicator(UBT.rootFolder+"//evicommunicator.log");
+		queryResultCommunicator = new FileCommunicator(UBT.rootFolder+"//querycommunicator.log");
 	}
 	
 	/**

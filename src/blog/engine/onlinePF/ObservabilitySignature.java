@@ -234,7 +234,7 @@ public class ObservabilitySignature {
 		for (BayesNetVar unobservable : unobservables){
 			rtn += ("obs " + unobservable.toString() + "=" + "false" + ";");
 		}
-		rtn += "obs {Blip b} = {b1, b2, b3, b4, b5};";
+		rtn = "obs {Blip b} = {b1, b2, b3, b4, b5};obs b1=b1;";
 		return rtn;
 		
 	}

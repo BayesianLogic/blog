@@ -149,6 +149,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		} else {
 			// checkIdentifiers(var, value); // allow any identifiers
 			basicVarToValue.put(var, value);
+			if (value instanceof NonGuaranteedObject)
+				nameToGenObj.put(var, value);
 			/*added by cheng*/
 			changedVarToValue.put(var, value);
 		}
@@ -1218,6 +1220,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	//for storing instantiatedVars so they are shared across worlds
 	public static HashMap instantiatedVars = new HashMap();
 	protected HashMap changedVarToValue = new HashMap();
+	protected HashMap nameToGenObj = new HashMap();
 	public HashMap getChangedBasicVars (){
 		return changedVarToValue;
 	}
