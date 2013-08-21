@@ -1,0 +1,50 @@
+if ("numObjects > theta" >= 0.7)
+	{"apply_alarm(t)"}
+elseif ("numObjects > theta" <= 0.2)
+	{"apply_no_alarm(t)"}
+elseif ("regionIsSuitable(0, t)" >= 0.3)
+	{"applied_scan(0, t)"}
+elseif ("regionIsSuitable(1, t)" >= 0.3)
+	{"applied_scan(1, t)"}
+elseif ("regionIsSuitable(2, t)" >= 0.3)
+	{"applied_scan(2, t)"}
+elseif ("regionIsSuitable(3, t)" >= 0.3)
+	{"applied_scan(3, t)"}
+elseif ("regionIsSuitable(4, t)" >= 0.3)
+	{"applied_scan(4, t)"}
+elseif ("regionIsSuitable(5, t)" >= 0.3)
+	{"applied_scan(5, t)"}
+elseif ("regionIsSuitable(6, t)" >= 0.3)
+	{"applied_scan(6, t)"}
+elseif ("regionIsSuitable(7, t)" >= 0.3)
+	{"applied_scan(7, t)"}
+elseif ("regionIsSuitable(8, t)" >= 0.3)
+	{"applied_scan(8, t)"}
+elseif ("regionIsSuitable(9, t)" >= 0.3)
+	{"applied_scan(9, t)"}
+elseif ("regionIsSuitable(10, t)" >= 0.3)
+	{"applied_scan(10, t)"}
+elseif ("regionIsSuitable(11, t)" >= 0.3)
+	{"applied_scan(11, t)"}
+elseif ("regionIsSuitable(12, t)" >= 0.3)
+	{"applied_scan(12, t)"}
+elseif ("regionIsSuitable(13, t)" >= 0.3)
+	{"applied_scan(13, t)"}
+elseif ("regionIsSuitable(14, t)" >= 0.3)
+	{"applied_scan(14, t)"}
+elseif ("regionIsSuitable(15, t)" >= 0.3)
+	{"applied_scan(15, t)"}
+elseif ("regionIsSuitable(16, t)" >= 0.3)
+	{"applied_scan(16, t)"}
+elseif ("regionIsSuitable(17, t)" >= 0.3)
+	{"applied_scan(17, t)"}
+elseif ("regionIsSuitable(18, t)" >= 0.3)
+	{"applied_scan(18, t)"}
+elseif ("regionIsSuitable(19, t)" >= 0.3)
+	{"applied_scan(19, t)"}
+elseif ("regionIsSuitable(20, t)" >= 0.3)
+	{"applied_scan(20, t)"}
+elseif ("regionIsSuitable(0, t)" >= 0.2)
+	{"applied_scan(0, t)"}
+else
+	{"applied_scan(toScan(t), t)"};
