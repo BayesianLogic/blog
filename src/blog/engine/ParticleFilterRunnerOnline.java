@@ -51,8 +51,8 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	}
 	
 	public void setUpStreams(){
-		eviCommunicator = new PipedCommunicator();
-		queryResultCommunicator = new FileCommunicator("randomstuff//filecommunicator.log");
+		eviCommunicator = new FileCommunicator("randomstuff//evicommunicator.log");
+		queryResultCommunicator = new FileCommunicator("randomstuff//querycommunicator.log");
 
 	}
 	/*
