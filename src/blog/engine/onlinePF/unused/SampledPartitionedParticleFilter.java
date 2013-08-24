@@ -394,7 +394,7 @@ public class SampledPartitionedParticleFilter extends InferenceEngine {
 		partitions.clear();
 		
 		ObservabilitySignature selectedOS = ObservabilitySignature.getOSbyIndex(osIndexes[selection]);
-		selectedOS.prepareEvidence();
+		//selectedOS.prepareEvidence();
 		Evidence ev = selectedOS.getEvidence();
 		ev.checkTypesAndScope(model);
 		if (ev.compile()!=0)

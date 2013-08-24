@@ -37,6 +37,7 @@ package blog.bn;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -180,6 +181,26 @@ public class RandFuncAppVar extends VarWithDistrib {
 		for (int i = 1; i < args.length; ++i) {
 			buf.append(", ");
 			buf.append(args[i]);
+		}
+		buf.append(")");
+		return buf.toString();
+	}
+	
+	/**
+	 * for observable type
+	 */
+	public String toObsString(HashMap m) {
+		if (args.length == 0) {
+			return f.toString();
+		}
+
+		StringBuffer buf = new StringBuffer();
+		buf.append(f);
+		buf.append("(");
+		buf.append(blog.engine.onlinePF.ObservabilitySignature.toObsString(args[0],m));
+		for (int i = 1; i < args.length; ++i) {
+			buf.append(", ");
+			buf.append(blog.engine.onlinePF.ObservabilitySignature.toObsString(args[i],m));
 		}
 		buf.append(")");
 		return buf.toString();

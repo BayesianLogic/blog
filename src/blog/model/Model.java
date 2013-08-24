@@ -823,11 +823,15 @@ public class Model {
 	}
 	public static HashMap<String,Integer> indexMap = new HashMap<String, Integer>();
 	public static String generateSetObservation(String typ, Integer num){
-		String rtn = "obs {" + typ + "} = {";
-		for (int i = 0; i < num; i ++)
+		String rtn = "obs {" + typ + " x} = {";
+		String end = "";
+		for (int i = 0; i < num; i ++){
 			rtn += ""+typ+(i+indexMap.get(typ)) +",";
+			end += "obs "+typ+(i+indexMap.get(typ))+"="+typ+(i+indexMap.get(typ))+";";
+		}
 		rtn = rtn.substring(0, rtn.length()-1);
 		rtn = rtn + "};";
+		rtn = rtn + end;
 		indexMap.put(typ, indexMap.get(typ)+num); 
 		return rtn;
 	}

@@ -217,16 +217,28 @@ public class ObservabilitySignature {
 			
 		return os;
 	}
-	
-	public String generateObservableString(){
+	public String generateObservableTypeString(){
 		String rtn = "";
 		for (BayesNetVar referenced : observedValues.keySet()){
-			rtn += ("obs " + referenced.toString() + "=" + observedValues.get(referenced) + ";");
 			if (isObsNum(referenced.toString())){
 				Integer numobj = (Integer) observedValues.get(referenced);
 				String setStr = Model.generateSetObservation(getTypeString(referenced.toString()), numobj);
+				rtn += setStr;
 			}
 			
+		}
+		return rtn;
+		
+	}
+	
+	public String generateObservableString(HashMap genObjToName){
+		String rtn = "";
+		for (BayesNetVar referenced : observedValues.keySet()){
+			String referencedStr = toObsString(referenced, genObjToName);
+			String obsValueStr = toObsString(observedValues.get(referenced), genObjToName);
+			rtn += ("obs " + referencedStr + "=" + obsValueStr + ";");
+			if (isObsNum(referenced.toString()))
+				continue;
 		}
 		for (BayesNetVar observable : observables){
 			rtn += ("obs " + observable.toString() + "=" + "true" + ";");
@@ -234,13 +246,19 @@ public class ObservabilitySignature {
 		for (BayesNetVar unobservable : unobservables){
 			rtn += ("obs " + unobservable.toString() + "=" + "false" + ";");
 		}
-		rtn = "obs {Blip b} = {b1, b2, b3, b4, b5};obs b1=b1;";
 		return rtn;
 		
 	}
 	
-	public void prepareEvidence(){
-		String eviString = generateObservableString();
+	public void prepareEvidence(TimedParticle tp, Model model){
+		String setEviString = generateObservableTypeString();
+		Evidence setEvidence = new Evidence();
+		parseAndTranslateEvidence(setEvidence, Util.list(), new StringReader(setEviString));
+		setEvidence.checkTypesAndScope(model);
+		setEvidence.compile();
+		tp.take(setEvidence);
+		
+		String eviString = generateObservableString(((AbstractPartialWorld)(tp.getLatestWorld())).getGenObjToName());
 		myEvidence = new Evidence();
 		parseAndTranslateEvidence(myEvidence, Util.list(), new StringReader(eviString));
 	}
@@ -283,5 +301,16 @@ public class ObservabilitySignature {
 		Matcher matcher = obsnumPattern.matcher(strrep);
 		matcher.find();
 		return matcher.group(1);
+	}
+	
+	/** obs type change
+	 * 
+	 */
+	public static String toObsString(Object o, HashMap m){
+		if (o instanceof blog.model.NonGuaranteedObject)
+			return m.get(o).toString();
+		else if (o instanceof blog.bn.RandFuncAppVar)
+			return ((blog.bn.RandFuncAppVar)o).toObsString(m);
+		else return o.toString();
 	}
 }

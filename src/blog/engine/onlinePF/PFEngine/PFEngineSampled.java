@@ -102,9 +102,10 @@ public class PFEngineSampled extends PFEngineOnline{
 		UBT.Stopwatch resamplePartitionAndParticlesTimer = new UBT.Stopwatch();
 		resamplePartitionAndParticlesTimer.startTimer();
 		Evidence ev = null;
-		Integer sampledOSindex = sampleOS();
+		TimedParticle sampledParticle = ((TimedParticle) sampleParticle());
+		Integer sampledOSindex = sampledParticle.getOS();
 		ObservabilitySignature selectedOS = ObservabilitySignature.getOSbyIndex(sampledOSindex);
-		selectedOS.prepareEvidence();
+		selectedOS.prepareEvidence(sampledParticle, model);
 		ev = selectedOS.getEvidence();
 		ev.checkTypesAndScope(model);
 		if (ev.compile()!=0)
