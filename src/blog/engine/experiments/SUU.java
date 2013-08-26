@@ -82,6 +82,7 @@ public class SUU {
 
 	private static void setModel(List modelFilePath) {
 		model = new Model();
+		Model.curMod = model;
 		Evidence evidence = new Evidence();
 		LinkedList queries = new LinkedList();
 		Main.simpleSetupFromFiles(model, evidence, queries,

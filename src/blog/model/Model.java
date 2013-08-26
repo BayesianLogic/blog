@@ -843,6 +843,8 @@ public class Model {
 		}
 		return ars;
 	}
+	
+	public static Model curMod;
 
 	
 }

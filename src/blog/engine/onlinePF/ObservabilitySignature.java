@@ -234,17 +234,17 @@ public class ObservabilitySignature {
 	public String generateObservableString(HashMap genObjToName){
 		String rtn = "";
 		for (BayesNetVar referenced : observedValues.keySet()){
+			if (isObsNum(referenced.toString()))
+				continue;
 			String referencedStr = toObsString(referenced, genObjToName);
 			String obsValueStr = toObsString(observedValues.get(referenced), genObjToName);
 			rtn += ("obs " + referencedStr + "=" + obsValueStr + ";");
-			if (isObsNum(referenced.toString()))
-				continue;
 		}
 		for (BayesNetVar observable : observables){
-			rtn += ("obs " + observable.toString() + "=" + "true" + ";");
+			rtn += ("obs " + toObsString(observable, genObjToName) + "=" + "true" + ";");
 		}
 		for (BayesNetVar unobservable : unobservables){
-			rtn += ("obs " + unobservable.toString() + "=" + "false" + ";");
+			rtn += ("obs " + toObsString(unobservable, genObjToName) + "=" + "false" + ";");
 		}
 		return rtn;
 		

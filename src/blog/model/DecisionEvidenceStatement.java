@@ -2,6 +2,8 @@
 
 package blog.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -10,6 +12,8 @@ import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.common.Util;
 import blog.world.PartialWorld;
+
+import blog.model.RandomFunction;
 
 /**
  * Represents a statement that a certain term has a certain value. Such a
@@ -206,6 +210,8 @@ public class DecisionEvidenceStatement {
 		}
 		return (observedVar + " = " + observedValue);
 	}
+	
+
 
 	private ArgSpec leftSide;
 	private ArgSpec output;
