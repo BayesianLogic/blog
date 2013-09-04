@@ -6,7 +6,7 @@ public class UnconditionalDecisionUnit extends DecisionUnit{
 	public UnconditionalDecisionUnit(String action){
 		decisionTemplate = action;
 	}
-	@Override
+	@Override 
 	public String getDecision(QueryResult q) {
 		String rtn = "decide " + templateToString(decisionTemplate, q.timestep) + "=true;";
 		return rtn;
