@@ -75,6 +75,7 @@ public class BuiltInFunctions {
 	public static final String SUCC_NAME = "Succ";
 	public static final String PRED_NAME = "Pred";
 	public static final String PREV_NAME = "Prev";
+	public static final String NEXT_NAME = "Next";
 	public static final String IS_EMPTY_NAME = "IsEmptyString";
 	// public static final String CONCAT_NAME = "Concat"; //Concat replaced by +
 	public static final String MIN_NAME = "min";
@@ -219,6 +220,13 @@ public class BuiltInFunctions {
 	 */
 	public static NonRandomFunction PREV;
 
+	/**
+	 * The predecessor function on timesteps. Given a positive timestep n, it
+	 * returns n+1.
+	 */
+	public static NonRandomFunction NEXT;
+
+	
 	/**
 	 * A function on strings <code>x</code>, <code>y</code> that returns the
 	 * concatenation of <code>x</code> and <code>y</code>.
@@ -557,6 +565,22 @@ public class BuiltInFunctions {
 		};
 		PREV = new NonRandomFunction(PREV_NAME, argTypes, retType, prevInterp);
 		addFunction(PREV);
+		
+		argTypes.clear();
+		argTypes.add(BuiltInTypes.TIMESTEP);
+		retType = BuiltInTypes.TIMESTEP;
+
+		FunctionInterp nextInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				Timestep arg = (Timestep) args.get(0);
+				if (arg.getValue() < 0) {
+					return Model.NULL;
+				}
+				return Timestep.at(arg.getValue() + 1);
+			}
+		};
+		NEXT = new NonRandomFunction(NEXT_NAME, argTypes, retType, nextInterp);
+		addFunction(NEXT);
 
 		// Add non-random functions from (string x string) to string
 		argTypes.clear();
