@@ -76,7 +76,7 @@ random Integer numObjects ~ Cardinality({Target o: true== true});
 random Boolean TheEnd(Timestep t){
 	if (t == @0) then
 		= false
-	else if (apply_alarm(Prev(t)) | apply_no_alarm(Prev(t)) | t == ScanningTimeLimit) then
+	else if (apply_alarm(Prev(t)) | apply_no_alarm(Prev(t)) | Prev(t) == ScanningTimeLimit) then
 		= true
 	else = TheEnd(Prev(t))
 };
@@ -88,6 +88,7 @@ random Real reward(Timestep t){
 	else if numObjects <=theta & apply_alarm(Prev(t)) then   = -100
 	else if numObjects >theta & apply_no_alarm(Prev(t)) then = -100
 	else if numObjects <=theta & apply_no_alarm(Prev(t)) then = 10
+  else if (TheEnd((t)) == true) then = 0
 	else if no_op(Prev(t)) then = -6
 	else = -6
 };
@@ -151,25 +152,30 @@ random Boolean applied_scan(Integer r, Timestep t){
 ///////start of policy/////////////
 
 nonrandom Integer cycleSize = 15;
-nonrandom Integer freqSignificanceThreshold=2;
+nonrandom Integer freqSignificanceThreshold=1;
 
-random Integer fTimeToInt (Timestep t) {
-  if true then
-    ~ TimeToInt(t)
+random Integer fTimeToInt (Timestep t){
+  if (t==@0) then 
+    = 0 
+  else 
+    = fTimeToInt(Prev(t)) + 1
 };
+
 random Timestep fIntToTime (Integer i) {
-  if true then
-    ~ IntToTime(i)
+  if (i==0) then 
+    = @0 
+  else 
+    = Next(fIntToTime(i - 1))
 };
 
-random Timestep cycleStart (Integer c) {if true then ~IntToTime(c * cycleSize)};
+random Timestep cycleStart (Integer c) {if true then  =fIntToTime(c * cycleSize)};
 
 
 
 
 random Timestep cycleEnd (Integer c){
 	if true then
-		~IntToTime( ((c + 1) * cycleSize) - 1)
+		= fIntToTime( ((c + 1) * cycleSize) - 1)
 };
 
 random Boolean currentCycle(Integer c, Timestep t){
@@ -177,16 +183,11 @@ random Boolean currentCycle(Integer c, Timestep t){
 		= (fTimeToInt(cycleStart(c))<=fTimeToInt(t) & fTimeToInt(cycleEnd(c))>=fTimeToInt(t))
 };
 
-random Integer lastCycleInt(){
-	if true then
-		~ UniformChoice({Integer n : n <= 2 & currentCycle(n, ScanningTimeLimit)})
-};
-
 nonrandom Integer lastCycle= 2;
 
 random Integer numBlipsPerCycle(Integer c){
 	if true then
-		~ Cardinality({Blip b: Time(b)<= cycleEnd(c) & Time(b) >= cycleStart(c)})
+		= numBlips(cycleStart(c), cycleEnd(c))
 };
 
 random Integer maxBlipsPerCycle(Integer c){
@@ -213,7 +214,7 @@ random Integer minEstimate = minBlipsPerCycle(lastCycle);
 
 random Integer countCyclesWithAtLeastKBlips (Integer k){
 	if true then
-		~ Cardinality({Integer c : c <= 2 & numBlipsPerCycle(c)>=k})
+		~ Cardinality({Integer c : c < lastCycle & numBlipsPerCycle(c)>=k})
 };
 
 random Boolean HiBlipCountCrossesFreqThreshold(Integer k){
@@ -227,11 +228,11 @@ random Boolean maxBlipCountCrossingFreqThreshold(Integer k){
 			(forall Integer l (l <= maxBlipsPerCycle(lastCycle) & HiBlipCountCrossesFreqThreshold(l)) => l<=k)
 };
 
-random Integer sigMaxEstimate ~ UniformChoice ({Integer n : n <= maxBlipsPerCycle(lastCycle) & maxBlipCountCrossingFreqThreshold(n)});
+random Integer sigMaxEstimate =1;
 
 random Integer countCyclesWithAtMostKBlips(Integer k){
 	if true then 
-		~ Cardinality({Integer c: c<=2 & numBlipsPerCycle(c)<=k})
+		~ Cardinality({Integer c: c<2 & numBlipsPerCycle(c)<=k})
 };
 
 random Boolean LoBlipCountCrossesFreqThreshold(Integer k){
@@ -244,9 +245,9 @@ random Boolean minBlipCountCrossingFreqThreshold(Integer k){
 		= LoBlipCountCrossesFreqThreshold(k) & (forall Integer l (l <= maxBlipsPerCycle(lastCycle) & LoBlipCountCrossesFreqThreshold(l)) => l >= k)
 };
 
-random Integer sigMinEstimate ~ UniformChoice({Integer n: n <= maxBlipsPerCycle(lastCycle) & minBlipCountCrossingFreqThreshold(n)});
+random Integer sigMinEstimate =1;
 
-random Integer reportedEstimate () { if true then =(sigMinEstimate + sigMaxEstimate)/2};
+random Integer reportedEstimate ()  = (numBlipsPerCycle(0) + numBlipsPerCycle(1))/2;
 
 
 random Boolean apply_no_alarm(Timestep t){
@@ -268,4 +269,30 @@ random Boolean no_op(Timestep t){
 		= false
 };
 
-query value(@30);
+random Integer numBlipsHelper (Timestep s) ~ Cardinality({Blip b: Time(b)==s});
+
+random Integer numBlips (Timestep s,  Timestep t){
+  if (s==t) then
+    = #{Blip b: Time(b)==t}
+  else
+    = numBlips(s, Prev(t)) + numBlipsHelper(t)
+};
+
+
+
+//~ UniformChoice ({Integer n : n <= maxBlipsPerCycle(lastCycle) & maxBlipCountCrossingFreqThreshold(n)})
+query reportedEstimate();
+query value(@32);
+//query (forall Integer l ((l <= 3) => l<=3));
+//query {Integer n : n <= maxBlipsPerCycle(lastCycle) & maxBlipCountCrossingFreqThreshold(n)};
+//query numBlips(@1,@1);
+//query value(@32);
+//query #{Integer i : i < 2};
+//query forall Integer l (l <= maxBlipsPerCycle(lastCycle) & HiBlipCountCrossesFreqThreshold(l)) => l<=1;
+//query maxBlipCountCrossingFreqThreshold(1);
+
+//query {Integer l: l <= maxBlipsPerCycle(lastCycle) & HiBlipCountCrossesFreqThreshold(l)};
+//query {Integer i : i <= maxBlipsPerCycle(lastCycle) &  maxBlipCountCrossingFreqThreshold(i)};
+//query HiBlipCountCrossesFreqThreshold(4);
+//query (forall Integer l ((l <= 3) => l<=3));
+
