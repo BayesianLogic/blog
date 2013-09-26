@@ -1,0 +1,278 @@
+Fix Function :
+
+Assignment :
+ Function < name = DamageA , type = DamageLevel >
+  >Parameters: 
+  >Expression: 
+     If Statement
+      >Cond: 
+         Operation : Op "=="
+           >Param#0:
+              Symbol < First >    prefix = First
+                 > type = City  belong = 
+           >Param#1:
+              Symbol < A >    prefix = A
+                 > type = City  belong = City
+      >Then: 
+         Symbol < DamageFirst >    prefix = DamageFirst
+            > type = DamageLevel  belong = 
+      >Else: 
+         Symbol < DamageSecond >    prefix = DamageSecond
+            > type = DamageLevel  belong = 
+ Function < name = DamageB , type = DamageLevel >
+  >Parameters: 
+  >Expression: 
+     If Statement
+      >Cond: 
+         Operation : Op "=="
+           >Param#0:
+              Symbol < First >    prefix = First
+                 > type = City  belong = 
+           >Param#1:
+              Symbol < B >    prefix = B
+                 > type = City  belong = City
+      >Then: 
+         Symbol < DamageFirst >    prefix = DamageFirst
+            > type = DamageLevel  belong = 
+      >Else: 
+         Symbol < DamageSecond >    prefix = DamageSecond
+            > type = DamageLevel  belong = 
+ Function < name = DamageFirst , type = DamageLevel >
+  >Parameters: 
+  >Expression: 
+     Distribution < CPD > origin = TabularCPD
+      >Parameter: 
+        Mapping Term : #sub = 2  type = < PrepLevel -> DamageLevel >
+          >sub#0 : from = High  to = Select(Map{Severe -> 0.2,Mild -> 0.8})
+           --> From:
+                  Symbol < High >    prefix = High
+                     > type = PrepLevel  belong = PrepLevel
+           -->   To:
+                  Distribution < Select > origin = Categorical
+                   >Parameter: 
+                     Mapping Term : #sub = 2  type = < DamageLevel -> Double >
+                       >sub#0 : from = Severe  to = 0.2
+                        --> From:
+                               Symbol < Severe >    prefix = Severe
+                                  > type = DamageLevel  belong = DamageLevel
+                        -->   To:
+                               0.2
+                       >sub#1 : from = Mild  to = 0.8
+                        --> From:
+                               Symbol < Mild >    prefix = Mild
+                                  > type = DamageLevel  belong = DamageLevel
+                        -->   To:
+                               0.8
+          >sub#1 : from = Low  to = Select(Map{Severe -> 0.8,Mild -> 0.2})
+           --> From:
+                  Symbol < Low >    prefix = Low
+                     > type = PrepLevel  belong = PrepLevel
+           -->   To:
+                  Distribution < Select > origin = Categorical
+                   >Parameter: 
+                     Mapping Term : #sub = 2  type = < DamageLevel -> Double >
+                       >sub#0 : from = Severe  to = 0.8
+                        --> From:
+                               Symbol < Severe >    prefix = Severe
+                                  > type = DamageLevel  belong = DamageLevel
+                        -->   To:
+                               0.8
+                       >sub#1 : from = Mild  to = 0.2
+                        --> From:
+                               Symbol < Mild >    prefix = Mild
+                                  > type = DamageLevel  belong = DamageLevel
+                        -->   To:
+                               0.2
+        Symbol < PrepFirst >    prefix = PrepFirst
+           > type = PrepLevel  belong = 
+ Function < name = DamageSecond , type = DamageLevel >
+  >Parameters: 
+  >Expression: 
+     Distribution < CPD > origin = TabularCPD
+      >Parameter: 
+        Mapping Term : #sub = 2  type = < PrepLevel -> DamageLevel >
+          >sub#0 : from = High  to = Select(Map{Severe -> 0.2,Mild -> 0.8})
+           --> From:
+                  Symbol < High >    prefix = High
+                     > type = PrepLevel  belong = PrepLevel
+           -->   To:
+                  Distribution < Select > origin = Categorical
+                   >Parameter: 
+                     Mapping Term : #sub = 2  type = < DamageLevel -> Double >
+                       >sub#0 : from = Severe  to = 0.2
+                        --> From:
+                               Symbol < Severe >    prefix = Severe
+                                  > type = DamageLevel  belong = DamageLevel
+                        -->   To:
+                               0.2
+                       >sub#1 : from = Mild  to = 0.8
+                        --> From:
+                               Symbol < Mild >    prefix = Mild
+                                  > type = DamageLevel  belong = DamageLevel
+                        -->   To:
+                               0.8
+          >sub#1 : from = Low  to = Select(Map{Severe -> 0.8,Mild -> 0.2})
+           --> From:
+                  Symbol < Low >    prefix = Low
+                     > type = PrepLevel  belong = PrepLevel
+           -->   To:
+                  Distribution < Select > origin = Categorical
+                   >Parameter: 
+                     Mapping Term : #sub = 2  type = < DamageLevel -> Double >
+                       >sub#0 : from = Severe  to = 0.8
+                        --> From:
+                               Symbol < Severe >    prefix = Severe
+                                  > type = DamageLevel  belong = DamageLevel
+                        -->   To:
+                               0.8
+                       >sub#1 : from = Mild  to = 0.2
+                        --> From:
+                               Symbol < Mild >    prefix = Mild
+                                  > type = DamageLevel  belong = DamageLevel
+                        -->   To:
+                               0.2
+        Symbol < PrepSecond >    prefix = PrepSecond
+           > type = PrepLevel  belong = 
+ Function < name = First , type = City >
+  >Parameters: 
+  >Expression: 
+     Distribution < Uniform > origin = UniformChoice
+      >Parameter: 
+        Set : < class = City >
+         >Instances: __ALL__
+ Function < name = PrepFirst , type = PrepLevel >
+  >Parameters: 
+  >Expression: 
+     Distribution < Select > origin = Categorical
+      >Parameter: 
+        Mapping Term : #sub = 2  type = < PrepLevel -> Double >
+          >sub#0 : from = High  to = 0.5
+           --> From:
+                  Symbol < High >    prefix = High
+                     > type = PrepLevel  belong = PrepLevel
+           -->   To:
+                  0.5
+          >sub#1 : from = Low  to = 0.5
+           --> From:
+                  Symbol < Low >    prefix = Low
+                     > type = PrepLevel  belong = PrepLevel
+           -->   To:
+                  0.5
+ Function < name = PrepSecond , type = PrepLevel >
+  >Parameters: 
+  >Expression: 
+     Distribution < CPD > origin = TabularCPD
+      >Parameter: 
+        Mapping Term : #sub = 2  type = < DamageLevel -> PrepLevel >
+          >sub#0 : from = Severe  to = Select(Map{High -> 0.9,Low -> 0.1})
+           --> From:
+                  Symbol < Severe >    prefix = Severe
+                     > type = DamageLevel  belong = DamageLevel
+           -->   To:
+                  Distribution < Select > origin = Categorical
+                   >Parameter: 
+                     Mapping Term : #sub = 2  type = < PrepLevel -> Double >
+                       >sub#0 : from = High  to = 0.9
+                        --> From:
+                               Symbol < High >    prefix = High
+                                  > type = PrepLevel  belong = PrepLevel
+                        -->   To:
+                               0.9
+                       >sub#1 : from = Low  to = 0.1
+                        --> From:
+                               Symbol < Low >    prefix = Low
+                                  > type = PrepLevel  belong = PrepLevel
+                        -->   To:
+                               0.1
+          >sub#1 : from = Mild  to = Select(Map{High -> 0.1,Low -> 0.9})
+           --> From:
+                  Symbol < Mild >    prefix = Mild
+                     > type = DamageLevel  belong = DamageLevel
+           -->   To:
+                  Distribution < Select > origin = Categorical
+                   >Parameter: 
+                     Mapping Term : #sub = 2  type = < PrepLevel -> Double >
+                       >sub#0 : from = High  to = 0.1
+                        --> From:
+                               Symbol < High >    prefix = High
+                                  > type = PrepLevel  belong = PrepLevel
+                        -->   To:
+                               0.1
+                       >sub#1 : from = Low  to = 0.9
+                        --> From:
+                               Symbol < Low >    prefix = Low
+                                  > type = PrepLevel  belong = PrepLevel
+                        -->   To:
+                               0.9
+        Symbol < DamageFirst >    prefix = DamageFirst
+           > type = DamageLevel  belong = 
+ Function < name = Second , type = City >
+  >Parameters: 
+  >Expression: 
+     Distribution < Uniform > origin = UniformChoice
+      >Parameter: 
+        Set : < class = City >
+         >Instances: __ALL__
+ Function < name = isSame , type = Boolean >
+  >Parameters: 
+  >Expression: 
+     Operation : Op "=="
+       >Param#0:
+          Symbol < First >    prefix = First
+             > type = City  belong = 
+       >Param#1:
+          Symbol < Second >    prefix = Second
+             > type = City  belong = 
+
+FigaroClass :
+ Class < name = City>
+  >Instances: A[1], B[1], 
+  >Number Statement: 
+     2
+  >Features: 
+ Class < name = DamageLevel>
+  >Instances: Severe[1], Mild[1], 
+  >Number Statement: 
+     2
+  >Features: 
+ Class < name = PrepLevel>
+  >Instances: Low[1], High[1], 
+  >Number Statement: 
+     2
+  >Features: 
+
+Observation :
+Evidence < left = right >
+ >Left Expr: 
+    Symbol < DamageFirst >    prefix = DamageFirst
+       > type = DamageLevel  belong = 
+ >Right Expr: 
+    Symbol < Severe >    prefix = Severe
+       > type = DamageLevel  belong = DamageLevel
+Evidence < left = right >
+ >Left Expr: 
+    Symbol < isSame >    prefix = isSame
+       > type = Boolean  belong = 
+ >Right Expr: 
+    false
+
+Query :
+ Query < Expr >
+  >Left Expr: 
+     Symbol < First >    prefix = First
+        > type = City  belong = 
+ Query < Expr >
+  >Left Expr: 
+     Symbol < DamageA >    prefix = DamageA
+        > type = DamageLevel  belong = 
+ Query < Expr >
+  >Left Expr: 
+     Symbol < DamageB >    prefix = DamageB
+        > type = DamageLevel  belong = 
+ Query < Expr >
+  >Left Expr: 
+     Symbol < DamageSecond >    prefix = DamageSecond
+        > type = DamageLevel  belong = 
+
+++++++++++++++++++++++++++
+Orders: [City, #City, PrepLevel, #PrepLevel, DamageLevel, #DamageLevel, First, Second, PrepFirst, isSame, DamageFirst, PrepSecond, DamageSecond, DamageA, DamageB]

@@ -1,0 +1,47 @@
+type City;
+type PrepLevel;
+type DamageLevel;
+
+random City First ~ UniformChoice({City c});
+
+random City Second ~ UniformChoice({City c});
+
+random PrepLevel PrepFirst ~ Categorical({High -> 0.5, Low -> 0.5});
+
+random PrepLevel PrepSecond ~ 
+            TabularCPD({Severe -> ~ Categorical({High -> 0.9, Low -> 0.1}),
+       	      		 Mild -> ~ Categorical({High -> 0.1, Low -> 0.9})},
+		       DamageFirst);
+
+random DamageLevel DamageFirst
+  ~ TabularCPD({High -> ~ Categorical({Severe -> 0.2, Mild -> 0.8}),
+	  	      Low -> ~ Categorical({Severe -> 0.8, Mild -> 0.2})},
+		PrepFirst);
+
+random DamageLevel DamageSecond {
+  ~ TabularCPD({High -> ~ Categorical({Severe -> 0.2, Mild -> 0.8}),
+	  	      Low -> ~ Categorical({Severe -> 0.8, Mild -> 0.2})},
+		PrepSecond)
+};
+
+distinct City A, B;
+distinct PrepLevel Low, High;
+distinct DamageLevel Severe, Mild;
+
+random Boolean isSame = (First == Second);
+
+obs DamageFirst = Severe;
+obs isSame = false;
+
+random DamageLevel DamageA 
+  if First == A then = DamageFirst
+  else = DamageSecond;
+
+random DamageLevel DamageB 
+  if First == B then = DamageFirst
+  else = DamageSecond;
+
+query First;
+query DamageA;
+query DamageB;
+query DamageSecond;
