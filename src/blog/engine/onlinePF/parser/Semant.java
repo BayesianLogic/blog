@@ -4,8 +4,10 @@ import blog.engine.onlinePF.absyn.Absyn;
 import blog.engine.onlinePF.absyn.ActionStmt;
 import blog.engine.onlinePF.absyn.ConditionChecker;
 import blog.engine.onlinePF.absyn.DecisionUnit;
+import blog.engine.onlinePF.absyn.ForDecisionUnit;
 import blog.engine.onlinePF.absyn.IfDecisionUnit;
 import blog.engine.onlinePF.absyn.IfStmt;
+import blog.engine.onlinePF.absyn.ForStmt;
 import blog.engine.onlinePF.absyn.OpExpr;
 import blog.engine.onlinePF.absyn.PolicyModel;
 import blog.engine.onlinePF.absyn.Stmt;
@@ -36,6 +38,9 @@ public class Semant {
 		if (st instanceof IfStmt){
 			pm.decisionUnits.add(transIfStmt((IfStmt)st));
 		}
+		if (st instanceof ForStmt){
+			pm.decisionUnits.add(transForStmt((ForStmt)st));
+		}
 		else{
 			System.err.println("non-IfStmt supplied to transStmt in Semant.java");
 			System.exit(1);
@@ -49,11 +54,19 @@ public class Semant {
 		return ifd;
 	}
 	
+	private DecisionUnit transForStmt(ForStmt fos){
+		DecisionUnit act = transIfOrActionStmt(fos.body);
+		ForDecisionUnit fod = new ForDecisionUnit(fos.type, fos.var, act);
+		return fod;
+	}
+	
 	private DecisionUnit transIfOrActionStmt(Stmt s){
 		if (s instanceof ActionStmt)
 			return transActionStmt((ActionStmt) s);
 		else if (s instanceof IfStmt)
 			return transIfStmt((IfStmt) s);
+		else if (s instanceof ForStmt)
+			return transForStmt((ForStmt) s);
 		else {
 			System.err.println("DecisionUnit: unable to find a match in transIfOrActionStmt");
 			System.exit(1);

@@ -10,6 +10,7 @@ import blog.engine.onlinePF.Util.Communicator;
 import blog.engine.onlinePF.Util.FileCommunicator;
 import blog.engine.onlinePF.Util.PipedCommunicator;
 import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorOnline;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorwPolicy;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
@@ -203,5 +204,4 @@ public class PFRunnerOnline{
 		}
 		return rtn;
 	}
-	
 }

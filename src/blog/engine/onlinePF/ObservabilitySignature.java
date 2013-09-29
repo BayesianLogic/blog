@@ -32,6 +32,8 @@ public class ObservabilitySignature {
 	public HashSet<BayesNetVar> unobservables = new HashSet<BayesNetVar>();
 	public HashSet<BayesNetVar> observables = new HashSet<BayesNetVar>();
 	
+	public String latestTypeGenStr;
+	
 	/**
 	 * returns a clone of the original (this)
 	 * @return
@@ -252,6 +254,7 @@ public class ObservabilitySignature {
 	
 	public void prepareEvidence(TimedParticle tp, Model model){
 		String setEviString = generateObservableTypeString();
+		this.latestTypeGenStr = setEviString;
 		Evidence setEvidence = new Evidence();
 		parseAndTranslateEvidence(setEvidence, Util.list(), new StringReader(setEviString));
 		setEvidence.checkTypesAndScope(model);

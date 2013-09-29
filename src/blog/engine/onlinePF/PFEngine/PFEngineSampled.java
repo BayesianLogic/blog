@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Set;
 import blog.common.Util;
 import blog.engine.Particle;
 import blog.engine.onlinePF.ObservabilitySignature;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorwPolicy;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.Evidence;
@@ -34,7 +36,6 @@ public class PFEngineSampled extends PFEngineOnline{
 		// TODO Auto-generated constructor stub
 	}
 
-
 	/**
 	 * Actions to perform after answering queries
 	 * Overrides the parent method in order to call 
@@ -55,6 +56,11 @@ public class PFEngineSampled extends PFEngineOnline{
 		resample();
 		//super.afterAnsweringQueries();
 		//outputIndexData();
+	}
+	
+	public void undoTime(){
+		for (TimedParticle p : particles)
+			p.timeStep -= 1;
 	}
 	
 	/**

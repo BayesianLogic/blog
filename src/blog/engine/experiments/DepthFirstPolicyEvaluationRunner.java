@@ -3,6 +3,7 @@ package blog.engine.experiments;
 import java.util.HashMap;
 import java.util.List;
 
+import blog.common.Util;
 import blog.common.cmdline.AbstractOption;
 import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
@@ -14,6 +15,7 @@ public class DepthFirstPolicyEvaluationRunner {
 	public static HashMap<String, AbstractOption> runtimeOptions = new HashMap<String, AbstractOption>();
 
 	public static void main(String[] args) {
+		Util.initRandom(false);
 		blog.common.cmdline.Parser
 				.setProgramDesc("Bayesian Logic (BLOG) inference engine");
 		blog.common.cmdline.Parser

@@ -38,7 +38,14 @@ public class IfDecisionUnit extends DecisionUnit{
 		rtn += "query " + templateToString(check.queryTemplate, t) + ";";
 		rtn += iftrue.getQueries(t);
 		rtn += iffalse.getQueries(t);
-		return rtn;
+		return rtn;	
+	}
+
+	@Override
+	public void updateGenObjects(String s) {
+		iftrue.updateGenObjects(s);
+		iffalse.updateGenObjects(s);
+		
 	}
 	
 

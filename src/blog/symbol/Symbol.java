@@ -12,7 +12,7 @@ import java.util.Map;
  * 
  */
 public class Symbol {
-	private String name;
+	public String name;
 
 	/**
 	 * factory pattern

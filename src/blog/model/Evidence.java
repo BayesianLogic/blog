@@ -338,6 +338,8 @@ public class Evidence {
 			} else {
 				// The value of this variable in curWorld is not the
 				// observed value.
+				Object a = getObservedValue(var);
+				Object b = var.getValue(curWorld);
 				evidenceLogSum += Double.NEGATIVE_INFINITY;
 				// implies that the actual probability is 0
 			}

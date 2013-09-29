@@ -18,7 +18,7 @@ public class TimedParticle extends Particle{
 		super(idTypes, numTimeSlicesInMemory, sampler);
 		// TODO Auto-generated constructor stub
 	}
-	protected int timeStep = -1;
+	public int timeStep = -1;
 	public int getTimestep(){
 		return timeStep;
 	}

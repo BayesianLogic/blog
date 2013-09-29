@@ -22,7 +22,9 @@ import blog.parse.Parse;
 import blog.semant.Semant;
 
 public class QueryResult {
+	public HashMap<String, String> boundVariables = new HashMap<String,String>();
 	public HashMap<String, Double> q2p = new HashMap<String,Double>();
+	//public HashMap<String, ArrayList<String>> q2s = new HashMap<String,ArrayList<String>>();
 	public int timestep;
 	private Model model;
 	public QueryResult (Model m, String qr, int t){
@@ -30,6 +32,7 @@ public class QueryResult {
 		parseQueryResult(qr);
 		model = m;
 	}
+	
 	public static void main (String[] args) throws IOException{
 		FileReader f = new FileReader ("/home/saasbook/git/dblog/f.txt");
 		BufferedReader b = new BufferedReader(f);
@@ -67,7 +70,6 @@ public class QueryResult {
 				String q = matcher.group(1);
 				String tr = matcher.group(3);
 				String fal = matcher.group(6);
-				
 				Double pot = Double.valueOf(0);
 				if (tr != null)
 					pot = Double.valueOf(tr);
@@ -102,6 +104,7 @@ public class QueryResult {
 						
 					q2p.put(q, Double.valueOf(pot));
 				}
+
 				else {
 					//System.err.println("NOTHING MATCHESSSSSSSSSSSSSS: QueryResult.parseQueryResult, offending string is: "+s);
 				}
