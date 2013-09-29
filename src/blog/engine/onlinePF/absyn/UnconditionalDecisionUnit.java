@@ -4,10 +4,15 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
+import blog.absyn.Dec;
 import blog.absyn.ExprList;
 import blog.absyn.FuncCallExpr;
+import blog.absyn.FunctionDec;
+import blog.absyn.Stmt;
+import blog.absyn.StmtList;
 import blog.common.Util;
 import blog.engine.onlinePF.absyn.ConditionChecker.Op;
 import blog.model.ArgSpec;
@@ -144,7 +149,7 @@ public class UnconditionalDecisionUnit extends DecisionUnit{
 	private boolean parseAndTranslateEvidence(Evidence e, List<Query> q, Reader reader) {
 		Parse parse = new Parse(reader, null);
 		Semant sem = new Semant(Model.curMod, e, q, new ErrorMsg.quietErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
-		sem.transProg(parse.getParseResult());
+		sem.transProgSimple(parse.getParseResult());
 		return true;
 	}
 

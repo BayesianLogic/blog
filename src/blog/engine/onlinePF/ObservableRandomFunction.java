@@ -49,7 +49,7 @@ public class ObservableRandomFunction extends RandomFunction{
 	RandomFunction referencedFun;
 	private String functionCall;
 	private String rtn;
-	private String queryString; //used to force blog to query all function application arguments
+	public String queryString; //used to force blog to query all function application arguments
 	public void setReferencedFun(Function referencedFun) {
 		this.referencedFun = (RandomFunction) referencedFun;
 		String checkVal = referencedFun.getRetType().getDefaultValue().toString();

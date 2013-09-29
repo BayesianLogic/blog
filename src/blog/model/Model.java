@@ -839,7 +839,7 @@ public class Model {
 	public List<String> typeCountQueryTemplates(){
 		ArrayList<String> ars = new ArrayList<String>();
 		for (Type typ : observableTypes){
-			ars.add("observable_number_" + typ.getName()+"(t)");
+			ars.add("Number_" + typ.getName()+"(t)");
 		}
 		return ars;
 	}

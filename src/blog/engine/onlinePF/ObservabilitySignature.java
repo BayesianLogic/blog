@@ -293,7 +293,7 @@ public class ObservabilitySignature {
 		OStoBucketSize.clear();
 		
 	}
-	private static Pattern obsnumPattern = Pattern.compile("observable_number_([a-zA-Z0-9]*)");
+	private static Pattern obsnumPattern = Pattern.compile("Number_([a-zA-Z0-9]*)");
 
 	public static boolean isObsNum(String strrep) {
 		Matcher matcher = obsnumPattern.matcher(strrep);

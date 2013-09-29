@@ -1382,7 +1382,36 @@ public class Semant {
 			error(0, 0, "Invalid program");
 		}
 		return errorMsg.OK();
+	}	
+	
+	/**
+	 * simplified translation, with no type checking, translates statements only, 
+	 * i.e. no declaration
+	 * 
+	 * @param e
+	 * @return whether any error happened during parsing and translating
+	 */
+	public boolean transProgSimple(Absyn e) {
+		if (e instanceof StmtList) {
+			StmtList stl = (StmtList) e;
+			List<Stmt> stmts = new LinkedList<Stmt>();
+			List<FunctionDec> funs = new LinkedList<FunctionDec>();
+			for (; stl != null; stl = stl.next) {
+				stmts.add(stl.head);
+			}
+
+			// third pass: translate observation and statement
+			for (Stmt stm : stmts) {
+				transStmt(stm);
+			}
+
+		} else {
+			error(0, 0, "Invalid program");
+		}
+		return errorMsg.OK();
 	}
+	
+	
 
 	public ModelEvidenceQueries getModelEvidenceQueries() {
 		return new ModelEvidenceQueries(model, evidence, queries);

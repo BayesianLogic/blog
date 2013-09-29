@@ -38,10 +38,11 @@ public class Semant {
 		if (st instanceof IfStmt){
 			pm.decisionUnits.add(transIfStmt((IfStmt)st));
 		}
-		if (st instanceof ForStmt){
+		else if (st instanceof ForStmt){
 			pm.decisionUnits.add(transForStmt((ForStmt)st));
 		}
 		else{
+			Boolean a = st instanceof IfStmt;
 			System.err.println("non-IfStmt supplied to transStmt in Semant.java");
 			System.exit(1);
 		}
