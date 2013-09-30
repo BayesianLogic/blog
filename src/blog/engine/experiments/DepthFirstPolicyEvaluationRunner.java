@@ -37,7 +37,7 @@ public class DepthFirstPolicyEvaluationRunner {
 		StringOption logName = new StringOption("s", "logName", "0",
 				"Name that identifies the output files");
 		runtimeOptions.put("logname", logName);
-		StringOption logFolder = new StringOption("f", "logFolder", "randomstuff//",
+		StringOption logFolder = new StringOption("f", "logFolder", "",
 				"Name of output folder");
 		runtimeOptions.put("logfolder", logFolder);
 		List filenames = blog.common.cmdline.Parser.parse(args);
