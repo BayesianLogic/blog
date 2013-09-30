@@ -22,8 +22,8 @@ public class UBT {
 	public static Double specialTimingData4 = 0.0;//timing for hashcode observability sig
 	public static Double specialTimingData5 = 0.0;//timing for copy/answer with particles
 	public static Double specialTimingData6 = 0.0;//timing for answering in each bucket
-	public static FileCommunicator dataOutput = new FileCommunicator("UBTData.log");
-        public static FileCommunicator osOutput = new FileCommunicator("OS.log");
+	public static FileCommunicator dataOutput = new FileCommunicator(".//UBTData.log");
+        public static FileCommunicator osOutput = new FileCommunicator(".//OS.log");
         public static FileCommunicator worldOutput;// = new FileCommunicator("randomstuff//World.log");
         public static FileCommunicator valueOutput;// = new FileCommunicator("randomstuff//World.log");
         public static int numtstep;
@@ -48,7 +48,7 @@ public class UBT {
 		repartitionTime = 0;
 		resamplePartitionAndParticlesTime = 0;
 	}
-	public static FileCommunicator timingProfile = new FileCommunicator("randomstuff//timingProfile.log");
+	public static FileCommunicator timingProfile = new FileCommunicator(".//timingProfile.log");
 	public static FileCommunicator valueOutput2;
 	public static FileCommunicator valueOutput3;
 	public static FileCommunicator varianceOutput;
