@@ -30,14 +30,14 @@ public class DepthFirstPolicyEvaluationRunner {
 				"ex_inprog//logistics//policies//donothingpolicy",
 				"Path of policy file <s>");
 		runtimeOptions.put("policyfile", policyFile);
-		StringOption hiddenQueryFile = new StringOption("q", "hidden_query_file",
+		StringOption hiddenQueryFile = new StringOption("q", "sos_query_file",
 				"ex_inprog//logistics//policies//forced_query",
 				"Path of hidden query file <s>");
 		runtimeOptions.put("queryfile", hiddenQueryFile);
 		StringOption logName = new StringOption("s", "logName", "0",
 				"Name that identifies the output files");
 		runtimeOptions.put("logname", logName);
-		StringOption logFolder = new StringOption("f", "logFolder", "",
+		StringOption logFolder = new StringOption("f", "logFolder", ".",
 				"Name of output folder");
 		runtimeOptions.put("logfolder", logFolder);
 		List filenames = blog.common.cmdline.Parser.parse(args);

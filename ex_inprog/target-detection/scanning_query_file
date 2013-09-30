@@ -1,0 +1,13 @@
+query numObjects > theta;
+query reward(Prev(t));
+query turnsToDecide(t);
+query #{Blip b: Time(b) == t};
+query numObjects;
+query exists Target o RegionOf(o, t) == -1;
+query #{Blip b: Time(b) == t};
+query numObjects;
+query TheEnd(t);
+query Number_mark(t);
+query scannedLastRound(t);
+query TheEnd(Prev(t));
+query value(t);
