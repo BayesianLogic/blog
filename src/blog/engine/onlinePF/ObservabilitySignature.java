@@ -237,10 +237,11 @@ public class ObservabilitySignature {
 		myEvidence = new Evidence();
 		parseAndTranslateEvidence(myEvidence, Util.list(), new StringReader(eviString));
 	}
-	public void prepareEvidence2(){
+	public String prepareEvidence2(){
 		String eviString = generateObservableTypeString();
 		myEvidence = new Evidence();
 		parseAndTranslateEvidence(myEvidence, Util.list(), new StringReader(eviString));
+		return eviString;
 	}
 	
 	private boolean parseAndTranslateEvidence(Evidence e, List<Query> q, Reader reader) {

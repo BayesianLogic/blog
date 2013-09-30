@@ -185,7 +185,6 @@ public abstract class EvidenceQueryDecisionGeneratorOnline {
 			else
 				accstr+=eviquerystr;
 		}
-
 		parseAndTranslateEvidence(ev, q, new StringReader((String) accstr));
 		latestQueryString = accstr;
 		

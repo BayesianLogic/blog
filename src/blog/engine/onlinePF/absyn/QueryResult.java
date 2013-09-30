@@ -111,7 +111,7 @@ public class QueryResult {
 	private boolean parseAndTranslateEvidence(Evidence e, List<Query> q, Reader reader) {
 		Parse parse = new Parse(reader, null);
 		Semant sem = new Semant(model, e, q, new ErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
-		sem.transProg(parse.getParseResult());
+		sem.transProg2(parse.getParseResult());
 		return true;
 	}
 	

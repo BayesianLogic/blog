@@ -71,8 +71,8 @@ public class PFRunnerSampled extends PFRunnerOnline {
 		}
 		particleFilter.beforeTakingEvidence();
 		particleFilter.answer(queries);
-		Evidence ev = ((PFEngineSampled)particleFilter).afterAnsweringQueries2();
-		((EvidenceQueryDecisionGeneratorwPolicy)this.evidenceGenerator).updateGenObj(ev.toString());
+		String evs = ((PFEngineSampled)particleFilter).afterAnsweringQueries2();
+		((EvidenceQueryDecisionGeneratorwPolicy)this.evidenceGenerator).updateGenObj(evs);
 		particleFilter.backtrack();
 	}
 	
