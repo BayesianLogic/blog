@@ -1,4 +1,3 @@
-
 package blog.engine.onlinePF.parser;
 import java_cup.runtime.*;
 
@@ -118,6 +117,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Ee][Ll][Ss][Ee]  	{ return symbol(PolicyTokenConstants.ELSE); }
 [Ee][Ll][Ss][Ee][Ii][Ff]  { return symbol(PolicyTokenConstants.ELSEIF); }
 [Ii][Ff]  		{ return symbol(PolicyTokenConstants.IF); }
+[Ff][Oo][Rr]  { return symbol(PolicyTokenConstants.FOR); }
 
 
 /* literals */

@@ -42,5 +42,10 @@ public class IfDecisionUnit extends DecisionUnit{
 	}
 	
 
+	@Override
+	public void updateGenObjects(String s) {
+		iftrue.updateGenObjects(s);
+		iffalse.updateGenObjects(s);
 
+	}
 }

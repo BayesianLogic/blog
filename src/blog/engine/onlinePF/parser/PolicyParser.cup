@@ -8,7 +8,7 @@ import blog.engine.onlinePF.absyn.*;
  * PolicyLexer.flex.
  */
 terminal NULL;
-terminal ELSE, IF, ELSEIF;
+terminal ELSE, IF, ELSEIF, FOR;
 terminal java.lang.Number INT_LITERAL, DOUBLE_LITERAL;
 terminal java.lang.Boolean BOOLEAN_LITERAL;
 terminal java.lang.String STRING_LITERAL;
@@ -18,7 +18,7 @@ terminal SEMI; //seperators
 terminal LPAREN, RPAREN, LBRACE, RBRACE; // paired seperators
 
 nonterminal program;
-nonterminal Stmt statement, if_stmt, action_stmt, elseif_stmt;
+nonterminal Stmt statement, if_stmt, action_stmt, elseif_stmt, for_stmt;
 nonterminal StmtList statement_lst;
 nonterminal Expr operation_expr;
 
@@ -88,8 +88,15 @@ statement_lst ::= statement:e SEMI statement_lst:slst
 /* A statement can be a declaration, an observation (assertion of some
  * evidence), or a query.
  */
-statement ::= if_stmt : e {: RESULT = e; :}
+statement ::= if_stmt : e {: RESULT = e; :} |
+							for_stmt : e {: RESULT = e; :}
             ;
+/**
+ * for statement
+ */
+ for_stmt ::= FOR:a LPAREN STRING_LITERAL:typ STRING_LITERAL:var RPAREN LBRACE action_stmt:act RBRACE
+   {: RESULT = new ForStmt(currLineno(), currColno(), typ, var, act); :}
+   ;
 
 
 /**

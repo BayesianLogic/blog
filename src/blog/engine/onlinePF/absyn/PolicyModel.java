@@ -26,7 +26,11 @@ public class PolicyModel {
 		}
 		return rtn;
 	}
-	
+	public void updateGenObjects(String s){
+		for (DecisionUnit u : decisionUnits){
+			u.updateGenObjects(s);
+		}
+	}
 	public String getDecisions (QueryResult q){
 		String rtn = "";
 		for (DecisionUnit u : decisionUnits){

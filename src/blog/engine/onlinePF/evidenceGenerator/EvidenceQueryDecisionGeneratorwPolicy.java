@@ -26,7 +26,9 @@ public class EvidenceQueryDecisionGeneratorwPolicy extends EvidenceQueryDecision
 		this.pm = pm;
 		this.resultCommunicator = resultCommunicator;
 	}
-	
+	public void updateGenObj(String s){
+		pm.updateGenObjects(s);
+	}
 	@Override
 	public void getUserObservationAndQuery(){
 		String s = pm.getQueries(lastTimeStep);

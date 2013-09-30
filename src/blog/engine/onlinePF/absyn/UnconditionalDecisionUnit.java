@@ -16,5 +16,7 @@ public class UnconditionalDecisionUnit extends DecisionUnit{
 		return "";
 	}
 	
-
+	@Override
+	public void updateGenObjects(String s) {		
+	}
 }

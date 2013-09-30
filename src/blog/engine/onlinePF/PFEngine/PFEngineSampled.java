@@ -56,17 +56,18 @@ public class PFEngineSampled extends PFEngineOnline{
 		//super.afterAnsweringQueries();
 		//outputIndexData();
 	}
-	public void afterAnsweringQueries2() {
+	public Evidence afterAnsweringQueries2() {
 		for (TimedParticle p : particles)
 			p.advanceTimestep();
 		updateOSforAllParticles();
-		retakeObservability2();
+		Evidence ev = retakeObservability2();
 		
 		resample();
 		//super.afterAnsweringQueries();
 		//outputIndexData();
+		return ev;
 	}
-	public void retakeObservability2() {
+	public Evidence retakeObservability2() {
 		UBT.Stopwatch resamplePartitionAndParticlesTimer = new UBT.Stopwatch();
 		resamplePartitionAndParticlesTimer.startTimer();
 		Evidence ev = null;
@@ -87,6 +88,7 @@ public class PFEngineSampled extends PFEngineOnline{
 		}
 
 		UBT.resamplePartitionAndParticlesTime += resamplePartitionAndParticlesTimer.elapsedTime();
+		return ev;
 	}
 	
 	

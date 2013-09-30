@@ -26,4 +26,5 @@ public abstract class DecisionUnit {
 		Matcher matcher = pattern.matcher(template);
 		return matcher.replaceAll("@" + t);
 	}
+	public abstract void updateGenObjects(String s);
 }
