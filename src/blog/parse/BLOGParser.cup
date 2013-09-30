@@ -147,12 +147,12 @@ nonterminal StmtList opt_statement_lst, statement_lst;
 nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   rand_func_decl, number_stmt, origin_func_decl,
   distinct_decl, distribution_decl, parameter_decl,
-  evidence_stmt, query_stmt, decision_func_decl, observable_func_decl; //declaration for decision functions
+  evidence_stmt, query_stmt, decision_func_decl, observable_func_decl, observable_type_decl; //declaration for decision functions
 nonterminal Stmt evidence, value_evidence, symbol_evidence, query, decision_evidence; //evidence for decision function
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
   quantified_formula, distribution_expr,
   function_call, list_construct_expression, symbol_expr,
-  map_construct_expression, number_expr, elseif_list;
+  map_construct_expression, number_expr, elseif_list, observation_call;
 nonterminal Expr dependency_statement_body;
 nonterminal SetExpr set_expr;
 nonterminal ExplicitSetExpr explicit_set;
@@ -269,10 +269,15 @@ declaration_stmt ::=
 /*  | parfactor : e {: RESULT = e; :}  */
   | decision_func_decl:e {: RESULT = e; :}
   | observable_func_decl: e {: RESULT=e; :}
+  | observable_type_decl:e {: RESULT = e; :}
   ;
 
 type_decl ::= TYPE ID:typename SEMI
     {: RESULT = new TypeDec(currLineno(), currColno(), sym(typename)); :}
+  ;
+
+observable_type_decl ::= OBSERVABLE TYPE ID:typename SEMI
+    {: RESULT = new ObservableTypeDec(currLineno(), currColno(), sym(typename)); :}
   ;
 
 
@@ -493,6 +498,7 @@ expression ::= operation_expr:e  {: RESULT = e; :}
   | set_expr:e {: RESULT = e; :}
   | number_expr:e {: RESULT = e; :}
   | symbol_expr:e {: RESULT = e; :}
+  | observation_call:e {: RESULT = e; :}
   ;
 
 literal ::= STRING_LITERAL:e
@@ -568,6 +574,10 @@ quantified_formula ::= FORALL type:ty ID:id expression:e
 
 function_call ::= class_name:id LPAREN opt_expression_list:e RPAREN
     {: RESULT = new FuncCallExpr(currLineno(), currColno(), sym(id), e); :}
+  ;
+
+observation_call ::= OBSERVABLE LT function_call:fc GT
+    {: RESULT = new ObservationCallExpr(currLineno(), currColno(), fc); :}
   ;
 
 symbol_expr ::= ID:id

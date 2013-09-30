@@ -156,6 +156,18 @@ public class Model {
 	}
 
 	/**
+	 * Creates a new observable user-defined type with the given name and adds it to this
+	 * model.
+	 * 
+	 * @return the newly created type
+	 */
+	public Type addObsType(String typeName) {
+		Type type = addType(typeName);
+		obsTypes.add(type);
+		return type;
+	}
+	
+	/**
 	 * Returns the user-defined types in this model.
 	 * 
 	 * @return unmodifiable Collection of Type
@@ -777,7 +789,13 @@ public class Model {
 	 * Stores user-defined Type objects in the order they were declared.
 	 */
 	protected List<Type> types = new ArrayList<Type>(); // of Type
+	
+	/**
+	 * Stores user-defined Type objects in the order they were declared.
+	 */
+	protected List<Type> obsTypes = new ArrayList<Type>(); // of Type
 
+	
 	/**
 	 * Stores user-defined Function objects in the order they were declared.
 	 */
@@ -808,6 +826,13 @@ public class Model {
 		for (FunctionSignature fs : observableToFunc.keySet()){
 			RandomFunction f = (RandomFunction) this.getFunction(fs);
 			rtn.add(f);
+		}
+		return rtn;
+	}
+	public List<Type> getObsTyp(){
+		ArrayList<Type> rtn = new ArrayList<Type>();
+		for (Type typ : obsTypes){
+			rtn.add(typ);
 		}
 		return rtn;
 	}

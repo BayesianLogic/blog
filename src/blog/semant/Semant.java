@@ -35,6 +35,8 @@ import blog.absyn.NameTy;
 import blog.absyn.NullExpr;
 import blog.absyn.NumberDec;
 import blog.absyn.NumberExpr;
+import blog.absyn.ObservableTypeDec;
+import blog.absyn.ObservationCallExpr;
 import blog.absyn.OpExpr;
 import blog.absyn.OriginFieldList;
 import blog.absyn.OriginFuncDec;
@@ -42,7 +44,6 @@ import blog.absyn.ParameterDec;
 import blog.absyn.QuantifiedFormulaExpr;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
-
 
 import blog.absyn.DecisionFuncDec;
 import blog.absyn.DecisionEvidence;
@@ -107,6 +108,7 @@ import blog.model.Type;
 import blog.model.UniversalFormula;
 import blog.model.ValueEvidenceStatement;
 import blog.msg.ErrorMsg;
+import blog.symbol.Symbol;
 import blog.type.Timestep;
 
 /**
@@ -170,13 +172,14 @@ public class Semant {
 			return true;
 		} else {
 			error(line, col, "Function/Symbol " + name
-			    + " without argument has already been declared.");
+					+ " without argument has already been declared.");
 			return false;
 		}
 	}
 
 	protected Function getFunction(String name, List<Type> argTypeList) {
-		Function f = model.getFunction(new FunctionSignature(name, argTypeList));
+		Function f = model
+				.getFunction(new FunctionSignature(name, argTypeList));
 		if ((f == null) && (evidence != null)) {
 			f = evidence.getSkolemConstant(name);
 		}
@@ -222,7 +225,8 @@ public class Semant {
 			Type termType = getNameType(arrDef.typ);
 
 			if (termType == null) {
-				error(type.line, type.col, "Type " + termType.getName() + " undefined!");
+				error(type.line, type.col, "Type " + termType.getName()
+						+ " undefined!");
 			}
 
 			// Type hierarchy: Array -> {type}Array -> {type}([])^{num_dims}
@@ -249,7 +253,8 @@ public class Semant {
 	}
 
 	/**
-	 * check whether e is a list of symbol names (function call without argument)
+	 * check whether e is a list of symbol names (function call without
+	 * argument)
 	 * 
 	 * @param e
 	 * @return a list of Symbol names
@@ -264,7 +269,8 @@ public class Semant {
 				if (fc.args == null)
 					checkSymbolDup(fc.line, fc.col, fn);
 				else {
-					error(fc.line, fc.col, "Invalid expression: expecting No argument");
+					error(fc.line, fc.col,
+							"Invalid expression: expecting No argument");
 				}
 				res.add(fn);
 			} else if (h instanceof SymbolExpr) {
@@ -273,7 +279,8 @@ public class Semant {
 				checkSymbolDup(var.line, var.col, sym);
 				res.add(sym);
 			} else {
-				error(h.line, h.col, "Invalid expression: expecting Symbol names");
+				error(h.line, h.col,
+						"Invalid expression: expecting Symbol names");
 			}
 		}
 		return res;
@@ -309,6 +316,8 @@ public class Semant {
 	void transDec(Dec e) {
 		if (e instanceof TypeDec) {
 			transDec((TypeDec) e);
+		} else if (e instanceof ObservableTypeDec) {
+			transDec((ObservableTypeDec) e);
 		} else if (e instanceof DistinctSymbolDec) {
 			transDec((DistinctSymbolDec) e);
 		} else if (e instanceof DistributionDec) {
@@ -323,7 +332,8 @@ public class Semant {
 	}
 
 	/**
-	 * translate the Distinct symbol declaration to internal model representation
+	 * translate the Distinct symbol declaration to internal model
+	 * representation
 	 * 
 	 * @param e
 	 */
@@ -340,7 +350,8 @@ public class Semant {
 						model.addEnumeratedObject(name, type);
 					} else {
 						for (int i = 0; i < sz; i++) {
-							model.addEnumeratedObject(name + "[" + i + "]", type);
+							model.addEnumeratedObject(name + "[" + i + "]",
+									type);
 						}
 					}
 			}
@@ -348,8 +359,8 @@ public class Semant {
 	}
 
 	/**
-	 * translate Function declaration to internal representation
-	 * for nonrandom and random functions, this step will not process the body
+	 * translate Function declaration to internal representation for nonrandom
+	 * and random functions, this step will not process the body
 	 * 
 	 * @param e
 	 */
@@ -357,7 +368,7 @@ public class Semant {
 		Type resTy = getType(e.result);
 		if (resTy == null) {
 			error(e.line, e.col, "Symbol at line " + e.result.line + " col "
-			    + e.result.col + " does not have a type!");
+					+ e.result.col + " does not have a type!");
 			return;
 		}
 		List<Type> argTy = new ArrayList<Type>();
@@ -368,7 +379,8 @@ public class Semant {
 			if (fl.var != null) {
 				String vn = fl.var.toString();
 				if (argVars.contains(vn)) {
-					error(fl.line, fl.col, "Variable " + vn + " used multiple times");
+					error(fl.line, fl.col, "Variable " + vn
+							+ " used multiple times");
 				} else {
 					argVars.add(vn);
 				}
@@ -399,28 +411,28 @@ public class Semant {
 		}
 
 		if (!(model.getOverlappingFuncs(name,
-		    (Type[]) argTy.toArray(new Type[argTy.size()])).isEmpty())) {
+				(Type[]) argTy.toArray(new Type[argTy.size()])).isEmpty())) {
 			error(e.line, e.col, "Function " + name + " overlapped");
 		}
-		
-		//parsing declaration for decision function
-		if (e instanceof DecisionFuncDec){
+
+		// parsing declaration for decision function
+		if (e instanceof DecisionFuncDec) {
 			fun = new DecisionFunction(name, argTy, resTy);
 			model.addFunction(fun);
 			return;
 		}
-		
-		//observable functions are really just random functions
-		if (e instanceof ObservableFuncDec){
-			//reference to function will be added in transfuncbody
-			RandomFunction f = new ObservableRandomFunction(name, argTy, resTy, null);
+
+		// observable functions are really just random functions
+		if (e instanceof ObservableFuncDec) {
+			// reference to function will be added in transfuncbody
+			RandomFunction f = new ObservableRandomFunction(name, argTy, resTy,
+					null);
 			f.setArgVars(argVars);
 			fun = f;
 			model.addFunction(fun);
 			return;
 		}
-		
-		
+
 		if (e instanceof FixedFuncDec) {
 			NonRandomFunction f;
 			if (argTy.size() == 0) {
@@ -437,23 +449,22 @@ public class Semant {
 		} else if (e instanceof OriginFuncDec) {
 			if (argTy.size() != 1) {
 				error(e.line, e.col,
-				    "Incorrect number of arguments: origin function expecting exactly One argument");
+						"Incorrect number of arguments: origin function expecting exactly One argument");
 			}
 			if (e.body != null) {
-				error(
-				    e.line,
-				    e.col,
-				    "Invalid origin function definition: the body of origin functions should be empty");
+				error(e.line,
+						e.col,
+						"Invalid origin function definition: the body of origin functions should be empty");
 			}
 			OriginFunction f = new OriginFunction(name, argTy, resTy);
 			fun = f;
-		} 
+		}
 		model.addFunction(fun);
 	}
 
 	/**
-	 * translate the function body
-	 * only nonrandom and random functions will be processed in this step.
+	 * translate the function body only nonrandom and random functions will be
+	 * processed in this step.
 	 * 
 	 * @param e
 	 */
@@ -470,12 +481,12 @@ public class Semant {
 		Function fun = getFunction(name, argTy);
 		currFunction = fun;
 
-		//DecisionFunctions have no body
-		if (e instanceof DecisionFuncDec){
+		// DecisionFunctions have no body
+		if (e instanceof DecisionFuncDec) {
 			currFunction = null;
 			return;
 		}
-		
+
 		if (e instanceof FixedFuncDec) {
 			if (e.body == null) {
 				error(e.line, e.col, "empty fixed function body");
@@ -508,24 +519,25 @@ public class Semant {
 				Object funcBody = transExpr(e.body);
 				ArgSpec funcValue = (ArgSpec) funcBody;
 				((NonRandomFunction) fun).setInterpretation(
-				    blog.model.ConstantInterp.class,
-				    Collections.singletonList(funcValue));
+						blog.model.ConstantInterp.class,
+						Collections.singletonList(funcValue));
 			}
 		} else if (e instanceof RandomFuncDec) {
 			DependencyModel dm = transDependency(e.body, fun.getRetType(),
-			    fun.getDefaultValue());
+					fun.getDefaultValue());
 			((RandomFunction) fun).setDepModel(dm);
 		}
-		
-		//handling of observablefuncdec
+
+		// handling of observablefuncdec
 		else if (e instanceof ObservableFuncDec) {
-			//body is made just like a random function
+			// body is made just like a random function
 			DependencyModel dm = transDependency(e.body, fun.getRetType(),
 					fun.getDefaultValue());
 			((RandomFunction) fun).setDepModel(dm);
-			model.addObservableFunction(((RandomFunction) fun), ((ObservableFuncDec)e).referenceFuncName);
+			model.addObservableFunction(((RandomFunction) fun),
+					((ObservableFuncDec) e).referenceFuncName);
 		}
-		
+
 		currFunction = null;
 	}
 
@@ -571,7 +583,8 @@ public class Semant {
 		List<Clause> cl = new ArrayList<Clause>(1);
 		if (body instanceof Term || body instanceof Formula) {
 			cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-			    .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
+					.<ArgSpec> emptyList(), Collections
+					.singletonList((ArgSpec) body)));
 		} else if (body instanceof Clause) {
 			cl.add((Clause) body);
 		} else if (e instanceof IfExpr) {
@@ -593,11 +606,9 @@ public class Semant {
 			transEvi((ValueEvidence) e);
 		} else if (e instanceof SymbolEvidence) {
 			transEvi((SymbolEvidence) e);
-		} 
-		else if (e instanceof DecisionEvidence){
+		} else if (e instanceof DecisionEvidence) {
 			transEvi((DecisionEvidence) e);
-		}
-		else {
+		} else {
 			error(e.line, e.col, "Unsupported Evidence type: " + e);
 		}
 	}
@@ -611,28 +622,29 @@ public class Semant {
 	 */
 	void transEvi(DecisionEvidence e) {
 		FuncAppTerm left = null;
-		try{
+		try {
 			left = (FuncAppTerm) transExpr(e.left);
-		}
-		catch(ClassCastException ex){
-			error(e.left.line, e.left.col, "Semant.transEvi: Tried to parse choice evidence that does not have func_call as left hand side!");
+		} catch (ClassCastException ex) {
+			error(e.left.line,
+					e.left.col,
+					"Semant.transEvi: Tried to parse choice evidence that does not have func_call as left hand side!");
 		}
 		Object value = transExpr(e.right);
 		if (value instanceof ArgSpec) {
-			evidence.addDecisionEvidence(new DecisionEvidenceStatement((FuncAppTerm) left,
-					(ArgSpec) value));
+			evidence.addDecisionEvidence(new DecisionEvidenceStatement(
+					(FuncAppTerm) left, (ArgSpec) value));
 		} else {
 			error(e.right.line, e.right.col,
 					"Invalid expression on the right side of evidence.");
 		}
 
 	}
-	
+
 	/**
 	 * valid evidence format include (will be checked in semantic checking)
 	 * 
-	 * - general form: random expression = fixed expression
-	 * - number_evidence: # implicit_set = int constant
+	 * - general form: random expression = fixed expression - number_evidence: #
+	 * implicit_set = int constant
 	 * 
 	 * @param e
 	 */
@@ -649,32 +661,33 @@ public class Semant {
 				value = (ArgSpec) transExpr(e.right);
 			} else {
 				error(e.right.line, e.right.col,
-				    "Number evidence expecting integer(natural number) on the right side");
+						"Number evidence expecting integer(natural number) on the right side");
 			}
 			evidence.addValueEvidence(new ValueEvidenceStatement(
-			    (CardinalitySpec) left, value));
+					(CardinalitySpec) left, value));
 		} else if (left instanceof ArgSpec) {
 			// general value expression
 			Object value = transExpr(e.right);
 			if (value instanceof ArgSpec) {
 				// need more semantic checking on type match
 				// if (left instanceof Term) {
-				// value = getTypedValue(((Term) left).getType(), (ArgSpec) value);
+				// value = getTypedValue(((Term) left).getType(), (ArgSpec)
+				// value);
 				// }
 				// let us use the type checking in Evidence,
 				if (value != null)
-					evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
-					    (ArgSpec) value));
+					evidence.addValueEvidence(new ValueEvidenceStatement(
+							(ArgSpec) left, (ArgSpec) value));
 				else
 					error(e.line, e.col,
-					    "type mistach for observation or translation error");
+							"type mistach for observation or translation error");
 			} else {
 				error(e.right.line, e.right.col,
-				    "Invalid expression on the right side of evidence.");
+						"Invalid expression on the right side of evidence.");
 			}
 		} else {
 			error(e.left.line, e.left.col,
-			    "Invalid expression on the left side of evidence.");
+					"Invalid expression on the left side of evidence.");
 		}
 	}
 
@@ -694,15 +707,15 @@ public class Semant {
 				// ok
 				value = getSymbolList(((ExplicitSetExpr) e.right).values);
 			} else {
-				error(
-				    e.right.line,
-				    e.right.col,
-				    "Invalid expression on right side of symbol evidence: explicit set of symbols expected");
+				error(e.right.line,
+						e.right.col,
+						"Invalid expression on right side of symbol evidence: explicit set of symbols expected");
 			}
-			SymbolEvidenceStatement sevid = new SymbolEvidenceStatement(leftset,
-			    value);
+			SymbolEvidenceStatement sevid = new SymbolEvidenceStatement(
+					leftset, value);
 			if (!evidence.addSymbolEvidence(sevid)) {
-				error(e.right.line, e.right.col, "Duplicate names in symbol evidence.");
+				error(e.right.line, e.right.col,
+						"Duplicate names in symbol evidence.");
 			}
 			for (SkolemConstant obj : sevid.getSkolemConstants()) {
 				model.addFunction(obj);
@@ -713,10 +726,9 @@ public class Semant {
 			// CardinalitySpec(
 			// leftset), createSpecFromInt(value.size())));
 		} else {
-			error(
-			    e.left.line,
-			    e.left.col,
-			    "Invalid expression on left side of symbool evidence: implicit set of symbols expected");
+			error(e.left.line,
+					e.left.col,
+					"Invalid expression on left side of symbool evidence: implicit set of symbols expected");
 		}
 	}
 
@@ -736,27 +748,32 @@ public class Semant {
 			if (f == null) {
 				error(fl.line, fl.col, "function undefined: " + name);
 			} else if (!(f instanceof OriginFunction)) {
-				error(fl.line, fl.col, "Function " + name + " with argument type "
-				    + typ.getName() + " has not been declared as an origin function.");
+				error(fl.line, fl.col, "Function " + name
+						+ " with argument type " + typ.getName()
+						+ " has not been declared as an origin function.");
 			} else if (fs.contains(f)) {
 				error(fl.line, fl.col, "Origin function " + name
-				    + " used more than once");
+						+ " used more than once");
 			} else {
 				fs.add((OriginFunction) f);
 			}
 			String vn = fl.var.toString();
 			if (argVars.contains(vn)) {
-				error(fl.line, fl.col, "Variable " + vn + " used multiple times");
+				error(fl.line, fl.col, "Variable " + vn
+						+ " used multiple times");
 			} else {
 				argVars.add(vn);
 			}
 		}
 
 		POP pop = new POP(typ, fs, transDependency(e.body,
-		    BuiltInTypes.NATURAL_NUM, new Integer(0)));
+				BuiltInTypes.NATURAL_NUM, new Integer(0)));
 		if (typ.getPOPWithOriginFuncs(pop.getOriginFuncSet()) != null) {
-			error(e.line, e.col, "number statement #" + typ.getName()
-			    + " uses same origin functions as earlier number statement.");
+			error(e.line,
+					e.col,
+					"number statement #"
+							+ typ.getName()
+							+ " uses same origin functions as earlier number statement.");
 		} else {
 			typ.addPOP(pop);
 		}
@@ -775,6 +792,21 @@ public class Semant {
 			error(e.line, e.col, "Type " + name + " already defined!");
 		} else {
 			model.addType(name);
+			// BuiltInTypes.addArrayTypes(name);
+		}
+	}
+
+	/**
+	 * add the observable declared type to model
+	 * 
+	 * @param e
+	 */
+	void transDec(ObservableTypeDec e) {
+		String name = e.name.toString();
+		if (Type.getType(name) != null) {
+			error(e.line, e.col, "Type " + name + " already defined!");
+		} else {
+			model.addObsType(name);
 			// BuiltInTypes.addArrayTypes(name);
 		}
 	}
@@ -801,8 +833,8 @@ public class Semant {
 	ArgSpec transExpr(DoubleExpr e) {
 		// TODO is there a better way than using function?
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
-		    String.valueOf(e.value), BuiltInTypes.REAL, e.value),
-		    Collections.EMPTY_LIST);
+				String.valueOf(e.value), BuiltInTypes.REAL, e.value),
+				Collections.EMPTY_LIST);
 		t.setLocation(e.line);
 		return t;
 	}
@@ -842,6 +874,8 @@ public class Semant {
 			return transExpr((NullExpr) e);
 		} else if (e instanceof QuantifiedFormulaExpr) {
 			return transExpr((QuantifiedFormulaExpr) e);
+		} else if (e instanceof ObservationCallExpr) {
+			return transExpr((ObservationCallExpr) e);
 		}
 		return null;
 	}
@@ -851,7 +885,7 @@ public class Semant {
 		t.setLocation(e.line);
 		return t;
 	}
-	
+
 	ArgSpec transExpr(SymbolExpr e) {
 		Term t = new SymbolTerm(e.name.toString());
 		t.setLocation(e.line);
@@ -867,10 +901,54 @@ public class Semant {
 			// to add type for this argspec
 		}
 
-		Term t = new FuncAppTerm(e.func.toString(), args.toArray(new ArgSpec[args
-		    .size()]));
+		Term t = new FuncAppTerm(e.func.toString(),
+				args.toArray(new ArgSpec[args.size()]));
 		t.setLocation(e.line);
 		return t;
+	}
+
+	Object transExpr(ObservationCallExpr e) {
+		Expr equivalent = getObsExprHelper(e.arg);
+		return transExpr(equivalent);
+	}
+
+	private Expr getObsExpr(ObservationCallExpr e) {
+		Expr rtn = new BooleanExpr(0, 0, true);
+
+		return rtn;
+	}
+
+	private Expr getObsExprHelper (FuncCallExpr e) {
+		Expr rtn = new BooleanExpr(0,0,true);
+		ExprList el = e.args;
+		int numarg = 0;
+		for (; el!=null; el = el.next){
+			numarg++;
+		}
+		el = e.args;
+		
+		RandomFunction rf = (RandomFunction) model.getRandomFunc(e.func.toString(), numarg);
+		if (rf != null){
+			String orfName = "observable_"+e.func.toString();
+			RandomFunction orf = (RandomFunction) model.getRandomFunc(orfName, numarg);
+			if (orf != null)
+				rtn = new OpExpr(0, 0, rtn, OpExpr.AND, new FuncCallExpr(0, 0, Symbol.symbol(orfName),e.args));
+			else
+				return new BooleanExpr(0,0,false);
+		} else {
+			if (model.getFuncsWithName(e.func.toString())==null){
+				System.err.println("Error: referenced function not found in getObsExprHelper in Semant.java");
+				System.exit(1);
+			}
+		}
+		for (; el!=null; el = el.next){
+			Expr arg = el.head;
+			if (arg instanceof FuncCallExpr){
+				FuncCallExpr farg = (FuncCallExpr) arg;
+				rtn = new OpExpr(0, 0, rtn, OpExpr.AND, getObsExprHelper(farg));
+			}
+		}
+		return rtn;
 	}
 
 	ArgSpec transExpr(ListInitExpr e) {
@@ -912,9 +990,11 @@ public class Semant {
 		Formula quantFormula = (Formula) quantExpr;
 		Type quantType = getType(e.type);
 		if (e.quantifier == QuantifiedFormulaExpr.FORALL) {
-			return new UniversalFormula(e.var.toString(), quantType, quantFormula);
+			return new UniversalFormula(e.var.toString(), quantType,
+					quantFormula);
 		} else if (e.quantifier == QuantifiedFormulaExpr.EXISTS) {
-			return new ExistentialFormula(e.var.toString(), quantType, quantFormula);
+			return new ExistentialFormula(e.var.toString(), quantType,
+					quantFormula);
 		} else {
 			return null;
 		}
@@ -939,7 +1019,8 @@ public class Semant {
 		} else {
 			// should be ArgSpec
 			clauses.add(new Clause(test, EqualsCPD.class, Collections
-			    .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
+					.<ArgSpec> emptyList(), Collections
+					.singletonList((ArgSpec) value)));
 		}
 	}
 
@@ -972,8 +1053,9 @@ public class Semant {
 			clauses.addAll((List<Clause>) value);
 		} else {
 			// should be ArgSpec
-			clauses.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-			    .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
+			clauses.add(new Clause(TrueFormula.TRUE, EqualsCPD.class,
+					Collections.<ArgSpec> emptyList(), Collections
+							.singletonList((ArgSpec) value)));
 		}
 	}
 
@@ -988,10 +1070,10 @@ public class Semant {
 			test = (Formula) cond;
 		} else if (cond instanceof Term) {
 			test = new EqualityFormula((Term) cond,
-			    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+					BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 		} else {
 			error(e.test.line, e.test.col,
-			    "Cannot use non-Boolean value as predicate for if clause");
+					"Cannot use non-Boolean value as predicate for if clause");
 			System.exit(1);
 		}
 
@@ -1006,21 +1088,21 @@ public class Semant {
 
 	ArgSpec transExpr(BooleanExpr e) {
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
-		    String.valueOf(e.value), BuiltInTypes.BOOLEAN, e.value));
+				String.valueOf(e.value), BuiltInTypes.BOOLEAN, e.value));
 		t.setLocation(e.line);
 		return t;
 	}
 
 	ArgSpec transExpr(IntExpr e) {
 		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
-		    String.valueOf(e.value), BuiltInTypes.INTEGER, e.value));
+				String.valueOf(e.value), BuiltInTypes.INTEGER, e.value));
 		t.setLocation(e.line);
 		return t;
 	}
 
 	ArgSpec transExpr(StringExpr e) {
-		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral("\"" + e.value + "\"",
-		    BuiltInTypes.STRING, e.value));
+		Term t = new FuncAppTerm(BuiltInFunctions.getLiteral("\"" + e.value
+				+ "\"", BuiltInTypes.STRING, e.value));
 		t.setLocation(e.line);
 		return t;
 	}
@@ -1050,10 +1132,9 @@ public class Semant {
 			if (c instanceof Formula) {
 				cond = (Formula) c;
 			} else {
-				error(
-				    e.cond.line,
-				    e.cond.col,
-				    "Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
+				error(e.cond.line,
+						e.cond.col,
+						"Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
 			}
 		}
 		return new ImplicitSetSpec(vn, typ, cond);
@@ -1070,10 +1151,9 @@ public class Semant {
 			if (tuple instanceof Term) {
 				tupleTerms.add((Term) tuple);
 			} else {
-				error(
-				    e.cond.line,
-				    e.cond.col,
-				    "Invalid expression as term in tuple set: term (number, string, boolean, or function call) expected");
+				error(e.cond.line,
+						e.cond.col,
+						"Invalid expression as term in tuple set: term (number, string, boolean, or function call) expected");
 			}
 			e.setTuple = e.setTuple.next;
 		}
@@ -1086,10 +1166,9 @@ public class Semant {
 				varTypes.add((Type) varType);
 				varNames.add((String) varName);
 			} else {
-				error(
-				    e.cond.line,
-				    e.cond.col,
-				    "Invalid expression as logical variable in implicit set: logical variable expected");
+				error(e.cond.line,
+						e.cond.col,
+						"Invalid expression as logical variable in implicit set: logical variable expected");
 			}
 			e.enumVars = e.enumVars.next;
 		}
@@ -1099,10 +1178,9 @@ public class Semant {
 			if (c instanceof Formula) {
 				cond = (Formula) c;
 			} else {
-				error(
-				    e.cond.line,
-				    e.cond.col,
-				    "Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
+				error(e.cond.line,
+						e.cond.col,
+						"Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
 			}
 		}
 		return new TupleSetSpec(tupleTerms, varTypes, varNames, cond);
@@ -1157,49 +1235,52 @@ public class Semant {
 		case OpExpr.EQ:
 			return new EqualityFormula((Term) left, (Term) right);
 		case OpExpr.NEQ:
-			return new NegFormula(new EqualityFormula((Term) left, (Term) right));
+			return new NegFormula(
+					new EqualityFormula((Term) left, (Term) right));
 		case OpExpr.LT:
 			return new ComparisonFormula((Term) left, (Term) right, Operator.LT);
 		case OpExpr.LEQ:
-			return new ComparisonFormula((Term) left, (Term) right, Operator.LEQ);
+			return new ComparisonFormula((Term) left, (Term) right,
+					Operator.LEQ);
 		case OpExpr.GT:
 			return new ComparisonFormula((Term) left, (Term) right, Operator.GT);
 		case OpExpr.GEQ:
-			return new ComparisonFormula((Term) left, (Term) right, Operator.GEQ);
+			return new ComparisonFormula((Term) left, (Term) right,
+					Operator.GEQ);
 		case OpExpr.AND:
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,
-				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			if (right instanceof Term) {
 				right = new EqualityFormula((Term) right,
-				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			return new ConjFormula((Formula) left, (Formula) right);
 		case OpExpr.OR:
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,
-				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			if (right instanceof Term) {
 				right = new EqualityFormula((Term) right,
-				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			return new DisjFormula((Formula) left, (Formula) right);
 		case OpExpr.IMPLY:
 			if (left instanceof Term) {
 				left = new EqualityFormula((Term) left,
-				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			if (right instanceof Term) {
 				right = new EqualityFormula((Term) right,
-				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			return new ImplicFormula((Formula) left, (Formula) right);
 		case OpExpr.NOT:
 			if (right instanceof Term) {
 				right = new EqualityFormula((Term) right,
-				    BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+						BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
 			}
 			return new NegFormula((Formula) right);
 		case OpExpr.SUB:
@@ -1207,39 +1288,41 @@ public class Semant {
 			if (left instanceof SymbolTerm) {
 				if (e.right instanceof IntExpr) {
 					String objectname = ((SymbolTerm) left).getName() + '['
-					    + ((IntExpr) e.right).value + ']';
-					Function object = getFunction(objectname, Collections.EMPTY_LIST);
+							+ ((IntExpr) e.right).value + ']';
+					Function object = getFunction(objectname,
+							Collections.EMPTY_LIST);
 					if (object != null)
 						return new FuncAppTerm(object);
 				}
 				Object symbolMapping = model
-				    .getFuncsWithName(((SymbolTerm) left).getName()).iterator().next();
+						.getFuncsWithName(((SymbolTerm) left).getName())
+						.iterator().next();
 				if (((Function) symbolMapping).getRetType().getName()
-				    .equals("Array_Real_1")) {
+						.equals("Array_Real_1")) {
 					func = (Function) BuiltInFunctions.getFuncsWithName(
-					    BuiltInFunctions.SUB_VEC_NAME).get(0);
+							BuiltInFunctions.SUB_VEC_NAME).get(0);
 				} else {
 					func = (Function) BuiltInFunctions.getFuncsWithName(
-					    BuiltInFunctions.SUB_MAT_NAME).get(0);
+							BuiltInFunctions.SUB_MAT_NAME).get(0);
 				}
 			} else {
 				func = (Function) BuiltInFunctions.getFuncsWithName(
-				    BuiltInFunctions.SUB_VEC_NAME).get(0);
+						BuiltInFunctions.SUB_VEC_NAME).get(0);
 			}
 			term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
 			return term;
 		case OpExpr.AT:
 			if (e.left == null && e.right instanceof IntExpr) {
 				Timestep t = Timestep.at(((IntExpr) e.right).value);
-				term = new FuncAppTerm(BuiltInFunctions.getLiteral(t.toString(),
-				    BuiltInTypes.TIMESTEP, t));
+				term = new FuncAppTerm(BuiltInFunctions.getLiteral(
+						t.toString(), BuiltInTypes.TIMESTEP, t));
 				term.setLocation(e.line);
 				return term;
 			}
 
 		default:
-			error(e.getLine(), e.getCol(),
-			    "The operation could not be applied" + e.toString());
+			error(e.getLine(), e.getCol(), "The operation could not be applied"
+					+ e.toString());
 			return null;
 		}
 
@@ -1267,9 +1350,9 @@ public class Semant {
 	 * check list of expressions
 	 * 
 	 * @param e
-	 *          list of expression
+	 *            list of expression
 	 * @param allowRandom
-	 *          whether allow terms with random functions in the expression
+	 *            whether allow terms with random functions in the expression
 	 * @return
 	 */
 	List<ArgSpec> transExprList(ExprList e, boolean allowRandom) {
@@ -1317,10 +1400,9 @@ public class Semant {
 	}
 
 	/**
-	 * each statement list will be processed twice
-	 * first time everything except processing function body for random/nonrandom
-	 * functions
-	 * second time those function bodies
+	 * each statement list will be processed twice first time everything except
+	 * processing function body for random/nonrandom functions second time those
+	 * function bodies
 	 * 
 	 * @param stl
 	 */
