@@ -17,7 +17,7 @@ import blog.engine.onlinePF.parser.Semant;
  */
 public class PolicyModel {
 	public List<DecisionUnit> decisionUnits = new ArrayList<DecisionUnit>();
-	FileCommunicator f = new FileCommunicator("randomstuff/policy_actions.log");  
+	FileCommunicator f = new FileCommunicator("./policy_actions.log");  
 	/**Gets the queries for latest Timestep t*/
 	public String getQueries (int t){
 		String rtn = "";
