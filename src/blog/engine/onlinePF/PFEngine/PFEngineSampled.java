@@ -56,6 +56,40 @@ public class PFEngineSampled extends PFEngineOnline{
 		//super.afterAnsweringQueries();
 		//outputIndexData();
 	}
+	public void afterAnsweringQueries2() {
+		for (TimedParticle p : particles)
+			p.advanceTimestep();
+		updateOSforAllParticles();
+		retakeObservability2();
+		
+		resample();
+		//super.afterAnsweringQueries();
+		//outputIndexData();
+	}
+	public void retakeObservability2() {
+		UBT.Stopwatch resamplePartitionAndParticlesTimer = new UBT.Stopwatch();
+		resamplePartitionAndParticlesTimer.startTimer();
+		Evidence ev = null;
+		Integer sampledOSindex = sampleOS();
+		ObservabilitySignature selectedOS = ObservabilitySignature.getOSbyIndex(sampledOSindex);
+		selectedOS.prepareEvidence2();
+		ev = selectedOS.getEvidence();
+		ev.checkTypesAndScope(model);
+		if (ev.compile()!=0)
+			System.exit(1);
+
+		
+		for (Particle o : particles){
+			TimedParticle p = (TimedParticle) o;
+			p.unInstantiateObservables(selectedOS);
+			p.take(ev);
+			p.setOS(sampledOSindex);
+		}
+
+		UBT.resamplePartitionAndParticlesTime += resamplePartitionAndParticlesTimer.elapsedTime();
+	}
+	
+	
 	
 	/**
 	 * Samples a single observability signature, by sampling a single particle

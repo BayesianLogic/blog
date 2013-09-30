@@ -10,6 +10,7 @@ import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorOnli
 import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorwPolicy;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Query;
 import blog.model.RandomFunction;
 import blog.model.Type;
 
@@ -57,18 +58,32 @@ public class PFRunnerSampled extends PFRunnerOnline {
 	 */
 	public void advancePhase0() {
 		Evidence evidence;
-		Collection queries;
-		beforeEvidenceAndQueries();
-		if ((evidence = evidenceGenerator.getLatestObservation()) == null 
-				| (queries = evidenceGenerator.getLatestQueries()) == null){
-			System.err.println("Evidence/Query should not be null");
-			System.exit(1);
+		Collection queries = setQI.getQueries(evidenceGenerator.lastTimeStep+1);
+		for (Query query : (Collection<Query>)queries){
+			if (!query.checkTypesAndScope(model)){
+				System.err.println("OPFevidencegenerator.getinput: error checking query");
+				System.exit(1);
+			}
+			if (query.compile()!=0){
+				System.err.println("OPFevidencegenerator.getinput: error compiling query");
+				System.exit(1);
+			}
 		}
 		particleFilter.beforeTakingEvidence();
-		particleFilter.take(evidence);
 		particleFilter.answer(queries);
-		particleFilter.afterAnsweringQueries();
-		
-		postEvidenceAndQueryIO();
+		((PFEngineSampled)particleFilter).afterAnsweringQueries2();
+		particleFilter.backtrack();
+	}
+	
+	/** Runs until shouldTerminate returns true */
+	@Override
+	public void run() {
+		//int i=0;
+		while (!shouldTerminate()){
+			advancePhase0();
+			advancePhase1();
+			advancePhase2();
+			//i++;
+		}
 	}
 }

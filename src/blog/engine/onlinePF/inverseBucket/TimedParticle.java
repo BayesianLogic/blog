@@ -25,6 +25,9 @@ public class TimedParticle extends Particle{
 	public void advanceTimestep(){
 		timeStep ++;
 	}
+	public void retractTimestep(){
+		timeStep --;
+	}
 	private Integer myOSIndex;
 	public Integer getOS (){
 		return myOSIndex;

@@ -213,6 +213,11 @@ public abstract class PFEngineOnline extends InferenceEngine {
 		resample();
 	}
 	
+	public void backtrack(){
+		for (TimedParticle p : particles)
+			p.retractTimestep();
+	}
+	
 	/**
 	 * Resamples particles according to their weight
 	 */

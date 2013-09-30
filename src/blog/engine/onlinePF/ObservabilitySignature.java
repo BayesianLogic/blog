@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import blog.DBLOGUtil;
 import blog.bn.BayesNetVar;
 import blog.common.Util;
@@ -234,6 +237,11 @@ public class ObservabilitySignature {
 		myEvidence = new Evidence();
 		parseAndTranslateEvidence(myEvidence, Util.list(), new StringReader(eviString));
 	}
+	public void prepareEvidence2(){
+		String eviString = generateObservableTypeString();
+		myEvidence = new Evidence();
+		parseAndTranslateEvidence(myEvidence, Util.list(), new StringReader(eviString));
+	}
 	
 	private boolean parseAndTranslateEvidence(Evidence e, List<Query> q, Reader reader) {
 		Parse parse = new Parse(reader, null);
@@ -246,6 +254,43 @@ public class ObservabilitySignature {
 	}
 	
 	private Evidence myEvidence;
+	
+	public String generateObservableTypeString(){
+		String rtn = "";
+		for (BayesNetVar referenced : observedValues.keySet()){
+			if (isObsNum(referenced.toString())){
+				Integer numobj = (Integer) observedValues.get(referenced);
+				String setStr = generateSetObservation(getTypeString(referenced.toString()), numobj);
+				rtn += setStr;
+			}
+
+		}
+		return rtn;
+
+	}
+	public String generateSetObservation(String typ, Integer num){
+		String rtn = "obs {" + typ + " x:Time_"+typ+"(x)"+"==@"+myTimestep+"} = {";
+		String end = "";
+		for (int i = 0; i < num; i ++){
+			rtn += ""+typ+"_"+myTimestep+"_"+i +",";
+			end += "obs "+typ+"_"+myTimestep+"_"+i +"="+typ+"_"+myTimestep+"_"+i +";";
+		}
+		rtn = rtn.substring(0, rtn.length()-1);
+		rtn = rtn + "};";
+		rtn = rtn + end;
+		return rtn;
+	}
+	private static Pattern obsnumPattern = Pattern.compile("Number_([a-zA-Z0-9]*)");
+	public static String getTypeString(String strrep) {
+		Matcher matcher = obsnumPattern.matcher(strrep);
+		matcher.find();
+		return matcher.group(1);
+	}
+
+	public static boolean isObsNum(String strrep) {
+		Matcher matcher = obsnumPattern.matcher(strrep);
+		return matcher.find();
+	}
 	
 	/**
 	 * Clears the cached observability signatures from before.
