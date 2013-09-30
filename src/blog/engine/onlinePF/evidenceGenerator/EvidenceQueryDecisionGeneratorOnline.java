@@ -243,7 +243,7 @@ public abstract class EvidenceQueryDecisionGeneratorOnline {
 	public Collection getLatestQueries() {
 		return latestQueries;
 	}
-	private static LinkedList makeQueryTemplates(Collection queryStrings) {
+	public static LinkedList makeQueryTemplates(Collection queryStrings) {
 		LinkedList list = new LinkedList();
 		for (Iterator it = queryStrings.iterator(); it.hasNext();) {
 			String queryString = (String) it.next();

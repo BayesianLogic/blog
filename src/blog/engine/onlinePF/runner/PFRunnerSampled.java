@@ -2,10 +2,13 @@ package blog.engine.onlinePF.runner;
 
 import java.util.*;
 
+import blog.TemporalQueriesInstantiator;
 import blog.engine.onlinePF.ObservableRandomFunction;
 import blog.engine.onlinePF.PFEngine.PFEngineSampled;
 import blog.engine.onlinePF.absyn.PolicyModel;
+import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorOnline;
 import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorwPolicy;
+import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.RandomFunction;
 import blog.model.Type;
@@ -37,9 +40,35 @@ public class PFRunnerSampled extends PFRunnerOnline {
 		for (RandomFunction orf: (List<RandomFunction>) model.getObsFun()){
 			queryStrings.add(((ObservableRandomFunction) orf).queryString);
 		}
+		evidenceGenerator = new EvidenceQueryDecisionGeneratorwPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
+		
+		
+		queryStrings = new ArrayList();
 		for (Type typ: (List<Type>) model.getObsTyp()){
 			queryStrings.add("Number_"+typ+"(t)");
 		}
-		evidenceGenerator = new EvidenceQueryDecisionGeneratorwPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
+		setQI = new TemporalQueriesInstantiator(model, EvidenceQueryDecisionGeneratorOnline.makeQueryTemplates(queryStrings));
+	}
+	public TemporalQueriesInstantiator setQI;
+	
+	/**
+	 * Phase0 refers to the phase in which 
+	 * - set queries are answered and then provided to the policy module
+	 */
+	public void advancePhase0() {
+		Evidence evidence;
+		Collection queries;
+		beforeEvidenceAndQueries();
+		if ((evidence = evidenceGenerator.getLatestObservation()) == null 
+				| (queries = evidenceGenerator.getLatestQueries()) == null){
+			System.err.println("Evidence/Query should not be null");
+			System.exit(1);
+		}
+		particleFilter.beforeTakingEvidence();
+		particleFilter.take(evidence);
+		particleFilter.answer(queries);
+		particleFilter.afterAnsweringQueries();
+		
+		postEvidenceAndQueryIO();
 	}
 }
