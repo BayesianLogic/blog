@@ -5,10 +5,10 @@ generating Monster Source(Sound);
 generating Timestep Sound_Time(Sound);
 
 random Integer DoorOf(Monster m, Timestep t) {
-   if t == @0 then ~ UniformChoice({Integer n: n< Max & n>=1})
+   if t == @0 then ~ UniformChoice({Integer n: n< Max & n>=0})
    else ~ Categorical([SuccMod(DoorOf(m, t-1), MaxDoor) -> 0.3,
                                  PredMod(DoorOf(m, t-1), MaxDoor) -> 0.3,
-                                 DoorOf(m, t-1) -> 0.3])
+                                 DoorOf(m, t-1) -> 0.4])
 };		
 
 #Sound(Source = m, Sound_Time = t) ~ {if apply_listen(t-1) then ~Bernoulli(0.5)
@@ -23,8 +23,8 @@ random Integer reward(Timestep t) {
     if apply_listen(t) then = -1
     else if exists Door d d< MaxDoor apply_enter(Door d, t) & exists Monster m
       DoorOf(m, t) == d then = -100
-    else if exists Door d  d<MaxDoor apply_enter(Door d, t) & !exists Monster m
-      DoorOf(m, t) == d then = 10
+    else if exists Door d  d<MaxDoor apply_enter(Door d, t) & !(exists Monster m
+      DoorOf(m, t) == d ) then = 10
 };
 
 observable(Sound);
@@ -34,7 +34,7 @@ decision apply_enter(Door d, Timestep t);
 decision apply_listen(Timestep t);
 
 /*helpers for policy*/
-SoundAroundDoor(Door d, t) = (exists Sound s Sound_Time(s)=t & (
+SoundAroundDoor(Door d, t) = (exists Sound s Sound_Time(s)==t & (
          ApparentDoor(s, t) == SuccMod(d, MaxDoor) |
          ApparentDoor(s, t) == d |
          ApparentDoor(s, t) == PredMod(d, MaxDoor));
