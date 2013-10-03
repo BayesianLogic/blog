@@ -1,4 +1,4 @@
-query numObjects > theta;
+query value(t);
 query reward(Prev(t));
 query turnsToDecide(t);
 query #{Blip b: Time(b) == t};
@@ -10,4 +10,4 @@ query TheEnd(t);
 query Number_mark(t);
 query scannedLastRound(t);
 query TheEnd(Prev(t));
-query value(t);
+query numObjects > theta;

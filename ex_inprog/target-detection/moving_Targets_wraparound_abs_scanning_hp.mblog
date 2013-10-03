@@ -142,8 +142,11 @@ random Integer regionIsSuitableHelper(Integer s, Timestep t){
 /////////////////////////
 //** Scanning policy **//
 /////////////////////////
-random Integer toScan(Timestep t){
+random Integer toScan(){
  	~ UniformChoice({Integer s: s<Max})
+ };
+ random Boolean observable(toScan()){
+  if true then = true
  };
 
 decision Boolean applied_scan(Integer r, Timestep t);
