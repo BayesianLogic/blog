@@ -1,4 +1,3 @@
-
 Integer MaxDoor = 15;
 #Monster ~ Poisson(6);
 
@@ -16,9 +15,9 @@ random Integer DoorOf(Monster m, Timestep t) {
                                         else = 0};
 
 random Door ApparentDoor(Sound s) ~
-           Categorical([SuccMod(DoorOf(Src(Sound)), MaxDoor) -> 0.25, 
-                          DoorOf(Src(Sound))     -> 0.50, 
-                          PredMod(DoorOf(Src(Sound)), MaxDoor)-> 0.25]);
+           Categorical([SuccMod(DoorOf(Src(Sound)), MaxDoor) -> 0.15, 
+                          DoorOf(Src(Sound))     -> 0.70, 
+                          PredMod(DoorOf(Src(Sound)), MaxDoor)-> 0.15]);
 
 random Integer reward(Timestep t) {
     if apply_listen(t) then = -1
