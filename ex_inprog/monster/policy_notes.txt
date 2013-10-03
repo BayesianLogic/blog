@@ -1,0 +1,22 @@
+
+policies:
+//if no sound from region around door then enter door
+if exists Door d !SoundAroundDoor(d, t) then apply_enter(d, t)
+else apply_listen()
+
+//if no sound from region around door then shoot &  enter door
+if exists Door d !SoundAroundDoor(d, t) then apply_shoot(d, t)
+if exists Door d apply_shoot(d, t-1) then apply_enter(d, t)
+else apply_listen()
+
+//if pr no monster at door then enter door
+if exists Door d P(!MonsterAtDoor(d, t) ) > theta then apply_enter(d, t)
+else apply_listen()
+
+//if pr no monster in region around door then shoot and enter door
+if exists Door d P(!MonsterAroundDoor(d, t) ) > theta 
+  then apply_shoot(d, t)
+else if exists Door d apply_shoot(d, t-1) then apply_enter(d, t)
+else apply_listen()
+
+
