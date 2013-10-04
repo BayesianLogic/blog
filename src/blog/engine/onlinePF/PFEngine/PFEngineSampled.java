@@ -144,15 +144,19 @@ public class PFEngineSampled extends PFEngineOnline{
 		ev.checkTypesAndScope(model);
 		if (ev.compile()!=0)
 			System.exit(1);
-
+		
 		UBT.obsOutput.printInput(ev.toString());
+		
+		int i = 0;
 		for (Particle o : particles){
 			TimedParticle p = (TimedParticle) o;
 			p.unInstantiateObservables(selectedOS);
 			p.take(ev);
 			p.setOS(sampledOSindex);
+			if (p.getLatestWeight()>0.00000001)
+				i++;
 		}
-
+		UBT.numParticleOutput.printInput(""+i);
 		
 		
 
