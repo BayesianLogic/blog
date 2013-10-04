@@ -6,4 +6,4 @@ query exists Sound s (Time_Sound(s)==t) & ApparentDoor(s, t) == -1;
 query exists Integer d d < MaxDoor & SoundAroundDoor(d, t) & false;
 query exists Integer d d < MaxDoor & MonsterAtDoor(d, t) & false;
 query exists Integer d d < MaxDoor & MonsterAroundDoor(d, t) & false;
-query exists Integer d d < MaxDoor & NumSoundFromDoor(d,t) == -1;
+query exists Integer d d < MaxDoor & NumSoundFromDoor(d,t) == -1 & false;
