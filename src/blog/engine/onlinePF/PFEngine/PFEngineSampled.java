@@ -79,7 +79,7 @@ public class PFEngineSampled extends PFEngineOnline{
 		if (ev.compile()!=0)
 			System.exit(1);
 
-		
+		UBT.obsOutput.printInput(evs);
 		for (Particle o : particles){
 			TimedParticle p = (TimedParticle) o;
 			p.unInstantiateObservables(selectedOS);

@@ -12,13 +12,5 @@ elseif("!MonsterAtDoor(4, t)" >= 0.9)
 	{"apply_enter(4, t)"}
 elseif("!MonsterAtDoor(5, t)" >= 0.9)
 	{"apply_enter(5, t)"}
-elseif("!MonsterAtDoor(6, t)" >= 0.9)
-	{"apply_enter(6, t)"}
-elseif("!MonsterAtDoor(7, t)" >= 0.9)
-	{"apply_enter(7, t)"}
-elseif("!MonsterAtDoor(8, t)" >= 0.9)
-	{"apply_enter(8, t)"}
-elseif("!MonsterAtDoor(9, t)" >= 0.9)
-	{"apply_enter(9, t)"}					
 else
 	{"apply_listen(t)"};

@@ -10,17 +10,6 @@ nonrandom Integer theta = 5;
 type Target;
 type Blip;
 
-observable type mark;
-random Integer Number_mark(Timestep t) ~Cardinality({mark b : Time_mark(b)==t});
-random Boolean observable(Number_mark(Timestep t)) =true;
-origin Timestep Time_mark(mark);
-//origin Target Source_mark(mark);
-#mark(Time_mark=t) = 2;
-
-decision Boolean do_nothing(mark bli, Integer i);
-//random Boolean observable(foo ())=false;
-random Integer foo () = 2;
-
 #Target ~ Poisson(5);
 
 nonrandom Integer GridDimX=15;

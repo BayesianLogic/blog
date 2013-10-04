@@ -57,6 +57,7 @@ public class DepthFirstPolicyEvaluationRunner {
 				+ "1.log");
 		UBT.varianceOutput3 = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "variance" + (((StringOption) runtimeOptions.get("logname")).getValue())
 				+ "2.log");
+		UBT.obsOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "obs.log");
 		UBT.rootFolder=logFolder.getValue();
 		UBT.dataOutput = new FileCommunicator(UBT.rootFolder+"//UBTData.log");
         UBT.osOutput = new FileCommunicator(UBT.rootFolder+"//OS.log");

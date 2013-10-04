@@ -1,6 +1,6 @@
-nonrandom Integer MaxDoor = 10;
+nonrandom Integer MaxDoor = 6;
 type Monster;
-#Monster ~ Poisson(5);
+#Monster ~ Poisson(3);
 observable type Sound;
 generating Monster Source(Sound);
 generating Timestep Time_Sound(Sound);

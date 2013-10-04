@@ -96,9 +96,3 @@ elseif ("regionIsSuitable(0, t)" >= 0.2)
 	{"applied_scan(0, t)"}
 else
 	{"applied_scan(toScan(), t)"};
-for ("mark" "m") {
-if ("true" >= 0.1)
-  {"do_nothing(m, foo())"}
-else
-  {"do_nothing(m, foo())"}
-};
