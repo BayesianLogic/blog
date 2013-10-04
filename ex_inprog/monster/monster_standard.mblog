@@ -1,44 +1,74 @@
-Integer MaxDoor = 15;
-#Monster ~ Poisson(6);
-
+nonrandom Integer MaxDoor = 10;
+type Monster;
+#Monster ~ Poisson(5);
+observable type Sound;
 generating Monster Source(Sound);
-generating Timestep Sound_Time(Sound);
+generating Timestep Time_Sound(Sound);
+random Integer Number_Sound(Timestep t) ~Cardinality({Sound s : Time_Sound(s)==t});
+random Boolean observable(Number_Sound(Timestep t)) =true;
 
 random Integer DoorOf(Monster m, Timestep t) {
-   if t == @0 then ~ UniformChoice({Integer n: n< Max & n>=0})
-   else ~ Categorical([SuccMod(DoorOf(m, t-1), MaxDoor) -> 0.3,
-                                 PredMod(DoorOf(m, t-1), MaxDoor) -> 0.3,
-                                 DoorOf(m, t-1) -> 0.4])
+   if t == @0 then ~ UniformChoice({Integer n: n< MaxDoor & n>=0})
+   else if movement(m, Prev(t))==1 then
+    = SuccMod(DoorOf(m, Prev(t)), MaxDoor)
+   else if movement(m, Prev(t))==-1 then
+    = PredMod(DoorOf(m, Prev(t)), MaxDoor)
+   else if movement(m, Prev(t))==0 then
+    = DoorOf(m, Prev(t))
 };		
 
-#Sound(Source = m, Sound_Time = t) ~ {if apply_listen(t-1) then ~Bernoulli(0.5)
+random Integer movement(Monster m, Timestep t) ~ Categorical({-1->0.3, 1->0.3, 0->0.4});
+random Integer movementSound(Sound s, Timestep t) ~ Categorical({-1->0.3, 1->0.3, 0->0.4});
+
+#Sound(Source = m, Time_Sound = t) {if apply_listen(Prev(t)) then ~Categorical({0->0.5,1->0.5})
                                         else = 0};
 
-random Door ApparentDoor(Sound s) ~
-           Categorical([SuccMod(DoorOf(Src(Sound)), MaxDoor) -> 0.15, 
-                          DoorOf(Src(Sound))     -> 0.70, 
-                          PredMod(DoorOf(Src(Sound)), MaxDoor)-> 0.15]);
+random Integer ApparentDoor(Sound s, Timestep t){
+   if movementSound(s, Prev(t))==1 then
+    = SuccMod(DoorOf(Source(s), t), MaxDoor)
+   else if movementSound(s, Prev(t))==-1 then
+    = PredMod(DoorOf(Source(s), t), MaxDoor)
+   else if movementSound(s, Prev(t))==01 then
+    = DoorOf(Source(s), t)
+};
+random Boolean observable(ApparentDoor(Sound s, Timestep t)) {if true then = apply_listen(Prev(t))};
 
 random Integer reward(Timestep t) {
-    if apply_listen(t) then = -1
-    else if exists Door d d< MaxDoor apply_enter(Door d, t) & exists Monster m
+    if (end_state(t)) then
+      = 0
+    else if apply_listen(t) then 
+      = -1
+    else if exists Integer d d< MaxDoor & apply_enter(d, t) & exists Monster m
       DoorOf(m, t) == d then = -100
-    else if exists Door d  d<MaxDoor apply_enter(Door d, t) & !(exists Monster m
+    else if exists Integer d  d<MaxDoor & apply_enter(d, t) & !(exists Monster m
       DoorOf(m, t) == d ) then = 10
+    else = -3
+};
+random Real value(Timestep t) {
+	if (t == @0) then 
+		= 0
+	else 
+		= value(Prev(t)) + reward(Prev(t))
+};
+random Boolean end_state(Timestep t){
+  if (t == @0) then
+    = false
+  else if (exists Integer d d<MaxDoor & apply_enter(d, Prev(t))) then
+    = true
+  else
+    = end_state(Prev(t))
 };
 
-observable(Sound);
-observable(ApparentDoor(s));
-
-decision apply_enter(Door d, Timestep t);
-decision apply_listen(Timestep t);
+decision Boolean apply_enter(Integer d, Timestep t);
+decision Boolean apply_listen(Timestep t);
 
 /*helpers for policy*/
-SoundAroundDoor(Door d, t) = (exists Sound s Sound_Time(s)==t & (
+random Boolean SoundAroundDoor(Integer d, Timestep t) = (exists Sound s Time_Sound(s)==t & (
          ApparentDoor(s, t) == SuccMod(d, MaxDoor) |
          ApparentDoor(s, t) == d |
-         ApparentDoor(s, t) == PredMod(d, MaxDoor));
-MonsterAtDoor(d, t) = (exists Monster m DoorOf(m, t) == d)
-MonsterAroundDoor(d, t) = (MonsterAtDoor(PredMod(d, MaxDoor)) | 
-                                             MonsterAtDoor(d) | 
-                                             MonsterAtDoor(SuccMod(d, MaxDoor)))
+         ApparentDoor(s, t) == PredMod(d, MaxDoor)));
+random Boolean MonsterAtDoor(Integer d, Timestep t) = (exists Monster m DoorOf(m, t) == d);
+random Boolean MonsterAroundDoor(Integer d, Timestep t) = (MonsterAtDoor(PredMod(d, MaxDoor), t) | 
+                                             MonsterAtDoor(d, t) | 
+                                             MonsterAtDoor(SuccMod(d, MaxDoor),t));
+random Boolean TheEnd(Timestep t){if (t==@30) then = true else = false};

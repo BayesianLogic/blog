@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import blog.DBLOGUtil;
 import blog.bn.BayesNetVar;
+import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.parse.Parse;
@@ -22,6 +23,8 @@ import blog.world.AbstractPartialWorld;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.runner.PFRunnerSampled;
 import blog.model.Evidence;
+import blog.model.Model;
+import blog.model.NonGuaranteedObject;
 import blog.model.Query;
 import blog.msg.ErrorMsg;
 
@@ -64,12 +67,12 @@ public class ObservabilitySignature {
 				BayesNetVar referenced = o2r.get(bnv);
 				int bnvTimestep = DBLOGUtil.getTimestepIndex(bnv);
 				if (!observedValues.containsKey(referenced) &&  bnvTimestep <= maxTimestep ){//&& bnvTimestep > myTimestep){
-					observedValues.put(referenced, world.getValue(referenced));
-					observables.add(bnv);
+					observedValues.put(maskVar(referenced, world.genObjToVar), world.getValue(referenced));
+					observables.add(maskVar(bnv,world.genObjToVar));
 				}
 			}
 			else
-				unobservables.add(bnv);
+				unobservables.add(maskVar(bnv,world.genObjToVar));
 				
 		}
 		//world.getChangedObservableMap().clear();
@@ -77,6 +80,29 @@ public class ObservabilitySignature {
 		parentIndex = myIndex;
 		myIndex = ObservabilitySignature.getOrSetIndexByOS(this);
 		this.indexValid = true;
+	}
+	
+	public BayesNetVar maskVar(BayesNetVar var, Map m){
+		BayesNetVar rtn = null;
+		if (var instanceof RandFuncAppVar){
+			boolean needsMasking = false;
+			List newArgs = new ArrayList();
+			for (Object arg: ((RandFuncAppVar)var).args())
+				if (arg instanceof NonGuaranteedObject){
+					needsMasking = true;
+					newArgs.add(m.get(arg));
+				}
+				else
+					newArgs.add(arg);
+			RandFuncAppVar newFuncAppVar = new RandFuncAppVar(((RandFuncAppVar) var).func(), newArgs);
+			if (needsMasking)
+				rtn = newFuncAppVar;
+			else
+				rtn = var;
+		}
+		else
+			rtn = var;
+		return rtn;
 	}
 
 	
@@ -220,7 +246,10 @@ public class ObservabilitySignature {
 	public String generateObservableString(){
 		String rtn = "";
 		for (BayesNetVar referenced : observedValues.keySet()){
-			rtn += ("obs " + referenced.toString() + "=" + observedValues.get(referenced) + ";");
+			if (!observedValues.get(referenced).equals(Model.NULL))
+				rtn += ("obs " + referenced.toString() + "=" + observedValues.get(referenced) + ";");
+			//else
+			//	rtn += ("obs " + referenced.toString() + "=" + "null;");
 		}
 		for (BayesNetVar observable : observables){
 			rtn += ("obs " + observable.toString() + "=" + "true" + ";");
@@ -276,7 +305,8 @@ public class ObservabilitySignature {
 			rtn += ""+typ+"_"+myTimestep+"_"+i +",";
 			end += "obs "+typ+"_"+myTimestep+"_"+i +"="+typ+"_"+myTimestep+"_"+i +";";
 		}
-		rtn = rtn.substring(0, rtn.length()-1);
+		if (num !=0)
+			rtn = rtn.substring(0, rtn.length()-1);
 		rtn = rtn + "};";
 		rtn = rtn + end;
 		return rtn;

@@ -130,7 +130,6 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		// System.out.println("AbstractPartialWorld: " + var + " set to NULL!");
 		// System.out.println();
 		// }
-
 		Object oldValue = basicVarToValue.get(var);
 		if (value == null ? (oldValue == null) : value.equals(oldValue)) {
 			Util.debug("Setting var: " + var + " to " + value);
@@ -151,6 +150,9 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			basicVarToValue.put(var, value);
 			/*added by cheng*/
 			changedVarToValue.put(var, value);
+			if (value instanceof NonGuaranteedObject & var instanceof RandFuncAppVar){
+				genObjToVar.put(value, var);
+			}
 		}
 
 		dirtyVars.add(var);
@@ -1059,6 +1061,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		newWorld.observableToReferenced = (HashMap<BayesNetVar, BayesNetVar>) observableToReferenced.clone(); //clone the observability map
 		newWorld.chanegdObservableToReferenced = (HashMap<BayesNetVar, BayesNetVar>) chanegdObservableToReferenced.clone(); //copying this map without calling empty cached causes performance problems
 		newWorld.changedVarToValue = (HashMap) changedVarToValue.clone();
+		newWorld.genObjToVar = (Map) ((HashMap) genObjToVar).clone();
 	}
 
 	public String toString() {
@@ -1072,6 +1075,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	protected Map basicVarToValue;
 
 	//start of change
+	public Map genObjToVar = new HashMap();
 	/**
 	 * Set of objects containing DecisionFuncAppVar objects which evaluate to true
 	 */

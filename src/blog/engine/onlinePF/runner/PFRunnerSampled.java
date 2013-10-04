@@ -38,9 +38,11 @@ public class PFRunnerSampled extends PFRunnerOnline {
 		super(model, particleFilterProperties, 15);
 		
 		particleFilter = new PFEngineSampled(model, particleFilterProperties);
+		/*
 		for (RandomFunction orf: (List<RandomFunction>) model.getObsFun()){
 			queryStrings.add(((ObservableRandomFunction) orf).queryString);
 		}
+		*/
 		evidenceGenerator = new EvidenceQueryDecisionGeneratorwPolicy(model, queryStrings, eviCommunicator, queryResultCommunicator, pm);
 		
 		

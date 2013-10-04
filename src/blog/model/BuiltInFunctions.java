@@ -444,6 +444,27 @@ public class BuiltInFunctions {
 		argTypes.add(BuiltInTypes.INTEGER);
 		retType = BuiltInTypes.INTEGER;
 
+		FunctionInterp succmodInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				Integer arg1 = (Integer) args.get(0);
+				Integer arg2 = (Integer) args.get(1);
+				return new Integer((arg1.intValue()+1+arg2.intValue()) % arg2.intValue());
+			}
+		};
+		SuccMod = new NonRandomFunction(SUCCMOD_NAME, argTypes, retType, succmodInterp);
+		addFunction(SuccMod);
+		
+		FunctionInterp predmodInterp = new AbstractFunctionInterp() {
+			public Object getValue(List args) {
+				Integer arg1 = (Integer) args.get(0);
+				Integer arg2 = (Integer) args.get(1);
+				return new Integer((arg1.intValue()-1+arg2.intValue()) % arg2.intValue());
+			}
+		};
+		PredMod = new NonRandomFunction(PREDMOD_NAME, argTypes, retType, predmodInterp);
+		addFunction(PredMod);
+		
+		
 		FunctionInterp plusInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
 				Integer arg1 = (Integer) args.get(0);
@@ -497,6 +518,8 @@ public class BuiltInFunctions {
 		MOD = new NonRandomFunction(MOD_NAME, argTypes, retType, modInterp);
 		addFunction(MOD);
 
+		
+		
 		// Add non-random functions from (real x real) to real
 		argTypes.clear();
 		argTypes.add(BuiltInTypes.REAL);
@@ -524,27 +547,6 @@ public class BuiltInFunctions {
 
 		RMINUS = new NonRandomFunction(MINUS_NAME, argTypes, retType, rminusInterp);
 		addFunction(RMINUS);
-
-		FunctionInterp succmodInterp = new AbstractFunctionInterp() {
-			public Object getValue(List args) {
-				Integer arg1 = (Integer) args.get(0);
-				Integer arg2 = (Integer) args.get(1);
-				return new Integer((arg1.intValue()+1) % arg2.intValue());
-			}
-		};
-		SuccMod = new NonRandomFunction(SUCCMOD_NAME, argTypes, retType, succmodInterp);
-		addFunction(SuccMod);
-		
-		FunctionInterp predmodInterp = new AbstractFunctionInterp() {
-			public Object getValue(List args) {
-				Integer arg1 = (Integer) args.get(0);
-				Integer arg2 = (Integer) args.get(1);
-				return new Integer((arg1.intValue()-1) % arg2.intValue());
-			}
-		};
-		PredMod = new NonRandomFunction(PREDMOD_NAME, argTypes, retType, predmodInterp);
-		addFunction(PredMod);
-		
 		
 		FunctionInterp rmultInterp = new AbstractFunctionInterp() {
 			public Object getValue(List args) {
