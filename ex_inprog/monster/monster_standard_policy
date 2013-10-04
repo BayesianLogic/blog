@@ -1,0 +1,34 @@
+if ("TheEnd(t)" >= 1.0)
+	{"apply_enter(0, t)"}
+elseif ("!SoundAroundDoor(0, t)" >= 1.0)
+	{"apply_enter(0, t)"}
+elseif("!SoundAroundDoor(1, t)" >= 1.0)
+	{"apply_enter(1, t)"}
+elseif("!SoundAroundDoor(2, t)" >= 1.0)
+	{"apply_enter(2, t)"}
+elseif("!SoundAroundDoor(3, t)" >= 1.0)
+	{"apply_enter(3, t)"}	
+elseif("!SoundAroundDoor(4, t)" >= 1.0)
+	{"apply_enter(4, t)"}
+elseif("!SoundAroundDoor(5, t)" >= 1.0)
+	{"apply_enter(5, t)"}
+elseif("!SoundAroundDoor(6, t)" >= 1.0)
+	{"apply_enter(6, t)"}
+elseif("!SoundAroundDoor(7, t)" >= 1.0)
+	{"apply_enter(7, t)"}
+elseif("!SoundAroundDoor(8, t)" >= 1.0)
+	{"apply_enter(8, t)"}
+elseif("!SoundAroundDoor(9, t)" >= 1.0)
+	{"apply_enter(9, t)"}
+elseif("!SoundAroundDoor(10, t)" >= 1.0)
+	{"apply_enter(10, t)"}
+elseif("!SoundAroundDoor(11, t)" >= 1.0)
+	{"apply_enter(11, t)"}
+elseif("!SoundAroundDoor(12, t)" >= 1.0)
+	{"apply_enter(12, t)"}
+elseif("!SoundAroundDoor(13, t)" >= 1.0)
+	{"apply_enter(13, t)"}
+elseif("!SoundAroundDoor(14, t)" >= 1.0)
+	{"apply_enter(14, t)"}												
+else
+	{"apply_listen(t)"};
