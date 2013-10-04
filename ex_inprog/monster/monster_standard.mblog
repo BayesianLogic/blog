@@ -46,7 +46,7 @@ random Integer reward(Timestep t) {
       DoorOf(m, t) == d then = -100
     else if exists Integer d  d<MaxDoor & apply_enter(d, t) & !(exists Monster m
       DoorOf(m, t) == d ) then = 10
-    else = -3
+    else = -5
 };
 random Real value(Timestep t) {
 	if (t == @0) then 
@@ -54,6 +54,7 @@ random Real value(Timestep t) {
 	else 
 		= value(Prev(t)) + reward(Prev(t))
 };
+
 random Boolean end_state(Timestep t){
   if (t == @0) then
     = false
@@ -65,7 +66,7 @@ random Boolean end_state(Timestep t){
 
 decision Boolean apply_enter(Integer d, Timestep t);
 decision Boolean apply_listen(Timestep t);
-
+decision Boolean no_op(Timestep t);
 /*helpers for policy*/
 random Boolean SoundAroundDoor(Integer d, Timestep t) = (exists Sound s Time_Sound(s)==t & (
          ApparentDoor(s, t) == SuccMod(d, MaxDoor) |
@@ -75,4 +76,4 @@ random Boolean MonsterAtDoor(Integer d, Timestep t) = (exists Monster m DoorOf(m
 random Boolean MonsterAroundDoor(Integer d, Timestep t) = (MonsterAtDoor(PredMod(d, MaxDoor), t) | 
                                              MonsterAtDoor(d, t) | 
                                              MonsterAtDoor(SuccMod(d, MaxDoor),t));
-random Boolean TheEnd(Timestep t){if (t==@30) then = true else = false};
+
