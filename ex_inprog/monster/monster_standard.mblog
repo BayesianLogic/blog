@@ -1,14 +1,33 @@
 random Integer MaxDoor = 15;
+type Door;
+distinct Door d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10,  d11, d12, d13, d14;
+fixed Integer Index(Door d) 
+      = TabularInterp(1,
+	      d0, 0,
+	      d1, 1,
+	      d2, 2,
+	      d3, 3,
+	      d4, 4,
+	      d5, 5,
+	      d6, 6,
+	      d7, 7,
+	      d8, 8,
+	      d9, 9,
+	      d10, 10,
+	      d11, 11,
+	      d12, 12,
+	      d13, 13,
+	      d14, 14);
+
 type Monster;
-#Monster ~ Poisson(15);
+#Monster ~ Poisson(6);
 observable type Sound;
 //type Sound;
 generating Monster Source(Sound);
 generating Timestep Time_Sound(Sound);
-//generating Integer Sound_Door(Sound);
+generating Door Sound_Door(Sound);
 random Integer Number_Sound(Timestep t) ~Cardinality({Sound s : Time_Sound(s)==t});
 random Boolean observable(Number_Sound(Timestep t)) =true;
-
 
 random Integer DoorOf(Monster m, Timestep t) {
    if t == @0 then ~ UniformChoice({Integer n: n< MaxDoor & n>=0})
@@ -22,27 +41,23 @@ random Integer DoorOf(Monster m, Timestep t) {
 
 random Integer movement(Monster m, Timestep t) ~ Categorical({-1->0.3, 1->0.3, 0->0.4});
 
-// #Sound(Source = m, Sound_Door = d,  Time_Sound = t) {if apply_listen(Prev(t)) & DoorOf(m, t) == d 
-//                                                   then ~Categorical({0->0.5,1->0.5})
-//                                         else = 0};
-
-#Sound(Source = m, Time_Sound = t) {if apply_listen(Prev(t))  
-                                                  then ~Categorical({0->0.5,1->0.5})
-                                        else = 0};
+#Sound(Source = m, Sound_Door = d,  Time_Sound = t) {if apply_listen(Prev(t)) & DoorOf(m, t) == Index(d) 
+                                                   then ~Categorical({0->0.5,1->0.5})
+                                         else = 0};
 
 random Integer ApparentDoor(Sound s, Timestep t) ~ RandNbrMod(DoorOf(Source(s), Time_Sound(s)), MaxDoor);
 random Boolean observable(ApparentDoor(Sound s, Timestep t)) {if true then = apply_listen(Prev(t))};
-//random Boolean observable(ApparentDoor(Sound s, Timestep t)) {if true then = true};
+
 
 random Integer reward(Timestep t) {
     if (end_state(t)) then
       = 0
     else if apply_listen(t) then 
       = -1
-    else if exists Integer d d< MaxDoor & apply_enter(d, t) & exists Monster m
-      DoorOf(m, t) == d then = -100
-    else if exists Integer d  d<MaxDoor & apply_enter(d, t) & !(exists Monster m
-      DoorOf(m, t) == d ) then = 10
+    else if exists Door d  apply_enter(Index(d), t) & exists Monster m
+      DoorOf(m, t) == Index(d) then = -100
+    else if exists Door d apply_enter(Index(d), t) & !(exists Monster m
+      DoorOf(m, t) == Index(d) ) then = 10
     else = -5
 };
 random Real value(Timestep t) {
@@ -55,7 +70,7 @@ random Real value(Timestep t) {
 random Boolean end_state(Timestep t){
   if (t == @0) then
     = false
-  else if (exists Integer d d<MaxDoor & apply_enter(d, Prev(t))) then
+  else if (exists Door d true & apply_enter(Index(d), Prev(t))) then
     = true
   else
     = end_state(Prev(t))
