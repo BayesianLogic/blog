@@ -28,6 +28,7 @@ public class UBT {
         public static FileCommunicator valueOutput;// = new FileCommunicator("randomstuff//World.log");
         public static FileCommunicator obsOutput;// = new FileCommunicator("randomstuff//World.log");
         public static FileCommunicator numParticleOutput;// = new FileCommunicator("randomstuff//World.log");
+        public static FileCommunicator debugRandom;
         public static int numtstep;
 	//public static FileCommunicator dataOutput2 = new FileCommunicator("tiger2Data.txt");
 	public static double answerTime=0;

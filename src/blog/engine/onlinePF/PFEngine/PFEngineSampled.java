@@ -154,16 +154,16 @@ public class PFEngineSampled extends PFEngineOnline{
 		int i = 0;
 		for (Particle o : particles){
 			TimedParticle p = (TimedParticle) o;
-			for (Object x : p.getLatestWorld().basicVarToValueMap().keySet())
-				UBT.worldOutput.printInput(x.toString()+"="+p.getLatestWorld().basicVarToValueMap().get(x).toString());
-			UBT.worldOutput.printInput(">>>>>");
+			//for (Object x : p.getLatestWorld().basicVarToValueMap().keySet())
+			//	UBT.worldOutput.printInput(x.toString()+"="+p.getLatestWorld().basicVarToValueMap().get(x).toString());
+			//UBT.worldOutput.printInput(">>>>>");
 			p.unInstantiateObservables(selectedOS);
 			p.take(ev);
 			p.setOS(sampledOSindex);
 			if (p.getLatestWeight()>0.00000001)
 				i++;
 		}
-		UBT.worldOutput.printInput("<<<<<>>>>>");
+		//UBT.worldOutput.printInput("<<<<<>>>>>");
 		UBT.numParticleOutput.printInput(""+i);
 		
 		

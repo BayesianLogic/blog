@@ -63,6 +63,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import blog.engine.onlinePF.inverseBucket.UBT;
+
 /**
  * Provides common utilities to FOMIE programs.
  * Original created by
@@ -87,9 +89,23 @@ public class Util {
 			long seed = System.currentTimeMillis();
 			System.out.println("Using clock time " + seed + " as random seed.");
 			rand = new Random(seed);
+			System.err.println("seed_is"+ seed);
 		} else {
 			System.out.println("Using fixed random seed for repeatability.");
 			rand = new Random(0xad527c2b74e10cb3L);
+			System.err.println("seed_is"+ 0xad527c2b74e10cb3L);
+		}
+	}
+	public static void initRandom(boolean randomize, long gseed) {
+		if (randomize) {
+			long seed = System.currentTimeMillis();
+			System.out.println("Using clock time " + seed + " as random seed.");
+			rand = new Random(seed);
+			System.err.println("seed_is"+ seed);
+		} else {
+			System.out.println("Using fixed random seed for repeatability.");
+			rand = new Random(gseed);
+			System.err.println("seed_is"+ 0xad527c2b74e10cb3L);
 		}
 	}
 
@@ -119,7 +135,9 @@ public class Util {
 	 * This method must not be called before initRandom() is called.
 	 */
 	public static double random() {
-		return rand.nextDouble(); // null pointer exception if not initialized
+		double x = rand.nextDouble(); // null pointer exception if not initialized
+		//UBT.debugRandom.printInput(""+x);
+		return x;
 	}
 
 	/**
@@ -127,7 +145,9 @@ public class Util {
 	 * n > 0
 	 */
 	public static int randInt(int n) {
-		return rand.nextInt(n);
+		int x = rand.nextInt(n);
+		//UBT.debugRandom.printInput(""+x);
+		return x;
 	}
 
 	/** Returns the sum of an array of doubles. */

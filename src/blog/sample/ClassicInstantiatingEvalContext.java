@@ -52,6 +52,7 @@ import blog.common.Util;
 import blog.distrib.CondProbDistrib;
 import blog.distrib.Iota;
 import blog.distrib.ListInterp;
+import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.DependencyModel;
 import blog.model.Function;
 import blog.model.FunctionSignature;
@@ -131,6 +132,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 				throw new IllegalArgumentException("Don't know how to instantiate: "
 						+ var);
 			}
+			UBT.debugRandom.printInput(var.toString());
 		}
 		return value;
 	}

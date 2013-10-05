@@ -15,7 +15,7 @@ public class DepthFirstPolicyEvaluationRunner {
 	public static HashMap<String, AbstractOption> runtimeOptions = new HashMap<String, AbstractOption>();
 
 	public static void main(String[] args) {
-		//Util.initRandom(true);
+		
 		blog.common.cmdline.Parser
 				.setProgramDesc("Bayesian Logic (BLOG) inference engine");
 		blog.common.cmdline.Parser
@@ -25,6 +25,10 @@ public class DepthFirstPolicyEvaluationRunner {
 		IntOption numParticles = new IntOption("n", "num_particles", 1000,
 				"Use n particles");
 		runtimeOptions.put("numparticles", numParticles);
+		
+		IntOption seed = new IntOption("s", "random_seed", -1,
+				"Use n particles");
+		
 		IntOption numTimesteps = new IntOption("t", "num_timesteps", 100,
 				"Run for t timesteps");
 		runtimeOptions.put("numtimesteps", numTimesteps);
@@ -65,12 +69,18 @@ public class DepthFirstPolicyEvaluationRunner {
         UBT.osOutput = new FileCommunicator(UBT.rootFolder+"//OS.log");
         UBT.numParticleOutput = new FileCommunicator(UBT.rootFolder+"//NP.log");
         UBT.worldOutput = new FileCommunicator(UBT.rootFolder+"//WO.log");
+        UBT.debugRandom = new FileCommunicator(UBT.rootFolder+"//debug.log");
 		//UBT.specialIndexOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "indices" + (((StringOption) runtimeOptions.get("logname")).getValue())
 		//		+ ".log");
 		//UBT.obsOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "obs" + (((StringOption) runtimeOptions.get("logname")).getValue())
 		//		+ ".log");
 		UBT.numtstep = ((IntOption) runtimeOptions.get("numtimesteps")).getValue();
 		
+		if (seed.wasPresent()){
+			Util.initRandom(false, seed.getValue());
+		}
+		else
+			Util.initRandom(true);
 		PFRunnerSampled runner = suu.makeSampledRunner(
 				filenames,
 				((StringOption) runtimeOptions.get("policyfile")).getValue(),
