@@ -26,7 +26,7 @@ public class DepthFirstPolicyEvaluationRunner {
 				"Use n particles");
 		runtimeOptions.put("numparticles", numParticles);
 		
-		IntOption seed = new IntOption("s", "random_seed", -1,
+		IntOption seed = new IntOption("r", "random_seed", -1,
 				"Use n particles");
 		
 		IntOption numTimesteps = new IntOption("t", "num_timesteps", 100,
