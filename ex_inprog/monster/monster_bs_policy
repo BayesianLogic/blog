@@ -1,34 +1,34 @@
-if ("end_state(t)" >=1)
+if ("end_state(t)" >=1.0)
    {"apply_no_op(t)"}
-elseif ("!MonsterAtDoor(0, t)" >= 0.9)
+elseif ("!MonsterAtDoor(0, t)" >= 0.95)
 	{"apply_enter(0, t)"}
-elseif("!MonsterAtDoor(1, t)" >= 0.9)
+elseif("!MonsterAtDoor(1, t)" >= 0.95)
 	{"apply_enter(1, t)"}
-elseif("!MonsterAtDoor(2, t)" >= 0.9)
+elseif("!MonsterAtDoor(2, t)" >= 0.95)
 	{"apply_enter(2, t)"}
-elseif("!MonsterAtDoor(3, t)" >= 0.9)
+elseif("!MonsterAtDoor(3, t)" >= 0.95)
 	{"apply_enter(3, t)"}	
-elseif("!MonsterAtDoor(4, t)" >= 0.9)
+elseif("!MonsterAtDoor(4, t)" >= 0.95)
 	{"apply_enter(4, t)"}
-elseif("!MonsterAtDoor(5, t)" >= 0.9)
+elseif("!MonsterAtDoor(5, t)" >= 0.95)
 	{"apply_enter(5, t)"}
-elseif("!MonsterAtDoor(6, t)" >= 0.9)
+elseif("!MonsterAtDoor(6, t)" >= 0.95)
 	{"apply_enter(6, t)"}
-elseif("!MonsterAtDoor(7, t)" >= 0.9)
+elseif("!MonsterAtDoor(7, t)" >= 0.95)
 	{"apply_enter(7, t)"}
-elseif("!MonsterAtDoor(8, t)" >= 0.9)
+elseif("!MonsterAtDoor(8, t)" >= 0.95)
 	{"apply_enter(8, t)"}
-elseif("!MonsterAtDoor(9, t)" >= 0.9)
+elseif("!MonsterAtDoor(9, t)" >= 0.95)
 	{"apply_enter(9, t)"}
-elseif("!MonsterAtDoor(10, t)" >= 0.9)
+elseif("!MonsterAtDoor(10, t)" >= 0.95)
 	{"apply_enter(10, t)"}
-elseif("!MonsterAtDoor(11, t)" >= 0.9)
+elseif("!MonsterAtDoor(11, t)" >= 0.95)
 	{"apply_enter(11, t)"}
-elseif("!MonsterAtDoor(12, t)" >= 0.9)
+elseif("!MonsterAtDoor(12, t)" >= 0.95)
 	{"apply_enter(12, t)"}
-elseif("!MonsterAtDoor(13, t)" >= 0.9)
+elseif("!MonsterAtDoor(13, t)" >= 0.95)
 	{"apply_enter(13, t)"}	
-elseif("!MonsterAtDoor(14, t)" >= 0.9)
+elseif("!MonsterAtDoor(14, t)" >= 0.95)
 	{"apply_enter(14, t)"}
 else
 	{"apply_listen(t)"};
