@@ -6,6 +6,7 @@ package blog.parse;
 import java.io.InputStream;
 
 import blog.absyn.Absyn;
+import blog.absyn.IndentingPrinter;
 import blog.absyn.Printer;
 import blog.msg.ErrorMsg;
 
@@ -54,7 +55,7 @@ public class Parse {
 	}
 
 	public static Parse parseString(String content) {
-		blog.msg.ErrorMsg errorMsg = new blog.msg.ErrorMsg("STRING"
+		blog.msg.ErrorMsg errorMsg = new blog.msg.ErrorMsg("String: "
 		    + content.hashCode());
 		java.io.Reader inp;
 		try {
@@ -75,6 +76,6 @@ public class Parse {
 
 	public static void main(String[] args) {
 		Parse parse = parseFile(args[0]);
-		parse.getParseResult().printTree(new Printer(System.out), 0);
+		parse.getParseResult().printSyntax(new IndentingPrinter(System.out));
 	}
 }
