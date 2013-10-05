@@ -24,31 +24,29 @@ public class RandNbrMod extends TemplateDistrib{
 		
 	}
 
-	private Boolean Next(Integer r1, Integer r2){
-		return (r2 == modAdd(r1));
+	private Boolean Next(Integer r1, Integer r2, Integer diff){
+		return (r2 == modAdd(r1, diff));
 	}
-	private Boolean Prev(Integer r1, Integer r2){
-		return (r2 == modSub(r1));
+        
+	private Boolean Prev(Integer r1, Integer r2, Integer diff){
+		return (r2 == modSub(r1,diff));
 	}
-	private Integer modAdd(Integer r1){
-		if (r1 + 1 >= max)
-			return r1 + 1-max;
-		else
-			return r1 + 1;
+        
+	private Integer modAdd(Integer r1, Integer diff){
+                                return (r1+diff )% max;
 	}
-	private Integer modSub(Integer r1){
-		if (r1 - 1 < 0)
-			return r1 - 1+max;
-		else
-			return r1 - 1;
+	private Integer modSub(Integer r1, Integer diff){
+                                return (r1+max - diff) % max;
 	}
 	
 	
 	private double transitionProb(Integer r1, Integer r2) {
 		if (r1 == r2)
 			return 0.4;
-		else if (Next(r1, r2) || Prev(r1,r2))
-			return 0.3;
+		else if (Next(r1, r2, 1) || Prev(r1, r2, 1))
+			return 0.2;
+                                else if (Next(r1, r2, 2) || Prev(r1, r2, 2))
+                                                return 0.1;
 		else
 			return 0;
 	}
@@ -58,7 +56,7 @@ public class RandNbrMod extends TemplateDistrib{
 	double getProb(Object value) {
 		Integer r1 = (Integer) pos;
 		Integer r2 = (Integer) value;
-		System.err.println("returning prob correctly");
+		//System.err.println("returning prob correctly");
 		return transitionProb(r1, r2);
 	}
 
@@ -69,7 +67,7 @@ public class RandNbrMod extends TemplateDistrib{
 		for (int i =0;i<max;i++) {
 			probList[i]=(transitionProb(pos, i));
 		}
-		System.err.println("returning val correctly");
+		//System.err.println("returning val correctly");
 		return Integer.valueOf((Util.sampleWithProbs(probList)));	
 	}
 

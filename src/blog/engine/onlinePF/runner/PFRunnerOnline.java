@@ -174,8 +174,10 @@ public class PFRunnerOnline{
 			System.out.println("#var in memory"+((Particle)Util.getFirst(particleFilter.particles)).getLatestWorld().basicVarToValueMap().size());
 			return true;
 		}
-		else
-			return false;
+                                else{
+                                            System.out.format("%d", evidenceGenerator.lastTimeStep+1);
+                                            return false;
+                                        }
 	}
 
 	/** utility method for finding the average value of queries whose results are numbers*/
