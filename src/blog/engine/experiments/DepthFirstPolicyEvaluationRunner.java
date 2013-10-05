@@ -3,6 +3,7 @@ package blog.engine.experiments;
 import java.util.HashMap;
 import java.util.List;
 
+import blog.common.Util;
 import blog.common.cmdline.AbstractOption;
 import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
@@ -14,6 +15,7 @@ public class DepthFirstPolicyEvaluationRunner {
 	public static HashMap<String, AbstractOption> runtimeOptions = new HashMap<String, AbstractOption>();
 
 	public static void main(String[] args) {
+		Util.initRandom(true);
 		blog.common.cmdline.Parser
 				.setProgramDesc("Bayesian Logic (BLOG) inference engine");
 		blog.common.cmdline.Parser
@@ -62,6 +64,7 @@ public class DepthFirstPolicyEvaluationRunner {
 		UBT.dataOutput = new FileCommunicator(UBT.rootFolder+"//UBTData.log");
         UBT.osOutput = new FileCommunicator(UBT.rootFolder+"//OS.log");
         UBT.numParticleOutput = new FileCommunicator(UBT.rootFolder+"//NP.log");
+        UBT.worldOutput = new FileCommunicator(UBT.rootFolder+"//WO.log");
 		//UBT.specialIndexOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "indices" + (((StringOption) runtimeOptions.get("logname")).getValue())
 		//		+ ".log");
 		//UBT.obsOutput = new FileCommunicator((((StringOption) runtimeOptions.get("logfolder")).getValue()) + "//" + "obs" + (((StringOption) runtimeOptions.get("logname")).getValue())
