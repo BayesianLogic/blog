@@ -160,7 +160,7 @@ public class PFEngineSampled extends PFEngineOnline{
 			p.unInstantiateObservables(selectedOS);
 			p.take(ev);
 			p.setOS(sampledOSindex);
-			if (p.getLatestWeight()>0.00000001)
+			if (p.getLatestWeight()>0.001)
 				i++;
 		}
 		UBT.worldOutput.printInput("<<<<<>>>>>");

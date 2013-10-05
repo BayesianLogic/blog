@@ -58,6 +58,7 @@ public class RandNbrMod extends TemplateDistrib{
 	double getProb(Object value) {
 		Integer r1 = (Integer) pos;
 		Integer r2 = (Integer) value;
+		System.err.println("returning prob correctly");
 		return transitionProb(r1, r2);
 	}
 
@@ -68,8 +69,8 @@ public class RandNbrMod extends TemplateDistrib{
 		for (int i =0;i<max;i++) {
 			probList[i]=(transitionProb(pos, i));
 		}
-
-		return Integer.valueOf((Util.sampleWithProbs(probList)));
+		System.err.println("returning val correctly");
+		return Integer.valueOf((Util.sampleWithProbs(probList)));	
 	}
 
 }

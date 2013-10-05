@@ -53,7 +53,7 @@ public abstract class TemplateDistrib extends AbstractCondProbDistrib {
 			setParams(params);
 		} else {
 			throw new IllegalArgumentException(
-					"Incorrect number of parameters");
+					"Incorrect number of parameters"+params.toString());
 		}
 	}
 

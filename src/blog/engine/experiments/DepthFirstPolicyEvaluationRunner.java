@@ -15,7 +15,7 @@ public class DepthFirstPolicyEvaluationRunner {
 	public static HashMap<String, AbstractOption> runtimeOptions = new HashMap<String, AbstractOption>();
 
 	public static void main(String[] args) {
-		Util.initRandom(true);
+		//Util.initRandom(true);
 		blog.common.cmdline.Parser
 				.setProgramDesc("Bayesian Logic (BLOG) inference engine");
 		blog.common.cmdline.Parser
