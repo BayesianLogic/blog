@@ -69,8 +69,8 @@ abstract public class Absyn {
 	 * 
 	 * @param pr Printer, where to print
 	 * @param d depth of the node in the tree
-	 *          
-	 * @deprecated Use {@link #printSyntax(IndentingPrinter)} instead.
+	 * 
+	 * @deprecated Use {@link #printSyntax(IndentingPrinter)} instead.  In a child, consider deleting/deprecating printTree.
 	 */
 	public abstract void printTree(Printer pr, int d);
 
