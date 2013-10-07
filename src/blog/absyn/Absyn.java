@@ -72,7 +72,9 @@ abstract public class Absyn {
 	 * 
 	 * @deprecated Use {@link #printSyntax(IndentingPrinter)} instead.  In a child, consider deleting/deprecating printTree.
 	 */
-	public abstract void printTree(Printer pr, int d);
+	public void printTree(Printer pr, int d) { 
+		throw new UnsupportedOperationException();
+	}
 
 	/**
 	 * Set to false to disable printing of line/column information when using printSyntax.

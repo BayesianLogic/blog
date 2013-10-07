@@ -40,4 +40,14 @@ public class SymbolArrayList extends Absyn implements Iterable<SymbolArray> {
 	}
 	public Iterator iterator() { return new Iterator(this);}
 
+	/**
+	 * @see StmtList#StmtList(Stmt...)
+	 */
+	public static SymbolArrayList SymbolArrayList(SymbolArray... xs) {
+		SymbolArrayList head = null;
+		for(int i = xs.length-1; i > -1; --i) {
+			head = new SymbolArrayList(xs[i], head);
+		}
+		return head;
+	}
 }
