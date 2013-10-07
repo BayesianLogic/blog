@@ -1,11 +1,5 @@
 package blog.absyn;
 
-import java.util.ArrayList;
-import java.util.ListIterator;
-
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
-
-import blog.absyn.StmtList.Iterator;
 import blog.symbol.Symbol;
 
 /**
@@ -25,7 +19,7 @@ public class FieldList extends Absyn implements Iterable<Field> {
 		head=field;
 		next=tail;
 	}
-	
+
 	@Override
 	public void printTree(Printer pr, int d) {
 		pr.indent(d);
@@ -42,7 +36,7 @@ public class FieldList extends Absyn implements Iterable<Field> {
 		}
 		pr.say(")");
 	}
-	
+
 	/**
 	 * @see StmtList.Iterator
 	 */
@@ -64,8 +58,9 @@ public class FieldList extends Absyn implements Iterable<Field> {
 	 */
 	public static FieldList FieldList(Field... xs) {
 		FieldList head = null;
-		for(int i = xs.length-1; i > -1; --i)
+		for(int i = xs.length-1; i > -1; --i) {
 			head = new FieldList(xs[i], head);
+		}
 		return head;
 	}
 
