@@ -618,7 +618,7 @@ public class Main {
 		Parse parse = new Parse(reader, msg);
 		Semant sem = new Semant(m, e, qs, msg);
 		if (msg.OK())
-			sem.transProg(parse.getParseResult());
+			sem.transProg(parse.getResult());
 		return msg.OK();
 	}
 

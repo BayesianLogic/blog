@@ -24,4 +24,7 @@ public class RandomFuncDec extends FunctionDec {
 		this(0, p, n, a, r, b);
 	}
 
+	public RandomFuncDec(Symbol n, FieldList a, Ty r, Expr b)
+	{ this(0, n, a, r, b); }
+
 }
