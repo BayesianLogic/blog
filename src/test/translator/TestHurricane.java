@@ -11,7 +11,7 @@ import blog.translate.FigaroTranslator;
  *                       /example/translator/hurricane_structure_log.txt
  *        
  * @author Yi Wu
- * @date Sept 6, 2012
+ * @date Oct 6, 2012
  */
 
 public class TestHurricane {

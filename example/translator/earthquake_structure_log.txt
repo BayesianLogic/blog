@@ -1,0 +1,119 @@
+Fix Function :
+
+Assignment :
+ Function < name = Alarm , type = Boolean >
+  >Parameters: 
+  >Expression: 
+     Distribution < CPD > origin = TabularCPD
+      >Parameter: 
+        Mapping Term : #sub = 4  type = < Array[Boolean] -> Boolean >
+          >sub#0 : from = Array(true,true)  to = Flip(0.95)
+           --> From:
+                  Array(true,true)
+           -->   To:
+                  Distribution < Flip > origin = Bernoulli
+                   >Parameter: 
+                     0.95
+          >sub#1 : from = Array(true,false)  to = Flip(0.94)
+           --> From:
+                  Array(true,false)
+           -->   To:
+                  Distribution < Flip > origin = Bernoulli
+                   >Parameter: 
+                     0.94
+          >sub#2 : from = Array(false,true)  to = Flip(0.29)
+           --> From:
+                  Array(false,true)
+           -->   To:
+                  Distribution < Flip > origin = Bernoulli
+                   >Parameter: 
+                     0.29
+          >sub#3 : from = Array(false,false)  to = Flip(0.001)
+           --> From:
+                  Array(false,false)
+           -->   To:
+                  Distribution < Flip > origin = Bernoulli
+                   >Parameter: 
+                     0.001
+        Array(Burglary,Earthquake)
+ Function < name = Burglary , type = Boolean >
+  >Parameters: 
+  >Expression: 
+     Distribution < Flip > origin = Bernoulli
+      >Parameter: 
+        0.001
+ Function < name = Earthquake , type = Boolean >
+  >Parameters: 
+  >Expression: 
+     Distribution < Flip > origin = Bernoulli
+      >Parameter: 
+        0.002
+ Function < name = JohnCalls , type = Boolean >
+  >Parameters: 
+  >Expression: 
+     Distribution < CPD > origin = TabularCPD
+      >Parameter: 
+        Mapping Term : #sub = 2  type = < Boolean -> Boolean >
+          >sub#0 : from = true  to = Flip(0.9)
+           --> From:
+                  true
+           -->   To:
+                  Distribution < Flip > origin = Bernoulli
+                   >Parameter: 
+                     0.9
+          >sub#1 : from = false  to = Flip(0.05)
+           --> From:
+                  false
+           -->   To:
+                  Distribution < Flip > origin = Bernoulli
+                   >Parameter: 
+                     0.05
+        Symbol < Alarm >    prefix = Alarm
+           > type = Boolean  belong = 
+ Function < name = MaryCalls , type = Boolean >
+  >Parameters: 
+  >Expression: 
+     Distribution < CPD > origin = TabularCPD
+      >Parameter: 
+        Mapping Term : #sub = 2  type = < Boolean -> Boolean >
+          >sub#0 : from = true  to = Flip(0.7)
+           --> From:
+                  true
+           -->   To:
+                  Distribution < Flip > origin = Bernoulli
+                   >Parameter: 
+                     0.7
+          >sub#1 : from = false  to = Flip(0.01)
+           --> From:
+                  false
+           -->   To:
+                  Distribution < Flip > origin = Bernoulli
+                   >Parameter: 
+                     0.01
+        Symbol < Alarm >    prefix = Alarm
+           > type = Boolean  belong = 
+
+FigaroClass :
+
+Observation :
+Evidence < left = right >
+ >Left Expr: 
+    Symbol < JohnCalls >    prefix = JohnCalls
+       > type = Boolean  belong = 
+ >Right Expr: 
+    true
+Evidence < left = right >
+ >Left Expr: 
+    Symbol < MaryCalls >    prefix = MaryCalls
+       > type = Boolean  belong = 
+ >Right Expr: 
+    true
+
+Query :
+ Query < Expr >
+  >Left Expr: 
+     Symbol < Burglary >    prefix = Burglary
+        > type = Boolean  belong = 
+
+++++++++++++++++++++++++++
+Orders: [Burglary, Earthquake, Alarm, JohnCalls, MaryCalls]
