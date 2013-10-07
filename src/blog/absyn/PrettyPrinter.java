@@ -11,28 +11,35 @@ import java.util.Locale;
  * @date 2013/10/4
  */
 
-public class IndentingPrinter {
+public class PrettyPrinter {
 
 	private PrintStream out;
 	private int depth=0;
 	
-	public IndentingPrinter reset() {
+	/**
+	 * Set to false to disable printing of line/column information when using printSyntax.
+	 * 
+	 * @see #printSyntax(PrettyPrinter)
+	 */
+	public boolean printSourceLocations=true;
+	
+	public PrettyPrinter reset() {
 		this.depth = 0;
 		this.out.flush();
 		return this;
 	}
     		
-	public IndentingPrinter indent() {
+	public PrettyPrinter indent() {
 		depth+=1;
 		return this;
 	}
-	public IndentingPrinter dedent() {
+	public PrettyPrinter dedent() {
 		depth-=1;
 		return this;
 	}
 
 	
-	public IndentingPrinter print(char c) {
+	public PrettyPrinter print(char c) {
 		if (c=='\n')
 			newline();
 		else
@@ -40,24 +47,24 @@ public class IndentingPrinter {
 		return this;
 	}
 
-	public IndentingPrinter print(char[] s) {
+	public PrettyPrinter print(char[] s) {
 		for (char c : s) {
 			print(c);
 		}
 		return this;
 	}
 
-	public IndentingPrinter print(String s) {
+	public PrettyPrinter print(String s) {
 		print(s.toCharArray());
 		return this;
 	}
 
-	public IndentingPrinter print(Object obj) {
+	public PrettyPrinter print(Object obj) {
 		print(String.valueOf(obj));
 		return this;
 	}
 
-	public IndentingPrinter newline() {
+	public PrettyPrinter newline() {
 		out.println();
 		for(int i=0; i < depth;++i) {
 			out.print('\t');
@@ -72,7 +79,7 @@ public class IndentingPrinter {
 	 * were altered to return this instead.
 	 * 
 	 */
-	public IndentingPrinter flush() {
+	public PrettyPrinter flush() {
 		out.flush();
 		return this;
 	}
@@ -85,107 +92,107 @@ public class IndentingPrinter {
 		return out.checkError();
 	}
 
-	public IndentingPrinter write(int b) {
+	public PrettyPrinter write(int b) {
 		out.write(b);
 		return this;
 	}
 
-	public IndentingPrinter print(boolean b) {
+	public PrettyPrinter print(boolean b) {
 		out.print(b);
 		return this;
 	}
 
-	public IndentingPrinter print(int i) {
+	public PrettyPrinter print(int i) {
 		out.print(i);
 		return this;
 	}
 
-	public IndentingPrinter print(long l) {
+	public PrettyPrinter print(long l) {
 		out.print(l);
 		return this;
 	}
 
-	public IndentingPrinter print(float f) {
+	public PrettyPrinter print(float f) {
 		out.print(f);
 		return this;
 	}
 
-	public IndentingPrinter print(double d) {
+	public PrettyPrinter print(double d) {
 		out.print(d);
 		return this;
 	}
 
-	public IndentingPrinter println(boolean x) {
+	public PrettyPrinter println(boolean x) {
 		print(x);
 		newline();
 		return this;
 	}
 
-	public IndentingPrinter println(char x) {
+	public PrettyPrinter println(char x) {
 		print(x);
 		newline();
 		return this;
 	}
 
-	public IndentingPrinter println(int x) {
+	public PrettyPrinter println(int x) {
 		print(x);
 		newline();
 		return this;
 	}
 
-	public IndentingPrinter println(long x) {
+	public PrettyPrinter println(long x) {
 		print(x);
 		newline();
 		return this;
 	}
 
-	public IndentingPrinter println(float x) {
+	public PrettyPrinter println(float x) {
 		print(x);
 		newline();
 		return this;
 	}
 
-	public IndentingPrinter println(double x) {
+	public PrettyPrinter println(double x) {
 		print(x);
 		newline();
 		return this;
 	}
 
-	public IndentingPrinter println(char[] x) {
+	public PrettyPrinter println(char[] x) {
 		print(x);
 		newline();
 		return this;
 	}
 
-	public IndentingPrinter println(String x) {
+	public PrettyPrinter println(String x) {
 		print(x);
 		newline();
 		return this;
 	}
 
-	public IndentingPrinter println(Object x) {
+	public PrettyPrinter println(Object x) {
 		print(x);
 		newline();
 		return this;
 	}
 
-	public IndentingPrinter printf(String format, Object... args) {
+	public PrettyPrinter printf(String format, Object... args) {
 		out.printf(format, args);
 		return this;
 	}
 
-	public IndentingPrinter printf(Locale l, String format, Object... args) {
+	public PrettyPrinter printf(Locale l, String format, Object... args) {
 		out.printf(l, format, args);
 		return this;
 	}
 
-	public IndentingPrinter format(String format, Object... args) {
+	public PrettyPrinter format(String format, Object... args) {
 		out.format(format, args);
 		return this;
 	}
 	
 
-	public IndentingPrinter format(Locale l, String format, Object... args) {
+	public PrettyPrinter format(Locale l, String format, Object... args) {
 		out.format(l, format, args);
 		return this;
 	}
@@ -194,15 +201,15 @@ public class IndentingPrinter {
 	 * Constructors
 	 */
 	
-	public IndentingPrinter(PrintStream out) {
+	public PrettyPrinter(PrintStream out) {
 		super();
 		this.out = out;
 	}
-	public IndentingPrinter(File file) throws FileNotFoundException {
+	public PrettyPrinter(File file) throws FileNotFoundException {
 		super();
 		out = new PrintStream(file);
 	}
-    public IndentingPrinter(OutputStream out) {
+    public PrettyPrinter(OutputStream out) {
     	super();
     	this.out = new PrintStream(out);
     }
