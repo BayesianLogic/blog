@@ -11,8 +11,12 @@ public class ExprList extends Absyn implements Iterable<Expr> {
 	public ExprList next;
 
 	public ExprList(Expr h, ExprList t) {
-		super(h.getLine(), h.getCol());
-		head = h;
+		super();
+		if (h != null) {
+			this.head = h;
+			this.line = h.line;
+			this.col = h.col;
+		}
 		next = t;
 	}
 
@@ -46,5 +50,15 @@ public class ExprList extends Absyn implements Iterable<Expr> {
 		public void remove() { throw new UnsupportedOperationException(); }
 	}
 	public Iterator iterator() { return new Iterator(this);}
+	
+	/**
+	 * @see StmtList#StmtList(Stmt...)
+	 */
+	public static ExprList ExprList(Expr... xs) {
+		ExprList head = null;
+		for(int i = xs.length-1; i > -1; --i)
+			head = new ExprList(xs[i], head);
+		return head;
+	}
 
 }
