@@ -13,19 +13,68 @@ import java.util.Locale;
 
 public class IndentingPrinter {
 
-	PrintStream out;
-	int depth=0;
+	private PrintStream out;
+	private int depth=0;
 	
-	void indent() {
-		depth+=1;
+	public IndentingPrinter reset() {
+		this.depth = 0;
+		this.out.flush();
+		return this;
 	}
-	void dedent() {
+    		
+	public IndentingPrinter indent() {
+		depth+=1;
+		return this;
+	}
+	public IndentingPrinter dedent() {
 		depth-=1;
+		return this;
 	}
 
 	
-	public void flush() {
+	public IndentingPrinter print(char c) {
+		if (c=='\n')
+			newline();
+		else
+			out.print(c);
+		return this;
+	}
+
+	public IndentingPrinter print(char[] s) {
+		for (char c : s) {
+			print(c);
+		}
+		return this;
+	}
+
+	public IndentingPrinter print(String s) {
+		print(s.toCharArray());
+		return this;
+	}
+
+	public IndentingPrinter print(Object obj) {
+		print(String.valueOf(obj));
+		return this;
+	}
+
+	public IndentingPrinter newline() {
+		out.println();
+		for(int i=0; i < depth;++i) {
+			out.print('\t');
+		}
+		return this;
+	}
+
+	/*
+	 * Delegated Methods 
+	 * 
+	 * These are essentially auto-generated, but some of the void return types
+	 * were altered to return this instead.
+	 * 
+	 */
+	public IndentingPrinter flush() {
 		out.flush();
+		return this;
 	}
 
 	public void close() {
@@ -63,39 +112,6 @@ public class IndentingPrinter {
 
 	public IndentingPrinter print(double d) {
 		out.print(d);
-		return this;
-	}
-
-	public IndentingPrinter print(char c) {
-		if (c=='\n')
-			newline();
-		else
-			out.print(c);
-		return this;
-	}
-
-	public IndentingPrinter print(char[] s) {
-		for (char c : s) {
-			print(c);
-		}
-		return this;
-	}
-
-	public IndentingPrinter print(String s) {
-		print(s.toCharArray());
-		return this;
-	}
-
-	public IndentingPrinter print(Object obj) {
-		print(String.valueOf(obj));
-		return this;
-	}
-
-	public IndentingPrinter newline() {
-		out.println();
-		for(int i=0; i < depth;++i) {
-			out.print('\t');
-		}
 		return this;
 	}
 
@@ -174,6 +190,10 @@ public class IndentingPrinter {
 		return this;
 	}
 
+	/*
+	 * Constructors
+	 */
+	
 	public IndentingPrinter(PrintStream out) {
 		super();
 		this.out = out;
@@ -186,5 +206,5 @@ public class IndentingPrinter {
     	super();
     	this.out = new PrintStream(out);
     }
-    	
+    
 }
