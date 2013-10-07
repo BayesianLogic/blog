@@ -17,11 +17,12 @@ public class StmtList extends Absyn implements Iterable<Stmt> {
 	public StmtList next;
 
 	public StmtList(Stmt h, StmtList t) {
-        if (h != null) {
-            this.line = h.getLine(); 
-            this.col = h.getCol();
-        }
-		head = h;
+		super();
+		if (h!= null) {
+			this.line = h.line;
+			this.col = h.col;
+			head = h;
+		}
 		next = t;
 	}
 
@@ -56,5 +57,29 @@ public class StmtList extends Absyn implements Iterable<Stmt> {
 		public void remove() { throw new UnsupportedOperationException(); }
 	}
 	public Iterator iterator() { return new Iterator(this);}
+
+	/**
+	 * A syntactically convenient creator of StmtList, primarily for use in testing.
+	 * <p>
+	 * Enable it via: 
+	 * <code>
+	 * import static blog.absyn.StmtList.StmtList;
+	 * </code>
+	 * <p>
+	 * Use it via:
+	 * <code>
+	 * StmtList(new Stmt(...), new Stmt(...), ...);
+	 * </code>
+	 * 
+	 * @param xs array of statements
+	 * @return list of statements
+	 */
+	public static StmtList StmtList(Stmt... xs) {
+		StmtList head = null;
+		for(int i = xs.length-1; i > -1; --i)
+			head = new StmtList(xs[i], head);
+		return head;
+	}
+	
 
 }
