@@ -48,7 +48,7 @@ import blog.absyn.*;
 action code {:
 
   static blog.symbol.Symbol sym(String s) {
-	         return blog.symbol.Symbol.symbol(s);
+	         return blog.symbol.Symbol.Symbol(s);
   }
 
     LocationInFile getCurLocation() {
@@ -102,6 +102,17 @@ parser code {:
     errorMsg = msg;
   }
 
+// WC: Methods that get automatically invoked when using the builtin error recovery mechanism.  
+/*
+public void report_error(String message, Object info)
+    This method should be called whenever an error message is to be issued. In the default implementation of this method, the first parameter provides the text of a message which is printed on System.err and the second parameter is simply ignored. It is very typical to override this method in order to provide a more sophisticated error reporting mechanism. 
+public void report_fatal_error(String message, Object info)
+    This method should be called whenever a non-recoverable error occurs. It responds by calling report_error(), then aborts parsing by calling the parser method done_parsing(), and finally throws an exception. (In general done_parsing() should be called at any point that parsing needs to be terminated early). 
+public void syntax_error(Symbol cur_token)
+    This method is called by the parser as soon as a syntax error is detected (but before error recovery is attempted). In the default implementation it calls: report_error("Syntax error", null);. 
+public void unrecovered_syntax_error(Symbol cur_token)
+    This method is called by the parser if it is unable to recover from a syntax error. In the default implementation it calls: report_fatal_error("Couldn't repair and continue parse", null);. 
+*/
 :}
 
 init with {:

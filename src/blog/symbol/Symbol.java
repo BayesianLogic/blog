@@ -33,7 +33,7 @@ public class Symbol {
 	 * Make return the unique symbol associated with a string. Repeated calls to
 	 * <tt>symbol("abc")</tt> will return the same Symbol.
 	 */
-	public static Symbol symbol(String n) {
+	public static Symbol Symbol(String n) {
 		String u = n.intern();
 		Symbol s = dict.get(u);
 		if (s == null) {

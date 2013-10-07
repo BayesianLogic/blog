@@ -12,6 +12,7 @@ public class StringExpr extends Expr {
 		value = v;
 	}
 
+	public StringExpr(String v) { this(0,v); }
 	public StringExpr(int pos, String v) {
 		this(0, pos, v);
 	}

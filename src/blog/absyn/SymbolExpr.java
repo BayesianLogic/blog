@@ -9,6 +9,7 @@ import blog.symbol.Symbol;
 public class SymbolExpr extends Expr {
     public Symbol name;
 
+    public SymbolExpr(Symbol n) {this(0,n);}
     public SymbolExpr(int p, Symbol n) {
         this(0, p, n);
     }
@@ -18,7 +19,8 @@ public class SymbolExpr extends Expr {
         name = n;
     }
 
-    @Override
+
+	@Override
     public void printTree(Printer pr, int d) {
         pr.indent(d);
         pr.sayln("SymbolExpr(");
