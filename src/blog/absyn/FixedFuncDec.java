@@ -8,29 +8,36 @@ import blog.symbol.Symbol;
  */
 public class FixedFuncDec extends FunctionDec {
 
-	/**
-	 * for constant
-	 * 
-	 * @param p
-	 * @param n
-	 * @param r
-	 * @param b
-	 */
-	public FixedFuncDec(int p, Symbol n, FieldList a, Ty r, Expr b) {
-		this(0, p, n, a, r, b);
-	}
+  public FixedFuncDec(Symbol n, FieldList a, Ty r, Expr b) {
+    this(0, n, a, r, b);
+  }
 
-	public FixedFuncDec(int line, int pos, Symbol n, FieldList a, Ty r, Expr b) {
-		super(line, pos, n, a, r, b);
-	}
+  public FixedFuncDec(int p, Symbol n, FieldList a, Ty r, Expr b) {
+    this(0, p, n, a, r, b);
+  }
 
-	/**
-	 * @param i
-	 * @param symbol
-	 * @param nameTy
-	 * @param booleanExpr
-	 */
-	public FixedFuncDec(int p, Symbol n, NameTy r, Expr b) {
-		this(0, p, n, null, r, b);
-	}
+  public FixedFuncDec(int line, int col, Symbol n, FieldList a, Ty r, Expr b) {
+    super(line, col, n, a, r, b);
+  }
+
+  /**
+   * for constants
+   * 
+   * @param line
+   * @param col
+   * @param n
+   * @param r
+   * @param b
+   */
+  public FixedFuncDec(int line, int col, Symbol n, Ty r, Expr b) {
+    this(line, col, n, null, r, b);
+  }
+
+  public FixedFuncDec(int p, Symbol n, Ty r, Expr b) {
+    this(0, p, n, r, b);
+  }
+
+  public FixedFuncDec(Symbol n, NameTy r, Expr b) {
+    this(0, n, r, b);
+  }
 }

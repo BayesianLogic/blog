@@ -9,6 +9,7 @@ public class DistinctSymbolDec extends Dec {
 	public SymbolArrayList symbols;
 	public Ty type;
 
+	public DistinctSymbolDec(Ty t, SymbolArrayList ss) { this(0,t,ss); }
 	public DistinctSymbolDec(int p, Ty t, SymbolArrayList ss) {
 		this(0, p, t, ss);
 	}
@@ -18,6 +19,7 @@ public class DistinctSymbolDec extends Dec {
 		type = t;
 		symbols = ss;
 	}
+
 
 	@Override
 	public void printTree(Printer pr, int d) {

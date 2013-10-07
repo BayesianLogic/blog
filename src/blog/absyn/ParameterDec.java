@@ -18,6 +18,8 @@ public class ParameterDec extends Dec {
 		cond = c;
 	}
 
+	/** Convenience for test-cases */
+	public ParameterDec(Ty t, Symbol n, Expr c) { this(0,t,n,c); }
 	public ParameterDec(int p, Ty t, Symbol n, Expr c) {
 		this(0, p, t, n, c);
 	}

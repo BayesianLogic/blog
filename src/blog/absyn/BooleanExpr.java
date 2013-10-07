@@ -17,6 +17,8 @@ public class BooleanExpr extends Expr {
 		value = v;
 	}
 
+	public BooleanExpr(boolean v) { this(0, v); }
+
 	@Override
 	public void printTree(Printer pr, int d) {
 		pr.indent(d);

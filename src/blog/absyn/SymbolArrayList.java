@@ -4,7 +4,7 @@ package blog.absyn;
  * @author leili
  * @date Apr 22, 2012
  */
-public class SymbolArrayList extends Absyn {
+public class SymbolArrayList extends Absyn implements Iterable<SymbolArray> {
 	public SymbolArray head;
 	public SymbolArrayList next;
 
@@ -23,5 +23,31 @@ public class SymbolArrayList extends Absyn {
 				next.printTree(pr, d);
 		}
 	}
+	
+	/**
+	 * @see StmtList.Iterator
+	 */
+	public class Iterator implements java.util.Iterator<SymbolArray> {
+		SymbolArrayList curr=null;
+		public Iterator(SymbolArrayList SymbolArrayList) { curr = SymbolArrayList; }
+		public boolean hasNext() { return curr != null; }
+		public SymbolArray next() {
+			SymbolArray o = curr.head;
+			curr = curr.next;
+			return o;
+		}
+		public void remove() { throw new UnsupportedOperationException(); }
+	}
+	public Iterator iterator() { return new Iterator(this);}
 
+	/**
+	 * @see StmtList#StmtList(Stmt...)
+	 */
+	public static SymbolArrayList SymbolArrayList(SymbolArray... xs) {
+		SymbolArrayList head = null;
+		for(int i = xs.length-1; i > -1; --i) {
+			head = new SymbolArrayList(xs[i], head);
+		}
+		return head;
+	}
 }

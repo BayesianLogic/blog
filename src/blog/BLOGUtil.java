@@ -172,7 +172,7 @@ public class BLOGUtil {
 		meq.model = m;
 		Parse parse = Parse.parseString(description);
 		Semant sem = new Semant(meq, parse.getErrorMsg());
-		sem.transProg(parse.getParseResult());
+		sem.transProg(parse.getResult());
 		return sem.getModelEvidenceQueries();
 	}
 

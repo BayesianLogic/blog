@@ -23,6 +23,8 @@ public class ImplicitSetExpr extends SetExpr {
 		cond = c;
 	}
 
+	public ImplicitSetExpr(Ty t, Symbol v, Expr c) { this(0,t,v,c); }
+
 	@Override
 	public void printTree(Printer pr, int d) {
 		pr.indent(d);

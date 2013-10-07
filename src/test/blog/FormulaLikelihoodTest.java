@@ -21,8 +21,10 @@ public class FormulaLikelihoodTest extends TestCase {
 		junit.textui.TestRunner.run(FormulaLikelihoodTest.class);
 	}
 
-	private static String modelDescription = "type Aircraft;"
-			+ "guaranteed Aircraft a, a2;" + "random Real Position(Aircraft);"
+	private static String modelDescription = ""
+			+ "type Aircraft;\n"
+			+ "guaranteed Aircraft a, a2;\n" 
+			+ "random Real Position(Aircraft);"
 			+ "Position(a) = 0;" + "" + "type Blip;" + "guaranteed Blip b, b2;"
 			+ "origin Aircraft Source(Blip);" + "random Real ApparentPos(Blip);"
 			+ "ApparentPos(blip) ~ Gaussian(Position(Source(blip)));" + ""

@@ -11,6 +11,7 @@ public class DistributionExpr extends Expr {
 	public Symbol name;
 	public ExprList args;
 
+	public DistributionExpr(Symbol f, ExprList a) { this(0, f, a); }
 	public DistributionExpr(int p, Symbol f, ExprList a) {
 		this(0, p, f, a);
 	}

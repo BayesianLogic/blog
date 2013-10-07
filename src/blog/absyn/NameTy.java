@@ -9,6 +9,10 @@ import blog.symbol.Symbol;
 public class NameTy extends Ty {
 	public Symbol name;
 
+	public NameTy(Symbol n) {
+		this(0, 0, n);
+	}
+	
 	public NameTy(int p, Symbol n) {
 		this(0, p, n);
 	}
