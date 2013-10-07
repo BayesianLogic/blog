@@ -57,11 +57,11 @@ import java_cup.runtime.*;
 
   // For line numbers
   public int getCurLineNum() {
-    return yyline;
+    return yyline+1;
   }
   
   public int getCurColNum() {
-    return yycolumn;
+    return yycolumn+1;
   }
 
   private String filename;
