@@ -6,7 +6,7 @@ package blog.parse;
 import java.io.InputStream;
 
 import blog.absyn.Absyn;
-import blog.absyn.IndentingPrinter;
+import blog.absyn.PrettyPrinter;
 import blog.absyn.Printer;
 import blog.msg.ErrorMsg;
 
@@ -76,6 +76,6 @@ public class Parse {
 
 	public static void main(String[] args) {
 		Parse parse = parseFile(args[0]);
-		parse.getResult().printSyntax(new IndentingPrinter(System.out));
+		new PrettyPrinter(System.out).printSyntax(parse.getResult());
 	}
 }

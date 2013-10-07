@@ -70,51 +70,10 @@ abstract public class Absyn {
 	 * @param pr Printer, where to print
 	 * @param d depth of the node in the tree
 	 * 
-	 * @deprecated Use {@link #printSyntax(IndentingPrinter)} instead.  In a child, consider deleting/deprecating printTree.
+	 * @deprecated Use {@link #MISSING()} instead.  In a child, consider deleting/deprecating printTree.
 	 */
 	public void printTree(Printer pr, int d) { 
 		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * Set to false to disable printing of line/column information when using printSyntax.
-	 * 
-	 * @see #printSyntax(IndentingPrinter)
-	 */
-	public static boolean printSourceLocations=true;
-	
-	/**
-	 * Prints the syntax tree, given an IndentingPrinter class.
-	 * <p>
-	 * In the case of syntax nodes that are mere lists of other syntax nodes (StmtList, for example),
-	 * make the output prettier by printing it as a list, rather than:
-	 * "(StmtList :head foo :next (StmtList :head bar :next ...) ...)"
-	 * which is what calling printFields instead of printMembers would result in.
-	 * 
-	 * @param pr IndentingPrinter, where to print
-	 * @see #printSourceLocations
-	 * @see #printMembers(IndentingPrinter)
-	 * @see #printFields(IndentingPrinter, Field[])
-	 * @see StmtList
-	 */
-	public void printSyntax(IndentingPrinter pr) {
-		Class myClass = this.getClass();
-		pr.print('(').print(myClass.getSimpleName());
-		if (printSourceLocations) {
-			pr.print(" :line ").print(line);
-			pr.print(" :col ").print(col);
-		}
-		pr.indent();
-		if (this instanceof Iterable) {
-			printMembers(pr);
-		} else {
-			// getDeclaredFields() will omit inherited fields
-			printFields(pr,pruneFields(myClass.getFields()));
-			//printFields(pr,pruneFields(myClass.getDeclaredFields()));
-		}
-								
-		pr.dedent();
-		pr.print(')');
 	}
 
 	/**
@@ -141,6 +100,9 @@ abstract public class Absyn {
 	/**
 	 * Helper for pruneFields; tests to see whether a field ought to be pruned.
 	 * 
+	 * "Ought to be pruned" means that the field tracks source locations,
+	 *  or that the "field" is a class-level, rather than instance-level, field.
+	 *  
 	 * @param f field to test
 	 * @return true if it should be squelched
 	 * @see #pruneFields(Field[])
@@ -153,84 +115,6 @@ abstract public class Absyn {
 	}
 
 	/**
-	 * Helper for printSyntax; loops over the (pruned) fields of this.
-	 * <p>
-	 * In the case of syntax objects with a single "real" field, squelch the name of that field.
-	 * IntExpr is a good example.
-	 *  
-	 * @see #printSyntax(IndentingPrinter)
-	 * @see blog.absyn.IntExpr
-	 */
-	protected void printFields(IndentingPrinter pr, ArrayList<Field> fields) {
-		if (fields.size()==1) {
-			pr.print(' ');
-			printValue(pr,getValue(fields.get(0)));
-			return;
-		}
-		
-		for (Field f : fields) {
-			pr.print('\n');
-			printField(pr, f);	
-		}
-	}
-	
-	/**
-	 * Helper for printSyntax; prints out a single field in Common LISP compatible syntax.
-	 * <p>
-	 * Code can easily be altered to target other conventions for associations.
-	 * Use <code>#:name value</code>, or <code>(name . value)</code>, for other LISPs.
-	 * Use <code>name: value</code> for YAML.
-	 * Use <code>"name":"value"</code> for JSON.
-	 * 
-	 * @param pr printer to send to
-	 * @param f field to print
-	 * @see #printSyntax(IndentingPrinter)
-	 */
-	protected void printField(IndentingPrinter pr, Field f) {
-		Object name = getName(f);
-		Object value = getValue(f);
-		
-		pr.print(":").print(name);
-		pr.print(' ');printValue(pr,value);
-	}
-	
-	/**
-	 * Helper for printSyntax; prints out a single value. 
-	 * <p>
-	 * This method recurses through printSyntax when the value is a syntax object, otherwise it delegates to the printer.
-	 * 
-	 * @param pr printer to send to
-	 * @param value value to print
-	 * @see #printSyntax(IndentingPrinter)
-	 */
-	protected void printValue(IndentingPrinter pr, Object value) {
-		if (value instanceof Absyn) {
-			((Absyn) value).printSyntax(pr);
-			return;
-		}
-		
-		pr.print(value);	
-	}
-	
-	/**
-	 * Helper for printSyntax; prints list-implementing syntax as a bona-fide list. 
-	 * <p> 
-	 * Uses newlines to separate list items, under the theory that most lists will contain
-	 * at least one complicated element, so, for better readability, give every element its own line.
-	 * Undesirable newlines, can, of course, be gotten rid of manually.
-	 * 
-	 * @param pr printer to send to
-	 * @param value value to print
-	 * @see #printSyntax(IndentingPrinter)
-	 */
-	protected void printMembers(IndentingPrinter pr) {
-		for (Object o : (Iterable) this) {
-			pr.newline();
-			printValue(pr,o);
-		}
-	}
-	
-	/**
 	 * Helper for printValue; looks up the value of a field reflectively, squelches any exceptions.
 	 * <p>
 	 * There shouldn't be any exceptions generated, as long as this method is called with a Field object in fact representing a Field of this object.
@@ -239,11 +123,10 @@ abstract public class Absyn {
 	 * @param f a Field object representing some field of this object
 	 * @return its value
 	 * @see java.lang.reflect.Field
-	 * @see #printValue(IndentingPrinter, Object)
+	 * @see #MISSING()
 	 */
 	protected Object getValue(Field f) {
-		Object name = f.getName();
-		Object value = name;
+		Object value = null;
 		try {
 			value = f.get(this);
 		} catch (IllegalArgumentException e) {
@@ -259,10 +142,10 @@ abstract public class Absyn {
 	 * @param f a Field reflectively representing a field of this object
 	 * @return its name
 	 * @see java.lang.reflect.Field
-	 * @see #printValue(IndentingPrinter, Object)
+	 * @see #MISSING()
 	 * @see #getValue(Field)
 	 */
-	protected Object getName(Field f) {
+	protected String getName(Field f) {
 		return f.getName();
 	}
 
@@ -271,13 +154,13 @@ abstract public class Absyn {
 	 * Uses printSyntax to deliver the S-expression rendering of the tree.
 	 * 
 	 * @see java.lang.Object#toString()
-	 * @see #printSyntax(IndentingPrinter)
-	 * @see #printSourceLocations
+	 * @see #MISSING()
+	 * @see PrettyPrinter#printSourceLocations
 	 */
 	public String toString() {
 		ByteArrayOutputStream str = new ByteArrayOutputStream();
-		IndentingPrinter pr = new IndentingPrinter(str);
-		printSyntax(pr);
+		PrettyPrinter pr = new PrettyPrinter(str);
+		pr.printSyntax(this);
 		return str.toString();
 	}
 
