@@ -971,7 +971,7 @@ class CUP$BLOGParser$actions {
 
 
   static blog.symbol.Symbol sym(String s) {
-	         return blog.symbol.Symbol.symbol(s);
+	         return blog.symbol.Symbol.Symbol(s);
   }
 
     LocationInFile getCurLocation() {

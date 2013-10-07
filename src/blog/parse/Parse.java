@@ -70,12 +70,12 @@ public class Parse {
 		return errorMsg;
 	}
 
-	public Absyn getParseResult() {
+	public Absyn getResult() {
 		return absyn;
 	}
 
 	public static void main(String[] args) {
 		Parse parse = parseFile(args[0]);
-		parse.getParseResult().printSyntax(new IndentingPrinter(System.out));
+		parse.getResult().printSyntax(new IndentingPrinter(System.out));
 	}
 }

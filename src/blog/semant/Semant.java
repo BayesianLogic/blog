@@ -353,10 +353,10 @@ public class Semant {
 		List<Type> argTy = new ArrayList<Type>();
 		List<String> argVars = new ArrayList<String>();
 		for (FieldList fl = e.params; fl != null; fl = fl.next) {
-			Type ty = getType(fl.typ);
+			Type ty = getType(fl.head.typ);
 			argTy.add(ty);
-			if (fl.var != null) {
-				String vn = fl.var.toString();
+			if (fl.head.var != null) {
+				String vn = fl.head.var.toString();
 				if (argVars.contains(vn)) {
 					error(fl.line, fl.col, "Variable " + vn + " used multiple times");
 				} else {
@@ -434,7 +434,7 @@ public class Semant {
 			return;
 		List<Type> argTy = new ArrayList<Type>();
 		for (FieldList fl = e.params; fl != null; fl = fl.next) {
-			Type ty = getType(fl.typ);
+			Type ty = getType(fl.head.typ);
 			argTy.add(ty);
 		}
 
@@ -1007,8 +1007,8 @@ public class Semant {
 
 		// TODO: TRANSLATE THE VARIABLE LIST AND TYPES
 		while (e.enumVars != null) {
-			Object varType = this.getType(e.enumVars.typ);
-			Object varName = e.enumVars.var.toString();
+			Object varType = this.getType(e.enumVars.head.typ);
+			Object varName = e.enumVars.head.var.toString();
 			if (varType instanceof Type && varName instanceof String) {
 				varTypes.add((Type) varType);
 				varNames.add((String) varName);
