@@ -31,15 +31,28 @@ public class SymbolEvidenceLikelihoodWeighterTest extends TestCase {
 		Util.initRandom(true);
 	}
 
-	private static String modelDescription = "type Aircraft;"
-			+ "guaranteed Aircraft a, a2;" + "random Real Position(Aircraft);"
-			+ "Position(ac) ~ Gaussian(3.0, 1.0);" + "" + "type Blip;"
-			+ "guaranteed Blip b, b2;" + "" + "origin Aircraft Source(Blip);"
-			+ "#Blip(Source = ac) = 1;" + "" + "random Real ApparentPos(Blip);"
-			+ "ApparentPos(blip) ~ Gaussian[1](Position(Source(blip)));" + ""
-			+ "random Blip B1;" + "B1 ~ UniformChoice({Blip b});" + ""
-			+ "random Blip B2;" + "B2 ~ UniformChoice({Blip b});" + ""
-			+ "random Boolean Dummy ~ Bernoulli[0.7]();";
+	private static String modelDescription = ""
+			+ "type Aircraft foo;" 							+ "\n"
+			+ "guaranteed Aircraft a1, a2;" 			+ "\n" 
+			+ "random Real Position(Aircraft a) ~" 		+ "\n"
+			+ "	Gaussian(3.0, 1.0);" 					+ "\n" 
+			+ "" 										+ "\n"
+			+ "type Blip;" 								+ "\n"
+			+ "guaranteed Blip b1, b2;" 				+ "\n" 
+			+ "" 										+ "\n"
+			+ "origin Aircraft Source(Blip);" 			+ "\n"
+			+ "#Blip(Source = a) = 1;" 					+ "\n" 
+			+ "" 										+ "\n"
+			+ "random Real ApparentPos(Blip b) ~ "		+ "\n"
+			+ "	Gaussian(1,Position(Source(b)));" 		+ "\n" 
+			+ "" 										+ "\n"
+			+ "random Blip B1() ~ " 					+ "\n" 
+			+ "	UniformChoice({Blip b});" 				+ "\n" 
+			+ "" 										+ "\n"
+			+ "random Blip B2() ~ " 					+ "\n" 
+			+ "	UniformChoice({Blip b});"	 			+ "\n" 
+			+ "" 										+ "\n"
+			+ "random Boolean Dummy() ~ Bernoulli(0.7);"	+ "\n";
 
 	public static void testGetValueEvidenceByIdentifier() {
 		Model model = Model.readFromString(modelDescription);
@@ -48,19 +61,19 @@ public class SymbolEvidenceLikelihoodWeighterTest extends TestCase {
 		Collection terms;
 		Map evidenceByTerm;
 
-		Term b1 = BLOGUtil.parseTerm_NE("B1", model);
-		Term b2 = BLOGUtil.parseTerm_NE("B2", model);
+		Term B1 = BLOGUtil.parseTerm_NE("B1()", model);
+		Term B2 = BLOGUtil.parseTerm_NE("B2()", model);
 
 		ValueEvidenceStatement st1 = BLOGUtil.parseValueEvidenceStatement_NE(
-				"obs ApparentPos(B1)=3;", model);
+				"obs ApparentPos(B1())=3;", model);
 		ValueEvidenceStatement st2 = BLOGUtil.parseValueEvidenceStatement_NE(
-				"obs ApparentPos(B2)=4;", model);
+				"obs ApparentPos(B2())=4;", model);
 		ValueEvidenceStatement st3 = BLOGUtil.parseValueEvidenceStatement_NE(
-				"obs ApparentPos(B1)=ApparentPos(B2);", model);
+				"obs ApparentPos(B1())=ApparentPos(B2());", model);
 		ValueEvidenceStatement st4 = BLOGUtil.parseValueEvidenceStatement_NE(
-				"obs ApparentPos(B1)=4;", model);
+				"obs ApparentPos(B1())=4;", model);
 		ValueEvidenceStatement st5 = BLOGUtil.parseValueEvidenceStatement_NE(
-				"obs ApparentPos(b)=4;", model);
+				"obs ApparentPos(b1)=4;", model);
 
 		// /////////////////
 
@@ -68,12 +81,12 @@ public class SymbolEvidenceLikelihoodWeighterTest extends TestCase {
 		evidence.addValueEvidence(st1);
 		evidence.addValueEvidence(st2);
 		evidence.addValueEvidence(st5);
-		terms = Util.list(b1, b2);
+		terms = Util.list(B1, B2);
 		evidenceByTerm = SymbolEvidenceLikelihoodWeighter
 				.getValueEvidenceByLastIdentifierToBeSampled(terms, evidence);
 
-		assertEquals(Util.set(st1), getValueStatementSet(evidenceByTerm, b1));
-		assertEquals(Util.set(st2), getValueStatementSet(evidenceByTerm, b2));
+		assertEquals(Util.set(st1), getValueStatementSet(evidenceByTerm, B1));
+		assertEquals(Util.set(st2), getValueStatementSet(evidenceByTerm, B2));
 		assertEquals(Util.set(st5), getValueStatementSet(evidenceByTerm, null));
 
 		// /////////////////
@@ -82,12 +95,12 @@ public class SymbolEvidenceLikelihoodWeighterTest extends TestCase {
 		evidence.addValueEvidence(st1);
 		evidence.addValueEvidence(st2);
 		evidence.addValueEvidence(st3);
-		terms = Util.list(b1, b2);
+		terms = Util.list(B1, B2);
 		evidenceByTerm = SymbolEvidenceLikelihoodWeighter
 				.getValueEvidenceByLastIdentifierToBeSampled(terms, evidence);
 
-		assertEquals(Util.set(st1), getValueStatementSet(evidenceByTerm, b1));
-		assertEquals(Util.set(st2, st3), getValueStatementSet(evidenceByTerm, b2));
+		assertEquals(Util.set(st1), getValueStatementSet(evidenceByTerm, B1));
+		assertEquals(Util.set(st2, st3), getValueStatementSet(evidenceByTerm, B2));
 		// statements with more than one identifier get assigned to the latest of
 		// them.
 
@@ -97,17 +110,17 @@ public class SymbolEvidenceLikelihoodWeighterTest extends TestCase {
 		evidence.addValueEvidence(st1);
 		evidence.addValueEvidence(st2);
 		evidence.addValueEvidence(st4);
-		terms = Util.list(b1, b2);
+		terms = Util.list(B1, B2);
 		evidenceByTerm = SymbolEvidenceLikelihoodWeighter
 				.getValueEvidenceByLastIdentifierToBeSampled(terms, evidence);
 
-		assertEquals(Util.set(st1, st4), getValueStatementSet(evidenceByTerm, b1));
-		assertEquals(Util.set(st2), getValueStatementSet(evidenceByTerm, b2));
+		assertEquals(Util.set(st1, st4), getValueStatementSet(evidenceByTerm, B1));
+		assertEquals(Util.set(st2), getValueStatementSet(evidenceByTerm, B2));
 		assertEquals(Util.set(), getValueStatementSet(evidenceByTerm, null));
 	}
 
-	private static HashSet getValueStatementSet(Map evidenceByTerm, Term b1) {
-		return new HashSet(((Evidence) evidenceByTerm.get(b1)).getValueEvidence());
+	private static HashSet getValueStatementSet(Map evidenceByTerm, Term x) {
+		return new HashSet(((Evidence) evidenceByTerm.get(x)).getValueEvidence());
 	}
 
 	Model model;
@@ -120,7 +133,7 @@ public class SymbolEvidenceLikelihoodWeighterTest extends TestCase {
 		model = Model.readFromString(modelDescription);
 
 		// Test fall back in cases without symbol evidence
-		evidence = BLOGUtil.parseEvidence_NE("obs Position(a)=1;", model);
+		evidence = BLOGUtil.parseEvidence_NE("obs Position(a1)=1;", model);
 		world = new DefaultPartialWorld();
 		ses = new SymbolEvidenceLikelihoodWeighter();
 		likelihoodAndWeight = ses.likelihoodAndWeight(evidence, world);
@@ -143,9 +156,11 @@ public class SymbolEvidenceLikelihoodWeighterTest extends TestCase {
 
 		// Test probability zero for equality of continuous variables.
 		model = Model.readFromString(modelDescription); // avoids symbol
-																										// redefinition error.
-		evidence = BLOGUtil.parseEvidence_NE("obs {Aircraft air} = {A1, A2};"
-				+ "obs Position(A1) = Position(A2);", model);
+
+		evidence = BLOGUtil.parseEvidence_NE(""
+				+ "obs {Aircraft air} = {A1, A2};\n"
+				+ "obs Position(A1) = Position(A2);\n", 
+				model);
 		world = new DefaultPartialWorld();
 		ses = new SymbolEvidenceLikelihoodWeighter();
 		likelihoodAndWeight = ses.likelihoodAndWeight(evidence, world);
@@ -169,13 +184,14 @@ public class SymbolEvidenceLikelihoodWeighterTest extends TestCase {
 		model = Model.readFromString(modelDescription); // avoids symbol
 																										// redefinition error.
 		world = new DefaultPartialWorld();
-		world.setValue((BasicVar) BLOGUtil.parseVariable_NE("Position(a)", model),
+		world.setValue((BasicVar) BLOGUtil.parseVariable_NE("Position(a1)", model),
 				new Integer(3));
 		world.setValue((BasicVar) BLOGUtil.parseVariable_NE("Position(a2)", model),
 				new Integer(7));
-		evidence = BLOGUtil.parseEvidence_NE(
-				"obs {Blip x : Source(x) != null} = {Blip1, Blip2};"
-						+ "obs ApparentPos(Blip1) = 1;" + "obs ApparentPos(Blip2) = 6;",
+		evidence = BLOGUtil.parseEvidence_NE(""
+				+ "obs {Blip x : Source(x) != null} = {Blip1, Blip2};\n"
+				+ "obs ApparentPos(Blip1) = 1;\n" 
+				+ "obs ApparentPos(Blip2) = 6;\n",
 				model);
 		ses = new SymbolEvidenceLikelihoodWeighter();
 		likelihoodAndWeight = ses.likelihoodAndWeight(evidence, world);
@@ -194,14 +210,16 @@ public class SymbolEvidenceLikelihoodWeighterTest extends TestCase {
 		model = Model.readFromString(modelDescription); // avoids symbol
 																										// redefinition error.
 		world = new DefaultPartialWorld();
-		world.setValue((BasicVar) BLOGUtil.parseVariable_NE("Position(a)", model),
+		world.setValue((BasicVar) BLOGUtil.parseVariable_NE("Position(a1)", model),
 				new Integer(3));
 		world.setValue((BasicVar) BLOGUtil.parseVariable_NE("Position(a2)", model),
 				new Integer(7));
-		evidence = BLOGUtil.parseEvidence_NE(
-				"obs {Blip x : Source(x) != null} = {Blip1, Blip2};"
-						+ "obs ApparentPos(Blip1) = 1;" + "obs ApparentPos(Blip2) = 6;"
-						+ "obs Dummy = true;", model);
+		evidence = BLOGUtil.parseEvidence_NE(""
+				+ "obs {Blip x : Source(x) != null} = {Blip1, Blip2};\n"
+				+ "obs ApparentPos(Blip1) = 1;\n" 
+				+ "obs ApparentPos(Blip2) = 6;\n"
+				+ "obs Dummy = true;\n", 
+				model);
 		ses = new SymbolEvidenceLikelihoodWeighter();
 		likelihoodAndWeight = ses.likelihoodAndWeight(evidence, world);
 		// System.out.println("Likelihood: {" + likelihoodAndWeight.likelihood +
@@ -222,31 +240,36 @@ public class SymbolEvidenceLikelihoodWeighterTest extends TestCase {
 		// Here, blips are generated from pairs of aircraft.
 		// This allows us to test situations where there are more than one
 		// identifier in a value evidence statement.
-		String modelDescription = "type Aircraft;"
-				+ "guaranteed Aircraft a, a2;"
-				+ "random Real Position(Aircraft);"
-				+ "Position(ac) ~ Gaussian(3.0, 1.0);"
-				+ ""
-				+ "type Blip;"
-				+ ""
-				+ "origin Aircraft Source1(Blip);"
-				+ "origin Aircraft Source2(Blip);"
-				+ "#Blip(Source1 = ac1, Source2 = ac2) = 1;"
-				+ ""
-				+ "random Real ApparentPos(Blip);"
-				+ "ApparentPos(blip) ~ Gaussian[1](RSum(Position(Source1(blip)),Position(Source2(blip))));";
+		String modelDescription = ""
+				+ "type Aircraft;\n"
+				+ "guaranteed Aircraft a1, a2;\n"
+				+ "random Real Position(Aircraft a) ~ \n"
+				+ "\tGaussian(3.0, 1.0);\n"
+				+ "\n"
+				+ "type Blip;\n"
+				+ "\n"
+				+ "origin Aircraft Source1(Blip b);\n"
+				+ "origin Aircraft Source2(Blip b);\n"
+				+ "#Blip(Source1 = ac1, Source2 = ac2) = 1;\n"
+				+ "\n"
+				+ "random Real ApparentPos(Blip b) ~ \n"
+				+ "Gaussian(1,Position(Source1(b)) + Position(Source2(b)));\n"
+				;
 
 		model = Model.readFromString(modelDescription); // avoids symbol
 																										// redefinition error.
 		world = new DefaultPartialWorld();
-		world.setValue((BasicVar) BLOGUtil.parseVariable_NE("Position(a)", model),
+		world.setValue((BasicVar) BLOGUtil.parseVariable_NE("Position(a1)", model),
 				new Integer(3));
 		world.setValue((BasicVar) BLOGUtil.parseVariable_NE("Position(a2)", model),
 				new Integer(7));
-		evidence = BLOGUtil.parseEvidence_NE(
-				"obs {Blip x} = {Blip1, Blip2, Blip3, Blip4};"
-						+ "obs ApparentPos(Blip1) =  6;" + "obs ApparentPos(Blip2) = 10;"
-						+ "obs ApparentPos(Blip3) = 10;" + "obs ApparentPos(Blip4) = 14;",
+		evidence = BLOGUtil.parseEvidence_NE(""
+				+ "obs {Blip x} = {Blip1, Blip2, Blip3, Blip4};\n"
+				+ "obs ApparentPos(Blip1) =  6;\n" 
+				+ "obs ApparentPos(Blip2) = 10;\n"
+				+ "\n"
+				+ "obs ApparentPos(Blip3) = 10;\n" 
+				+ "obs ApparentPos(Blip4) = 14;\n",
 				model);
 		ses = new SymbolEvidenceLikelihoodWeighter();
 		likelihoodAndWeight = ses.likelihoodAndWeight(evidence, world);
@@ -261,9 +284,6 @@ public class SymbolEvidenceLikelihoodWeighterTest extends TestCase {
 																																					// makes
 																																					// sense
 																																					// since
-																																					// there
-																																					// are
-																																					// (only)
 																																					// two
 																																					// possible
 																																					// good
