@@ -20,10 +20,12 @@ public class SymbolArray extends Absyn {
 		this(line, pos, n, 1);
 	}
 
+	public SymbolArray(Symbol n, int s) { this(0, n, s); }
 	public SymbolArray(int pos, Symbol n, int s) {
 		this(0, pos, n, s);
 	}
 
+	public SymbolArray(Symbol n) { this(0,n); }
 	public SymbolArray(int pos, Symbol n) {
 		this(0, pos, n, 1);
 	}

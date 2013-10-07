@@ -16,6 +16,8 @@ public class IntExpr extends Expr {
 		value = v;
 	}
 
+	public IntExpr(int v) { this(0,v); }
+
 	@Override
 	public void printTree(Printer pr, int d) {
 		pr.indent(d);
