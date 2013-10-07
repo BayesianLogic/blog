@@ -8,9 +8,8 @@ package blog.absyn;
 public class DoubleExpr extends Expr {
 	public double value;
 
-	public DoubleExpr(int p, double v) {
-		this(0, p, v);
-	}
+	public DoubleExpr(double v) { this(0, v); }
+	public DoubleExpr(int p, double v) { this(0, p, v); }
 
 	public DoubleExpr(int line, int col, double v) {
 		super(line, col);

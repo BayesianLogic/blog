@@ -8,6 +8,9 @@ public class OpExpr extends Expr {
 	public Expr left, right;
 	public int oper;
 
+	public OpExpr(Expr l, int o, Expr r) {
+		this(0,l,o,r);
+	}
 	public OpExpr(int p, Expr l, int o, Expr r) {
 		this(0, p, l, o, r);
 	}
@@ -27,6 +30,7 @@ public class OpExpr extends Expr {
 		oper = o;
 		right = r;
 	}
+
 
 	public final static int PLUS = 0, MINUS = 1, MULT = 2, DIV = 3, MOD = 4,
 			POWER = 5, EQ = 11, NEQ = 12, LT = 13, LEQ = 14, GT = 15, GEQ = 16,

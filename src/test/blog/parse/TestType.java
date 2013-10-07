@@ -7,13 +7,16 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import blog.absyn.Absyn;
 import blog.absyn.Stmt;
 import blog.absyn.TypeDec;
-import blog.symbol.Symbol;
+import static blog.symbol.Symbol.Symbol;
 
 /**
  * @author amatsukawa
  * @date Apr 15, 2012
+ * @author William Cushing
+ * @date 2013/10/6
  *
  */
 public class TestType extends TestParse {
@@ -21,26 +24,23 @@ public class TestType extends TestParse {
 	@Test
 	public void testTypeDeclaration() {
 		
-		String parsed = TestParse.parsedStringRepr("type Test;");
+		String parsed = parseToRepr("type Test;");
+		String generated = toRepr(Stmts(new TypeDec(Symbol("Test"))));
 		
-		Stmt[] stmts= {new TypeDec(0, Symbol.symbol("Test"))};
-		String shouldBe = TestParse.shouldBeRepr(stmts);
-		
-		assertEquals(shouldBe, parsed);
+		assertEquals(generated, parsed);
 	}
 	
 	@Test
 	public void testMultipleTypeDeclarations() {
 		
-		String parsed = TestParse.parsedStringRepr("type Test; type Test2;");
+		String parsed = parseToRepr("type Test; type Test2;");
+		String generated = 
+			toRepr(Stmts(
+					new TypeDec(Symbol("Test")),
+					new TypeDec(Symbol("Test2"))
+					));
 		
-		Stmt[] stmts= {
-				new TypeDec(0, Symbol.symbol("Test")),
-				new TypeDec(0, Symbol.symbol("Test2")),
-			};
-		String shouldBe = TestParse.shouldBeRepr(stmts);
-		
-		assertEquals(shouldBe, parsed);
+		assertEquals(generated, parsed);
 	}
 
 }
