@@ -20,12 +20,12 @@ public class TestParameter extends TestParse {
 	@Test
 	public void testParamDeclaration() {
 		
-		String parsed = TestParse.parsedStringRepr("param Real a;");
+		String parsed = TestParse.parseToRepr("param Real a;");
 		
 		Stmt[] stmts= {
-			new ParameterDec(0, new NameTy(0, Symbol.symbol("Real")), Symbol.symbol("a"), null)
+			new ParameterDec(new NameTy(Symbol("Real")), Symbol("a"), null)
 		};
-		String shouldBe = TestParse.shouldBeRepr(stmts);
+		String shouldBe = TestParse.toRepr(stmts);
 		
 		assertEquals(shouldBe, parsed);
 	}
@@ -33,13 +33,13 @@ public class TestParameter extends TestParse {
 	@Test
 	public void testMultipleParamDeclarations() {
 		
-		String parsed = TestParse.parsedStringRepr("param Real a; param NaturalNum x;");
+		String parsed = TestParse.parseToRepr("param Real a; param NaturalNum x;");
 		
 		Stmt[] stmts= {
-			new ParameterDec(0, new NameTy(0, Symbol.symbol("Real")), Symbol.symbol("a"), null),
-			new ParameterDec(0, new NameTy(0, Symbol.symbol("NaturalNum")), Symbol.symbol("x"), null)
+			new ParameterDec(0, new NameTy(0, Symbol.Symbol("Real")), Symbol.Symbol("a"), null),
+			new ParameterDec(0, new NameTy(0, Symbol.Symbol("NaturalNum")), Symbol.Symbol("x"), null)
 		};
-		String shouldBe = TestParse.shouldBeRepr(stmts);
+		String shouldBe = TestParse.toRepr(stmts);
 		
 		assertEquals(shouldBe, parsed);
 	}

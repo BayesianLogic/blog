@@ -33,7 +33,7 @@ public class TestObs extends TestParse {
 	@Test
 	public void testSimpleDecl() {
 		String toParse = "obs ObsColor(Draw1) = Blue;";
-		String parsed = TestParse.parsedStringRepr(toParse);
+		String parsed = TestParse.parseToRepr(toParse);
 		System.out.println(parsed);
 	}
 
