@@ -239,7 +239,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
 	private boolean parseAndTranslateEvidence(Evidence e, Reader reader) {
 		Parse parse = new Parse(reader, null);
 		Semant sem = new Semant(model, e, new ArrayList<Query>(), new ErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
-		sem.transProg(parse.getParseResult());
+		sem.transProg(parse.getResult());
 		return true;
 	}
 
