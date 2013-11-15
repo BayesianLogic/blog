@@ -7,3 +7,5 @@ bin/
 /doc
 *.pyc
 *.swp
+/nbproject/private/
+/build/
