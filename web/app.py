@@ -1,3 +1,11 @@
+#
+#
+# Author: Cheng-Lai Huang
+# Author: Dan Wang
+# Author: Lei Li (leili@cs.berkeley.edu)
+# Since: 2012-02
+# Last modified: 2013-11-15 
+
 import web
 import time
 import os
