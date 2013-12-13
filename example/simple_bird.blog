@@ -1,0 +1,49 @@
+/* DBLOG model for birds migration
+ */
+
+type Location;
+distinct Location L1, L2, L3, L4;
+
+type Bird;
+distinct Bird Bird[10];
+
+random Location loc(Bird b, Timestep t) {
+    if t == @0 then ~ Categorical({L1 -> 0.25,
+                 L2 -> 0.25,
+                 L3 -> 0.25,
+                 L4 -> 0.25})
+    else ~ TabularCPD(
+      {L1 -> ~ Categorical({L1 -> 0.0, L2 -> 1.0, L3 -> 0.0, L4 -> 0.0}),
+       L2 -> ~ Categorical({L1 -> 0.0, L2 -> 0.0, L3 -> 1.0, L4 -> 0.0}),
+       L3 -> ~ Categorical({L1 -> 0.0, L2 -> 0.0, L3 -> 0.0, L4 -> 1.0}),
+       L4 -> ~ Categorical({L1 -> 1.0, L2 -> 0.0, L3 -> 0.0, L4 -> 0.0})},
+    /**
+      {L1 -> ~ Categorical({L1 -> 0.0, L2 -> 0.4, L3 -> 0.6, L4 -> 0.0}),
+       L2 -> ~ Categorical({L1 -> 0.4, L2 -> 0.0, L3 -> 0.0, L4 -> 0.6}),
+       L3 -> ~ Categorical({L1 -> 0.6, L2 -> 0.0, L3 -> 0.0, L4 -> 0.4}),
+       L4 -> ~ Categorical({L1 -> 0.0, L2 -> 0.6, L3 -> 0.4, L4 -> 0.0})},
+    */
+      loc(b, Prev(t)))
+};
+
+/**
+ * the number of birds at locate (s), and time tick t;
+ */
+random Integer num(Location s, Timestep t) ~ Size({Bird b: loc(b, t) == s});
+
+
+/* Evidence for the birds.
+ */
+obs num(L1, @0) = 1;
+obs num(L2, @0) = 2;
+obs num(L3, @0) = 3;
+
+query num(L4, @0);
+query num(L1, @1);
+query num(L2, @1);
+query num(L3, @1);
+query num(L4, @1);
+query num(L1, @2);
+query num(L2, @2);
+query num(L3, @2);
+query num(L4, @2);
