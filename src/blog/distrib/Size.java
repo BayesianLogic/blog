@@ -4,7 +4,6 @@
 package blog.distrib;
 
 import java.util.List;
-
 import blog.model.Type;
 import blog.objgen.ObjectSet;
 
