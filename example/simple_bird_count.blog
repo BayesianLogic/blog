@@ -1,0 +1,27 @@
+/* DBLOG model for birds migration
+ */
+
+type Location;
+distinct Location L1, L2, L3, L4;
+
+random Integer numTransfer(Location s, Location sp, Timestep t)
+  ~ UniformInt(0, num(s, t));
+
+/**
+ * the number of birds at locate (s), and time tick t;
+ */
+random Integer num(Location s, Timestep t) {
+  if (t == @0) ~ UniformInt(1, 6)
+  else = num(s, Prev(t)) 
+        - ListSum({numTransfer(s, sp, Prev(t)) for Location sp}) 
+        + ListSum({numTransfer(sp, s, Prev(t)) for Location sp})
+}
+
+/* Evidence for the Hidden Markov Model.
+ */
+obs num(L1, @0) = 2;
+obs num(L2, @0) = 5;
+obs num(L3, @0) = 3;
+obs num(L4, @0) = 0;
+
+query num(L1, @1);
