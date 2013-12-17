@@ -156,7 +156,7 @@ nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
 nonterminal Stmt evidence, value_evidence, symbol_evidence, query;
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
   quantified_formula, distribution_expr,
-  function_call, list_construct_expression, symbol_expr,
+  function_call, list_construct_expression,
   map_construct_expression, number_expr, elseif_list;
 nonterminal Expr dependency_statement_body;
 nonterminal SetExpr set_expr;
@@ -166,15 +166,17 @@ nonterminal TupleSetExpr tuple_set;
 nonterminal ExprList semi_colon_separated_expression_list,
   opt_expression_list, expression_list;
 nonterminal ExprTupleList expression_pair_list;
-nonterminal Ty type, array_type, list_type, map_type, name_type;
-nonterminal Integer dims;
+nonterminal Ty type, list_type, map_type;
+nonterminal ArrayTy array_type;
+nonterminal String array_type_or_sub;
+//nonterminal Integer dims; //not used
 //nonterminal FieldList opt_parenthesized_type_lst, type_lst // Not Used
 nonterminal FieldList opt_parenthesized_type_var_lst, type_var_lst;
 nonterminal OriginFieldList opt_parenthesized_origin_var_list,
   origin_var_list;
 nonterminal SymbolArray id_or_subid;
 nonterminal SymbolArrayList id_or_subid_list;
-nonterminal String class_name;
+nonterminal String refer_name;
 
 
 /*
@@ -190,7 +192,8 @@ precedence left NOT;
 precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
 precedence left PLUS, MINUS;
 precedence left MULT, DIV, MOD, POWER;
-precedence left LBRACKET;
+precedence right LBRACKET;
+precedence left RBRACKET;
 
 
 /* Grammar *******************************************************************/
@@ -283,30 +286,30 @@ type_decl ::= TYPE ID:typename SEMI
  * Represents a type that is built in or has already been declared.
  * can also be an array
  */
-type ::= name_type:e {: RESULT = e; :}
+type ::= refer_name:typename
+    {: RESULT = new NameTy(currLineno(), currColno(), sym(typename)); :}
   | list_type:e {: RESULT = e; :}
   | array_type : at {: RESULT = at; :}
   | map_type:e {: RESULT = e; :}
   ;
 
-name_type ::= ID:typename
-    {: RESULT = new NameTy(currLineno(), currColno(), sym(typename)); :}
-  ;
-
-list_type ::= LIST LT ID:typename GT
+list_type ::= LIST LT refer_name:typename GT
     /* only allow nametype as list */
-    {: RESULT = new ListTy(currLineno(), currColno(),
-        new NameTy(currLineno(), currColno(), sym(typename))); :}
+    {: RESULT = new ListTy(currLineno(), currColno(), 
+    new NameTy(currLineno(), currColno(), sym(typename))); :}
   ;
 
-array_type ::= ID : typename  dims : d
+array_type_or_sub ::= refer_name:typename LBRACKET
+  {: RESULT = typename; :}
+  ;
+
+array_type ::= array_type_or_sub:typename RBRACKET
     /* only allow nametype as array */
-    {: RESULT = new ArrayTy(currLineno(), currColno(),
-        new NameTy(currLineno(), currColno(), sym(typename)), d.intValue()); :}
-  ;
-
-dims ::= LBRACKET RBRACKET {: RESULT = new Integer(1); :}
-  | LBRACKET RBRACKET dims : d {: RESULT = new Integer(d.intValue() + 1); :}
+    {: RESULT = new ArrayTy(currLineno(), currColno(), 
+    new NameTy(currLineno(), currColno(), sym(typename)), 1); :}
+  | array_type : arrty LBRACKET RBRACKET
+    {: arrty.dim += 1; 
+      RESULT = arrty; :}    
   ;
 
 map_type ::= MAP LT type:t1 COMMA type:t2 GT
@@ -372,9 +375,10 @@ rand_func_decl ::=
  * number statement
  */
 number_stmt ::=
-    NUMSIGN name_type:ty opt_parenthesized_origin_var_list:otl
+    NUMSIGN refer_name:ty opt_parenthesized_origin_var_list:otl
 	dependency_statement_body:body SEMI
-    {: RESULT = new NumberDec(currLineno(), currColno(), ty, otl, body); :}
+    {: RESULT = new NumberDec(currLineno(), currColno(), 
+    new NameTy(currLineno(), currColno(), sym(ty)), otl, body); :}
   ;
 
 opt_parenthesized_origin_var_list ::= LPAREN origin_var_list:e RPAREN
@@ -401,8 +405,9 @@ origin_func_decl ::=
  * declaration of distinct symbols, (guaranteed objects)
  */
 distinct_decl ::=
-    DISTINCT name_type:ty id_or_subid_list:e SEMI
-    {: RESULT = new DistinctSymbolDec(currLineno(), currColno(), ty, e); :}
+    DISTINCT refer_name:ty id_or_subid_list:e SEMI
+    {: RESULT = new DistinctSymbolDec(currLineno(), currColno(), 
+    new NameTy(currLineno(), currColno(), sym(ty)), e); :}
   ;
 
 id_or_subid_list ::= id_or_subid:e {: RESULT = new SymbolArrayList(e, null); :}
@@ -420,7 +425,7 @@ id_or_subid ::= ID:id
  * declaration of a distribution
  */
 distribution_decl ::=
-    DISTRIBUTION ID:id EQ class_name:name
+    DISTRIBUTION ID:id EQ refer_name:name
     LPAREN opt_expression_list:e RPAREN SEMI
     {: RESULT = new DistributionDec(currLineno(), currColno(), sym(id),
       new ClassName(currLineno(), currColno(), sym(name)), e); :}
@@ -428,8 +433,8 @@ distribution_decl ::=
 
 
 /* reference to function name or Java class */
-class_name ::= ID:id {: RESULT = id; :}
-  | ID:id DOT class_name:n {: RESULT = id + "." + n; :}
+refer_name ::= ID:id {: RESULT = id; :}
+  | ID:id DOT refer_name:n {: RESULT = id + "." + n; :}
   ;
 
 /**
@@ -483,7 +488,7 @@ expression ::= operation_expr:e  {: RESULT = e; :}
   | quantified_formula:e {: RESULT = e; :}
   | set_expr:e {: RESULT = e; :}
   | number_expr:e {: RESULT = e; :}
-  | symbol_expr:e {: RESULT = e; :}
+  | refer_name:e {: RESULT = new SymbolExpr(currLineno(), currColno(), sym(e)); :}
   ;
 
 literal ::= STRING_LITERAL:e
@@ -534,6 +539,9 @@ operation_expr ::= expression:e1 PLUS expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.IMPLY, e2); :}
   | expression:e1 LBRACKET expression:e2 RBRACKET
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.SUB, e2); :}
+  | array_type_or_sub:e1 expression:e2 RBRACKET
+    {: RESULT = new OpExpr(currLineno(), currColno(), 
+      new SymbolExpr(currLineno(), currColno(), sym(e1)), OpExpr.SUB, e2); :}
   | unary_operation_expr:e {: RESULT = e; :}
   ;
 
@@ -548,7 +556,6 @@ unary_operation_expr ::=
     {: RESULT = e; :}
   ;
 
-
 quantified_formula ::= FORALL type:ty ID:id expression:e
     {: RESULT = new QuantifiedFormulaExpr(currLineno(), currColno(),
     QuantifiedFormulaExpr.FORALL, ty, sym(id), e); :}
@@ -557,15 +564,11 @@ quantified_formula ::= FORALL type:ty ID:id expression:e
     QuantifiedFormulaExpr.EXISTS, ty, sym(id), e); :}
   ;
 
-function_call ::= class_name:id LPAREN opt_expression_list:e RPAREN
+function_call ::= refer_name:id LPAREN opt_expression_list:e RPAREN
     {: RESULT = new FuncCallExpr(currLineno(), currColno(), sym(id), e); :}
   ;
 
-symbol_expr ::= ID:id
-    {: RESULT = new SymbolExpr(currLineno(), currColno(), sym(id)); :}
-  ;
-
-distribution_expr ::= DISTRIB class_name:name LPAREN opt_expression_list:e RPAREN
+distribution_expr ::= DISTRIB refer_name:name LPAREN opt_expression_list:e RPAREN
     {: RESULT = new DistributionExpr(currLineno(), currColno(), sym(name), e); :}
   ;
 
