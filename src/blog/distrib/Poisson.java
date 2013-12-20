@@ -5,20 +5,20 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- *
+ * 
  * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
+ * notice, this list of conditions and the following disclaimer.
+ * 
  * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the
- *   distribution.  
- *
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
+ * 
  * * Neither the name of the University of California, Berkeley nor
- *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior 
- *   written permission.
- *
+ * the names of its contributors may be used to endorse or promote
+ * products derived from this software without specific prior
+ * written permission.
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -50,159 +50,170 @@ import blog.model.Type;
  * tailored to implement the CondProbDistrib interface.
  */
 public class Poisson extends AbstractCondProbDistrib implements Serializable {
-	/**
-	 * Creates a new Poisson distribution with the specifies lambda parameter.
-	 */
-	public Poisson(List params) {
-		if (!(params.get(0) instanceof Number)) {
-			throw new IllegalArgumentException("The first parameter to Poisson "
-					+ "distribution must be of class Number, " + "not "
-					+ params.get(0).getClass() + ".");
-		}
+  /**
+   * Creates a new Poisson distribution with the specifies lambda parameter.
+   */
+  public Poisson(List params) {
+    if (params.isEmpty()) {
+      random_lambda = true;
+      return;
+    }
+    if (!(params.get(0) instanceof Number)) {
+      throw new IllegalArgumentException("The first parameter to Poisson "
+          + "distribution must be of class Number, " + "not "
+          + params.get(0).getClass() + ".");
+    }
 
-		lambda = ((Number) params.get(0)).doubleValue();
-	}
+    lambda = ((Number) params.get(0)).doubleValue();
+  }
 
-	// more succinct constructor
-	public Poisson(double lambda) {
-		this.lambda = lambda;
-	}
+  // more succinct constructor
+  public Poisson(double lambda) {
+    this.lambda = lambda;
+  }
 
-	/**
-	 * Returns the probability of the integer n under this distribution.
-	 */
-	public double getProb(List args, Object value) {
-		// Work in log domain to avoid overflow for large values of n
-		return Math.exp(getLogProb(args, value));
-	}
+  /**
+   * Returns the probability of the integer n under this distribution.
+   */
+  public double getProb(List args, Object value) {
+    // Work in log domain to avoid overflow for large values of n
+    return Math.exp(getLogProb(args, value));
+  }
 
-	/**
-	 * Returns the log probability of the integer n under this distribution.
-	 */
-	public double getLogProb(List args, Object value) {
-		int n = ((Number) value).intValue();
-		return computeLogProb(n);
-	}
+  /**
+   * Returns the log probability of the integer n under this distribution.
+   */
+  public double getLogProb(List args, Object value) {
+    if (random_lambda) {
+      lambda = ((Number) args.get(0)).doubleValue();
+    }
+    int n = ((Number) value).intValue();
+    return computeLogProb(n);
+  }
 
-	public double computeLogProb(int n) {
-		return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
-	}
+  public double computeLogProb(int n) {
+    return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
+  }
 
-	public static double computeLogProb(double lambda, int n) {
-		return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
-	}
+  public static double computeLogProb(double lambda, int n) {
+    return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
+  }
 
-	/**
-	 * Returns an integer sampled according to this distribution. This
-	 * implementation takes time proportional to the magnitude of the integer
-	 * returned. I got the algorithm from Anuj Kumar's course page for IEOR E4404
-	 * at Columbia University, specifically the file: <blockquote>
-	 * http://www.columbia.edu/~ak2108/ta/summer2003/poisson1.c </blockquote>
-	 */
-	public Object sampleVal(List args, Type childType) {
-		int n = sampleInt();
-		return new Integer(n);
-	}
+  /**
+   * Returns an integer sampled according to this distribution. This
+   * implementation takes time proportional to the magnitude of the integer
+   * returned. I got the algorithm from Anuj Kumar's course page for IEOR E4404
+   * at Columbia University, specifically the file: <blockquote>
+   * http://www.columbia.edu/~ak2108/ta/summer2003/poisson1.c </blockquote>
+   */
+  public Object sampleVal(List args, Type childType) {
+    if (random_lambda) {
+      lambda = ((Number) args.get(0)).doubleValue();
+    }
+    int n = sampleInt();
+    return new Integer(n);
+  }
 
-	public int sampleInt() {
-		return sampleInt(lambda);
-	}
+  public int sampleInt() {
+    return sampleInt(lambda);
+  }
 
-	public static int sampleInt(double lambda) {
-		int n = 0;
-		double probOfN = Math.exp(-lambda); // start with prob of 0
-		double cumProb = probOfN;
+  public static int sampleInt(double lambda) {
+    int n = 0;
+    double probOfN = Math.exp(-lambda); // start with prob of 0
+    double cumProb = probOfN;
 
-		double u = Util.random();
-		while (cumProb < u) {
-			n++;
-			// ratio between P(n) and P(n-1) is lambda / n
-			probOfN *= (lambda / n);
-			cumProb += probOfN;
-		}
+    double u = Util.random();
+    while (cumProb < u) {
+      n++;
+      // ratio between P(n) and P(n-1) is lambda / n
+      probOfN *= (lambda / n);
+      cumProb += probOfN;
+    }
 
-		return n;
-	}
+    return n;
+  }
 
-	/**
-	 * compute the cumulative density
-	 * 
-	 * @author leili
-	 * @param args
-	 * @param value
-	 * @return
-	 */
-	public double cdf(List args, Object value) {
-		int n = ((Number) value).intValue();
-		double w = 0;
-		for (int i = 0; i <= n; i++) {
-			w += Math.exp(computeLogProb(i));
-		}
-		return w;
-		// TODO cache of computed cdf
-	}
+  /**
+   * compute the cumulative density
+   * 
+   * @author leili
+   * @param args
+   * @param value
+   * @return
+   */
+  public double cdf(List args, Object value) {
+    int n = ((Number) value).intValue();
+    double w = 0;
+    for (int i = 0; i <= n; i++) {
+      w += Math.exp(computeLogProb(i));
+    }
+    return w;
+    // TODO cache of computed cdf
+  }
 
-	private double[] cdf_table = null;
+  private double[] cdf_table = null;
 
-	private static double[] ensureSize(int n, double[] table) {
-		double[] tb = table;
-		if (table == null)
-			tb = new double[n + 1];
-		else if (n >= table.length) {
-			tb = new double[n + 1];
-			System.arraycopy(table, 0, tb, 0, table.length);
-		}
-		return tb;
-	}
+  private static double[] ensureSize(int n, double[] table) {
+    double[] tb = table;
+    if (table == null)
+      tb = new double[n + 1];
+    else if (n >= table.length) {
+      tb = new double[n + 1];
+      System.arraycopy(table, 0, tb, 0, table.length);
+    }
+    return tb;
+  }
 
-	private void ensureCDFTable(int n) {
-		int oldn = 0;
-		double w;
-		if (cdf_table != null) {
-			oldn = cdf_table.length;
-		}
-		if ((cdf_table == null) || (n >= cdf_table.length)) {
-			cdf_table = ensureSize(n, cdf_table);
-		}
-		if (oldn > 0)
-			w = cdf_table[oldn - 1];
-		else
-			w = 0;
-		for (; oldn < cdf_table.length; oldn++) {
-			w += Math.exp(computeLogProb(lambda, oldn));
-			cdf_table[oldn] = w;
-		}
-	}
+  private void ensureCDFTable(int n) {
+    int oldn = 0;
+    double w;
+    if (cdf_table != null) {
+      oldn = cdf_table.length;
+    }
+    if ((cdf_table == null) || (n >= cdf_table.length)) {
+      cdf_table = ensureSize(n, cdf_table);
+    }
+    if (oldn > 0)
+      w = cdf_table[oldn - 1];
+    else
+      w = 0;
+    for (; oldn < cdf_table.length; oldn++) {
+      w += Math.exp(computeLogProb(lambda, oldn));
+      cdf_table[oldn] = w;
+    }
+  }
 
-	/**
-	 * dynamically construct cdf table based on demand, and return cdf within the
-	 * region of a to b, inclusive
-	 * 
-	 * @param lambda
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public double cdf(int a, int b) {
-		ensureCDFTable(b);
+  /**
+   * dynamically construct cdf table based on demand, and return cdf within the
+   * region of a to b, inclusive
+   * 
+   * @param lambda
+   * @param a
+   * @param b
+   * @return
+   */
+  public double cdf(int a, int b) {
+    ensureCDFTable(b);
 
-		if (a <= 0)
-			return cdf_table[b];
-		else
-			return cdf_table[b] - cdf_table[a - 1];
-	}
+    if (a <= 0)
+      return cdf_table[b];
+    else
+      return cdf_table[b] - cdf_table[a - 1];
+  }
 
-	public static double cdf(double lambda, int a, int b) {
-		double w = 0;
-		for (int i = a; i <= b; i++) {
-			w += Math.exp(computeLogProb(lambda, i));
-		}
-		return w;
-	}
+  public static double cdf(double lambda, int a, int b) {
+    double w = 0;
+    for (int i = a; i <= b; i++) {
+      w += Math.exp(computeLogProb(lambda, i));
+    }
+    return w;
+  }
 
-	public String toString() {
-		return getClass().getName();
-	}
+  public String toString() {
+    return getClass().getName();
+  }
 
-	private double lambda;
+  private double lambda;
+  private boolean random_lambda = false;
 }
