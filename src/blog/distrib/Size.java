@@ -35,9 +35,8 @@ public class Size extends AbstractCondProbDistrib {
   }
 
   /**
-   * Takes a single argument, namely a set S. If S is non-empty, returns 1 / |S|
-   * if <code>value</code> is in S, and otherwise 0. If S is empty, returns 1 if
-   * the value is Model.NULL, and 0 otherwise.
+   * Takes a single argument, namely a set S, Return 1
+   * if <code>value</code> is the same as the size of S, and otherwise 0.
    * 
    * @throws IllegalArgumentException
    *           if <code>args</code> contains anything other than a single
@@ -56,8 +55,7 @@ public class Size extends AbstractCondProbDistrib {
   }
 
   /**
-   * Takes a single argument, namely a finite set S. Returns an element of S
-   * selected uniformly at random. If S is empty, returns Model.NULL.
+   * Takes a single argument, namely a finite set S. Returns the size of S
    * 
    * @throws IllegalArgumentException
    *           if <code>args</code> contains anything other than a single
