@@ -27,7 +27,7 @@
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY:w, WHETHER IN CONTRACT,
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -294,9 +294,9 @@ type ::= refer_name:typename
   ;
 
 list_type ::= LIST LT refer_name:typename GT
-    /* only allow nametype as list */
+    /* here general name is allowed, but internally only allow nametype as list */
     {: RESULT = new ListTy(currLineno(), currColno(), 
-    new NameTy(currLineno(), currColno(), sym(typename))); :}
+			new NameTy(currLineno(), currColno(), sym(typename))); :}
   ;
 
 array_type_or_sub ::= refer_name:typename LBRACKET
@@ -304,9 +304,9 @@ array_type_or_sub ::= refer_name:typename LBRACKET
   ;
 
 array_type ::= array_type_or_sub:typename RBRACKET
-    /* only allow nametype as array */
+    /* internally only allow nametype as array */
     {: RESULT = new ArrayTy(currLineno(), currColno(), 
-    new NameTy(currLineno(), currColno(), sym(typename)), 1); :}
+    	new NameTy(currLineno(), currColno(), sym(typename)), 1); :}
   | array_type : arrty LBRACKET RBRACKET
     {: arrty.dim += 1; 
       RESULT = arrty; :}    
@@ -454,15 +454,10 @@ dependency_statement_body ::= EQ expression:e
   | IF:a expression:e1 dependency_statement_body:e2 elseif_list:e3
     {: error("missing THEN in dependency statement clause, proceed anyway");
     RESULT = new IfExpr(currLineno(), currColno(), e1, e2, e3); :}
-//  | error
-//    {: error("invalid body of random function or number statement"); :}
   ;
 
 elseif_list ::=
-//    ELSEIF:eif expression:e1 THEN dependency_statement_body:e2 elseif_list:e3
-//    {: RESULT = new IfExpr(eifleft, e1, e2, e3); :} |
-    ELSE dependency_statement_body:e
-    {: RESULT = e; :}
+    ELSE dependency_statement_body:e {: RESULT = e; :}
   | {: RESULT = null; :}
   ;
 
