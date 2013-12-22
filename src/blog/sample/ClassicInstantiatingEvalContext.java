@@ -5,20 +5,20 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- *
+ * 
  * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
+ * notice, this list of conditions and the following disclaimer.
+ * 
  * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the
- *   distribution.  
- *
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
+ * 
  * * Neither the name of the University of California, Berkeley nor
- *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior 
- *   written permission.
- *
+ * the names of its contributors may be used to endorse or promote
+ * products derived from this software without specific prior
+ * written permission.
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -79,145 +79,147 @@ import blog.world.PartialWorld;
  * the initial BLOG implementation.
  */
 public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
-		implements InstantiatingEvalContext {
-	/**
-	 * Creates a new InstantiatingEvalContext using the given world. Its sequence
-	 * of responsible variables is empty.
-	 */
-	public ClassicInstantiatingEvalContext(PartialWorld world) {
-		super(world);
-		this.respVarsAndContexts = new LinkedHashMap();
-	}
+    implements InstantiatingEvalContext {
+  /**
+   * Creates a new InstantiatingEvalContext using the given world. Its sequence
+   * of responsible variables is empty.
+   */
+  public ClassicInstantiatingEvalContext(PartialWorld world) {
+    super(world);
+    this.respVarsAndContexts = new LinkedHashMap<VarWithDistrib, ClassicInstantiatingEvalContext>();
+  }
 
-	/**
-	 * Creates a new InstantiatingEvalContext with the given sequence of
-	 * responsible variables.
-	 * 
-	 * @param respVarsAndContexts
-	 *          map from VarWithDistrib to EvalContext in which the order of the
-	 *          variables is the order in which they were reached in the recursive
-	 *          instantiation process, and each variable is mapped to the context
-	 *          that led to it
-	 */
-	protected ClassicInstantiatingEvalContext(PartialWorld world,
-			LinkedHashMap respVarsAndContexts) {
-		super(world);
-		this.respVarsAndContexts = respVarsAndContexts;
-	}
+  /**
+   * Creates a new InstantiatingEvalContext with the given sequence of
+   * responsible variables.
+   * 
+   * @param respVarsAndContexts
+   *          map from VarWithDistrib to EvalContext in which the order of the
+   *          variables is the order in which they were reached in the recursive
+   *          instantiation process, and each variable is mapped to the context
+   *          that led to it
+   */
+  protected ClassicInstantiatingEvalContext(
+      PartialWorld world,
+      LinkedHashMap<VarWithDistrib, ClassicInstantiatingEvalContext> respVarsAndContexts) {
+    super(world);
+    this.respVarsAndContexts = respVarsAndContexts;
+  }
 
-	public boolean isInstantiated(BasicVar var) {
-		return (world.getValue(var) != null);
-	}
+  public boolean isInstantiated(BasicVar var) {
+    return (world.getValue(var) != null);
+  }
 
-	protected Object getOrComputeValue(BasicVar var) {
-		Object value = world.getValue(var);
-		if (value == null) {
-			if (var instanceof VarWithDistrib) {
-				value = instantiate((VarWithDistrib) var);
-			} else {
-				throw new IllegalArgumentException("Don't know how to instantiate: "
-						+ var);
-			}
-		}
-		return value;
-	}
+  protected Object getOrComputeValue(BasicVar var) {
+    Object value = world.getValue(var);
+    if (value == null) {
+      if (var instanceof VarWithDistrib) {
+        value = instantiate((VarWithDistrib) var);
+      } else {
+        throw new IllegalArgumentException("Don't know how to instantiate: "
+            + var);
+      }
+    }
+    return value;
+  }
 
-	// Note that we don't have to override getSatisfiers, because the
-	// DefaultEvalContext implementation of getSatisfiers calls getValue
-	// on the number variable.
+  // Note that we don't have to override getSatisfiers, because the
+  // DefaultEvalContext implementation of getSatisfiers calls getValue
+  // on the number variable.
 
-	/**
-	 * Returns the log of the probability of this InstantiatingEvalContext
-	 * assigning the values it has assigned to the variables it has instantiated.
-	 */
-	public double getLogProbability() {
-		return logProb;
-	}
+  /**
+   * Returns the log of the probability of this InstantiatingEvalContext
+   * assigning the values it has assigned to the variables it has instantiated.
+   */
+  public double getLogProbability() {
+    return logProb;
+  }
 
-	/**
-	 * A listener of the type {@link AfterSamplingListener} invoked after each
-	 * time a variable is instantiated (sampled).
-	 */
-	public AfterSamplingListener afterSamplingListener;
+  /**
+   * A listener of the type {@link AfterSamplingListener} invoked after each
+   * time a variable is instantiated (sampled).
+   */
+  public AfterSamplingListener afterSamplingListener;
 
-	/**
-	 * A <b>static</b> listener of the type {@link AfterSamplingListener} invoked
-	 * after each time a variable is instantiated (sampled).
-	 */
-	public static AfterSamplingListener staticAfterSamplingListener;
+  /**
+   * A <b>static</b> listener of the type {@link AfterSamplingListener} invoked
+   * after each time a variable is instantiated (sampled).
+   */
+  public static AfterSamplingListener staticAfterSamplingListener;
 
-	protected Object instantiate(VarWithDistrib var) {
-		var.ensureStable();
+  protected Object instantiate(VarWithDistrib var) {
+    var.ensureStable();
 
-		/*
-		 * if (Util.verbose()) { System.out.println("Need to instantiate: " + var);
-		 * }
-		 */
+    /*
+     * if (Util.verbose()) { System.out.println("Need to instantiate: " + var);
+     * }
+     */
 
-		if (respVarsAndContexts.containsKey(var)) {
-			cycleError(var);
-		}
+    if (respVarsAndContexts.containsKey(var)) {
+      cycleError(var);
+    }
 
-		// Create a new "child" context and get the distribution for
-		// var in that context.
-		respVarsAndContexts.put(var, this);
-		ClassicInstantiatingEvalContext spawn = new ClassicInstantiatingEvalContext(
-				world, respVarsAndContexts);
-		spawn.afterSamplingListener = afterSamplingListener;
-		DependencyModel.Distrib distrib = var.getDistrib(spawn);
-		logProb += spawn.getLogProbability();
-		respVarsAndContexts.remove(this);
+    // Create a new "child" context and get the distribution for
+    // var in that context.
+    respVarsAndContexts.put(var, this);
+    ClassicInstantiatingEvalContext spawn = new ClassicInstantiatingEvalContext(
+        world, respVarsAndContexts);
+    spawn.afterSamplingListener = afterSamplingListener;
+    DependencyModel.Distrib distrib = var.getDistrib(spawn);
+    logProb += spawn.getLogProbability();
+    //		respVarsAndContexts.remove(this); //this code in original implementation seems wrong (leili)
+    respVarsAndContexts.remove(var);
 
-		// Sample new value for var
-		CondProbDistrib cpd = distrib.getCPD();
-		List cpdArgs = distrib.getArgValues();
-		Object newValue = cpd.sampleVal(cpdArgs, var.getType());
-		double probForThisValue = cpd.getProb(cpdArgs, newValue);
-		double logProbForThisValue = Math.log(probForThisValue);
-		logProb += logProbForThisValue;
+    // Sample new value for var
+    CondProbDistrib cpd = distrib.getCPD();
+    List cpdArgs = distrib.getArgValues();
+    Object newValue = cpd.sampleVal(cpdArgs, var.getType());
+    double probForThisValue = cpd.getProb(cpdArgs, newValue);
+    double logProbForThisValue = Math.log(probForThisValue);
+    logProb += logProbForThisValue;
 
-		// Assert any identifiers that are used by var
-		Object[] args = var.args();
-		for (int i = 0; i < args.length; ++i) {
-			if (args[i] instanceof ObjectIdentifier) {
-				world.assertIdentifier((ObjectIdentifier) args[i]);
-			}
-		}
-		if (newValue instanceof ObjectIdentifier) {
-			world.assertIdentifier((ObjectIdentifier) newValue);
-		}
+    // Assert any identifiers that are used by var
+    Object[] args = var.args();
+    for (int i = 0; i < args.length; ++i) {
+      if (args[i] instanceof ObjectIdentifier) {
+        world.assertIdentifier((ObjectIdentifier) args[i]);
+      }
+    }
+    if (newValue instanceof ObjectIdentifier) {
+      world.assertIdentifier((ObjectIdentifier) newValue);
+    }
 
-		// Actually set value
-		world.setValue(var, newValue);
+    // Actually set value
+    world.setValue(var, newValue);
 
-		if (afterSamplingListener != null)
-			afterSamplingListener.evaluate(var, newValue, probForThisValue);
+    if (afterSamplingListener != null)
+      afterSamplingListener.evaluate(var, newValue, probForThisValue);
 
-		if (staticAfterSamplingListener != null)
-			staticAfterSamplingListener.evaluate(var, newValue, probForThisValue);
+    if (staticAfterSamplingListener != null)
+      staticAfterSamplingListener.evaluate(var, newValue, probForThisValue);
 
-		/*
-		 * if (Util.verbose()) { System.out.println("Instantiated: " + var); }
-		 */
+    /*
+     * if (Util.verbose()) { System.out.println("Instantiated: " + var); }
+     */
 
-		return newValue;
-	}
+    return newValue;
+  }
 
-	protected void cycleError(VarWithDistrib var) {
-		System.err.println("Encountered cycle in context-specific "
-				+ "dependency graph.  Evaluation sequence: ");
-		for (Iterator iter = respVarsAndContexts.entrySet().iterator(); iter
-				.hasNext();) {
-			Map.Entry entry = (Map.Entry) iter.next();
-			((EvalContext) entry.getValue()).printEvalTrace(System.err);
-			System.err.println(entry.getKey());
-		}
-		printEvalTrace(System.err);
-		System.err.println(var);
-		Util.fatalError("Stopping evaluation to avoid infinite loop.", false);
-	}
+  protected void cycleError(VarWithDistrib var) {
+    System.err.println("Encountered cycle in context-specific "
+        + "dependency graph.  Evaluation sequence: ");
+    for (Iterator iter = respVarsAndContexts.entrySet().iterator(); iter
+        .hasNext();) {
+      Map.Entry entry = (Map.Entry) iter.next();
+      ((EvalContext) entry.getValue()).printEvalTrace(System.err);
+      System.err.println(entry.getKey());
+    }
+    printEvalTrace(System.err);
+    System.err.println(var);
+    Util.fatalError("Stopping evaluation to avoid infinite loop.", false);
+  }
 
-	protected LinkedHashMap respVarsAndContexts; // VarWithDistrib to EvalContext
+  protected LinkedHashMap<VarWithDistrib, ClassicInstantiatingEvalContext> respVarsAndContexts; // VarWithDistrib to EvalContext    
 
-	protected double logProb = 0;
+  protected double logProb = 0;
 }
