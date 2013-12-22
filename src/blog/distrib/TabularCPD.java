@@ -154,8 +154,8 @@ public class TabularCPD extends AbstractCondProbDistrib {
             }
             // TODO: add more types as they are required by getArgSpec,
             //       or find a better way to handle built-in types
-            else if (o instanceof Boolean) {
-            	Boolean b = (Boolean) o;
+            else if (o instanceof BooleanDistrib) {
+            	BooleanDistrib b = (BooleanDistrib) o;
             	return new FuncAppTerm(BuiltInFunctions.getLiteral(
         								String.valueOf(b), BuiltInTypes.BOOLEAN, b));
             }
