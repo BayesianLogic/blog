@@ -92,5 +92,5 @@ obs X(9) = [6.294380168511825; -1.4899535512591284];
  * probability mass on each of those bins.  
  */
 query Z(0) == Z(1); // do observations 0 and 1 come from same component?
-query Theta(Z(0));
-query Theta(Z(1));
+//query Theta(Z(0));
+//query Theta(Z(1));
