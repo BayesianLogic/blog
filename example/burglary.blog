@@ -4,22 +4,22 @@
  * element of each row in the parameters to TabularCPD.  
  */
 
-random Boolean Burglary ~ Bernoulli(0.001);
+random Boolean Burglary ~ BooleanDistrib(0.001);
 
-random Boolean Earthquake ~ Bernoulli(0.002);
+random Boolean Earthquake ~ BooleanDistrib(0.002);
 
-random Boolean Alarm ~ TabularCPD({[true, true] -> ~ Bernoulli(0.95),
-       	       	       		   [true, false] -> ~ Bernoulli(0.94),
-				   [false, true] -> ~ Bernoulli(0.29),
-				   [false, false] -> ~ Bernoulli(0.001)},
+random Boolean Alarm ~ TabularCPD({[true, true] -> ~ BooleanDistrib(0.95),
+       	   [true, false] -> ~ BooleanDistrib(0.94),
+				   [false, true] -> ~ BooleanDistrib(0.29),
+				   [false, false] -> ~ BooleanDistrib(0.001)},
 			     [Burglary, Earthquake]);
 
-random Boolean JohnCalls ~ TabularCPD({true -> ~ Bernoulli(0.9),
-       	       		   	       false -> ~ Bernoulli(0.05)},
+random Boolean JohnCalls ~ TabularCPD({true -> ~ BooleanDistrib(0.9),
+       	       		   	       false -> ~ BooleanDistrib(0.05)},
 				 Alarm);
 
-random Boolean MaryCalls ~ TabularCPD({true -> ~ Bernoulli(0.7),
-       	       		   	       false -> ~ Bernoulli(0.01)},
+random Boolean MaryCalls ~ TabularCPD({true -> ~ BooleanDistrib(0.7),
+       	       		   	       false -> ~ BooleanDistrib(0.01)},
 				 Alarm);
 
 /* Evidence for the burglary model (burglary.mblog) saying that both 

@@ -25,13 +25,13 @@ origin Person Owner(Login);
   if Honest(x) then = 1  
   else ~ Geometric(0.8);
 
-random Boolean Honest(Person p) ~ Bernoulli(0.9);
+random Boolean Honest(Person p) ~ BooleanDistrib(0.9);
 
 random Boolean Transaction(Login x, Login y)
-  if x!=y & Owner(x) == Owner(y) then ~ Bernoulli(0.9)
+  if x!=y & Owner(x) == Owner(y) then ~ BooleanDistrib(0.9)
   else if x!=y then 
-    ~ TabularCPD({true -> ~ Bernoulli(0.6),
-      		  false -> ~ Bernoulli(0.1)},
+    ~ TabularCPD({true -> ~ BooleanDistrib(0.6),
+      		  false -> ~ BooleanDistrib(0.1)},
     		Honest(Owner(x)));
 
 obs {Login l} = {Login1, Login2, Login3, Login4, Login5};  
