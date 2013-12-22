@@ -9,7 +9,7 @@ blog = blog.lexer:BlogLexer
 
 setup( 
     name         = 'blog', 
-    version      = '0.6', 
+    version      = '0.7', 
     author       = "Sharad Vikram, Lei Li", 
     packages     = ['blog'], 
     entry_points = entry_points 

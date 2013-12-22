@@ -1,7 +1,7 @@
 " Vim Syntax File
 " Language: blog
 " Maintainer: Bharath Ramsundar, Lei Li
-" Latest Revision: blog 0.6
+" Latest Revision: blog 0.7
 
 if exists("b:current_syntax")
     finish
@@ -9,13 +9,11 @@ endif
 
 " Keywords
 syn keyword blogKeywords type distinct random origin fixed param query obs
-syn keyword blogKeywords guaranteed
-syn keyword blogType Real R3Vector Timestep Boolean Integer 
+syn keyword blogType Real Timestep Boolean Integer 
 syn keyword blogStatement if then else null true false forall exists for
-syn keyword blogDistribution TabularCPD Dirichlet UniformVector UniformReal
-syn keyword blogDistribution MultivarGaussian Poisson UnivarGaussian Gaussian
-syn keyword blogDistribution Categorical UniformChoice Bernoulli Geometric
-
+syn keyword blogDistribution Bernoulli BooleanDistrib Categorical CharDistrib Dirichlet EqualsCPD Gamma Gaussian Geometric Iota LinearGaussian MixtureDistrib MultivarGaussian NegativeBinomial Poisson RoundedLogNormal TabularCPD UniformChoice UniformInt UniformVector UniformReal UnivarGaussian
+" this one was used in old syntax
+syn keyword blogKeywords guaranteed nonrandom
 " Matches
 syn match blogComment "//.*$"
 syn match blogNumberStatement "^\s*#\w\+"

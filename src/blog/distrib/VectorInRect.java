@@ -5,20 +5,20 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- *
+ * 
  * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
+ * notice, this list of conditions and the following disclaimer.
+ * 
  * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the
- *   distribution.  
- *
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
+ * 
  * * Neither the name of the University of California, Berkeley nor
- *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior 
- *   written permission.
- *
+ * the names of its contributors may be used to endorse or promote
+ * products derived from this software without specific prior
+ * written permission.
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -35,7 +35,8 @@
 
 package blog.distrib;
 
-import java.util.*;
+import java.util.List;
+
 import Jama.Matrix;
 
 /**
@@ -47,56 +48,56 @@ import Jama.Matrix;
  * min_d &le; x_d &le; max_d.
  */
 public class VectorInRect extends blog.model.AbstractFunctionInterp {
-	/**
-	 * Creates a new VectorInRect function interpretation with min and max values
-	 * for each dimension specified by the given parameter list.
-	 * 
-	 * @param params
-	 *          list of Number objects
-	 */
-	public VectorInRect(List params) {
-		if (params.size() % 2 != 0) {
-			throw new IllegalArgumentException(
-					"VectorInRect expects an even number of parameters, "
-							+ "forming min-max pairs.");
-		}
+  /**
+   * Creates a new VectorInRect function interpretation with min and max values
+   * for each dimension specified by the given parameter list.
+   * 
+   * @param params
+   *          list of Number objects
+   */
+  public VectorInRect(List params) {
+    if (params.size() % 2 != 0) {
+      throw new IllegalArgumentException(
+          "VectorInRect expects an even number of parameters, "
+              + "forming min-max pairs.");
+    }
 
-		int d = params.size() / 2;
-		mins = new double[d];
-		maxes = new double[d];
+    int d = params.size() / 2;
+    mins = new double[d];
+    maxes = new double[d];
 
-		for (int i = 0; i < d; ++i) {
-			mins[i] = ((Number) params.get(2 * i)).doubleValue();
-			maxes[i] = ((Number) params.get((2 * i) + 1)).doubleValue();
-		}
-	}
+    for (int i = 0; i < d; ++i) {
+      mins[i] = ((Number) params.get(2 * i)).doubleValue();
+      maxes[i] = ((Number) params.get((2 * i) + 1)).doubleValue();
+    }
+  }
 
-	/**
-	 * Returns Boolean.TRUE if the first element of args is a column vector (i.e.,
-	 * a Matrix with one column) in the specified rectangle; otherwise returns
-	 * Boolean.FALSE.
-	 */
-	public Object getValue(List args) {
-		if (args.size() != 1) {
-			throw new IllegalArgumentException(
-					"VectorInRect expects exactly one argument.");
-		}
+  /**
+   * Returns Boolean.TRUE if the first element of args is a column vector (i.e.,
+   * a Matrix with one column) in the specified rectangle; otherwise returns
+   * Boolean.FALSE.
+   */
+  public Object getValue(List args) {
+    if (args.size() != 1) {
+      throw new IllegalArgumentException(
+          "VectorInRect expects exactly one argument.");
+    }
 
-		Matrix v = (Matrix) args.get(0);
-		if ((v.getRowDimension() != mins.length) || (v.getColumnDimension() != 1)) {
-			throw new IllegalArgumentException("Argument to VectorInRect should be "
-					+ mins.length + "x1 vector, not " + v.getRowDimension() + "x"
-					+ v.getColumnDimension() + "matrix.");
-		}
+    Matrix v = (Matrix) args.get(0);
+    if ((v.getRowDimension() != mins.length) || (v.getColumnDimension() != 1)) {
+      throw new IllegalArgumentException("Argument to VectorInRect should be "
+          + mins.length + "x1 vector, not " + v.getRowDimension() + "x"
+          + v.getColumnDimension() + "matrix.");
+    }
 
-		for (int i = 0; i < mins.length; ++i) {
-			if ((v.get(i, 0) < mins[i]) || (v.get(i, 0) > maxes[i])) {
-				return Boolean.FALSE;
-			}
-		}
-		return Boolean.TRUE;
-	}
+    for (int i = 0; i < mins.length; ++i) {
+      if ((v.get(i, 0) < mins[i]) || (v.get(i, 0) > maxes[i])) {
+        return Boolean.FALSE;
+      }
+    }
+    return Boolean.TRUE;
+  }
 
-	private double[] mins;
-	private double[] maxes;
+  private double[] mins;
+  private double[] maxes;
 }

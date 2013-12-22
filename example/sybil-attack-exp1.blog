@@ -21,7 +21,7 @@ type Login;
 //#Person ~ Poisson(10);
 #Person ~ Poisson(2);
 
-random Boolean Honest(Person x) ~ Bernoulli(0.9);
+random Boolean Honest(Person x) ~ BooleanDistrib(0.9);
 
 origin Person Owner(Login);
 #Login(Owner = x) 
@@ -29,7 +29,7 @@ origin Person Owner(Login);
     else ~ Geometric(0.8);
 
 random Boolean Transaction(Login x, Login y) {
-  if x!=y & Owner(x) == Owner(y) then ~ Bernoulli(0.9)
+  if x!=y & Owner(x) == Owner(y) then ~ BooleanDistrib(0.9)
   else if x!=y then 
     ~ TabularCPD({true -> ~Categorical({true -> 0.6, false -> 0.4}), 
                  false -> ~Categorical({true -> 0.1, false -> 0.9})}, 
@@ -38,12 +38,12 @@ random Boolean Transaction(Login x, Login y) {
 
 random Boolean Recommends(Login x, Login y) {
   if (x!=y) & Transaction(x,y) then
-    if Owner(x) == Owner(y) then ~ Bernoulli(0.99)
+    if Owner(x) == Owner(y) then ~ BooleanDistrib(0.99)
     else ~ TabularCPD(
-      {[true, true]   -> ~ Bernoulli(0.9),
-       [true, false]  -> ~ Bernoulli(0.1), 
-       [false, true]  -> ~ Bernoulli(0.1),
-       [false, false] -> ~ Bernoulli(0.1)},
+      {[true, true]   -> ~ BooleanDistrib(0.9),
+       [true, false]  -> ~ BooleanDistrib(0.1), 
+       [false, true]  -> ~ BooleanDistrib(0.1),
+       [false, false] -> ~ BooleanDistrib(0.1)},
     [Honest(Owner(x)), Honest(Owner(y))])
 };
 

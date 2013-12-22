@@ -27,12 +27,12 @@ random Length RotorLength(Aircraft a) {
 
 random Boolean BladeFlash(Blip b) {
     if (Source(b) == null) then
-        ~ Bernoulli(0.01)
+        ~ BooleanDistrib(0.01)
     else if (WingType(Source(b)) == Helicopter & RotorLength(Source(b)) != null) then
-        ~ TabularCPD({Long -> ~ Bernoulli(0.9),
-	  	      Short -> ~ Bernoulli(0.6)}, RotorLength(Source(b)))
+        ~ TabularCPD({Long -> ~ BooleanDistrib(0.9),
+	  	      Short -> ~ BooleanDistrib(0.6)}, RotorLength(Source(b)))
     else  
-        ~ Bernoulli(0.1)
+        ~ BooleanDistrib(0.1)
 };
 
 obs {Blip b} = {b1, b2, b3, b4, b5, b6};

@@ -35,7 +35,7 @@ random Person team2player2(Integer i) // i-th match
                           & (p != team2player1(i))});
 
 random Boolean lazy(Person p, Integer i) 
-  ~ Bernoulli(0.1);
+  ~ BooleanDistrib(0.1);
 
 random Real pulling_power(Person p, Integer i) 
 	if lazy(p, i) then = strength(p) / 2
