@@ -68,7 +68,7 @@ public class NatNumDistribWithTail extends AbstractCondProbDistrib {
 	public NatNumDistribWithTail(double[] pi, double lambda, double alpha) {
 		k = pi.length;
 		prefixDistrib = new Categorical(pi);
-		mixDistrib = new Bernoulli(lambda);
+		mixDistrib = new BooleanDistrib(lambda);
 		geometric = new Geometric(alpha);
 	}
 
@@ -109,7 +109,7 @@ public class NatNumDistribWithTail extends AbstractCondProbDistrib {
 					"Second parameter to NatNumDistribWithTail should be a "
 							+ "number (the probability of using the explicit distrib).");
 		}
-		mixDistrib = new Bernoulli(((Number) params.get(1)).doubleValue());
+		mixDistrib = new BooleanDistrib(((Number) params.get(1)).doubleValue());
 
 		if (!(params.get(2) instanceof Number)) {
 			throw new IllegalArgumentException(
@@ -223,7 +223,7 @@ public class NatNumDistribWithTail extends AbstractCondProbDistrib {
 	 */
 
 	int k;
-	Bernoulli mixDistrib;
+	BooleanDistrib mixDistrib;
 	Categorical prefixDistrib;
 	Geometric geometric;
 }

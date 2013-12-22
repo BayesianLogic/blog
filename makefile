@@ -9,7 +9,9 @@ MISC_FILE=compile.sh \
  compile.bat \
  makefile \
  gen_parser.sh \
- parse.sh 
+ parse.sh \
+ test-ex.sh \
+ ex_test_classes
  
 
 TAGNAME=$(shell git describe --exact-match --abbrev=0)
@@ -51,3 +53,6 @@ sync:
 
 log:
 	git log --stat --name-only --date=short --abbrev-commit > ChangeLog
+	
+test:
+	./test-ex.sh

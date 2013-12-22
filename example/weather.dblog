@@ -5,7 +5,7 @@
 type RainEvent;
 distinct RainEvent Rainy, Dry;
 
-random Boolean RainyRegion ~ Bernoulli(0.5);
+random Boolean RainyRegion ~ BooleanDistrib(0.5);
 
 random RainEvent Weather(Timestep d) {
     if (d == @0) then ~ TabularCPD({true -> ~ Categorical({Rainy -> 0.7, Dry -> 0.3}),

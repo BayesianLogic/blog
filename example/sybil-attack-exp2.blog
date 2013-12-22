@@ -25,22 +25,22 @@ origin Person Owner(Login);
     else ~ Geometric(0.8)
 };
 
-random Boolean Honest(Person p) ~ Bernoulli(0.9);
+random Boolean Honest(Person p) ~ BooleanDistrib(0.9);
 
 random Boolean Transaction(Login x, Login y) {
     if (x != y) then {
-        if (Owner(x) == Owner(y)) then ~ Bernoulli(0.9)
-	else ~ TabularCPD({true -> ~ Bernoulli(0.6),
-	       		   false -> ~ Bernoulli(0.1)},
+        if (Owner(x) == Owner(y)) then ~ BooleanDistrib(0.9)
+	else ~ TabularCPD({true -> ~ BooleanDistrib(0.6),
+	       		   false -> ~ BooleanDistrib(0.1)},
 			Honest(Owner(x)))
     }
 };
 
 random Boolean Recommends(Login x, Login y) {
-    if (x != y & Transaction(x,y) == true & Owner(x) == Owner(y)) then ~ Bernoulli(0.99)
+    if (x != y & Transaction(x,y) == true & Owner(x) == Owner(y)) then ~ BooleanDistrib(0.99)
     else if (Transaction(x,y) == true & Owner(x) != Owner(y)) then {
-    	 if (Honest(Owner(x)) == true & Honest(Owner(y)) == true) then ~ Bernoulli(0.9)
-	 else ~ Bernoulli(0.1)
+    	 if (Honest(Owner(x)) == true & Honest(Owner(y)) == true) then ~ BooleanDistrib(0.9)
+	 else ~ BooleanDistrib(0.1)
     }
 };
 

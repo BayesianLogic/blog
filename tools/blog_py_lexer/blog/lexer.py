@@ -14,9 +14,13 @@ class BlogLexer(RegexLexer):
         'param','type', 'forall', 'exists', 'obs', 'query', 
         'if', 'then', 'else', 'for']
   types = ['Integer','Real','Boolean','NaturalNum','List','Map']
-  distribs = ['TabularCPD','Categorical','Distribution','Gaussian',
+  distribs = ['TabularCPD', 'Distribution','Gaussian',
              'UniformChoice', 'MultivarGaussian', 'Poisson',
-             'Bernoulli', 'Binomial', 'Beta', 'Dirichlet',
+             'Bernoulli', 'BooleanDistrib', 'Binomial', 'Beta', 'BoundedGenometric',
+             'Categorical', 'Dirichlet', 'EqualsCPD', 'Gamma', 'Geometric', 'Iota',
+             'LinearGaussian', 'MixtureDistrib', 'NegativeBinamial', 
+             'RoundedLogNormal', 'TabularInterp',
+             'UniformVector', 'UnivarGaussian', 
              'Exponential', 'UniformInt', 'UniformReal']
 
   def gen_regex(ops):

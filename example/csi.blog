@@ -5,17 +5,17 @@
  * The probability of X being true given no evidence is P(X=true) = 0.596.
  */
 
-random Boolean U ~ Bernoulli(0.3);
+random Boolean U ~ BooleanDistrib(0.3);
 
-random Boolean V ~ Bernoulli(0.9);
+random Boolean V ~ BooleanDistrib(0.9);
 
-random Boolean W ~ Bernoulli(0.1);
+random Boolean W ~ BooleanDistrib(0.1);
 
 random Boolean X {
-    if U then ~ TabularCPD({true -> ~ Bernoulli(0.8),
-       	      		    false -> ~ Bernoulli(0.2)}, W)
-    else ~ TabularCPD({true -> ~ Bernoulli(0.8),
-    	   	       false -> ~ Bernoulli(0.2)}, V)
+    if U then ~ TabularCPD({true -> ~ BooleanDistrib(0.8),
+       	      		    false -> ~ BooleanDistrib(0.2)}, W)
+    else ~ TabularCPD({true -> ~ BooleanDistrib(0.8),
+    	   	       false -> ~ BooleanDistrib(0.2)}, V)
 };
 
 query X;
