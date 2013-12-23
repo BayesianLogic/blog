@@ -22,6 +22,7 @@ BLOG 0.7 (27 December 2013)
       (previous caused problem on copied possible world)
     - fix the key removal in linkedHashMap in InstantiationEvalContext 
       (previously remove the value rather than key)
+    - fix the incorrect parsing of sub_array expression within LBRACE and RBRACE (due to a reduce-reduce conflict)
 
 BLOG 0.6 (5 April 2013)
 -------------------
