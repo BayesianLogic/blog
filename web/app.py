@@ -4,7 +4,7 @@
 # Author: Dan Wang
 # Author: Lei Li (leili@cs.berkeley.edu)
 # Since: 2012-02
-# Last modified: 2013-11-15 
+# Last modified: 2013-12-25
 
 import web
 import time
@@ -26,19 +26,20 @@ with open(EXAMPLE_BLOG_PATH) as f:
     example_blog_code = f.read()
 
 def run_process(script_name):
-    command = ["./run.sh", "--displaycbn", script_name]
+    command = ["../run.sh", "--displaycbn", script_name]
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = os.linesep.join(p.communicate())
     return output
 
-def ensure_dir(USER_STORE):
-    if not os.path.exists(USER_STORE):
-        os.makedirs(USER_STORE)
+def ensure_dir(d):
+    """ make sure the corresponding directory exists"""
+    if not os.path.exists(d):
+        os.makedirs(d)
 
 def store_script(prefix, script):
     #Check if directory exist
     ensure_dir(USER_STORE)
-    
+
     #Write input into local file
     script_name = prefix+BLOG_EXTENSION
     input_handler = open(script_name, 'w')
@@ -80,7 +81,7 @@ def parse_query_results(s):
             })
         for line in lines[1:]:
             query_match = re.match('Distribution of values for (.*)', line)
-            result_match = re.match(r'\s*([\d\.]+)\s*(\S*)', line)
+            result_match = re.match(r'\s*([0-9]*\.?[0-9]+[eE]?[-+]?[0-9]*)\s*(\S*)', line)
             if query_match:
                 query = query_match.group(1)
                 results[-1]['queries'].append({
