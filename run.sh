@@ -10,7 +10,7 @@
 # blog from another directory, edit this script so BLOG_HOME is set to
 # your top-level BLOG directory.
 
-if [ -d "lib"]; then
+if [ -d "lib" ] ; then
   BLOG_HOME="."
 else
   BLOG_HOME=".."
