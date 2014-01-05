@@ -27,8 +27,9 @@ zip:
 	cp ${RUN_FILE} tmp/${TAGNAME}/
 	cp -r lib tmp/${TARGETNAME}/
 	jar cfe ${TARGETNAME}.jar blog.Main -C bin . 
-	mv ${TARGETNAME}.jar tmp/${TAGNAME}/
+	mv ${TARGETNAME}.jar tmp/${TAGNAME}/lib/
 	cd tmp; zip -r ${TARGETNAME}-bin.zip ${TARGETNAME}
+	rm tmp/${TAGNAME}/lib/${TARGETNAME}.jar
 	cp -r src tmp/${TARGETNAME}/
 	cp -r example tmp/${TAGNAME}/
 	cp ${MISC_FILE} tmp/${TAGNAME}/
