@@ -124,7 +124,7 @@ public class RelationExtractionProposer implements Proposer {
     // Set POPs
     relPOP = (POP) relType.getPOPs().iterator().next();
     entPOP = (POP) entType.getPOPs().iterator().next();
-    factPOP = (POP) factType.getPOPs().iterator().next();
+    //factPOP = (POP) factType.getPOPs().iterator().next(); // Not needed..?
     trigPOP = (POP) trigType.getPOPs().iterator().next();
     sentPOP = (POP) sentType.getPOPs().iterator().next();
 
@@ -152,15 +152,15 @@ public class RelationExtractionProposer implements Proposer {
 
     // Set number variables: Assume #Triggers, #Sentences, #Relations, #Entities are specified in model
     NumberVar nRels = new NumberVar(relPOP, Collections.EMPTY_LIST);
-    world.setValue(nRels, relType.getGuaranteedObjects());
+    world.setValue(nRels, relType.getGuaranteedObjects().size());
     NumberVar nEnts = new NumberVar(entPOP, Collections.EMPTY_LIST);
-    world.setValue(nEnts, entType.getGuaranteedObjects());
-    NumberVar nFacts = new NumberVar(factPOP, Collections.EMPTY_LIST);
-    world.setValue(nFacts, factType.getGuaranteedObjects());
+    world.setValue(nEnts, entType.getGuaranteedObjects().size());
+    //NumberVar nFacts = new NumberVar(factPOP, Collections.EMPTY_LIST);
+    //world.setValue(nFacts, factType.getGuaranteedObjects());          // Not needed because it's already set..?
     NumberVar nTrigs = new NumberVar(trigPOP, Collections.EMPTY_LIST);
-    world.setValue(nTrigs, trigType.getGuaranteedObjects());
+    world.setValue(nTrigs, trigType.getGuaranteedObjects().size());
     NumberVar nSents = new NumberVar(sentPOP, Collections.EMPTY_LIST);
-    world.setValue(nSents, sentType.getGuaranteedObjects());
+    world.setValue(nSents, sentType.getGuaranteedObjects().size());
 
     // Set observed variables
     for (Iterator iter = evidence.getEvidenceVars().iterator(); iter.hasNext();) {
@@ -168,13 +168,13 @@ public class RelationExtractionProposer implements Proposer {
     	RandomFunction varFunc = var.func();
     	if (varFunc == verbFunc) {
     		Object sentence = var.args()[0];
-    		int triggerIndex = trigType.getGuaranteedObjIndex(sentence); // Assumes trigger Type knows all triggers
+    		int triggerIndex = trigType.getGuaranteedObjIndex(evidence.getObservedValue(var)); // Assumes trigger Type knows all triggers
     		RandFuncAppVar trigFuncVar = new RandFuncAppVar(triggerIDFunc, Collections.singletonList(sentence));
     		world.setValue(trigFuncVar, triggerIndex);
     	} 
     	world.setValue(var, evidence.getObservedValue(var));
     }
-
+    System.out.println(world.toString());
     return world;
 
   }
