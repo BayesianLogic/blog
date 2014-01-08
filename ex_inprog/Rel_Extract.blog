@@ -16,7 +16,7 @@ origin Entity Arg2(Fact);
 
 #Fact(Rel = r, Arg1 = a1, Arg2 = a2) = 1;
 
-random Boolean Holds(Fact f) ~ Bernoulli(Sparsity(Rel(f)));
+random Boolean Holds(Fact f) ~ BooleanDistrib(Sparsity(Rel(f)));
 
 /* A trigger is a set of words that is specific to the relation.
  * The categorical distribution is sampled from a Dirichlet distribution.
