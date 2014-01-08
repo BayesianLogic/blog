@@ -2,3 +2,6 @@
 /build
 /nbproject
 /bin
+
+*.DS_Store
+*.swp
