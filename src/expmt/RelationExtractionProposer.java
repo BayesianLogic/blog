@@ -42,11 +42,13 @@ import java.util.Properties;
 
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
+import blog.bn.NumberVar;
 import blog.model.Evidence;
 import blog.model.FunctionSignature;
 import blog.model.Model;
 import blog.model.RandomFunction;
 import blog.model.Type;
+import blog.model.POP;
 import blog.sample.Proposer;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
@@ -68,17 +70,21 @@ public class RelationExtractionProposer implements Proposer {
   private Type trigType; // Trigger
   private Type sentType; // Sentence
 
-  // private POP relPOP; // To be implemented in a later version
+  private POP relPOP;
+  private POP entPOP;
+  private POP factPOP;
+  private POP trigPOP;
+  private POP sentPOP;
 
   // random variable functions as described by the model
-  private RandomFunction sparsity;
-  private RandomFunction holds;
-  private RandomFunction theta;
-  private RandomFunction sourceFact;
-  private RandomFunction subject;
-  private RandomFunction object;
-  private RandomFunction triggerID;
-  private RandomFunction verb;
+  private RandomFunction sparsityFunc;
+  private RandomFunction holdsFunc;
+  private RandomFunction thetaFunc;
+  private RandomFunction sourceFactFunc;
+  private RandomFunction subjectFunc;
+  private RandomFunction objectFunc;
+  private RandomFunction triggerIDFunc;
+  private RandomFunction verbFunc;
 
   /**
    * Creates a new RelationExtractionProposer object for the given model.
@@ -98,32 +104,38 @@ public class RelationExtractionProposer implements Proposer {
     sentType = Type.getType("Sentence");
 
     // Set Random Functions
-    sparsity = (RandomFunction) model.getFunction(new FunctionSignature(
+    sparsityFunc = (RandomFunction) model.getFunction(new FunctionSignature(
         "Sparsity", relType));
-    holds = (RandomFunction) model.getFunction(new FunctionSignature("Holds",
+    holdsFunc = (RandomFunction) model.getFunction(new FunctionSignature("Holds",
         factType));
-    theta = (RandomFunction) model.getFunction(new FunctionSignature("Theta",
+    thetaFunc = (RandomFunction) model.getFunction(new FunctionSignature("Theta",
         relType));
-    sourceFact = (RandomFunction) model.getFunction(new FunctionSignature(
+    sourceFactFunc = (RandomFunction) model.getFunction(new FunctionSignature(
         "SourceFact", sentType));
-    subject = (RandomFunction) model.getFunction(new FunctionSignature(
+    subjectFunc = (RandomFunction) model.getFunction(new FunctionSignature(
         "Subject", sentType));
-    object = (RandomFunction) model.getFunction(new FunctionSignature("Object",
+    objectFunc = (RandomFunction) model.getFunction(new FunctionSignature("Object",
         sentType));
-    triggerID = (RandomFunction) model.getFunction(new FunctionSignature(
+    triggerIDFunc = (RandomFunction) model.getFunction(new FunctionSignature(
         "TriggerID", sentType));
-    verb = (RandomFunction) model.getFunction(new FunctionSignature("Verb",
+    verbFunc = (RandomFunction) model.getFunction(new FunctionSignature("Verb",
         sentType));
+
+    // Set POPs
+    relPOP = (POP) relType.getPOPs().iterator().next();
+    entPOP = (POP) entType.getPOPs().iterator().next();
+    factPOP = (POP) factType.getPOPs().iterator().next();
+    trigPOP = (POP) trigType.getPOPs().iterator().next();
+    sentPOP = (POP) sentType.getPOPs().iterator().next();
 
   }
 
   /**
    * Initialization:
-   * - Set all observed variables
+   * - Set all observed variables (Subject, Object, Verb, TriggerID)
    * - Choose SourceFact for all observed sentences uniformly from all facts
    * such that the argument pair matches
    * - Set the Holds(f) variable for this fact to be True
-   * - Set Dirichlet parameter (alpha) size to be number of triggers
    * - Set TriggerID for observed sentences such that the observed Verb matches
    * the TriggerID
    * - Sample everything else
@@ -138,11 +150,31 @@ public class RelationExtractionProposer implements Proposer {
         Collections.singleton(relType));
     PartialWorldDiff world = new PartialWorldDiff(underlying);
 
+    // Set number variables: Assume #Triggers, #Sentences, #Relations, #Entities are specified in model
+    NumberVar nRels = new NumberVar(relPOP, Collections.EMPTY_LIST);
+    world.setValue(nRels, relType.getGuaranteedObjects());
+    NumberVar nEnts = new NumberVar(entPOP, Collections.EMPTY_LIST);
+    world.setValue(nEnts, entType.getGuaranteedObjects());
+    NumberVar nFacts = new NumberVar(factPOP, Collections.EMPTY_LIST);
+    world.setValue(nFacts, factType.getGuaranteedObjects());
+    NumberVar nTrigs = new NumberVar(trigPOP, Collections.EMPTY_LIST);
+    world.setValue(nTrigs, trigType.getGuaranteedObjects());
+    NumberVar nSents = new NumberVar(sentPOP, Collections.EMPTY_LIST);
+    world.setValue(nSents, sentType.getGuaranteedObjects());
+
     // Set observed variables
     for (Iterator iter = evidence.getEvidenceVars().iterator(); iter.hasNext();) {
-      RandFuncAppVar var = (RandFuncAppVar) iter.next();
-
+    	RandFuncAppVar var = (RandFuncAppVar) iter.next();
+    	RandomFunction varFunc = var.func();
+    	if (varFunc == verbFunc) {
+    		Object sentence = var.args()[0];
+    		int triggerIndex = trigType.getGuaranteedObjIndex(sentence); // Assumes trigger Type knows all triggers
+    		RandFuncAppVar trigFuncVar = new RandFuncAppVar(triggerIDFunc, Collections.singletonList(sentence));
+    		world.setValue(trigFuncVar, triggerIndex);
+    	} 
+    	world.setValue(var, evidence.getObservedValue(var));
     }
+
     return world;
 
   }
