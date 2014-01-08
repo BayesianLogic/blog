@@ -87,7 +87,6 @@ public class RelationExtractionProposer implements Proposer {
   private RandomFunction triggerIDFunc;
   private RandomFunction verbFunc;
 
-
   /**
    * Creates a new RelationExtractionProposer object for the given model.
    * 
