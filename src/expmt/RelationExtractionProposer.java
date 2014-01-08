@@ -87,6 +87,7 @@ public class RelationExtractionProposer implements Proposer {
   private RandomFunction triggerIDFunc;
   private RandomFunction verbFunc;
 
+
   /**
    * Creates a new RelationExtractionProposer object for the given model.
    * 
@@ -128,6 +129,7 @@ public class RelationExtractionProposer implements Proposer {
     //factPOP = (POP) factType.getPOPs().iterator().next(); // Not needed..?
     trigPOP = (POP) trigType.getPOPs().iterator().next();
     sentPOP = (POP) sentType.getPOPs().iterator().next();
+
 
   }
 
@@ -176,6 +178,7 @@ public class RelationExtractionProposer implements Proposer {
     	world.setValue(var, evidence.getObservedValue(var));
     }
     System.out.println(world.toString());
+
     return world;
 
   }
