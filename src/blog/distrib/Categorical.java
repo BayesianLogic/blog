@@ -344,6 +344,10 @@ public class Categorical extends AbstractCondProbDistrib {
     for (int i = 0; i < probs.length; ++i) {
       probs[i] /= s;
     }
+    if (s <= 0) {
+      throw new IllegalArgumentException(
+          "Categorical distribution gets incorrect weights!");
+    }
   }
 
   /**
