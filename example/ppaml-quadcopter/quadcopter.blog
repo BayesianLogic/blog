@@ -1,0 +1,139 @@
+/*
+At each time step, we have:
+
+- sensors (observed):
+  latitude, longitude, altitude, accelX, accelY, accelZ, gyroX, gyroY, gyroZ
+- controls (observed):
+  motor0, motor1, motor2, motor3
+- ground-truth state (hidden):
+  x, y, z, qx, qy, qz, qw
+
+Our model is discrete-time linear Gaussian:
+
+x_i+1 = A * x_i + B * u_i + v_i
+y_i = C * x_i + w_i
+
+where
+- x_0 is the initial state, distributed as MultivarGaussian(mu_0, sigma_0)
+- x_i is state at timestep i
+- u_i is controls for timestep i+1
+- y_i is observations at timestep i
+- v_i is the dynamics noise, distributed as MultivarGaussian(0, V)
+- w_i is the observation noise, distributed as MultivarGaussian(0, W)
+
+The parameters of the model are A, B, C, V, W, mu_0, sigma_0.
+For now, we assume that we know all of these matrices.
+
+Eventually, we'll want to make A, B, C random variables and learn them.
+*/
+
+
+/* The fixed model params (values are completely made up): */
+
+fixed Real[][] A = [
+    [1, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 1]
+];
+
+fixed Real[][] B = [
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1],
+    [0, 0, 1, 0],
+    [0, 1, 0, 0],
+    [1, 0, 0, 0]
+];
+
+fixed Real[][] C = [
+    [1, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0]
+];
+
+fixed Real[][] V = [
+    [1, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 1]
+];
+
+fixed Real[][] W = [
+    [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1]
+];
+
+fixed Real[] mu_0 = [0; 0; 0; 0; 0; 0; 0];
+
+fixed Real[][] sigma_0 = [
+    [1, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 1]
+];
+
+
+/* Dynamics model: */
+
+random Real[] state(Timestep t) {
+    if t == @0 then ~ MultivarGaussian(mu_0, sigma_0)
+    else ~ MultivarGaussian(A * state(Prev(t)) + B * controls(Prev(t)), V)
+};
+
+
+/* Observation model: */
+
+random Real[] sensors(Timestep t)
+    ~ MultivarGaussian(C * state(t), W);
+
+
+/* All controls should be observed, but we still need to define this function,
+ * or else we get an error. So we provide a dummy prior here: */
+
+fixed Real[] mu_controls = [0; 0; 0; 0];
+
+fixed Real[][] sigma_controls = [
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1]
+];
+
+random Real[] controls(Timestep t) ~ MultivarGaussian(mu_controls, sigma_controls);
+
+
+/* Dummy observations for one time step: */
+
+obs sensors(@0) = [0; 0; 0; 0; 0; 0; 0; 0; 0];
+obs controls(@0) = [0; 0; 0; 0];
+obs sensors(@1) = [0; 0; 0; 0; 0; 0; 0; 0; 0];
+
+
+/* Query hidden state: */
+
+query state(@0);
+query state(@1);
