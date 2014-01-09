@@ -111,7 +111,7 @@ public class MapSpec extends ArgSpec {
   }
 
   /**
-   * For now, we only consider constant maps
+   * 
    */
   public boolean containsRandomSymbol() {
     if (compiled) {
