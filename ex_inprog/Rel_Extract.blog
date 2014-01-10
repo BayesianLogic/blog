@@ -2,12 +2,12 @@
  */
 
 type Relation;
-#Relation = 100;
+//#Relation = 100;
 
 random Real Sparsity(Relation r) ~ Beta(10,1000); // beta, gamma parameters
 
 type Entity;
-#Entity = 4;
+//#Entity = 4;
 
 type Fact;
 origin Relation Rel(Fact);
@@ -23,7 +23,7 @@ random Boolean Holds(Fact f) ~ BooleanDistrib(Sparsity(Rel(f)));
  */
 
 type Trigger;
-#Trigger = 2;
+//#Trigger = 2;
 
 /* alpha should be a vector of length #Triggers */
 fixed Real alpha = 0.5;
@@ -34,7 +34,7 @@ random Real[] Theta(Relation r) ~ Dirichlet(alpha, alpha);
  */
 
 type Sentence;
-#Sentence = 2;
+//#Sentence = 2;
 random Fact SourceFact(Sentence s) ~ UniformChoice({Fact f : Holds(f) == true});
 random Entity Subject(Sentence s) = Arg1(SourceFact(s));
 random Entity Object(Sentence s) = Arg2(SourceFact(s));
