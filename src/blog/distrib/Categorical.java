@@ -147,7 +147,6 @@ public class Categorical extends AbstractCondProbDistrib {
         for (int i = 0; i < probs.length; ++i) {
           sum += probs[i];
         }
-
         for (int i = 0; i < probs.length; ++i) {
           probs[i] /= sum;
         }
@@ -161,6 +160,7 @@ public class Categorical extends AbstractCondProbDistrib {
         }
       }
     }
+    expectProbsAsArg = false;
   }
 
   /**
@@ -205,13 +205,13 @@ public class Categorical extends AbstractCondProbDistrib {
         } else if (obj instanceof ArrayList) {
           ArrayList mapping = (ArrayList) obj;
           int numElements = mapping.size();
-
           probs = new double[numElements];
           values = new Object[numElements];
           for (int i = 0; i < numElements; i++) {
             probs[i] = (Double) mapping.get(i);
             values[i] = i;
           }
+          expectProbsAsArg = false;
         } else {
           // TODO
           Util.fatalError("Categorical with " + obj + " not supported yet");
@@ -226,7 +226,6 @@ public class Categorical extends AbstractCondProbDistrib {
     } else {
       expectProbsAsArg = true;
     }
-    normalizeProb();
   }
 
   /**
