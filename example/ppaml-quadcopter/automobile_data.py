@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+Read the automobile data.
+"""
+
 import csv
 import os
 
@@ -8,6 +12,9 @@ INTENSITY_COLS = 361
 
 
 class Reading(object):
+    """
+    One sensor reading. Values are left None when unobserved.
+    """
     def __init__(self):
         self.time = None
         self.gps_latitude = None
