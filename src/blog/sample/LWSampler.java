@@ -43,6 +43,7 @@ import java.util.Set;
 
 import blog.BLOGUtil;
 import blog.bn.BayesNetVar;
+import blog.common.Histogram;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -128,10 +129,11 @@ public class LWSampler extends Sampler {
     else
       curWorld = new DefaultPartialWorld(idTypes);
 
-    weight = supportEvidenceAndCalculateWeight();
+    weight = supportEvidenceAndCalculateLogWeight();
+    if (!Histogram.USING_LOG_WEIGHT)
+      weight = Math.exp(weight);
     BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
         afterSamplingListener);
-
     //if (Util.verbose()) {
     //	System.out.println("Generated world:");
     //	curWorld.print(System.out);
@@ -140,18 +142,29 @@ public class LWSampler extends Sampler {
 
     ++totalNumSamples;
     ++numSamplesThisTrial;
-    if (weight > 0) {
+    // TODO add a constant for the threshold
+    if ((Histogram.USING_LOG_WEIGHT && weight < -10000)
+        || ((!Histogram.USING_LOG_WEIGHT) && weight <= 0)) {
       ++totalNumConsistent;
       ++numConsistentThisTrial;
     }
-    sumWeightsThisTrial += weight;
+    if (Histogram.USING_LOG_WEIGHT)
+      sumWeightsThisTrial = Util.logSum(sumWeightsThisTrial, weight);
+    else
+      sumWeightsThisTrial += weight;
   }
 
   /**
    * Calculates weight for evidence and current world.
    */
+  @Deprecated
   protected double supportEvidenceAndCalculateWeight() {
     return evidence.setEvidenceEnsureSupportedAndReturnLikelihood(curWorld);
+  }
+
+  protected double supportEvidenceAndCalculateLogWeight() {
+    evidence.setEvidenceAndEnsureSupported(curWorld);
+    return evidence.getEvidenceLogProb(curWorld);
   }
 
   public PartialWorld getLatestWorld() {
