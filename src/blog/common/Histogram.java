@@ -5,20 +5,20 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- *
+ * 
  * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
+ * notice, this list of conditions and the following disclaimer.
+ * 
  * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the
- *   distribution.  
- *
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
+ * 
  * * Neither the name of the University of California, Berkeley nor
- *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior 
- *   written permission.
- *
+ * the names of its contributors may be used to endorse or promote
+ * products derived from this software without specific prior
+ * written permission.
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -35,8 +35,19 @@
 
 package blog.common;
 
-import java.util.*;
 import java.io.PrintStream;
+import java.util.AbstractSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * A mapping from objects to weights, which are real numbers. A Histogram
@@ -62,316 +73,330 @@ import java.io.PrintStream;
  * Note: This class does not allow null elements to be added.
  */
 public class Histogram implements SetWithDistrib {
-	/**
-	 * The fraction of total weight a delta must be greater than in order for a
-	 * change in weight to be accepted.
-	 */
-	// This should probably be deprecated, since it affects distributions quite a
-	// bit,
-	// especially on continuous values with lots of samples, each with small
-	// probability.
-	// Maybe it can replaced by a more refined test involving its ration to the
-	// total weight,
-	// also only after a large number of entries is present.
-	// See ArgSpecQuery#prune(double).
-	private static final double acceptanceDeltaThreshold = 0;
+  /**
+   * The fraction of total weight a delta must be greater than in order for a
+   * change in weight to be accepted.
+   */
+  // This should probably be deprecated, since it affects distributions quite a
+  // bit,
+  // especially on continuous values with lots of samples, each with small
+  // probability.
+  // Maybe it can replaced by a more refined test involving its ration to the
+  // total weight,
+  // also only after a large number of entries is present.
+  // See ArgSpecQuery#prune(double).
+  private static final double acceptanceDeltaThreshold = 0;
 
-	/**
-	 * Creates an empty histogram.
-	 */
-	public Histogram() {
-		initMap();
-	}
+  /**
+   * Creates an empty histogram.
+   */
+  public Histogram() {
+    initMap();
+  }
 
-	/**
-	 * Creates an empty histogram.
-	 * 
-	 * @param sorted
-	 *          if true, use a sorted map from elements to weights
-	 */
-	public Histogram(boolean sorted) {
-		this.sorted = sorted;
-		initMap();
-	}
+  /**
+   * Creates an empty histogram.
+   * 
+   * @param sorted
+   *          if true, use a sorted map from elements to weights
+   */
+  public Histogram(boolean sorted) {
+    this.sorted = sorted;
+    initMap();
+  }
 
-	public UnaryFunction getNormalizer() {
-		return normalizer;
-	}
+  public UnaryFunction getNormalizer() {
+    return normalizer;
+  }
 
-	public void setNormalizer(UnaryFunction normalizer) {
-		this.normalizer = normalizer;
-	}
+  public void setNormalizer(UnaryFunction normalizer) {
+    this.normalizer = normalizer;
+  }
 
-	/**
-	 * Returns the number of objects that have non-zero weight in this histogram.
-	 */
-	public int size() {
-		return map.size();
-	}
+  /**
+   * Returns the number of objects that have non-zero weight in this histogram.
+   */
+  public int size() {
+    return map.size();
+  }
 
-	/**
-	 * Returns the weight of the given object in this histogram. If the object is
-	 * not explicitly represented in the histogram, its weight is zero.
-	 */
-	public double getWeight(Object obj) {
-		if (obj == null) {
-			return 0;
-		}
+  /**
+   * Returns the weight of the given object in this histogram. If the object is
+   * not explicitly represented in the histogram, its weight is zero.
+   */
+  public double getWeight(Object obj) {
+    if (obj == null) {
+      if (USING_LOG_WEIGHT)
+        return Double.NEGATIVE_INFINITY;
+      else
+        return 0;
+    }
 
-		Double value = (Double) map.get(normalizer.evaluate(obj));
-		if (value == null) {
-			return 0;
-		}
-		return value.doubleValue();
-	}
+    Double value = (Double) map.get(normalizer.evaluate(obj));
+    if (value == null) {
+      if (USING_LOG_WEIGHT)
+        return Double.NEGATIVE_INFINITY;
+      else
+        return 0;
+    }
+    return value.doubleValue();
+  }
 
-	/**
-	 * Returns the sum of the weights of all objects in this histogram.
-	 */
-	public double getTotalWeight() {
-		return totalWeight;
-	}
+  /**
+   * Returns the sum of the weights of all objects in this histogram.
+   */
+  public double getTotalWeight() {
+    return totalWeight;
+  }
 
-	/**
-	 * Returns the probability of the given object being sampled, according to its
-	 * weight.
-	 */
-	public double getProb(Object o) {
-		if (o == null) {
-			return 0;
-		}
+  /**
+   * Returns the probability of the given object being sampled, according to its
+   * weight.
+   */
+  public double getProb(Object o) {
+    if (o == null) {
+      return 0;
+    }
 
-		Double value = (Double) map.get(normalizer.evaluate(o));
-		if (value == null) {
-			return 0;
-		}
-		return value.doubleValue() / totalWeight;
-	}
+    Double value = (Double) map.get(normalizer.evaluate(o));
+    if (value == null) {
+      return 0;
+    }
+    return value.doubleValue() / totalWeight;
+  }
 
-	/**
-	 * Returns the log probability of the given object being sampled, according to
-	 * its weight.
-	 */
-	public double getLogProb(Object o) {
-		return Math.log(getProb(o));
-	}
+  /**
+   * Returns the log probability of the given object being sampled, according to
+   * its weight.
+   */
+  public double getLogProb(Object o) {
+    return Math.log(getProb(o));
+  }
 
-	/**
-	 * Increases the weight for the given object by the given amount. If the
-	 * object was not explicitly represented in the histogram, its old weight is
-	 * considered to be zero.
-	 */
-	public void increaseWeight(Object obj, double delta) {
-		if (delta > 0 && Math.abs(delta / totalWeight) < acceptanceDeltaThreshold)
-			return;
+  /**
+   * Increases the weight for the given object by the given amount. If the
+   * object was not explicitly represented in the histogram, its old weight is
+   * considered to be zero.
+   */
+  public static boolean USING_LOG_WEIGHT = true;
 
-		double newWeight = getWeight(obj) + delta;
-		if (newWeight == 0) {
-			map.remove(normalizer.evaluate(obj));
-		} else {
-			map.put(normalizer.evaluate(obj), new Double(newWeight));
-		}
+  public void increaseWeight(Object obj, double delta) {
+    if (USING_LOG_WEIGHT) {
+      totalWeight = Util.logSum(totalWeight, delta);
+      map.put(obj, Util.logSum(getWeight(obj), delta));
+      return;
+    }
 
-		totalWeight += delta;
-	}
+    if (delta > 0 && Math.abs(delta / totalWeight) < acceptanceDeltaThreshold)
+      return;
 
-	/**
-	 * Resets the weights of all objects to zero.
-	 */
-	public void clear() {
-		initMap();
-		totalWeight = 0;
-	}
+    double newWeight = getWeight(obj) + delta;
+    if (newWeight == 0) {
+      map.remove(normalizer.evaluate(obj));
+    } else {
+      map.put(normalizer.evaluate(obj), new Double(newWeight));
+    }
 
-	/**
-	 * Returns an unmodifiable view of the set of objects that have non-zero
-	 * weight in this histogram.
-	 */
-	public Set elementSet() {
-		return Collections.unmodifiableMap(map).keySet();
-	}
+    totalWeight += delta;
+  }
 
-	/**
-	 * Returns an unmodifiable view of the set of Histogram.Entry objects
-	 * corresponding to the non-zero weight objects in this histogram.
-	 */
-	public Set entrySet() {
-		return entrySet;
-	}
+  /**
+   * Resets the weights of all objects to zero.
+   */
+  public void clear() {
+    initMap();
+    totalWeight = 0;
+  }
 
-	public Object sample() {
-		double remaining = Util.random() * totalWeight;
-		Object o = null;
-		for (Iterator iter = map.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry entry = (Map.Entry) iter.next();
-			o = entry.getKey();
-			remaining -= ((Double) entry.getValue()).doubleValue();
-			if (remaining < 0) {
-				break;
-			}
-		}
-		return o;
-	}
+  /**
+   * Returns an unmodifiable view of the set of objects that have non-zero
+   * weight in this histogram.
+   */
+  public Set elementSet() {
+    return Collections.unmodifiableMap(map).keySet();
+  }
 
-	/**
-	 * Prints this histogram to the given stream. Each entry is printed out on its
-	 * own line: first the key, then the value. If this histogram was constructed
-	 * with the <code>sorted</code> flag set to true, then the entries are sorted
-	 * by key.
-	 */
-	public void print(PrintStream s) {
-		for (Iterator iter = map.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry entry = (Map.Entry) iter.next();
-			s.print(entry.getKey());
-			s.print('\t');
-			s.println(entry.getValue());
-		}
-	}
+  /**
+   * Returns an unmodifiable view of the set of Histogram.Entry objects
+   * corresponding to the non-zero weight objects in this histogram.
+   */
+  public Set entrySet() {
+    return entrySet;
+  }
 
-	private static Comparator WEIGHT_COMPARATOR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-			double diff = ((Double) ((Map.Entry) o1).getValue()).doubleValue()
-					- ((Double) ((Map.Entry) o2).getValue()).doubleValue();
-			if (diff < 0) {
-				return 1;
-			} else if (diff > 0) {
-				return -1;
-			}
-			return 0;
-		}
-	};
+  public Object sample() {
+    double remaining = Util.random() * totalWeight;
+    Object o = null;
+    for (Iterator iter = map.entrySet().iterator(); iter.hasNext();) {
+      Map.Entry entry = (Map.Entry) iter.next();
+      o = entry.getKey();
+      remaining -= ((Double) entry.getValue()).doubleValue();
+      if (remaining < 0) {
+        break;
+      }
+    }
+    return o;
+  }
 
-	/**
-	 * Remove entries from histogram such that at least
-	 * <code>(1 - percentile)</code> of the total weight remains.
-	 */
-	public void prune(double percentile) {
-		List entries = new ArrayList(map.entrySet());
-		Collections.sort(entries, WEIGHT_COMPARATOR);
-		double remainingWeight = totalWeight;
-		double toBePruned = percentile * totalWeight;
+  /**
+   * Prints this histogram to the given stream. Each entry is printed out on its
+   * own line: first the key, then the value. If this histogram was constructed
+   * with the <code>sorted</code> flag set to true, then the entries are sorted
+   * by key.
+   */
+  public void print(PrintStream s) {
+    for (Iterator iter = map.entrySet().iterator(); iter.hasNext();) {
+      Map.Entry entry = (Map.Entry) iter.next();
+      s.print(entry.getKey());
+      s.print('\t');
+      s.println(entry.getValue());
+    }
+  }
 
-		// skip entries to be kept
-		Iterator it = entries.iterator();
-		while (it.hasNext() && remainingWeight >= toBePruned) {
-			Map.Entry entry = (Map.Entry) it.next();
-			double weight = ((Double) entry.getValue()).doubleValue();
-			remainingWeight -= weight;
-		}
+  private static Comparator WEIGHT_COMPARATOR = new Comparator() {
+    public int compare(Object o1, Object o2) {
+      double diff = ((Double) ((Map.Entry) o1).getValue()).doubleValue()
+          - ((Double) ((Map.Entry) o2).getValue()).doubleValue();
+      if (diff < 0) {
+        return 1;
+      } else if (diff > 0) {
+        return -1;
+      }
+      return 0;
+    }
+  };
 
-		// set remaining entries weights to zero.
-		while (it.hasNext()) {
-			Map.Entry entry = (Map.Entry) it.next();
-			increaseWeight(entry.getKey(), -((Double) entry.getValue()).doubleValue());
-		}
-	}
+  /**
+   * Remove entries from histogram such that at least
+   * <code>(1 - percentile)</code> of the total weight remains.
+   */
+  public void prune(double percentile) {
+    List entries = new ArrayList(map.entrySet());
+    Collections.sort(entries, WEIGHT_COMPARATOR);
+    double remainingWeight = totalWeight;
+    double toBePruned = percentile * totalWeight;
 
-	/**
-	 * Returns a collection with up to <code>n</code> entries, and with the
-	 * minimum number of elements comprising at least <code>percentile</code> of
-	 * total mass.
-	 */
-	public Collection getNBestButInUpper(int n, double percentile) {
-		List entries = new ArrayList(map.entrySet());
-		Collections.sort(entries, WEIGHT_COMPARATOR);
-		double remainingWeight = totalWeight;
-		double toBePruned = (1 - percentile) * totalWeight;
-		Collection result = new LinkedList();
+    // skip entries to be kept
+    Iterator it = entries.iterator();
+    while (it.hasNext() && remainingWeight >= toBePruned) {
+      Map.Entry entry = (Map.Entry) it.next();
+      double weight = ((Double) entry.getValue()).doubleValue();
+      remainingWeight -= weight;
+    }
 
-		Iterator it = entries.iterator();
-		while (it.hasNext() && remainingWeight > toBePruned && result.size() < n) {
-			Map.Entry entry = (Map.Entry) it.next();
-			double weight = ((Double) entry.getValue()).doubleValue();
-			remainingWeight -= weight;
-			result.add(entry.getKey());
-		}
+    // set remaining entries weights to zero.
+    while (it.hasNext()) {
+      Map.Entry entry = (Map.Entry) it.next();
+      increaseWeight(entry.getKey(), -((Double) entry.getValue()).doubleValue());
+    }
+  }
 
-		return result;
-	}
+  /**
+   * Returns a collection with up to <code>n</code> entries, and with the
+   * minimum number of elements comprising at least <code>percentile</code> of
+   * total mass.
+   */
+  public Collection getNBestButInUpper(int n, double percentile) {
+    List entries = new ArrayList(map.entrySet());
+    Collections.sort(entries, WEIGHT_COMPARATOR);
+    double remainingWeight = totalWeight;
+    double toBePruned = (1 - percentile) * totalWeight;
+    Collection result = new LinkedList();
 
-	private void initMap() {
-		if (sorted) {
-			map = new TreeMap();
-		} else {
-			map = new HashMap();
-		}
-	}
+    Iterator it = entries.iterator();
+    while (it.hasNext() && remainingWeight > toBePruned && result.size() < n) {
+      Map.Entry entry = (Map.Entry) it.next();
+      double weight = ((Double) entry.getValue()).doubleValue();
+      remainingWeight -= weight;
+      result.add(entry.getKey());
+    }
 
-	/**
-	 * Nested class for the entries in a histogram.
-	 */
-	public static class Entry {
-		Entry(Object obj, double weight) {
-			this.obj = obj;
-			this.weight = weight;
-		}
+    return result;
+  }
 
-		/**
-		 * Returns the object in this entry.
-		 */
-		public Object getElement() {
-			return obj;
-		}
+  private void initMap() {
+    if (sorted) {
+      map = new TreeMap();
+    } else {
+      map = new HashMap();
+    }
+  }
 
-		/**
-		 * Returns the weight of the object.
-		 */
-		public double getWeight() {
-			return weight;
-		}
+  /**
+   * Nested class for the entries in a histogram.
+   */
+  public static class Entry {
+    Entry(Object obj, double weight) {
+      this.obj = obj;
+      this.weight = weight;
+    }
 
-		public boolean equals(Object o) {
-			if (o instanceof Histogram.Entry) {
-				Histogram.Entry other = (Histogram.Entry) o;
-				return (other.getElement().equals(obj) && (other.getWeight() == weight));
-			}
-			return false;
-		}
+    /**
+     * Returns the object in this entry.
+     */
+    public Object getElement() {
+      return obj;
+    }
 
-		public int hashCode() {
-			return obj.hashCode();
-		}
+    /**
+     * Returns the weight of the object.
+     */
+    public double getWeight() {
+      return weight;
+    }
 
-		public String toString() {
-			return ("(" + obj + ", " + weight + ")");
-		}
+    public boolean equals(Object o) {
+      if (o instanceof Histogram.Entry) {
+        Histogram.Entry other = (Histogram.Entry) o;
+        return (other.getElement().equals(obj) && (other.getWeight() == weight));
+      }
+      return false;
+    }
 
-		private Object obj;
-		private double weight;
-	}
+    public int hashCode() {
+      return obj.hashCode();
+    }
 
-	private class EntrySet extends AbstractSet {
-		public int size() {
-			return map.size();
-		}
+    public String toString() {
+      return ("(" + obj + ", " + weight + ")");
+    }
 
-		public Iterator iterator() {
-			return new EntrySetIterator();
-		}
+    private Object obj;
+    private double weight;
+  }
 
-		private class EntrySetIterator implements Iterator {
-			public boolean hasNext() {
-				return mapIter.hasNext();
-			}
+  private class EntrySet extends AbstractSet {
+    public int size() {
+      return map.size();
+    }
 
-			public Object next() {
-				Map.Entry mapEntry = (Map.Entry) mapIter.next();
-				double weight = ((Double) mapEntry.getValue()).doubleValue();
-				return new Histogram.Entry(mapEntry.getKey(), weight);
-			}
+    public Iterator iterator() {
+      return new EntrySetIterator();
+    }
 
-			public void remove() {
-				throw new UnsupportedOperationException(
-						"Histogram entry set iterator does not allow removal.");
-			}
+    private class EntrySetIterator implements Iterator {
+      public boolean hasNext() {
+        return mapIter.hasNext();
+      }
 
-			private Iterator mapIter = map.entrySet().iterator();
-		}
-	}
+      public Object next() {
+        Map.Entry mapEntry = (Map.Entry) mapIter.next();
+        double weight = ((Double) mapEntry.getValue()).doubleValue();
+        return new Histogram.Entry(mapEntry.getKey(), weight);
+      }
 
-	private boolean sorted = false;
-	private Map map;
-	private double totalWeight = 0;
-	private EntrySet entrySet = new Histogram.EntrySet();
-	private UnaryFunction normalizer = IdentityFunction.getInstance();
+      public void remove() {
+        throw new UnsupportedOperationException(
+            "Histogram entry set iterator does not allow removal.");
+      }
+
+      private Iterator mapIter = map.entrySet().iterator();
+    }
+  }
+
+  private boolean sorted = false;
+  private Map map;
+  private double totalWeight = 0;
+  private EntrySet entrySet = new Histogram.EntrySet();
+  private UnaryFunction normalizer = IdentityFunction.getInstance();
 }
