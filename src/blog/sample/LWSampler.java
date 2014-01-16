@@ -143,8 +143,8 @@ public class LWSampler extends Sampler {
     ++totalNumSamples;
     ++numSamplesThisTrial;
     // TODO add a constant for the threshold
-    if ((Histogram.USING_LOG_WEIGHT && weight < -10000)
-        || ((!Histogram.USING_LOG_WEIGHT) && weight <= 0)) {
+    if ((Histogram.USING_LOG_WEIGHT && weight > -10000)
+        || ((!Histogram.USING_LOG_WEIGHT) && weight > 0)) {
       ++totalNumConsistent;
       ++numConsistentThisTrial;
     }
