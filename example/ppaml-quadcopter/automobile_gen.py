@@ -74,7 +74,7 @@ def generate_model(disc_readings):
     """
     Take discretized readings and return the generated model as a string.
     """
-    state_size = 3
+    state_size = 6
     controls_size = 2
     sensors_size = INTENSITY_COLS + LASER_COLS
 

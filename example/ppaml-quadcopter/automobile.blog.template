@@ -4,12 +4,14 @@
 Model for the no-noise version of the automobile problem.
 
 At each time step, we have:
-- sensors: laser, intensity
+- state: x, y, theta, xdot, ydot, thetadot
+  (the GPS location and orientation, and the translational and rotational
+  velocities)
+- observations: laser (361 readings), intensity (361 readings)
 - controls: velocity, steering
-- pose: gps_latitude, gps_longitude, gps_orientation
 
 Because of time discretization, the sensors and controls are observed only some
-of the time. The pose is never observed.
+of the time. The state is always hidden.
 
 Our model is discrete-time linear Gaussian:
 
