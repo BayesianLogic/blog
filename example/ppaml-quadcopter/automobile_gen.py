@@ -7,12 +7,12 @@ Generate the BLOG model for the automobile problem.
 from automobile_data import INTENSITY_COLS
 from automobile_data import LASER_COLS
 from automobile_data import read_data
+import filters
 
 from collections import namedtuple
 from copy import copy
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
-from StringIO import StringIO
 import numpy as np
 
 
@@ -47,27 +47,6 @@ def discretize_time(readings):
         disc_reading.timestep = timestep
         disc_readings.append(disc_reading)
     return disc_readings
-
-
-def blog_column_vector_filter(val):
-    """
-    Jinja2 filter for outputting a column vector in BLOG format.
-    """
-    return '[{}]'.format('; '.join(map(unicode, val)))
-
-
-def blog_matrix_filter(val):
-    """
-    Jinja2 filter for outputting a matrix in BLOG format.
-    """
-    stream = StringIO()
-    print >>stream, '['
-    for i, row in enumerate(val):
-        print >>stream, '    [{}]{}'.format(
-            ', '.join(map(unicode, row)),
-            '' if i == len(val) - 1 else ',')
-    print >>stream, ']',
-    return stream.getvalue()
 
 
 def generate_model(disc_readings):
@@ -106,8 +85,8 @@ def generate_model(disc_readings):
 
     # Generate the model.
     env = Environment(loader=FileSystemLoader('.'))
-    env.filters['blog_column_vector'] = blog_column_vector_filter
-    env.filters['blog_matrix'] = blog_matrix_filter
+    env.filters['blog_column_vector'] = filters.blog_column_vector_filter
+    env.filters['blog_matrix'] = filters.blog_matrix_filter
     template = env.get_template('automobile.blog.template')
     return template.render(
         model=model_vars,
