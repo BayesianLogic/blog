@@ -94,7 +94,7 @@ public class LWSampler extends Sampler {
 
     numSamplesThisTrial = 0;
     numConsistentThisTrial = 0;
-    sumWeightsThisTrial = 0;
+    logSumWeightsThisTrial = Double.NEGATIVE_INFINITY;
 
     curWorld = null;
     weight = -1;
@@ -148,10 +148,11 @@ public class LWSampler extends Sampler {
       ++totalNumConsistent;
       ++numConsistentThisTrial;
     }
-    if (Histogram.USING_LOG_WEIGHT)
-      sumWeightsThisTrial = Util.logSum(sumWeightsThisTrial, weight);
-    else
-      sumWeightsThisTrial += weight;
+    if (Histogram.USING_LOG_WEIGHT) {
+      logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, weight);
+    } else {
+      logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, java.lang.Math.log(weight));
+    }
   }
 
   /**
@@ -195,8 +196,11 @@ public class LWSampler extends Sampler {
     System.out.println("======== " + samplerType + " LW Trial Stats =========");
 
     if (numSamplesThisTrial > 0) {
+      double logAvgWeight = logSumWeightsThisTrial - java.lang.Math.log(numSamplesThisTrial);
+      System.out.println("Log of average likelihood weight (this trial): "
+        + logAvgWeight);
       System.out.println("Average likelihood weight (this trial): "
-          + (sumWeightsThisTrial / (double) numSamplesThisTrial));
+        + java.lang.Math.exp(logAvgWeight));
       System.out.println("Fraction of consistent worlds (this trial): "
           + (numConsistentThisTrial / (double) numSamplesThisTrial));
     }
@@ -224,5 +228,5 @@ public class LWSampler extends Sampler {
   // statistics since last call to initialize()
   protected int numSamplesThisTrial = 0;
   protected int numConsistentThisTrial = 0;
-  protected double sumWeightsThisTrial = 0;
+  protected double logSumWeightsThisTrial = 0;
 }
