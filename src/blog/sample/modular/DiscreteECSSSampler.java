@@ -25,7 +25,6 @@ import blog.bn.RandFuncAppVar;
 import blog.bn.VarWithDistrib;
 import blog.common.AddedTupleIterator;
 import blog.common.ExtensibleLinkedList;
-import blog.common.Histogram;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
 import blog.model.ArgSpec;
@@ -88,11 +87,7 @@ public class DiscreteECSSSampler extends LWSampler {
 			++totalNumConsistent;
 			++numConsistentThisTrial;
 		}
-        if(Histogram.USING_LOG_WEIGHT) {
-          logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, weight);
-        } else {
-          logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, java.lang.Math.log(weight));
-        }
+        logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, weight);
 	}
 	
 	private void recursiveCardinalitySampler(Type t) {

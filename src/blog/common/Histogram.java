@@ -87,9 +87,6 @@ public class Histogram implements SetWithDistrib {
   // See ArgSpecQuery#prune(double).
   private static final double acceptanceDeltaThreshold = 0;
 
-  // FIXME: Use log weights always, instead of if/else.
-  public static boolean USING_LOG_WEIGHT = true;
-
   /**
    * Creates an empty histogram.
    */
@@ -129,18 +126,12 @@ public class Histogram implements SetWithDistrib {
    */
   public double getWeight(Object obj) {
     if (obj == null) {
-      if (USING_LOG_WEIGHT)
         return Double.NEGATIVE_INFINITY;
-      else
-        return 0;
     }
 
     Double value = (Double) map.get(normalizer.evaluate(obj));
     if (value == null) {
-      if (USING_LOG_WEIGHT)
         return Double.NEGATIVE_INFINITY;
-      else
-        return 0;
     }
     return value.doubleValue();
   }
@@ -182,12 +173,10 @@ public class Histogram implements SetWithDistrib {
    * considered to be zero.
    */
   public void increaseWeight(Object obj, double delta) {
-    if (USING_LOG_WEIGHT) {
       totalWeight = Util.logSum(totalWeight, delta);
       map.put(obj, Util.logSum(getWeight(obj), delta));
-      return;
-    }
 
+    /*
     if (delta > 0 && Math.abs(delta / totalWeight) < acceptanceDeltaThreshold)
       return;
 
@@ -199,6 +188,7 @@ public class Histogram implements SetWithDistrib {
     }
 
     totalWeight += delta;
+    */
   }
 
   /**
