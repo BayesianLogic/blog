@@ -204,8 +204,6 @@ public class ArgSpecQuery extends AbstractQuery {
   }
 
   public void zeroOut() {
-    // histList.add(histogram);
-    // histogram = new Histogram();
     trialNum++;
     if ((outputFile != null) && (trialNum != Main.numTrials())) {
       outputFile = Main.filePrintStream(Main.histOut() + "-trial" + trialNum
@@ -222,62 +220,6 @@ public class ArgSpecQuery extends AbstractQuery {
     s.println("\tVariance of " + getArgSpec() + " results is not computed.");
     // printVarStats(s);
   }
-
-  /**
-   * Print the query summary: mean histogram (because we have to calculate it
-   * anyway, variation distance (sum of absolute values of each element from its
-   * mean), and element-wise variance.
-   * 
-   * Yes, I know this makes many, many passes over histList, but variation
-   * distance needs to know the mean first, so I might as well change as little
-   * code as possible.
-   * 
-   * private void printVarStats(PrintStream s) { Set objs = new TreeSet(); for
-   * (int i = 0; i < histList.size() ; i++) { objs.addAll(((Histogram)
-   * histList.get(i)).elementSet()); }
-   * 
-   * double vardist = 0; Histogram meanHist = findMeanHist(objs); Histogram
-   * sumSquareHist = new Histogram(); for (int i = 0 ; i < histList.size() ;
-   * i++) { Histogram hist = (Histogram) histList.get(i); Iterator objIter =
-   * hist.elementSet().iterator(); while (objIter.hasNext()) { Object obj =
-   * objIter.next(); double normWeight =
-   * hist.getWeight(obj)/hist.getTotalWeight(); vardist +=
-   * Math.abs(meanHist.getWeight(obj) - normWeight);
-   * sumSquareHist.increaseWeight(obj, normWeight*normWeight); } }
-   * 
-   * s.println("Query summary for: " + argSpec);
-   * 
-   * s.println("  Mean histogram: (value, probability)"); Iterator objIter =
-   * objs.iterator(); while (objIter.hasNext()) { Object obj = objIter.next();
-   * s.println("\t" + obj + "\t" + meanHist.getWeight(obj)); }
-   * 
-   * s.println("  Variation distance: " + vardist);
-   * 
-   * s.println("  Element-wise variance: (value, variance, standard dev)");
-   * objIter = objs.iterator(); while (objIter.hasNext()) { Object obj =
-   * objIter.next(); double mu2 = Math.pow(meanHist.getWeight(obj), 2); double
-   * var = Math.abs(sumSquareHist.getWeight(obj) - mu2); s.println("\t" + obj +
-   * "\t" + var + "\t" + Math.sqrt(var)); } }
-   * 
-   * /** findMeanHist returns a Histogram representing the mean values for each
-   * of the elements in histList. It takes as argument a Set of Objects, objs,
-   * which is a set of all objects in all Histograms in histList.
-   * 
-   * private Histogram findMeanHist(Set objs) { Histogram meanHist = new
-   * Histogram(); for (int i = 0 ; i < histList.size() ; i++) { Histogram hist =
-   * (Histogram) histList.get(i); double denom = hist.getTotalWeight(); Iterator
-   * objIter = hist.elementSet().iterator(); while (objIter.hasNext()) { Object
-   * obj = objIter.next(); double numer = hist.getWeight(obj);
-   * meanHist.increaseWeight(obj, numer/denom); } }
-   * 
-   * // Normalize mean probabilities Histogram normMean = new Histogram();
-   * Iterator objIter = objs.iterator(); double denom =
-   * meanHist.getTotalWeight(); while (objIter.hasNext()) { Object obj =
-   * objIter.next(); normMean.increaseWeight(obj,
-   * meanHist.getWeight(obj)/denom); }
-   * 
-   * return normMean; }
-   */
 
   /**
    * Every object should have an output file. If it does not yet exist, create
@@ -382,7 +324,6 @@ public class ArgSpecQuery extends AbstractQuery {
   protected ArgSpec argSpec;
   protected BayesNetVar variable;
   protected Histogram histogram = new Histogram();
-  // private LinkedList histList = new LinkedList(); // of Histogram
   protected int trialNum = 0;
 
   protected Map outputFiles = new HashMap(); // of PrintStream
