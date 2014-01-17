@@ -80,9 +80,6 @@ import blog.sample.Sampler;
  * The property list is also passed to the sampler's constructor.
  */
 public class SamplingEngine extends InferenceEngine {
-    // Samples with log weight <= NEGLIGIBLE_LOG_WEIGHT are ignored.
-    public static final double NEGLIGIBLE_LOG_WEIGHT = -10000;
-
     /**
      * Creates a new sampling engine for the given BLOG model, with configuration
      * parameters specified by the given properties table.
@@ -184,7 +181,7 @@ public class SamplingEngine extends InferenceEngine {
             }
 
             if (i >= numBurnIn) {
-                if (logWeight > NEGLIGIBLE_LOG_WEIGHT) {
+                if (logWeight > Sampler.NEGLIGIBLE_LOG_WEIGHT) {
                     // Update statistics to reflect this sample.
                     for (Iterator iter = queries.iterator(); iter.hasNext();) {
                         Query query = ((Query) iter.next());
@@ -216,7 +213,7 @@ public class SamplingEngine extends InferenceEngine {
                                     + timer.elapsedTime() + " s.");
             }
 
-            if (Util.print() && logWeight > NEGLIGIBLE_LOG_WEIGHT && !printed) {
+            if (Util.print() && logWeight > Sampler.NEGLIGIBLE_LOG_WEIGHT && !printed) {
                 printGeneratedWorld(sampler, logWeight);
                 printed = true;
             }
