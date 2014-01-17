@@ -87,6 +87,9 @@ public class Histogram implements SetWithDistrib {
   // See ArgSpecQuery#prune(double).
   private static final double acceptanceDeltaThreshold = 0;
 
+  // FIXME: Use log weights always, instead of if/else.
+  public static boolean USING_LOG_WEIGHT = true;
+
   /**
    * Creates an empty histogram.
    */
@@ -178,8 +181,6 @@ public class Histogram implements SetWithDistrib {
    * object was not explicitly represented in the histogram, its old weight is
    * considered to be zero.
    */
-  public static boolean USING_LOG_WEIGHT = true;
-
   public void increaseWeight(Object obj, double delta) {
     if (USING_LOG_WEIGHT) {
       totalWeight = Util.logSum(totalWeight, delta);
