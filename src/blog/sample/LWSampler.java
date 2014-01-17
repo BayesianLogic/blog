@@ -45,7 +45,6 @@ import blog.BLOGUtil;
 import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.Util;
-import blog.engine.SamplingEngine;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -141,7 +140,7 @@ public class LWSampler extends Sampler {
 
     ++totalNumSamples;
     ++numSamplesThisTrial;
-    if (latestSampleLogWeight > SamplingEngine.NEGLIGIBLE_LOG_WEIGHT) {
+    if (latestSampleLogWeight > NEGLIGIBLE_LOG_WEIGHT) {
       ++totalNumConsistent;
       ++numConsistentThisTrial;
     }
