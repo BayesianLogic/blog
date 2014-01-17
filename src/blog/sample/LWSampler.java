@@ -131,8 +131,6 @@ public class LWSampler extends Sampler {
       curWorld = new DefaultPartialWorld(idTypes);
 
     weight = supportEvidenceAndCalculateLogWeight();
-    if (!Histogram.USING_LOG_WEIGHT)
-      weight = Math.exp(weight);
     BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
         afterSamplingListener);
     //if (Util.verbose()) {
@@ -143,16 +141,11 @@ public class LWSampler extends Sampler {
 
     ++totalNumSamples;
     ++numSamplesThisTrial;
-    if ((Histogram.USING_LOG_WEIGHT && weight > SamplingEngine.NEGLIGIBLE_LOG_WEIGHT)
-        || ((!Histogram.USING_LOG_WEIGHT) && weight > 0)) {
+    if (weight > SamplingEngine.NEGLIGIBLE_LOG_WEIGHT) {
       ++totalNumConsistent;
       ++numConsistentThisTrial;
     }
-    if (Histogram.USING_LOG_WEIGHT) {
-      logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, weight);
-    } else {
-      logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, java.lang.Math.log(weight));
-    }
+    logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, weight);
   }
 
   /**
