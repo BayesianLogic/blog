@@ -80,6 +80,9 @@ import blog.sample.Sampler;
  * The property list is also passed to the sampler's constructor.
  */
 public class SamplingEngine extends InferenceEngine {
+    // Samples with log weight <= NEGLIGIBLE_LOG_WEIGHT are ignored.
+    public static final double NEGLIGIBLE_LOG_WEIGHT = -10000;
+
     /**
      * Creates a new sampling engine for the given BLOG model, with configuration
      * parameters specified by the given properties table.
@@ -135,11 +138,11 @@ public class SamplingEngine extends InferenceEngine {
         this(model, new Properties());
     }
 
-    public void printGeneratedWorld(Sampler sampler, double weight) {
+    public void printGeneratedWorld(Sampler sampler, double logWeight) {
       PartialWorld curWorld = sampler.getLatestWorld(); 
       System.out.println("======== Generated World: ========");
       curWorld.print(System.out);
-      System.out.println("======== Weight: " + weight + " ========");
+      System.out.println("======== Log weight: " + logWeight + " ========");
     }
 
 
@@ -157,22 +160,21 @@ public class SamplingEngine extends InferenceEngine {
         Timer timer = new Timer();
         timer.start();
 
-        double weight = 0.0;
         for (int i = 0; i < numSamples; ++i) {
             if (Util.verbose()) {
                 System.out.println();
                 System.out.println("Iteration " + i + ":");
             }
             sampler.nextSample();
-            weight = sampler.getLatestWeight();
+            double logWeight = sampler.getLatestWeight();
 
             if (Util.verbose()) {
-                printGeneratedWorld(sampler, weight);
+                printGeneratedWorld(sampler, logWeight);
             }
             
             if (i != 0 && (i) % queryReportInterval == 0) {
-            // Print query results
-            System.out.println("======== Query Results ========");
+                // Print query results
+                System.out.println("======== Query Results ========");
                 System.out.println("Iteration " + i + ":");
                 for (Iterator iter = queries.iterator(); iter.hasNext();) {
                    Query q = (Query) iter.next();
@@ -182,7 +184,7 @@ public class SamplingEngine extends InferenceEngine {
             }
 
             if (i >= numBurnIn) {
-                if (weight > 0) {
+                if (logWeight > NEGLIGIBLE_LOG_WEIGHT) {
                     // Update statistics to reflect this sample.
                     for (Iterator iter = queries.iterator(); iter.hasNext();) {
                         Query query = ((Query) iter.next());
@@ -196,7 +198,7 @@ public class SamplingEngine extends InferenceEngine {
                                 // distribution, it still converges 
                                 // to it.
                                 sampler.getLatestWorld()); 
-                        query.updateStats(sampler.getLatestWorld(), weight);
+                        query.updateStats(sampler.getLatestWorld(), logWeight);
                     }
                 }
 
@@ -214,8 +216,8 @@ public class SamplingEngine extends InferenceEngine {
                                     + timer.elapsedTime() + " s.");
             }
 
-            if (Util.print() && weight > 0 && !printed) {
-                printGeneratedWorld(sampler, weight);
+            if (Util.print() && logWeight > NEGLIGIBLE_LOG_WEIGHT && !printed) {
+                printGeneratedWorld(sampler, logWeight);
                 printed = true;
             }
         }
