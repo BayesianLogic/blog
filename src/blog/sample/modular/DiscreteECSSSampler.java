@@ -27,6 +27,7 @@ import blog.common.AddedTupleIterator;
 import blog.common.ExtensibleLinkedList;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
+import blog.engine.SamplingEngine;
 import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
@@ -71,23 +72,22 @@ public class DiscreteECSSSampler extends LWSampler {
 			Util.debug("Creating initial possible world");
 		}
 		this.curWorld = curWorld;
-		double w = 0;
-		weight = 1;
-		
+		latestSampleLogWeight = 0;
+
 		// ECSS for number statement evidence, then LW for the rest
-		weight *= supportCardinalityEvidenceAndReturnWeight();
-		weight *= supportOtherEvidenceAndReturnWeight();
+		latestSampleLogWeight += supportCardinalityEvidenceAndReturnLogWeight();
+		latestSampleLogWeight += supportOtherEvidenceAndReturnLogWeight();
 		BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
 				afterSamplingListener);
 
         // FIXME: remove duplication with LWSampler
 		++totalNumSamples;
 		++numSamplesThisTrial;
-		if (weight > 0) {
+		if (latestSampleLogWeight > SamplingEngine.NEGLIGIBLE_LOG_WEIGHT) {
 			++totalNumConsistent;
 			++numConsistentThisTrial;
 		}
-        logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, weight);
+        logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, latestSampleLogWeight);
 	}
 	
 	private void recursiveCardinalitySampler(Type t) {
@@ -103,28 +103,22 @@ public class DiscreteECSSSampler extends LWSampler {
 		// how to get all number variables of type t?
 	}
 	
-	public double supportCardinalityEvidenceAndReturnWeight() {
-		return 1.0;
+	public double supportCardinalityEvidenceAndReturnLogWeight() {
+		return 0;
 	}
 
-	public double supportOtherEvidenceAndReturnWeight() {
-		return 1.0;
+	public double supportOtherEvidenceAndReturnLogWeight() {
+		return 0;
 	}
 
-	/**
-	 * instantiate
-	 * calculate weight of
-	 * 
-	 * @see blog.sample.LWSampler#supportEvidenceAndCalculateWeight()
-	 */
 	@Override
-	protected double supportEvidenceAndCalculateWeight() {
+	protected double supportEvidenceAndCalculateLogWeight() {
 		// TODO modify to block sampling
 		BLOGUtil.setBasicVars(evidence, curWorld);
 		BlockInstantiatingEvalContextImpl context = new BlockInstantiatingEvalContextImpl(
 				curWorld);
 		BLOGUtil.ensureDetAndSupported(evidence.getEvidenceVars(), context);
-		return evidence.getEvidenceProb(curWorld);
+		return evidence.getEvidenceLogProb(curWorld);
 	}
 
 	private HashMap<Type, Boolean> processed;
