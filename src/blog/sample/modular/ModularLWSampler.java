@@ -27,6 +27,7 @@ import blog.common.AddedTupleIterator;
 import blog.common.ExtensibleLinkedList;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
+import blog.engine.SamplingEngine;
 import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
@@ -74,15 +75,13 @@ public class ModularLWSampler extends LWSampler {
 			Util.debug("Creating initial possible world");
 		}
 		this.curWorld = curWorld;
-		double w = 0;
-		weight = 1;
+		double logWeight = Double.NEGATIVE_INFINITY;
+        latestSampleLogWeight = 0;
 		while (!isCurWorldSufficient(curWorld)) {
 			VarWithDistrib var = curWorld.getNextUninstVar();
 			if (var != null) {
 				if (var.canSample(curWorld)) {
-					w = sampleAndComputeWeight(var, curWorld);
-					if (w < 0)
-						break;
+					logWeight = sampleAndComputeLogWeight(var, curWorld);
 				} else {
 					curWorld.putBackVarWithDistrib(var);
 				}
@@ -91,35 +90,35 @@ public class ModularLWSampler extends LWSampler {
 						+ "variable is supported.  Please check for "
 						+ "a possible cycle in your model.");
 			}
-			weight *= w;
+            latestSampleLogWeight += logWeight;
 		}
 
 		if (!evidence.isTrue(curWorld))
-			weight = 0;
+            latestSampleLogWeight = Double.NEGATIVE_INFINITY;
 		BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
 				afterSamplingListener);
 
 		// if (Util.verbose()) {
 		// System.out.println("Generated world:");
 		// curWorld.print(System.out);
-		// System.out.println("Weight: " + weight);
+        // System.out.println("Log weight: " + latestSampleLogWeight);
 		// }
 
         // FIXME: remove duplication with LWSampler
 		++totalNumSamples;
 		++numSamplesThisTrial;
-		if (weight > 0) {
+		if (latestSampleLogWeight > SamplingEngine.NEGLIGIBLE_LOG_WEIGHT) {
 			++totalNumConsistent;
 			++numConsistentThisTrial;
 		}
-        logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, weight);
+        logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, latestSampleLogWeight);
 	}
 	
 	public void printStats() {
 		super.printStats("Modular");
 	}
 
-	private double sampleAndComputeWeight(VarWithDistrib var,
+	private double sampleAndComputeLogWeight(VarWithDistrib var,
 			WorldWithBlock curWorld) {
 		DependencyModel.Distrib distrib = var
 				.getDistrib(new BlockInstantiatingEvalContextImpl(curWorld));
@@ -129,21 +128,21 @@ public class ModularLWSampler extends LWSampler {
 		List args = distrib.getArgValues();
 		Region r = curWorld.getSatisfyingRegion(var);
 
-		double w = 0;
+		double logWeight = Double.NEGATIVE_INFINITY;
 		if (r.isEmpty())
 			return -1;
 		Object value = null;
 		if (r.isSingleton()) {
 			value = r.getOneValue();
-			w = cpd.getProb(args, value);
+			logWeight = java.lang.Math.log(cpd.getProb(args, value));
 		} else {
 			do {
 				value = cpd.sampleVal(args, varType);
 			} while (!r.contains(value));
-			w = computeCPD(cpd, args, r);
+			logWeight = java.lang.Math.log(computeCPD(cpd, args, r));
 		}
 		curWorld.setValue(var, value);
-		return w; // TODO return weight
+		return logWeight;
 	}
 
 	/**
@@ -188,20 +187,14 @@ public class ModularLWSampler extends LWSampler {
 		return true;
 	}
 
-	/**
-	 * instantiate
-	 * calculate weight of
-	 * 
-	 * @see blog.sample.LWSampler#supportEvidenceAndCalculateWeight()
-	 */
 	@Override
-	protected double supportEvidenceAndCalculateWeight() {
+	protected double supportEvidenceAndCalculateLogWeight() {
 		// TODO modify to block sampling
 		BLOGUtil.setBasicVars(evidence, curWorld);
 		BlockInstantiatingEvalContextImpl context = new BlockInstantiatingEvalContextImpl(
 				curWorld);
 		BLOGUtil.ensureDetAndSupported(evidence.getEvidenceVars(), context);
-		return evidence.getEvidenceProb(curWorld);
+		return evidence.getEvidenceLogProb(curWorld);
 	}
 
 }
