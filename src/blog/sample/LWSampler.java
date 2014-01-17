@@ -45,6 +45,7 @@ import blog.BLOGUtil;
 import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.Util;
+import blog.engine.SamplingEngine;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -142,8 +143,7 @@ public class LWSampler extends Sampler {
 
     ++totalNumSamples;
     ++numSamplesThisTrial;
-    // TODO add a constant for the threshold
-    if ((Histogram.USING_LOG_WEIGHT && weight > -10000)
+    if ((Histogram.USING_LOG_WEIGHT && weight > SamplingEngine.NEGLIGIBLE_LOG_WEIGHT)
         || ((!Histogram.USING_LOG_WEIGHT) && weight > 0)) {
       ++totalNumConsistent;
       ++numConsistentThisTrial;
