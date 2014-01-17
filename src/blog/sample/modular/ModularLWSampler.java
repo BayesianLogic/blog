@@ -27,7 +27,6 @@ import blog.common.AddedTupleIterator;
 import blog.common.ExtensibleLinkedList;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
-import blog.engine.SamplingEngine;
 import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
@@ -107,7 +106,7 @@ public class ModularLWSampler extends LWSampler {
         // FIXME: remove duplication with LWSampler
 		++totalNumSamples;
 		++numSamplesThisTrial;
-		if (latestSampleLogWeight > SamplingEngine.NEGLIGIBLE_LOG_WEIGHT) {
+		if (latestSampleLogWeight > NEGLIGIBLE_LOG_WEIGHT) {
 			++totalNumConsistent;
 			++numConsistentThisTrial;
 		}
