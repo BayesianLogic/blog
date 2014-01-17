@@ -25,6 +25,7 @@ import blog.bn.RandFuncAppVar;
 import blog.bn.VarWithDistrib;
 import blog.common.AddedTupleIterator;
 import blog.common.ExtensibleLinkedList;
+import blog.common.Histogram;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
 import blog.model.ArgSpec;
@@ -105,13 +106,18 @@ public class ModularLWSampler extends LWSampler {
 		// System.out.println("Weight: " + weight);
 		// }
 
+        // FIXME: remove duplication with LWSampler
 		++totalNumSamples;
 		++numSamplesThisTrial;
 		if (weight > 0) {
 			++totalNumConsistent;
 			++numConsistentThisTrial;
 		}
-		sumWeightsThisTrial += weight;
+        if(Histogram.USING_LOG_WEIGHT) {
+          logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, weight);
+        } else {
+          logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, java.lang.Math.log(weight));
+        }
 	}
 	
 	public void printStats() {
