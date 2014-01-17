@@ -98,7 +98,7 @@ public class LWSampler extends Sampler {
     logSumWeightsThisTrial = Double.NEGATIVE_INFINITY;
 
     curWorld = null;
-    weight = -1;
+    latestSampleLogWeight = Double.NEGATIVE_INFINITY;
   }
 
   /**
@@ -130,22 +130,22 @@ public class LWSampler extends Sampler {
     else
       curWorld = new DefaultPartialWorld(idTypes);
 
-    weight = supportEvidenceAndCalculateLogWeight();
+    latestSampleLogWeight = supportEvidenceAndCalculateLogWeight();
     BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
         afterSamplingListener);
     //if (Util.verbose()) {
     //	System.out.println("Generated world:");
     //	curWorld.print(System.out);
-    //	System.out.println("Weight: " + weight);
+    //	System.out.println("Log weight: " + latestSampleLogWeight);
     //}
 
     ++totalNumSamples;
     ++numSamplesThisTrial;
-    if (weight > SamplingEngine.NEGLIGIBLE_LOG_WEIGHT) {
+    if (latestSampleLogWeight > SamplingEngine.NEGLIGIBLE_LOG_WEIGHT) {
       ++totalNumConsistent;
       ++numConsistentThisTrial;
     }
-    logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, weight);
+    logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, latestSampleLogWeight);
   }
 
   /**
@@ -169,11 +169,7 @@ public class LWSampler extends Sampler {
   }
 
   public double getLatestWeight() {
-    // leili: this code is not correct, should not compare double with ==
-    // if (weight == -1) {
-    // throw new IllegalStateException("LWSampler has no latest sample.");
-    // }
-    return weight;
+    return latestSampleLogWeight;
   }
 
   /**
@@ -212,7 +208,7 @@ public class LWSampler extends Sampler {
 
   protected PartialWorld curWorld = null;
   private PartialWorld baseWorld = null;
-  protected double weight = -1;
+  protected double latestSampleLogWeight = Double.NEGATIVE_INFINITY;
 
   // overall statistics
   protected int totalNumSamples = 0;

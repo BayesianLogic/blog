@@ -128,6 +128,12 @@ public abstract class Sampler {
 	 *           if <code>nextSample</code> has not been called, or if
 	 *           <code>initialize</code> has been called since the last call to
 	 *           <code>nextSample</code>
+     *
+     * FIXME (cberzan): This is API is unnecessarily stateful. The latest
+     * weight should not be kept in the sampler at all. It should probably be
+     * returned by nextSample() in some way.
+     *
+     * TODO (cberzan): Make it clear that this returns log weights.
 	 */
 	public double getLatestWeight() {
 		return 1.0;
