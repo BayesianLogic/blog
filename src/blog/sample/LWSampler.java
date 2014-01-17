@@ -148,14 +148,6 @@ public class LWSampler extends Sampler {
     logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, latestSampleLogWeight);
   }
 
-  /**
-   * Calculates weight for evidence and current world.
-   */
-  @Deprecated
-  protected double supportEvidenceAndCalculateWeight() {
-    return evidence.setEvidenceEnsureSupportedAndReturnLikelihood(curWorld);
-  }
-
   protected double supportEvidenceAndCalculateLogWeight() {
     evidence.setEvidenceAndEnsureSupported(curWorld);
     return evidence.getEvidenceLogProb(curWorld);
