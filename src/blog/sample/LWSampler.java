@@ -43,7 +43,6 @@ import java.util.Set;
 
 import blog.BLOGUtil;
 import blog.bn.BayesNetVar;
-import blog.common.Histogram;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
