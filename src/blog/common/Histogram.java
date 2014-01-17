@@ -74,20 +74,6 @@ import java.util.TreeMap;
  */
 public class Histogram implements SetWithDistrib {
   /**
-   * The fraction of total weight a delta must be greater than in order for a
-   * change in weight to be accepted.
-   */
-  // This should probably be deprecated, since it affects distributions quite a
-  // bit,
-  // especially on continuous values with lots of samples, each with small
-  // probability.
-  // Maybe it can replaced by a more refined test involving its ration to the
-  // total weight,
-  // also only after a large number of entries is present.
-  // See ArgSpecQuery#prune(double).
-  private static final double acceptanceDeltaThreshold = 0;
-
-  /**
    * Creates an empty histogram.
    */
   public Histogram() {
@@ -175,20 +161,6 @@ public class Histogram implements SetWithDistrib {
   public void increaseWeight(Object obj, double delta) {
       totalWeight = Util.logSum(totalWeight, delta);
       map.put(obj, Util.logSum(getWeight(obj), delta));
-
-    /*
-    if (delta > 0 && Math.abs(delta / totalWeight) < acceptanceDeltaThreshold)
-      return;
-
-    double newWeight = getWeight(obj) + delta;
-    if (newWeight == 0) {
-      map.remove(normalizer.evaluate(obj));
-    } else {
-      map.put(normalizer.evaluate(obj), new Double(newWeight));
-    }
-
-    totalWeight += delta;
-    */
   }
 
   /**
