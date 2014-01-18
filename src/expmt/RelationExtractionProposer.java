@@ -112,6 +112,9 @@ public class RelationExtractionProposer implements Proposer {
   
   // HashMap for facts
   private HashMap<String, Object> factMap;
+  
+  // Random Number Generate
+  private Random rng;
 
   /**
    * Creates a new RelationExtractionProposer object for the given model.
@@ -231,7 +234,7 @@ public class RelationExtractionProposer implements Proposer {
     // 2) For each observed sentence, choose SourceFact (basically randomly choose a relation
     // to go with the argument pair). This assumes sentences are distinct.
     // 3) Also, set the holds variable for this fact to be true
-    Random rng = new Random();
+    rng = new Random();
     for (Object sentence : sentType.getGuaranteedObjects()) {
     	
     	// Choose relation randomly from all relations
