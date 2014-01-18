@@ -97,11 +97,7 @@ public class ArgSpecQuery extends AbstractQuery {
 
     for (Iterator iter = entries.iterator(); iter.hasNext();) {
       Histogram.Entry entry = (Histogram.Entry) iter.next();
-      // TODO make it general
-      // using plain weights
-      //      double prob = entry.getWeight() / histogram.getTotalWeight();
-      // using log weights
-      double prob = Math.exp(entry.getWeight() - histogram.getTotalWeight());
+      double prob = histogram.getProb(entry.getElement());
       s.println("\t" + prob + "\t" + entry.getElement());
     }
   }
@@ -110,7 +106,7 @@ public class ArgSpecQuery extends AbstractQuery {
     final List entries = new ArrayList(histogram.entrySet());
     for (Iterator iter = entries.iterator(); iter.hasNext();) {
       Histogram.Entry entry = (Histogram.Entry) iter.next();
-      double prob = entry.getWeight() / histogram.getTotalWeight();
+      double prob = histogram.getProb(entry.getElement());
       PrintStream s = getOutputFile(entry.getElement());
       s.println("\t" + numSamples + "\t" + prob);
     }
@@ -128,7 +124,7 @@ public class ArgSpecQuery extends AbstractQuery {
       Collections.sort(entries, c);
       for (Iterator iter = entries.iterator(); iter.hasNext();) {
         Histogram.Entry entry = (Histogram.Entry) iter.next();
-        double prob = entry.getWeight() / histogram.getTotalWeight();
+        double prob = histogram.getProb(entry.getElement());
         outputFile.println("\t" + entry.getElement() + "\t" + prob);
       }
     }
@@ -173,15 +169,9 @@ public class ArgSpecQuery extends AbstractQuery {
     return errors;
   }
 
-  public void updateStats(PartialWorld world, double weight) {
-    // System.out.println("ArqSpecQuery.updateStats: World is " +
-    // System.identityHashCode(world));
+  public void updateStats(PartialWorld world, double logWeight) {
     Object value = getArgSpec().evaluate(world);
-    // System.out.println("ArqSpecQuery.updateStats: " + argSpec +
-    // " determined as " + value);
-    // System.out.println("ArgSpecQuery: increasing weight of " + value + " by "
-    // + weight);
-    histogram.increaseWeight(value, weight);
+    histogram.increaseWeight(value, logWeight);
   }
 
   public void setPosterior(Factor posterior) {
@@ -292,8 +282,8 @@ public class ArgSpecQuery extends AbstractQuery {
 
   private static Comparator WEIGHT_COMPARATOR = new Comparator() {
     public int compare(Object o1, Object o2) {
-      double diff = (((Histogram.Entry) o1).getWeight() - ((Histogram.Entry) o2)
-          .getWeight());
+      double diff = (((Histogram.Entry) o1).getLogWeight() - ((Histogram.Entry) o2)
+          .getLogWeight());
       if (diff < 0) {
         return 1;
       } else if (diff > 0) {

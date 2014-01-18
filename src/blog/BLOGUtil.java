@@ -433,6 +433,6 @@ public class BLOGUtil {
 			String valueString) {
 		Histogram hist = query.getHistogram();
 		Object value = model.getConstantValue(valueString);
-		return hist.getWeight(value) / hist.getTotalWeight();
+        return hist.getLogProb(value);
 	}
 }

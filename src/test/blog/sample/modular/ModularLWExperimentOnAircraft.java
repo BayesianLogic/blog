@@ -60,7 +60,7 @@ public class ModularLWExperimentOnAircraft {
 				for (Iterator iter = hist.entrySet().iterator(); iter.hasNext();) {
 					Histogram.Entry entry = (Histogram.Entry) iter.next();
 					int x = ((Integer) entry.getElement()).intValue();
-					double prob = entry.getWeight() / hist.getTotalWeight();
+					double prob = hist.getProb(entry.getElement());
 					if (x < N)
 						res[x] = prob;
 				}
