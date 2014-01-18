@@ -65,7 +65,6 @@ CLASSES = Bernoulli.class \
 	FibHeap.class \
 	SamplingMultiset.class \
 	SetWithDistrib.class \
-	LogHistogram.class \
 	IndexedSortedSet.class \
 	IndexedTreeSet.class \
 	IndexedTreeSetDiff.class \
