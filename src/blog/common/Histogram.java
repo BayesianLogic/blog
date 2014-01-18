@@ -50,9 +50,9 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * A mapping from objects to weights, which are real numbers. A Histogram
+ * A mapping from objects to log-weights, which are real numbers. A Histogram
  * maintains an internal map from objects to Doubles, and also keeps track of
- * the sum of the weights. If the <code>sorted</code> flag is specified at
+ * the log-sum of the weights. If the <code>sorted</code> flag is specified at
  * construction, then the Histogram uses a sorted map so that sampling results
  * are reproducible.
  * 
@@ -62,8 +62,8 @@ import java.util.TreeMap;
  * represented. The <code>iterator</code> method only allows you to iterate over
  * objects with non-zero weight; if you want to iterate over other objects, you
  * need to enumerate those objects in some other way, and call
- * <code>getWeight</code> for each one.
- * 
+ * <code>getLogWeight</code> for each one.
+ *
  * The class accepts a normalizer, that is, a UnaryFunction mapping each
  * possible element to a representative in a user-defined equivalency class. The
  * representative is the one stored in the histogram. By default, the normalizer
@@ -107,10 +107,11 @@ public class Histogram implements SetWithDistrib {
   }
 
   /**
-   * Returns the weight of the given object in this histogram. If the object is
-   * not explicitly represented in the histogram, its weight is zero.
+   * Returns the log weight of the given object in this histogram. If the
+   * object is not explicitly represented in the histogram, its log weight is
+   * -inf.
    */
-  public double getWeight(Object obj) {
+  public double getLogWeight(Object obj) {
     if (obj == null) {
         return Double.NEGATIVE_INFINITY;
     }
@@ -123,26 +124,18 @@ public class Histogram implements SetWithDistrib {
   }
 
   /**
-   * Returns the sum of the weights of all objects in this histogram.
+   * Return the log of the sum of the weights of all objects in this histogram.
    */
-  public double getTotalWeight() {
-    return totalWeight;
+  public double getTotalLogWeight() {
+    return totalLogWeight;
   }
 
   /**
-   * Returns the probability of the given object being sampled, according to its
+   * Return the probability of the given object being sampled, according to its
    * weight.
    */
   public double getProb(Object o) {
-    if (o == null) {
-      return 0;
-    }
-
-    Double value = (Double) map.get(normalizer.evaluate(o));
-    if (value == null) {
-      return 0;
-    }
-    return value.doubleValue() / totalWeight;
+    return java.lang.Math.exp(getLogProb(o));
   }
 
   /**
@@ -150,7 +143,11 @@ public class Histogram implements SetWithDistrib {
    * its weight.
    */
   public double getLogProb(Object o) {
-    return Math.log(getProb(o));
+    Double value = (Double) map.get(normalizer.evaluate(o));
+    if(value == null) {
+        return Double.NEGATIVE_INFINITY;
+    }
+    return value - totalLogWeight;
   }
 
   /**
@@ -158,9 +155,9 @@ public class Histogram implements SetWithDistrib {
    * object was not explicitly represented in the histogram, its old weight is
    * considered to be zero.
    */
-  public void increaseWeight(Object obj, double delta) {
-      totalWeight = Util.logSum(totalWeight, delta);
-      map.put(obj, Util.logSum(getWeight(obj), delta));
+  public void increaseWeight(Object obj, double logWeight) {
+      totalLogWeight = Util.logSum(totalLogWeight, logWeight);
+      map.put(obj, Util.logSum(getLogWeight(obj), logWeight));
   }
 
   /**
@@ -168,7 +165,7 @@ public class Histogram implements SetWithDistrib {
    */
   public void clear() {
     initMap();
-    totalWeight = 0;
+    totalLogWeight = Double.NEGATIVE_INFINITY;
   }
 
   /**
@@ -188,6 +185,10 @@ public class Histogram implements SetWithDistrib {
   }
 
   public Object sample() {
+    // FIXME: make this use log weights
+    return null;
+
+    /*
     double remaining = Util.random() * totalWeight;
     Object o = null;
     for (Iterator iter = map.entrySet().iterator(); iter.hasNext();) {
@@ -199,6 +200,7 @@ public class Histogram implements SetWithDistrib {
       }
     }
     return o;
+    */
   }
 
   /**
@@ -234,6 +236,9 @@ public class Histogram implements SetWithDistrib {
    * <code>(1 - percentile)</code> of the total weight remains.
    */
   public void prune(double percentile) {
+    // FIXME: make this use log weights
+
+    /*
     List entries = new ArrayList(map.entrySet());
     Collections.sort(entries, WEIGHT_COMPARATOR);
     double remainingWeight = totalWeight;
@@ -252,6 +257,7 @@ public class Histogram implements SetWithDistrib {
       Map.Entry entry = (Map.Entry) it.next();
       increaseWeight(entry.getKey(), -((Double) entry.getValue()).doubleValue());
     }
+    */
   }
 
   /**
@@ -260,6 +266,10 @@ public class Histogram implements SetWithDistrib {
    * total mass.
    */
   public Collection getNBestButInUpper(int n, double percentile) {
+    // FIXME: make this use log weights
+    return null;
+
+    /*
     List entries = new ArrayList(map.entrySet());
     Collections.sort(entries, WEIGHT_COMPARATOR);
     double remainingWeight = totalWeight;
@@ -275,6 +285,7 @@ public class Histogram implements SetWithDistrib {
     }
 
     return result;
+    */
   }
 
   private void initMap() {
@@ -289,9 +300,9 @@ public class Histogram implements SetWithDistrib {
    * Nested class for the entries in a histogram.
    */
   public static class Entry {
-    Entry(Object obj, double weight) {
+    Entry(Object obj, double logWeight) {
       this.obj = obj;
-      this.weight = weight;
+      this.logWeight = logWeight;
     }
 
     /**
@@ -302,16 +313,16 @@ public class Histogram implements SetWithDistrib {
     }
 
     /**
-     * Returns the weight of the object.
+     * Returns the log weight of the object.
      */
-    public double getWeight() {
-      return weight;
+    public double getLogWeight() {
+      return logWeight;
     }
 
     public boolean equals(Object o) {
       if (o instanceof Histogram.Entry) {
         Histogram.Entry other = (Histogram.Entry) o;
-        return (other.getElement().equals(obj) && (other.getWeight() == weight));
+        return (other.getElement().equals(obj) && (other.getLogWeight() == logWeight));
       }
       return false;
     }
@@ -321,11 +332,11 @@ public class Histogram implements SetWithDistrib {
     }
 
     public String toString() {
-      return ("(" + obj + ", " + weight + ")");
+      return ("(" + obj + ", " + logWeight + ")");
     }
 
     private Object obj;
-    private double weight;
+    private double logWeight;
   }
 
   private class EntrySet extends AbstractSet {
@@ -344,8 +355,8 @@ public class Histogram implements SetWithDistrib {
 
       public Object next() {
         Map.Entry mapEntry = (Map.Entry) mapIter.next();
-        double weight = ((Double) mapEntry.getValue()).doubleValue();
-        return new Histogram.Entry(mapEntry.getKey(), weight);
+        double logWeight = ((Double) mapEntry.getValue()).doubleValue();
+        return new Histogram.Entry(mapEntry.getKey(), logWeight);
       }
 
       public void remove() {
@@ -358,8 +369,8 @@ public class Histogram implements SetWithDistrib {
   }
 
   private boolean sorted = false;
-  private Map map;
-  private double totalWeight = 0;
+  private Map map;  // map of object to logWeight
+  private double totalLogWeight = Double.NEGATIVE_INFINITY;
   private EntrySet entrySet = new Histogram.EntrySet();
   private UnaryFunction normalizer = IdentityFunction.getInstance();
 }
