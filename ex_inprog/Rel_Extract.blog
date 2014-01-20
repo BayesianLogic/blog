@@ -4,7 +4,9 @@
 type Relation;
 //#Relation = 100;
 
-random Real Sparsity(Relation r) ~ Beta(10,1000); // beta, gamma parameters
+fixed Real alpha = 10;
+fixed Real beta = 100;
+random Real Sparsity(Relation r) ~ Beta(alpha, beta);
 
 type Entity;
 //#Entity = 4;

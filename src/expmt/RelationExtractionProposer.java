@@ -193,17 +193,16 @@ public class RelationExtractionProposer implements Proposer {
    * Please look to that file for details.
    */
   public double proposeNextState(PartialWorldDiff proposedWorld) {
-	  double sample = rng.nextDouble();
-	  if (sample < 0.25) {
-		  return sourceFactSwitch(proposedWorld);
-	  } else if (sample < 0.5) {
-		  return holdsSwitch(proposedWorld);
-	  } else if (sample < 0.75) {
-		  return sparsitySample(proposedWorld);
-	  } else {
-		  return thetaSample(proposedWorld);
-	  }
-
+	double sample = rng.nextDouble();
+	if (sample < 0.25) {
+	  return sourceFactSwitch(proposedWorld);
+	} else if (sample < 0.5) {
+	  return holdsSwitch(proposedWorld);
+    } else if (sample < 0.75) {
+	  return sparsitySample(proposedWorld);
+    } else {
+	  return thetaSample(proposedWorld);
+    }
   }
 
   /**
@@ -224,9 +223,33 @@ public class RelationExtractionProposer implements Proposer {
 
   /**
    * Method for performing sparsity sampling (this is Gibbs)
+   * 
+   * Hr := {Holds(f) : Rel(f) = r), refer for the Tex file for more details
    */
   private double sparsitySample(PartialWorldDiff proposedWorld) {
-    return 0;
+	
+  	// Choose relation randomly from all relations
+  	int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
+  	Object rel = relType.getGuaranteedObject(relNum);
+	  
+	// The size of Hr is simply the number of unique combinations of different entities
+	int sizeOfHr = (int) Math.pow(entType.getGuaranteedObjects().size(), 2);
+	int numOfTrueFactsInHr = 0;
+	for (Object fact : factMap.values()) {
+		Object factRel = ((NonGuaranteedObject) fact).getOriginFuncValue(relFunc);
+		if (factRel == rel) {
+			if (((Boolean) proposedWorld.getValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)))).booleanValue()) {
+				numOfTrueFactsInHr++;
+			}
+		}
+	}
+	
+	// Sample from posterior distribution 
+    Integer[] params = {alpha + numOfTrueFactsInHr, beta + sizeOfHr - numOfTrueFactsInHr};
+    System.out.println(numOfTrueFactsInHr);
+    System.out.println(sizeOfHr);
+    Beta sparsitySampler = new Beta(Arrays.asList(params));
+    return (Double) sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType);
   }
 
   /**
