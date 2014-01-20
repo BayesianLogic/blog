@@ -193,7 +193,16 @@ public class RelationExtractionProposer implements Proposer {
    * Please look to that file for details.
    */
   public double proposeNextState(PartialWorldDiff proposedWorld) {
-    return 0;
+	  double sample = rng.nextDouble();
+	  if (sample < 0.25) {
+		  return sourceFactSwitch(proposedWorld);
+	  } else if (sample < 0.5) {
+		  return holdsSwitch(proposedWorld);
+	  } else if (sample < 0.75) {
+		  return sparsitySample(proposedWorld);
+	  } else {
+		  return thetaSample(proposedWorld);
+	  }
 
   }
 
@@ -223,7 +232,7 @@ public class RelationExtractionProposer implements Proposer {
   /**
    * Method for performing theta sampling (this is Gibbs)
    */
-  private double thetaSampling(PartialWorldDiff proposedWorld) {
+  private double thetaSample(PartialWorldDiff proposedWorld) {
     return 0;
   }
 
