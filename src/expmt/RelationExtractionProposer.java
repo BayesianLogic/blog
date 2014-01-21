@@ -35,6 +35,11 @@
 
 package expmt;
 
+<<<<<<< HEAD
+=======
+import java.util.ArrayList;
+import java.util.Arrays;
+>>>>>>> Finish holdsSwitch method
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +48,14 @@ import java.util.Properties;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.bn.NumberVar;
+<<<<<<< HEAD
+=======
+import blog.bn.VarWithDistrib;
+import blog.common.Util;
+import blog.distrib.Beta;
+import blog.distrib.Dirichlet;
+import blog.distrib.UniformChoice;
+>>>>>>> Finish holdsSwitch method
 import blog.model.Evidence;
 import blog.model.FunctionSignature;
 import blog.model.Model;
@@ -86,6 +99,23 @@ public class RelationExtractionProposer implements Proposer {
   private RandomFunction objectFunc;
   private RandomFunction triggerIDFunc;
   private RandomFunction verbFunc;
+<<<<<<< HEAD
+=======
+  
+  // Origin functions
+  private OriginFunction relFunc;
+  private OriginFunction arg1Func;
+  private OriginFunction arg2Func;
+  
+  // HashMap for facts
+  private HashMap<String, Object> factMap;
+  
+  // Random Number Generate
+  private Random rng;
+  
+  // HashMap of supporting fact -> List of sentences that express it
+  private HashMap<Object, List> supportedFacts;
+>>>>>>> Finish holdsSwitch method
 
   /**
    * Creates a new RelationExtractionProposer object for the given model.
@@ -203,8 +233,9 @@ public class RelationExtractionProposer implements Proposer {
     }
     
     // 2) For each observed sentence, choose SourceFact (basically randomly choose a relation
-    // to go with the argument pair). This assumes sentences are distinct.
+    // to go with the argument pair). This assumes sentences are distinct. Add SourceFact to Set of supported facts.
     // 3) Also, set the holds variable for this fact to be true
+    supportedFacts = new HashMap();
     rng = new Random();
     for (Object sentence : sentType.getGuaranteedObjects()) {
     	
@@ -217,6 +248,15 @@ public class RelationExtractionProposer implements Proposer {
     	// 2) Set the sourceFact value in the world
     	Object fact = factMap.get(generateKey(rel, arg1, arg2));
     	world.setValue(new RandFuncAppVar(sourceFactFunc, Collections.singletonList(sentence)), fact);
+    	
+    	// Update hashmap of supporting facts accordingly
+    	if (supportedFacts.containsKey(fact)) {
+    		supportedFacts.get(fact).add(sentence);
+    	} else {
+    		ArrayList sentences = new ArrayList();
+    		sentences.add(sentence);
+    		supportedFacts.put(fact, sentences);
+    	}
     	    	
     	// 3) Set the Holds value in the world
     	world.setValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)), true); // I hope this is correct, and there isn't some class for BLOG booleans
@@ -294,6 +334,12 @@ public class RelationExtractionProposer implements Proposer {
 
   /**
    * Method for performing sourceFact(s) switch
+   * 
+   * 1) Choose a random sentence s
+   * 2) Create multinomial vector
+   * 3) Sample relation from multinomial vector
+   * 4) Set newSourceFact appropriately (update set of supported facts accordingly)
+   * 5) Sample previousSourceFact if unsupporting
    */
   private double sourceFactSwitch(PartialWorldDiff proposedWorld) {
     return 0;
@@ -302,16 +348,83 @@ public class RelationExtractionProposer implements Proposer {
 
   /**
    * Method for performing Holds(f) switch
+   * 
+   * 1) Calculate number of true facts
+   * 2) Choose a random Holds(f) that is unsupported
+   * 3) Sample it based on sparsity(Rel(f))
+   * 4) Calculate number of true facts in new state and return log proposal ratio
    */
   private double holdsSwitch(PartialWorldDiff proposedWorld) {
-    return 0;
+	
+	// 1) Run through all facts, find the number of true facts in current state and get set of unsupported facts
+	int numTrueFactsInOldState = 0;
+	Set unsupportedFacts = new HashSet();
+	for (Object fact : factMap.values()) {
+		if ((Boolean) proposedWorld.getValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)))) {
+			numTrueFactsInOldState++;
+		}
+		if (!supportedFacts.containsKey(fact)) {
+			unsupportedFacts.add(fact);
+		}
+	}
+	
+	// 2) Randomly choose a Holds(f) from unsupported set of facts
+	Object factChoice = sampleUniformlyFromSet(unsupportedFacts);
+	
+	// 3) Sample it based on sparsity
+	RandFuncAppVar holds = new RandFuncAppVar(holdsFunc, Collections.singletonList(factChoice));
+	Object factChoiceRel = ((NonGuaranteedObject) factChoice).getOriginFuncValue(relFunc);
+	RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(factChoiceRel));
 
+	// Used for calculating number of true facts in new state
+	boolean current = ((Boolean) proposedWorld.getValue(holds)).booleanValue();
+	boolean sample;
+	
+	// Sampling process
+	if (rng.nextDouble() < (Double) proposedWorld.getValue(sparsity)) {
+		sample = true;
+	} else {
+		sample = false;
+	}
+	proposedWorld.setValue(holds, sample); // Set the new value in the world
+	
+	// 4) See if number of true facts changed
+	int numTrueFactsInNewState = numTrueFactsInOldState;
+	if (!(current == sample)) {
+		if (current == true && sample == false) {
+			numTrueFactsInNewState--;
+		} else if (current == false && sample == true) {
+			numTrueFactsInNewState++;
+		}
+	}
+	
+	// Return log proposal ratio. More details in Tex file
+	int numSentences = sentType.getGuaranteedObjects().size();
+    return numSentences * Math.log(numTrueFactsInOldState/numTrueFactsInNewState);
+
+  }
+  
+  // Uniformly sample an element from a Set s. Used in holdsSwitch() method
+  private Object sampleUniformlyFromSet(Set s) {
+	
+	int n = Util.randInt(s.size());
+	int index = 0;
+	for (Object item : s) {
+		if (index == n) {
+			return item;
+		}
+		index++;
+	}
+	return null;
+	  
   }
 
   /**
    * Method for performing sparsity sampling (this is Gibbs)
    * 
    * Hr := {Holds(f) : Rel(f) = r), refer for the Tex file for more details
+   * 
+   * Basically, sample from posterior Beta distribution
    */
   private double sparsitySample(PartialWorldDiff proposedWorld) {
 	
@@ -344,6 +457,8 @@ public class RelationExtractionProposer implements Proposer {
    * Method for performing theta sampling (this is Gibbs)
    * 
    * Refer to the Tex file for more details
+   * 
+   * Basically, sample from posterior Dirichlet Distribution
    */
   private double thetaSample(PartialWorldDiff proposedWorld) {
 	
