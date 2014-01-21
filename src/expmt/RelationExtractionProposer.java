@@ -244,12 +244,13 @@ public class RelationExtractionProposer implements Proposer {
 		}
 	}
 	
-	// Sample from posterior distribution 
+	// Sample from posterior distribution, set the value in the world
     Integer[] params = {alpha + numOfTrueFactsInHr, beta + sizeOfHr - numOfTrueFactsInHr};
-    System.out.println(numOfTrueFactsInHr);
-    System.out.println(sizeOfHr);
     Beta sparsitySampler = new Beta(Arrays.asList(params));
-    return (Double) sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType);
+    RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel));
+    proposedWorld.setValue(sparsity, sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType));
+    
+    return 0; // Gibbs
   }
 
   /**
