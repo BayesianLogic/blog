@@ -178,6 +178,93 @@ public class RelationExtractionProposer implements Proposer {
     }
     System.out.println(world.toString());
 
+    // Create hashmap where key is a unique relation/arg pair, value is a fact
+    factMap = new HashMap<String, Object>(); 
+    
+    for (Object rel : relType.getGuaranteedObjects()) {
+    	for (Object arg1 : entType.getGuaranteedObjects()) {
+    		for (Object arg2 : entType.getGuaranteedObjects()) {
+    			
+    			// The key
+    			String key = generateKey(rel, arg1, arg2);
+    			
+    			// Use a NumberVar to grab the fact
+    			Object[] factArgs = {rel, arg1, arg2};
+    		    NumberVar nFacts = new NumberVar(factPOP, factArgs);
+    		    
+    		    // 4a) Instantiate the number variable, by definition of the model
+    		    world.setValue(nFacts, 1);
+    		    
+    			Object value = world.getSatisfiers(nFacts).iterator().next(); // Should only be one fact that satisfies that number statement
+    			
+    			factMap.put(key, value);
+    		}
+    	}
+    }
+    
+    // 2) For each observed sentence, choose SourceFact (basically randomly choose a relation
+    // to go with the argument pair). This assumes sentences are distinct.
+    // 3) Also, set the holds variable for this fact to be true
+    rng = new Random();
+    for (Object sentence : sentType.getGuaranteedObjects()) {
+    	
+    	// Choose relation randomly from all relations
+    	int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
+    	Object rel = relType.getGuaranteedObject(relNum);
+    	Object arg1 = world.getValue(new RandFuncAppVar(subjectFunc, Collections.singletonList(sentence)));
+    	Object arg2 = world.getValue(new RandFuncAppVar(objectFunc, Collections.singletonList(sentence)));
+    	
+    	// 2) Set the sourceFact value in the world
+    	Object fact = factMap.get(generateKey(rel, arg1, arg2));
+    	world.setValue(new RandFuncAppVar(sourceFactFunc, Collections.singletonList(sentence)), fact);
+    	    	
+    	// 3) Set the Holds value in the world
+    	world.setValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)), true); // I hope this is correct, and there isn't some class for BLOG booleans
+    }
+    
+    // 4b and c) Sample Sparsity(r) and Theta(r) for each relation r
+    Integer[] params = {alpha, beta};
+    Beta sparsitySampler = new Beta(Arrays.asList(params));
+    Dirichlet thetaSampler = new Dirichlet(trigType.getGuaranteedObjects().size(), dir_alpha);
+    for (Object rel : relType.getGuaranteedObjects()) {
+    	
+    	// 4b) Sparsity(r)
+    	RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel));
+    	world.setValue(sparsity, sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType));
+    	
+    	// 4c) Theta(r)
+    	RandFuncAppVar theta = new RandFuncAppVar(thetaFunc, Collections.singletonList(rel));
+    	world.setValue(theta, thetaSampler.sampleVal(Collections.EMPTY_LIST, relType)); 
+    	    	
+    }
+    
+    
+    // 4d) Sample all holds(f) values if they haven't been instantiated
+    for (Object fact: factMap.values()) {
+    	
+    	RandFuncAppVar holds = new RandFuncAppVar(holdsFunc, Collections.singletonList(fact));
+    	if (!world.isInstantiated(holds)) {
+    		
+    		Object rel = ((NonGuaranteedObject) fact).getOriginFuncValue(relFunc);
+    		if (rng.nextDouble() < (Double) world.getValue(new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel)))) {
+    			world.setValue(holds, true);
+    		} else {
+    			world.setValue(holds, false);
+    		}	
+    	}
+    }
+    
+    // Debug
+    if (Util.verbose()) {
+	    for (Object fact : factMap.values()) {
+	    	
+	    	Object holds = world.getValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)));
+	    	System.out.println("Fact: " + fact + ", Holds: " + holds);
+	    	
+	    }
+	    System.out.println(world.toString());
+    }
+    
     return world;
 
   }
@@ -250,14 +337,39 @@ public class RelationExtractionProposer implements Proposer {
     RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel));
     proposedWorld.setValue(sparsity, sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType));
     
-    return 0; // Gibbs
+    return 0; // Gibbs, may have to figure this out later with MHSampler.java
   }
 
   /**
    * Method for performing theta sampling (this is Gibbs)
+   * 
+   * Refer to the Tex file for more details
    */
   private double thetaSample(PartialWorldDiff proposedWorld) {
-    return 0;
+	
+  	// Choose relation randomly from all relations
+  	int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
+  	Object rel = relType.getGuaranteedObject(relNum);
+	  
+	// Create parameter vector
+	Double[] params = new Double[trigType.getGuaranteedObjects().size()];
+	Arrays.fill(params, dir_alpha);
+	
+	// For each trigger (indexed by i), find how many TriggerID(s) rv's have that value
+	for (int i = 0; i < params.length; i++) {
+		for (Object sentence : sentType.getGuaranteedObjects()) {
+			RandFuncAppVar triggerID = new RandFuncAppVar(triggerIDFunc, Collections.singletonList(sentence));
+			if (proposedWorld.getValue(triggerID).equals(i)) {
+				params[i]++;
+			}
+		}
+	}
+	// Sample from posterior distribution, set the value in the world
+    Dirichlet thetaSampler = new Dirichlet(Arrays.asList(params));
+    RandFuncAppVar theta = new RandFuncAppVar(thetaFunc, Collections.singletonList(rel));
+    proposedWorld.setValue(theta, thetaSampler.sampleVal(Collections.EMPTY_LIST, relType));
+  
+    return 0; // Gibbs, may have to figure this out later with MHSampler.java
   }
 
   /**
