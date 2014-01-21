@@ -254,7 +254,7 @@ public class RelationExtractionProposer implements Proposer {
     // 4b and c) Sample Sparsity(r) and Theta(r) for each relation r
     Integer[] params = {alpha, beta};
     Beta sparsitySampler = new Beta(Arrays.asList(params));
-    Dirichlet thetaSampler = new Dirichlet(trigType.getGuaranteedObjects().size(), dir_alpha); // This needs to change, need to implement a new dirichlet dist
+    Dirichlet thetaSampler = new Dirichlet(trigType.getGuaranteedObjects().size(), dir_alpha);
     for (Object rel : relType.getGuaranteedObjects()) {
     	
     	// 4b) Sparsity(r)
@@ -366,14 +366,39 @@ public class RelationExtractionProposer implements Proposer {
     RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel));
     proposedWorld.setValue(sparsity, sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType));
     
-    return 0; // Gibbs
+    return 0; // Gibbs, may have to figure this out later with MHSampler.java
   }
 
   /**
    * Method for performing theta sampling (this is Gibbs)
+   * 
+   * Refer to the Tex file for more details
    */
   private double thetaSample(PartialWorldDiff proposedWorld) {
-    return 0;
+	
+  	// Choose relation randomly from all relations
+  	int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
+  	Object rel = relType.getGuaranteedObject(relNum);
+	  
+	// Create parameter vector
+	Double[] params = new Double[trigType.getGuaranteedObjects().size()];
+	Arrays.fill(params, dir_alpha);
+	
+	// For each trigger (indexed by i), find how many TriggerID(s) rv's have that value
+	for (int i = 0; i < params.length; i++) {
+		for (Object sentence : sentType.getGuaranteedObjects()) {
+			RandFuncAppVar triggerID = new RandFuncAppVar(triggerIDFunc, Collections.singletonList(sentence));
+			if (proposedWorld.getValue(triggerID).equals(i)) {
+				params[i]++;
+			}
+		}
+	}
+	// Sample from posterior distribution, set the value in the world
+    Dirichlet thetaSampler = new Dirichlet(Arrays.asList(params));
+    RandFuncAppVar theta = new RandFuncAppVar(thetaFunc, Collections.singletonList(rel));
+    proposedWorld.setValue(theta, thetaSampler.sampleVal(Collections.EMPTY_LIST, relType));
+  
+    return 0; // Gibbs, may have to figure this out later with MHSampler.java
   }
 
   /**
