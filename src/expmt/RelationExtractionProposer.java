@@ -35,27 +35,24 @@
 
 package expmt;
 
-<<<<<<< HEAD
-=======
 import java.util.ArrayList;
 import java.util.Arrays;
->>>>>>> Finish holdsSwitch method
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import Jama.Matrix;
+
+import blog.BLOGUtil;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.bn.NumberVar;
-<<<<<<< HEAD
-=======
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.distrib.Beta;
 import blog.distrib.Dirichlet;
 import blog.distrib.UniformChoice;
->>>>>>> Finish holdsSwitch method
 import blog.model.Evidence;
 import blog.model.FunctionSignature;
 import blog.model.Model;
@@ -99,8 +96,6 @@ public class RelationExtractionProposer implements Proposer {
   private RandomFunction objectFunc;
   private RandomFunction triggerIDFunc;
   private RandomFunction verbFunc;
-<<<<<<< HEAD
-=======
   
   // Origin functions
   private OriginFunction relFunc;
@@ -115,7 +110,6 @@ public class RelationExtractionProposer implements Proposer {
   
   // HashMap of supporting fact -> List of sentences that express it
   private HashMap<Object, List> supportedFacts;
->>>>>>> Finish holdsSwitch method
 
   /**
    * Creates a new RelationExtractionProposer object for the given model.
@@ -335,13 +329,54 @@ public class RelationExtractionProposer implements Proposer {
   /**
    * Method for performing sourceFact(s) switch
    * 
-   * 1) Choose a random sentence s
+   * 1) Choose a random sentence
    * 2) Create multinomial vector
    * 3) Sample relation from multinomial vector
    * 4) Set newSourceFact appropriately (update set of supported facts accordingly)
    * 5) Sample previousSourceFact if unsupporting
    */
   private double sourceFactSwitch(PartialWorldDiff proposedWorld) {
+	  
+  	// Choose sentence s randomly from all sentences
+  	int sentNum = rng.nextInt(sentType.getGuaranteedObjects().size());
+  	Object sentence = sentType.getGuaranteedObject(sentNum);
+  	
+  	// Get previous source fact
+  	Object previousSourceFact = proposedWorld.getValue(new RandFuncAppVar(sourceFactFunc, Collections.singletonList(sentence)));
+  	
+  	// Get triggerID(sentence)
+  	int triggerID = (Integer) proposedWorld.getValue(new RandFuncAppVar(triggerIDFunc, Collections.singletonList(sentence)));
+  	
+  	// Create multinomial vector M
+  	double[] M = new double[relType.getGuaranteedObjects().size()];
+  	for (int i = 0; i < relType.getGuaranteedObjects().size(); i++) {
+  		
+  		Object rel = relType.getGuaranteedObject(i);
+  		Matrix theta = (Matrix) proposedWorld.getValue(new RandFuncAppVar(thetaFunc, Collections.singletonList(rel)));
+  		M[i] = theta.get(1, triggerID);
+  		
+  	}
+  	
+  	// Sample relation from M
+  	int newRelNum = Util.sampleWithProbs(M);
+  	Object newRel = relType.getGuaranteedObject(newRelNum);
+  	
+  	// Pair this relation with arg pair to get new source fact
+  	Object arg1 = proposedWorld.getValue(new RandFuncAppVar(subjectFunc, Collections.singletonList(sentence)));
+  	Object arg2 = proposedWorld.getValue(new RandFuncAppVar(objectFunc, Collections.singletonList(sentence)));
+  	Object newSourceFact = factMap.get(generateKey(newRel, arg1, arg2));
+  	
+  	// Update hashmap of supported facts appropriately
+  	// Remove from previous source fact list
+  	// Remove key from dictionary if list is size 0
+  	// Add to new source fact list (check if key is present)
+  	
+  	
+  	// Sample previous source fact if unsupporting
+  	
+  	
+  	// Calculate and return log proposal ratio
+	  
     return 0;
 
   }
@@ -400,7 +435,7 @@ public class RelationExtractionProposer implements Proposer {
 	
 	// Return log proposal ratio. More details in Tex file
 	int numSentences = sentType.getGuaranteedObjects().size();
-    return numSentences * Math.log(numTrueFactsInOldState/numTrueFactsInNewState);
+    return numSentences * Math.log(numTrueFactsInOldState/numTrueFactsInNewState); // this needs to be changed, this is log acceptance ratio, not log proposal ratio
 
   }
   
@@ -424,7 +459,7 @@ public class RelationExtractionProposer implements Proposer {
    * 
    * Hr := {Holds(f) : Rel(f) = r), refer for the Tex file for more details
    * 
-   * Basically, sample from posterior Beta distribution
+   * Sample from posterior Beta distribution
    */
   private double sparsitySample(PartialWorldDiff proposedWorld) {
 	
@@ -458,7 +493,7 @@ public class RelationExtractionProposer implements Proposer {
    * 
    * Refer to the Tex file for more details
    * 
-   * Basically, sample from posterior Dirichlet Distribution
+   * Sample from posterior Dirichlet Distribution
    */
   private double thetaSample(PartialWorldDiff proposedWorld) {
 	
