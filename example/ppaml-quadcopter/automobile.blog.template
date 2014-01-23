@@ -53,34 +53,38 @@ fixed Real[][] sigma_0 = {{ model.sigma_0|blog_matrix }};
 
 /* Dynamics model: */
 
-random Real[] state(Timestep t) {
-    if t == @0 then ~ MultivarGaussian(mu_0, sigma_0)
-    else ~ MultivarGaussian(A * state(Prev(t)) + B * controls(Prev(t)), V)
-};
+random Real[] state_0 ~ MultivarGaussian(mu_0, sigma_0);
+
+{% for timestep in range(1, last_timestep + 1) %}
+random Real[] state_{{ timestep }}
+    ~ MultivarGaussian(A * state_{{ timestep - 1 }} + B * controls_{{ timestep - 1 }}, V);
+{%- endfor %}
 
 
 /* Observation model: */
 
-random Real[] sensors(Timestep t)
-    ~ MultivarGaussian(C * state(t), W);
+{% for timestep in range(last_timestep + 1) %}
+random Real[] sensors_{{ timestep }}
+    ~ MultivarGaussian(C * state_{{ timestep }}, W);
+{%- endfor %}
 
 
 /* The controls are fixed values. */
 
 {% for ctl in controls %}
-fixed Real[] controls(@{{ ctl.timestep }}) = {{ ctl.controls|blog_column_vector }};
+fixed Real[] controls_{{ ctl.timestep }} = {{ ctl.controls|blog_column_vector }};
 {%- endfor %}
 
 
 /* Observations: */
 
 {% for obs in observations %}
-    obs sensors(@{{ obs.timestep }}) = {{ obs.sensors|blog_column_vector }};
+    obs sensors_{{ obs.timestep }} = {{ obs.sensors|blog_column_vector }};
 {%- endfor %}
 
 
 /* Query the hidden state: */
 
-{% for timestep in range(last_timestep) %}
-query state(@{{ timestep }});
+{% for timestep in range(last_timestep + 1) %}
+query state_{{ timestep }};
 {%- endfor %}
