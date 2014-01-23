@@ -10,8 +10,9 @@ At each time step, we have:
 - observations: laser (361 readings), intensity (361 readings)
 - controls: velocity, steering
 
-Because of time discretization, the sensors and controls are observed only some
-of the time. The state is always hidden.
+The state is always hidden. The sensors are observed only in some time steps,
+because of time discretization. The controls are implemented as fixed values
+rather than random variables, because that makes sampling faster.
 
 Our model is discrete-time linear Gaussian:
 
@@ -64,27 +65,17 @@ random Real[] sensors(Timestep t)
     ~ MultivarGaussian(C * state(t), W);
 
 
-/* All controls should be observed, but we still need to define this function,
- * or else we get an error. So we provide a dummy prior here: */
+/* The controls are fixed values. */
 
-fixed Real[] mu_controls = [0; 0];
-
-fixed Real[][] sigma_controls = [
-    [1, 0],
-    [0, 1]
-];
-
-random Real[] controls(Timestep t) ~ MultivarGaussian(mu_controls, sigma_controls);
+{% for ctl in controls %}
+fixed Real[] controls(@{{ ctl.timestep }}) = {{ ctl.controls|blog_column_vector }};
+{%- endfor %}
 
 
 /* Observations: */
 
 {% for obs in observations %}
     obs sensors(@{{ obs.timestep }}) = {{ obs.sensors|blog_column_vector }};
-{%- endfor %}
-
-{% for ctl in controls %}
-obs controls(@{{ ctl.timestep }}) = {{ ctl.controls|blog_column_vector }};
 {%- endfor %}
 
 

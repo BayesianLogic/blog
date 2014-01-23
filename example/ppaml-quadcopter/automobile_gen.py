@@ -68,18 +68,30 @@ def generate_model(disc_readings):
     model_vars['sigma_0'] = np.eye(state_size)
 
     # Observations and controls:
+    # (We fill in controls even at time steps where they are not observed.)
     last_timestep = disc_readings[-1].timestep
     observations = []
     controls = []
+    next_control_timestep = 0
+    prev_control = (0, 0)
     for reading in disc_readings:
         if reading.laser:
             observations.append(Observation(
                 timestep=reading.timestep,
                 sensors=reading.laser + reading.intensity))
         elif reading.velocity:
+            # Fill in unobserved timesteps with the previous control.
+            while next_control_timestep < reading.timestep:
+                controls.append(Control(
+                    timestep=next_control_timestep,
+                    controls=prev_control))
+                next_control_timestep += 1
+            # Add the new control:
             controls.append(Control(
                 timestep=reading.timestep,
                 controls=(reading.velocity, reading.steering)))
+            next_control_timestep += 1
+            prev_control = (reading.velocity, reading.steering)
         else:
             pass  # skip GPS readings
 
