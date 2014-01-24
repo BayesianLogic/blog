@@ -3,8 +3,8 @@
 """
 Use this script to generate a model with a given number of samples:
 
-./example_gen.py 20 >example-20.blog
-./example_gen.py 1000 >example-1000.blog
+./univar_gen.py 20 >univar-20.blog
+./univar_gen.py 1000 >univar-1000.blog
 """
 
 
@@ -30,7 +30,7 @@ def generate_model(mean, variance, num_samples):
 
     # Generate the model.
     env = Environment(loader=FileSystemLoader('.'))
-    template = env.get_template('example.blog.template')
+    template = env.get_template('univar.blog.template')
     return template.render(observations=observations)
 
 
