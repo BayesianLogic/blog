@@ -87,6 +87,11 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
+  public double trace() {
+    return values.trace();
+  }
+
+  @Override
   public MatrixLib transpose() {
     return new JamaMatrixLib(values.transpose());
   }

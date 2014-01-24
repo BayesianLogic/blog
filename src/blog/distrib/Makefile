@@ -17,6 +17,7 @@ CLASSES = Bernoulli.class \
 	UnivarGaussian.class \
 	Gaussian.class \
 	MultivarGaussian.class \
+	MatrixGaussian.class \
 	Geometric.class \
 	ListInterp.class \
 	TabularInterp.class \
@@ -67,6 +68,11 @@ Gaussian.class : Gaussian.java \
 	../CondProbDistrib.java \
 
 MultivarGaussian.class : MultivarGaussian.java \
+	UnivarGaussian.java \
+	../CondProbDistrib.java \
+	../../common/Util.java \
+
+MatrixGaussian.class : MatrixGaussian.java \
 	UnivarGaussian.java \
 	../CondProbDistrib.java \
 	../../common/Util.java \

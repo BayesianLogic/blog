@@ -74,6 +74,11 @@ public interface MatrixLib {
 	 * Returns the determinant of this matrix
 	 */
 	public double det();
+
+	/**
+	 * Return the trace of this matrix.
+	 */
+	public double trace();
 	
 	/**
 	 * Returns the transpose of this matrix
