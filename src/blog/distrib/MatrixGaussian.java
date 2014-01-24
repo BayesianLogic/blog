@@ -53,6 +53,18 @@ import blog.model.Type;
 public class MatrixGaussian extends AbstractCondProbDistrib {
 
     public MatrixGaussian(MatrixLib location, MatrixLib uScale, MatrixLib vScale) {
+        initParams(location, uScale, vScale);
+    }
+
+    public MatrixGaussian(List params) {
+        if (params.size() != 3) {
+            throw new IllegalArgumentException(
+                "MatrixGaussian expects 3 parameters.");
+        }
+        initParams((MatrixLib)params.get(0), (MatrixLib)params.get(1), (MatrixLib)params.get(2));
+    }
+
+    private void initParams(MatrixLib location, MatrixLib uScale, MatrixLib vScale) {
         if (location.rowLen() != uScale.rowLen() || location.rowLen() != uScale.colLen()) {
             throw new IllegalArgumentException(
                 "uScale does not match dimension of location");
