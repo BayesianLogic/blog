@@ -1,0 +1,26 @@
+{# This is the jinja2 template for generating our model. #}
+
+/*
+ * We get some samples from a MultivarGaussian with unknown parameters.
+ * The goal is to infer the mean and covariance.
+ */
+
+fixed Real[] mean_prior_mean = [0; 0; 0];
+fixed Real[][] mean_prior_cov = [[10, 0, 0],  [0, 10, 0],  [0, 0, 10]];
+
+fixed Real[][] var_prior_loc = [[1, 0, 0],  [0, 1, 0],  [0, 0, 1]];
+fixed Real[][] var_prior_u = [[1, 0, 0],  [0, 1, 0],  [0, 0, 1]];
+fixed Real[][] var_prior_v = [[1, 0, 0],  [0, 1, 0],  [0, 0, 1]];
+
+random Real[] mean ~ MultivarGaussian(mean_prior_mean, mean_prior_cov);
+random Real[][] covar ~ MatrixGaussian(var_prior_loc, var_prior_u, var_prior_v);
+
+random Real[] value(Timestep t) ~ MultivarGaussian(mean, covar);
+
+{% for obs in observations %}
+obs value(@{{ obs.timestep }}) = {{ obs.value|blog_column_vector }};
+{%- endfor %}
+
+// TODO: How do we display these nicely?
+query mean;
+query covar;
