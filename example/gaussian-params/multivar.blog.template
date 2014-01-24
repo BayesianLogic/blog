@@ -12,8 +12,13 @@ fixed Real[][] var_prior_loc = [[1, 0, 0],  [0, 1, 0],  [0, 0, 1]];
 fixed Real[][] var_prior_u = [[1, 0, 0],  [0, 1, 0],  [0, 0, 1]];
 fixed Real[][] var_prior_v = [[1, 0, 0],  [0, 1, 0],  [0, 0, 1]];
 
+// HACK: need a matrix because (scalar * matrix) multiplication is not supported
+fixed Real[][] half = [[0.5, 0.5, 0.5],  [0.5, 0.5, 0.5],  [0.5, 0.5, 0.5]];
+
 random Real[] mean ~ MultivarGaussian(mean_prior_mean, mean_prior_cov);
-random Real[][] covar ~ MatrixGaussian(var_prior_loc, var_prior_u, var_prior_v);
+random Real[][] covar_asym ~ MatrixGaussian(var_prior_loc, var_prior_u, var_prior_v);
+random Real[][] covar = half * (covar_asym + covar_asym);
+// FIXME need to implement transpose and add it above, to make covar symmetric
 
 random Real[] value(Timestep t) ~ MultivarGaussian(mean, covar);
 
