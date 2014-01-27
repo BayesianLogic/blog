@@ -9,6 +9,10 @@ import os
 
 LASER_COLS = 361
 INTENSITY_COLS = 361
+LASER_MIN = 0.0
+LASER_MAX = 10.0 + 1e-10
+INTENSITY_MIN = 0.0
+INTENSITY_MAX = 32768.0 + 1e-10
 
 
 class Reading(object):
@@ -69,7 +73,11 @@ def read_data(data_dir):
             reading = Reading()
             reading.time = float(row[0])
             reading.laser = map(float, row[1:1 + LASER_COLS])
+            assert min(reading.laser) >= LASER_MIN
+            assert max(reading.laser) <= LASER_MAX
             reading.intensity = map(float, row[1 + LASER_COLS:])
+            assert min(reading.intensity) >= INTENSITY_MIN
+            assert max(reading.intensity) <= INTENSITY_MAX
             readings.append(reading)
 
     readings.sort(key=lambda reading: reading.time)
