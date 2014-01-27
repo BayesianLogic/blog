@@ -13,6 +13,10 @@ LASER_MIN = 0.0
 LASER_MAX = 10.0 + 1e-10
 INTENSITY_MIN = 0.0
 INTENSITY_MAX = 32768.0 + 1e-10
+LATITUDE_MIN = -7
+LATITUDE_MAX = 7
+LONGITUDE_MIN = -7
+LONGITUDE_MAX = 7
 
 
 class Reading(object):
@@ -46,7 +50,9 @@ def read_data(data_dir):
             reading = Reading()
             reading.time = float(row[0])
             reading.gps_latitude = float(row[1])
+            assert LATITUDE_MIN <= reading.gps_latitude <= LATITUDE_MAX
             reading.gps_longitude = float(row[2])
+            assert LONGITUDE_MIN <= reading.gps_longitude <= LONGITUDE_MAX
             reading.gps_orientation = float(row[3])
             readings.append(reading)
 
