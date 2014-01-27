@@ -113,6 +113,41 @@ def read_data(data_dir):
     return readings
 
 
+class Properties(object):
+    """
+    Object holding arbitrary properties as attributes.
+    """
+
+
+def read_metadata(data_dir):
+    """
+    Read metadata in given dir and return Properties and list of Obstacles.
+    """
+    # Read properties file.
+    properties = Properties()
+    with open(os.path.join(data_dir, 'properties.csv')) as csv_file:
+        reader = csv.reader(csv_file)
+        header = reader.next()
+        values = reader.next()
+        for name, value in zip(header, values):
+            setattr(properties, name, float(value))
+        for row in reader:
+            raise ValueError("did not expect more rows")
+
+    # Read obstacles file.
+    obstacles = []
+    with open(os.path.join(data_dir, '..', '..', 'obstacles.csv')) as csv_file:
+        reader = csv.reader(csv_file)
+        header = reader.next()
+        assert header[0] == 'GPSLon'
+        for row in reader:
+            assert len(row) == 2
+            obstacles.append((float(row[0]), float(row[1])))
+
+    return properties, obstacles
+
+
 if __name__ == "__main__":
     data_dir = "./data/automobile/1_straight/data/ground/"
     data = read_data(data_dir)
+    properties, obstacles = read_metadata(data_dir)

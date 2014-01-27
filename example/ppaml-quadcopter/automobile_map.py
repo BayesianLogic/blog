@@ -13,12 +13,13 @@ from automobile_data import LATITUDE_MAX
 from automobile_data import LONGITUDE_MIN
 from automobile_data import LONGITUDE_MAX
 from automobile_data import read_data
+from automobile_data import read_metadata
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-def draw_map(ax, readings):
+def draw_map(ax, readings, properties, true_obstacles):
     """
     Draw map based on laser, intensity, and GPS data.
     """
@@ -34,7 +35,6 @@ def draw_map(ax, readings):
         if reading.gps_latitude:
             prev_gps_reading = reading
         if reading.laser and reading.intensity:
-            delays.append(reading.time - prev_gps_reading.time)
             agent_x = prev_gps_reading.gps_longitude
             agent_y = prev_gps_reading.gps_latitude
             agent_xs.append(agent_x)
@@ -44,7 +44,7 @@ def draw_map(ax, readings):
                 if np.abs(distance - LASER_MAX) < 1e-6:
                     continue  # no obstacles within laser range
                 intensity = reading.intensity[i]
-                radians = (0.5 * i - 90) * np.pi / 180
+                radians = (-0.5 * i + 90) * np.pi / 180
                 obst_x = agent_x + distance * np.cos(radians)
                 obst_y = agent_y + distance * np.sin(radians)
                 obst_c = intensity / INTENSITY_MAX
@@ -56,6 +56,8 @@ def draw_map(ax, readings):
         len(agent_xs), len(obst_xs))
     ax.scatter(agent_xs, agent_ys, c='red', linewidths=0)
     ax.scatter(obst_xs, obst_ys, c=obst_cs, linewidths=0)
+    true_obst_xs, true_obst_ys = zip(*true_obstacles)
+    ax.scatter(true_obst_xs, true_obst_ys, c='yellow')
     ax.set_xlim(LONGITUDE_MIN - 1, LONGITUDE_MAX + 1)
     ax.set_ylim(LATITUDE_MIN - 1, LATITUDE_MAX + 1)
     plt.draw()
@@ -64,7 +66,8 @@ def draw_map(ax, readings):
 if __name__ == "__main__":
     data_dir = "./data/automobile/1_straight/data/ground/"
     readings = read_data(data_dir)
+    properties, obstacles = read_metadata(data_dir)
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    draw_map(ax, readings)
+    draw_map(ax, readings, properties, obstacles)
     plt.show()
