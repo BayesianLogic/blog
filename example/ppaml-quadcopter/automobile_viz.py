@@ -31,7 +31,10 @@ def draw_readings(ax, readings, index, properties, true_obstacles):
     ax.clear()
     ax.set_xlim(LONGITUDE_MIN - 1, LONGITUDE_MAX + 1)
     ax.set_ylim(LATITUDE_MIN - 1, LATITUDE_MAX + 1)
-    true_obst_xs, true_obst_ys = zip(*true_obstacles)
+    true_obst_xs = []
+    true_obst_ys = []
+    if true_obstacles:
+        true_obst_xs, true_obst_ys = zip(*true_obstacles)
     ax.scatter(true_obst_xs, true_obst_ys, c='yellow')
 
     # Find nearest (present or past) indices where data is available:

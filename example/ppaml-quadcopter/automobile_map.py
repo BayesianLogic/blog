@@ -63,7 +63,10 @@ def draw_map(ax, readings, properties, true_obstacles):
         len(agent_xs), len(obst_xs))
     ax.scatter(agent_xs, agent_ys, c='red', linewidths=0)
     ax.scatter(obst_xs, obst_ys, c=obst_cs, linewidths=0, alpha=0.01)
-    true_obst_xs, true_obst_ys = zip(*true_obstacles)
+    true_obst_xs = []
+    true_obst_ys = []
+    if true_obstacles:
+        true_obst_xs, true_obst_ys = zip(*true_obstacles)
     ax.scatter(true_obst_xs, true_obst_ys, c='yellow')
     ax.set_xlim(LONGITUDE_MIN - 1, LONGITUDE_MAX + 1)
     ax.set_ylim(LATITUDE_MIN - 1, LATITUDE_MAX + 1)
