@@ -37,6 +37,11 @@ def draw_map(ax, readings, properties, true_obstacles):
         if reading.laser and reading.intensity:
             agent_x = prev_gps_reading.gps_longitude
             agent_y = prev_gps_reading.gps_latitude
+            agent_phi = prev_gps_reading.gps_orientation
+            laser_x = (agent_x + properties.a * np.cos(agent_phi) +
+                properties.b * np.cos(agent_phi + np.pi / 2))
+            laser_y = (agent_y + properties.a * np.sin(agent_phi) +
+                properties.b * np.sin(agent_phi + np.pi / 2))
             agent_xs.append(agent_x)
             agent_ys.append(agent_y)
             for i in xrange(LASER_COLS):
@@ -44,9 +49,9 @@ def draw_map(ax, readings, properties, true_obstacles):
                 if np.abs(distance - LASER_MAX) < 1e-6:
                     continue  # no obstacles within laser range
                 intensity = reading.intensity[i]
-                radians = (-0.5 * i + 90) * np.pi / 180
-                obst_x = agent_x + distance * np.cos(radians)
-                obst_y = agent_y + distance * np.sin(radians)
+                radians = agent_phi + (-0.5 * i + 90) * np.pi / 180
+                obst_x = laser_x + distance * np.cos(radians)
+                obst_y = laser_y + distance * np.sin(radians)
                 obst_c = intensity / INTENSITY_MAX
                 obst_xs.append(obst_x)
                 obst_ys.append(obst_y)

@@ -22,6 +22,9 @@ LONGITUDE_MAX = 7
 class Reading(object):
     """
     One sensor reading. Values are left None when unobserved.
+
+    Note: In the data, GPS latitude and longitude are for the car's rear axle
+    center, from which the laser is displaced by (properties.a, properties.b).
     """
     def __init__(self):
         self.time = None

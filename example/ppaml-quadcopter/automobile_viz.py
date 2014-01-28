@@ -58,6 +58,11 @@ def draw_readings(ax, readings, index, properties, true_obstacles):
             intensity_index, readings[intensity_index].time))
     agent_x = readings[gps_index].gps_longitude
     agent_y = readings[gps_index].gps_latitude
+    agent_phi = readings[gps_index].gps_orientation
+    laser_x = (agent_x + properties.a * np.cos(agent_phi) +
+        properties.b * np.cos(agent_phi + np.pi / 2))
+    laser_y = (agent_y + properties.a * np.sin(agent_phi) +
+        properties.b * np.sin(agent_phi + np.pi / 2))
     ax.scatter([agent_x], [agent_y], c='red')
     obst_xs = []
     obst_ys = []
@@ -68,9 +73,9 @@ def draw_readings(ax, readings, index, properties, true_obstacles):
         if np.abs(distance - LASER_MAX) < 1e-6:
             continue  # no obstacles within laser range
         intensity = readings[intensity_index].intensity[i]
-        radians = (-0.5 * i + 90) * np.pi / 180
-        obst_x = agent_x + distance * np.cos(radians)
-        obst_y = agent_y + distance * np.sin(radians)
+        radians = agent_phi + (-0.5 * i + 90) * np.pi / 180
+        obst_x = laser_x + distance * np.cos(radians)
+        obst_y = laser_y + distance * np.sin(radians)
         obst_c = intensity / INTENSITY_MAX
         obst_xs.append(obst_x)
         obst_ys.append(obst_y)
