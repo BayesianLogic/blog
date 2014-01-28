@@ -12,11 +12,13 @@ from automobile_data import LATITUDE_MIN
 from automobile_data import LATITUDE_MAX
 from automobile_data import LONGITUDE_MIN
 from automobile_data import LONGITUDE_MAX
+from automobile_data import path_for_dataset
 from automobile_data import read_data
 from automobile_data import read_metadata
 
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 
 def draw_map(ax, readings, properties, true_obstacles):
@@ -68,11 +70,21 @@ def draw_map(ax, readings, properties, true_obstacles):
     plt.draw()
 
 
-if __name__ == "__main__":
-    data_dir = "./data/automobile/1_straight/data/ground/"
+def demo(dataset_name, dataset_kind):
+    """
+    Read data and show map of laser data for the entire run.
+    """
+    data_dir = path_for_dataset(dataset_name, dataset_kind)
     readings = read_data(data_dir)
     properties, obstacles = read_metadata(data_dir)
     fig = plt.figure()
     ax = fig.add_subplot(111)
     draw_map(ax, readings, properties, obstacles)
     plt.show()
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        raise RuntimeError(
+            "Usage example: {} 1_straight ground".format(sys.argv[0]))
+    demo(sys.argv[1], sys.argv[2])

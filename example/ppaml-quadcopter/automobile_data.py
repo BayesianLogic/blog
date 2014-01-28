@@ -6,6 +6,7 @@ Read the automobile data.
 
 import csv
 import os
+import sys
 
 LASER_COLS = 361
 INTENSITY_COLS = 361
@@ -73,6 +74,8 @@ def read_data(data_dir):
             readings.append(reading)
 
     # Laser data:
+    shown_out_of_range_laser_warning = False
+    shown_out_of_range_intensity_warning = False
     with open(os.path.join(data_dir, 'slam_laser.csv')) as csv_file:
         reader = csv.reader(csv_file)
         header = reader.next()
@@ -82,11 +85,17 @@ def read_data(data_dir):
             reading = Reading()
             reading.time = float(row[0])
             reading.laser = map(float, row[1:1 + LASER_COLS])
-            assert min(reading.laser) >= LASER_MIN
-            assert max(reading.laser) <= LASER_MAX
+            if (not shown_out_of_range_laser_warning and
+                    (min(reading.laser) < LASER_MIN or
+                     max(reading.laser) > LASER_MAX)):
+                print "Warning: found out-of-range laser readings"
+                shown_out_of_range_laser_warning = True
             reading.intensity = map(float, row[1 + LASER_COLS:])
-            assert min(reading.intensity) >= INTENSITY_MIN
-            assert max(reading.intensity) <= INTENSITY_MAX
+            if (not shown_out_of_range_intensity_warning and
+                    (min(reading.intensity) < INTENSITY_MIN or
+                     max(reading.intensity) > INTENSITY_MAX)):
+                print "Warning: found out-of-range intensity readings"
+                shown_out_of_range_intensity_warning = True
             readings.append(reading)
 
     readings.sort(key=lambda reading: reading.time)
@@ -150,7 +159,28 @@ def read_metadata(data_dir):
     return properties, obstacles
 
 
-if __name__ == "__main__":
-    data_dir = "./data/automobile/1_straight/data/ground/"
-    data = read_data(data_dir)
+def path_for_dataset(name, kind):
+    """
+    Return path to dataset of given name and kind.
+
+    >>> path_for_dataset('1_straight', 'ground')
+    './data/automobile/1_straight/data/ground/'
+    """
+    return os.path.join('./data/automobile', name, 'data', kind)
+
+
+def demo(dataset_name, dataset_kind):
+    """
+    Read data and return readings, properties, obstacles.
+    """
+    data_dir = path_for_dataset(dataset_name, dataset_kind)
+    readings = read_data(data_dir)
     properties, obstacles = read_metadata(data_dir)
+    return readings, properties, obstacles
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        raise RuntimeError(
+            "Usage example: {} 1_straight ground".format(sys.argv[0]))
+    readings, properties, obstacles = demo(sys.argv[1], sys.argv[2])

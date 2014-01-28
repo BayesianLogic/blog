@@ -13,11 +13,13 @@ from automobile_data import LATITUDE_MIN
 from automobile_data import LATITUDE_MAX
 from automobile_data import LONGITUDE_MIN
 from automobile_data import LONGITUDE_MAX
+from automobile_data import path_for_dataset
 from automobile_data import read_data
 from automobile_data import read_metadata
 
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 
 def draw_readings(ax, readings, index, properties, true_obstacles):
@@ -116,8 +118,11 @@ class Zipper(object):
             self.callback(self.index)
 
 
-if __name__ == "__main__":
-    data_dir = "./data/automobile/1_straight/data/ground/"
+def demo(dataset_name, dataset_kind):
+    """
+    Read data and show plot that allows scrolling time using the arrow keys.
+    """
+    data_dir = path_for_dataset(dataset_name, dataset_kind)
     readings = read_data(data_dir)
     properties, obstacles = read_metadata(data_dir)
     fig = plt.figure()
@@ -130,3 +135,13 @@ if __name__ == "__main__":
     fig.canvas.mpl_connect('key_press_event', zipper.on_key_press)
     redraw(0)
     plt.show()
+    return zipper
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        raise RuntimeError(
+            "Usage example: {} 1_straight ground".format(sys.argv[0]))
+    # We need to keep a reference to the zipper, because otherwise it gets
+    # garbage-collected and won't respond to key_press_event.
+    zipper = demo(sys.argv[1], sys.argv[2])
