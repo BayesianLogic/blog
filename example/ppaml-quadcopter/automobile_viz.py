@@ -113,10 +113,15 @@ class Zipper(object):
             self.index += 10
         elif event.key == 'down':
             self.index -= 10
-        if self.index < self.min_val:
+        elif event.key == 'pageup':
+            self.index += 100
+        elif event.key == 'pagedown':
+            self.index -= 100
+        elif event.key == 'home':
             self.index = self.min_val
-        if self.index > self.max_val:
+        elif event.key == 'end':
             self.index = self.max_val
+        self.index = min(max(self.index, self.min_val), self.max_val)
         if self.index != prev_index:
             self.callback(self.index)
 
