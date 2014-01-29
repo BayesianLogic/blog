@@ -9,35 +9,60 @@ patterns:
 - name: comment.line.double-slash.blog
   match: \s*((//).*$\n?)
 - name: comment.block.blog
-  begin: (/\*\*)\s*$
-  beginCaptures: 
+  begin: (/\*)
+  beginCaptures:
     '1': {name: punctuation.definition.comment.begin.blog}
   end: \*/\s*
   endCaptures:
     '0': {name: punctuation.definition.comment.blog}
 ##operators
+- match: (\#)(\w+)\b
+  captures:
+    '1': {name: keyword.operator.blog}
+    '2': {name: storage.type.blog}  
 - name: keyword.operator.blog
-  match: \b(\<|\>|\=|\=\=|\>\=|\<\=|\!|~|:|\+|\-|\*|\/|\%|\{|\}|\=\>|\-\>|@|#|&|\|)\b
+  match: (\-\>|\<|\>|\=|\=\=|\>\=|\<\=|\!|~|:|\+|\-|\*|\/|\%|\=\>|\&|\|)
 - name: storage.modifer.blog
-  match: \b(fixed|random|distinct|obs|query)\b
-- name: nametype.blog
-  match: \b(type)\s+(\w+)(\s*\,\s*(\w+))*\s*
+  match: \b(obs|query)\b
+- name: funcdecl.blog
+  match: \b(fixed|random)\s+(Integer|Real|Boolean|NaturalNum|Timestep)\b
   captures:
     '1': {name: storage.modifier.blog}
-    '2': {name: entity.name.type.blog}
+    '2': {name: storage.type.primitive.blog} 
+- name: funcdecl.blog
+  match: \b(fixed|random)\s+(\w+)\b
+  captures:
+    '1': {name: storage.modifier.blog}
+    '2': {name: storage.type.blog}
+#distinct symbol declaration
+- name: distinctdecl.blog
+  match: \b(distinct)\s+(\w+)\b
+  captures:
+    '1': {name: storage.modifier.blog}
+    '2': {name: storage.type.blog} 
+# matching type declaration
+- match: \b(type)\s+(\w+)(\s*\,\s*(\w+))*\s*
+  captures:
+    '1': {name: storage.modifier.blog}
+    '2': {name: storage.type.blog}
 - name: storage.type.primitive.blog
-  match: \b(Integer|Real|Boolean|NaturalNum)\b
+  match: \b(Integer|Real|Boolean|NaturalNum|Timestep)\b
 - name: keyword.control.blog
   match: \b(if|then|else|forall|exists)\b
-## distributions
-- name: support.class.blog
+# distributions
+- name: support.function.blog
   match: \b(TabularCPD|Distribution|Gaussian|UniformChoice|MultivarGaussian|Poisson|Bernoulli|BooleanDistrib|Binomial|Beta|BoundedGenometric|Categorical|Dirichlet|EqualsCPD|Gamma|Geometric|Iota|LinearGaussian|MixtureDistrib|NegativeBinamial|RoundedLogNormal|TabularInterp|UniformVector|UnivarGaussian|Exponential|UniformInt|UniformReal)\b
+# numbers
 - name: constant.numeric.blog
   match: \b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)([LlFfUuDd]|UL|ul)?\b
+- name: constant.other.blog
+  match: \@[0-9]+
+# true, false and null
 - name: constant.language.blog
   match: \b(true|false|null)\b
 - name: punctuation.terminator.blog
   match: ;
+# function name
 - name: function.blog
   match: \b(\w+)\(
   captures:
