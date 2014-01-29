@@ -62,7 +62,8 @@ def draw_map(ax, readings, properties, true_obstacles):
     print "Have {} agent locations and {} obstacle locations.".format(
         len(agent_xs), len(obst_xs))
     ax.scatter(agent_xs, agent_ys, c='red', linewidths=0)
-    ax.scatter(obst_xs, obst_ys, c=obst_cs, linewidths=0, alpha=0.01)
+    # ax.scatter(obst_xs, obst_ys, c=obst_cs, linewidths=0, alpha=0.01)
+    ax.scatter(obst_xs, obst_ys, c='blue', linewidths=0, alpha=0.01)
     true_obst_xs = []
     true_obst_ys = []
     if true_obstacles:
