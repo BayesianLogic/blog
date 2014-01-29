@@ -18,7 +18,7 @@
 		</dict>
 		<dict>
 			<key>begin</key>
-			<string>(/\*\*)\s*$</string>
+			<string>(/\*)</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>1</key>
@@ -41,14 +41,31 @@
 			<string>comment.block.blog</string>
 		</dict>
 		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.operator.blog</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>storage.type.blog</string>
+				</dict>
+			</dict>
 			<key>match</key>
-			<string>\b(\&lt;|\&gt;|\=|\=\=|\&gt;\=|\&lt;\=|\!|~|:|\+|\-|\*|\/|\%|\{|\}|\=\&gt;|\-\&gt;|@|#|&amp;|\|)\b</string>
+			<string>(\#)(\w+)\b</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>(\-\&gt;|\&lt;|\&gt;|\=|\=\=|\&gt;\=|\&lt;\=|\!|~|:|\+|\-|\*|\/|\%|\=\&gt;|\&amp;|\|)</string>
 			<key>name</key>
 			<string>keyword.operator.blog</string>
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\b(fixed|random|distinct|obs|query)\b</string>
+			<string>\b(obs|query)\b</string>
 			<key>name</key>
 			<string>storage.modifer.blog</string>
 		</dict>
@@ -63,17 +80,72 @@
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>entity.name.type.blog</string>
+					<string>storage.type.primitive.blog</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>\b(fixed|random)\s+(Integer|Real|Boolean|NaturalNum|Timestep)\b</string>
+			<key>name</key>
+			<string>funcdecl.blog</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>storage.modifier.blog</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>storage.type.blog</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>\b(fixed|random)\s+(\w+)\b</string>
+			<key>name</key>
+			<string>funcdecl.blog</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>storage.modifier.blog</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>storage.type.blog</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>\b(distinct)\s+(\w+)\b</string>
+			<key>name</key>
+			<string>distinctdecl.blog</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>storage.modifier.blog</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>storage.type.blog</string>
 				</dict>
 			</dict>
 			<key>match</key>
 			<string>\b(type)\s+(\w+)(\s*\,\s*(\w+))*\s*</string>
-			<key>name</key>
-			<string>nametype.blog</string>
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\b(Integer|Real|Boolean|NaturalNum)\b</string>
+			<string>\b(Integer|Real|Boolean|NaturalNum|Timestep)\b</string>
 			<key>name</key>
 			<string>storage.type.primitive.blog</string>
 		</dict>
@@ -87,13 +159,19 @@
 			<key>match</key>
 			<string>\b(TabularCPD|Distribution|Gaussian|UniformChoice|MultivarGaussian|Poisson|Bernoulli|BooleanDistrib|Binomial|Beta|BoundedGenometric|Categorical|Dirichlet|EqualsCPD|Gamma|Geometric|Iota|LinearGaussian|MixtureDistrib|NegativeBinamial|RoundedLogNormal|TabularInterp|UniformVector|UnivarGaussian|Exponential|UniformInt|UniformReal)\b</string>
 			<key>name</key>
-			<string>support.class.blog</string>
+			<string>support.function.blog</string>
 		</dict>
 		<dict>
 			<key>match</key>
 			<string>\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)([LlFfUuDd]|UL|ul)?\b</string>
 			<key>name</key>
 			<string>constant.numeric.blog</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>\@[0-9]+</string>
+			<key>name</key>
+			<string>constant.other.blog</string>
 		</dict>
 		<dict>
 			<key>match</key>
