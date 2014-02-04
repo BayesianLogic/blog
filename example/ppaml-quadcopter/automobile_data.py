@@ -112,7 +112,7 @@ def read_data(data_dir):
             declared_sensors.append((float(row[0]), code_to_sensor[row[1]]))
     assert len(declared_sensors) == len(readings)
     for reading, decl in zip(readings, declared_sensors):
-        assert abs(reading.time - decl[0]) < 1e-10
+        assert abs(reading.time - decl[0]) < 1e-4
         if decl[1] == 'gps':
             assert reading.gps_latitude is not None
         elif decl[1] == 'control':
