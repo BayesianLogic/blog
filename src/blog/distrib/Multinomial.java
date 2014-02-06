@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2005, Regents of the University of California
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -12,11 +12,11 @@
  * * Redistributions in binary form must reproduce the above copyright
  *   notice, this list of conditions and the following disclaimer in
  *   the documentation and/or other materials provided with the
- *   distribution.  
+ *   distribution.
  *
  * * Neither the name of the University of California, Berkeley nor
  *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior 
+ *   products derived from this software without specific prior
  *   written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -33,147 +33,140 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package blog.common;
+package blog.distrib;
 
 import java.io.Serializable;
 import java.io.IOException;
+import java.util.List;
+import java.util.Random;
+
+import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixLib;
+import blog.common.Util;
+import blog.distrib.AbstractCondProbDistrib;
+import blog.model.Type;
 
 /**
  * A distribution over a finite set of elements 0, 1, ..., k, specified with an
  * array of k probabilities pi_0,...,pi_k summing to 1.
  */
-public class Multinomial implements Serializable, IntegerDist {
+public class Multinomial extends AbstractCondProbDistrib {
+    /**
+     * Creates a Multinomial object with probabilities specified by the given
+     * array.
+     *
+     * @throws IllegalArgumentException
+     *           if pi does not define a probability distribution
+     */
+    public Multinomial(int numTrials, double[] pi) {
+        this.numTrials = numTrials;
+        this.pi = (double[]) pi.clone();
+        double sum = 0;
+        for (int i = 0; i < pi.length; i++) {
+            if (pi[i] < 0) {
+                throw new IllegalArgumentException("Probability " + pi[i]
+                        + " for element " + i + " is negative.");
+            }
+            sum += pi[i];
+        }
+        if (sum < 1e-9) {
+            throw new IllegalArgumentException("Probabilities sum to approx zero");
+        }
+        for (int i = 0; i < pi.length; i++) {
+            this.pi[i] /= sum;
+        }
+    }
+
 	/**
-	 * Creates a Multinomial object representing the uniform distribution over k
-	 * elements.
+	 * Returns the probability of given vector.
 	 */
-	public Multinomial(int k) {
-		pi = new double[k];
-		for (int i = 0; i < k; i++) {
-			pi[i] = 1.0 / k;
+	public double getProb(List args, Object value) {
+		if (!(value instanceof MatrixLib)) {
+			throw new IllegalArgumentException("expected vector value");
 		}
-
-		counts = new int[k];
+        MatrixLib valueVector = (MatrixLib) value;
+        if (valueVector.rowLen() != numTrials || valueVector.colLen() != 1) {
+            throw new IllegalArgumentException("value has wrong dimension");
+        }
+        int sum = 0;
+        for (int i = 0; i < numTrials; i++) {
+            sum += valueVector.elementAt(i, 0);
+        }
+        if (sum != numTrials) {
+            return 0;
+        }
+        double prob = Util.factorial(numTrials);
+        for (int i = 0; i < numTrials; i++) {
+            prob *= Math.pow(pi[i], valueVector.elementAt(i, 0));
+            prob /= Util.factorial((int)Math.round(valueVector.elementAt(i, 0)));
+            // FIXME: It would be better if we could take the param as an array
+            // of ints, so we don't have to worry about rounding.
+        }
+        return prob;
 	}
 
-	/**
-	 * Creates a Multinomial object with probabilities specified by the given
-	 * array.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if pi does not define a probability distribution
-	 */
-	public Multinomial(double[] pi) {
-		this.pi = (double[]) pi.clone();
-		double sum = 0;
-		for (int i = 0; i < pi.length; i++) {
-			if ((pi[i] < 0) || (pi[i] > 1)) {
-				throw new IllegalArgumentException("Probability " + pi[i]
-						+ " for element " + i + " is not valid.");
-			}
-			sum += pi[i];
+    /**
+	 * Returns the log probability of given vector.
+     */
+    public double getLogProb(List args, Object value) {
+		if (!(value instanceof MatrixLib)) {
+			throw new IllegalArgumentException("expected vector value");
 		}
-		if (Math.abs(sum - 1) > 1e-9) {
-			throw new IllegalArgumentException("Probabilities sum to " + sum
-					+ " rather than 1.0.");
-		}
+        MatrixLib valueVector = (MatrixLib) value;
+        if (valueVector.rowLen() != numTrials) {
+            throw new IllegalArgumentException("value has wrong dimension");
+        }
+        int sum = 0;
+        for (int i = 0; i < numTrials; i++) {
+            sum += valueVector.elementAt(i, 0);
+        }
+        if (sum != numTrials) {
+            return 0;
+        }
+        double logProb = Util.logFactorial(numTrials);
+        for (int i = 0; i < numTrials; i++) {
+            logProb += valueVector.elementAt(i, 0) * Math.log(pi[i]);
+            logProb -= Util.logFactorial((int)Math.round(valueVector.elementAt(i, 0)));
+        }
+        return logProb;
+    }
 
-		counts = new int[pi.length];
-	}
+    /**
+     * Returns a vector chosen at random according to this distribution.
+     */
+    public MatrixLib sampleVal(List args, Type childType) {
+        final int numBuckets = pi.length;
+        double[] cdf = new double[numBuckets];
+        cdf[0] = pi[0];
+        for (int i = 1; i < numBuckets; i++) {
+            cdf[i] = cdf[i - 1] + pi[i];
+        }
 
-	/**
-	 * Returns the size of the set that this distribution is defined over.
-	 */
-	public int size() {
-		return pi.length;
-	}
+        int[] result = new int[numBuckets];
+        for (int i = 0; i < numBuckets; i++) {
+            result[i] = 0;
+        }
 
-	/**
-	 * Returns the probability of element i.
-	 */
-	public double getProb(int i) {
-		return pi[i];
-	}
+        Random rng = new java.util.Random();
+        for (int trial = 0; trial < numTrials; trial++) {
+            double val = rng.nextDouble();
+            int bucket = 0;
+            for (bucket = 1; bucket < numBuckets; bucket++) {
+                if (val <= cdf[bucket]) {
+                    break;
+                }
+            }
+            result[bucket] += 1;
+        }
 
-	/**
-	 * Returns the log of the probability of element i.
-	 */
-	public double getLogProb(int i) {
-		return Math.log(pi[i]);
-	}
+        // Convert to Jama (nasty).
+        double[][] doubleResult = new double[numBuckets][1];
+        for (int i = 0; i < numBuckets; i++) {
+            doubleResult[i][0] = result[i];
+        }
+        return new JamaMatrixLib(doubleResult);
+    }
 
-	/**
-	 * Records an occurrence of element i, for use in updating parameters.
-	 */
-	public void collectStats(int i) {
-		totalCount++;
-		counts[i]++;
-	}
-
-	/**
-	 * Records n occurrences of an element i, for use in updating parameters.
-	 */
-	public void collectAggrStats(int i, int n) {
-		totalCount += n;
-		counts[i] += n;
-	}
-
-	/**
-	 * Sets the parameter array pi to the values that maximize the likelihood of
-	 * the elements passed to collectStats since the last call to updateParams.
-	 * Then clears the collected statistics, and returns the difference between
-	 * the log likelihood of the data under the new parameters and the log
-	 * likelihood under the old parameters.
-	 */
-	public double updateParams() {
-		double oldLogProb = 0;
-		double newLogProb = 0;
-
-		// Update parameters
-		if (totalCount > 0) {
-			for (int i = 0; i < counts.length; i++) {
-				oldLogProb += (counts[i] * Math.log(pi[i]));
-				pi[i] = counts[i] / (double) totalCount;
-				newLogProb += (counts[i] * Math.log(pi[i]));
-			}
-		}
-
-		// Clear statistics
-		totalCount = 0;
-		for (int i = 0; i < counts.length; i++) {
-			counts[i] = 0;
-		}
-
-		return (newLogProb - oldLogProb);
-	}
-
-	/**
-	 * Returns an integer chosen at random according to this distribution.
-	 */
-	public int sample() {
-		double target = Util.random();
-		double cumProb = 0;
-		for (int i = 0; i < pi.length; i++) {
-			cumProb += pi[i];
-			if (target < cumProb) {
-				return i;
-			}
-		}
-		return (pi.length - 1); // this shouldn't ever be executed
-	}
-
-	/**
-	 * Called when this object is read in from a stream through the serialization
-	 * API. It allocates a <code>counts</code> array of the appropriate size.
-	 */
-	private void readObject(java.io.ObjectInputStream in) throws IOException,
-			ClassNotFoundException {
-		in.defaultReadObject();
-		counts = new int[pi.length];
-	}
-
-	double[] pi;
-
-	transient int totalCount;
-	transient int[] counts;
+    private int numTrials;
+    private double[] pi;
 }
