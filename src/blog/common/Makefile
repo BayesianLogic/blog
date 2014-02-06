@@ -13,8 +13,6 @@ CLASSES = Bernoulli.class \
 	FilteredMapIterator.class \
 	Geometric.class \
 	IntegerDist.class \
-	Multinomial.class \
-	MultinomialWithTail.class \
 	PermutationDistrib.class \
 	PermutationIterator.class \
 	Permutation.class \

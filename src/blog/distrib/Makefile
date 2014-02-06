@@ -38,6 +38,7 @@ CLASSES = Bernoulli.class \
 	ChooseFromArgs.class \
 	BoundedGeometric.class \
 	MixtureDistrib.class \
+	Multinomial.class \
 
 all : ${CLASSES}
 
@@ -187,10 +188,6 @@ MixtureDistrib.class : MixtureDistrib.java \
 	../../common/Util.java \
 
 Multinomial.class : Multinomial.java \
-	../CondProbDistrib.java \
-
-MultinomialWithTail.class : MultinomialWithTail.java \
-	Multinomial.java \
 	../CondProbDistrib.java \
 
 # blank line below; needed by non-GNU make
