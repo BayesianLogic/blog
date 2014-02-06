@@ -161,18 +161,6 @@ public class NatNumDistribWithTail extends AbstractCondProbDistrib {
 	}
 
 	/**
-	 * Records an occurrence of the number n, for use in updating parameters.
-	 */
-	/*
-	 * public void collectStats(int n) { if (n < 0) { throw new
-	 * IllegalArgumentException
-	 * ("MultinomialWithTail can't generate a negative number."); }
-	 * 
-	 * totalCount++; if (n < k) { multinomialCount++; multinomial.collectStats(n);
-	 * } else { geometric.collectStats(n-k); } }
-	 */
-
-	/**
 	 * Returns a sample from this distribution.
 	 */
 	public int sampleVal() {
@@ -197,30 +185,6 @@ public class NatNumDistribWithTail extends AbstractCondProbDistrib {
 
 		return new Integer(sampleVal());
 	}
-
-	/**
-	 * Sets the parameter lambda to the value that maximizes the likelihood of the
-	 * numbers passed to collectStats since the last call to updateParams. Then
-	 * clears the collected statistics, and returns the difference between the log
-	 * likelihood of the data under the new parameters and the log likelihood
-	 * under the old parameters.
-	 */
-	/*
-	 * public double updateParams() { // Update mixture parameter double
-	 * oldLogProb = (multinomialCount * logLambda) + ((totalCount -
-	 * multinomialCount) * logOneMinusLambda); if (totalCount > 0) { lambda =
-	 * multinomialCount / (double) totalCount; cacheParams(); } double newLogProb
-	 * = (multinomialCount * logLambda) + ((totalCount - multinomialCount) *
-	 * logOneMinusLambda);
-	 * 
-	 * // Update parameters for component distributions double logProbChange =
-	 * newLogProb - oldLogProb; logProbChange += multinomial.updateParams();
-	 * logProbChange += geometric.updateParams();
-	 * 
-	 * // Clear statistics totalCount = 0; multinomialCount = 0;
-	 * 
-	 * return logProbChange; }
-	 */
 
 	int k;
 	BooleanDistrib mixDistrib;
