@@ -4,11 +4,11 @@
 type Relation;
 
 fixed Real alpha = 10;
-fixed Real beta = 100;
+fixed Real beta = 1000;
 random Real Sparsity(Relation r) ~ Beta(alpha, beta);
+//random Real Sparsity(Relation r) = 0.1;
 
 type Entity;
-//#Entity = 4;
 
 type Fact;
 origin Relation Rel(Fact);
@@ -24,10 +24,9 @@ random Boolean Holds(Fact f) ~ BooleanDistrib(Sparsity(Rel(f)));
  */
 
 type Trigger;
-//#Trigger = 2;
 
 /* alpha should be a vector of length #Triggers */
-fixed Real dir_alpha = 0.5;
+fixed Real dir_alpha = 1.0;
 random Real[] Theta(Relation r) ~ Dirichlet(dir_alpha, dir_alpha);
 
 /* A sentence expresses a fact. The fact is chosen uniformly
@@ -35,16 +34,34 @@ random Real[] Theta(Relation r) ~ Dirichlet(dir_alpha, dir_alpha);
  */
 
 type Sentence;
-//#Sentence = 2;
 random Fact SourceFact(Sentence s) ~ UniformChoice({Fact f : Holds(f) == true});
 random Entity Subject(Sentence s) = Arg1(SourceFact(s));
 random Entity Object(Sentence s) = Arg2(SourceFact(s));
 
-random Integer TriggerID(Sentence s) ~ Categorical(Theta(Rel(SourceFact(s))));
+random Integer TriggerID(Sentence s) {
+ if (SourceFact(s) != null) then ~ Categorical(Theta(Rel(SourceFact(s))))
+};
+
 random Trigger Verb(Sentence s) = idToTrigger( TriggerID(s) );
 
 /* Observations go here */
-distinct Relation R0, R1;
+/*
+obs Subject(Sent[0]) = X0;
+obs Object(Sent[0]) = Y0;
+obs Verb(Sent[0]) = Trig[0];
+*/
+/*
+obs Subject(Sent[1]) = X0;
+obs Object(Sent[1]) = Y0;
+obs Verb(Sent[1]) = Trig[1];
+*/
+/*
+obs Subject(Sent[1]) = X1;
+obs Object(Sent[1]) = Y1;
+obs Verb(Sent[1]) = Trig[0];
+
+distinct Entity X0,Y0,X1,Y1;
+distinct Relation R[2];
 distinct Sentence Sent[2];
 
 distinct Trigger Trig[2];
@@ -53,25 +70,59 @@ fixed Trigger idToTrigger(Integer i)
     0, Trig[0],
     1, Trig[1]
   );
-
-
-// This works
-//distinct Entity X1, Y1;
-// This one is giving 0 probability worlds
-distinct Entity X0, Y0, X1, Y1;
-
-obs Subject(Sent[0]) = X0;
-obs Object(Sent[0]) = Y0;
-obs Verb(Sent[0]) = Trig[0];
-/*
-obs Subject(Sent[1]) = Y1;
-obs Object(Sent[1]) = X1;
-obs Verb(Sent[1]) = Trig[1];
 */
-obs Subject(Sent[1]) = X1;
-obs Object(Sent[1]) = Y1;
-obs Verb(Sent[1]) = Trig[1];
+
 
 
 /* Queries go here */
-query SourceFact(Sent[0]) == SourceFact(Sent[1]);
+/*
+query Rel(SourceFact(Sent[0])) == Rel(SourceFact(Sent[1]));
+query Rel(SourceFact(Sent[0])) == R[0];
+*/
+
+
+
+
+distinct Relation R[10];
+distinct Sentence Sent[50];
+
+distinct Entity Mr_Fonseca, Mr_Clinton, Federal_Reserve_Board, Felix_G_Rohatyn, National_Organization, Yehuda_Litani, The_Jerusalem_Post, Xerox, Yma_Sumac, Connecticut, United_States, Loren_Thompson, Mr_Bloomberg, Washington, Sanford_C_Bernstein__Company, Bartin, La_Guardia, City_Hall, Norman_Siegel, Edward_Bennett_Williams, Alan_Greenspan, Queens_Democratic_Party, Citicorp_Card_Services_Inc, New_York, International_Olympic_Committee, New_York_Civil_Liberties_Union, General_Electric_Company, Moscow, Donald_S_Lowitz, Steve_Vineberg, Holy_Cross_College, Tim_Peirce, Cecil_Fielder, Juan_Antonio_Samaranch, University_of_California, Palestine_Liberation_Organization, Raines, Service_Resources_Corporation, Tom_Wolzien, Indigena, William_A_Costa, Nature_Conservancy, Torre, Congress, Real_Estate_Board_of_New_York, Macy, Citicorp, Yasir_Arafat, Nelson_Mandela, Lexington_Institute, Yoshiko_Ebihara, Federated_Department_Stores, NBC, Mr_Gephardt, Charles_P_Young, Hal_R_Varian, Taxi, Jay_L_Turoff, African_National_Congress, Edward_Skyler, New_York_Yankees, William_J_Casey, Chicago, Unal_Gogus, Central_Intelligence, Nonet, Phoenix, Richard_Rubin, General_Cinema, Mr_Bush, Mr_Shamir, Gallery, Richard_Smith, Municipal_Assistance_Corporation, Tania_Leon, Z_Begun, New_Rochelle, Yellow_Front, William_Gibson, Steven_Spinola, Dee_Dee_Myers, Jason_Giambi, Continential_Illinois_National_Bank_and_Trust_Company, William_Dudley, Stamford, White_House, William_Carrick;
+
+distinct Trigger appos__appos_economist_nn__nn, nn__nn_chapter_prep_of_pobj__pobj, appos__appos_analyst_prep_at_pobj__pobj, appos__appos_manager_poss__poss, nsubj__nsubj_professor_prep_at_pobj__pobj, appos__appos_leader_prep_of_pobj__pobj, appos__appos_economist_prep_at_pobj__pobj, nsubj__nsubj_hit_nsubj__nsubj, rcmod__rcmod_base_prep_in_pobj__pobj, dobj__dobj_renominate_prep_as_pobj_chairman_prep_of_pobj__pobj, appos__appos_lawyer_nn__nn, appos__appos_secretary_poss__poss, rcmod__rcmod_own_dobj__dobj, appos__appos_owner_prep_of_pobj__pobj, appos__appos_executive_prep_of_pobj__pobj, appos__appos_manager_prep_of_pobj__pobj, appos__appos_president_prep_of_pobj__pobj, nsubj__nsubj_say_prep_at_pobj__pobj, nsubj__nsubj_survive_nsubj__nsubj, appos__appos_director_prep_of_pobj__pobj, nsubj__nsubj_ask_dobj__dobj, pobj__pobj_of_prep_nomination_dobj_approve_prep_as_pobj_chairman_prep_of_pobj__pobj, appos__appos_subsidiary_prep_of_pobj__pobj, appos__appos_editor_prep_of_pobj__pobj, nsubj__nsubj_return_prep_to_pobj__pobj, nsubj__nsubj_start_dobj__dobj, appos__appos_official_nn__nn, nsubj__nsubj_say_nsubj__nsubj, appos__appos_head_prep_of_pobj__pobj, partmod__partmod_base_prep_in_pobj__pobj, appos__appos_chairman_prep_of_pobj__pobj;
+
+fixed Trigger idToTrigger(Integer i)
+  = TabularInterp(1,
+    0, appos__appos_economist_nn__nn,
+    1, nn__nn_chapter_prep_of_pobj__pobj,
+    2, appos__appos_analyst_prep_at_pobj__pobj,
+    3, appos__appos_manager_poss__poss,
+    4, nsubj__nsubj_professor_prep_at_pobj__pobj,
+    5, appos__appos_leader_prep_of_pobj__pobj,
+    6, appos__appos_economist_prep_at_pobj__pobj,
+    7, nsubj__nsubj_hit_nsubj__nsubj,
+    8, rcmod__rcmod_base_prep_in_pobj__pobj,
+    9, dobj__dobj_renominate_prep_as_pobj_chairman_prep_of_pobj__pobj,
+    10, appos__appos_lawyer_nn__nn,
+    11, appos__appos_secretary_poss__poss,
+    12, rcmod__rcmod_own_dobj__dobj,
+    13, appos__appos_owner_prep_of_pobj__pobj,
+    14, appos__appos_executive_prep_of_pobj__pobj,
+    15, appos__appos_manager_prep_of_pobj__pobj,
+    16, appos__appos_president_prep_of_pobj__pobj,
+    17, nsubj__nsubj_say_prep_at_pobj__pobj,
+    18, nsubj__nsubj_survive_nsubj__nsubj,
+    19, appos__appos_director_prep_of_pobj__pobj,
+    20, nsubj__nsubj_ask_dobj__dobj,
+    21, pobj__pobj_of_prep_nomination_dobj_approve_prep_as_pobj_chairman_prep_of_pobj__pobj,
+    22, appos__appos_subsidiary_prep_of_pobj__pobj,
+    23, appos__appos_editor_prep_of_pobj__pobj,
+    24, nsubj__nsubj_return_prep_to_pobj__pobj,
+    25, nsubj__nsubj_start_dobj__dobj,
+    26, appos__appos_official_nn__nn,
+    27, nsubj__nsubj_say_nsubj__nsubj,
+    28, appos__appos_head_prep_of_pobj__pobj,
+    29, partmod__partmod_base_prep_in_pobj__pobj,
+    30, appos__appos_chairman_prep_of_pobj__pobj
+  );
+
+
