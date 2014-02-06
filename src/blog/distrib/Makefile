@@ -186,4 +186,11 @@ MixtureDistrib.class : MixtureDistrib.java \
 	../CondProbDistrib.java \
 	../../common/Util.java \
 
+Multinomial.class : Multinomial.java \
+	../CondProbDistrib.java \
+
+MultinomialWithTail.class : MultinomialWithTail.java \
+	Multinomial.java \
+	../CondProbDistrib.java \
+
 # blank line below; needed by non-GNU make

@@ -120,15 +120,6 @@ Geometric.class : Geometric.java \
 
 IntegerDist.class : IntegerDist.java \
 
-Multinomial.class : Multinomial.java \
-	IntegerDist.java \
-	Util.java \
-
-MultinomialWithTail.class : MultinomialWithTail.java \
-	IntegerDist.java \
-	Multinomial.java \
-	Geometric.java \
-
 PermutationDistrib.class : PermutationDistrib.java \
 	Permutation.java \
 
