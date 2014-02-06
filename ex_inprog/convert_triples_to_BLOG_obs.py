@@ -40,6 +40,8 @@ def main():
 
 	##### WRITE TO OBSERVATION FILE #####
 
+	uniq_arg_pairs = set()
+
 	evidence_output_file.write("/* Observation file */\n\n")
 	for index, sentence in enumerate(sentences):
 
@@ -54,12 +56,13 @@ def main():
 		entity_set.add(sentence["dest"])
 		trigger_set.add(sentence["depPath"])
 
+		uniq_arg_pairs.add(sentence["source"]+sentence["dest"])
+		uniq_arg_pairs.add(sentence["dest"]+sentence["source"])
+
 		# End for loop
+
 	data_file.close()
 	evidence_output_file.close()
-
-	print(len(entity_set))
-	sys.exit(0)
 
 	##### WRITE TO MODEL FILE #####
 
@@ -98,7 +101,7 @@ def main():
 
 	query_output_file.close()
 
-
+	print("Number of unique sentence arg pairs:" + str(len(uniq_arg_pairs)/2))
 
 def clean_sentences(sentences):
 	""" Replace all whitespace with underscores """
