@@ -1,3 +1,9 @@
 /dist
 /build
 /nbproject
+/bin
+
+*.DS_Store
+*.swp
+.project
+.classpath
