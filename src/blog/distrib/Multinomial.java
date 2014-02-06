@@ -44,21 +44,17 @@ import blog.common.numerical.JamaMatrixLib;
 import blog.common.numerical.MatrixLib;
 import blog.common.Util;
 import blog.distrib.AbstractCondProbDistrib;
+import blog.model.MatrixSpec;
 import blog.model.Type;
 
 /**
- * A distribution over a finite set of elements 0, 1, ..., k, specified with an
- * array of k probabilities pi_0,...,pi_k summing to 1.
+ * Multinomial distribution.
+ *
+ * See https://en.wikipedia.org/wiki/Multinomial_distribution
  */
 public class Multinomial extends AbstractCondProbDistrib {
-    /**
-     * Creates a Multinomial object with probabilities specified by the given
-     * array.
-     *
-     * @throws IllegalArgumentException
-     *           if pi does not define a probability distribution
-     */
-    public Multinomial(int numTrials, double[] pi) {
+
+    private void init(int numTrials, double[] pi) {
         this.numTrials = numTrials;
         this.pi = (double[]) pi.clone();
         double sum = 0;
@@ -77,6 +73,48 @@ public class Multinomial extends AbstractCondProbDistrib {
         }
     }
 
+    /**
+     * Creates a Multinomial object with probabilities specified by the given
+     * array.
+     *
+     * @throws IllegalArgumentException
+     *           if pi does not define a probability distribution
+     */
+    public Multinomial(int numTrials, double[] pi) {
+        init(numTrials, pi);
+    }
+
+	public Multinomial(List params) {
+        if (params.size() != 2) {
+            throw new IllegalArgumentException("expected numTrials and pi");
+        }
+
+        if (!(params.get(0) instanceof Integer)) {
+            throw new IllegalArgumentException("expected first arg to be integer numTrials");
+        }
+        int numTrials = (int) params.get(0);
+
+        Object objectPi = params.get(1);
+		if (objectPi instanceof MatrixSpec) {
+			objectPi = ((MatrixSpec) objectPi).getValueIfNonRandom();
+		}
+        if (!(objectPi instanceof MatrixLib)) {
+            throw new IllegalArgumentException(
+                "expected second arg to be array of reals; got " + objectPi +
+                " instead, which is of type " + objectPi.getClass().getName());
+        }
+        MatrixLib pi = (MatrixLib) objectPi;
+        if (pi.colLen() != 1) {
+            throw new IllegalArgumentException("expected second arg to be column vector");
+        }
+        double[] nativePi = new double[pi.rowLen()];
+        for (int i = 0; i < pi.rowLen(); i++) {
+            nativePi[i] = pi.elementAt(i, 0);
+        }
+
+        init(numTrials, nativePi);
+    }
+
 	/**
 	 * Returns the probability of given vector.
 	 */
@@ -84,19 +122,20 @@ public class Multinomial extends AbstractCondProbDistrib {
 		if (!(value instanceof MatrixLib)) {
 			throw new IllegalArgumentException("expected vector value");
 		}
+        final int numBuckets = pi.length;
         MatrixLib valueVector = (MatrixLib) value;
-        if (valueVector.rowLen() != numTrials || valueVector.colLen() != 1) {
+        if (valueVector.rowLen() != numBuckets || valueVector.colLen() != 1) {
             throw new IllegalArgumentException("value has wrong dimension");
         }
         int sum = 0;
-        for (int i = 0; i < numTrials; i++) {
+        for (int i = 0; i < numBuckets; i++) {
             sum += valueVector.elementAt(i, 0);
         }
         if (sum != numTrials) {
             return 0;
         }
         double prob = Util.factorial(numTrials);
-        for (int i = 0; i < numTrials; i++) {
+        for (int i = 0; i < numBuckets; i++) {
             prob *= Math.pow(pi[i], valueVector.elementAt(i, 0));
             prob /= Util.factorial((int)Math.round(valueVector.elementAt(i, 0)));
             // FIXME: It would be better if we could take the param as an array
@@ -150,8 +189,8 @@ public class Multinomial extends AbstractCondProbDistrib {
         Random rng = new java.util.Random();
         for (int trial = 0; trial < numTrials; trial++) {
             double val = rng.nextDouble();
-            int bucket = 0;
-            for (bucket = 1; bucket < numBuckets; bucket++) {
+            int bucket;
+            for (bucket = 0; bucket < numBuckets; bucket++) {
                 if (val <= cdf[bucket]) {
                     break;
                 }
