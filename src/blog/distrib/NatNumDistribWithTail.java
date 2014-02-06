@@ -51,7 +51,7 @@ import blog.model.Type;
 public class NatNumDistribWithTail extends AbstractCondProbDistrib {
 	/**
 	 * Creates a NatNumDistribWithTail with the given array of probabilities for
-	 * the multinomial distribution, and the given lambda and alpha values. k is
+	 * the categorical distribution, and the given lambda and alpha values. k is
 	 * set to the size of the probability array.
 	 * 
 	 * @param pi
