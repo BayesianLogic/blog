@@ -295,21 +295,7 @@ public class RelationExtractionProposer implements Proposer {
           } else {
             world.setValue(holds, false);
           }	
-        }
-        
-        // Do the same for the other order of arg pair
-        fact = getFact(rel, arg2, arg1, world);
-        factMap.put(generateKey(rel, arg2, arg1), fact);
-        holds = new RandFuncAppVar(holdsFunc, Collections.singletonList(fact));
-        
-        if (!world.isInstantiated(holds)) {
-            if (rng.nextDouble() < (Double) world.getValue(new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel)))) {
-            world.setValue(holds, true);
-          } else {
-            world.setValue(holds, false);
-          } 
-        }
-        
+        }        
       }
     }
 
@@ -370,6 +356,7 @@ public class RelationExtractionProposer implements Proposer {
   private double sourceFactSwitch(PartialWorldDiff proposedWorld) {
 
     // Choose sentence s randomly from all sentences
+
     int sentNum = rng.nextInt(sentType.getGuaranteedObjects().size());
     Object sentence = sentType.getGuaranteedObject(sentNum);
 
@@ -479,25 +466,29 @@ public class RelationExtractionProposer implements Proposer {
         numTrueFactsInNewState++;
       }
     }
+    double logTrueFactRatio = sentType.getGuaranteedObjects().size() * Math.log((float) numTrueFactsInOldState/numTrueFactsInNewState);
     double logStateRatio = logProbOfPSFy + logProbOfNSFy + Math.log(M[newRelNum])
                            - logProbOfPSFx - logProbOfNSFx - Math.log(M[oldRelNum])
-                           + sentType.getGuaranteedObjects().size() * Math.log((float) numTrueFactsInOldState/numTrueFactsInNewState);
+                           + logTrueFactRatio;
     
     
     // now print it..
-    //if (count % 100 == 0) {
-    //  System.out.println("Source Fact Iteration #: " + count);
-    //  System.out.println("Correct logStateRatio: " + logStateRatio);
-    //  int sdjfkl = 5+2; // lol this is here so I can put a breakpoint after the system print
-    //}
+//    if (count % 100 == 0) {
+//      System.out.println("Source Fact Iteration #: " + count);
+//      System.out.println("Correct logStateRatio: " + logStateRatio);
+//      System.out.println("Correct logTrueFactRatio: " + logTrueFactRatio);
+//      int sdjfkl = 5+2; // lol this is here so I can put a breakpoint after the system print
+//    }
     
     boolean PSFyIsSupported = isSupported(previousSourceFact);
     double logProposalRatio = Math.log(M[oldRelNum]) + ((!PSFxIsSupported) ? logProbOfPSFx : 0) - Math.log(M[newRelNum]) - ((!PSFyIsSupported) ? logProbOfPSFy : 0);
 
-    //double logAcceptanceRatio = logStateRatio + logProposalRatio;
-    //double acceptanceRatio = Math.exp(logAcceptanceRatio);
+    double logAcceptanceRatio = logStateRatio + logProposalRatio;
+    double acceptanceRatio = Math.exp(logAcceptanceRatio);
     
-    return logProposalRatio;
+    return logAcceptanceRatio; // RelationExtractionMHSampler hack
+    
+    //return logProposalRatio;
 
   }
 
@@ -566,14 +557,16 @@ public class RelationExtractionProposer implements Proposer {
 //    if (count % 100 == 0) {
 //      System.out.println("holdsSwitch Iteration #: " + count);
 //      System.out.println("Correct logStateRatio: " + logStateRatio);
+//      int jklsf = 43;
 //    }
     
     double logProposalRatio = logProbOfOldState - logProbOfNewState;
     
-    //double logAcceptanceRatio = logStateRatio + logProposalRatio;
-    //double acceptanceRatio = Math.exp(logAcceptanceRatio);
+    double logAcceptanceRatio = logStateRatio + logProposalRatio;
+    double acceptanceRatio = Math.exp(logAcceptanceRatio);
+    return logAcceptanceRatio; // RelationExtractionMHSampler hack
     
-    return logProposalRatio;
+    //return logProposalRatio;
 
   }
 
@@ -628,7 +621,9 @@ public class RelationExtractionProposer implements Proposer {
     RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel));
     proposedWorld.setValue(sparsity, sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType));
     
-    return Double.POSITIVE_INFINITY; // Gibbs, may have to figure this out later with MHSampler.java
+    //return Double.POSITIVE_INFINITY; // Gibbs, may have to figure this out later with MHSampler.java
+    return 0; // Gibbs, for RelationExtractionMHSampler hack
+  
   }
 
   /**
@@ -662,7 +657,9 @@ public class RelationExtractionProposer implements Proposer {
     RandFuncAppVar theta = new RandFuncAppVar(thetaFunc, Collections.singletonList(rel));
     proposedWorld.setValue(theta, thetaSampler.sampleVal(Collections.EMPTY_LIST, relType));
     
-    return Double.POSITIVE_INFINITY; // Gibbs, may have to figure this out later with MHSampler.java
+    //return Double.POSITIVE_INFINITY; // Gibbs, may have to figure this out later with MHSampler.java
+    return 0; // Gibbs, for RelationExtractionMHSampler hack
+  
   }
 
   /**

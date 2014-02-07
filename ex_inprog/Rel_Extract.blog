@@ -5,7 +5,7 @@ type Relation;
 //#Relation = 100;
 
 fixed Real alpha = 10;
-fixed Real beta = 1000;
+fixed Real beta = 100;
 random Real Sparsity(Relation r) ~ Beta(alpha, beta);
 //random Real Sparsity(Relation r) = 0.1;
 
@@ -28,7 +28,8 @@ type Trigger;
 
 /* alpha should be a vector of length #Triggers */
 fixed Real dir_alpha = 1.0;
-random Real[] Theta(Relation r) ~ Dirichlet(dir_alpha, dir_alpha);
+fixed Integer numTrigs = 31;
+random Real[] Theta(Relation r) ~ SymmetricDirichlet(numTrigs, dir_alpha);
 
 /* A sentence expresses a fact. The fact is chosen uniformly
  * from the set of all true facts.
