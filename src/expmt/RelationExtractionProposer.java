@@ -39,9 +39,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
+import java.util.Set;
 
 import Jama.Matrix;
 import blog.BLOGUtil;
@@ -58,10 +62,11 @@ import blog.model.Evidence;
 import blog.model.Function;
 import blog.model.FunctionSignature;
 import blog.model.Model;
+import blog.model.NonGuaranteedObject;
+import blog.model.OriginFunction;
 import blog.model.RandomFunction;
 import blog.model.Type;
 import blog.model.POP;
-
 import blog.sample.Proposer;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
