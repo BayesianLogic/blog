@@ -8,21 +8,32 @@ random Boolean Burglary ~ BooleanDistrib(0.001);
 
 random Boolean Earthquake ~ BooleanDistrib(0.002);
 
-random Boolean Alarm ~ TabularCPD({[true, true] -> ~ BooleanDistrib(0.95),
-       	   [true, false] -> ~ BooleanDistrib(0.94),
-				   [false, true] -> ~ BooleanDistrib(0.29),
-				   [false, false] -> ~ BooleanDistrib(0.001)},
-			     [Burglary, Earthquake]);
+random Boolean Alarm {
+	if Burglary then
+		if Earthquake then
+		  ~ BooleanDistrib(0.95)
+		else
+		  ~ BooleanDistrib(0.94)
+	else
+		if Earthquake then
+		  ~ BooleanDistrib(0.29)
+		else
+		  ~ BooleanDistrib(0.001)  
+};
 
-random Boolean JohnCalls ~ TabularCPD({true -> ~ BooleanDistrib(0.9),
-       	       		   	       false -> ~ BooleanDistrib(0.05)},
-				 Alarm);
+random Boolean JohnCalls 
+	if Alarm then 
+	  ~ BooleanDistrib(0.9)
+	else 
+	  ~ BooleanDistrib(0.05);
 
-random Boolean MaryCalls ~ TabularCPD({true -> ~ BooleanDistrib(0.7),
-       	       		   	       false -> ~ BooleanDistrib(0.01)},
-				 Alarm);
+random Boolean MaryCalls 
+  if Alarm then 
+    ~ BooleanDistrib(0.7)
+  else 
+    ~ BooleanDistrib(0.01);
 
-/* Evidence for the burglary model (burglary.mblog) saying that both 
+/* Evidence for the burglary model saying that both 
  * John and Mary called.  Given this evidence, the posterior probability 
  * of Burglary is 0.284 (see p. 505 of "AI: A Modern Approach", 2nd ed.).
  */
@@ -30,7 +41,7 @@ random Boolean MaryCalls ~ TabularCPD({true -> ~ BooleanDistrib(0.7),
 obs JohnCalls = true;
 obs MaryCalls = true;
 
-/* Query for the burglary model (burglary.mblog) asking whether Burglary 
+/* Query for the burglary model asking whether Burglary 
  * is true.
  */
 
