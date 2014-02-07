@@ -26,6 +26,8 @@ def dynamics(car_params, old_state, encoder_velocity, steering_angle, delta_t):
     steering_angle is in radians.
     """
     a, b, h, L = car_params.a, car_params.b, car_params.h, car_params.L
+    # print
+    # print "controls:", encoder_velocity, steering_angle
     # print "old_state:", old_state
     [x, y, theta, xdot, ydot, thetadot, obst_x, obst_y] = old_state
 
@@ -60,7 +62,6 @@ def dynamics(car_params, old_state, encoder_velocity, steering_angle, delta_t):
         new_obst_x, new_obst_y,
     ]
     # print "new_state:", new_state
-    # raw_input()
     return new_state
 
 
@@ -144,8 +145,7 @@ def get_my_poses(readings, car_params, dynamics):
     initial_x = first_gps_reading.gps_longitude
     initial_y = first_gps_reading.gps_latitude
     initial_theta = first_gps_reading.gps_orientation
-    control_readings = [reading for reading in readings if reading.velocity]
-    assert control_readings[0].time > initial_t
+    control_ts, velocities, steerings = get_controls(readings)
     my_ts = [initial_t]
     my_xs = [initial_x]
     my_ys = [initial_y]
@@ -154,12 +154,16 @@ def get_my_poses(readings, car_params, dynamics):
         initial_x, initial_y, initial_theta,
         0, 0, 0,
         123, 45]
-    for reading in control_readings:
-        delta_t = reading.time - my_ts[-1]
+    for i in xrange(len(control_ts)):
+        if control_ts[i] < initial_t:
+            continue
+        delta_t = control_ts[i] - my_ts[-1]
+        # delta_t = max(delta_t - 0.001, 0.00001)
+        assert delta_t > 0
         new_state = dynamics(
-            car_params, prev_state, reading.velocity,
-            reading.steering, delta_t)
-        my_ts.append(reading.time)
+            car_params, prev_state, velocities[i],
+            steerings[i], delta_t)
+        my_ts.append(control_ts[i])
         my_xs.append(new_state[0])
         my_ys.append(new_state[1])
         my_thetas.append(new_state[2])
@@ -174,6 +178,10 @@ def demo(dataset_name, dataset_kind):
     data_dir = path_for_dataset(dataset_name, dataset_kind)
     readings = read_data(data_dir)
     car_params, obstacles = read_metadata(data_dir)
+
+    # HACK: We ignore the first 0.5 seconds, because the velocity and
+    # steering data is broken at the beginning of a run.
+    readings = [reading for reading in readings if reading.time > 0.5]
 
     # Ground-truth trajectory vs trajectory from dynamics model:
     fig1 = plt.figure()
