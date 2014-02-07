@@ -51,6 +51,10 @@ def dynamics(car_params, old_state, encoder_velocity, steering_angle, delta_t):
     new_x = x + delta_t * xdot
     new_y = y + delta_t * ydot
     new_theta = theta + delta_t * thetadot
+    if new_theta > np.pi:
+        new_theta -= 2 * np.pi
+    elif new_theta < -np.pi:
+        new_theta += 2 * np.pi
 
     # The obstacles stay the same:
     new_obst_x = obst_x
