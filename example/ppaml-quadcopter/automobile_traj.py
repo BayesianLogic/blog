@@ -26,6 +26,7 @@ def dynamics(car_params, old_state, encoder_velocity, steering_angle, delta_t):
     steering_angle is in radians.
     """
     a, b, h, L = car_params.a, car_params.b, car_params.h, car_params.L
+    # print "old_state:", old_state
     [x, y, theta, xdot, ydot, thetadot, obst_x, obst_y] = old_state
 
     # Translate velocity from encoder to center of back axle:
@@ -47,17 +48,20 @@ def dynamics(car_params, old_state, encoder_velocity, steering_angle, delta_t):
     # Compute new x, y, theta:
     new_x = x + delta_t * xdot
     new_y = y + delta_t * ydot
-    new_theta = thetadot  # XXX mistake in their paper??
+    new_theta = theta + delta_t * thetadot
 
     # The obstacles stay the same:
     new_obst_x = obst_x
     new_obst_y = obst_y
 
-    return [
+    new_state = [
         new_x, new_y, new_theta,
         new_xdot, new_ydot, new_thetadot,
         new_obst_x, new_obst_y,
     ]
+    # print "new_state:", new_state
+    # raw_input()
+    return new_state
 
 
 def plot_traj(ax, label, ts, xs, ys, thetas):
@@ -69,32 +73,85 @@ def plot_traj(ax, label, ts, xs, ys, thetas):
     # TODO take into account ts and thetas
 
 
-def demo(dataset_name, dataset_kind):
+def plot_components(fig, label, gps_poses, my_poses, controls):
     """
-    Read data and show true trajectory and trajectory given by dynamics model.
+    Plot x, y, theta, velocity, steering individually.
     """
-    data_dir = path_for_dataset(dataset_name, dataset_kind)
-    readings = read_data(data_dir)
-    car_params, obstacles = read_metadata(data_dir)
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
+    gps_ts, gps_xs, gps_ys, gps_thetas = gps_poses
+    my_ts, my_xs, my_ys, my_thetas = my_poses
+    control_ts, velocities, steerings = controls
 
-    # Ground-truth trajectory from GPS readings:
+    x_ax = fig.add_subplot(511)
+    x_ax.plot(gps_ts, gps_xs, label='ground')
+    x_ax.plot(my_ts, my_xs, label='mine')
+    x_ax.set_ylabel('x')
+    x_ax.set_ylim(LONGITUDE_MIN - 1, LONGITUDE_MAX + 1)
+    x_ax.legend()
+
+    y_ax = fig.add_subplot(512)
+    y_ax.plot(gps_ts, gps_ys, label='ground')
+    y_ax.plot(my_ts, my_ys, label='mine')
+    y_ax.set_ylabel('y')
+    y_ax.set_ylim(LONGITUDE_MIN - 1, LONGITUDE_MAX + 1)
+    y_ax.legend()
+
+    theta_ax = fig.add_subplot(513)
+    theta_ax.plot(gps_ts, gps_thetas, label='ground')
+    theta_ax.plot(my_ts, my_thetas, label='mine')
+    theta_ax.set_ylabel('theta')
+    theta_ax.set_ylim(-np.pi, np.pi)
+    theta_ax.legend()
+
+    velocity_ax = fig.add_subplot(514)
+    velocity_ax.plot(control_ts, velocities)
+    velocity_ax.set_ylabel('velocity')
+
+    steering_ax = fig.add_subplot(515)
+    steering_ax.plot(control_ts, steerings)
+    steering_ax.set_ylabel('steering')
+
+
+def get_controls(readings):
+    """
+    Return control_ts, velocities, steerings from control readings.
+    """
+    control_readings = [reading for reading in readings if reading.velocity]
+    ts = [reading.time for reading in control_readings]
+    velocities = [reading.velocity for reading in control_readings]
+    steerings = [reading.steering for reading in control_readings]
+    return ts, velocities, steerings
+
+
+def get_ground_truth_poses(readings):
+    """
+    Return ts, xs, ys, thetas from GPS readings.
+    """
     gps_readings = [reading for reading in readings if reading.gps_latitude]
     gps_ts = [reading.time for reading in gps_readings]
     gps_xs = [reading.gps_longitude for reading in gps_readings]
     gps_ys = [reading.gps_latitude for reading in gps_readings]
     gps_thetas = [reading.gps_orientation for reading in gps_readings]
-    plot_traj(ax, 'ground', gps_ts, gps_xs, gps_ys, gps_thetas)
+    return gps_ts, gps_xs, gps_ys, gps_thetas
 
-    # Trajectory as given by our dynamics model:
+
+def get_my_poses(readings, car_params, dynamics):
+    """
+    Return ts, xs, ys, thetas given by dynamics model.
+    """
+    initial_t, initial_x, initial_y, initial_theta = None, None, None, None
+    first_gps_reading = next(rdng for rdng in readings if rdng.gps_latitude)
+    initial_t = first_gps_reading.time
+    initial_x = first_gps_reading.gps_longitude
+    initial_y = first_gps_reading.gps_latitude
+    initial_theta = first_gps_reading.gps_orientation
     control_readings = [reading for reading in readings if reading.velocity]
-    my_ts = [0]
-    my_xs = [gps_xs[0]]
-    my_ys = [gps_ys[0]]
-    my_thetas = [gps_thetas[0]]
+    assert control_readings[0].time > initial_t
+    my_ts = [initial_t]
+    my_xs = [initial_x]
+    my_ys = [initial_y]
+    my_thetas = [initial_theta]
     prev_state = [
-        gps_xs[0], gps_ys[0], gps_thetas[0],
+        initial_x, initial_y, initial_theta,
         0, 0, 0,
         123, 45]
     for reading in control_readings:
@@ -106,20 +163,43 @@ def demo(dataset_name, dataset_kind):
         my_xs.append(new_state[0])
         my_ys.append(new_state[1])
         my_thetas.append(new_state[2])
+        prev_state = new_state
+    return my_ts, my_xs, my_ys, my_thetas
 
-        # LEFT TODO: debug dynamics function
-        print new_state
 
-    plot_traj(ax, 'mine', my_ts, my_xs, my_ys, my_thetas)
+def demo(dataset_name, dataset_kind):
+    """
+    Read data and show true trajectory and trajectory given by dynamics model.
+    """
+    data_dir = path_for_dataset(dataset_name, dataset_kind)
+    readings = read_data(data_dir)
+    car_params, obstacles = read_metadata(data_dir)
 
-    ax.set_xlim(LONGITUDE_MIN - 1, LONGITUDE_MAX + 1)
-    ax.set_ylim(LATITUDE_MIN - 1, LATITUDE_MAX + 1)
-    plt.legend()
+    # Ground-truth trajectory vs trajectory from dynamics model:
+    fig1 = plt.figure()
+    ax1 = fig1.add_subplot(111)
+    gps_poses = get_ground_truth_poses(readings)
+    plot_traj(ax1, 'ground', *gps_poses)
+    my_poses = get_my_poses(readings, car_params, dynamics)
+    plot_traj(ax1, 'mine', *my_poses)
+    ax1.set_xlim(LONGITUDE_MIN - 1, LONGITUDE_MAX + 1)
+    ax1.set_ylim(LATITUDE_MIN - 1, LATITUDE_MAX + 1)
+    ax1.legend()
+
+    # Components of ground-truth trajectory vs my trajectory:
+    controls = get_controls(readings)
+    fig2 = plt.figure()
+    plot_components(fig2, 'ground', gps_poses, my_poses, controls)
+
     plt.show()
+
+    return gps_poses, my_poses
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         raise RuntimeError(
             "Usage example: {} 1_straight ground".format(sys.argv[0]))
-    demo(sys.argv[1], sys.argv[2])
+    gps_poses, my_poses = demo(sys.argv[1], sys.argv[2])
+    gps_ts, gps_xs, gps_ys, gps_thetas = gps_poses
+    my_ts, my_xs, my_ys, my_thetas = my_poses
