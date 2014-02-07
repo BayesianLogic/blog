@@ -5,20 +5,20 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- *
+ * 
  * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
+ * notice, this list of conditions and the following disclaimer.
+ * 
  * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the
- *   distribution.  
- *
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
+ * 
  * * Neither the name of the University of California, Berkeley nor
- *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior 
- *   written permission.
- *
+ * the names of its contributors may be used to endorse or promote
+ * products derived from this software without specific prior
+ * written permission.
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -35,9 +35,9 @@
 
 package blog.distrib;
 
-import java.util.*;
+import java.util.List;
+
 import Jama.Matrix;
-import blog.*;
 import blog.model.Type;
 
 /**
@@ -49,145 +49,145 @@ import blog.model.Type;
  * distribution.
  */
 public class NatNumDistribWithTail extends AbstractCondProbDistrib {
-	/**
-	 * Creates a NatNumDistribWithTail with the given array of probabilities for
-	 * the categorical distribution, and the given lambda and alpha values. k is
-	 * set to the size of the probability array.
-	 * 
-	 * @param pi
-	 *          an array of double values specifying a probability distribution
-	 *          over the first pi.length natural numbers
-	 * 
-	 * @param lambda
-	 *          the probability P(X &lt; pi.length)
-	 * 
-	 * @param alpha
-	 *          the success probability of the geometric distribution: P(X &gt;=
-	 *          n+1 | X &gt;= n) for n &gt;= pi.length
-	 */
-	public NatNumDistribWithTail(double[] pi, double lambda, double alpha) {
-		k = pi.length;
-		prefixDistrib = new Categorical(pi);
-		mixDistrib = new BooleanDistrib(lambda);
-		geometric = new Geometric(alpha);
-	}
+  /**
+   * Creates a NatNumDistribWithTail with the given array of probabilities for
+   * the categorical distribution, and the given lambda and alpha values. k is
+   * set to the size of the probability array.
+   * 
+   * @param pi
+   *          an array of double values specifying a probability distribution
+   *          over the first pi.length natural numbers
+   * 
+   * @param lambda
+   *          the probability P(X &lt; pi.length)
+   * 
+   * @param alpha
+   *          the success probability of the geometric distribution: P(X &gt;=
+   *          n+1 | X &gt;= n) for n &gt;= pi.length
+   */
+  public NatNumDistribWithTail(double[] pi, double lambda, double alpha) {
+    k = pi.length;
+    prefixDistrib = new Categorical(pi);
+    mixDistrib = new BooleanDistrib(lambda);
+    geometric = new Geometric(alpha);
+  }
 
-	/**
-	 * Creates a new NatNumDistribWithTail with the following three parameters:
-	 * <ol>
-	 * <li>a k-by-1 matrix specifying a probability distribution over the first k
-	 * natural numbers
-	 * 
-	 * <li>the probability of generating a number less than k
-	 * 
-	 * <li>the success probability of the geometric distribution for values
-	 * greater than or equal to k
-	 * </ol>
-	 */
-	public NatNumDistribWithTail(List params) {
-		if (params.size() != 3) {
-			throw new IllegalArgumentException(
-					"NatNumDistribWithTail expects three parameters: the "
-							+ "distribution over small numbers, the probability of "
-							+ "using that distribution, and the success probability "
-							+ "for a geometric distribution over larger numbers.");
-		}
+  /**
+   * Creates a new NatNumDistribWithTail with the following three parameters:
+   * <ol>
+   * <li>a k-by-1 matrix specifying a probability distribution over the first k
+   * natural numbers
+   * 
+   * <li>the probability of generating a number less than k
+   * 
+   * <li>the success probability of the geometric distribution for values
+   * greater than or equal to k
+   * </ol>
+   */
+  public NatNumDistribWithTail(List params) {
+    if (params.size() != 3) {
+      throw new IllegalArgumentException(
+          "NatNumDistribWithTail expects three parameters: the "
+              + "distribution over small numbers, the probability of "
+              + "using that distribution, and the success probability "
+              + "for a geometric distribution over larger numbers.");
+    }
 
-		if ((!(params.get(0) instanceof Matrix))
-				|| (((Matrix) params.get(0)).getColumnDimension() != 1)) {
-			throw new IllegalArgumentException(
-					"First parameter to NatNumDistribWithTail should be a "
-							+ "column vector.");
-		}
-		Matrix m = (Matrix) params.get(0);
-		k = m.getRowDimension();
-		double[] probs = m.getColumnPackedCopy();
-		prefixDistrib = new Categorical(probs);
+    if ((!(params.get(0) instanceof Matrix))
+        || (((Matrix) params.get(0)).getColumnDimension() != 1)) {
+      throw new IllegalArgumentException(
+          "First parameter to NatNumDistribWithTail should be a "
+              + "column vector.");
+    }
+    Matrix m = (Matrix) params.get(0);
+    k = m.getRowDimension();
+    double[] probs = m.getColumnPackedCopy();
+    prefixDistrib = new Categorical(probs);
 
-		if (!(params.get(1) instanceof Number)) {
-			throw new IllegalArgumentException(
-					"Second parameter to NatNumDistribWithTail should be a "
-							+ "number (the probability of using the explicit distrib).");
-		}
-		mixDistrib = new BooleanDistrib(((Number) params.get(1)).doubleValue());
+    if (!(params.get(1) instanceof Number)) {
+      throw new IllegalArgumentException(
+          "Second parameter to NatNumDistribWithTail should be a "
+              + "number (the probability of using the explicit distrib).");
+    }
+    mixDistrib = new BooleanDistrib(((Number) params.get(1)).doubleValue());
 
-		if (!(params.get(2) instanceof Number)) {
-			throw new IllegalArgumentException(
-					"Third parameter to NatNumDistribWithTail should be a "
-							+ "number (the success prob for the geometric distrib).");
-		}
-		geometric = new Geometric(((Number) params.get(2)).doubleValue());
-	}
+    if (!(params.get(2) instanceof Number)) {
+      throw new IllegalArgumentException(
+          "Third parameter to NatNumDistribWithTail should be a "
+              + "number (the success prob for the geometric distrib).");
+    }
+    geometric = new Geometric(((Number) params.get(2)).doubleValue());
+  }
 
-	/**
-	 * Returns the probability of a non-negative integer n under this
-	 * distribution. Throws an exception if n is negative.
-	 */
-	public double getProb(int n) {
-		if (n < k) {
-			return mixDistrib.getProb(true) * prefixDistrib.getProb(n);
-		}
-		return mixDistrib.getProb(false) * geometric.getProb(n - k);
-	}
+  /**
+   * Returns the probability of a non-negative integer n under this
+   * distribution. Throws an exception if n is negative.
+   */
+  public double getProb(int n) {
+    if (n < k) {
+      return mixDistrib.getProb(true) * prefixDistrib.getProb(n);
+    }
+    return mixDistrib.getProb(false) * geometric.getProb(n - k);
+  }
 
-	/**
-	 * Returns the log probability of a non-negative integer n under this
-	 * distribution. Throws an exception if n is negative.
-	 */
-	public double getLogProb(int n) {
-		if (n < k) {
-			return mixDistrib.getLogProb(true) + prefixDistrib.getLogProb(n);
-		}
-		return mixDistrib.getLogProb(false) + geometric.getLogProb(n - k);
-	}
+  /**
+   * Returns the log probability of a non-negative integer n under this
+   * distribution. Throws an exception if n is negative.
+   */
+  public double getLogProb(int n) {
+    if (n < k) {
+      return mixDistrib.getLogProb(true) + prefixDistrib.getLogProb(n);
+    }
+    return mixDistrib.getLogProb(false) + geometric.getLogProb(n - k);
+  }
 
-	/**
-	 * Returns the probability of the given value, which should be a non-negative
-	 * Integer. Expects no arguments.
-	 */
-	public double getProb(List args, Object childValue) {
-		if (!args.isEmpty()) {
-			throw new IllegalArgumentException(
-					"NatNumDistribWithTail expects no arguments.");
-		}
+  /**
+   * Returns the probability of the given value, which should be a non-negative
+   * Integer. Expects no arguments.
+   */
+  public double getProb(List args, Object childValue) {
+    if (!args.isEmpty()) {
+      throw new IllegalArgumentException(
+          "NatNumDistribWithTail expects no arguments.");
+    }
 
-		if (!(childValue instanceof Integer)) {
-			throw new IllegalArgumentException(
-					"NatNumDistribWithTail defines distribution over objects "
-							+ "of class Integer, not " + childValue.getClass());
-		}
+    if (!(childValue instanceof Integer)) {
+      throw new IllegalArgumentException(
+          "NatNumDistribWithTail defines distribution over objects "
+              + "of class Integer, not " + childValue.getClass());
+    }
 
-		return getProb(((Integer) childValue).intValue());
-	}
+    return getProb(((Integer) childValue).intValue());
+  }
 
-	/**
-	 * Returns a sample from this distribution.
-	 */
-	public int sampleVal() {
-		boolean usePrefix = mixDistrib.sampleVal();
-		if (usePrefix) {
-			// X < k
-			return prefixDistrib.sampleVal();
-		} else {
-			// X >= k
-			return k + geometric.sampleVal();
-		}
-	}
+  /**
+   * Returns a sample from this distribution.
+   */
+  public int sampleVal() {
+    boolean usePrefix = mixDistrib.sampleVal();
+    if (usePrefix) {
+      // X < k
+      return prefixDistrib.sampleVal();
+    } else {
+      // X >= k
+      return k + geometric.sampleVal();
+    }
+  }
 
-	/**
-	 * Returns an Integer sampled from this distribution. Expects no arguments.
-	 */
-	public Object sampleVal(List args, Type childType) {
-		if (!args.isEmpty()) {
-			throw new IllegalArgumentException(
-					"NatNumDistribWithTail expects no arguments.");
-		}
+  /**
+   * Returns an Integer sampled from this distribution. Expects no arguments.
+   */
+  public Object sampleVal(List args, Type childType) {
+    if (!args.isEmpty()) {
+      throw new IllegalArgumentException(
+          "NatNumDistribWithTail expects no arguments.");
+    }
 
-		return new Integer(sampleVal());
-	}
+    return new Integer(sampleVal());
+  }
 
-	int k;
-	BooleanDistrib mixDistrib;
-	Categorical prefixDistrib;
-	Geometric geometric;
+  int k;
+  BooleanDistrib mixDistrib;
+  Categorical prefixDistrib;
+  Geometric geometric;
 }
