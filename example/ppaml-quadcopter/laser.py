@@ -36,9 +36,7 @@ def readings_for_obstacle(
         c = ((laser_x - obstacle_x) ** 2 +
              (laser_y - obstacle_y) ** 2 -
              obstacle_r ** 2)
-        # print a, b, c
         k1, k2 = solve_quadratic_equation(a, b, c)
-        # print k1, k2
         if k1 is None or k2 < 0:
             # Does not intersect ray.
             readings[i] = laser_max_range
@@ -50,20 +48,10 @@ def readings_for_obstacle(
 
 
 def demo():
-    # laser_x = 0.0
-    # laser_y = 0.0
-    # laser_theta = 0.0
-    # laser_angles = [0.0]
-    # laser_max_range = 10
-    # obstacle_x = 7.0
-    # obstacle_y = 0.0
-    # obstacle_r = 2.0
-
     laser_x = 2.0
     laser_y = 3.0
     laser_theta = 0.3
     laser_angles = np.arange(-90, 90.5, 0.5) * np.pi / 180
-    # laser_angles = [0.8]
     laser_max_range = 10
     obstacle_x = 7.0
     obstacle_y = 9.0
@@ -72,7 +60,6 @@ def demo():
     readings = readings_for_obstacle(
         laser_x, laser_y, laser_theta, laser_angles, laser_max_range,
         obstacle_x, obstacle_y, obstacle_r)
-    print readings
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
