@@ -1,0 +1,84 @@
+/* BLOG Model for Relationship Extraction
+ */
+
+type Relation;
+//#Relation = 100;
+
+fixed Real alpha = 10;
+fixed Real beta = 100;
+random Real Sparsity(Relation r) ~ Beta(alpha, beta);
+//random Real Sparsity(Relation r) = 0.1;
+
+type Entity;
+
+type Fact;
+origin Relation Rel(Fact);
+origin Entity Arg1(Fact);
+origin Entity Arg2(Fact);
+
+#Fact(Rel = r, Arg1 = a1, Arg2 = a2) = 1;
+
+random Boolean Holds(Fact f) ~ BooleanDistrib(Sparsity(Rel(f)));
+
+/* A trigger is a set of words that is specific to the relation.
+ * The categorical distribution is sampled from a Dirichlet distribution.
+ */
+
+type Trigger;
+
+/* alpha should be a vector of length #Triggers */
+fixed Real dir_alpha = 1.0;
+fixed Integer numTrigs = 31;
+random Real[] Theta(Relation r) ~ SymmetricDirichlet(numTrigs, dir_alpha);
+
+/* A sentence expresses a fact. The fact is chosen uniformly
+ * from the set of all true facts.
+ */
+
+type Sentence;
+random Fact SourceFact(Sentence s) ~ UniformChoice({Fact f : Holds(f) == true});
+random Entity Subject(Sentence s) = Arg1(SourceFact(s));
+random Entity Object(Sentence s) = Arg2(SourceFact(s));
+
+random Integer TriggerID(Sentence s) {
+ if (SourceFact(s) != null) then ~ Categorical(Theta(Rel(SourceFact(s))))
+};
+
+random Trigger Verb(Sentence s) = idToTrigger( TriggerID(s) );
+
+/* Observations go here */
+/*
+obs Subject(Sent[0]) = X0;
+obs Object(Sent[0]) = Y0;
+obs Verb(Sent[0]) = Trig[0];
+*/
+/*
+obs Subject(Sent[1]) = X0;
+obs Object(Sent[1]) = Y0;
+obs Verb(Sent[1]) = Trig[1];
+*/
+/*
+obs Subject(Sent[1]) = X1;
+obs Object(Sent[1]) = Y1;
+obs Verb(Sent[1]) = Trig[0];
+
+distinct Entity X0,Y0,X1,Y1;
+distinct Relation R[2];
+distinct Sentence Sent[2];
+
+distinct Trigger Trig[2];
+fixed Trigger idToTrigger(Integer i) 
+  = TabularInterp(1,
+    0, Trig[0],
+    1, Trig[1]
+  );
+*/
+
+
+/* Queries go here */
+/*
+query Rel(SourceFact(Sent[0])) == Rel(SourceFact(Sent[1]));
+query Rel(SourceFact(Sent[0])) == R[0];
+*/
+
+

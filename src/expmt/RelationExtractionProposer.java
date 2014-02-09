@@ -192,125 +192,132 @@ public class RelationExtractionProposer implements Proposer {
     // Set evidence and queries
     this.evidence = evidence;
     this.queries = queries;
+    
+    PartialWorldDiff world;
 
-    PartialWorld underlying = new DefaultPartialWorld(
-        Collections.singleton(relType));
-    PartialWorldDiff world = new PartialWorldDiff(underlying);
-
-    // 1) Set observed variables
-    for (Iterator iter = evidence.getEvidenceVars().iterator(); iter.hasNext();) {
-      RandFuncAppVar var = (RandFuncAppVar) iter.next();
-      RandomFunction varFunc = var.func();
-
-      if (varFunc == verbFunc) {
-        Object sentence = var.args()[0]; // Get the sentence s
-        int triggerIndex = trigType.getGuaranteedObjIndex(evidence.getObservedValue(var)); // Assumes triggers are Distinct
-        RandFuncAppVar trigFuncVar = new RandFuncAppVar(triggerIDFunc, Collections.singletonList(sentence));
-        world.setValue(trigFuncVar, triggerIndex);
-      }
-
-      world.setValue(var, evidence.getObservedValue(var));
-    }
-    System.out.println(world.toString());
-
-    // Create hashmap where key is a unique relation/arg pair, value is a fact
-    //factMap = new HashMap<String, Object>(); 
-
-    // Set number variables
-    for (Object rel : relType.getGuaranteedObjects()) {
-      for (Object arg1 : entType.getGuaranteedObjects()) {
-        for (Object arg2 : entType.getGuaranteedObjects()) {
-
-          // The key
-          //String key = generateKey(rel, arg1, arg2);
-
-          // Use a NumberVar to grab the fact
-          Object[] factArgs = {rel, arg1, arg2};
-          NumberVar nFacts = new NumberVar(factPOP, factArgs);
-
-          // 4a) Instantiate the number variable, by definition of the model
-          world.setValue(nFacts, 1);
-
-          //Object value = world.getSatisfiers(nFacts).iterator().next(); // Should only be one fact that satisfies that number statement
-
-          //factMap.put(key, value);
+    // Sample until a world with nonzero probability world has been sampled.
+    do {
+    
+      PartialWorld underlying = new DefaultPartialWorld(getTypes());
+      world = new PartialWorldDiff(underlying);
+      
+      // 1) Set observed variables
+      for (Iterator iter = evidence.getEvidenceVars().iterator(); iter.hasNext();) {
+        RandFuncAppVar var = (RandFuncAppVar) iter.next();
+        RandomFunction varFunc = var.func();
+  
+        if (varFunc == verbFunc) {
+          Object sentence = var.args()[0]; // Get the sentence s
+          int triggerIndex = trigType.getGuaranteedObjIndex(evidence.getObservedValue(var)); // Assumes triggers are Distinct
+          RandFuncAppVar trigFuncVar = new RandFuncAppVar(triggerIDFunc, Collections.singletonList(sentence));
+          world.setValue(trigFuncVar, triggerIndex);
         }
-      }
-    }
-
-    // 2) For each observed sentence, choose SourceFact (basically randomly choose a relation
-    // to go with the argument pair). This assumes sentences are distinct. Add SourceFact to Set of supported facts.
-    // 3) Also, set the holds variable for this fact to be true
-    rng = new Random();
-    for (Object sentence : sentType.getGuaranteedObjects()) {
-
-      // Choose relation randomly from all relations
-      int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
-      Object rel = relType.getGuaranteedObject(relNum);
-      Object arg1 = world.getValue(new RandFuncAppVar(subjectFunc, Collections.singletonList(sentence)));
-      Object arg2 = world.getValue(new RandFuncAppVar(objectFunc, Collections.singletonList(sentence)));
-
-      // 2) Set the sourceFact value in the world
-      Object fact = getFact(rel, arg1, arg2, world);
-      world.setValue(new RandFuncAppVar(sourceFactFunc, Collections.singletonList(sentence)), fact);
-
-      // 3) Set the Holds value in the world
-      world.setValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)), true);
-      
-    }
-
-    // 4b and c) Sample Sparsity(r) and Theta(r) for each relation r
-    Integer[] params = {alpha, beta};
-    Beta sparsitySampler = new Beta(Arrays.asList(params));
-    Dirichlet thetaSampler = new Dirichlet(trigType.getGuaranteedObjects().size(), dir_alpha);
-    for (Object rel : relType.getGuaranteedObjects()) {
-
-      // 4b) Sparsity(r)
-      RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel));
-      world.setValue(sparsity, sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType));
-      
-      // 4c) Theta(r)
-      RandFuncAppVar theta = new RandFuncAppVar(thetaFunc, Collections.singletonList(rel));
-      world.setValue(theta, thetaSampler.sampleVal(Collections.EMPTY_LIST, relType)); 
-
-    }
-
-    // 4d) Sample all holds(f) values OF RELEVANT FACTS if they haven't been instantiated
-    factMap = new HashMap<String, Object>();
-    for (Object sentence: sentType.getGuaranteedObjects()) {
-
-      Object arg1 = world.getValue(new RandFuncAppVar(subjectFunc, Collections.singletonList(sentence)));
-      Object arg2 = world.getValue(new RandFuncAppVar(objectFunc, Collections.singletonList(sentence)));
-      
-      for (Object rel : relType.getGuaranteedObjects()) {
-        
-        // Get the fact, put it in the factMap, instantiate and sample if need be
-        Object fact = getFact(rel, arg1, arg2, world);
-        factMap.put(generateKey(rel, arg1, arg2), fact);
-        RandFuncAppVar holds = new RandFuncAppVar(holdsFunc, Collections.singletonList(fact));
-        
-        if (!world.isInstantiated(holds)) {
-            if (rng.nextDouble() < (Double) world.getValue(new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel)))) {
-            world.setValue(holds, true);
-          } else {
-            world.setValue(holds, false);
-          }	
-        }        
-      }
-    }
-
-    // Debug
-    if (Util.verbose()) {
-      for (Object fact : allFacts(world)) {
-
-        Object holds = world.getValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)));
-        System.out.println("Fact: " + fact + ", Holds: " + holds);
-
+  
+        world.setValue(var, evidence.getObservedValue(var));
       }
       System.out.println(world.toString());
-    }
-
-    count = 0;
+  
+      // Create hashmap where key is a unique relation/arg pair, value is a fact
+      //factMap = new HashMap<String, Object>(); 
+  
+      // Set number variables
+      for (Object rel : relType.getGuaranteedObjects()) {
+        for (Object arg1 : entType.getGuaranteedObjects()) {
+          for (Object arg2 : entType.getGuaranteedObjects()) {
+  
+            // The key
+            //String key = generateKey(rel, arg1, arg2);
+  
+            // Use a NumberVar to grab the fact
+            Object[] factArgs = {rel, arg1, arg2};
+            NumberVar nFacts = new NumberVar(factPOP, factArgs);
+  
+            // 4a) Instantiate the number variable, by definition of the model
+            world.setValue(nFacts, 1);
+  
+            //Object value = world.getSatisfiers(nFacts).iterator().next(); // Should only be one fact that satisfies that number statement
+  
+            //factMap.put(key, value);
+          }
+        }
+      }
+  
+      // 2) For each observed sentence, choose SourceFact (basically randomly choose a relation
+      // to go with the argument pair). This assumes sentences are distinct. Add SourceFact to Set of supported facts.
+      // 3) Also, set the holds variable for this fact to be true
+      rng = new Random();
+      for (Object sentence : sentType.getGuaranteedObjects()) {
+  
+        // Choose relation randomly from all relations
+        int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
+        Object rel = relType.getGuaranteedObject(relNum);
+        Object arg1 = world.getValue(new RandFuncAppVar(subjectFunc, Collections.singletonList(sentence)));
+        Object arg2 = world.getValue(new RandFuncAppVar(objectFunc, Collections.singletonList(sentence)));
+  
+        // 2) Set the sourceFact value in the world
+        Object fact = getFact(rel, arg1, arg2, world);
+        world.setValue(new RandFuncAppVar(sourceFactFunc, Collections.singletonList(sentence)), fact);
+  
+        // 3) Set the Holds value in the world
+        world.setValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)), true);
+        
+      }
+  
+      // 4b and c) Sample Sparsity(r) and Theta(r) for each relation r
+      Integer[] params = {alpha, beta};
+      Beta sparsitySampler = new Beta(Arrays.asList(params));
+      Dirichlet thetaSampler = new Dirichlet(trigType.getGuaranteedObjects().size(), dir_alpha);
+      for (Object rel : relType.getGuaranteedObjects()) {
+  
+        // 4b) Sparsity(r)
+        RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel));
+        world.setValue(sparsity, sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType));
+        
+        // 4c) Theta(r)
+        RandFuncAppVar theta = new RandFuncAppVar(thetaFunc, Collections.singletonList(rel));
+        world.setValue(theta, thetaSampler.sampleVal(Collections.EMPTY_LIST, relType)); 
+  
+      }
+  
+      // 4d) Sample all holds(f) values OF RELEVANT FACTS if they haven't been instantiated
+      factMap = new HashMap<String, Object>();
+      for (Object sentence: sentType.getGuaranteedObjects()) {
+  
+        Object arg1 = world.getValue(new RandFuncAppVar(subjectFunc, Collections.singletonList(sentence)));
+        Object arg2 = world.getValue(new RandFuncAppVar(objectFunc, Collections.singletonList(sentence)));
+        
+        for (Object rel : relType.getGuaranteedObjects()) {
+          
+          // Get the fact, put it in the factMap, instantiate and sample if need be
+          Object fact = getFact(rel, arg1, arg2, world);
+          factMap.put(generateKey(rel, arg1, arg2), fact);
+          RandFuncAppVar holds = new RandFuncAppVar(holdsFunc, Collections.singletonList(fact));
+          
+          if (!world.isInstantiated(holds)) {
+              if (rng.nextDouble() < (Double) world.getValue(new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel)))) {
+              world.setValue(holds, true);
+            } else {
+              world.setValue(holds, false);
+            }	
+          }        
+        }
+      }
+  
+      // Debug
+      if (Util.verbose()) {
+        for (Object fact : allFacts(world)) {
+  
+          Object holds = world.getValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)));
+          System.out.println("Fact: " + fact + ", Holds: " + holds);
+  
+        }
+        System.out.println(world.toString());
+      }
+  
+      count = 0;
+    
+    } while (this.evidence.getEvidenceProb(world) == 0);
+    // End do-while loop
     
     System.out.println("Number of sentences: " + sentType.getGuaranteedObjects().size());
     System.out.println("Number of facts: " + factMap.size());
@@ -333,15 +340,23 @@ public class RelationExtractionProposer implements Proposer {
     updateSupportedFacts(proposedWorld); // Used for sourceFactSwitch and holdsSwitch
     count++;
     double sample = rng.nextDouble();
-    if (sample < 0.5) {
-      return sourceFactSwitch(proposedWorld);
-    } else if (sample < 0.8) {
-      return holdsSwitch(proposedWorld);
-    } else if (sample < 0.9) {
-      return sparsitySample(proposedWorld);
-    } else {
-      return thetaSample(proposedWorld);
-    }
+    double logProposalRatio;
+    
+    // Sample until a valid move has been made (where evidence was not changed)
+    do {
+      proposedWorld.revert();
+      if (sample < 0.5) {
+        logProposalRatio = sourceFactSwitch(proposedWorld);
+      } else if (sample < 0.8) {
+        logProposalRatio = holdsSwitch(proposedWorld);
+      } else if (sample < 0.9) {
+        logProposalRatio = sparsitySample(proposedWorld);
+      } else {
+        logProposalRatio = thetaSample(proposedWorld);
+      }
+    } while (this.evidence.getEvidenceProb(proposedWorld) == 0);
+    
+    return logProposalRatio;
   }
 
   /**

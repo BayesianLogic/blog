@@ -1,3 +1,0 @@
-query Rel(SourceFact(Sent[0])) == Rel(SourceFact(Sent[1]));
-query Rel(SourceFact(Sent[2])) == Rel(SourceFact(Sent[3]));
-query Rel(SourceFact(Sent[0])) == Rel(SourceFact(Sent[22]));

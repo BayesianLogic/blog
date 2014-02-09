@@ -1,0 +1,10 @@
+Author: Chris Xie 2/8/14
+
+Constructed an artifial dataset consisting of 20 sentences, and 5 relations:
+	R[0] = Leadership
+	R[1] = Teaches a Class
+	R[2] = Student to Professor
+	R[3] = Authorship
+	R[4] = Made Money From
+
+I constructed these such that there are a lot of overlaps between the argument pairs and the relations. The goal is to see if the current model has a bootstrap (or semi-supervised clustering like) effect on the data when the entities and triggers are represented ONLY as strings.
