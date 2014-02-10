@@ -17,7 +17,7 @@ import numpy as np
 
 
 # Aggregate data types passed into the template.
-Observation = namedtuple('Observation', ['timestep', 'sensors'])
+Observation = namedtuple('Observation', ['timestep', 'lasers'])
 Control = namedtuple('Control', ['timestep', 'controls'])
 
 TIME_CHUNK = 0.005
@@ -53,12 +53,10 @@ def generate_model(disc_readings):
     """
     Take discretized readings and return the generated model as a string.
     """
-    state_size = 6
-    controls_size = 2
-    sensors_size = INTENSITY_COLS + LASER_COLS
-
     # Model parameters (values completely made up):
     model_vars = {}
+    model_vars['lasers_mu'] = np.zeros(LASER_COLS)
+    model_vars['lasers_sigma'] = np.eye(LASER_COLS)
 
     # Observations and controls:
     # (We fill in controls even at time steps where they are not observed.)
@@ -71,7 +69,7 @@ def generate_model(disc_readings):
         if reading.laser:
             observations.append(Observation(
                 timestep=reading.timestep,
-                sensors=reading.laser + reading.intensity))
+                lasers=reading.laser))
         elif reading.velocity:
             # Fill in unobserved timesteps with the previous control.
             while next_control_timestep < reading.timestep:
