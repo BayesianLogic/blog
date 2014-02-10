@@ -7,6 +7,7 @@ Generate the BLOG model for the automobile problem.
 from automobile_data import INTENSITY_COLS
 from automobile_data import LASER_COLS
 from automobile_data import read_data
+from automobile_data import read_metadata
 from automobile_data import Reading
 import filters
 
@@ -50,12 +51,17 @@ def discretize_time(readings):
     return disc_readings
 
 
-def generate_model(disc_readings):
+def generate_model(disc_readings, car_params):
     """
     Take discretized readings and return the generated model as a string.
     """
     # Model parameters (values completely made up):
     model_vars = {}
+    model_vars['param_a'] = car_params.a
+    model_vars['param_b'] = car_params.b
+    model_vars['param_h'] = car_params.h
+    model_vars['param_L'] = car_params.L
+    model_vars['xdot_sigma'] = 1.0
     model_vars['lasers_mu'] = np.zeros(LASER_COLS)
     model_vars['lasers_sigma'] = np.eye(LASER_COLS)
 
@@ -107,9 +113,10 @@ def generate_model(disc_readings):
 if __name__ == "__main__":
     data_dir = "./data/automobile/1_straight/data/ground/"
     readings = read_data(data_dir)
+    car_params, obstacles = read_metadata(data_dir)
     disc_readings = discretize_time(readings)
     # XXX Output only a few, to keep model size small.
     disc_readings = disc_readings[:10]
-    model = generate_model(disc_readings)
+    model = generate_model(disc_readings, car_params)
     with open('automobile.blog', 'w') as f:
         f.write(model)
