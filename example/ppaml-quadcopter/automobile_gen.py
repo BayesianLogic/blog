@@ -59,13 +59,6 @@ def generate_model(disc_readings):
 
     # Model parameters (values completely made up):
     model_vars = {}
-    model_vars['A'] = np.eye(state_size)
-    model_vars['B'] = np.eye(state_size, controls_size)
-    model_vars['C'] = np.eye(sensors_size, state_size)
-    model_vars['V'] = np.eye(state_size)
-    model_vars['W'] = np.eye(sensors_size)
-    model_vars['mu_0'] = np.zeros(state_size)
-    model_vars['sigma_0'] = np.eye(state_size)
 
     # Observations and controls:
     # (We fill in controls even at time steps where they are not observed.)
