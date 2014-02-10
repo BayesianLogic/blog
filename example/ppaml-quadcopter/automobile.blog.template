@@ -79,14 +79,14 @@ random Real[] lasers(Integer timestep) {
 random Real velocity(Integer timestep) {
     if false then = 0
     {%- for timestep in range(last_timestep + 1) %}
-    else if timestep == {{ timestep }} then = {{ controls[timestep].controls[0] }}
+    else if timestep == {{ timestep }} then = {{ controls[timestep].velocity }}
     {%- endfor %}
 };
 
 random Real steering(Integer timestep) {
     if false then = 0
     {%- for timestep in range(last_timestep + 1) %}
-    else if timestep == {{ timestep }} then = {{ controls[timestep].controls[1] }}
+    else if timestep == {{ timestep }} then = {{ controls[timestep].steering }}
     {%- endfor %}
 };
 
@@ -94,7 +94,7 @@ random Real steering(Integer timestep) {
 /* Observations: */
 
 {% for obs in observations %}
-obs lasers({{ obs.timestep }}) = {{ obs.lasers|blog_column_vector }};
+obs lasers({{ obs.timestep }}) = {{ obs.laser|blog_column_vector }};
 {%- endfor %}
 
 

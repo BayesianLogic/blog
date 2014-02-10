@@ -7,6 +7,7 @@ Generate the BLOG model for the automobile problem.
 from automobile_data import INTENSITY_COLS
 from automobile_data import LASER_COLS
 from automobile_data import read_data
+from automobile_data import Reading
 import filters
 
 from collections import namedtuple
@@ -17,8 +18,8 @@ import numpy as np
 
 
 # Aggregate data types passed into the template.
-Observation = namedtuple('Observation', ['timestep', 'lasers'])
-Control = namedtuple('Control', ['timestep', 'controls'])
+Observation = namedtuple('Observation', ['timestep', 'laser', 'intensity'])
+Control = namedtuple('Control', ['timestep', 'velocity', 'steering'])
 
 TIME_CHUNK = 0.005
 
@@ -64,25 +65,30 @@ def generate_model(disc_readings):
     observations = []
     controls = []
     next_control_timestep = 0
-    prev_control = (0, 0)
+    prev_control_reading = Reading()
+    prev_control_reading.velocity = 0.0
+    prev_control_reading.steering = 0.0
     for reading in disc_readings:
         if reading.laser:
             observations.append(Observation(
                 timestep=reading.timestep,
-                lasers=reading.laser))
+                laser=reading.laser,
+                intensity=reading.intensity))
         elif reading.velocity:
             # Fill in unobserved timesteps with the previous control.
             while next_control_timestep < reading.timestep:
                 controls.append(Control(
                     timestep=next_control_timestep,
-                    controls=prev_control))
+                    velocity=prev_control_reading.velocity,
+                    steering=prev_control_reading.steering))
                 next_control_timestep += 1
             # Add the new control:
             controls.append(Control(
                 timestep=reading.timestep,
-                controls=(reading.velocity, reading.steering)))
+                velocity=reading.velocity,
+                steering=reading.steering))
             next_control_timestep += 1
-            prev_control = (reading.velocity, reading.steering)
+            prev_control_reading = reading
         else:
             pass  # skip GPS readings
 
