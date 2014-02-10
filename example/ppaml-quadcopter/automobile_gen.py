@@ -105,7 +105,7 @@ if __name__ == "__main__":
     readings = read_data(data_dir)
     disc_readings = discretize_time(readings)
     # XXX Output only a few, to keep model size small.
-    disc_readings = disc_readings[:100]
+    disc_readings = disc_readings[:10]
     model = generate_model(disc_readings)
     with open('automobile.blog', 'w') as f:
         f.write(model)
