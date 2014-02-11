@@ -45,10 +45,6 @@ random Integer RegionOf(Target o, Timestep t) {
      else = 0
 };
 
-random Boolean observable(observation_blip(Timestep t)){
-  if (true) then = true
-};
-
 random Integer observation_blip(Timestep t){
   if true then
     ~ Cardinality({Blip b : Time(b) == t})
@@ -111,6 +107,8 @@ random Boolean applied_scan(Integer r, Timestep t){
 	if t<ScanningTimeLimit & r==toScan(t) then = true
 	else = false
 };
+
+random Boolean observable(observation_blip(Timestep t)) = true;
 
 //obs observation_blip(@5)=1;
 

@@ -63,6 +63,7 @@ import blog.sample.AfterSamplingListener;
 import blog.sample.DMHSampler;
 import blog.sample.Sampler;
 import blog.world.AbstractPartialWorld;
+import blog.world.PartialWorld;
 
 /**
  * Implementation of the particle filter engine that samples its own observations, keeps multiple buckets
@@ -77,6 +78,15 @@ public class PFEnginePartitioned extends PFEngineOnline {
 	}
 
 	
+	public PFEnginePartitioned(Model model, Properties properties,
+			PartialWorld s) {
+		super(model, properties);
+		for (TimedParticle tp : particles) {
+			tp.setWorld(s);
+		}
+	}
+
+
 	/**
 	 * On top of creating particles, also create partitions
 	 */

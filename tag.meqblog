@@ -1,0 +1,61 @@
+type Person;
+
+type MoveType;
+distinct MoveType Stay, Up, Down, Left, Right;
+
+guaranteed Person p1, robot;
+
+#Person ~ Poisson(5);
+
+random Boolean isTarget(Person p) 
+    if (p == p1) then = true
+    else = false;
+
+random MoveType Move(Person p, Timestep t) {
+    if (p == p1) then 
+        ~ Categorical({Stay -> 0.6,
+                       Up -> 0.1,
+                       Down -> 0.1,
+                       Left -> 0.1,
+                       Right -> 0.1})
+    else
+        ~ Categorical({Stay -> 0.4,
+                       Up -> 0.15,
+                       Down -> 0.15,
+                       Left -> 0.15,
+                       Right -> 0.15})
+    
+};
+
+random Integer Position(Person p, Timestep t) {
+    if (t == @0) then
+        if (p == robot) then = 29
+        else if (p == p1) then = 5 
+        else ~ UniformInt(0, 29)
+    else if (Move(p, Prev(t)) == Stay) then 
+        = Position(p, Prev(t))
+    else if (Move(p, Prev(t)) == Up) then
+        if (Position(p, Prev(t)) < 9) then
+            = Position(p, Prev(t))
+        else
+            = Position(p, Prev(t)) - 10
+    else if (Move(p, Prev(t)) == Down) then
+        if (Position(p, Prev(t)) > 19) then 
+            = Position(p, Prev(t))
+        else
+            = Position(p, Prev(t)) + 10
+    else if (Move(p, Prev(t)) == Right) then
+        if (Position(p, Prev(t)) % 10 == 9) then 
+            = Position(p, Prev(t))
+        else
+            = Position(p, Prev(t)) + 1
+    else if (Move(p, Prev(t)) == Left) then
+        if (Position(p, Prev(t)) % 10 == 0) then 
+            = Position(p, Prev(t))
+        else
+            = Position(p, Prev(t)) - 1
+};
+
+// Query
+query #{Person p};
+query Position(p1, @5);

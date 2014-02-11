@@ -113,6 +113,7 @@ public abstract class PFEngineOnline extends InferenceEngine {
 		System.out.println("Constructing sampler of class " + samplerClassName);
 		particleSampler = Sampler.make(samplerClassName, model, properties);
 		
+		this.properties = properties;
 		initialize();
 	}
 
@@ -331,11 +332,13 @@ public abstract class PFEngineOnline extends InferenceEngine {
 		}
 		return rtn;
 	}
-	private Set idTypes; // of Type
+	protected Set idTypes; // of Type
 
 	int numParticles;
 	public List<TimedParticle> particles; // of Particles
 	protected Sampler particleSampler;
+	
+	public Properties properties;
 	
 	/**
 	 * Takes collection of decision evidence

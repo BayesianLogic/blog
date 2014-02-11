@@ -837,4 +837,15 @@ public class Model {
 		return rtn;
 	}
 	
+	//TODO
+	public List<DecisionFunction> getDecisionFunctions() {
+		List<DecisionFunction> rtn = new ArrayList<DecisionFunction>();
+		for (Function function : functions) {
+			if (function instanceof DecisionFunction) {
+				rtn.add((DecisionFunction) function);
+			}
+		}
+		return rtn;
+	}
+	
 }

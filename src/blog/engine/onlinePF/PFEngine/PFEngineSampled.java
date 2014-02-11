@@ -61,10 +61,12 @@ public class PFEngineSampled extends PFEngineOnline{
 			p.advanceTimestep();
 		updateOSforAllParticles();
 		String evs = retakeObservability2();
+		retakeObservability();
 		
 		resample();
 		//super.afterAnsweringQueries();
 		//outputIndexData();
+		System.out.println("Evidence: " + evs);
 		return evs;
 	}
 	public String retakeObservability2() {
@@ -78,7 +80,7 @@ public class PFEngineSampled extends PFEngineOnline{
 		ev.checkTypesAndScope(model);
 		if (ev.compile()!=0)
 			System.exit(1);
-
+		System.out.println("rtObs" + ev);
 		for (Particle o : particles){
 			TimedParticle p = (TimedParticle) o;
 			p.unInstantiateObservables(selectedOS);
@@ -133,7 +135,7 @@ public class PFEngineSampled extends PFEngineOnline{
 	 * 
 	 * @param numPartitionSampled the number of partitions to be sampled
 	 */
-	public void retakeObservability() {
+	public Integer retakeObservability() {
 		UBT.Stopwatch resamplePartitionAndParticlesTimer = new UBT.Stopwatch();
 		resamplePartitionAndParticlesTimer.startTimer();
 		Evidence ev = null;
@@ -164,11 +166,12 @@ public class PFEngineSampled extends PFEngineOnline{
 				i++;
 		}
 		//UBT.worldOutput.printInput("<<<<<>>>>>");
-		UBT.numParticleOutput.printInput(""+i);
+		//TODO: PAUL revert UBT.numParticleOutput.printInput(""+i);
 		
-		
+		System.out.println("rtObs1" + ev);
 
 		UBT.resamplePartitionAndParticlesTime += resamplePartitionAndParticlesTimer.elapsedTime();
+		return sampledOSindex;
 	}
 
 	
@@ -185,6 +188,15 @@ public class PFEngineSampled extends PFEngineOnline{
 		}
 	}
 	
-
+	public PFEngineSampled copy() {
+		PFEngineSampled copy = new PFEngineSampled(this.model, this.properties);
+		copy.particles = new ArrayList<TimedParticle>();
+		for (TimedParticle p : this.particles) {
+			copy.particles.add(p.copy());
+		}
+		copy.idTypes = new HashSet(this.idTypes);
+		copy.queries = new ArrayList(this.queries); //TODO: necessary?
+		return copy;
+	}
 
 }

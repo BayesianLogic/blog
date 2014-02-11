@@ -88,6 +88,8 @@ public class PFRunnerOnline{
 			System.err.println("Evidence/Query should not be null");
 			System.exit(1);
 		}
+		System.out.println("AP1 " + evidence);
+		System.out.println("AP1 " + queries);
 		particleFilter.beforeTakingEvidence();
 		particleFilter.take(evidence);
 		particleFilter.answer(queries);

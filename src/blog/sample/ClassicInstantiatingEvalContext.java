@@ -132,7 +132,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 				throw new IllegalArgumentException("Don't know how to instantiate: "
 						+ var);
 			}
-			UBT.debugRandom.printInput(var.toString());
+			//UBT.debugRandom.printInput(var.toString());
 		}
 		return value;
 	}
