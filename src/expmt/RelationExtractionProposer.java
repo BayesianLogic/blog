@@ -50,6 +50,7 @@ import java.util.Set;
 import Jama.Matrix;
 import blog.BLOGUtil;
 import blog.bn.BayesNetVar;
+import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;
 import blog.bn.NumberVar;
 import blog.bn.VarWithDistrib;
@@ -59,10 +60,12 @@ import blog.distrib.Beta;
 import blog.distrib.Dirichlet;
 import blog.distrib.UniformChoice;
 import blog.model.Evidence;
+import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.FunctionSignature;
 import blog.model.Model;
 import blog.model.NonGuaranteedObject;
+import blog.model.NonRandomFunction;
 import blog.model.OriginFunction;
 import blog.model.RandomFunction;
 import blog.model.Type;
@@ -203,7 +206,11 @@ public class RelationExtractionProposer implements Proposer {
       
       // 1) Set observed variables
       for (Iterator iter = evidence.getEvidenceVars().iterator(); iter.hasNext();) {
-        RandFuncAppVar var = (RandFuncAppVar) iter.next();
+        BayesNetVar evidenceVar = (BayesNetVar) iter.next();
+        if (!(evidenceVar instanceof RandFuncAppVar)) {
+          continue;
+        }
+        RandFuncAppVar var = (RandFuncAppVar) evidenceVar;
         RandomFunction varFunc = var.func();
   
         if (varFunc == verbFunc) {
@@ -215,7 +222,6 @@ public class RelationExtractionProposer implements Proposer {
   
         world.setValue(var, evidence.getObservedValue(var));
       }
-      System.out.println(world.toString());
   
       // Create hashmap where key is a unique relation/arg pair, value is a fact
       //factMap = new HashMap<String, Object>(); 
@@ -241,12 +247,49 @@ public class RelationExtractionProposer implements Proposer {
           }
         }
       }
+      
+      // This is for labeled sentences, where a relation of a sentence is observed (along with the arg pair, of course)
+      for (Iterator iter = evidence.getEvidenceVars().iterator(); iter.hasNext(); ) {
+        
+        BayesNetVar evidenceVar = (BayesNetVar) iter.next();
+        
+        // This assumes the observation looks like this: obs Rel(SourceFact(Sent[1])) = R[3];
+        // This will make that evidence var a DerivedVar
+        if (!(evidenceVar instanceof DerivedVar)) {
+          continue;
+        }
+        
+        // Absolute NO IDEA how this works.. I thought it was supposed to return an ArgSpec
+        FuncAppTerm evidenceVarArgs = (FuncAppTerm) ((DerivedVar) evidenceVar).getArgSpec();
+        FuncAppTerm argOfEvidenceVarArgs = (FuncAppTerm) evidenceVarArgs.getArgs()[0];
+        FuncAppTerm funcOfSentence = (FuncAppTerm) argOfEvidenceVarArgs.getArgs()[0];
+        NonRandomFunction nonRandomSentence = (NonRandomFunction) funcOfSentence.getFunction();
+        Object sentence = nonRandomSentence.getInterpretation().getValue(Collections.EMPTY_LIST);
+                
+        Object rel = evidence.getObservedValue(evidenceVar);
+        Object arg1 = world.getValue(new RandFuncAppVar(subjectFunc, Collections.singletonList(sentence)));
+        Object arg2 = world.getValue(new RandFuncAppVar(objectFunc, Collections.singletonList(sentence)));
+  
+        // 2) Set the sourceFact value in the world
+        Object fact = getFact(rel, arg1, arg2, world);
+        world.setValue(new RandFuncAppVar(sourceFactFunc, Collections.singletonList(sentence)), fact);
+  
+        // 3) Set the Holds value in the world
+        world.setValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)), true);
+     
+        
+      }
   
       // 2) For each observed sentence, choose SourceFact (basically randomly choose a relation
-      // to go with the argument pair). This assumes sentences are distinct. Add SourceFact to Set of supported facts.
+      // to go with the argument pair). This assumes sentences are distinct.
       // 3) Also, set the holds variable for this fact to be true
       rng = new Random();
       for (Object sentence : sentType.getGuaranteedObjects()) {
+        
+        // Some of these may have been set from observing a relation
+        if (world.isInstantiated(makeVar(sourceFactFunc, Collections.singletonList(sentence)))) {
+          continue;
+        }
   
         // Choose relation randomly from all relations
         int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
@@ -337,26 +380,26 @@ public class RelationExtractionProposer implements Proposer {
    * Please look to that file for details.
    */
   public double proposeNextState(PartialWorldDiff proposedWorld) {
-    updateSupportedFacts(proposedWorld); // Used for sourceFactSwitch and holdsSwitch
     count++;
     double sample = rng.nextDouble();
-    double logProposalRatio;
+    double logAcceptanceRatio;
     
     // Sample until a valid move has been made (where evidence was not changed)
     do {
       proposedWorld.revert();
-      if (sample < 0.5) {
-        logProposalRatio = sourceFactSwitch(proposedWorld);
+      updateSupportedFacts(proposedWorld); // Used for sourceFactSwitch and holdsSwitch
+      if (sample < 0.3) {
+        logAcceptanceRatio = sourceFactSwitch(proposedWorld);
+      } else if (sample < 0.6) {
+        logAcceptanceRatio = holdsSwitch(proposedWorld);
       } else if (sample < 0.8) {
-        logProposalRatio = holdsSwitch(proposedWorld);
-      } else if (sample < 0.9) {
-        logProposalRatio = sparsitySample(proposedWorld);
+        logAcceptanceRatio = sparsitySample(proposedWorld);
       } else {
-        logProposalRatio = thetaSample(proposedWorld);
+        logAcceptanceRatio = thetaSample(proposedWorld);
       }
     } while (this.evidence.getEvidenceProb(proposedWorld) == 0);
     
-    return logProposalRatio;
+    return logAcceptanceRatio;
   }
 
   /**
