@@ -944,8 +944,8 @@ public class BuiltInFunctions {
 
     // Transpose function for Real matrices
     argTypes.clear();
-    argTypes.add(Type.getType("Array_Real_2"));
-    retType = Type.getType("Array_Real_2");
+    argTypes.add(BuiltInTypes.ARRAY_REAL_2);
+    retType = BuiltInTypes.ARRAY_REAL_2;
 
     FunctionInterp transposeInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
@@ -960,8 +960,8 @@ public class BuiltInFunctions {
 
     // Transpose function for Real vectors (uses the same FunctionInterp above)
     argTypes.clear();
-    argTypes.add(Type.getType("Array_Real_1"));
-    retType = Type.getType("Array_Real_1");
+    argTypes.add(BuiltInTypes.ARRAY_REAL);
+    retType = BuiltInTypes.ARRAY_REAL;
     TRANSPOSE_REAL_VEC = new NonRandomFunction(
         TRANSPOSE_NAME, argTypes, retType, transposeInterp);
     addFunction(TRANSPOSE_REAL_VEC);
