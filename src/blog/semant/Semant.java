@@ -795,21 +795,9 @@ public class Semant {
   }
 
   ArgSpec transExpr(ListInitExpr e) {
-    List<ArgSpec> values = transExprList(e.values, false);
-    // modified by leili, no need to do translation now, will do later
-    // if (e.type instanceof ArrayTy) {
-    // Type arrType = getType(e.type);
-    // String baseType = arrType.getName();
-    // baseType = baseType.substring(baseType.indexOf('_') + 1,
-    // baseType.lastIndexOf('_'));
-    //
-    // if (baseType.equals("NaturalNum") || baseType.equals("Real")) {
-    // return new MatrixSpec(values);
-    // }
-    // return new ListSpec(values, arrType);
-    // } else {
+    List<ArgSpec> values = transExprList(e.values, true);
+    // todo support stack and concatenation
     return new ListSpec(values, getType(e.type));
-    // }
   }
 
   MapSpec transExpr(MapInitExpr e) {
@@ -1193,10 +1181,16 @@ public class Semant {
     List<ArgSpec> args = new ArrayList<ArgSpec>();
     for (; e != null; e = e.next) {
       Object o = transExpr(e.head);
-      if (o instanceof List)
-        return (List<ArgSpec>) o;
+      // removed by leili, the following statements do not make sense
+      // if (o instanceof List)
+      // return (List<ArgSpec>) o;
       if (o != null) {
-        args.add((ArgSpec) o);
+        if (o instanceof ArgSpec) {
+          args.add((ArgSpec) o);
+        } else {
+          error(e.line, e.col,
+              "Expression expected! but we get " + o.toString());
+        }
       }
     }
     // TODO add checking for allowRandom
