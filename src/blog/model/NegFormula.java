@@ -35,7 +35,10 @@
 
 package blog.model;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import blog.sample.EvalContext;
 
@@ -46,135 +49,135 @@ import blog.sample.EvalContext;
  */
 public class NegFormula extends Formula {
 
-	public NegFormula(Formula neg) {
+  public NegFormula(Formula neg) {
 
-		this.neg = neg;
+    this.neg = neg;
 
-	}
+  }
 
-	public Formula getNeg() {
+  public Formula getNeg() {
 
-		return neg;
+    return neg;
 
-	}
+  }
 
-	public Object evaluate(EvalContext context) {
-		Boolean negValue = (Boolean) neg.evaluate(context);
-		if (negValue == null) {
-			return null;
-		}
+  public Object evaluate(EvalContext context) {
+    Boolean negValue = (Boolean) neg.evaluate(context);
+    if (negValue == null) {
+      return null;
+    }
 
-		return Boolean.valueOf(!negValue.booleanValue());
-	}
+    return Boolean.valueOf(!negValue.booleanValue());
+  }
 
-	/**
-	 * The standard form of a negation formula !psi is determined as follows. If
-	 * there is a formula equivalent to !psi that is not a negation formula, we
-	 * return the standard form of that formula. Otherwise, we just return !psi',
-	 * where psi' is the standard form of psi.
-	 */
-	public Formula getStandardForm() {
-		Formula equiv = neg.getEquivToNegation();
-		if (equiv == null) {
-			return new NegFormula(neg.getStandardForm());
-		}
-		return equiv.getStandardForm();
-	}
+  /**
+   * The standard form of a negation formula !psi is determined as follows. If
+   * there is a formula equivalent to !psi that is not a negation formula, we
+   * return the standard form of that formula. Otherwise, we just return !psi',
+   * where psi' is the standard form of psi.
+   */
+  public Formula getStandardForm() {
+    Formula equiv = neg.getEquivToNegation();
+    if (equiv == null) {
+      return new NegFormula(neg.getStandardForm());
+    }
+    return equiv.getStandardForm();
+  }
 
-	/**
-	 * A formula equivalent to the negation of !psi is psi itself.
-	 */
-	protected Formula getEquivToNegationInternal() {
-		return neg;
-	}
+  /**
+   * A formula equivalent to the negation of !psi is psi itself.
+   */
+  protected Formula getEquivToNegationInternal() {
+    return neg;
+  }
 
-	public List getSubformulas() {
-		return Collections.singletonList(neg);
-	}
+  public List<Formula> getSubformulas() {
+    return Collections.singletonList(neg);
+  }
 
-	/**
-	 * If this is a literal, then its CNF form is just a conjunction consisting of
-	 * one disjunction, whose sole disjunct is this formula. Otherwise, its CNF
-	 * form is the CNF form of the equivalent formula that is not a NegFormula.
-	 */
-	public ConjFormula getPropCNF() {
-		Formula equiv = neg.getEquivToNegation();
-		if (equiv == null) {
-			// can't push negation inside, so this is a literal
-			return new ConjFormula(new DisjFormula(this));
-		}
-		return equiv.getPropCNF();
-	}
+  /**
+   * If this is a literal, then its CNF form is just a conjunction consisting of
+   * one disjunction, whose sole disjunct is this formula. Otherwise, its CNF
+   * form is the CNF form of the equivalent formula that is not a NegFormula.
+   */
+  public ConjFormula getPropCNF() {
+    Formula equiv = neg.getEquivToNegation();
+    if (equiv == null) {
+      // can't push negation inside, so this is a literal
+      return new ConjFormula(new DisjFormula(this));
+    }
+    return equiv.getPropCNF();
+  }
 
-	/**
-	 * If this is a literal, then its DNF form is just a disjunction consisting of
-	 * one conjunction, whose sole conjunct is this formula. Otherwise, its DNF
-	 * form is the DNF form of the equivalent formula that is not a NegFormula.
-	 */
-	public DisjFormula getPropDNF() {
-		Formula equiv = neg.getEquivToNegation();
-		if (equiv == null) {
-			// can't push negation inside, so this is a literal
-			return new DisjFormula(new ConjFormula(this));
-		}
-		return equiv.getPropDNF();
-	}
+  /**
+   * If this is a literal, then its DNF form is just a disjunction consisting of
+   * one conjunction, whose sole conjunct is this formula. Otherwise, its DNF
+   * form is the DNF form of the equivalent formula that is not a NegFormula.
+   */
+  public DisjFormula getPropDNF() {
+    Formula equiv = neg.getEquivToNegation();
+    if (equiv == null) {
+      // can't push negation inside, so this is a literal
+      return new DisjFormula(new ConjFormula(this));
+    }
+    return equiv.getPropDNF();
+  }
 
-	/**
-	 * Returns true if the negated formula is an atomic formula or an equality
-	 * formula.
-	 */
-	public boolean isLiteral() {
-		return ((neg instanceof AtomicFormula) || (neg instanceof EqualityFormula));
-	}
+  /**
+   * Returns true if the negated formula is an atomic formula or an equality
+   * formula.
+   */
+  public boolean isLiteral() {
+    return ((neg instanceof AtomicFormula) || (neg instanceof EqualityFormula));
+  }
 
-	public Set getSatisfiersIfExplicit(EvalContext context, LogicalVar subject,
-			GenericObject genericObj) {
-		return neg.getNonSatisfiersIfExplicit(context, subject, genericObj);
-	}
+  public Set getSatisfiersIfExplicit(EvalContext context, LogicalVar subject,
+      GenericObject genericObj) {
+    return neg.getNonSatisfiersIfExplicit(context, subject, genericObj);
+  }
 
-	public Set getNonSatisfiersIfExplicit(EvalContext context,
-			LogicalVar subject, GenericObject genericObj) {
-		return neg.getSatisfiersIfExplicit(context, subject, genericObj);
-	}
+  public Set getNonSatisfiersIfExplicit(EvalContext context,
+      LogicalVar subject, GenericObject genericObj) {
+    return neg.getSatisfiersIfExplicit(context, subject, genericObj);
+  }
 
-	/**
-	 * Two NegFormulas are equal if they have the same subformula.
-	 */
-	public boolean equals(Object o) {
-		if (o instanceof NegFormula) {
-			NegFormula other = (NegFormula) o;
-			return neg.equals(other.getNeg());
-		}
-		return false;
-	}
+  /**
+   * Two NegFormulas are equal if they have the same subformula.
+   */
+  public boolean equals(Object o) {
+    if (o instanceof NegFormula) {
+      NegFormula other = (NegFormula) o;
+      return neg.equals(other.getNeg());
+    }
+    return false;
+  }
 
-	public int hashCode() {
-		return (getClass().hashCode() ^ neg.hashCode());
-	}
+  public int hashCode() {
+    return (getClass().hashCode() ^ neg.hashCode());
+  }
 
-	/**
-	 * Returns a string of the form !psi where psi is the negated formula.
-	 */
-	public String toString() {
-		return ("!" + neg);
-	}
+  /**
+   * Returns a string of the form !psi where psi is the negated formula.
+   */
+  public String toString() {
+    return ("!" + neg);
+  }
 
-	public boolean checkTypesAndScope(Model model, Map scope) {
-		return neg.checkTypesAndScope(model, scope);
-	}
+  public boolean checkTypesAndScope(Model model, Map scope) {
+    return neg.checkTypesAndScope(model, scope);
+  }
 
-	public ArgSpec replace(Term t, ArgSpec another) {
-		Formula newNeg = (Formula) neg.replace(t, another);
-		if (newNeg != neg)
-			return compileAnotherIfCompiled(new NegFormula(newNeg));
-		return this;
-	}
+  public ArgSpec replace(Term t, ArgSpec another) {
+    Formula newNeg = (Formula) neg.replace(t, another);
+    if (newNeg != neg)
+      return compileAnotherIfCompiled(new NegFormula(newNeg));
+    return this;
+  }
 
-	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
-		return new NegFormula((Formula) neg.getSubstResult(subst, boundVars));
-	}
+  public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
+    return new NegFormula((Formula) neg.getSubstResult(subst, boundVars));
+  }
 
-	private Formula neg;
+  private Formula neg;
 
 }
