@@ -84,6 +84,10 @@ public class BuiltInFunctions {
   public static final String MAX_NAME = "max";
   public static final String ROUND_NAME = "round";
   public static final String TRANSPOSE_NAME = "transpose";
+  public static final String SIN_NAME = "sin";
+  public static final String COS_NAME = "cos";
+  public static final String TAN_NAME = "tan";
+  public static final String ATAN2_NAME = "atan2";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -337,6 +341,26 @@ public class BuiltInFunctions {
    * A function that takes a string and returns true if the string is empty.
    */
   public static NonRandomFunction IS_EMPTY_STRING;
+
+  /**
+   * Take scalar <code>x</code> (in radians) and return <code>sin(x)</code>.
+   */
+  public static NonRandomFunction SIN;
+
+  /**
+   * Take scalar <code>x</code> (in radians) and return <code>cos(x)</code>.
+   */
+  public static NonRandomFunction COS;
+
+  /**
+   * Take scalar <code>x</code> (in radians) and return <code>tan(x)</code>.
+   */
+  public static NonRandomFunction TAN;
+
+  /**
+   * Take scalars <code>x</code> and <code>y</code> and return <code>atan2(y, x)</code>.
+   */
+  public static NonRandomFunction ATAN2;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -985,5 +1009,51 @@ public class BuiltInFunctions {
     TRANSPOSE_INT_VEC = new NonRandomFunction(
         TRANSPOSE_NAME, argTypes, retType, transposeInterp);
     addFunction(TRANSPOSE_INT_VEC);
+
+    // Trigonometric functions on scalars:
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+
+    FunctionInterp sinInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Double radians = (Double) args.get(0);
+        return Math.sin(radians);
+      }
+    };
+    SIN = new NonRandomFunction(SIN_NAME, argTypes, retType, sinInterp);
+    addFunction(SIN);
+
+    FunctionInterp cosInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Double radians = (Double) args.get(0);
+        return Math.cos(radians);
+      }
+    };
+    COS = new NonRandomFunction(COS_NAME, argTypes, retType, cosInterp);
+    addFunction(COS);
+
+    FunctionInterp tanInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Double radians = (Double) args.get(0);
+        return Math.tan(radians);
+      }
+    };
+    TAN = new NonRandomFunction(TAN_NAME, argTypes, retType, tanInterp);
+    addFunction(TAN);
+
+    FunctionInterp atan2Interp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Double y = (Double) args.get(0);
+        Double x = (Double) args.get(1);
+        return Math.atan2(y, x);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+    ATAN2 = new NonRandomFunction(ATAN2_NAME, argTypes, retType, atan2Interp);
+    addFunction(ATAN2);
   };
 }
