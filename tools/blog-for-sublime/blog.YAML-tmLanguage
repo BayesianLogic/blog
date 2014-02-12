@@ -2,7 +2,7 @@
 ---
 name: BLOG
 scopeName: source.blog
-fileTypes: [blog]
+fileTypes: [blog,dblog]
 uuid: 99d32618-4b9c-4a4c-b44b-fb8851e307be
 
 patterns:
@@ -21,22 +21,15 @@ patterns:
     '1': {name: keyword.operator.blog}
     '2': {name: storage.type.blog}  
 - name: keyword.operator.blog
-  match: (\-\>|\<|\>|\=|\=\=|\>\=|\<\=|\!|~|:|\+|\-|\*|\/|\%|\=\>|\&|\|)
+  match: (\-\>|\<|\>|\=|\=\=|\>\=|\<\=|\!|~|:|\+|\-|\*|\/|\%|\=\>|\&|\||\[|\])
 - name: storage.modifer.blog
   match: \b(obs|query)\b
-- name: funcdecl.blog
-  match: \b(fixed|random)\s+(Integer|Real|Boolean|NaturalNum|Timestep)\b
+- match: \b(fixed|random|origin)\b\s+\b(Integer|Real|Boolean|NaturalNum|Timestep|\w+)((\[\])*)\s+
   captures:
     '1': {name: storage.modifier.blog}
-    '2': {name: storage.type.primitive.blog} 
-- name: funcdecl.blog
-  match: \b(fixed|random)\s+(\w+)\b
-  captures:
-    '1': {name: storage.modifier.blog}
-    '2': {name: storage.type.blog}
+    '2': {name: storage.type.primitive.blog}
 #distinct symbol declaration
-- name: distinctdecl.blog
-  match: \b(distinct)\s+(\w+)\b
+- match: \b(distinct)\s+(\w+)\b
   captures:
     '1': {name: storage.modifier.blog}
     '2': {name: storage.type.blog} 
@@ -46,7 +39,7 @@ patterns:
     '1': {name: storage.modifier.blog}
     '2': {name: storage.type.blog}
 - name: storage.type.primitive.blog
-  match: \b(Integer|Real|Boolean|NaturalNum|Timestep)\b
+  match: \b(Integer|Real|Boolean|NaturalNum|Timestep)((\[\])*)\b
 - name: keyword.control.blog
   match: \b(if|then|else|forall|exists)\b
 # distributions
