@@ -202,17 +202,17 @@ public class BuiltInFunctions {
   public static NonRandomFunction RDIV;
 
   /**
-   * The function on arrays <code>x<code>, <code>y</code> that returns x + y.
+   * The function on 2D arrays <code>x<code>, <code>y</code> that returns x + y.
    */
   public static NonRandomFunction PLUS_MAT;
 
   /**
-   * The function on arrays <code>x<code>, <code>y</code> that returns x - y.
+   * The function on 2D arrays <code>x<code>, <code>y</code> that returns x - y.
    */
   public static NonRandomFunction MINUS_MAT;
 
   /**
-   * The function on arrays <code>x<code>, <code>y</code> that returns x * y.
+   * The function on 2D arrays <code>x<code>, <code>y</code> that returns x * y.
    */
   public static NonRandomFunction TIMES_MAT;
 
@@ -227,52 +227,48 @@ public class BuiltInFunctions {
   public static NonRandomFunction MINUS_VEC;
 
   /**
-   * The function on arrays <code>x<code>, <code>y</code> that returns
-   * x * y.
+   * The function on 1D array <code>x<code> and 2D array <code>y</code> that
+   * returns x * y.
    */
   public static NonRandomFunction TIMES_VEC_MAT;
 
   /**
-   * The function on arrays <code>x<code>, 1D array <code>y</code> that returns
-   * x * y.
+   * The function on 2D array <code>x<code> and 1D array <code>y</code> that
+   * returns x * y.
    */
   public static NonRandomFunction TIMES_MAT_VEC;
 
   /**
-   * The function on an array
-   * <code>x<code>, and a scalar <code> y <code> that returns
-   * x * y.
+   * The function on 2D array <code>x<code> and scalar <code>y<code> that
+   * returns x * y.
    */
   public static NonRandomFunction TIMES_MAT_SCALAR;
 
   /**
-   * The function on a scalar
-   * <code>x<code>, and an array <code> y <code> that returns
-   * x * y.
+   * The function on scalar <code>x<code> and 2D array <code>y<code> that
+   * returns x * y.
    */
   public static NonRandomFunction TIMES_SCALAR_MAT;
 
   /**
-   * The function on an 1D array
-   * <code>x<code>, and a scalar <code> y <code> that returns
-   * x * y.
+   * The function on 1D array <code>x<code>, and scalar <code>y<code> that
+   * returns x * y.
    */
   public static NonRandomFunction TIMES_VEC_SCALAR;
 
   /**
-   * The function on a scalar
-   * <code>x<code>, and an 1D array <code> y <code> that returns
-   * x * y.
+   * The function on scalar <code>x<code> and 1D array <code>y<code> that
+   * returns x * y.
    */
   public static NonRandomFunction TIMES_SCALAR_VEC;
 
   /**
-   * The function on one array <code>x<code> that returns inverse of x.
+   * The function on 2D array <code>x<code> that returns the inverse of x.
    */
   public static NonRandomFunction INV_MAT;
 
   /**
-   * The function on one array <code>x<code> that returns determinant of x.
+   * The function on 2D array <code>x<code> that returns the determinant of x.
    */
   public static NonRandomFunction DET_MAT;
 
@@ -851,7 +847,7 @@ public class BuiltInFunctions {
     argTypes.add(BuiltInTypes.ARRAY_REAL_2);
     retType = BuiltInTypes.REAL;
 
-    // matrix inverse
+    // matrix determinant
     FunctionInterp matDeterminantInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         MatrixLib mat1 = (MatrixLib) args.get(0);
