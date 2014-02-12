@@ -316,22 +316,22 @@ public class BuiltInFunctions {
   /**
    * a function on Real[][] matrix <code>x</code> returns the transpose of <code>x</code>
    */
-  public static NonRandomFunction TRANSPOSE_MATRIX_REAL;
+  public static NonRandomFunction TRANSPOSE_REAL_MAT;
 
   /**
    * a function on Real[] vector <code>x</code> returns the transpose of <code>x</code>
    */
-  public static NonRandomFunction TRANSPOSE_VECTOR_REAL;
+  public static NonRandomFunction TRANSPOSE_REAL_VEC;
 
   /**
    * a function on Integer[][] matrix <code>x</code> returns the transpose of <code>x</code>
    */
-  public static NonRandomFunction TRANSPOSE_MATRIX_INT;
+  public static NonRandomFunction TRANSPOSE_INT_MAT;
 
   /**
    * a function on Integer[] vector <code>x</code> returns the transpose of <code>x</code>
    */
-  public static NonRandomFunction TRANSPOSE_VECTOR_INT;
+  public static NonRandomFunction TRANSPOSE_INT_VEC;
 
   /**
    * A function that takes a string and returns true if the string is empty.
@@ -954,17 +954,17 @@ public class BuiltInFunctions {
       }
     };
 
-    TRANSPOSE_MATRIX_REAL = new NonRandomFunction(
+    TRANSPOSE_REAL_MAT = new NonRandomFunction(
         TRANSPOSE_NAME, argTypes, retType, transposeInterp);
-    addFunction(TRANSPOSE_MATRIX_REAL);
+    addFunction(TRANSPOSE_REAL_MAT);
 
     // Transpose function for Real vectors (uses the same FunctionInterp above)
     argTypes.clear();
     argTypes.add(Type.getType("Array_Real_1"));
     retType = Type.getType("Array_Real_1");
-    TRANSPOSE_VECTOR_REAL = new NonRandomFunction(
+    TRANSPOSE_REAL_VEC = new NonRandomFunction(
         TRANSPOSE_NAME, argTypes, retType, transposeInterp);
-    addFunction(TRANSPOSE_VECTOR_REAL);
+    addFunction(TRANSPOSE_REAL_VEC);
 
     // Transpose function for Integer matrices (uses the same FunctionInterp above)
     // Does not work yet ("Incorrect value type for nonrandom constant
@@ -972,9 +972,9 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(Type.getType("Array_Integer_2"));
     retType = Type.getType("Array_Integer_2");
-    TRANSPOSE_MATRIX_INT = new NonRandomFunction(
+    TRANSPOSE_INT_MAT = new NonRandomFunction(
         TRANSPOSE_NAME, argTypes, retType, transposeInterp);
-    addFunction(TRANSPOSE_MATRIX_INT);
+    addFunction(TRANSPOSE_INT_MAT);
 
     // Transpose function for Integer vectors (uses the same FunctionInterp above)
     // Does not work yet ("Incorrect value type for nonrandom constant
@@ -982,8 +982,8 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(Type.getType("Array_Integer_1"));
     retType = Type.getType("Array_Integer_1");
-    TRANSPOSE_VECTOR_INT = new NonRandomFunction(
+    TRANSPOSE_INT_VEC = new NonRandomFunction(
         TRANSPOSE_NAME, argTypes, retType, transposeInterp);
-    addFunction(TRANSPOSE_VECTOR_INT);
+    addFunction(TRANSPOSE_INT_VEC);
   };
 }
