@@ -6,7 +6,7 @@ package blog.model;
 /**
  * ArrayType for BLOG
  * e.g. Real[] will be ArrayType(Type("Real"), 1);
- * e.g. Real[] will be ArrayType(Type("Real"), 2);
+ * e.g. Real[][] will be ArrayType(Type("Real"), 2);
  * 
  * @author leili
  * @since Feb 11, 2014
@@ -16,7 +16,7 @@ public class ArrayType extends Type {
 
   /**
    * @param elementType
-   *          the element type for this ArrayType, e.g. Real in the element type
+   *          the element type for this ArrayType, e.g. Real is the element type
    *          in Real[]
    */
   public ArrayType(Type elementType) {
@@ -26,7 +26,7 @@ public class ArrayType extends Type {
   /**
    * 
    * @param elementType
-   *          the element type for this ArrayType, e.g. Real in the element type
+   *          the element type for this ArrayType, e.g. Real is the element type
    *          in Real[]
    * @param dims
    *          number of dimensions
