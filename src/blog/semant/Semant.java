@@ -1181,9 +1181,6 @@ public class Semant {
     List<ArgSpec> args = new ArrayList<ArgSpec>();
     for (; e != null; e = e.next) {
       Object o = transExpr(e.head);
-      // removed by leili, the following statements do not make sense
-      // if (o instanceof List)
-      // return (List<ArgSpec>) o;
       if (o != null) {
         if (o instanceof ArgSpec) {
           args.add((ArgSpec) o);
