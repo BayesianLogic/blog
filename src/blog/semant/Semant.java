@@ -1135,17 +1135,13 @@ public class Semant {
         }
         Object symbolMapping = model
             .getFuncsWithName(((SymbolTerm) left).getName()).iterator().next();
-        if (((Function) symbolMapping).getRetType().getName()
-            .equals("Array_Real_1")) {
-          func = (Function) BuiltInFunctions.getFuncsWithName(
-              BuiltInFunctions.SUB_VEC_NAME).get(0);
+        if (((Function) symbolMapping).getRetType() == BuiltInTypes.ARRAY_REAL) {
+          func = BuiltInFunctions.SUB_VEC;
         } else {
-          func = (Function) BuiltInFunctions.getFuncsWithName(
-              BuiltInFunctions.SUB_MAT_NAME).get(0);
+          func = BuiltInFunctions.SUB_MAT;
         }
       } else {
-        func = (Function) BuiltInFunctions.getFuncsWithName(
-            BuiltInFunctions.SUB_VEC_NAME).get(0);
+        func = BuiltInFunctions.SUB_VEC;
       }
       term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
       return term;
