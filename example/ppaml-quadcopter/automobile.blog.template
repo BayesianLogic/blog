@@ -22,16 +22,20 @@ because of time discretization.
 /*
  * Dynamics model.
  * We assume H = 0 so the velocity is measured at the center of the back axle.
+ * We assume delta_t is the fixed step size.
  */
 
 fixed Real param_a = {{ model.param_a }};
 fixed Real param_b = {{ model.param_b }};
 fixed Real param_h = {{ model.param_h }};
 fixed Real param_L = {{ model.param_L }};
-
+fixed Real delta_t = {{ model.delta_t }};
 fixed Real xdot_sigma = {{ model.xdot_sigma }};
 fixed Real ydot_sigma = {{ model.ydot_sigma }};
 fixed Real thetadot_sigma = {{ model.thetadot_sigma }};
+fixed Real x_sigma = {{ model.x_sigma }};
+fixed Real y_sigma = {{ model.y_sigma }};
+fixed Real theta_sigma = {{ model.theta_sigma }};
 
 random Real new_xdot(Real theta, Real vel, Real steer) {
     = vel * cos(theta) - tan(steer) * (vel / param_L) * (
@@ -68,19 +72,37 @@ random Real state_thetadot(Integer timestep) {
         thetadot_sigma)
 };
 
+random Real new_x(Real x, Real xdot) {
+    = x + delta_t * xdot
+};
+
 random Real state_x(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)
-    else ~ UnivarGaussian(0, 1)
+    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
+    else ~ UnivarGaussian(
+        new_x(state_x(timestep - 1), state_xdot(timestep - 1)),
+        x_sigma)
+};
+
+random Real new_y(Real y, Real ydot) {
+    = y + delta_t * ydot
 };
 
 random Real state_y(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)
-    else ~ UnivarGaussian(0, 1)
+    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
+    else ~ UnivarGaussian(
+        new_y(state_y(timestep - 1), state_ydot(timestep - 1)),
+        y_sigma)
+};
+
+random Real new_theta(Real theta, Real thetadot) {
+    = theta + delta_t * thetadot
 };
 
 random Real state_theta(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)
-    else ~ UnivarGaussian(0, 1)
+    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
+    else ~ UnivarGaussian(
+        new_theta(state_theta(timestep - 1), state_thetadot(timestep - 1)),
+        theta_sigma)
 };
 
 
