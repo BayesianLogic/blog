@@ -30,9 +30,9 @@ def readings_for_obstacle(
     """
     readings = np.empty(len(laser_angles))
     for i, angle in enumerate(laser_angles):
-        a = 1
-        b = (2 * (laser_x - obstacle_x) * np.cos(laser_theta + angle) +
-             2 * (laser_y - obstacle_y) * np.sin(laser_theta + angle))
+        a = 1.0
+        b = (2.0 * (laser_x - obstacle_x) * np.cos(laser_theta + angle) +
+             2.0 * (laser_y - obstacle_y) * np.sin(laser_theta + angle))
         c = ((laser_x - obstacle_x) ** 2 +
              (laser_y - obstacle_y) ** 2 -
              obstacle_r ** 2)
@@ -47,7 +47,49 @@ def readings_for_obstacle(
     return readings
 
 
-def demo():
+def readings_for_obstacle_vectorized(
+        laser_x, laser_y, laser_theta, laser_angles, laser_max_range,
+        obstacle_x, obstacle_y, obstacle_r):
+    """
+    Like readings_for_obstacle() but using only matrix operations.
+    """
+    eqn_as = np.ones_like(laser_angles, dtype=np.float)
+    eqn_bs = (2 * (laser_x - obstacle_x) * np.cos(laser_theta + laser_angles) +
+              2 * (laser_y - obstacle_y) * np.sin(laser_theta + laser_angles))
+    eqn_cs = np.ones_like(laser_angles, dtype=np.float) * (
+             (laser_x - obstacle_x) ** 2 +
+             (laser_y - obstacle_y) ** 2 -
+             obstacle_r ** 2)
+    eqn_deltas = eqn_bs ** 2 - 4.0 * eqn_as * eqn_cs
+    no_soln_indicators = (eqn_deltas < 0).astype(np.int)
+    eqn_deltas_safe = np.maximum(eqn_deltas, 0)  # to avoid nans
+    eqn_k1s = (-eqn_bs - np.sqrt(eqn_deltas_safe)) / (2.0 * eqn_as)
+    eqn_k2s = (-eqn_bs + np.sqrt(eqn_deltas_safe)) / (2.0 * eqn_as)
+    k2_behind_indicators = (eqn_k2s < 0).astype(np.int)
+    k1_behind_indicators = (eqn_k1s < 0).astype(np.int)
+    max_range_indicators = (
+        (no_soln_indicators + k2_behind_indicators) > 0).astype(np.int)
+    soln_k2_indicators = (
+        (-max_range_indicators + k1_behind_indicators) > 0).astype(np.int)
+    soln_k1_indicators = ((
+        np.ones_like(laser_angles) -
+        max_range_indicators -
+        soln_k2_indicators) > 0).astype(np.int)
+    assert np.sum(
+        max_range_indicators +
+        soln_k2_indicators +
+        soln_k1_indicators) == len(laser_angles)
+    solns = (
+        laser_max_range * max_range_indicators +
+        eqn_k1s * soln_k1_indicators +
+        eqn_k2s * soln_k2_indicators)
+    # NOTE: I verified that max_range_indicators and soln_k1_indicators does
+    # the right thing, but in my example soln_k2_indicators is all zeros.
+    assert np.all(0 <= solns) and np.all(solns <= laser_max_range)
+    return solns
+
+
+def demo(readings_for_obstacle):
     laser_x = 2.0
     laser_y = 3.0
     laser_theta = 0.3
@@ -78,4 +120,5 @@ def demo():
 
 
 if __name__ == "__main__":
-    demo()
+    demo(readings_for_obstacle)
+    demo(readings_for_obstacle_vectorized)
