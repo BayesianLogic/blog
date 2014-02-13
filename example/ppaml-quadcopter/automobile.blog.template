@@ -30,6 +30,43 @@ fixed Real param_h = {{ model.param_h }};
 fixed Real param_L = {{ model.param_L }};
 
 fixed Real xdot_sigma = {{ model.xdot_sigma }};
+fixed Real ydot_sigma = {{ model.ydot_sigma }};
+fixed Real thetadot_sigma = {{ model.thetadot_sigma }};
+
+random Real new_xdot(Real theta, Real vel, Real steer) {
+    = vel * cos(theta) - tan(steer) * (vel / param_L) * (
+        (param_a * sin(theta) + param_b * cos(theta)))
+};
+
+random Real state_xdot(Integer timestep) {
+    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
+    else ~ UnivarGaussian(
+        new_xdot(state_theta(timestep - 1), velocity(timestep), steering(timestep)),
+        xdot_sigma)
+};
+
+random Real new_ydot(Real theta, Real vel, Real steer) {
+    = vel * sin(theta) - tan(steer) * (vel / param_L) * (
+        (param_a * cos(theta) + param_b * sin(theta)))
+};
+
+random Real state_ydot(Integer timestep) {
+    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
+    else ~ UnivarGaussian(
+        new_ydot(state_theta(timestep - 1), velocity(timestep), steering(timestep)),
+        ydot_sigma)
+};
+
+random Real new_thetadot(Real vel, Real steer) {
+    = tan(steer) * (vel / param_L)
+};
+
+random Real state_thetadot(Integer timestep) {
+    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
+    else ~ UnivarGaussian(
+        new_thetadot(velocity(timestep), steering(timestep)),
+        thetadot_sigma)
+};
 
 random Real state_x(Integer timestep) {
     if timestep == 0 then ~ UnivarGaussian(0, 1)
@@ -42,28 +79,6 @@ random Real state_y(Integer timestep) {
 };
 
 random Real state_theta(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)
-    else ~ UnivarGaussian(0, 1)
-};
-
-random Real new_xdot(Real theta, Real vel, Real steer) {
-    = vel * cos(theta) - tan(steer) * (vel / param_L) * (
-        (param_a * sin(theta) + param_b * cos(theta)))
-};
-
-random Real state_xdot(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)
-    else ~ UnivarGaussian(
-        new_xdot(state_theta(timestep - 1), velocity(timestep), steering(timestep)),
-        xdot_sigma)
-};
-
-random Real state_ydot(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)
-    else ~ UnivarGaussian(0, 1)
-};
-
-random Real state_thetadot(Integer timestep) {
     if timestep == 0 then ~ UnivarGaussian(0, 1)
     else ~ UnivarGaussian(0, 1)
 };

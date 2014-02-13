@@ -62,6 +62,8 @@ def generate_model(disc_readings, car_params):
     model_vars['param_h'] = car_params.h
     model_vars['param_L'] = car_params.L
     model_vars['xdot_sigma'] = 1.0
+    model_vars['ydot_sigma'] = 1.0
+    model_vars['thetadot_sigma'] = 1.0
     model_vars['lasers_mu'] = np.zeros(LASER_COLS)
     model_vars['lasers_sigma'] = np.eye(LASER_COLS)
 
