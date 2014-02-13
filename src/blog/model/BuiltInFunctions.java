@@ -119,6 +119,11 @@ public class BuiltInFunctions {
   public static final NonRandomFunction EPOCH;
 
   /**
+   * Constant that denotes PI.
+   */
+  public static final NonRandomFunction PI;
+
+  /**
    * The LessThan relation on type Real (and its subtypes).
    */
   public static NonRandomFunction LT;
@@ -442,6 +447,7 @@ public class BuiltInFunctions {
     ZERO = getLiteral("0", BuiltInTypes.INTEGER, new Integer(0));
     ONE = getLiteral("1", BuiltInTypes.INTEGER, new Integer(1));
     EPOCH = getLiteral("@0", BuiltInTypes.TIMESTEP, Timestep.at(0));
+    PI = getLiteral("pi", BuiltInTypes.REAL, new Double(Math.PI));
 
     // Add non-random functions from (real x real) to Boolean
     List<Type> argTypes = new ArrayList<Type>();

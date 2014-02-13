@@ -1,7 +1,5 @@
 // Trigonometric functions.
 
-fixed Real pi = 3.14159;
-
 fixed Real thirty_degrees = pi / 6.0;
 fixed Real sin_thirty = sin(thirty_degrees);
 fixed Real cos_thirty = cos(thirty_degrees);
