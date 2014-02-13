@@ -53,18 +53,17 @@ def readings_for_obstacle_vectorized(
     """
     Like readings_for_obstacle() but using only matrix operations.
     """
-    eqn_as = np.ones_like(laser_angles, dtype=np.float)
+    eqn_a = 1.0
     eqn_bs = (2 * (laser_x - obstacle_x) * np.cos(laser_theta + laser_angles) +
               2 * (laser_y - obstacle_y) * np.sin(laser_theta + laser_angles))
-    eqn_cs = np.ones_like(laser_angles, dtype=np.float) * (
-             (laser_x - obstacle_x) ** 2 +
+    eqn_c = ((laser_x - obstacle_x) ** 2 +
              (laser_y - obstacle_y) ** 2 -
              obstacle_r ** 2)
-    eqn_deltas = eqn_bs ** 2 - 4.0 * eqn_as * eqn_cs
+    eqn_deltas = eqn_bs ** 2 - 4.0 * eqn_a * eqn_c
     no_soln_indicators = (eqn_deltas < 0).astype(np.int)
     eqn_deltas_safe = np.maximum(eqn_deltas, 0)  # to avoid nans
-    eqn_k1s = (-eqn_bs - np.sqrt(eqn_deltas_safe)) / (2.0 * eqn_as)
-    eqn_k2s = (-eqn_bs + np.sqrt(eqn_deltas_safe)) / (2.0 * eqn_as)
+    eqn_k1s = (-eqn_bs - np.sqrt(eqn_deltas_safe)) / (2.0 * eqn_a)
+    eqn_k2s = (-eqn_bs + np.sqrt(eqn_deltas_safe)) / (2.0 * eqn_a)
     k2_behind_indicators = (eqn_k2s < 0).astype(np.int)
     k1_behind_indicators = (eqn_k1s < 0).astype(np.int)
     max_range_indicators = (
