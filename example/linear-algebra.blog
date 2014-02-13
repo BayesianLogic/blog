@@ -1,0 +1,41 @@
+// a simple example with linear algebra operators
+
+fixed Real[] a = [1, 2];
+fixed Real[] b = [4, 5];
+random Real[] x = a + b - a + a;
+
+random Real[] w = a * 10.0 + 20.0 * b;
+
+fixed Real[][] c = [1, 2; 3, 4];
+fixed Real[][] d = [4, 5; 6, 7];
+random Real[][] y = c * d;
+
+random Real[][] z = c * 3.0 + 4.0 * d - c;
+
+
+random Real[][] u = a * c;
+
+fixed Real[][] e = [10; 20];
+random Real[][] v = c * e;
+
+random Real[][] s = inv(c);
+random Real t = det(c);
+
+random Real h = a[0];
+
+random Real[] i = c[0];
+
+random Integer k ~ Categorical({0 -> 0.3, 1 -> 0.7});
+random Real j = c[0][k];
+
+query x;
+query y;
+query z;
+query w;
+query u;
+query v;
+query s;
+query t;
+query h;
+query i;
+query j;
