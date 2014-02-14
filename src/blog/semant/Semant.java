@@ -498,21 +498,19 @@ public class Semant {
       else
         return null;
     } else if (value instanceof MatrixSpec) {
-      if (ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL)
-          || ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL_2))
+      if (ty.isSubtypeOf(BuiltInTypes.REAL_MATRIX)) {
         return value;
-      else
+      } else {
         return null;
+      }
     } else if (value instanceof ListSpec) {
-      // TODO add more checks with array
-      if (ty.isSubtypeOf(BuiltInTypes.ARRAY)) {
-        if (ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL)
-            || ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL_2)) {
-          return ((ListSpec) value).transferToMatrix();
-        } else
-          return value;
-      } else
+      if (ty.isSubtypeOf(BuiltInTypes.REAL_MATRIX)) {
+        return ((ListSpec) value).transferToMatrix();
+      } else if (ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL)) {
+        return ((ListSpec) value).transferToMatrix();
+      } else {
         return null;
+      }
     } else
       return null;
   }
