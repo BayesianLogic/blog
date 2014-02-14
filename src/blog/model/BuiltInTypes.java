@@ -142,6 +142,7 @@ public class BuiltInTypes {
   public static final Type ARRAY = new ArrayType(BUILT_IN);
   public static final Type ARRAY_REAL = new ArrayType(REAL);
   public static final Type ARRAY_REAL_2 = new ArrayType(REAL, 2);
+  public static final Type MATRIX_REAL = new RealMatrixType();
 
   public static final Type ARRAY_INTEGER = new ArrayType(INTEGER);
   public static final Type ARRAY_INTEGER_2 = new ArrayType(INTEGER, 2);
@@ -337,6 +338,18 @@ public class BuiltInTypes {
   // return null;
   // }
   // }
+
+  /**
+   * Real Matrix type.
+   *
+   * Row vectors are represented as matrices with one row.
+   * Column vectors are represented as matrices with one column.
+   */
+  private static class RealMatrixType extends Type {
+    public RealMatrixType() {
+      super("RealMatrix", BUILT_IN);
+    }
+  }
 
   /*
    * A reference to BuiltInTypes is necessary to load the class,
