@@ -108,8 +108,41 @@ random Real state_theta(Integer timestep) {
 
 /*
  * Observation model.
- * FIXME pick a more reasonable prior?
+ * For now, we assume a single obstacle with known location and radius.
+ * The code here is hard to follow because we only have matrix operations and
+ * function application. For a more readable imperative version, see laser.py.
+ *
+ * FIXME: Deterministic functions defined as random because of bug in BLOG...
  */
+
+fixed Real obstacle_x = {{ model.obstacle_x }};
+fixed Real obstacle_y = {{ model.obstacle_y }};
+fixed Real obstacle_r = {{ model.obstacle_r }};
+
+fixed Real[] laser_angles = {{ model.laser_angles |blog_column_vector }};
+
+fixed Real laser_eqn_a = 1.0;
+random Real[] laser_eqn_bs(Real laser_x, Real laser_y, Real laser_theta) {
+    = (2 * (laser_x - obstacle_x) * cos(laser_theta + laser_angles) +
+       2 * (laser_y - obstacle_y) * sin(laser_theta + laser_angles))
+};
+random Real[] laser_eqn_cs(Real laser_x, Real laser_y) {
+    = ((laser_x - obstacle_x) ^2 +
+       (laser_y - obstacle_y) ^2 -
+       obstacle_r ^2)
+};
+random Real[] laser_eqn_deltas(Real laser_x, Real laser_y, Real laser_theta) {
+    = (laser_eqn_bs(laser_x, laser_y, laser_theta) ^2
+       - 4.0 * laser_eqn_a * laser_eqn_cs(laser_x, laser_y))
+};
+/*
+random Real[] laser_no_soln_indicators(Real laser_x, Real laser_y, Real laser_theta) {
+    // LEFT TODO: need indicator function
+};
+*/
+
+
+
 
 fixed Real[] lasers_mu = {{ model.lasers_mu |blog_column_vector }};
 

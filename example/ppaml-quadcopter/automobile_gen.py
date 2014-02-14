@@ -68,6 +68,10 @@ def generate_model(disc_readings, car_params):
     model_vars['x_sigma'] = 1.0
     model_vars['y_sigma'] = 1.0
     model_vars['theta_sigma'] = 1.0
+    model_vars['obstacle_x'] = 3.0
+    model_vars['obstacle_y'] = 2.0
+    model_vars['obstacle_r'] = 1.0
+    model_vars['laser_angles'] = np.arange(-90, 90.5, 0.5) * np.pi / 180
     model_vars['lasers_mu'] = np.zeros(LASER_COLS)
     model_vars['lasers_sigma'] = np.eye(LASER_COLS)
 
