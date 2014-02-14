@@ -203,39 +203,37 @@ public class BuiltInFunctions {
   public static NonRandomFunction RDIV;
 
   /**
-   * The function on 2D arrays <code>x<code>, <code>y</code> that returns x + y.
+   * RealMatrix + RealMatrix returns RealMatrix
    */
   public static NonRandomFunction PLUS_MAT;
 
   /**
-   * The function on 2D arrays <code>x<code>, <code>y</code> that returns x - y.
+   * RealMatrix - RealMatrix returns RealMatrix
    */
   public static NonRandomFunction MINUS_MAT;
 
   /**
-   * The function on 2D arrays <code>x<code>, <code>y</code> that returns x * y.
+   * RealMatrix * RealMatrix returns RealMatrix (matrix multiplication)
    */
   public static NonRandomFunction TIMES_MAT;
 
   /**
-   * The function on 2D array <code>x<code> and scalar <code>y<code> that
-   * returns x * y.
+   * RealMatrix * Real returns RealMatrix
    */
   public static NonRandomFunction TIMES_MAT_SCALAR;
 
   /**
-   * The function on scalar <code>x<code> and 2D array <code>y<code> that
-   * returns x * y.
+   * Real * RealMatrix returns RealMatrix
    */
   public static NonRandomFunction TIMES_SCALAR_MAT;
 
   /**
-   * The function on 2D array <code>x<code> that returns the inverse of x.
+   * inv(RealMatrix) returns RealMatrix (matrix inverse)
    */
   public static NonRandomFunction INV_MAT;
 
   /**
-   * The function on 2D array <code>x<code> that returns the determinant of x.
+   * det(RealMatrix) returns Real (matrix determinant)
    */
   public static NonRandomFunction DET_MAT;
 
@@ -252,14 +250,12 @@ public class BuiltInFunctions {
   public static NonRandomFunction CONCAT;
 
   /**
-   * A function on MatrixLib <code>mat</code> and int <code>i</code> and
-   * that returns the <code>i</code>th row in <code>mat</code>.
+   * RealMatrix[Integer] returns RealMatrix (i-th row of matrix)
    */
   public static NonRandomFunction SUB_MAT;
 
   /**
-   * A function on MatrixLib <code>vec</code> and int <code>i</code> that
-   * returns the <code>i</code>th element of <code>vec</code>.
+   * RealArray[Integer] returns Real (i-th element of array)
    */
   public static NonRandomFunction SUB_ARRAY;
 
@@ -280,12 +276,12 @@ public class BuiltInFunctions {
   public static NonRandomFunction ROUND;
 
   /**
-   * a function on Real[][] matrix <code>x</code> returns the transpose of <code>x</code>
+   * transpose(RealMatrix) returns RealMatrix
    */
   public static NonRandomFunction TRANSPOSE_REAL_MAT;
 
   /**
-   * a function on Integer[][] matrix <code>x</code> returns the transpose of <code>x</code>
+   * transpose(IntegerMatrix) returns IntegerMatrix
    */
   public static NonRandomFunction TRANSPOSE_INT_MAT;
 
@@ -643,7 +639,7 @@ public class BuiltInFunctions {
         subMatInterp);
     addFunction(SUB_MAT);
 
-    // Add non-random functions from (Real[] x int) to double
+    // Add non-random functions from (RealArray x int) to double
     argTypes.clear();
     argTypes.add(BuiltInTypes.REAL_ARRAY);
     argTypes.add(BuiltInTypes.INTEGER);
