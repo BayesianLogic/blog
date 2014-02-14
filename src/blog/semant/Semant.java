@@ -506,7 +506,7 @@ public class Semant {
     } else if (value instanceof ListSpec) {
       if (ty.isSubtypeOf(BuiltInTypes.REAL_MATRIX)) {
         return ((ListSpec) value).transferToMatrix();
-      } else if (ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL)) {
+      } else if (ty.isSubtypeOf(BuiltInTypes.REAL_ARRAY)) {
         return ((ListSpec) value).transferToMatrix();
       } else {
         return null;
@@ -1121,13 +1121,13 @@ public class Semant {
         }
         Object symbolMapping = model
             .getFuncsWithName(((SymbolTerm) left).getName()).iterator().next();
-        if (((Function) symbolMapping).getRetType() == BuiltInTypes.ARRAY_REAL) {
-          func = BuiltInFunctions.SUB_VEC;
+        if (((Function) symbolMapping).getRetType() == BuiltInTypes.REAL_ARRAY) {
+          func = BuiltInFunctions.SUB_ARRAY;
         } else {
           func = BuiltInFunctions.SUB_MAT;
         }
       } else {
-        func = BuiltInFunctions.SUB_VEC;
+        func = BuiltInFunctions.SUB_ARRAY;
       }
       term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
       return term;

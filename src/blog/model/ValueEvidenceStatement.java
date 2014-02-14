@@ -134,7 +134,7 @@ public class ValueEvidenceStatement {
 							+ ", cannot take value " + output + ", which has type " + right);
 					return false;
 				}
-			} else if (left.isSubtypeOf(BuiltInTypes.ARRAY_REAL)) {
+			} else if (left.isSubtypeOf(BuiltInTypes.REAL_ARRAY)) {
 				if (output instanceof ListSpec) {
 					output = ((ListSpec) output).transferToMatrix();
 				} else if (output instanceof MatrixSpec) {

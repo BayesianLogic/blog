@@ -66,7 +66,7 @@ public class BuiltInFunctions {
   public static final String MOD_NAME = "__MOD";
   public static final String POWER_NAME = "__POWER";
   public static final String SUB_MAT_NAME = "__SUB_MAT";
-  public static final String SUB_VEC_NAME = "__SUB_VEC";
+  public static final String SUB_ARRAY_NAME = "__SUB_ARRAY";
   public static final String GT_NAME = "__GREATERTHAN";
   public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
   public static final String LT_NAME = "__LESSTHAN";
@@ -260,7 +260,7 @@ public class BuiltInFunctions {
    * A function on MatrixLib <code>vec</code> and int <code>i</code> that
    * returns the <code>i</code>th element of <code>vec</code>.
    */
-  public static NonRandomFunction SUB_VEC;
+  public static NonRandomFunction SUB_ARRAY;
 
   /**
    * a function on Set <code>x</code> returns the minimal value from the set
@@ -632,10 +632,9 @@ public class BuiltInFunctions {
         subMatInterp);
     addFunction(SUB_MAT);
 
-    // XXX what to do about SUB_VEC?
     // Add non-random functions from (Real[] x int) to double
     argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL);
+    argTypes.add(BuiltInTypes.REAL_ARRAY);
     argTypes.add(BuiltInTypes.INTEGER);
     retType = BuiltInTypes.REAL;
 
@@ -647,9 +646,9 @@ public class BuiltInFunctions {
         return mat.elementAt(0, i);
       }
     };
-    SUB_VEC = new NonRandomFunction(SUB_VEC_NAME, argTypes, retType,
+    SUB_ARRAY = new NonRandomFunction(SUB_ARRAY_NAME, argTypes, retType,
         subVecInterp);
-    addFunction(SUB_VEC);
+    addFunction(SUB_ARRAY);
 
     // Add non-random functions from (RealMatrix x RealMatrix) to RealMatrix
     argTypes.clear();

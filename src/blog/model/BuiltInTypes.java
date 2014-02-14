@@ -139,13 +139,10 @@ public class BuiltInTypes {
    * Type for arrays of elements of a given type. Objects of this type
    * are represented as blog.common.numerical.MatrixLib objects.
    */
-  public static final Type ARRAY = new ArrayType(BUILT_IN);
-  public static final Type ARRAY_REAL = new ArrayType(REAL);
-  public static final Type ARRAY_REAL_2 = new ArrayType(REAL, 2);
+  public static final Type REAL_ARRAY = new RealArrayType();
   public static final Type REAL_MATRIX = new RealMatrixType();
-
-  public static final Type ARRAY_INTEGER = new ArrayType(INTEGER);
-  public static final Type ARRAY_INTEGER_2 = new ArrayType(INTEGER, 2);
+  public static final Type INTEGER_ARRAY = new IntegerArrayType();
+  public static final Type INTEGER_MATRIX = new IntegerMatrixType();
 
   /**
    * Type for object sets. Objects of this type are represented as
@@ -340,6 +337,19 @@ public class BuiltInTypes {
   // }
 
   /**
+   * Real array type.
+   *
+   * Arrays and matrices are not interchangeable types!
+   * Use an array if you want a list of real values.
+   * Use a matrix if you want to perform matrix operations.
+   */
+  private static class RealArrayType extends Type {
+    public RealArrayType() {
+      super("RealArray", BUILT_IN);
+    }
+  }
+
+  /**
    * Real Matrix type.
    *
    * Row vectors are represented as matrices with one row.
@@ -348,6 +358,31 @@ public class BuiltInTypes {
   private static class RealMatrixType extends Type {
     public RealMatrixType() {
       super("RealMatrix", BUILT_IN);
+    }
+  }
+
+  /**
+   * Integer array type.
+   *
+   * Arrays and matrices are not interchangeable types!
+   * Use an array if you want a list of integer values.
+   * Use a matrix if you want to perform matrix operations.
+   */
+  private static class IntegerArrayType extends Type {
+    public IntegerArrayType() {
+      super("IntegerArray", BUILT_IN);
+    }
+  }
+
+  /**
+   * Integer Matrix type.
+   *
+   * Row vectors are represented as matrices with one row.
+   * Column vectors are represented as matrices with one column.
+   */
+  private static class IntegerMatrixType extends Type {
+    public IntegerMatrixType() {
+      super("IntegerMatrix", BUILT_IN);
     }
   }
 
@@ -369,10 +404,10 @@ public class BuiltInTypes {
     addType(TIMESTEP);
     addType(STRING);
     addType(CHARACTER);
-    addType(ARRAY_REAL);
-    addType(ARRAY_REAL_2);
-    addType(ARRAY_INTEGER);
-    addType(ARRAY_INTEGER_2);
+    addType(REAL_ARRAY);
+    addType(REAL_MATRIX);
+    addType(INTEGER_ARRAY);
+    addType(INTEGER_MATRIX);
 
     // special treatment for NaturalNum
     // builtInTypes.put(NATURALNUM_TYPE_NAME, NATURAL_NUM);
