@@ -84,6 +84,10 @@ public class BuiltInFunctions {
   public static final String MAX_NAME = "max";
   public static final String ROUND_NAME = "round";
   public static final String TRANSPOSE_NAME = "transpose";
+  public static final String SIN_NAME = "sin";
+  public static final String COS_NAME = "cos";
+  public static final String TAN_NAME = "tan";
+  public static final String ATAN2_NAME = "atan2";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -113,6 +117,11 @@ public class BuiltInFunctions {
    * this constant even if it doesn't occur in a file.
    */
   public static final NonRandomFunction EPOCH;
+
+  /**
+   * Constant that denotes PI.
+   */
+  public static final NonRandomFunction PI;
 
   /**
    * The LessThan relation on type Real (and its subtypes).
@@ -290,6 +299,26 @@ public class BuiltInFunctions {
    */
   public static NonRandomFunction IS_EMPTY_STRING;
 
+  /**
+   * Take scalar <code>x</code> (in radians) and return <code>sin(x)</code>.
+   */
+  public static NonRandomFunction SIN;
+
+  /**
+   * Take scalar <code>x</code> (in radians) and return <code>cos(x)</code>.
+   */
+  public static NonRandomFunction COS;
+
+  /**
+   * Take scalar <code>x</code> (in radians) and return <code>tan(x)</code>.
+   */
+  public static NonRandomFunction TAN;
+
+  /**
+   * Take scalars <code>x</code> and <code>y</code> and return <code>atan2(y, x)</code>.
+   */
+  public static NonRandomFunction ATAN2;
+
   private BuiltInFunctions() {
     // prevent instantiation
   }
@@ -370,6 +399,7 @@ public class BuiltInFunctions {
     ZERO = getLiteral("0", BuiltInTypes.INTEGER, new Integer(0));
     ONE = getLiteral("1", BuiltInTypes.INTEGER, new Integer(1));
     EPOCH = getLiteral("@0", BuiltInTypes.TIMESTEP, Timestep.at(0));
+    PI = getLiteral("pi", BuiltInTypes.REAL, new Double(Math.PI));
 
     // Add non-random functions from (real x real) to Boolean
     List<Type> argTypes = new ArrayList<Type>();
