@@ -83,6 +83,11 @@ public class BuiltInFunctions {
   public static final String MIN_NAME = "min";
   public static final String MAX_NAME = "max";
   public static final String ROUND_NAME = "round";
+  public static final String TRANSPOSE_NAME = "transpose";
+  public static final String SIN_NAME = "sin";
+  public static final String COS_NAME = "cos";
+  public static final String TAN_NAME = "tan";
+  public static final String ATAN2_NAME = "atan2";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -112,6 +117,11 @@ public class BuiltInFunctions {
    * this constant even if it doesn't occur in a file.
    */
   public static final NonRandomFunction EPOCH;
+
+  /**
+   * Constant that denotes PI.
+   */
+  public static final NonRandomFunction PI;
 
   /**
    * The LessThan relation on type Real (and its subtypes).
@@ -313,9 +323,49 @@ public class BuiltInFunctions {
   public static NonRandomFunction ROUND;
 
   /**
+   * a function on Real[][] matrix <code>x</code> returns the transpose of <code>x</code>
+   */
+  public static NonRandomFunction TRANSPOSE_REAL_MAT;
+
+  /**
+   * a function on Real[] vector <code>x</code> returns the transpose of <code>x</code>
+   */
+  public static NonRandomFunction TRANSPOSE_REAL_VEC;
+
+  /**
+   * a function on Integer[][] matrix <code>x</code> returns the transpose of <code>x</code>
+   */
+  public static NonRandomFunction TRANSPOSE_INT_MAT;
+
+  /**
+   * a function on Integer[] vector <code>x</code> returns the transpose of <code>x</code>
+   */
+  public static NonRandomFunction TRANSPOSE_INT_VEC;
+
+  /**
    * A function that takes a string and returns true if the string is empty.
    */
   public static NonRandomFunction IS_EMPTY_STRING;
+
+  /**
+   * Take scalar <code>x</code> (in radians) and return <code>sin(x)</code>.
+   */
+  public static NonRandomFunction SIN;
+
+  /**
+   * Take scalar <code>x</code> (in radians) and return <code>cos(x)</code>.
+   */
+  public static NonRandomFunction COS;
+
+  /**
+   * Take scalar <code>x</code> (in radians) and return <code>tan(x)</code>.
+   */
+  public static NonRandomFunction TAN;
+
+  /**
+   * Take scalars <code>x</code> and <code>y</code> and return <code>atan2(y, x)</code>.
+   */
+  public static NonRandomFunction ATAN2;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -397,6 +447,7 @@ public class BuiltInFunctions {
     ZERO = getLiteral("0", BuiltInTypes.INTEGER, new Integer(0));
     ONE = getLiteral("1", BuiltInTypes.INTEGER, new Integer(1));
     EPOCH = getLiteral("@0", BuiltInTypes.TIMESTEP, Timestep.at(0));
+    PI = getLiteral("pi", BuiltInTypes.REAL, new Double(Math.PI));
 
     // Add non-random functions from (real x real) to Boolean
     List<Type> argTypes = new ArrayList<Type>();
@@ -917,8 +968,98 @@ public class BuiltInFunctions {
         return Math.round(num);
       }
     };
-
+    
     ROUND = new NonRandomFunction(ROUND_NAME, argTypes, retType, roundInterp);
     addFunction(ROUND);
+
+    // Transpose function for Real matrices
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.ARRAY_REAL_2);
+    retType = BuiltInTypes.ARRAY_REAL_2;
+
+    FunctionInterp transposeInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        MatrixLib matrix = (MatrixLib) args.get(0);
+        return matrix.transpose();
+      }
+    };
+
+    TRANSPOSE_REAL_MAT = new NonRandomFunction(
+        TRANSPOSE_NAME, argTypes, retType, transposeInterp);
+    addFunction(TRANSPOSE_REAL_MAT);
+
+    // Transpose function for Real vectors (uses the same FunctionInterp above)
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.ARRAY_REAL);
+    retType = BuiltInTypes.ARRAY_REAL;
+    TRANSPOSE_REAL_VEC = new NonRandomFunction(
+        TRANSPOSE_NAME, argTypes, retType, transposeInterp);
+    addFunction(TRANSPOSE_REAL_VEC);
+
+    // Transpose function for Integer matrices (uses the same FunctionInterp above)
+    // Does not work yet ("Incorrect value type for nonrandom constant
+    // fixed_matrix_int_t: expected Array_Integer_2, got Array_Real_2")
+    argTypes.clear();
+    argTypes.add(Type.getType("Array_Integer_2"));
+    retType = Type.getType("Array_Integer_2");
+    TRANSPOSE_INT_MAT = new NonRandomFunction(
+        TRANSPOSE_NAME, argTypes, retType, transposeInterp);
+    addFunction(TRANSPOSE_INT_MAT);
+
+    // Transpose function for Integer vectors (uses the same FunctionInterp above)
+    // Does not work yet ("Incorrect value type for nonrandom constant
+    // fixed_matrix_int_t: expected Array_Integer_2, got Array_Real_2")
+    argTypes.clear();
+    argTypes.add(Type.getType("Array_Integer_1"));
+    retType = Type.getType("Array_Integer_1");
+    TRANSPOSE_INT_VEC = new NonRandomFunction(
+        TRANSPOSE_NAME, argTypes, retType, transposeInterp);
+    addFunction(TRANSPOSE_INT_VEC);
+
+    // Trigonometric functions on scalars:
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+
+    FunctionInterp sinInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Double radians = (Double) args.get(0);
+        return Math.sin(radians);
+      }
+    };
+    SIN = new NonRandomFunction(SIN_NAME, argTypes, retType, sinInterp);
+    addFunction(SIN);
+
+    FunctionInterp cosInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Double radians = (Double) args.get(0);
+        return Math.cos(radians);
+      }
+    };
+    COS = new NonRandomFunction(COS_NAME, argTypes, retType, cosInterp);
+    addFunction(COS);
+
+    FunctionInterp tanInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Double radians = (Double) args.get(0);
+        return Math.tan(radians);
+      }
+    };
+    TAN = new NonRandomFunction(TAN_NAME, argTypes, retType, tanInterp);
+    addFunction(TAN);
+
+    FunctionInterp atan2Interp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Double y = (Double) args.get(0);
+        Double x = (Double) args.get(1);
+        return Math.atan2(y, x);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+    ATAN2 = new NonRandomFunction(ATAN2_NAME, argTypes, retType, atan2Interp);
+    addFunction(ATAN2);
   };
 }
