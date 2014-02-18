@@ -1,23 +1,31 @@
-FOR BASIC USER
-===============================
-Compiling/Install
-----------------------
-Under Linux/MAC OSX
+# Basic Users
+## Requirement
+- Java 1.6 or above (1.7 or above preferred)
+
+## Compiling/Install
+- Under Linux/MAC OSX
+```
   make compile
-
-Under Windows
+```
+- Under Windows
+```
   compile.bat
+```
 
-Usage
-----------------------
-Under Linux/MAC OSX
+## Usage
+- Under Linux/MAC OSX
+```
  run.sh <path_to_blog_file> <params>
-
-Under Windows
+```
+- Under Windows
+```
  run.bat <path_to_blog_file> <params>
+```
 
-FOR ADVANCED USER and DEVELOPER
-===============================
+# Contributing and Developer
+## Coding guideline
+- 
+
 Generating Lexer and Parser
 ----------------------
 
