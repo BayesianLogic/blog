@@ -23,7 +23,7 @@
 ```
 
 # Contributing and Developer
-### [Developping guideline guideline](wiki/Home)
+### [Developping guideline guideline](https://github.com/lileicc/dblog/wiki/Home)
 
 ### Generating Lexer and Parser
 You only need to do this if you modified `BLOGLexer.flex` or `BLOGParser.cup`
@@ -49,7 +49,7 @@ $ ./gen_parser
 - Formating source code using Eclipse
   1. please set the line ending to be linux style `\n`
   2. use 2 spaces ` ` for indentation
-  3. For more please refer to [development guideline](Home)
+  3. For more please refer to [development guideline](https://github.com/lileicc/dblog/wiki/Home)
 
 ### Compiling Directly
 0. (needed only if you change parser) Generate Lexer and Parser 
