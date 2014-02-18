@@ -23,7 +23,7 @@
 ```
 
 # Contributing and Developer
-### [Developping guideline guideline](Home)
+### [[Developping guideline guideline|Home]]
 
 ### Generating Lexer and Parser
 You only need to do this if you modified `BLOGLexer.flex` or `BLOGParser.cup`
