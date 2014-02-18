@@ -885,5 +885,51 @@ public class BuiltInFunctions {
     TRANSPOSE_INT_MAT = new NonRandomFunction(
         TRANSPOSE_NAME, argTypes, retType, transposeInterp);
     addFunction(TRANSPOSE_INT_MAT);
+
+    // Trigonometric functions on scalars:
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+
+    FunctionInterp sinInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Double radians = (Double) args.get(0);
+        return Math.sin(radians);
+      }
+    };
+    SIN = new NonRandomFunction(SIN_NAME, argTypes, retType, sinInterp);
+    addFunction(SIN);
+
+    FunctionInterp cosInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Double radians = (Double) args.get(0);
+        return Math.cos(radians);
+      }
+    };
+    COS = new NonRandomFunction(COS_NAME, argTypes, retType, cosInterp);
+    addFunction(COS);
+
+    FunctionInterp tanInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Double radians = (Double) args.get(0);
+        return Math.tan(radians);
+      }
+    };
+    TAN = new NonRandomFunction(TAN_NAME, argTypes, retType, tanInterp);
+    addFunction(TAN);
+
+    FunctionInterp atan2Interp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Double y = (Double) args.get(0);
+        Double x = (Double) args.get(1);
+        return Math.atan2(y, x);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+    ATAN2 = new NonRandomFunction(ATAN2_NAME, argTypes, retType, atan2Interp);
+    addFunction(ATAN2);
   };
 }
