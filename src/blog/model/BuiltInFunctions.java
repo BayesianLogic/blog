@@ -266,7 +266,12 @@ public class BuiltInFunctions {
   /**
    * RealArray[Integer] returns Real (i-th element of array)
    */
-  public static NonRandomFunction SUB_ARRAY;
+  public static NonRandomFunction SUB_REAL_ARRAY;
+
+  /**
+   * IntegerArray[Integer] returns Integer (i-th element of array)
+   */
+  public static NonRandomFunction SUB_INT_ARRAY;
 
   /**
    * a function on Set <code>x</code> returns the minimal value from the set
@@ -669,12 +674,6 @@ public class BuiltInFunctions {
         subMatInterp);
     addFunction(SUB_MAT);
 
-    // Add non-random functions from (RealArray x int) to double
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.REAL_ARRAY);
-    argTypes.add(BuiltInTypes.INTEGER);
-    retType = BuiltInTypes.REAL;
-
     // Array subscription (aka indexing) 
     FunctionInterp subVecInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
@@ -683,9 +682,24 @@ public class BuiltInFunctions {
         return mat.elementAt(0, i);
       }
     };
-    SUB_ARRAY = new NonRandomFunction(SUB_ARRAY_NAME, argTypes, retType,
+
+    // Array indexing for Real arrays:
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_ARRAY);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL;
+    SUB_REAL_ARRAY = new NonRandomFunction(SUB_ARRAY_NAME, argTypes, retType,
         subVecInterp);
-    addFunction(SUB_ARRAY);
+    addFunction(SUB_REAL_ARRAY);
+
+    // Array indexing for Integer arrays:
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER_ARRAY);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.INTEGER;
+    SUB_INT_ARRAY = new NonRandomFunction(SUB_ARRAY_NAME, argTypes, retType,
+        subVecInterp);
+    addFunction(SUB_INT_ARRAY);
 
     // Add non-random functions from (RealMatrix x RealMatrix) to RealMatrix
     argTypes.clear();

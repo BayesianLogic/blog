@@ -218,11 +218,7 @@ public class Semant {
       error(type.line, type.col, "Type " + type.typ.toString() + " undefined!");
     }
 
-    // Type hierarchy: Array -> {type}Array -> {type}([])^{num_dims}
-    String typeName = termType.getName();
-    String arrTypeName = "Array_" + typeName;
-
-    ArrayType arrType = new ArrayType(termType, type.dim);
+    ArrayType arrType = new ArrayType(termType);
     arrType = (ArrayType) Type.getType(arrType.getName());
 
     return arrType;
@@ -1122,12 +1118,14 @@ public class Semant {
         Object symbolMapping = model
             .getFuncsWithName(((SymbolTerm) left).getName()).iterator().next();
         if (((Function) symbolMapping).getRetType() == BuiltInTypes.REAL_ARRAY) {
-          func = BuiltInFunctions.SUB_ARRAY;
+          func = BuiltInFunctions.SUB_REAL_ARRAY;
+        } else if (((Function) symbolMapping).getRetType() == BuiltInTypes.INTEGER_ARRAY) {
+          func = BuiltInFunctions.SUB_INT_ARRAY;
         } else {
           func = BuiltInFunctions.SUB_MAT;
         }
       } else {
-        func = BuiltInFunctions.SUB_ARRAY;
+        func = BuiltInFunctions.SUB_REAL_ARRAY;
       }
       term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
       return term;
