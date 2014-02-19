@@ -139,9 +139,10 @@ public class BuiltInTypes {
    * Type for arrays of elements of a given type. Objects of this type
    * are represented as blog.common.numerical.MatrixLib objects.
    */
-  public static final Type REAL_ARRAY = new RealArrayType();
+  public static final Type ARRAY = new ArrayType(BUILT_IN);
+  public static final Type REAL_ARRAY = new ArrayType(REAL);
   public static final Type REAL_MATRIX = new RealMatrixType();
-  public static final Type INTEGER_ARRAY = new IntegerArrayType();
+  public static final Type INTEGER_ARRAY = new ArrayType(INTEGER);
   public static final Type INTEGER_MATRIX = new IntegerMatrixType();
 
   /**
@@ -337,19 +338,6 @@ public class BuiltInTypes {
   // }
 
   /**
-   * Real array type.
-   *
-   * Arrays and matrices are not interchangeable types!
-   * Use an array if you want a list of real values.
-   * Use a matrix if you want to perform matrix operations.
-   */
-  private static class RealArrayType extends Type {
-    public RealArrayType() {
-      super("RealArray", BUILT_IN);
-    }
-  }
-
-  /**
    * Real Matrix type.
    *
    * Row vectors are represented as matrices with one row.
@@ -358,19 +346,6 @@ public class BuiltInTypes {
   private static class RealMatrixType extends Type {
     public RealMatrixType() {
       super("RealMatrix", BUILT_IN);
-    }
-  }
-
-  /**
-   * Integer array type.
-   *
-   * Arrays and matrices are not interchangeable types!
-   * Use an array if you want a list of integer values.
-   * Use a matrix if you want to perform matrix operations.
-   */
-  private static class IntegerArrayType extends Type {
-    public IntegerArrayType() {
-      super("IntegerArray", BUILT_IN);
     }
   }
 
