@@ -19,6 +19,8 @@ because of time discretization.
 */
 
 
+//////////////////////////////////////////////////////////////////////////////
+
 /*
  * Dynamics model.
  * We assume H = 0 so the velocity is measured at the center of the back axle.
@@ -106,6 +108,8 @@ random Real state_theta(Integer timestep) {
 };
 
 
+//////////////////////////////////////////////////////////////////////////////
+
 /*
  * Observation model.
  * For now, we assume a single obstacle with known location and radius.
@@ -135,28 +139,81 @@ random Real[] laser_eqn_deltas(Real laser_x, Real laser_y, Real laser_theta) {
     = (laser_eqn_bs(laser_x, laser_y, laser_theta) ^2
        - 4.0 * laser_eqn_a * laser_eqn_cs(laser_x, laser_y))
 };
-/*
-random Real[] laser_no_soln_indicators(Real laser_x, Real laser_y, Real laser_theta) {
-    // LEFT TODO: need indicator function
+random Real[] laser_eqn_no_soln_indicators(Real laser_x, Real laser_y, Real laser_theta) {
+    // Need "less than zero" indicator.
+    = indicator_lt(laser_eqn_deltas(laser_x, laser_y, laser_theta), 0)
 };
-*/
+random Real[] laser_eqn_deltas_safe(Real laser_x, Real laser_y, Real laser_theta) {
+    // Need "max" that operates on arrays.
+    = max(laser_eqn_deltas(laser_x, laser_y, laser_theta), 0)
+};
+random Real[] laser_eqn_soln1s(Real laser_x, Real laser_y, Real laser_theta) {
+    // Need "sqrt" that operates on each element of an array
+    = (-laser_eqn_bs(laser_x, laser_y, laser_theta)
+        - sqrt(laser_eqn_deltas_safe(laser_x, laser_y, laser_theta))) /
+      (2 * laser_eqn_a)
+};
+random Real[] laser_eqn_soln2s(Real laser_x, Real laser_y, Real laser_theta) {
+    // Need "sqrt" that operates on each element of an array
+    = (-laser_eqn_bs(laser_x, laser_y, laser_theta)
+        + sqrt(laser_eqn_deltas_safe(laser_x, laser_y, laser_theta))) /
+      (2 * laser_eqn_a)
+};
+random Real[] laser_eqn_soln2_behind_indicators(Real laser_x, Real laser_y, Real laser_theta) {
+    // Need "less than zero" indicator.
+    = indicator_lt(laser_eqn_soln2s(laser_x, laser_y, laser_theta), 0)
+};
+random Real[] laser_eqn_soln1_behind_indicators(Real laser_x, Real laser_y, Real laser_theta) {
+    // Need "less than zero" indicator.
+    = indicator_lt(laser_eqn_soln1s(laser_x, laser_y, laser_theta), 0)
+};
+random Real[] laser_max_range_indicators(Real laser_x, Real laser_y, Real laser_theta) {
+    // Need "greater than zero" indicator.
+    = indicator_gt(
+        laser_eqn_no_soln_indicators(laser_x, laser_y, laser_theta)
+            + laser_eqn_soln2_behind_indicators(laser_x, laser_y, laser_theta),
+        0)
+};
+random Real[] laser_soln2_indicators(Real laser_x, Real laser_y, Real laser_theta) {
+    // Need "greater than zero" indicator.
+    = indicator_gt(
+        -laser_max_range_indicators(laser_x, laser_y, laser_theta)
+            + laser_eqn_soln1_behind_indicators(laser_x, laser_y, laser_theta),
+        0)
+};
+random Real[] laser_soln1_indicators(Real laser_x, Real laser_y, Real laser_theta) {
+    // Need func that creates an array full of ones.
+    // Need "greater than zero" indicator.
+    = indicator_gt(
+        ones_like(laser_angles)
+            - laser_max_range_indicators(laser_x, laser_y, laser_theta)
+            - laser_soln2_indicators,
+        0)
+};
+random Real[] laser_solns(Real laser_x, Real laser_y, Real laser_theta) {
+    = (laser_max_range
+            * laser_max_range_indicators(laser_x, laser_y, laser_theta)
+        + laser_eqn_soln1s(laser_x, laser_y, laser_theta)
+            * laser_soln1_indicators(laser_x, laser_y, laser_theta)
+        + laser_eqn_soln2s(laser_x, laser_y, laser_theta)
+            * laser_soln2_indicators(laser_x, laser_y, laser_theta))
+};
 
-
-
-
-fixed Real[] lasers_mu = {{ model.lasers_mu |blog_column_vector }};
 
 fixed Real[][] lasers_sigma = {{ model.lasers_sigma |blog_matrix }};
 
 random Real[] lasers_func(Real x, Real y, Real theta) {
-    // FIXME placeholder
-    ~ MultivarGaussian(lasers_mu, lasers_sigma)
+    ~ MultivarGaussian(
+        laser_solns(x, y, theta),
+        lasers_sigma)
 };
 
 random Real[] lasers(Integer timestep) {
     = lasers_func(state_x(timestep), state_y(timestep), state_theta(timestep))
 };
 
+
+//////////////////////////////////////////////////////////////////////////////
 
 /*
  * The controls are fixed values.
@@ -178,12 +235,16 @@ random Real steering(Integer timestep) {
 };
 
 
+//////////////////////////////////////////////////////////////////////////////
+
 /* Observations: */
 
 {% for obs in observations %}
 obs lasers({{ obs.timestep }}) = {{ obs.laser|blog_column_vector }};
 {%- endfor %}
 
+
+//////////////////////////////////////////////////////////////////////////////
 
 /* Query the hidden state: */
 
