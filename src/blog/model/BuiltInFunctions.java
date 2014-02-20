@@ -66,7 +66,7 @@ public class BuiltInFunctions {
   public static final String MOD_NAME = "__MOD";
   public static final String POWER_NAME = "__POWER";
   public static final String SUB_MAT_NAME = "__SUB_MAT";
-  public static final String SUB_VEC_NAME = "__SUB_VEC";
+  public static final String SUB_ARRAY_NAME = "__SUB_ARRAY";
   public static final String GT_NAME = "__GREATERTHAN";
   public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
   public static final String LT_NAME = "__LESSTHAN";
@@ -212,73 +212,37 @@ public class BuiltInFunctions {
   public static NonRandomFunction RDIV;
 
   /**
-   * The function on 2D arrays <code>x<code>, <code>y</code> that returns x + y.
+   * RealMatrix + RealMatrix returns RealMatrix
    */
   public static NonRandomFunction PLUS_MAT;
 
   /**
-   * The function on 2D arrays <code>x<code>, <code>y</code> that returns x - y.
+   * RealMatrix - RealMatrix returns RealMatrix
    */
   public static NonRandomFunction MINUS_MAT;
 
   /**
-   * The function on 2D arrays <code>x<code>, <code>y</code> that returns x * y.
+   * RealMatrix * RealMatrix returns RealMatrix (matrix multiplication)
    */
   public static NonRandomFunction TIMES_MAT;
 
   /**
-   * The function on 1D arrays <code>x<code>, <code>y</code> that returns x + y.
-   */
-  public static NonRandomFunction PLUS_VEC;
-
-  /**
-   * The function on 1D arrays <code>x<code>, <code>y</code> that returns x - y.
-   */
-  public static NonRandomFunction MINUS_VEC;
-
-  /**
-   * The function on 1D array <code>x<code> and 2D array <code>y</code> that
-   * returns x * y.
-   */
-  public static NonRandomFunction TIMES_VEC_MAT;
-
-  /**
-   * The function on 2D array <code>x<code> and 1D array <code>y</code> that
-   * returns x * y.
-   */
-  public static NonRandomFunction TIMES_MAT_VEC;
-
-  /**
-   * The function on 2D array <code>x<code> and scalar <code>y<code> that
-   * returns x * y.
+   * RealMatrix * Real returns RealMatrix
    */
   public static NonRandomFunction TIMES_MAT_SCALAR;
 
   /**
-   * The function on scalar <code>x<code> and 2D array <code>y<code> that
-   * returns x * y.
+   * Real * RealMatrix returns RealMatrix
    */
   public static NonRandomFunction TIMES_SCALAR_MAT;
 
   /**
-   * The function on 1D array <code>x<code>, and scalar <code>y<code> that
-   * returns x * y.
-   */
-  public static NonRandomFunction TIMES_VEC_SCALAR;
-
-  /**
-   * The function on scalar <code>x<code> and 1D array <code>y<code> that
-   * returns x * y.
-   */
-  public static NonRandomFunction TIMES_SCALAR_VEC;
-
-  /**
-   * The function on 2D array <code>x<code> that returns the inverse of x.
+   * inv(RealMatrix) returns RealMatrix (matrix inverse)
    */
   public static NonRandomFunction INV_MAT;
 
   /**
-   * The function on 2D array <code>x<code> that returns the determinant of x.
+   * det(RealMatrix) returns Real (matrix determinant)
    */
   public static NonRandomFunction DET_MAT;
 
@@ -295,16 +259,19 @@ public class BuiltInFunctions {
   public static NonRandomFunction CONCAT;
 
   /**
-   * A function on MatrixLib <code>mat</code> and int <code>i</code> and
-   * that returns the <code>i</code>th row in <code>mat</code>.
+   * RealMatrix[Integer] returns RealMatrix (i-th row of matrix)
    */
   public static NonRandomFunction SUB_MAT;
 
   /**
-   * A function on MatrixLib <code>vec</code> and int <code>i</code> that
-   * returns the <code>i</code>th element of <code>vec</code>.
+   * RealArray[Integer] returns Real (i-th element of array)
    */
-  public static NonRandomFunction SUB_VEC;
+  public static NonRandomFunction SUB_REAL_ARRAY;
+
+  /**
+   * IntegerArray[Integer] returns Integer (i-th element of array)
+   */
+  public static NonRandomFunction SUB_INT_ARRAY;
 
   /**
    * a function on Set <code>x</code> returns the minimal value from the set
@@ -323,24 +290,14 @@ public class BuiltInFunctions {
   public static NonRandomFunction ROUND;
 
   /**
-   * a function on Real[][] matrix <code>x</code> returns the transpose of <code>x</code>
+   * transpose(RealMatrix) returns RealMatrix
    */
   public static NonRandomFunction TRANSPOSE_REAL_MAT;
 
   /**
-   * a function on Real[] vector <code>x</code> returns the transpose of <code>x</code>
-   */
-  public static NonRandomFunction TRANSPOSE_REAL_VEC;
-
-  /**
-   * a function on Integer[][] matrix <code>x</code> returns the transpose of <code>x</code>
+   * transpose(IntegerMatrix) returns IntegerMatrix
    */
   public static NonRandomFunction TRANSPOSE_INT_MAT;
-
-  /**
-   * a function on Integer[] vector <code>x</code> returns the transpose of <code>x</code>
-   */
-  public static NonRandomFunction TRANSPOSE_INT_VEC;
 
   /**
    * A function that takes a string and returns true if the string is empty.
@@ -699,11 +656,11 @@ public class BuiltInFunctions {
         isEmptyStringInterp);
     addFunction(IS_EMPTY_STRING);
 
-    // Add non-random functions from (Real[][] x int) to Real[]
+    // Add non-random functions from (RealMatrix x int) to RealMatrix
     argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL_2);
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
     argTypes.add(BuiltInTypes.INTEGER);
-    retType = BuiltInTypes.ARRAY_REAL;
+    retType = BuiltInTypes.REAL_MATRIX;
 
     // get the i-th row of the matrix
     FunctionInterp subMatInterp = new AbstractFunctionInterp() {
@@ -717,12 +674,6 @@ public class BuiltInFunctions {
         subMatInterp);
     addFunction(SUB_MAT);
 
-    // Add non-random functions from (Real[] x int) to double
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL);
-    argTypes.add(BuiltInTypes.INTEGER);
-    retType = BuiltInTypes.REAL;
-
     // Array subscription (aka indexing) 
     FunctionInterp subVecInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
@@ -731,15 +682,30 @@ public class BuiltInFunctions {
         return mat.elementAt(0, i);
       }
     };
-    SUB_VEC = new NonRandomFunction(SUB_VEC_NAME, argTypes, retType,
-        subVecInterp);
-    addFunction(SUB_VEC);
 
-    // Add non-random functions from (Real[][] x Real[][]) to Real[][]
+    // Array indexing for Real arrays:
     argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL_2);
-    argTypes.add(BuiltInTypes.ARRAY_REAL_2);
-    retType = BuiltInTypes.ARRAY_REAL_2;
+    argTypes.add(BuiltInTypes.REAL_ARRAY);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL;
+    SUB_REAL_ARRAY = new NonRandomFunction(SUB_ARRAY_NAME, argTypes, retType,
+        subVecInterp);
+    addFunction(SUB_REAL_ARRAY);
+
+    // Array indexing for Integer arrays:
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER_ARRAY);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.INTEGER;
+    SUB_INT_ARRAY = new NonRandomFunction(SUB_ARRAY_NAME, argTypes, retType,
+        subVecInterp);
+    addFunction(SUB_INT_ARRAY);
+
+    // Add non-random functions from (RealMatrix x RealMatrix) to RealMatrix
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
 
     // matrix plus
     FunctionInterp matPlusInterp = new AbstractFunctionInterp() {
@@ -749,8 +715,6 @@ public class BuiltInFunctions {
         return mat1.plus(mat2);
       }
     };
-
-    // TODO support for plus of integer matrix
     PLUS_MAT = new NonRandomFunction(PLUS_NAME, argTypes, retType,
         matPlusInterp);
     addFunction(PLUS_MAT);
@@ -779,51 +743,13 @@ public class BuiltInFunctions {
         matTimesInterp);
     addFunction(TIMES_MAT);
 
-    // Add non-random functions from (Real[] x Real[]) to Real[]
+    // Add non-random functions from (RealMatrix x Real) to RealMatrix
     argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL);
-    argTypes.add(BuiltInTypes.ARRAY_REAL);
-    retType = BuiltInTypes.ARRAY_REAL;
-
-    // TODO support for plus of integer matrix
-    // vector plus
-    PLUS_VEC = new NonRandomFunction(PLUS_NAME, argTypes, retType,
-        matPlusInterp);
-    addFunction(PLUS_VEC);
-
-    // vector minus
-    MINUS_VEC = new NonRandomFunction(MINUS_NAME, argTypes, retType,
-        matMinusInterp);
-    addFunction(MINUS_VEC);
-
-    // Add non-random functions from (Real[][] x Real[]) to Real[]
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL_2);
-    argTypes.add(BuiltInTypes.ARRAY_REAL);
-    retType = BuiltInTypes.ARRAY_REAL;
-
-    // matrix vector multiplication
-    TIMES_MAT_VEC = new NonRandomFunction(MULT_NAME, argTypes, retType,
-        matTimesInterp);
-    addFunction(TIMES_MAT_VEC);
-
-    // Add non-random functions from (Real[] x Real[][]) to Real[][]
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL);
-    argTypes.add(BuiltInTypes.ARRAY_REAL_2);
-    retType = BuiltInTypes.ARRAY_REAL_2;
-
-    // matrix vector multiplication
-    TIMES_VEC_MAT = new NonRandomFunction(MULT_NAME, argTypes, retType,
-        matTimesInterp);
-    addFunction(TIMES_VEC_MAT);
-
-    // Add non-random functions from (Real[] x Real) to Real[]
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL);
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
     argTypes.add(BuiltInTypes.REAL);
-    retType = BuiltInTypes.ARRAY_REAL;
+    retType = BuiltInTypes.REAL_MATRIX;
 
+    // matrix scalar multiplication
     FunctionInterp matScalarTimesInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         double val = (Double) args.get(1);
@@ -831,19 +757,17 @@ public class BuiltInFunctions {
         return mat.timesScale(val);
       }
     };
-
-    // matrix scalar multiplication
-    TIMES_VEC_SCALAR = new NonRandomFunction(MULT_NAME, argTypes, retType,
+    TIMES_MAT_SCALAR = new NonRandomFunction(MULT_NAME, argTypes, retType,
         matScalarTimesInterp);
-    addFunction(TIMES_VEC_SCALAR);
+    addFunction(TIMES_MAT_SCALAR);
 
-    // Add non-random functions from (Real x Real[]) to Real[]
+    // Add non-random functions from (Real x RealMatrix) to RealMatrix
     argTypes.clear();
     argTypes.add(BuiltInTypes.REAL);
-    argTypes.add(BuiltInTypes.ARRAY_REAL);
-    retType = BuiltInTypes.ARRAY_REAL;
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
 
-    // scalar vector multiplication
+    // scalar matrix multiplication
     FunctionInterp scalarMatTimesInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         double val = (Double) args.get(0);
@@ -851,36 +775,14 @@ public class BuiltInFunctions {
         return mat2.timesScale(val);
       }
     };
-    TIMES_SCALAR_VEC = new NonRandomFunction(MULT_NAME, argTypes, retType,
-        scalarMatTimesInterp);
-    addFunction(TIMES_SCALAR_VEC);
-
-    // Add non-random functions from (Real[][] x Real) to Real[][]
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL_2);
-    argTypes.add(BuiltInTypes.REAL);
-    retType = BuiltInTypes.ARRAY_REAL_2;
-
-    // matrix scalar multiplication
-    TIMES_MAT_SCALAR = new NonRandomFunction(MULT_NAME, argTypes, retType,
-        matScalarTimesInterp);
-    addFunction(TIMES_MAT_SCALAR);
-
-    // Add non-random functions from (Real x Real[][]) to Real[][]
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.REAL);
-    argTypes.add(BuiltInTypes.ARRAY_REAL_2);
-    retType = BuiltInTypes.ARRAY_REAL_2;
-
-    // matrix scalar multiplication
     TIMES_SCALAR_MAT = new NonRandomFunction(MULT_NAME, argTypes, retType,
         scalarMatTimesInterp);
     addFunction(TIMES_SCALAR_MAT);
 
-    // Add non-random functions from Real[][] to Real[][]
+    // Add non-random functions from RealMatrix to RealMatrix
     argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL_2);
-    retType = BuiltInTypes.ARRAY_REAL_2;
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
 
     // matrix inverse
     FunctionInterp matInverseInterp = new AbstractFunctionInterp() {
@@ -893,9 +795,9 @@ public class BuiltInFunctions {
         matInverseInterp);
     addFunction(INV_MAT);
 
-    // Add non-random functions from Real[][] to Real
+    // Add non-random functions from RealMatrix to Real
     argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL_2);
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
     retType = BuiltInTypes.REAL;
 
     // matrix determinant
@@ -974,8 +876,8 @@ public class BuiltInFunctions {
 
     // Transpose function for Real matrices
     argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL_2);
-    retType = BuiltInTypes.ARRAY_REAL_2;
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
 
     FunctionInterp transposeInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
@@ -988,33 +890,15 @@ public class BuiltInFunctions {
         TRANSPOSE_NAME, argTypes, retType, transposeInterp);
     addFunction(TRANSPOSE_REAL_MAT);
 
-    // Transpose function for Real vectors (uses the same FunctionInterp above)
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.ARRAY_REAL);
-    retType = BuiltInTypes.ARRAY_REAL;
-    TRANSPOSE_REAL_VEC = new NonRandomFunction(
-        TRANSPOSE_NAME, argTypes, retType, transposeInterp);
-    addFunction(TRANSPOSE_REAL_VEC);
-
     // Transpose function for Integer matrices (uses the same FunctionInterp above)
-    // Does not work yet ("Incorrect value type for nonrandom constant
-    // fixed_matrix_int_t: expected Array_Integer_2, got Array_Real_2")
+    // Does not work yet ("java.util.ArrayList cannot be cast to
+    // blog.common.numerical.MatrixLib")
     argTypes.clear();
-    argTypes.add(Type.getType("Array_Integer_2"));
-    retType = Type.getType("Array_Integer_2");
+    argTypes.add(BuiltInTypes.INTEGER_MATRIX);
+    retType = BuiltInTypes.INTEGER_MATRIX;
     TRANSPOSE_INT_MAT = new NonRandomFunction(
         TRANSPOSE_NAME, argTypes, retType, transposeInterp);
     addFunction(TRANSPOSE_INT_MAT);
-
-    // Transpose function for Integer vectors (uses the same FunctionInterp above)
-    // Does not work yet ("Incorrect value type for nonrandom constant
-    // fixed_matrix_int_t: expected Array_Integer_2, got Array_Real_2")
-    argTypes.clear();
-    argTypes.add(Type.getType("Array_Integer_1"));
-    retType = Type.getType("Array_Integer_1");
-    TRANSPOSE_INT_VEC = new NonRandomFunction(
-        TRANSPOSE_NAME, argTypes, retType, transposeInterp);
-    addFunction(TRANSPOSE_INT_VEC);
 
     // Trigonometric functions on scalars:
     argTypes.clear();
