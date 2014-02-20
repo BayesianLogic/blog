@@ -1,23 +1,23 @@
-// We can transpose Real 2D matrices:
+// We can transpose Real matrices:
 
-fixed Real[][] fixed_real_matrix = [ 1, 2, 3; 4, 5, 6 ];
-fixed Real[][] fixed_real_matrix_t = transpose(fixed_real_matrix);
+fixed RealMatrix fixed_real_matrix = [ 1, 2, 3; 4, 5, 6 ];
+fixed RealMatrix fixed_real_matrix_t = transpose(fixed_real_matrix);
 query fixed_real_matrix;
 query fixed_real_matrix_t;
 
 
 // We can transpose Real column vectors:
 
-fixed Real[] fixed_real_col_vec = [ 1; 2; 3 ];
-fixed Real[] fixed_real_col_vec_t = transpose(fixed_real_col_vec);
+fixed RealMatrix fixed_real_col_vec = [ 1; 2; 3 ];
+fixed RealMatrix fixed_real_col_vec_t = transpose(fixed_real_col_vec);
 query fixed_real_col_vec;
 query fixed_real_col_vec_t;
 
 
 // We can transpose Real row vectors:
 
-fixed Real[] fixed_real_row_vec = [ 1, 2, 3 ];
-fixed Real[] fixed_real_row_vec_t = transpose(fixed_real_row_vec);
+fixed RealMatrix fixed_real_row_vec = [ 1, 2, 3 ];
+fixed RealMatrix fixed_real_row_vec_t = transpose(fixed_real_row_vec);
 query fixed_real_row_vec;
 query fixed_real_row_vec_t;
 
@@ -25,26 +25,26 @@ query fixed_real_row_vec_t;
 /*
  * The integer stuff below does not work yet.
 
-// We can transpose Integer 2D matrices:
+// We can transpose Integer matrices:
 
-fixed Integer[][] fixed_int_matrix = [ 1, 2, 3; 4, 5, 6 ];
-fixed Integer[][] fixed_int_matrix_t = transpose(fixed_int_matrix);
+fixed IntegerMatrix fixed_int_matrix = [ 1, 2, 3; 4, 5, 6 ];
+fixed IntegerMatrix fixed_int_matrix_t = transpose(fixed_int_matrix);
 query fixed_int_matrix;
 query fixed_int_matrix_t;
 
 
 // We can transpose Integer column vectors:
 
-fixed Integer[] fixed_int_col_vec = [ 1; 2; 3 ];
-fixed Integer[] fixed_int_col_vec_t = transpose(fixed_int_col_vec);
+fixed IntegerMatrix fixed_int_col_vec = [ 1; 2; 3 ];
+fixed IntegerMatrix fixed_int_col_vec_t = transpose(fixed_int_col_vec);
 query fixed_int_col_vec;
 query fixed_int_col_vec_t;
 
 
 // We can transpose Integer row vectors:
 
-fixed Integer[] fixed_int_row_vec = [ 1, 2, 3 ];
-fixed Integer[] fixed_int_row_vec_t = transpose(fixed_int_row_vec);
+fixed IntegerMatrix fixed_int_row_vec = [ 1, 2, 3 ];
+fixed IntegerMatrix fixed_int_row_vec_t = transpose(fixed_int_row_vec);
 query fixed_int_row_vec;
 query fixed_int_row_vec_t;
 
