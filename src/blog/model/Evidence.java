@@ -176,9 +176,18 @@ public class Evidence {
 	 * @return an unmodifiable Set of BayesNetVar objects
 	 */
 	public Set<? extends BayesNetVar> getEvidenceVars() {
-		if (unmodifiableEvidenceVars == null)
+		if (unmodifiableEvidenceVars == null) {
 			unmodifiableEvidenceVars = Collections.unmodifiableSet(observedValues
 					.keySet());
+			/*
+			List<SkolemConstant> skolemConstants = getSkolemConstants();
+			for (SkolemConstant c : skolemConstants) {
+				unmodifiableEvidenceVars.add(c.rv());
+			}
+			unmodifiableEvidenceVars.addAll(observedValues.keySet());
+			unmodifiableEvidenceVars = Collections.unmodifiableSet(unmodifiableEvidenceVars);
+			*/
+		}
 		return unmodifiableEvidenceVars;
 	}
 
@@ -460,11 +469,12 @@ public class Evidence {
 	}
 
 	public String toString() {
-		List list = new LinkedList();
+		/*List list = new LinkedList();
 		list.addAll(getValueEvidence());
 		list.addAll(getSymbolEvidence());
 		list.addAll(getDecisionEvidence());
-		return list.toString();
+		return list.toString();*/
+		return stringSet().toString();
 	}
 
 	/**adds a decision evidence to the evidence*/ 
@@ -501,4 +511,48 @@ public class Evidence {
 	private Map<BayesNetVar, Object> observedValues = new LinkedHashMap<BayesNetVar, Object>();
 
 	private boolean compiled = false;
+	
+	public int hashCode() {
+		return stringSet().hashCode();
+		//return observedValues.hashCode();
+	}
+	
+	public boolean equals(Object o) {
+		if (!(o instanceof Evidence)) {
+			return false;
+		}
+		Evidence e = (Evidence) o;
+		//The following does not work because equals for bayesnetvar is not implemented
+		/*if (toString().equals(e.toString())) {
+			if (!observedValues.equals(e.observedValues)) {
+				System.out.println(observedValues);
+				System.out.println(e.observedValues);
+				System.out.println("different?");
+			}
+		}
+		return observedValues.equals(e.observedValues);
+		*/
+		return stringSet().equals(e.stringSet());
+	}
+	
+	private Set<String> stringSet() {
+		if (stringSet != null) return stringSet;
+		Set<String> result = new HashSet<String>();
+		for (Object o : getValueEvidence()) {
+			result.add(o.toString());
+		}
+		for (Object o : getSymbolEvidence()) {
+			result.add(o.toString());
+		}
+		for (Object o : getDecisionEvidence()) {
+			result.add(o.toString());
+		}
+		for (SkolemConstant s : getSkolemConstants()) {
+			result.add(s.getName());
+		}
+		stringSet = result;
+		return result;
+	}
+	
+	private Set<String> stringSet;
 }

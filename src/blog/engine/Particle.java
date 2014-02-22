@@ -45,6 +45,7 @@ import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Query;
 import blog.sample.Sampler;
+import blog.world.AbstractPartialWorld;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 
@@ -92,7 +93,7 @@ public class Particle {
 
 		// System.out.println("Particle.take: weight set to " + weight);
 		curWorld = sampler.getLatestWorld();
-
+		((AbstractPartialWorld) curWorld).addSkolemConstants(evidence.getSkolemConstants());;
 		// System.out.println("Weight: " + weight);
 		// System.out.println("Updated world: " + curWorld);
 

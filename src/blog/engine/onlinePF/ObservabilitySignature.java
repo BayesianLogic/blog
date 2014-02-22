@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -279,6 +280,29 @@ public class ObservabilitySignature {
 		sem.transProg(parse.getParseResult());
 		return true;
 	}
+	
+	public String prepareEvidence2(Model model){
+		String eviString = generateObservableTypeString();
+		myEvidence = new Evidence();
+		parseAndTranslateEvidence(model, myEvidence, Util.list(), new StringReader(eviString));
+		obsSetID++;
+		return eviString;
+	}
+	
+	public void prepareEvidence(Model model){
+		String eviString = generateObservableString();
+		if (myEvidence == null)
+			myEvidence = new Evidence();
+		parseAndTranslateEvidence(model, myEvidence, Util.list(), new StringReader(eviString));
+	}
+	
+	private boolean parseAndTranslateEvidence(Model model, Evidence e, List<Query> q, Reader reader) {
+		Parse parse = new Parse(reader, null);
+		Semant sem = new Semant(model, e, q, new ErrorMsg.quietErrorMsg("ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); //ignore this error message for now
+		sem.transProg(parse.getParseResult());
+		return true;
+	}
+	
 	public Evidence getEvidence(){
 		return myEvidence;
 	}
@@ -287,28 +311,43 @@ public class ObservabilitySignature {
 	
 	public String generateObservableTypeString(){
 		String rtn = "";
+		Set<String> symbols = new HashSet<String>();
 		for (BayesNetVar referenced : observedValues.keySet()){
 			if (isObsNum(referenced.toString())){
 				Integer numobj = (Integer) observedValues.get(referenced);
+				symbols.addAll(generateSetObservationNames(getTypeString(referenced.toString()), numobj));
 				String setStr = generateSetObservation(getTypeString(referenced.toString()), numobj);
 				rtn += setStr;
 			}
-
 		}
 		return rtn;
 
 	}
+	
+	private static int obsSetID = 0;
+	
+	public Set<String> generateSetObservationNames(String type, Integer num) {
+		Set<String> symbols = new HashSet<String>();
+		for (int i = 0; i < num; i ++){
+			String name = type+"_"+myTimestep+"_"+i + "_" + obsSetID;
+			symbols.add(name);
+		}
+		return symbols;
+	}
+	
 	public String generateSetObservation(String typ, Integer num){
 		String rtn = "obs {" + typ + " x:Time_"+typ+"(x)"+"==@"+myTimestep+"} = {";
 		String end = "";
-		for (int i = 0; i < num; i ++){
-			rtn += ""+typ+"_"+myTimestep+"_"+i +",";
-			end += "obs "+typ+"_"+myTimestep+"_"+i +"="+typ+"_"+myTimestep+"_"+i +";";
+		Set<String> symbols = generateSetObservationNames(typ, num);
+		for (String name : symbols){
+			rtn += ""+ name +",";
+			end += "obs "+ name + "=" + name +";";
 		}
 		if (num !=0)
 			rtn = rtn.substring(0, rtn.length()-1);
 		rtn = rtn + "};";
 		rtn = rtn + end;
+		//System.out.println("genSetObs" + rtn);
 		return rtn;
 	}
 	private static Pattern obsnumPattern = Pattern.compile("Number_([a-zA-Z0-9]*)");

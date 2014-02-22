@@ -67,5 +67,8 @@ public class TimedParticle extends Particle{
 	public void setWeight(double newWeight){
 		this.weight = newWeight;
 	}
+	public void setTimestep(int timestep) {
+		this.timeStep = timestep;
+	}
 	
 }

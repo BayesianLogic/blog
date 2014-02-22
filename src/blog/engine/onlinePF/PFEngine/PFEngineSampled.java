@@ -21,6 +21,7 @@ import blog.model.Query;
 import blog.msg.ErrorMsg;
 import blog.parse.Parse;
 import blog.semant.Semant;
+import blog.world.PartialWorld;
 
 /**
  * Implementation of the particle filter engine that samples its own observations, keeps a single bucket
@@ -32,6 +33,15 @@ public class PFEngineSampled extends PFEngineOnline{
 	public PFEngineSampled(Model model, Properties properties) {
 		super(model, properties);
 		// TODO Auto-generated constructor stub
+	}
+	
+	public PFEngineSampled(Model model, Properties properties,
+			PartialWorld s, int timestep) {
+		super(model, properties);
+		for (TimedParticle tp : particles) {
+			tp.setWorld(s);
+			tp.setTimestep(timestep);
+		}
 	}
 
 
@@ -69,23 +79,27 @@ public class PFEngineSampled extends PFEngineOnline{
 		System.out.println("Evidence: " + evs);
 		return evs;
 	}
+	
 	public String retakeObservability2() {
+		Integer sampledOSindex = sampleOS();
+		return retakeObservability2(sampledOSindex);
+	}
+	
+	public String retakeObservability2(Integer osIndex) {
 		UBT.Stopwatch resamplePartitionAndParticlesTimer = new UBT.Stopwatch();
 		resamplePartitionAndParticlesTimer.startTimer();
 		Evidence ev = null;
-		Integer sampledOSindex = sampleOS();
-		ObservabilitySignature selectedOS = ObservabilitySignature.getOSbyIndex(sampledOSindex);
-		String evs = selectedOS.prepareEvidence2();
+		ObservabilitySignature selectedOS = ObservabilitySignature.getOSbyIndex(osIndex);
+		String evs = selectedOS.prepareEvidence2(this.model);
 		ev = selectedOS.getEvidence();
 		ev.checkTypesAndScope(model);
 		if (ev.compile()!=0)
 			System.exit(1);
-		System.out.println("rtObs" + ev);
 		for (Particle o : particles){
 			TimedParticle p = (TimedParticle) o;
 			p.unInstantiateObservables(selectedOS);
 			p.take(ev);
-			p.setOS(sampledOSindex);
+			p.setOS(osIndex);
 		}
 
 		UBT.resamplePartitionAndParticlesTime += resamplePartitionAndParticlesTimer.elapsedTime();
@@ -128,6 +142,11 @@ public class PFEngineSampled extends PFEngineOnline{
 		}
 	}
 	
+	public Integer retakeObservability() {
+		Integer sampledOSindex = sampleOS();
+		return retakeObservability(sampledOSindex);
+	}
+	
 	/**
 	 * samples an observabilitySignature, then uninstantiates observability variables (at this timestep) 
 	 * for all particles. Finally, make all particles take the sampled observabilitySignature as evidence,
@@ -135,24 +154,24 @@ public class PFEngineSampled extends PFEngineOnline{
 	 * 
 	 * @param numPartitionSampled the number of partitions to be sampled
 	 */
-	public Integer retakeObservability() {
+	public Integer retakeObservability(Integer sampledOSindex) {
 		UBT.Stopwatch resamplePartitionAndParticlesTimer = new UBT.Stopwatch();
 		resamplePartitionAndParticlesTimer.startTimer();
 		Evidence ev = null;
-		Integer sampledOSindex = sampleOS();
 		ObservabilitySignature selectedOS = ObservabilitySignature.getOSbyIndex(sampledOSindex);
-		selectedOS.prepareEvidence();
+		selectedOS.prepareEvidence(model);
 		ev = selectedOS.getEvidence();
 		ev.checkTypesAndScope(model);
 		if (ev.compile()!=0)
 			System.exit(1);
-		for (Object o : ev.getValueEvidence())
+		/*for (Object o : ev.getValueEvidence())
 			UBT.obsOutput.printInput("obs " + o.toString()+";");
 		for (Object o : ev.getSymbolEvidence())
 			UBT.obsOutput.printInput("obs "+o.toString()+";");
 		//for (Object o : ev.getDecisionEvidence())
 		//	UBT.obsOutput.printInput(o.toString());
-		
+		*/
+		//TODO: PAUL remove comments above
 		int i = 0;
 		for (Particle o : particles){
 			TimedParticle p = (TimedParticle) o;
@@ -168,7 +187,7 @@ public class PFEngineSampled extends PFEngineOnline{
 		//UBT.worldOutput.printInput("<<<<<>>>>>");
 		//TODO: PAUL revert UBT.numParticleOutput.printInput(""+i);
 		
-		System.out.println("rtObs1" + ev);
+		//System.out.println("rtObs1" + ev);
 
 		UBT.resamplePartitionAndParticlesTime += resamplePartitionAndParticlesTimer.elapsedTime();
 		return sampledOSindex;
