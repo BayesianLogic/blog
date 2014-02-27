@@ -1,202 +1,4373 @@
 /* Observation file */
 
-obs Subject(Sent[0]) = William_J_Casey;
-obs Object(Sent[0]) = Central_Intelligence;
-obs Verb(Sent[0]) = appos__appos_director_prep_of_pobj__pobj;
+obs Subject(Sent[0]) = Kevin_Phillips;
+obs Object(Sent[0]) = Republican;
+obs Verb(Sent[0]) = appos__appos_analyst_nn__nn;
+obs Rel(SourceFact(Sent[0])) = analyst;
 
-obs Subject(Sent[1]) = Norman_Siegel;
-obs Object(Sent[1]) = New_York_Civil_Liberties_Union;
-obs Verb(Sent[1]) = appos__appos_director_prep_of_pobj__pobj;
+obs Subject(Sent[1]) = Jonathan_Jay_Pollard;
+obs Object(Sent[1]) = Navy;
+obs Verb(Sent[1]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[2]) = Steven_Spinola;
-obs Object(Sent[2]) = Real_Estate_Board_of_New_York;
-obs Verb(Sent[2]) = appos__appos_president_prep_of_pobj__pobj;
+obs Subject(Sent[2]) = Safa_Rashtchy;
+obs Object(Sent[2]) = Internet;
+obs Verb(Sent[2]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[3]) = Juan_Antonio_Samaranch;
-obs Object(Sent[3]) = International_Olympic_Committee;
-obs Verb(Sent[3]) = appos__appos_president_prep_of_pobj__pobj;
+obs Subject(Sent[3]) = Mary_Meeker;
+obs Object(Sent[3]) = Internet;
+obs Verb(Sent[3]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[4]) = Jay_L_Turoff;
-obs Object(Sent[4]) = Taxi;
-obs Verb(Sent[4]) = appos__appos_head_prep_of_pobj__pobj;
+obs Subject(Sent[4]) = Linda_Franklin;
+obs Object(Sent[4]) = FBI;
+obs Verb(Sent[4]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[5]) = Yasir_Arafat;
-obs Object(Sent[5]) = Palestine_Liberation_Organization;
-obs Verb(Sent[5]) = appos__appos_head_prep_of_pobj__pobj;
+obs Subject(Sent[5]) = John_Casesa;
+obs Object(Sent[5]) = Merrill_Lynch;
+obs Verb(Sent[5]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[6]) = Yasir_Arafat;
-obs Object(Sent[6]) = Palestine_Liberation_Organization;
-obs Verb(Sent[6]) = appos__appos_chairman_prep_of_pobj__pobj;
+obs Subject(Sent[6]) = Jessica_Reif_Cohen;
+obs Object(Sent[6]) = Merrill_Lynch;
+obs Verb(Sent[6]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[7]) = Felix_G_Rohatyn;
-obs Object(Sent[7]) = Municipal_Assistance_Corporation;
-obs Verb(Sent[7]) = appos__appos_chairman_prep_of_pobj__pobj;
+obs Subject(Sent[7]) = Jeff_Greenfield;
+obs Object(Sent[7]) = CNN;
+obs Verb(Sent[7]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[8]) = Yasir_Arafat;
-obs Object(Sent[8]) = Palestine_Liberation_Organization;
-obs Verb(Sent[8]) = appos__appos_leader_prep_of_pobj__pobj;
+obs Subject(Sent[8]) = Jack_B_Grubman;
+obs Object(Sent[8]) = Salomon_Smith_Barney;
+obs Verb(Sent[8]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[9]) = Nelson_Mandela;
-obs Object(Sent[9]) = African_National_Congress;
-obs Verb(Sent[9]) = appos__appos_leader_prep_of_pobj__pobj;
+obs Subject(Sent[9]) = Henry_Blodget;
+obs Object(Sent[9]) = Internet;
+obs Verb(Sent[9]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[10]) = Tom_Wolzien;
-obs Object(Sent[10]) = Sanford_C_Bernstein__Company;
-obs Verb(Sent[10]) = appos__appos_analyst_prep_at_pobj__pobj;
+obs Subject(Sent[10]) = Sam_Nakagama;
+obs Object(Sent[10]) = Wall_Street;
+obs Verb(Sent[10]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[11]) = Loren_Thompson;
-obs Object(Sent[11]) = Lexington_Institute;
-obs Verb(Sent[11]) = appos__appos_analyst_prep_at_pobj__pobj;
+obs Subject(Sent[11]) = Nauman_Barakat;
+obs Object(Sent[11]) = Smith_Barney;
+obs Verb(Sent[11]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[12]) = William_Gibson;
-obs Object(Sent[12]) = Continential_Illinois_National_Bank_and_Trust_Company;
-obs Verb(Sent[12]) = appos__appos_economist_prep_at_pobj__pobj;
+obs Subject(Sent[12]) = Nauman_Barakat;
+obs Object(Sent[12]) = Harris_Upham;
+obs Verb(Sent[12]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[13]) = William_Dudley;
-obs Object(Sent[13]) = United_States;
-obs Verb(Sent[13]) = appos__appos_economist_nn__nn;
+obs Subject(Sent[13]) = Mr_Pollard;
+obs Object(Sent[13]) = United_States_Navy;
+obs Verb(Sent[13]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[14]) = William_Carrick;
-obs Object(Sent[14]) = Mr_Gephardt;
-obs Verb(Sent[14]) = appos__appos_manager_poss__poss;
+obs Subject(Sent[14]) = Mr_Pollard;
+obs Object(Sent[14]) = Navy;
+obs Verb(Sent[14]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[15]) = William_A_Costa;
-obs Object(Sent[15]) = New_Rochelle;
-obs Verb(Sent[15]) = appos__appos_manager_poss__poss;
+obs Subject(Sent[15]) = Mark_D_Luftig;
+obs Object(Sent[15]) = Salomon_Brothers;
+obs Verb(Sent[15]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[16]) = Tim_Peirce;
-obs Object(Sent[16]) = La_Guardia;
-obs Verb(Sent[16]) = appos__appos_manager_prep_of_pobj__pobj;
+obs Subject(Sent[16]) = Larry_Wu_Tai_Chin;
+obs Object(Sent[16]) = Central_Intelligence_Agency;
+obs Verb(Sent[16]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[17]) = Unal_Gogus;
-obs Object(Sent[17]) = Bartin;
-obs Verb(Sent[17]) = appos__appos_manager_prep_of_pobj__pobj;
+obs Subject(Sent[17]) = Jonathan_Jay_Pollard;
+obs Object(Sent[17]) = United_States_Navy;
+obs Verb(Sent[17]) = appos__appos_analyst_nn__nn;
 
-obs Subject(Sent[18]) = Steve_Vineberg;
-obs Object(Sent[18]) = Holy_Cross_College;
-obs Verb(Sent[18]) = nsubj__nsubj_professor_prep_at_pobj__pobj;
+obs Subject(Sent[18]) = Tom_Wolzien;
+obs Object(Sent[18]) = Sanford_C_Bernstein__Company;
+obs Verb(Sent[18]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[19]) = Hal_R_Varian;
-obs Object(Sent[19]) = University_of_California;
-obs Verb(Sent[19]) = nsubj__nsubj_professor_prep_at_pobj__pobj;
+obs Subject(Sent[19]) = Loren_Thompson;
+obs Object(Sent[19]) = Lexington_Institute;
+obs Verb(Sent[19]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[20]) = Edward_Bennett_Williams;
-obs Object(Sent[20]) = Washington;
-obs Verb(Sent[20]) = appos__appos_lawyer_nn__nn;
+obs Subject(Sent[20]) = Julius_Maldutis;
+obs Object(Sent[20]) = Salomon_Brothers;
+obs Verb(Sent[20]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[21]) = Donald_S_Lowitz;
-obs Object(Sent[21]) = Chicago;
-obs Verb(Sent[21]) = appos__appos_lawyer_nn__nn;
+obs Subject(Sent[21]) = Judah_Kraushaar;
+obs Object(Sent[21]) = Merrill_Lynch;
+obs Verb(Sent[21]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[22]) = White_House;
-obs Object(Sent[22]) = Congress;
-obs Verb(Sent[22]) = nsubj__nsubj_ask_dobj__dobj;
+obs Subject(Sent[22]) = John_Casesa;
+obs Object(Sent[22]) = Merrill_Lynch;
+obs Verb(Sent[22]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[23]) = Washington;
-obs Object(Sent[23]) = Mr_Shamir;
-obs Verb(Sent[23]) = nsubj__nsubj_say_nsubj__nsubj;
+obs Subject(Sent[23]) = Jessica_Reif_Cohen;
+obs Object(Sent[23]) = Merrill_Lynch;
+obs Verb(Sent[23]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[24]) = Washington;
-obs Object(Sent[24]) = Mr_Fonseca;
-obs Verb(Sent[24]) = nsubj__nsubj_say_nsubj__nsubj;
+obs Subject(Sent[24]) = Donald_J_Fine;
+obs Object(Sent[24]) = Chase_Manhattan_Bank;
+obs Verb(Sent[24]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[25]) = Citicorp_Card_Services_Inc;
-obs Object(Sent[25]) = Citicorp;
-obs Verb(Sent[25]) = appos__appos_subsidiary_prep_of_pobj__pobj;
+obs Subject(Sent[25]) = Donald_Fine;
+obs Object(Sent[25]) = Chase_Securities;
+obs Verb(Sent[25]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[26]) = Charles_P_Young;
-obs Object(Sent[26]) = Service_Resources_Corporation;
-obs Verb(Sent[26]) = appos__appos_subsidiary_prep_of_pobj__pobj;
+obs Subject(Sent[26]) = Donald_Fine;
+obs Object(Sent[26]) = Chase_Asset_Management;
+obs Verb(Sent[26]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[27]) = Z_Begun;
-obs Object(Sent[27]) = Moscow;
-obs Verb(Sent[27]) = nsubj__nsubj_return_prep_to_pobj__pobj;
+obs Subject(Sent[27]) = David_Healy;
+obs Object(Sent[27]) = Burnham_Securities;
+obs Verb(Sent[27]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[28]) = Yoshiko_Ebihara;
-obs Object(Sent[28]) = Gallery;
-obs Verb(Sent[28]) = appos__appos_owner_prep_of_pobj__pobj;
+obs Subject(Sent[28]) = Vance_Brown;
+obs Object(Sent[28]) = Prudential_Bache_Securities_Inc;
+obs Verb(Sent[28]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[29]) = Yma_Sumac;
-obs Object(Sent[29]) = New_York;
-obs Verb(Sent[29]) = nsubj__nsubj_return_prep_to_pobj__pobj;
+obs Subject(Sent[29]) = Thomas_R_Kully;
+obs Object(Sent[29]) = William_Blair__Company;
+obs Verb(Sent[29]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[30]) = Yellow_Front;
-obs Object(Sent[30]) = Phoenix;
-obs Verb(Sent[30]) = partmod__partmod_base_prep_in_pobj__pobj;
+obs Subject(Sent[30]) = Teresa_Ma;
+obs Object(Sent[30]) = Jardine_Flemming_Securities;
+obs Verb(Sent[30]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[31]) = Yehuda_Litani;
-obs Object(Sent[31]) = The_Jerusalem_Post;
-obs Verb(Sent[31]) = appos__appos_editor_prep_of_pobj__pobj;
+obs Subject(Sent[31]) = Stephen_Berman;
+obs Object(Sent[31]) = Nomura_Securities_Inc;
+obs Verb(Sent[31]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[32]) = Xerox;
-obs Object(Sent[32]) = Stamford;
-obs Verb(Sent[32]) = rcmod__rcmod_base_prep_in_pobj__pobj;
+obs Subject(Sent[32]) = Samuel_Liss;
+obs Object(Sent[32]) = Salomon_Brothers;
+obs Verb(Sent[32]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[33]) = Richard_Smith;
-obs Object(Sent[33]) = General_Cinema;
-obs Verb(Sent[33]) = appos__appos_executive_prep_of_pobj__pobj;
+obs Subject(Sent[33]) = Ronald_Sapiro;
+obs Object(Sent[33]) = Continental_Illinois_National_Bank_and_Trust;
+obs Verb(Sent[33]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[34]) = Richard_Rubin;
-obs Object(Sent[34]) = Queens_Democratic_Party;
-obs Verb(Sent[34]) = appos__appos_official_nn__nn;
+obs Subject(Sent[34]) = Ronald_Asmus;
+obs Object(Sent[34]) = Free_University;
+obs Verb(Sent[34]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[35]) = Alan_Greenspan;
-obs Object(Sent[35]) = Federal_Reserve_Board;
-obs Verb(Sent[35]) = pobj__pobj_of_prep_nomination_dobj_approve_prep_as_pobj_chairman_prep_of_pobj__pobj;
+obs Subject(Sent[35]) = George_M_Salem;
+obs Object(Sent[35]) = Lufkin__Jenrette_Securities_Corporation;
+obs Verb(Sent[35]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[36]) = Alan_Greenspan;
-obs Object(Sent[36]) = Federal_Reserve_Board;
-obs Verb(Sent[36]) = dobj__dobj_renominate_prep_as_pobj_chairman_prep_of_pobj__pobj;
+obs Subject(Sent[36]) = Edward_Atorino;
+obs Object(Sent[36]) = Smith_Barney;
+obs Verb(Sent[36]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[37]) = Mr_Bush;
-obs Object(Sent[37]) = White_House;
-obs Verb(Sent[37]) = nsubj__nsubj_say_prep_at_pobj__pobj;
+obs Subject(Sent[37]) = Alan_Gottesman;
+obs Object(Sent[37]) = LF_Rothschild;
+obs Verb(Sent[37]) = appos__appos_analyst_prep_at_pobj__pobj;
 
-obs Subject(Sent[38]) = Mr_Bloomberg;
-obs Object(Sent[38]) = City_Hall;
-obs Verb(Sent[38]) = nsubj__nsubj_say_prep_at_pobj__pobj;
+obs Subject(Sent[38]) = Scott_Merlis;
+obs Object(Sent[38]) = Morgan_Stanley__Company;
+obs Verb(Sent[38]) = appos__appos_analyst_prep_for_pobj__pobj;
 
-obs Subject(Sent[39]) = Torre;
-obs Object(Sent[39]) = Raines;
-obs Verb(Sent[39]) = nsubj__nsubj_start_dobj__dobj;
+obs Subject(Sent[39]) = Roy_D_Burry;
+obs Object(Sent[39]) = Oppenheimer__Company;
+obs Verb(Sent[39]) = appos__appos_analyst_prep_for_pobj__pobj;
 
-obs Subject(Sent[40]) = Torre;
-obs Object(Sent[40]) = Cecil_Fielder;
-obs Verb(Sent[40]) = nsubj__nsubj_start_dobj__dobj;
+obs Subject(Sent[40]) = Kevin_Murphy;
+obs Object(Sent[40]) = Morgan_Stanley;
+obs Verb(Sent[40]) = appos__appos_analyst_prep_for_pobj__pobj;
 
-obs Subject(Sent[41]) = Tania_Leon;
-obs Object(Sent[41]) = Nonet;
-obs Verb(Sent[41]) = nsubj__nsubj_survive_nsubj__nsubj;
+obs Subject(Sent[41]) = John_Morton;
+obs Object(Sent[41]) = Lynch__Jones__Ryan;
+obs Verb(Sent[41]) = appos__appos_analyst_prep_for_pobj__pobj;
 
-obs Subject(Sent[42]) = Tania_Leon;
-obs Object(Sent[42]) = Indigena;
-obs Verb(Sent[42]) = nsubj__nsubj_survive_nsubj__nsubj;
+obs Subject(Sent[42]) = Harvey_Heinbach;
+obs Object(Sent[42]) = Merrill_Lynch__Company;
+obs Verb(Sent[42]) = appos__appos_analyst_prep_for_pobj__pobj;
 
-obs Subject(Sent[43]) = General_Electric_Company;
-obs Object(Sent[43]) = NBC;
-obs Verb(Sent[43]) = rcmod__rcmod_own_dobj__dobj;
+obs Subject(Sent[43]) = Harvey_Heinbach;
+obs Object(Sent[43]) = Merrill_Lynch;
+obs Verb(Sent[43]) = appos__appos_analyst_prep_for_pobj__pobj;
 
-obs Subject(Sent[44]) = Federated_Department_Stores;
-obs Object(Sent[44]) = Macy;
-obs Verb(Sent[44]) = rcmod__rcmod_own_dobj__dobj;
+obs Subject(Sent[44]) = Gary_D_Black;
+obs Object(Sent[44]) = Sanford_C_Bernstein__Company;
+obs Verb(Sent[44]) = appos__appos_analyst_prep_for_pobj__pobj;
 
-obs Subject(Sent[45]) = Edward_Skyler;
-obs Object(Sent[45]) = Mr_Bloomberg;
-obs Verb(Sent[45]) = appos__appos_secretary_poss__poss;
+obs Subject(Sent[45]) = Emanuel_Goldman;
+obs Object(Sent[45]) = Paine_Webber;
+obs Verb(Sent[45]) = appos__appos_analyst_prep_for_pobj__pobj;
 
-obs Subject(Sent[46]) = Dee_Dee_Myers;
-obs Object(Sent[46]) = Mr_Clinton;
-obs Verb(Sent[46]) = appos__appos_secretary_poss__poss;
+obs Subject(Sent[46]) = Emanuel_Goldman;
+obs Object(Sent[46]) = Merrill_Lynch;
+obs Verb(Sent[46]) = appos__appos_analyst_prep_for_pobj__pobj;
 
-obs Subject(Sent[47]) = Connecticut;
-obs Object(Sent[47]) = Nature_Conservancy;
-obs Verb(Sent[47]) = nn__nn_chapter_prep_of_pobj__pobj;
+obs Subject(Sent[47]) = Donald_Fine;
+obs Object(Sent[47]) = Chase_Securities;
+obs Verb(Sent[47]) = appos__appos_analyst_prep_for_pobj__pobj;
 
-obs Subject(Sent[48]) = New_York;
-obs Object(Sent[48]) = National_Organization;
-obs Verb(Sent[48]) = nn__nn_chapter_prep_of_pobj__pobj;
+obs Subject(Sent[48]) = Wolfgang_H_Demisch;
+obs Object(Sent[48]) = First_Boston_Corporation;
+obs Verb(Sent[48]) = appos__appos_analyst_prep_for_pobj__pobj;
 
-obs Subject(Sent[49]) = New_York_Yankees;
-obs Object(Sent[49]) = Jason_Giambi;
-obs Verb(Sent[49]) = nsubj__nsubj_hit_nsubj__nsubj;
+obs Subject(Sent[49]) = William_N_Smith;
+obs Object(Sent[49]) = Harris_Upham__Company;
+obs Verb(Sent[49]) = appos__appos_analyst_prep_for_pobj__pobj;
+
+obs Subject(Sent[50]) = Sheridan_Tatsuno;
+obs Object(Sent[50]) = Data_Quest;
+obs Verb(Sent[50]) = appos__appos_analyst_prep_for_pobj__pobj;
+
+obs Subject(Sent[51]) = Sanford_Margoshes;
+obs Object(Sent[51]) = Shearson_Lehman_Brothers_Inc;
+obs Verb(Sent[51]) = appos__appos_analyst_prep_for_pobj__pobj;
+
+obs Subject(Sent[52]) = R_Wayne_Atwell;
+obs Object(Sent[52]) = Goldman;
+obs Verb(Sent[52]) = appos__appos_analyst_prep_for_pobj__pobj;
+
+obs Subject(Sent[53]) = Ronald_W_Pelton;
+obs Object(Sent[53]) = National_Security_Agency;
+obs Verb(Sent[53]) = appos__appos_analyst_prep_for_pobj__pobj;
+
+obs Subject(Sent[54]) = Rollin_Post;
+obs Object(Sent[54]) = KRON;
+obs Verb(Sent[54]) = appos__appos_analyst_prep_for_pobj__pobj;
+
+obs Subject(Sent[55]) = Robert_Joedicke;
+obs Object(Sent[55]) = Shearson_Lehman_Brothers_Inc;
+obs Verb(Sent[55]) = appos__appos_analyst_prep_for_pobj__pobj;
+
+obs Subject(Sent[56]) = Jonathan_Jay_Pollard;
+obs Object(Sent[56]) = Navy;
+obs Verb(Sent[56]) = appos__appos_analyst_prep_for_pobj__pobj;
+
+obs Subject(Sent[57]) = John_Pincavage;
+obs Object(Sent[57]) = Paine_Webber;
+obs Verb(Sent[57]) = appos__appos_analyst_prep_for_pobj__pobj;
+
+obs Subject(Sent[58]) = Walter_Spilka;
+obs Object(Sent[58]) = Harris_Upham__Company;
+obs Verb(Sent[58]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[59]) = Viren_Mehta;
+obs Object(Sent[59]) = Mehta__Isaly;
+obs Verb(Sent[59]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[60]) = Neil_Sweig;
+obs Object(Sent[60]) = Southeast_Research_Partners;
+obs Verb(Sent[60]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[61]) = Kevin_Murphy;
+obs Object(Sent[61]) = Morgan_Stanley;
+obs Verb(Sent[61]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[62]) = Kenneth_S_Abramowitz;
+obs Object(Sent[62]) = Sanford_C_Bernstein__Company;
+obs Verb(Sent[62]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[63]) = Joel_Karlin;
+obs Object(Sent[63]) = Research_Department_Inc;
+obs Verb(Sent[63]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[64]) = James_Hale;
+obs Object(Sent[64]) = MMS_International;
+obs Verb(Sent[64]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[65]) = Harvey_Heinbach;
+obs Object(Sent[65]) = Merrill_Lynch;
+obs Verb(Sent[65]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[66]) = Emanuel_Goldman;
+obs Object(Sent[66]) = Paine_Webber;
+obs Verb(Sent[66]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[67]) = Daniel_Kunstler;
+obs Object(Sent[67]) = J_P_Morgan;
+obs Verb(Sent[67]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[68]) = Richard_Marose;
+obs Object(Sent[68]) = Stotler__Company;
+obs Verb(Sent[68]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[69]) = Philip_Stanley;
+obs Object(Sent[69]) = Thomson_McKinnon_Securities_Inc;
+obs Verb(Sent[69]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[70]) = Philip_Stanley;
+obs Object(Sent[70]) = Thomson_McKinnon_Securities_Inc;
+obs Verb(Sent[70]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[71]) = Peter_Beutel;
+obs Object(Sent[71]) = Elders_Futures_Inc;
+obs Verb(Sent[71]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[72]) = Michael_Metz;
+obs Object(Sent[72]) = Oppenheimer__Company;
+obs Verb(Sent[72]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[73]) = Maryann_N_Keller;
+obs Object(Sent[73]) = Furman_Selz_Mager_Dietz__Birney;
+obs Verb(Sent[73]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[74]) = Larry_Wachtel;
+obs Object(Sent[74]) = Prudential_Bache_Securities_Inc;
+obs Verb(Sent[74]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[75]) = David_Healy;
+obs Object(Sent[75]) = Drexel_Burnham_Lambert;
+obs Verb(Sent[75]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[76]) = Charlie_Richardson;
+obs Object(Sent[76]) = Lind_Waldock;
+obs Verb(Sent[76]) = appos__appos_analyst_prep_with_pobj__pobj;
+
+obs Subject(Sent[77]) = Paul_A_Volcker;
+obs Object(Sent[77]) = Federal_Reserve;
+obs Verb(Sent[77]) = appos__appos_chairman_nn__nn;
+obs Rel(SourceFact(Sent[77])) = chairman;
+
+obs Subject(Sent[78]) = Alan_Greenspan;
+obs Object(Sent[78]) = Federal_Reserve;
+obs Verb(Sent[78]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[79]) = Alan_Greenspan;
+obs Object(Sent[79]) = Fed;
+obs Verb(Sent[79]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[80]) = Yasir_Arafat;
+obs Object(Sent[80]) = Palestine_Liberation_Organization;
+obs Verb(Sent[80]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[81]) = William_H_Gates;
+obs Object(Sent[81]) = Microsoft;
+obs Verb(Sent[81]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[82]) = Stanley_M_Friedman;
+obs Object(Sent[82]) = Bronx_Democratic;
+obs Verb(Sent[82]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[83]) = Paul_A_Volcker;
+obs Object(Sent[83]) = Federal_Reserve_Board;
+obs Verb(Sent[83]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[84]) = Paul_A_Volcker;
+obs Object(Sent[84]) = Fed;
+obs Verb(Sent[84]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[85]) = James_L_Dolan;
+obs Object(Sent[85]) = Madison_Square_Garden;
+obs Verb(Sent[85]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[86]) = E_Virgil_Conway;
+obs Object(Sent[86]) = MTA;
+obs Verb(Sent[86]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[87]) = Bill_Gates;
+obs Object(Sent[87]) = Microsoft;
+obs Verb(Sent[87]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[88]) = Ben_S_Bernanke;
+obs Object(Sent[88]) = Federal_Reserve;
+obs Verb(Sent[88]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[89]) = Alan_Greenspan;
+obs Object(Sent[89]) = Federal_Reserve_Board;
+obs Verb(Sent[89]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[90]) = Robert_Kiley;
+obs Object(Sent[90]) = Metropolitan_Transportation_Authority;
+obs Verb(Sent[90]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[91]) = David_M_Roderick;
+obs Object(Sent[91]) = USX;
+obs Verb(Sent[91]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[92]) = William_H_Gray;
+obs Object(Sent[92]) = House_Budget_Committee;
+obs Verb(Sent[92]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[93]) = WASHINGTON;
+obs Object(Sent[93]) = Securities_and_Exchange_Commission;
+obs Verb(Sent[93]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[94]) = Walter_Wriston;
+obs Object(Sent[94]) = Citicorp;
+obs Verb(Sent[94]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[95]) = Roger_B_Smith;
+obs Object(Sent[95]) = Chrysler;
+obs Verb(Sent[95]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[96]) = William_M_Blake;
+obs Object(Sent[96]) = Suffolk;
+obs Verb(Sent[96]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[97]) = William_M_Blake;
+obs Object(Sent[97]) = Republican;
+obs Verb(Sent[97]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[98]) = Norman_Tebbit;
+obs Object(Sent[98]) = Conservative_Party;
+obs Verb(Sent[98]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[99]) = Robert_S_Strauss;
+obs Object(Sent[99]) = Democratic_Party;
+obs Verb(Sent[99]) = appos__appos_chairman_nn__nn;
+
+obs Subject(Sent[100]) = John_S_Reed;
+obs Object(Sent[100]) = Citicorp;
+obs Verb(Sent[100]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[101]) = John_Sculley;
+obs Object(Sent[101]) = Apple;
+obs Verb(Sent[101]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[102]) = Lee_A_Iacocca;
+obs Object(Sent[102]) = Chrysler;
+obs Verb(Sent[102]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[103]) = William_H_Gates;
+obs Object(Sent[103]) = Microsoft;
+obs Verb(Sent[103]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[104]) = Robert_J_Eaton;
+obs Object(Sent[104]) = Chrysler;
+obs Verb(Sent[104]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[105]) = Michael_D_Eisner;
+obs Object(Sent[105]) = Disney;
+obs Verb(Sent[105]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[106]) = Kenneth_L_Lay;
+obs Object(Sent[106]) = Enron;
+obs Verb(Sent[106]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[107]) = Bill_Gates;
+obs Object(Sent[107]) = Microsoft;
+obs Verb(Sent[107]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[108]) = Alan_Greenspan;
+obs Object(Sent[108]) = Federal_Reserve;
+obs Verb(Sent[108]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[109]) = Alan_Greenspan;
+obs Object(Sent[109]) = Fed;
+obs Verb(Sent[109]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[110]) = Donald_E_Petersen;
+obs Object(Sent[110]) = Ford;
+obs Verb(Sent[110]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[111]) = William_H_Bricker;
+obs Object(Sent[111]) = Shamrock;
+obs Verb(Sent[111]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[112]) = Paul_A_Volcker;
+obs Object(Sent[112]) = Federal_Reserve_Board;
+obs Verb(Sent[112]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[113]) = Willy_Brandt;
+obs Object(Sent[113]) = Social_Democrats;
+obs Verb(Sent[113]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[114]) = Robert_A_Hanson;
+obs Object(Sent[114]) = Deere;
+obs Verb(Sent[114]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[115]) = Richard_M_Morrow;
+obs Object(Sent[115]) = Amoco;
+obs Verb(Sent[115]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[116]) = Arnold_C_Greenberg;
+obs Object(Sent[116]) = Coleco;
+obs Verb(Sent[116]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[117]) = Robert_H_Short;
+obs Object(Sent[117]) = Portland_General;
+obs Verb(Sent[117]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[118]) = Robert_Campeau;
+obs Object(Sent[118]) = Campeau;
+obs Verb(Sent[118]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[119]) = Richard_J_Ferris;
+obs Object(Sent[119]) = UAL;
+obs Verb(Sent[119]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[120]) = William_A_Schreyer;
+obs Object(Sent[120]) = Merrill;
+obs Verb(Sent[120]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[121]) = J_Hugh_Liedtke;
+obs Object(Sent[121]) = Pennzoil;
+obs Verb(Sent[121]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[122]) = William_R_Chaney;
+obs Object(Sent[122]) = Tiffany;
+obs Verb(Sent[122]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[123]) = William_Jovanovich;
+obs Object(Sent[123]) = Harcourt;
+obs Verb(Sent[123]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[124]) = William_H_Bricker;
+obs Object(Sent[124]) = Diamond_Shamrock;
+obs Verb(Sent[124]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[125]) = Roger_B_Smith;
+obs Object(Sent[125]) = GM;
+obs Verb(Sent[125]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[126]) = Peter_A_Cohen;
+obs Object(Sent[126]) = Shearson;
+obs Verb(Sent[126]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[127]) = John_W_Teets;
+obs Object(Sent[127]) = Greyhound;
+obs Verb(Sent[127]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[128]) = John_L_Marion;
+obs Object(Sent[128]) = Sotheby;
+obs Verb(Sent[128]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[129]) = Donald_B_Marron;
+obs Object(Sent[129]) = Paine_Webber;
+obs Verb(Sent[129]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[130]) = Bill_Brock;
+obs Object(Sent[130]) = Mr_Dole;
+obs Verb(Sent[130]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[131]) = Alfred_C_DeCrane_Jr;
+obs Object(Sent[131]) = Texaco;
+obs Verb(Sent[131]) = appos__appos_chairman_poss__poss;
+
+obs Subject(Sent[132]) = Yasir_Arafat;
+obs Object(Sent[132]) = Palestine_Liberation_Organization;
+obs Verb(Sent[132]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[133]) = Felix_G_Rohatyn;
+obs Object(Sent[133]) = Municipal_Assistance_Corporation;
+obs Verb(Sent[133]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[134]) = Alan_Greenspan;
+obs Object(Sent[134]) = Federal_Reserve_Board;
+obs Verb(Sent[134]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[135]) = Alan_Greenspan;
+obs Object(Sent[135]) = Federal_Reserve;
+obs Verb(Sent[135]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[136]) = Rupert_Murdoch;
+obs Object(Sent[136]) = News_Corporation;
+obs Verb(Sent[136]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[137]) = L_William_Seidman;
+obs Object(Sent[137]) = Federal_Deposit_Insurance_Corporation;
+obs Verb(Sent[137]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[138]) = Gen_Richard_B_Myers;
+obs Object(Sent[138]) = Joint_Chiefs_of_Staff;
+obs Verb(Sent[138]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[139]) = Gen_Peter_Pace;
+obs Object(Sent[139]) = Joint_Chiefs_of_Staff;
+obs Verb(Sent[139]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[140]) = Gen_Colin_L_Powell;
+obs Object(Sent[140]) = Joint_Chiefs_of_Staff;
+obs Verb(Sent[140]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[141]) = Charles_A_Gargano;
+obs Object(Sent[141]) = Empire_State_Development_Corporation;
+obs Verb(Sent[141]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[142]) = Paul_A_Volcker;
+obs Object(Sent[142]) = Federal_Reserve_Board;
+obs Verb(Sent[142]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[143]) = Lee_A_Iacocca;
+obs Object(Sent[143]) = Chrysler_Corporation;
+obs Verb(Sent[143]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[144]) = Roger_B_Smith;
+obs Object(Sent[144]) = General_Motors_Corporation;
+obs Verb(Sent[144]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[145]) = Paul_G_Kirk_Jr;
+obs Object(Sent[145]) = Democratic_National_Committee;
+obs Verb(Sent[145]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[146]) = Sam_Nunn;
+obs Object(Sent[146]) = Senate_Armed_Services_Committee;
+obs Verb(Sent[146]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[147]) = Roy_M_Speer;
+obs Object(Sent[147]) = Home_Shopping;
+obs Verb(Sent[147]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[148]) = Jerry_Della_Femina;
+obs Object(Sent[148]) = Della_Femina;
+obs Verb(Sent[148]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[149]) = Gen_David_C_Jones;
+obs Object(Sent[149]) = Joint_Chiefs_of_Staff;
+obs Verb(Sent[149]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[150]) = Frank_Lorenzo;
+obs Object(Sent[150]) = Texas_Air_Corporation;
+obs Verb(Sent[150]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[151]) = Don_Johnston;
+obs Object(Sent[151]) = JWT_Group;
+obs Verb(Sent[151]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[152]) = Beryl_W_Sprinkel;
+obs Object(Sent[152]) = Council_of_Economic_Advisers;
+obs Verb(Sent[152]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[153]) = Sam_Nunn;
+obs Object(Sent[153]) = Armed_Services_Committee;
+obs Verb(Sent[153]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[154]) = Robert_R_Kiley;
+obs Object(Sent[154]) = Metropolitan_Transportation_Authority;
+obs Verb(Sent[154]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[155]) = Richard_J_Ferris;
+obs Object(Sent[155]) = Allegis;
+obs Verb(Sent[155]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[156]) = David_S_Ruder;
+obs Object(Sent[156]) = Securities_and_Exchange_Commission;
+obs Verb(Sent[156]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[157]) = Dan_Rostenkowski;
+obs Object(Sent[157]) = House_Ways_and_Means_Committee;
+obs Verb(Sent[157]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[158]) = Carl_C_Icahn;
+obs Object(Sent[158]) = Trans_World_Airlines_Inc;
+obs Verb(Sent[158]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[159]) = William_Crowe;
+obs Object(Sent[159]) = Joint_Chiefs_of_Staff;
+obs Verb(Sent[159]) = appos__appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[160]) = Patrick_J_Buchanan;
+obs Object(Sent[160]) = White_House;
+obs Verb(Sent[160]) = appos__appos_director_nn__nn;
+obs Rel(SourceFact(Sent[160])) = leadership;
+
+obs Subject(Sent[161]) = Sonny_Reizner;
+obs Object(Sent[161]) = Sports_Book;
+obs Verb(Sent[161]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[162]) = Sargent_Shriver;
+obs Object(Sent[162]) = Peace_Corps;
+obs Verb(Sent[162]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[163]) = Ruth_Dreier;
+obs Object(Sent[163]) = FM;
+obs Verb(Sent[163]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[164]) = Ronald_Parra;
+obs Object(Sent[164]) = Houston;
+obs Verb(Sent[164]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[165]) = Priscilla_Feral;
+obs Object(Sent[165]) = New_England;
+obs Verb(Sent[165]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[166]) = P_J_Boatwright;
+obs Object(Sent[166]) = USGA;
+obs Verb(Sent[166]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[167]) = Patrick_H_Buchanan;
+obs Object(Sent[167]) = White_House;
+obs Verb(Sent[167]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[168]) = Olivier_Roux;
+obs Object(Sent[168]) = Guinness;
+obs Verb(Sent[168]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[169]) = Dr_Walter_Dowdle;
+obs Object(Sent[169]) = AIDS;
+obs Verb(Sent[169]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[170]) = Robert_S_Mueller_III;
+obs Object(Sent[170]) = FBI;
+obs Verb(Sent[170]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[171]) = Richard_G_Darman;
+obs Object(Sent[171]) = White_House;
+obs Verb(Sent[171]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[172]) = Mike_Jendrzejczyk;
+obs Object(Sent[172]) = Washington;
+obs Verb(Sent[172]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[173]) = Mark_D_Gearan;
+obs Object(Sent[173]) = White_House;
+obs Verb(Sent[173]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[174]) = Louis_J_Freeh;
+obs Object(Sent[174]) = FBI;
+obs Verb(Sent[174]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[175]) = J_Edgar_Hoover;
+obs Object(Sent[175]) = FBI;
+obs Verb(Sent[175]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[176]) = George_Stephanopoulos;
+obs Object(Sent[176]) = White_House;
+obs Verb(Sent[176]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[177]) = Douglas_Sosnik;
+obs Object(Sent[177]) = White_House;
+obs Verb(Sent[177]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[178]) = Dan_Bartlett;
+obs Object(Sent[178]) = White_House;
+obs Verb(Sent[178]) = appos__appos_director_nn__nn;
+
+obs Subject(Sent[179]) = Philippe_de_Montebello;
+obs Object(Sent[179]) = Met;
+obs Verb(Sent[179]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[180]) = Warren_Jones;
+obs Object(Sent[180]) = Bond;
+obs Verb(Sent[180]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[181]) = Traug_Keller;
+obs Object(Sent[181]) = Imnet;
+obs Verb(Sent[181]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[182]) = Tom_Boisture;
+obs Object(Sent[182]) = Giants;
+obs Verb(Sent[182]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[183]) = Stella_Schindler;
+obs Object(Sent[183]) = Mayor;
+obs Verb(Sent[183]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[184]) = Robert_S_Hirschfield;
+obs Object(Sent[184]) = CUNY;
+obs Verb(Sent[184]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[185]) = Robert_North;
+obs Object(Sent[185]) = Rambert;
+obs Verb(Sent[185]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[186]) = Rich_Cowles;
+obs Object(Sent[186]) = MSI;
+obs Verb(Sent[186]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[187]) = Ray_A_Johnson;
+obs Object(Sent[187]) = Wheeling_Pittsburgh;
+obs Verb(Sent[187]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[188]) = Lyn_Nofziger;
+obs Object(Sent[188]) = Reagan;
+obs Verb(Sent[188]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[189]) = Zenia_Mucha;
+obs Object(Sent[189]) = Mr_Pataki;
+obs Verb(Sent[189]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[190]) = Thomas_Krens;
+obs Object(Sent[190]) = Guggenheim;
+obs Verb(Sent[190]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[191]) = Philippe_de_Montebello;
+obs Object(Sent[191]) = Metropolitan;
+obs Verb(Sent[191]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[192]) = Peter_Martins;
+obs Object(Sent[192]) = City_Ballet;
+obs Verb(Sent[192]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[193]) = Kevin_McKenzie;
+obs Object(Sent[193]) = Ballet_Theater;
+obs Verb(Sent[193]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[194]) = Karen_P_Hughes;
+obs Object(Sent[194]) = Mr_Bush;
+obs Verb(Sent[194]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[195]) = Glenn_D_Lowry;
+obs Object(Sent[195]) = Modern;
+obs Verb(Sent[195]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[196]) = George_Stephanopoulos;
+obs Object(Sent[196]) = Mr_Clinton;
+obs Verb(Sent[196]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[197]) = Cristyne_F_Lategano;
+obs Object(Sent[197]) = Mayor;
+obs Verb(Sent[197]) = appos__appos_director_poss__poss;
+
+obs Subject(Sent[198]) = William_N_Griggs;
+obs Object(Sent[198]) = Griggs__Santow_Inc;
+obs Verb(Sent[198]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[199]) = Ward_McCarthy;
+obs Object(Sent[199]) = McCarthy_Research_Associates;
+obs Verb(Sent[199]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[200]) = Steven_A_Wood;
+obs Object(Sent[200]) = Bank_of_America;
+obs Verb(Sent[200]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[201]) = Raymond_W_Stone;
+obs Object(Sent[201]) = McCarthy_Research_Associates;
+obs Verb(Sent[201]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[202]) = Maria_Fiorini_Ramirez;
+obs Object(Sent[202]) = Drexel_Burnham_Lambert;
+obs Verb(Sent[202]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[203]) = Leonard_J_Santow;
+obs Object(Sent[203]) = Griggs__Santow_Inc;
+obs Verb(Sent[203]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[204]) = Dr_Arthur_Caplan;
+obs Object(Sent[204]) = University_of_Pennsylvania;
+obs Verb(Sent[204]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[205]) = Dr_Arthur_Caplan;
+obs Object(Sent[205]) = University_of_Minnesota;
+obs Verb(Sent[205]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[206]) = Donald_Ratajczak;
+obs Object(Sent[206]) = Georgia_State_University;
+obs Verb(Sent[206]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[207]) = Charles_M_Elson;
+obs Object(Sent[207]) = University_of_Delaware;
+obs Verb(Sent[207]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[208]) = William_Sullivan;
+obs Object(Sent[208]) = Witter_Reynolds;
+obs Verb(Sent[208]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[209]) = Wayne_F_Wong;
+obs Object(Sent[209]) = Marinevest;
+obs Verb(Sent[209]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[210]) = Vicki_Lynn;
+obs Object(Sent[210]) = Rensselaer_Polytechnic_Institute;
+obs Verb(Sent[210]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[211]) = Rodney_Berens;
+obs Object(Sent[211]) = Morgan_Stanley__Company;
+obs Verb(Sent[211]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[212]) = Maria_F_Ramirez;
+obs Object(Sent[212]) = Drexel_Burnham_Lambert;
+obs Verb(Sent[212]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[213]) = Leonard_Natman;
+obs Object(Sent[213]) = Brooklyn_Academy_of_Music;
+obs Verb(Sent[213]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[214]) = John_Perreault;
+obs Object(Sent[214]) = Snug_Harbor_Cultural_Center;
+obs Verb(Sent[214]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[215]) = Joan_Bacchus;
+obs Object(Sent[215]) = Riverside_Church;
+obs Verb(Sent[215]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[216]) = Jack_Barbanel;
+obs Object(Sent[216]) = Gruntal__Company;
+obs Verb(Sent[216]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[217]) = A_Tripodi;
+obs Object(Sent[217]) = DDB_Needham_Worldwide;
+obs Verb(Sent[217]) = appos__appos_director_prep_at_pobj__pobj;
+
+obs Subject(Sent[218]) = Steven_D_Gold;
+obs Object(Sent[218]) = Study_of_the_States;
+obs Verb(Sent[218]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[219]) = R_Scott_Appleby;
+obs Object(Sent[219]) = Study_of_American_Catholicism;
+obs Verb(Sent[219]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[220]) = Mary_Brosnahan;
+obs Object(Sent[220]) = Homeless;
+obs Verb(Sent[220]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[221]) = John_Rother;
+obs Object(Sent[221]) = American_Association_of_Retired_Persons;
+obs Verb(Sent[221]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[222]) = Desmond_Ryan;
+obs Object(Sent[222]) = Better_Long_Island;
+obs Verb(Sent[222]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[223]) = David_E_Cole;
+obs Object(Sent[223]) = Study_of_Automotive_Transportation;
+obs Verb(Sent[223]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[224]) = Charles_Brecher;
+obs Object(Sent[224]) = Citizens_Budget_Commission;
+obs Verb(Sent[224]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[225]) = Caroline_Smith_DeWaal;
+obs Object(Sent[225]) = Center_for_Science;
+obs Verb(Sent[225]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[226]) = Blair_Horner;
+obs Object(Sent[226]) = New_York_Public_Interest_Research_Group;
+obs Verb(Sent[226]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[227]) = Adrienne_Esposito;
+obs Object(Sent[227]) = Environment;
+obs Verb(Sent[227]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[228]) = William_C_LaRow;
+obs Object(Sent[228]) = Department_of_Environmental_Conservation;
+obs Verb(Sent[228]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[229]) = Thomas_Gunn;
+obs Object(Sent[229]) = Arthur_Young__Company;
+obs Verb(Sent[229]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[230]) = Ted_Elisee;
+obs Object(Sent[230]) = Diocese_of_Monterey;
+obs Verb(Sent[230]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[231]) = Steven_W_Pedersen;
+obs Object(Sent[231]) = Semiconductor_Industry_Association;
+obs Verb(Sent[231]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[232]) = Roz_Post;
+obs Object(Sent[232]) = Department_of_Housing_Preservation_and_Development;
+obs Verb(Sent[232]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[233]) = Ron_W_Hayes;
+obs Object(Sent[233]) = California_Department_of_the_Youth_Authority;
+obs Verb(Sent[233]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[234]) = Roger_A_Bruns;
+obs Object(Sent[234]) = National_Archives__Historical_Publications_and_Records_Commission;
+obs Verb(Sent[234]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[235]) = Robert_Gilmore;
+obs Object(Sent[235]) = Fish_and_Wildlife_Service;
+obs Verb(Sent[235]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[236]) = Richard_Manley;
+obs Object(Sent[236]) = Disabled;
+obs Verb(Sent[236]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[237]) = Richard_Caspe;
+obs Object(Sent[237]) = Region;
+obs Verb(Sent[237]) = appos__appos_director_prep_for_pobj__pobj;
+
+obs Subject(Sent[238]) = William_J_Casey;
+obs Object(Sent[238]) = Central_Intelligence;
+obs Verb(Sent[238]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[239]) = Norman_Siegel;
+obs Object(Sent[239]) = New_York_Civil_Liberties_Union;
+obs Verb(Sent[239]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[240]) = C_Fred_Bergsten;
+obs Object(Sent[240]) = Institute_for_International_Economics;
+obs Verb(Sent[240]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[241]) = Stanley_Hill;
+obs Object(Sent[241]) = District_Council;
+obs Verb(Sent[241]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[242]) = Robert_Gangi;
+obs Object(Sent[242]) = Correctional_Association_of_New_York;
+obs Verb(Sent[242]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[243]) = Robert_D_Reischauer;
+obs Object(Sent[243]) = Congressional_Budget_Office;
+obs Verb(Sent[243]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[244]) = Ralph_Reed;
+obs Object(Sent[244]) = Christian_Coalition;
+obs Verb(Sent[244]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[245]) = Mary_Ann_Rothman;
+obs Object(Sent[245]) = Council_of_New_York_Cooperatives;
+obs Verb(Sent[245]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[246]) = Lee_E_Koppelman;
+obs Object(Sent[246]) = Long_Island_Regional_Planning_Board;
+obs Verb(Sent[246]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[247]) = Blair_Horner;
+obs Object(Sent[247]) = New_York_Public_Interest_Research_Group;
+obs Verb(Sent[247]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[248]) = Kenneth_L_Adelman;
+obs Object(Sent[248]) = Arms_Control_and_Disarmament_Agency;
+obs Verb(Sent[248]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[249]) = Robert_M_Gates;
+obs Object(Sent[249]) = Central_Intelligence;
+obs Verb(Sent[249]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[250]) = William_E_Colby;
+obs Object(Sent[250]) = Central_Intelligence;
+obs Verb(Sent[250]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[251]) = Judith_Enck;
+obs Object(Sent[251]) = Environmental_Planning_Lobby;
+obs Verb(Sent[251]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[252]) = Jeffrey_Levi;
+obs Object(Sent[252]) = National_Gay;
+obs Verb(Sent[252]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[253]) = Georgi_A_Arbatov;
+obs Object(Sent[253]) = Institute_of_the_USA;
+obs Verb(Sent[253]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[254]) = Fred_Lebow;
+obs Object(Sent[254]) = New_York_City_Marathon;
+obs Verb(Sent[254]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[255]) = James_C_Miller;
+obs Object(Sent[255]) = Office_of_Management_and_Budget;
+obs Verb(Sent[255]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[256]) = Dr_Walter_R_Dowdle;
+obs Object(Sent[256]) = Centers_for_Disease_Control;
+obs Verb(Sent[256]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[257]) = David_Dreman;
+obs Object(Sent[257]) = Dreman_Value_Management;
+obs Verb(Sent[257]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[258]) = Ralph_G_Neas;
+obs Object(Sent[258]) = Leadership_Conference_on_Civil_Rights;
+obs Verb(Sent[258]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[259]) = Michael_McKee;
+obs Object(Sent[259]) = New_York_State_Tenant;
+obs Verb(Sent[259]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[260]) = Kate_Michelman;
+obs Object(Sent[260]) = National_Abortion_Rights_Action_League;
+obs Verb(Sent[260]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[261]) = Robert_Schoelkopf;
+obs Object(Sent[261]) = Marine_Mammal_Stranding_Center;
+obs Verb(Sent[261]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[262]) = Philippe_de_Montebello;
+obs Object(Sent[262]) = Metropolitan_Museum;
+obs Verb(Sent[262]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[263]) = Ellin_Saltzman;
+obs Object(Sent[263]) = Saks_Fifth_Avenue;
+obs Verb(Sent[263]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[264]) = Ann_F_Lewis;
+obs Object(Sent[264]) = Americans;
+obs Verb(Sent[264]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[265]) = John_Pinney;
+obs Object(Sent[265]) = Institute;
+obs Verb(Sent[265]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[266]) = Bruce_Murray;
+obs Object(Sent[266]) = Jet_Propulsion_Laboratory;
+obs Verb(Sent[266]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[267]) = Yasir_Arafat;
+obs Object(Sent[267]) = Palestine_Liberation_Organization;
+obs Verb(Sent[267]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[268]) = William_J_Grinker;
+obs Object(Sent[268]) = Human_Resources_Administration;
+obs Verb(Sent[268]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[269]) = Louis_Farrakhan;
+obs Object(Sent[269]) = Nation_of_Islam;
+obs Verb(Sent[269]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[270]) = Laura_DAndrea_Tyson;
+obs Object(Sent[270]) = Council_of_Economic_Advisers;
+obs Verb(Sent[270]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[271]) = Jay_L_Turoff;
+obs Object(Sent[271]) = Taxi;
+obs Verb(Sent[271]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[272]) = Gerry_Adams;
+obs Object(Sent[272]) = Sinn_Fein;
+obs Verb(Sent[272]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[273]) = Gen_Tommy_R_Franks;
+obs Object(Sent[273]) = United_States_Central_Command;
+obs Verb(Sent[273]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[274]) = Dr_Anthony_S_Fauci;
+obs Object(Sent[274]) = National_Institute_of_Allergy_and_Infectious_Diseases;
+obs Verb(Sent[274]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[275]) = Donald_Fehr;
+obs Object(Sent[275]) = Players_Association;
+obs Verb(Sent[275]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[276]) = David_Trimble;
+obs Object(Sent[276]) = Ulster_Unionist_Party;
+obs Verb(Sent[276]) = appos__appos_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[277]) = Stephen_S_Roach;
+obs Object(Sent[277]) = Morgan_Stanley__Company;
+obs Verb(Sent[277]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[278]) = Lawrence_A_Kudlow;
+obs Object(Sent[278]) = Bear;
+obs Verb(Sent[278]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[279]) = Thomas_Mayer;
+obs Object(Sent[279]) = Deutsche_Bank;
+obs Verb(Sent[279]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[280]) = Stephen_S_Roach;
+obs Object(Sent[280]) = Morgan_Stanley;
+obs Verb(Sent[280]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[281]) = John_Lipsky;
+obs Object(Sent[281]) = Salomon_Brothers;
+obs Verb(Sent[281]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[282]) = Jared_Bernstein;
+obs Object(Sent[282]) = Economic_Policy_Institute;
+obs Verb(Sent[282]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[283]) = Ian_Shepherdson;
+obs Object(Sent[283]) = High_Frequency_Economics;
+obs Verb(Sent[283]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[284]) = Gary_Burtless;
+obs Object(Sent[284]) = Brookings_Institution;
+obs Verb(Sent[284]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[285]) = David_H_Resler;
+obs Object(Sent[285]) = Nomura_Securities_International;
+obs Verb(Sent[285]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[286]) = Bruce_Steinberg;
+obs Object(Sent[286]) = Merrill_Lynch;
+obs Verb(Sent[286]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[287]) = Irwin_L_Kellner;
+obs Object(Sent[287]) = Manufacturers_Hanover_Trust_Company;
+obs Verb(Sent[287]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[288]) = William_Gibson;
+obs Object(Sent[288]) = Continential_Illinois_National_Bank_and_Trust_Company;
+obs Verb(Sent[288]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[289]) = Walter_M_Cadette;
+obs Object(Sent[289]) = Morgan_Guaranty_Trust_Company;
+obs Verb(Sent[289]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[290]) = Ute_Geipel;
+obs Object(Sent[290]) = Citibank;
+obs Verb(Sent[290]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[291]) = Susan_M_Wachter;
+obs Object(Sent[291]) = Wharton_School_of_the_University_of_Pennsylvania;
+obs Verb(Sent[291]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[292]) = Steven_E_Cerier;
+obs Object(Sent[292]) = Manufacturers_Hanover_Trust_Company;
+obs Verb(Sent[292]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[293]) = Steven_C_Cerier;
+obs Object(Sent[293]) = Manufacturers_Hanover_Trust_Company;
+obs Verb(Sent[293]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[294]) = Sally_Stewart_Ronk;
+obs Object(Sent[294]) = United_States_Treasury_Department;
+obs Verb(Sent[294]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[295]) = Irwin_Kellner;
+obs Object(Sent[295]) = Manufacturers_Hanover_Trust_Company;
+obs Verb(Sent[295]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[296]) = Dana_Johnson;
+obs Object(Sent[296]) = First_National_Bank_of_Chicago;
+obs Verb(Sent[296]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[297]) = Philip_Braverman;
+obs Object(Sent[297]) = Irving_Securities;
+obs Verb(Sent[297]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[298]) = Henry_Kaufman;
+obs Object(Sent[298]) = Salomon_Brothers;
+obs Verb(Sent[298]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[299]) = Eugene_J_Sherman;
+obs Object(Sent[299]) = Federal_Home_Loan_Bank_of_New_York;
+obs Verb(Sent[299]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[300]) = Edward_Yardeni;
+obs Object(Sent[300]) = Prudential_Bache_Securities;
+obs Verb(Sent[300]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[301]) = David_Wyss;
+obs Object(Sent[301]) = Data_Resources_Inc;
+obs Verb(Sent[301]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[302]) = David_M_Jones;
+obs Object(Sent[302]) = Aubrey_G_Lanston__Company;
+obs Verb(Sent[302]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[303]) = Allen_Sinai;
+obs Object(Sent[303]) = Shearson_Lehman_Brothers;
+obs Verb(Sent[303]) = appos__appos_economist_prep_at_pobj__pobj;
+
+obs Subject(Sent[304]) = Yoram_K_Bauman;
+obs Object(Sent[304]) = University_of_Washington;
+obs Verb(Sent[304]) = appos__appos_economist_rcmod_teach_prep_at_pobj__pobj;
+
+obs Subject(Sent[305]) = Steven_C_Salop;
+obs Object(Sent[305]) = Georgetown_University_Law_Center;
+obs Verb(Sent[305]) = appos__appos_economist_rcmod_teach_prep_at_pobj__pobj;
+
+obs Subject(Sent[306]) = Sandy_Baum;
+obs Object(Sent[306]) = Skidmore_College;
+obs Verb(Sent[306]) = appos__appos_economist_rcmod_teach_prep_at_pobj__pobj;
+
+obs Subject(Sent[307]) = Robert_M_Solow;
+obs Object(Sent[307]) = Massachusetts_Institute_of_Technology;
+obs Verb(Sent[307]) = appos__appos_economist_rcmod_teach_prep_at_pobj__pobj;
+
+obs Subject(Sent[308]) = Ricardo_Hausmann;
+obs Object(Sent[308]) = Harvard_University;
+obs Verb(Sent[308]) = appos__appos_economist_rcmod_teach_prep_at_pobj__pobj;
+
+obs Subject(Sent[309]) = Nguyen_Tien_Hung;
+obs Object(Sent[309]) = Howard_University;
+obs Verb(Sent[309]) = appos__appos_economist_rcmod_teach_prep_at_pobj__pobj;
+
+obs Subject(Sent[310]) = Mr_Sadowski;
+obs Object(Sent[310]) = University_of_Ghana;
+obs Verb(Sent[310]) = appos__appos_economist_rcmod_teach_prep_at_pobj__pobj;
+
+obs Subject(Sent[311]) = Mr_Ganis;
+obs Object(Sent[311]) = Smith_College;
+obs Verb(Sent[311]) = appos__appos_economist_rcmod_teach_prep_at_pobj__pobj;
+
+obs Subject(Sent[312]) = Eli_Ginzberg;
+obs Object(Sent[312]) = Columbia_University;
+obs Verb(Sent[312]) = appos__appos_economist_rcmod_teach_prep_at_pobj__pobj;
+
+obs Subject(Sent[313]) = Andrew_Zimbalist;
+obs Object(Sent[313]) = Smith_College;
+obs Verb(Sent[313]) = appos__appos_economist_rcmod_teach_prep_at_pobj__pobj;
+
+obs Subject(Sent[314]) = William_A_Walker;
+obs Object(Sent[314]) = Bacardi_Imports;
+obs Verb(Sent[314]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[315]) = Willard_C_Butcher;
+obs Object(Sent[315]) = Chase_Manhattan_Bank;
+obs Verb(Sent[315]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[316]) = Roger_Stangeland;
+obs Object(Sent[316]) = Von;
+obs Verb(Sent[316]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[317]) = Richard_Smith;
+obs Object(Sent[317]) = General_Cinema;
+obs Verb(Sent[317]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[318]) = Reginald_K_Brack_Jr;
+obs Object(Sent[318]) = Magazine_Group;
+obs Verb(Sent[318]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[319]) = Peter_Rona;
+obs Object(Sent[319]) = J_Henry_Schroder_Bank;
+obs Verb(Sent[319]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[320]) = Mr_Morton;
+obs Object(Sent[320]) = Guinness_Peat_PLC;
+obs Verb(Sent[320]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[321]) = Mr_DAlessandro;
+obs Object(Sent[321]) = Fiat;
+obs Verb(Sent[321]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[322]) = Mr_Brack;
+obs Object(Sent[322]) = Magazine_Group;
+obs Verb(Sent[322]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[323]) = Laurence_A_Tisch;
+obs Object(Sent[323]) = CBS_Inc;
+obs Verb(Sent[323]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[324]) = Samuel_D_Waksal;
+obs Object(Sent[324]) = ImClone_Systems;
+obs Verb(Sent[324]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[325]) = Richard_M_Scrushy;
+obs Object(Sent[325]) = HealthSouth;
+obs Verb(Sent[325]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[326]) = Richard_D_Parsons;
+obs Object(Sent[326]) = AOL_Time_Warner;
+obs Verb(Sent[326]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[327]) = Pamela_Liebman;
+obs Object(Sent[327]) = Corcoran_Group;
+obs Verb(Sent[327]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[328]) = Michael_D_Eisner;
+obs Object(Sent[328]) = Walt_Disney_Company;
+obs Verb(Sent[328]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[329]) = Maurice_R_Greenberg;
+obs Object(Sent[329]) = American_International_Group;
+obs Verb(Sent[329]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[330]) = L_Dennis_Kozlowski;
+obs Object(Sent[330]) = Tyco_International;
+obs Verb(Sent[330]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[331]) = Jeffrey_K_Skilling;
+obs Object(Sent[331]) = Enron;
+obs Verb(Sent[331]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[332]) = Carleton_S_Fiorina;
+obs Object(Sent[332]) = Hewlett_Packard;
+obs Verb(Sent[332]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[333]) = Bernard_J_Ebbers;
+obs Object(Sent[333]) = WorldCom;
+obs Verb(Sent[333]) = appos__appos_executive_prep_of_pobj__pobj;
+
+obs Subject(Sent[334]) = Kohlberg;
+obs Object(Sent[334]) = New_York;
+obs Verb(Sent[334]) = appos__appos_firm_nn__nn;
+obs Rel(SourceFact(Sent[334])) = firm;
+
+obs Subject(Sent[335]) = Working_Assets_Money_Fund;
+obs Object(Sent[335]) = San_Francisco;
+obs Verb(Sent[335]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[336]) = Vinson__Elkins;
+obs Object(Sent[336]) = Houston;
+obs Verb(Sent[336]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[337]) = Trepp__Company;
+obs Object(Sent[337]) = New_York;
+obs Verb(Sent[337]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[338]) = Stoels;
+obs Object(Sent[338]) = Washington;
+obs Verb(Sent[338]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[339]) = Sanford_C_Bernstein__Company;
+obs Object(Sent[339]) = New_York;
+obs Verb(Sent[339]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[340]) = Rosenman__Colin;
+obs Object(Sent[340]) = New_York;
+obs Verb(Sent[340]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[341]) = R_H_Wrightson_Associates;
+obs Object(Sent[341]) = New_York;
+obs Verb(Sent[341]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[342]) = Dubin__Swieca;
+obs Object(Sent[342]) = New_York;
+obs Verb(Sent[342]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[343]) = Bruyette__Woods_Inc;
+obs Object(Sent[343]) = Wall_Street;
+obs Verb(Sent[343]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[344]) = Petroleum_Finance_Company;
+obs Object(Sent[344]) = Washington;
+obs Verb(Sent[344]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[345]) = Kleiner_Perkins_Caufield__Byers;
+obs Object(Sent[345]) = Silicon_Valley;
+obs Verb(Sent[345]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[346]) = Jupiter_Media_Metrix;
+obs Object(Sent[346]) = Internet;
+obs Verb(Sent[346]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[347]) = Jupiter_Communications;
+obs Object(Sent[347]) = Internet;
+obs Verb(Sent[347]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[348]) = Hicks;
+obs Object(Sent[348]) = Dallas;
+obs Verb(Sent[348]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[349]) = Futures_Group;
+obs Object(Sent[349]) = Washington;
+obs Verb(Sent[349]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[350]) = Forrester_Research;
+obs Object(Sent[350]) = Internet;
+obs Verb(Sent[350]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[351]) = Corcoran_Group;
+obs Object(Sent[351]) = Manhattan;
+obs Verb(Sent[351]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[352]) = Birinyi_Associates;
+obs Object(Sent[352]) = Wall_Street;
+obs Verb(Sent[352]) = appos__appos_firm_nn__nn;
+
+obs Subject(Sent[353]) = Dataquest;
+obs Object(Sent[353]) = San_Jose;
+obs Verb(Sent[353]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[354]) = Warburg_Pincus;
+obs Object(Sent[354]) = New_York;
+obs Verb(Sent[354]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[355]) = Paul_Hastings;
+obs Object(Sent[355]) = Los_Angeles;
+obs Verb(Sent[355]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[356]) = Oxford_Partners;
+obs Object(Sent[356]) = Stamford;
+obs Verb(Sent[356]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[357]) = John_Hotchkis;
+obs Object(Sent[357]) = Los_Angeles;
+obs Verb(Sent[357]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[358]) = Handy_Associates;
+obs Object(Sent[358]) = New_York;
+obs Verb(Sent[358]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[359]) = DMW_Group;
+obs Object(Sent[359]) = Ann_Arbor;
+obs Verb(Sent[359]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[360]) = Data_Quest;
+obs Object(Sent[360]) = San_Jose;
+obs Verb(Sent[360]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[361]) = Dataquest_Inc;
+obs Object(Sent[361]) = San_Jose;
+obs Verb(Sent[361]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[362]) = Covington__Burling;
+obs Object(Sent[362]) = Washington;
+obs Verb(Sent[362]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[363]) = Yankee_Group;
+obs Object(Sent[363]) = Boston;
+obs Verb(Sent[363]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[364]) = Pearl_Meyer__Partners;
+obs Object(Sent[364]) = New_York;
+obs Verb(Sent[364]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[365]) = NPD_Group;
+obs Object(Sent[365]) = Port_Washington;
+obs Verb(Sent[365]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[366]) = Morningstar_Inc;
+obs Object(Sent[366]) = Chicago;
+obs Verb(Sent[366]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[367]) = Jupiter_Communications;
+obs Object(Sent[367]) = New_York;
+obs Verb(Sent[367]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[368]) = International_Data_Corporation;
+obs Object(Sent[368]) = Framingham;
+obs Verb(Sent[368]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[369]) = Gartner_Group;
+obs Object(Sent[369]) = Stamford;
+obs Verb(Sent[369]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[370]) = Forrester_Research;
+obs Object(Sent[370]) = Cambridge;
+obs Verb(Sent[370]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[371]) = Birinyi_Associates;
+obs Object(Sent[371]) = Greenwich;
+obs Verb(Sent[371]) = appos__appos_firm_prep_in_pobj__pobj;
+
+obs Subject(Sent[372]) = Jay_L_Turoff;
+obs Object(Sent[372]) = Taxi;
+obs Verb(Sent[372]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[373]) = Yasir_Arafat;
+obs Object(Sent[373]) = Palestine_Liberation_Organization;
+obs Verb(Sent[373]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[374]) = William_J_Grinker;
+obs Object(Sent[374]) = Human_Resources_Administration;
+obs Verb(Sent[374]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[375]) = Louis_Farrakhan;
+obs Object(Sent[375]) = Nation_of_Islam;
+obs Verb(Sent[375]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[376]) = Laura_DAndrea_Tyson;
+obs Object(Sent[376]) = Council_of_Economic_Advisers;
+obs Verb(Sent[376]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[377]) = Gerry_Adams;
+obs Object(Sent[377]) = Sinn_Fein;
+obs Verb(Sent[377]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[378]) = Gen_Tommy_R_Franks;
+obs Object(Sent[378]) = United_States_Central_Command;
+obs Verb(Sent[378]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[379]) = Dr_Anthony_S_Fauci;
+obs Object(Sent[379]) = National_Institute_of_Allergy_and_Infectious_Diseases;
+obs Verb(Sent[379]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[380]) = Donald_Fehr;
+obs Object(Sent[380]) = Players_Association;
+obs Verb(Sent[380]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[381]) = David_Trimble;
+obs Object(Sent[381]) = Ulster_Unionist_Party;
+obs Verb(Sent[381]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[382]) = Oliver_Tambo;
+obs Object(Sent[382]) = African_National_Congress;
+obs Verb(Sent[382]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[383]) = John_H_Riley;
+obs Object(Sent[383]) = Federal_Railroad_Administration;
+obs Verb(Sent[383]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[384]) = W_Michael_Blumenthal;
+obs Object(Sent[384]) = Unisys_Corporation;
+obs Verb(Sent[384]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[385]) = William_J_Bennett;
+obs Object(Sent[385]) = National_Endowment;
+obs Verb(Sent[385]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[386]) = William_H_Webster;
+obs Object(Sent[386]) = Federal_Bureau_of_Investigation;
+obs Verb(Sent[386]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[387]) = William_H_Gray;
+obs Object(Sent[387]) = House_Budget_Committee;
+obs Verb(Sent[387]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[388]) = Dr_Alexander_Kuehl;
+obs Object(Sent[388]) = Emergency_Medical_Services;
+obs Verb(Sent[388]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[389]) = William_Donovan;
+obs Object(Sent[389]) = Office_of_Strategic_Services;
+obs Verb(Sent[389]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[390]) = Rudolf_Bing;
+obs Object(Sent[390]) = Metropolitan_Opera;
+obs Verb(Sent[390]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[391]) = Jack_Donlan;
+obs Object(Sent[391]) = Management_Council;
+obs Verb(Sent[391]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[392]) = Irene_Natividad;
+obs Object(Sent[392]) = National_Women_s_Political_Caucus;
+obs Verb(Sent[392]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[393]) = William_von_Raab;
+obs Object(Sent[393]) = United_States_Customs_Service;
+obs Verb(Sent[393]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[394]) = William_F_Harrah;
+obs Object(Sent[394]) = AirCal_Inc;
+obs Verb(Sent[394]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[395]) = John_B_Damoose;
+obs Object(Sent[395]) = Audi;
+obs Verb(Sent[395]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[396]) = Dr_William_L_Roper;
+obs Object(Sent[396]) = Federal_Health_Care_Financing_Administration;
+obs Verb(Sent[396]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[397]) = Donald_J_Devine;
+obs Object(Sent[397]) = Office_of_Personnel_Management;
+obs Verb(Sent[397]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[398]) = C_Richard_Kamin;
+obs Object(Sent[398]) = Motor_Vehicle_Services;
+obs Verb(Sent[398]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[399]) = Creedon_House;
+obs Object(Sent[399]) = Metropolitan_Life_Insurance_Company;
+obs Verb(Sent[399]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[400]) = Craig_Venter;
+obs Object(Sent[400]) = Institute_for_Genetics_Research;
+obs Verb(Sent[400]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[401]) = Craig_Steidle;
+obs Object(Sent[401]) = Office_of_Exploration_Systems;
+obs Verb(Sent[401]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[402]) = Craig_O_McCaw;
+obs Object(Sent[402]) = McCaw_Cellular;
+obs Verb(Sent[402]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[403]) = Craig_Miller;
+obs Object(Sent[403]) = Jewish_Action_Group;
+obs Verb(Sent[403]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[404]) = Craig_McCaw;
+obs Object(Sent[404]) = McCaw_Communications;
+obs Verb(Sent[404]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[405]) = Craig_Masback;
+obs Object(Sent[405]) = USA_Track__Field;
+obs Verb(Sent[405]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[406]) = Craig_Koch;
+obs Object(Sent[406]) = Hertz;
+obs Verb(Sent[406]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[407]) = Charles_Z_Wick;
+obs Object(Sent[407]) = United_States_Information_Agency;
+obs Verb(Sent[407]) = appos__appos_head_prep_of_pobj__pobj;
+
+obs Subject(Sent[408]) = Thomas_C_Troy;
+obs Object(Sent[408]) = Mr_Doherty;
+obs Verb(Sent[408]) = appos__appos_lawyer_prep_for_pobj__pobj;
+obs Rel(SourceFact(Sent[408])) = lawyer;
+
+obs Subject(Sent[409]) = Mr_Morin;
+obs Object(Sent[409]) = Puerto_Rican_Legal_Defense_and_Education_Fund;
+obs Verb(Sent[409]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[410]) = Mr_Mason;
+obs Object(Sent[410]) = Mr_Grimes;
+obs Verb(Sent[410]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[411]) = Mr_Maddox;
+obs Object(Sent[411]) = Mr_Sandiford;
+obs Verb(Sent[411]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[412]) = Lois_G_Williams;
+obs Object(Sent[412]) = National_Treasury_Employees_Union;
+obs Verb(Sent[412]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[413]) = Lawrence_Farkash;
+obs Object(Sent[413]) = Mrs_Silver;
+obs Verb(Sent[413]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[414]) = Joseph_D_Jamail;
+obs Object(Sent[414]) = Pennzoil;
+obs Verb(Sent[414]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[415]) = John_C_Fox;
+obs Object(Sent[415]) = Paul_Hastings;
+obs Verb(Sent[415]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[416]) = J_Curtis_Herge;
+obs Object(Sent[416]) = National_Endowment;
+obs Verb(Sent[416]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[417]) = Ivan_S_Fisher;
+obs Object(Sent[417]) = Salvatore_Catalano;
+obs Verb(Sent[417]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[418]) = Steven_Banks;
+obs Object(Sent[418]) = Legal_Aid_Society_s_Homeless_Family_Rights_Project;
+obs Verb(Sent[418]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[419]) = Stephen_Jones;
+obs Object(Sent[419]) = Mr_McVeigh;
+obs Verb(Sent[419]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[420]) = Russianoff;
+obs Object(Sent[420]) = Straphangers_Campaign;
+obs Verb(Sent[420]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[421]) = Russianoff;
+obs Object(Sent[421]) = New_York_Public_Interest_Research_Group;
+obs Verb(Sent[421]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[422]) = Michael_E_Tigar;
+obs Object(Sent[422]) = Mr_Nichols;
+obs Verb(Sent[422]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[423]) = Larry_Shapiro;
+obs Object(Sent[423]) = New_York_Public_Interest_Research_Group;
+obs Verb(Sent[423]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[424]) = Gene_Russianoff;
+obs Object(Sent[424]) = Straphangers_Campaign;
+obs Verb(Sent[424]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[425]) = Gene_Russianoff;
+obs Object(Sent[425]) = New_York_Public_Interest_Research_Group;
+obs Verb(Sent[425]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[426]) = Eric_A_Goldstein;
+obs Object(Sent[426]) = Natural_Resources_Defense_Council;
+obs Verb(Sent[426]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[427]) = Christopher_Dunn;
+obs Object(Sent[427]) = New_York_Civil_Liberties_Union;
+obs Verb(Sent[427]) = appos__appos_lawyer_prep_for_pobj__pobj;
+
+obs Subject(Sent[428]) = Bob_Dole;
+obs Object(Sent[428]) = Senate;
+obs Verb(Sent[428]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[429]) = Bob_Dole;
+obs Object(Sent[429]) = Republican;
+obs Verb(Sent[429]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[430]) = Trent_Lott;
+obs Object(Sent[430]) = Senate;
+obs Verb(Sent[430]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[431]) = Tom_Daschle;
+obs Object(Sent[431]) = Senate;
+obs Verb(Sent[431]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[432]) = Richard_A_Gephardt;
+obs Object(Sent[432]) = House;
+obs Verb(Sent[432]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[433]) = Representative_Richard_A_Gephardt;
+obs Object(Sent[433]) = House;
+obs Verb(Sent[433]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[434]) = Radovan_Karadzic;
+obs Object(Sent[434]) = Bosnian_Serb;
+obs Verb(Sent[434]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[435]) = Joseph_L_Bruno;
+obs Object(Sent[435]) = Senate;
+obs Verb(Sent[435]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[436]) = Joseph_L_Bruno;
+obs Object(Sent[436]) = Republican;
+obs Verb(Sent[436]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[437]) = Dick_Armey;
+obs Object(Sent[437]) = House;
+obs Verb(Sent[437]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[438]) = Surjit_Singh_Barnala;
+obs Object(Sent[438]) = Sikh;
+obs Verb(Sent[438]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[439]) = Robert_Michel;
+obs Object(Sent[439]) = House;
+obs Verb(Sent[439]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[440]) = Robert_H_Michel;
+obs Object(Sent[440]) = Republican;
+obs Verb(Sent[440]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[441]) = Robert_H_Michel;
+obs Object(Sent[441]) = House;
+obs Verb(Sent[441]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[442]) = Peter_Vallone;
+obs Object(Sent[442]) = New_York_City_Council;
+obs Verb(Sent[442]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[443]) = Najib;
+obs Object(Sent[443]) = Afghan;
+obs Verb(Sent[443]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[444]) = Meade_H_Esposito;
+obs Object(Sent[444]) = Democratic;
+obs Verb(Sent[444]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[445]) = Meade_H_Esposito;
+obs Object(Sent[445]) = Brooklyn;
+obs Verb(Sent[445]) = appos__appos_leader_nn__nn;
+
+obs Subject(Sent[446]) = Yasir_Arafat;
+obs Object(Sent[446]) = Palestine_Liberation_Organization;
+obs Verb(Sent[446]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[447]) = Nelson_Mandela;
+obs Object(Sent[447]) = African_National_Congress;
+obs Verb(Sent[447]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[448]) = Shimon_Peres;
+obs Object(Sent[448]) = Labor_Party;
+obs Verb(Sent[448]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[449]) = Raymond_B_Harding;
+obs Object(Sent[449]) = Liberal_Party;
+obs Verb(Sent[449]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[450]) = Radovan_Karadzic;
+obs Object(Sent[450]) = Bosnian_Serbs;
+obs Verb(Sent[450]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[451]) = Louis_Farrakhan;
+obs Object(Sent[451]) = Nation_of_Islam;
+obs Verb(Sent[451]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[452]) = Joseph_L_Bruno;
+obs Object(Sent[452]) = State_Senate;
+obs Verb(Sent[452]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[453]) = Jean_Marie_Le_Pen;
+obs Object(Sent[453]) = National_Front;
+obs Verb(Sent[453]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[454]) = Gerry_Adams;
+obs Object(Sent[454]) = Sinn_Fein;
+obs Verb(Sent[454]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[455]) = Dalai_Lama;
+obs Object(Sent[455]) = Tibet;
+obs Verb(Sent[455]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[456]) = Warren_M_Anderson;
+obs Object(Sent[456]) = State_Senate;
+obs Verb(Sent[456]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[457]) = Tom_Foley;
+obs Object(Sent[457]) = House;
+obs Verb(Sent[457]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[458]) = Shelton;
+obs Object(Sent[458]) = House;
+obs Verb(Sent[458]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[459]) = Seamus_Mallon;
+obs Object(Sent[459]) = Social_Democratic_and_Labor_Party;
+obs Verb(Sent[459]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[460]) = Sandra_R_Galef;
+obs Object(Sent[460]) = Board_of_Legislators;
+obs Verb(Sent[460]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[461]) = Peter_Vallone;
+obs Object(Sent[461]) = New_York_City_Council;
+obs Verb(Sent[461]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[462]) = Peter_Murphy;
+obs Object(Sent[462]) = Bauhaus;
+obs Verb(Sent[462]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[463]) = Otto_Schily;
+obs Object(Sent[463]) = Green_Party;
+obs Verb(Sent[463]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[464]) = Oliver_Tambo;
+obs Object(Sent[464]) = African_National_Congress;
+obs Verb(Sent[464]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[465]) = Neil_Kinnock;
+obs Object(Sent[465]) = British_Labor_Party;
+obs Verb(Sent[465]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[466]) = Manfred_Ohrenstein;
+obs Object(Sent[466]) = New_York_State_Senate;
+obs Verb(Sent[466]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[467]) = Jerry_Falwell;
+obs Object(Sent[467]) = Moral_Majority;
+obs Verb(Sent[467]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[468]) = Elijah_Masinde;
+obs Object(Sent[468]) = Dini;
+obs Verb(Sent[468]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[469]) = Edward_Broadbent;
+obs Object(Sent[469]) = New_Democratic_Party;
+obs Verb(Sent[469]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[470]) = Dalai_Lama;
+obs Object(Sent[470]) = Tibetan_Buddhism;
+obs Verb(Sent[470]) = appos__appos_leader_prep_of_pobj__pobj;
+
+obs Subject(Sent[471]) = Donald_R_Manes;
+obs Object(Sent[471]) = Queens_Borough;
+obs Verb(Sent[471]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[472]) = Tony_Siegle;
+obs Object(Sent[472]) = Philadelphia_Phillies;
+obs Verb(Sent[472]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[473]) = Timothy_L_Tabor;
+obs Object(Sent[473]) = Kidder;
+obs Verb(Sent[473]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[474]) = Thomas_Reed;
+obs Object(Sent[474]) = Alabama;
+obs Verb(Sent[474]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[475]) = Tennessee_Gas_Transmission_Co;
+obs Object(Sent[475]) = Vincent_F_Ewell;
+obs Verb(Sent[475]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[476]) = Samsung_Electronics_America;
+obs Object(Sent[476]) = Il_Tae_Kim;
+obs Verb(Sent[476]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[477]) = Middle_West;
+obs Object(Sent[477]) = Ormand_J_Wade;
+obs Verb(Sent[477]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[478]) = Lausanne;
+obs Object(Sent[478]) = IOC;
+obs Verb(Sent[478]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[479]) = Juan_Antonio_Samaranch;
+obs Object(Sent[479]) = IOC;
+obs Verb(Sent[479]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[480]) = Jo_Ann_Mehnert;
+obs Object(Sent[480]) = Elmont;
+obs Verb(Sent[480]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[481]) = David_N_Dinkins;
+obs Object(Sent[481]) = Manhattan;
+obs Verb(Sent[481]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[482]) = Claire_Shulman;
+obs Object(Sent[482]) = Queens_Borough;
+obs Verb(Sent[482]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[483]) = Andrew_J_Stein;
+obs Object(Sent[483]) = City_Council;
+obs Verb(Sent[483]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[484]) = Ameritech_Enterprise_Group;
+obs Object(Sent[484]) = Frank_R_Zimmerman;
+obs Verb(Sent[484]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[485]) = Slobodan_Milosevic;
+obs Object(Sent[485]) = Yugoslav;
+obs Verb(Sent[485]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[486]) = Ruth_W_Messinger;
+obs Object(Sent[486]) = Manhattan;
+obs Verb(Sent[486]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[487]) = Mr_Ferrer;
+obs Object(Sent[487]) = Bronx;
+obs Verb(Sent[487]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[488]) = Fernando_Ferrer;
+obs Object(Sent[488]) = Bronx_Borough;
+obs Verb(Sent[488]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[489]) = Fernando_Ferrer;
+obs Object(Sent[489]) = Bronx;
+obs Verb(Sent[489]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[490]) = C_Virginia_Fields;
+obs Object(Sent[490]) = Manhattan;
+obs Verb(Sent[490]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[491]) = Mr_Manes;
+obs Object(Sent[491]) = Queens_Borough;
+obs Verb(Sent[491]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[492]) = Howard_Golden;
+obs Object(Sent[492]) = Brooklyn_Borough;
+obs Verb(Sent[492]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[493]) = Dr_Bobby_Brown;
+obs Object(Sent[493]) = American_League;
+obs Verb(Sent[493]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[494]) = Bobby_Brown;
+obs Object(Sent[494]) = American_League;
+obs Verb(Sent[494]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[495]) = A_Bartlett_Giamatti;
+obs Object(Sent[495]) = National_League;
+obs Verb(Sent[495]) = appos__appos_president_nn__nn;
+
+obs Subject(Sent[496]) = Joe_McIlvaine;
+obs Object(Sent[496]) = Mets;
+obs Verb(Sent[496]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[497]) = William_H_Curtiss;
+obs Object(Sent[497]) = Ridge;
+obs Verb(Sent[497]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[498]) = William_Chisholm;
+obs Object(Sent[498]) = Westminster;
+obs Verb(Sent[498]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[499]) = William_B_Winter;
+obs Object(Sent[499]) = Becor;
+obs Verb(Sent[499]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[500]) = Walter_L_Weisman;
+obs Object(Sent[500]) = American_Medical;
+obs Verb(Sent[500]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[501]) = Walter_L_Weisman;
+obs Object(Sent[501]) = American;
+obs Verb(Sent[501]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[502]) = The_New_York_Times;
+obs Object(Sent[502]) = The_Times;
+obs Verb(Sent[502]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[503]) = Taylor_Smith;
+obs Object(Sent[503]) = Falcons;
+obs Verb(Sent[503]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[504]) = Louis_E_Lataif;
+obs Object(Sent[504]) = Ford;
+obs Verb(Sent[504]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[505]) = Dan_Rooney;
+obs Object(Sent[505]) = Steelers;
+obs Verb(Sent[505]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[506]) = Scott_Layden;
+obs Object(Sent[506]) = Knicks;
+obs Verb(Sent[506]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[507]) = Rod_Thorn;
+obs Object(Sent[507]) = Nets;
+obs Verb(Sent[507]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[508]) = Neil_Smith;
+obs Object(Sent[508]) = Rangers;
+obs Verb(Sent[508]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[509]) = Lou_Lamoriello;
+obs Object(Sent[509]) = Devils;
+obs Verb(Sent[509]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[510]) = John_Mara;
+obs Object(Sent[510]) = Giants;
+obs Verb(Sent[510]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[511]) = Isiah_Thomas;
+obs Object(Sent[511]) = Knicks;
+obs Verb(Sent[511]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[512]) = Glen_Sather;
+obs Object(Sent[512]) = Rangers;
+obs Verb(Sent[512]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[513]) = Ernie_Grunfeld;
+obs Object(Sent[513]) = Knicks;
+obs Verb(Sent[513]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[514]) = Dave_Checketts;
+obs Object(Sent[514]) = Knicks;
+obs Verb(Sent[514]) = appos__appos_president_poss__poss;
+
+obs Subject(Sent[515]) = William_V_Sullivan_Jr;
+obs Object(Sent[515]) = Witter_Reynolds;
+obs Verb(Sent[515]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[516]) = Robert_Berne;
+obs Object(Sent[516]) = New_York_University;
+obs Verb(Sent[516]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[517]) = Robert_A_Kurtter;
+obs Object(Sent[517]) = Moody_s_Investors_Service;
+obs Verb(Sent[517]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[518]) = Richard_E_Witten;
+obs Object(Sent[518]) = Goldman__Sachs__Company;
+obs Verb(Sent[518]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[519]) = Paul_L_Kasriel;
+obs Object(Sent[519]) = Northern_Trust_Company;
+obs Verb(Sent[519]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[520]) = Kalman_Ruttenstein;
+obs Object(Sent[520]) = Bloomingdale;
+obs Verb(Sent[520]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[521]) = Joseph_Liro;
+obs Object(Sent[521]) = S_G_Warburg__Company;
+obs Verb(Sent[521]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[522]) = James_R_Capra;
+obs Object(Sent[522]) = Shearson_Lehman_Government_Securities;
+obs Verb(Sent[522]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[523]) = David_F_Poltrack;
+obs Object(Sent[523]) = CBS;
+obs Verb(Sent[523]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[524]) = Bill_Gamba;
+obs Object(Sent[524]) = Cowen__Company;
+obs Verb(Sent[524]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[525]) = Willian_Shea;
+obs Object(Sent[525]) = Lloyds_Government_Securities_Corporation;
+obs Verb(Sent[525]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[526]) = William_V_Sullivan;
+obs Object(Sent[526]) = Witter_Reynolds;
+obs Verb(Sent[526]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[527]) = William_M_LeFevre;
+obs Object(Sent[527]) = Advest_Inc;
+obs Verb(Sent[527]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[528]) = William_M_LeFevre;
+obs Object(Sent[528]) = Advest_Group_Inc;
+obs Verb(Sent[528]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[529]) = William_L_Randol;
+obs Object(Sent[529]) = First_Boston_Corporation;
+obs Verb(Sent[529]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[530]) = William_F_Brachfeld;
+obs Object(Sent[530]) = Daiwa_Securities_America;
+obs Verb(Sent[530]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[531]) = Rimmer_de_Vries;
+obs Object(Sent[531]) = Morgan_Guaranty_Trust_Company;
+obs Verb(Sent[531]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[532]) = John_Prout;
+obs Object(Sent[532]) = Lufkin__Jenrette_Securities_Corporation;
+obs Verb(Sent[532]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[533]) = James_McGroarty;
+obs Object(Sent[533]) = Discount_Corporation;
+obs Verb(Sent[533]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[534]) = Dawn_Steel;
+obs Object(Sent[534]) = Paramount;
+obs Verb(Sent[534]) = appos__appos_president_prep_at_pobj__pobj;
+
+obs Subject(Sent[535]) = Steven_Spinola;
+obs Object(Sent[535]) = Real_Estate_Board_of_New_York;
+obs Verb(Sent[535]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[536]) = Juan_Antonio_Samaranch;
+obs Object(Sent[536]) = International_Olympic_Committee;
+obs Verb(Sent[536]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[537]) = Sandra_Feldman;
+obs Object(Sent[537]) = United_Federation_of_Teachers;
+obs Verb(Sent[537]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[538]) = Rocco_Landesman;
+obs Object(Sent[538]) = Jujamcyn_Theaters;
+obs Verb(Sent[538]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[539]) = Raymond_D_Horton;
+obs Object(Sent[539]) = Citizens_Budget_Commission;
+obs Verb(Sent[539]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[540]) = Randi_Weingarten;
+obs Object(Sent[540]) = United_Federation_of_Teachers;
+obs Verb(Sent[540]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[541]) = Kenneth_E_Raske;
+obs Object(Sent[541]) = Greater_New_York_Hospital_Association;
+obs Verb(Sent[541]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[542]) = Jack_Valenti;
+obs Object(Sent[542]) = Motion_Picture_Association_of_America;
+obs Verb(Sent[542]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[543]) = Gerry_Adams;
+obs Object(Sent[543]) = Sinn_Fein;
+obs Verb(Sent[543]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[544]) = Dick_Ebersol;
+obs Object(Sent[544]) = NBC_Sports;
+obs Verb(Sent[544]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[545]) = Howard_Stringer;
+obs Object(Sent[545]) = CBS_News;
+obs Verb(Sent[545]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[546]) = John_H_Lichtblau;
+obs Object(Sent[546]) = Petroleum_Industry_Research_Foundation;
+obs Verb(Sent[546]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[547]) = William_R_Howard;
+obs Object(Sent[547]) = Piedmont_Aviation_Inc;
+obs Verb(Sent[547]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[548]) = William_G_Roth;
+obs Object(Sent[548]) = American_Standard_Inc;
+obs Verb(Sent[548]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[549]) = Walker_Merryman;
+obs Object(Sent[549]) = Tobacco_Institute;
+obs Verb(Sent[549]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[550]) = Shelley_Lotenberg;
+obs Object(Sent[550]) = Salisbury_Civic_Association;
+obs Verb(Sent[550]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[551]) = Roone_Arledge;
+obs Object(Sent[551]) = ABC_News;
+obs Verb(Sent[551]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[552]) = Oliver_Tambo;
+obs Object(Sent[552]) = African_National_Congress;
+obs Verb(Sent[552]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[553]) = Arthur_Barnes;
+obs Object(Sent[553]) = New_York_Urban_Coalition;
+obs Verb(Sent[553]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[554]) = Robert_R_Hagopian;
+obs Object(Sent[554]) = Spendthrift_Farm_Inc;
+obs Verb(Sent[554]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[555]) = Lawrence_K_Grossman;
+obs Object(Sent[555]) = NBC_News;
+obs Verb(Sent[555]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[556]) = Ernest_L_Boyer;
+obs Object(Sent[556]) = Carnegie_Foundation;
+obs Verb(Sent[556]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[557]) = Dr_Donna_E_Shalala;
+obs Object(Sent[557]) = Hunter_College;
+obs Verb(Sent[557]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[558]) = A_Bartlett_Giamatti;
+obs Object(Sent[558]) = National_League;
+obs Verb(Sent[558]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[559]) = Thomas_Reppetto;
+obs Object(Sent[559]) = Citizens_Crime_Commission;
+obs Verb(Sent[559]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[560]) = Robin_E_Davis;
+obs Object(Sent[560]) = McKinley_Allsopp_Inc;
+obs Verb(Sent[560]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[561]) = Robert_M_Tobias;
+obs Object(Sent[561]) = National_Treasury_Employes_Union;
+obs Verb(Sent[561]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[562]) = Rhoda_Nichter;
+obs Object(Sent[562]) = GASP;
+obs Verb(Sent[562]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[563]) = Mr_Linde;
+obs Object(Sent[563]) = Property_Resources_Corporation;
+obs Verb(Sent[563]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[564]) = Kenneth_T_Blaylock;
+obs Object(Sent[564]) = American_Federation_of_Government_Employees;
+obs Verb(Sent[564]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[565]) = John_Lay;
+obs Object(Sent[565]) = Colorado_Ski_Country_USA;
+obs Verb(Sent[565]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[566]) = John_E_Jacob;
+obs Object(Sent[566]) = National_Urban_League;
+obs Verb(Sent[566]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[567]) = James_C_Stewart;
+obs Object(Sent[567]) = Gilbert_Charles_Beylen_Inc;
+obs Verb(Sent[567]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[568]) = Jackie_Presser;
+obs Object(Sent[568]) = International_Brotherhood_of_Teamsters;
+obs Verb(Sent[568]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[569]) = George_E_McDonald;
+obs Object(Sent[569]) = Allied_Printing_Trades_Council;
+obs Verb(Sent[569]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[570]) = Bernard_Jacobs;
+obs Object(Sent[570]) = Shubert_Organization;
+obs Verb(Sent[570]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[571]) = Yugoslav;
+obs Object(Sent[571]) = Slobodan_Milosevic;
+obs Verb(Sent[571]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[572]) = Soviet;
+obs Object(Sent[572]) = Mikhail_S_Gorbachev;
+obs Verb(Sent[572]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[573]) = Serbian;
+obs Object(Sent[573]) = Slobodan_Milosevic;
+obs Verb(Sent[573]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[574]) = Senate;
+obs Object(Sent[574]) = Donald_T_DiFrancesco;
+obs Verb(Sent[574]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[575]) = Russian;
+obs Object(Sent[575]) = Boris_N_Yeltsin;
+obs Verb(Sent[575]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[576]) = Queens_Borough;
+obs Object(Sent[576]) = Claire_Shulman;
+obs Verb(Sent[576]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[577]) = Croatian;
+obs Object(Sent[577]) = Franjo_Tudjman;
+obs Verb(Sent[577]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[578]) = Brooklyn_Borough;
+obs Object(Sent[578]) = Howard_Golden;
+obs Verb(Sent[578]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[579]) = Bronx_Borough;
+obs Object(Sent[579]) = Fernando_Ferrer;
+obs Verb(Sent[579]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[580]) = Bosnian;
+obs Object(Sent[580]) = Alija_Izetbegovic;
+obs Verb(Sent[580]) = appos__appos_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[581]) = Laurence_H_Tribe;
+obs Object(Sent[581]) = Harvard;
+obs Verb(Sent[581]) = appos__appos_professor_nn__nn;
+obs Rel(SourceFact(Sent[581])) = professor;
+
+obs Subject(Sent[582]) = Samuel_L_Hayes;
+obs Object(Sent[582]) = Harvard_Business_School;
+obs Verb(Sent[582]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[583]) = Laurence_H_Tribe;
+obs Object(Sent[583]) = Harvard_Law_School;
+obs Verb(Sent[583]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[584]) = Stephen_Gillers;
+obs Object(Sent[584]) = New_York_University;
+obs Verb(Sent[584]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[585]) = John_C_Coffee_Jr;
+obs Object(Sent[585]) = Columbia_University;
+obs Verb(Sent[585]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[586]) = Jeffrey_Sachs;
+obs Object(Sent[586]) = Harvard;
+obs Verb(Sent[586]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[587]) = Elizabeth_Warren;
+obs Object(Sent[587]) = Harvard;
+obs Verb(Sent[587]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[588]) = Dr_Gary_I_Wadler;
+obs Object(Sent[588]) = New_York_University;
+obs Verb(Sent[588]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[589]) = David_Cole;
+obs Object(Sent[589]) = Georgetown_University;
+obs Verb(Sent[589]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[590]) = Alan_M_Dershowitz;
+obs Object(Sent[590]) = Harvard;
+obs Verb(Sent[590]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[591]) = William_J_Perry;
+obs Object(Sent[591]) = Harvard;
+obs Verb(Sent[591]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[592]) = Shlomo_Avineri;
+obs Object(Sent[592]) = Hebrew_University;
+obs Verb(Sent[592]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[593]) = Richard_A_Daynard;
+obs Object(Sent[593]) = Northeastern_University;
+obs Verb(Sent[593]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[594]) = Philip_B_Heymann;
+obs Object(Sent[594]) = Harvard;
+obs Verb(Sent[594]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[595]) = Noye_Monroe_Johnson;
+obs Object(Sent[595]) = Dartmouth_College;
+obs Verb(Sent[595]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[596]) = Mr_Williams;
+obs Object(Sent[596]) = Cooper_Union;
+obs Verb(Sent[596]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[597]) = Edward_Altman;
+obs Object(Sent[597]) = New_York_University;
+obs Verb(Sent[597]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[598]) = Dr_Sternberg;
+obs Object(Sent[598]) = IBM;
+obs Verb(Sent[598]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[599]) = Burt_Neuborne;
+obs Object(Sent[599]) = New_York_University;
+obs Verb(Sent[599]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[600]) = Arthur_R_Miller;
+obs Object(Sent[600]) = Harvard;
+obs Verb(Sent[600]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[601]) = William_P_Lyons;
+obs Object(Sent[601]) = Yale_University;
+obs Verb(Sent[601]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[602]) = William_P_Lyons;
+obs Object(Sent[602]) = Yale_Law_School;
+obs Verb(Sent[602]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[603]) = William_L_Silber;
+obs Object(Sent[603]) = New_York_University;
+obs Verb(Sent[603]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[604]) = William_L_Langer;
+obs Object(Sent[604]) = Coolidge;
+obs Verb(Sent[604]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[605]) = William_C_Barrett;
+obs Object(Sent[605]) = Pace;
+obs Verb(Sent[605]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[606]) = Thomas_McMahon;
+obs Object(Sent[606]) = Harvard;
+obs Verb(Sent[606]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[607]) = Robert_R_Glauber;
+obs Object(Sent[607]) = Harvard_Business_School;
+obs Verb(Sent[607]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[608]) = Robert_A_Mundell;
+obs Object(Sent[608]) = Columbia;
+obs Verb(Sent[608]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[609]) = Gary_C_Hufbauer;
+obs Object(Sent[609]) = Wallenberg;
+obs Verb(Sent[609]) = appos__appos_professor_nn__nn;
+
+obs Subject(Sent[610]) = Stephen_Gillers;
+obs Object(Sent[610]) = New_York_University_Law_School;
+obs Verb(Sent[610]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[611]) = Stephen_Gillers;
+obs Object(Sent[611]) = New_York_University;
+obs Verb(Sent[611]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[612]) = Ross_K_Baker;
+obs Object(Sent[612]) = Rutgers_University;
+obs Verb(Sent[612]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[613]) = Peter_Arenella;
+obs Object(Sent[613]) = University_of_California;
+obs Verb(Sent[613]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[614]) = Merle_Black;
+obs Object(Sent[614]) = Emory_University;
+obs Verb(Sent[614]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[615]) = John_C_Coffee_Jr;
+obs Object(Sent[615]) = Columbia_University;
+obs Verb(Sent[615]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[616]) = Fred_Siegel;
+obs Object(Sent[616]) = Cooper_Union;
+obs Verb(Sent[616]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[617]) = Douglas_Muzzio;
+obs Object(Sent[617]) = Baruch_College;
+obs Verb(Sent[617]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[618]) = David_Rebovich;
+obs Object(Sent[618]) = Rider_University;
+obs Verb(Sent[618]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[619]) = Andrew_Zimbalist;
+obs Object(Sent[619]) = Smith_College;
+obs Verb(Sent[619]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[620]) = Samuel_L_Hayes;
+obs Object(Sent[620]) = Harvard_Business_School;
+obs Verb(Sent[620]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[621]) = Merle_Goldman;
+obs Object(Sent[621]) = Boston_University;
+obs Verb(Sent[621]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[622]) = Thomas_C_Jorling;
+obs Object(Sent[622]) = Williams_College;
+obs Verb(Sent[622]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[623]) = Mr_Gibbons;
+obs Object(Sent[623]) = New_England_Conservatory;
+obs Verb(Sent[623]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[624]) = Lawrence_Kohlberg;
+obs Object(Sent[624]) = Harvard;
+obs Verb(Sent[624]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[625]) = Herbert_Menzel;
+obs Object(Sent[625]) = New_York_University;
+obs Verb(Sent[625]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[626]) = Dr_Roger_Maickel;
+obs Object(Sent[626]) = Purdue_University;
+obs Verb(Sent[626]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[627]) = Dr_Leon_Rudorfer;
+obs Object(Sent[627]) = Downstate_Medical_Center;
+obs Verb(Sent[627]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[628]) = Dr_Judith_Brown_Greif;
+obs Object(Sent[628]) = Albert_Einstein_College_of_Medicine;
+obs Verb(Sent[628]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[629]) = Dr_Joe_Patterson;
+obs Object(Sent[629]) = Columbia_University;
+obs Verb(Sent[629]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[630]) = Eugene_Kennedy;
+obs Object(Sent[630]) = Loyola_University;
+obs Verb(Sent[630]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[631]) = Benjamin_M_Friedman;
+obs Object(Sent[631]) = Harvard_University;
+obs Verb(Sent[631]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[632]) = William_P_Lyons;
+obs Object(Sent[632]) = Yale_University;
+obs Verb(Sent[632]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[633]) = William_E_Hellerstein;
+obs Object(Sent[633]) = Brooklyn_Law_School;
+obs Verb(Sent[633]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[634]) = Walter_Gilbert;
+obs Object(Sent[634]) = Harvard_University;
+obs Verb(Sent[634]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[635]) = Uwe_E_Reinhardt;
+obs Object(Sent[635]) = Princeton_University;
+obs Verb(Sent[635]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[636]) = Thomas_A_Benjamin;
+obs Object(Sent[636]) = Lehman_College;
+obs Verb(Sent[636]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[637]) = Theodore_Sizer;
+obs Object(Sent[637]) = Brown_University;
+obs Verb(Sent[637]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[638]) = Stephen_Jay_Gould;
+obs Object(Sent[638]) = Museum_of_Comparative_Zoology;
+obs Verb(Sent[638]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[639]) = Shaul_Bakhash;
+obs Object(Sent[639]) = George_Mason_University;
+obs Verb(Sent[639]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[640]) = Richard_A_Daynard;
+obs Object(Sent[640]) = Northeastern_University;
+obs Verb(Sent[640]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[641]) = Kirk_Varnedoe;
+obs Object(Sent[641]) = New_York_University_s_Institute_of_Fine_Art;
+obs Verb(Sent[641]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[642]) = John_Stachel;
+obs Object(Sent[642]) = Boston_University;
+obs Verb(Sent[642]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[643]) = Sidney_Shapiro;
+obs Object(Sent[643]) = University_of_Kansas_Law_School;
+obs Verb(Sent[643]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[644]) = Sidney_Rosenberg;
+obs Object(Sent[644]) = York;
+obs Verb(Sent[644]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[645]) = Sidney_Plotkin;
+obs Object(Sent[645]) = Vassar;
+obs Verb(Sent[645]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[646]) = Sidney;
+obs Object(Sent[646]) = New_York_University;
+obs Verb(Sent[646]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[647]) = Sidney_Mintz;
+obs Object(Sent[647]) = Johns_Hopkins_University;
+obs Verb(Sent[647]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[648]) = Sidney_Harring;
+obs Object(Sent[648]) = City_University_of_New_York_School_of_Law;
+obs Verb(Sent[648]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[649]) = Sidney_Gottlieb;
+obs Object(Sent[649]) = Sacred_Heart_University;
+obs Verb(Sent[649]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[650]) = Sidney_Fine;
+obs Object(Sent[650]) = University_of_Michigan;
+obs Verb(Sent[650]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[651]) = Sidney_Callahan;
+obs Object(Sent[651]) = Mercy_College;
+obs Verb(Sent[651]) = appos__appos_professor_prep_at_pobj__pobj;
+
+obs Subject(Sent[652]) = Sheila_Tate;
+obs Object(Sent[652]) = Mr_Bush;
+obs Verb(Sent[652]) = appos__appos_secretary_poss__poss;
+obs Rel(SourceFact(Sent[652])) = secretary;
+
+obs Subject(Sent[653]) = Mo_Mowlam;
+obs Object(Sent[653]) = Britain;
+obs Verb(Sent[653]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[654]) = Leland_T_Jones;
+obs Object(Sent[654]) = Mayor;
+obs Verb(Sent[654]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[655]) = Katherine_Harris;
+obs Object(Sent[655]) = Florida;
+obs Verb(Sent[655]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[656]) = Edward_Skyler;
+obs Object(Sent[656]) = Mr_Bloomberg;
+obs Verb(Sent[656]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[657]) = Dee_Dee_Myers;
+obs Object(Sent[657]) = Mr_Clinton;
+obs Verb(Sent[657]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[658]) = Cristyne_Lategano;
+obs Object(Sent[658]) = Mr_Giuliani;
+obs Verb(Sent[658]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[659]) = Colleen_Roche;
+obs Object(Sent[659]) = Mayor;
+obs Verb(Sent[659]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[660]) = Chris_Lehane;
+obs Object(Sent[660]) = Mr_Gore;
+obs Verb(Sent[660]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[661]) = Albert_Scardino;
+obs Object(Sent[661]) = Mayor;
+obs Verb(Sent[661]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[662]) = Walt_Riker;
+obs Object(Sent[662]) = Mr_Dole;
+obs Verb(Sent[662]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[663]) = Thad_Eure;
+obs Object(Sent[663]) = North_Carolina;
+obs Verb(Sent[663]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[664]) = Terry_Michael;
+obs Object(Sent[664]) = Mr_Simon;
+obs Verb(Sent[664]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[665]) = Kevin_Sweeney;
+obs Object(Sent[665]) = Mr_Hart;
+obs Verb(Sent[665]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[666]) = John_Buckley;
+obs Object(Sent[666]) = Mr_Kemp;
+obs Verb(Sent[666]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[667]) = Jody_Powell;
+obs Object(Sent[667]) = Carter;
+obs Verb(Sent[667]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[668]) = Fawn_Hall;
+obs Object(Sent[668]) = Lieut_Col_Oliver_L_North;
+obs Verb(Sent[668]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[669]) = Fawn_Hall;
+obs Object(Sent[669]) = Colonel_North;
+obs Verb(Sent[669]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[670]) = Elaine_Crispen;
+obs Object(Sent[670]) = Mrs_Reagan;
+obs Verb(Sent[670]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[671]) = Don_Foley;
+obs Object(Sent[671]) = Mr_Gephardt;
+obs Verb(Sent[671]) = appos__appos_secretary_poss__poss;
+
+obs Subject(Sent[672]) = Marlin_Fitzwater;
+obs Object(Sent[672]) = White_House;
+obs Verb(Sent[672]) = appos__appos_spokesman_nn__nn;
+obs Rel(SourceFact(Sent[672])) = spokesman;
+
+obs Subject(Sent[673]) = Gennadi_I_Gerasimov;
+obs Object(Sent[673]) = Foreign_Ministry;
+obs Verb(Sent[673]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[674]) = Charles_E_Redman;
+obs Object(Sent[674]) = State_Department;
+obs Verb(Sent[674]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[675]) = Washington;
+obs Object(Sent[675]) = White_House;
+obs Verb(Sent[675]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[676]) = Terry_Eastland;
+obs Object(Sent[676]) = Justice_Department;
+obs Verb(Sent[676]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[677]) = Larry_Speakes;
+obs Object(Sent[677]) = White_House;
+obs Verb(Sent[677]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[678]) = Gennadi_I_Gerasimov;
+obs Object(Sent[678]) = Soviet;
+obs Verb(Sent[678]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[679]) = Albert_R_Brashear;
+obs Object(Sent[679]) = White_House;
+obs Verb(Sent[679]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[680]) = West;
+obs Object(Sent[680]) = United_States;
+obs Verb(Sent[680]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[681]) = Marlin_M_Fitzwater;
+obs Object(Sent[681]) = White_House;
+obs Verb(Sent[681]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[682]) = Scott_McClellan;
+obs Object(Sent[682]) = White_House;
+obs Verb(Sent[682]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[683]) = Richard_A_Boucher;
+obs Object(Sent[683]) = State_Department;
+obs Verb(Sent[683]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[684]) = Nicholas_Burns;
+obs Object(Sent[684]) = State_Department;
+obs Verb(Sent[684]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[685]) = Michael_D_McCurry;
+obs Object(Sent[685]) = White_House;
+obs Verb(Sent[685]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[686]) = Joe_Lockhart;
+obs Object(Sent[686]) = White_House;
+obs Verb(Sent[686]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[687]) = James_P_Rubin;
+obs Object(Sent[687]) = State_Department;
+obs Verb(Sent[687]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[688]) = Ari_Fleischer;
+obs Object(Sent[688]) = White_House;
+obs Verb(Sent[688]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[689]) = Robert_B_Sims;
+obs Object(Sent[689]) = Pentagon;
+obs Verb(Sent[689]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[690]) = John_Russell;
+obs Object(Sent[690]) = Justice_Department;
+obs Verb(Sent[690]) = appos__appos_spokesman_nn__nn;
+
+obs Subject(Sent[691]) = Tony_Blankley;
+obs Object(Sent[691]) = Mr_Gingrich;
+obs Verb(Sent[691]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[692]) = Terry_Eastland;
+obs Object(Sent[692]) = Mr_Meese;
+obs Verb(Sent[692]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[693]) = Terry_Eastland;
+obs Object(Sent[693]) = Justice_Department;
+obs Verb(Sent[693]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[694]) = Robert_Sims;
+obs Object(Sent[694]) = Pentagon;
+obs Verb(Sent[694]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[695]) = Paul_J_Browne;
+obs Object(Sent[695]) = Police_Department;
+obs Verb(Sent[695]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[696]) = Nelson_Warfield;
+obs Object(Sent[696]) = Mr_Dole;
+obs Verb(Sent[696]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[697]) = Marlin_Fitzwater;
+obs Object(Sent[697]) = Reagan;
+obs Verb(Sent[697]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[698]) = Marlin_Fitzwater;
+obs Object(Sent[698]) = Mr_Reagan;
+obs Verb(Sent[698]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[699]) = Marlin_Fitzwater;
+obs Object(Sent[699]) = Mr_Bush;
+obs Verb(Sent[699]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[700]) = Marlin_Fitzwater;
+obs Object(Sent[700]) = Bush;
+obs Verb(Sent[700]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[701]) = Leland_T_Jones;
+obs Object(Sent[701]) = Mayor;
+obs Verb(Sent[701]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[702]) = Jon_Shure;
+obs Object(Sent[702]) = Mr_Florio;
+obs Verb(Sent[702]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[703]) = Ivan_F_Boesky;
+obs Object(Sent[703]) = Mr_Goldin;
+obs Verb(Sent[703]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[704]) = Howard_Wolfson;
+obs Object(Sent[704]) = Mrs_Clinton;
+obs Verb(Sent[704]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[705]) = Chris_Lehane;
+obs Object(Sent[705]) = Mr_Gore;
+obs Verb(Sent[705]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[706]) = Ari_Fleischer;
+obs Object(Sent[706]) = Mr_Bush;
+obs Verb(Sent[706]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[707]) = Wolfgang_Roth;
+obs Object(Sent[707]) = Social_Democratic_Party;
+obs Verb(Sent[707]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[708]) = Robin_Cook;
+obs Object(Sent[708]) = Labor_Party;
+obs Verb(Sent[708]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[709]) = Paula_Waters;
+obs Object(Sent[709]) = Dr_Pesch;
+obs Verb(Sent[709]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[710]) = Martin_Steadman;
+obs Object(Sent[710]) = Cuomo;
+obs Verb(Sent[710]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[711]) = Larry_Speakes;
+obs Object(Sent[711]) = Reagan;
+obs Verb(Sent[711]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[712]) = John_Buckley;
+obs Object(Sent[712]) = Mr_Kemp;
+obs Verb(Sent[712]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[713]) = Joe_Pecor;
+obs Object(Sent[713]) = Mrs_Byrne;
+obs Verb(Sent[713]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[714]) = Fred_Hoffman;
+obs Object(Sent[714]) = Pentagon;
+obs Verb(Sent[714]) = appos__appos_spokesman_poss__poss;
+
+obs Subject(Sent[715]) = Thomas_R_Viola;
+obs Object(Sent[715]) = State_Division_of_Housing_and_Community_Renewal;
+obs Verb(Sent[715]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[716]) = Vahe_Tiryakian;
+obs Object(Sent[716]) = Department_of_Buildings;
+obs Verb(Sent[716]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[717]) = Patrick_Clark;
+obs Object(Sent[717]) = Charles_J_Hynes;
+obs Verb(Sent[717]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[718]) = Michael_McKeon;
+obs Object(Sent[718]) = Mr_Pataki;
+obs Verb(Sent[718]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[719]) = Mark_Regev;
+obs Object(Sent[719]) = Foreign_Ministry;
+obs Verb(Sent[719]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[720]) = Jim_Steets;
+obs Object(Sent[720]) = Entergy;
+obs Verb(Sent[720]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[721]) = Jared_Lebow;
+obs Object(Sent[721]) = Transit_Authority;
+obs Verb(Sent[721]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[722]) = Frank_Belluscio;
+obs Object(Sent[722]) = New_Jersey_School_Boards_Association;
+obs Verb(Sent[722]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[723]) = Darren_Dopp;
+obs Object(Sent[723]) = Mr_Spitzer;
+obs Verb(Sent[723]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[724]) = Al_OLeary;
+obs Object(Sent[724]) = New_York_City_Transit;
+obs Verb(Sent[724]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[725]) = Avi_Pazner;
+obs Object(Sent[725]) = Yitzhak_Shamir;
+obs Verb(Sent[725]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[726]) = Stephen_D_Hayes;
+obs Object(Sent[726]) = Federal_Aviation_Administration;
+obs Verb(Sent[726]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[727]) = Scott_Peters;
+obs Object(Sent[727]) = Atomic_Industrial_Forum;
+obs Verb(Sent[727]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[728]) = Robert_W_Lougee_Jr;
+obs Object(Sent[728]) = Fleet;
+obs Verb(Sent[728]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[729]) = Richard_Sullivan;
+obs Object(Sent[729]) = Association_of_Food_Industries;
+obs Verb(Sent[729]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[730]) = Marc_Moran;
+obs Object(Sent[730]) = Mr_ORourke;
+obs Verb(Sent[730]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[731]) = Lee_Fryer;
+obs Object(Sent[731]) = Federal_Aviation_Administration;
+obs Verb(Sent[731]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[732]) = Kelvin_Scott;
+obs Object(Sent[732]) = United_Nations_Conference_on_Trade_and_Development;
+obs Verb(Sent[732]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[733]) = Elaine_Crispen;
+obs Object(Sent[733]) = Mrs_Reagan;
+obs Verb(Sent[733]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[734]) = Don_Finley;
+obs Object(Sent[734]) = United_States_Geological_Survey;
+obs Verb(Sent[734]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[735]) = John_Buckley;
+obs Object(Sent[735]) = Representative_Jack_F_Kemp;
+obs Verb(Sent[735]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[736]) = Yossi_Gal;
+obs Object(Sent[736]) = Israeli_Embassy;
+obs Verb(Sent[736]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[737]) = Thomas_R_Viola;
+obs Object(Sent[737]) = Division_of_Housing_and_Community_Renewal;
+obs Verb(Sent[737]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[738]) = Thomas_McCarthy;
+obs Object(Sent[738]) = Queens_District_Attorney;
+obs Verb(Sent[738]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[739]) = Terry_Mikelson;
+obs Object(Sent[739]) = OSHA;
+obs Verb(Sent[739]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[740]) = Terry_Eastland;
+obs Object(Sent[740]) = Justice_Department;
+obs Verb(Sent[740]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[741]) = Phil_Roeder;
+obs Object(Sent[741]) = Iowa_Democratic_Party;
+obs Verb(Sent[741]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[742]) = Michael_Benson;
+obs Object(Sent[742]) = National_Transportation_Safety_Board;
+obs Verb(Sent[742]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[743]) = Jon_Lukomnik;
+obs Object(Sent[743]) = Mr_Goldin;
+obs Verb(Sent[743]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[744]) = John_Buckley;
+obs Object(Sent[744]) = Mr_Kemp;
+obs Verb(Sent[744]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[745]) = James_M_Staples;
+obs Object(Sent[745]) = Department_of_Environmental_Protection;
+obs Verb(Sent[745]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[746]) = Gennadi_I_Gerasimov;
+obs Object(Sent[746]) = Foreign_Ministry;
+obs Verb(Sent[746]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[747]) = Fred_Farrar;
+obs Object(Sent[747]) = Federal_Aviation_Administration;
+obs Verb(Sent[747]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[748]) = Financial_Corporation_of_America;
+obs Object(Sent[748]) = Federal_Home_Loan_Bank_Board;
+obs Verb(Sent[748]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[749]) = Edwin_L_Dale_Jr;
+obs Object(Sent[749]) = Office_of_Management_and_Budget;
+obs Verb(Sent[749]) = appos__appos_spokesman_prep_for_pobj__pobj;
+
+obs Subject(Sent[750]) = Suzanne_Trazoff;
+obs Object(Sent[750]) = Human_Resources_Administration;
+obs Verb(Sent[750]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[751]) = Susan_Smirnoff;
+obs Object(Sent[751]) = Carter_Wallace_Inc;
+obs Verb(Sent[751]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[752]) = Patricia_B_Miller;
+obs Object(Sent[752]) = Aamco;
+obs Verb(Sent[752]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[753]) = Mary_de_Bourbon;
+obs Object(Sent[753]) = Robert_M_Morgenthau;
+obs Verb(Sent[753]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[754]) = Marjorie_Wyler;
+obs Object(Sent[754]) = Jewish_Theological;
+obs Verb(Sent[754]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[755]) = Lynn_McMahon;
+obs Object(Sent[755]) = Hospital_of_Pittsburgh;
+obs Verb(Sent[755]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[756]) = Leonita_Weintraub;
+obs Object(Sent[756]) = Schmid_Laboratories;
+obs Verb(Sent[756]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[757]) = Florence_Karlsberg;
+obs Object(Sent[757]) = National_Cancer_Institute;
+obs Verb(Sent[757]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[758]) = Dana_Scanlon;
+obs Object(Sent[758]) = Mr_LaRouche;
+obs Verb(Sent[758]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[759]) = Dale_K_Bennett;
+obs Object(Sent[759]) = IBM;
+obs Verb(Sent[759]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[760]) = Zenia_Mucha;
+obs Object(Sent[760]) = Mr_Pataki;
+obs Verb(Sent[760]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[761]) = Susan_Amlung;
+obs Object(Sent[761]) = United_Federation_of_Teachers;
+obs Verb(Sent[761]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[762]) = Patricia_Lynch;
+obs Object(Sent[762]) = Mr_Silver;
+obs Verb(Sent[762]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[763]) = Nancy_Nielsen;
+obs Object(Sent[763]) = The_Times;
+obs Verb(Sent[763]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[764]) = Marjorie_Anders;
+obs Object(Sent[764]) = Metro_North;
+obs Verb(Sent[764]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[765]) = Margie_Feinberg;
+obs Object(Sent[765]) = Board_of_Education;
+obs Verb(Sent[765]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[766]) = Janel_Patterson;
+obs Object(Sent[766]) = Economic_Development_Corporation;
+obs Verb(Sent[766]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[767]) = Ilyse_Fink;
+obs Object(Sent[767]) = Department_of_Buildings;
+obs Verb(Sent[767]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[768]) = Ellen_Borakove;
+obs Object(Sent[768]) = Medical_Examiner;
+obs Verb(Sent[768]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[769]) = Carol_Abrams;
+obs Object(Sent[769]) = Department_of_Housing_Preservation_and_Development;
+obs Verb(Sent[769]) = appos__appos_spokeswoman_prep_for_pobj__pobj;
+
+obs Subject(Sent[770]) = Thomas_McManus;
+obs Object(Sent[770]) = Banc_of_America_Securities;
+obs Verb(Sent[770]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[771]) = Richard_Bernstein;
+obs Object(Sent[771]) = Merrill_Lynch;
+obs Verb(Sent[771]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[772]) = Michael_Metz;
+obs Object(Sent[772]) = Oppenheimer__Company;
+obs Verb(Sent[772]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[773]) = Matthew_F_Alexy;
+obs Object(Sent[773]) = CS_First_Boston;
+obs Verb(Sent[773]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[774]) = Jack_Regan;
+obs Object(Sent[774]) = Josephthal;
+obs Verb(Sent[774]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[775]) = Douglas_R_Cliggott;
+obs Object(Sent[775]) = J_P_Morgan_Securities;
+obs Verb(Sent[775]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[776]) = David_Shulman;
+obs Object(Sent[776]) = Salomon_Brothers;
+obs Verb(Sent[776]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[777]) = Charles_Pradilla;
+obs Object(Sent[777]) = Cowen__Company;
+obs Verb(Sent[777]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[778]) = Byron_R_Wien;
+obs Object(Sent[778]) = Morgan_Stanley;
+obs Verb(Sent[778]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[779]) = Byron_R_Wien;
+obs Object(Sent[779]) = Dean_Witter;
+obs Verb(Sent[779]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[780]) = William_M_LeFevre;
+obs Object(Sent[780]) = Advest_Inc;
+obs Verb(Sent[780]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[781]) = Suresh_L_Bhirud;
+obs Object(Sent[781]) = First_Boston_Corporation;
+obs Verb(Sent[781]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[782]) = Raymond_De_Voe_Jr;
+obs Object(Sent[782]) = Legg_Mason_Wood_Walker;
+obs Verb(Sent[782]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[783]) = Larry_Wachtel;
+obs Object(Sent[783]) = Prudential_Bache_Securities;
+obs Verb(Sent[783]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[784]) = Larry_M_Wachtel;
+obs Object(Sent[784]) = Prudential_Bache_Securities_Inc;
+obs Verb(Sent[784]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[785]) = John_D_Connolly;
+obs Object(Sent[785]) = Witter_Reynolds;
+obs Verb(Sent[785]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[786]) = Greg_Smith;
+obs Object(Sent[786]) = Prudential_Bache_Securities;
+obs Verb(Sent[786]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[787]) = Donald_I_Trott;
+obs Object(Sent[787]) = Mabon;
+obs Verb(Sent[787]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[788]) = Charles_T_Maxwell;
+obs Object(Sent[788]) = Cyrus_J_Lawrence_Inc;
+obs Verb(Sent[788]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[789]) = Byron_R_Wien;
+obs Object(Sent[789]) = Morgan;
+obs Verb(Sent[789]) = appos__appos_strategist_prep_at_pobj__pobj;
+
+obs Subject(Sent[790]) = W_Jerry_Sanders_III;
+obs Object(Sent[790]) = Advanced_Micro_Devices_Inc;
+obs Verb(Sent[790]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[791]) = L_William_Seidman;
+obs Object(Sent[791]) = Federal_Deposit_Insurance_Corporation;
+obs Verb(Sent[791]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[792]) = Gen_Richard_B_Myers;
+obs Object(Sent[792]) = Joint_Chiefs_of_Staff;
+obs Verb(Sent[792]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[793]) = Gen_Peter_Pace;
+obs Object(Sent[793]) = Joint_Chiefs_of_Staff;
+obs Verb(Sent[793]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[794]) = Gen_Henry_H_Shelton;
+obs Object(Sent[794]) = Joint_Chiefs_of_Staff;
+obs Verb(Sent[794]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[795]) = Gen_Colin_L_Powell;
+obs Object(Sent[795]) = Joint_Chiefs_of_Staff;
+obs Verb(Sent[795]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[796]) = William_H_Gates;
+obs Object(Sent[796]) = Microsoft_Corporation;
+obs Verb(Sent[796]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[797]) = Robert_T_Francis;
+obs Object(Sent[797]) = National_Transportation_Safety_Board;
+obs Verb(Sent[797]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[798]) = Robert_M_Rosenberg;
+obs Object(Sent[798]) = Donuts;
+obs Verb(Sent[798]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[799]) = Richard_C_Breeden;
+obs Object(Sent[799]) = SEC;
+obs Verb(Sent[799]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[800]) = Shephard_Melzer;
+obs Object(Sent[800]) = Aeronautic_Committee_of_the_Association_of_the_Bar_of_New_York_City;
+obs Verb(Sent[800]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[801]) = Roger_E_Birk;
+obs Object(Sent[801]) = Merrill_Lynch;
+obs Verb(Sent[801]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[802]) = Robert_J_Helbock;
+obs Object(Sent[802]) = Republican_Party;
+obs Verb(Sent[802]) = appos__appos_today_appos_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[803]) = William_J_Casey;
+obs Object(Sent[803]) = Central_Intelligence;
+obs Verb(Sent[803]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[804]) = Upshaw;
+obs Object(Sent[804]) = National_Football_League_Players_Association;
+obs Verb(Sent[804]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[805]) = Reagan;
+obs Object(Sent[805]) = Central_Intelligence;
+obs Verb(Sent[805]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[806]) = Peter_Wright;
+obs Object(Sent[806]) = Lotus_Engineering;
+obs Verb(Sent[806]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[807]) = William_H_Webster;
+obs Object(Sent[807]) = Central_Intelligence;
+obs Verb(Sent[807]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[808]) = Robert_M_Gates;
+obs Object(Sent[808]) = Central_Intelligence;
+obs Verb(Sent[808]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[809]) = Richard_Feist;
+obs Object(Sent[809]) = Callaway_Gardens;
+obs Verb(Sent[809]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[810]) = Mary_Ann_Rothman;
+obs Object(Sent[810]) = Council_of_New_York_Cooperatives;
+obs Verb(Sent[810]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[811]) = Louis_J_Freeh;
+obs Object(Sent[811]) = Federal_Bureau_of_Investigation;
+obs Verb(Sent[811]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[812]) = John_M_Deutch;
+obs Object(Sent[812]) = Central_Intelligence;
+obs Verb(Sent[812]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[813]) = Zubin_Mehta;
+obs Object(Sent[813]) = New_York_Philharmonic;
+obs Verb(Sent[813]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[814]) = William_E_Colby;
+obs Object(Sent[814]) = Central_Intelligence;
+obs Verb(Sent[814]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[815]) = Thomas_S_Holman;
+obs Object(Sent[815]) = Albany_Museum_of_Art;
+obs Verb(Sent[815]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[816]) = Sarah_Tinsley;
+obs Object(Sent[816]) = Agency_for_International_Development;
+obs Verb(Sent[816]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[817]) = Siegfried_Landau;
+obs Object(Sent[817]) = Brooklyn_Philharmonia;
+obs Verb(Sent[817]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[818]) = Radiothon;
+obs Object(Sent[818]) = Chicago_Symphony;
+obs Verb(Sent[818]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[819]) = Peter_Debreceny;
+obs Object(Sent[819]) = Fay;
+obs Verb(Sent[819]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[820]) = National_Security_Adviser;
+obs Object(Sent[820]) = Central_Intelligence;
+obs Verb(Sent[820]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[821]) = Mr_Forsythe;
+obs Object(Sent[821]) = Frankfurt_Opera_Ballet;
+obs Verb(Sent[821]) = dep__dep_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[822]) = Paul_Volcker;
+obs Object(Sent[822]) = Federal_Reserve;
+obs Verb(Sent[822]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+obs Rel(SourceFact(Sent[822])) = replace_chairman;
+
+obs Subject(Sent[823]) = Paul_A_Volcker;
+obs Object(Sent[823]) = Federal_Reserve_Board;
+obs Verb(Sent[823]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[824]) = William_H_Donaldson;
+obs Object(Sent[824]) = Securities_and_Exchange_Commission;
+obs Verb(Sent[824]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[825]) = Thurmond;
+obs Object(Sent[825]) = Senate_Armed_Services_Committee;
+obs Verb(Sent[825]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[826]) = Stephen_M_Wolf;
+obs Object(Sent[826]) = United;
+obs Verb(Sent[826]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[827]) = Representative_Christopher_H_Smith;
+obs Object(Sent[827]) = Veterans_Affairs_Committee;
+obs Verb(Sent[827]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[828]) = Pete_Domenici;
+obs Object(Sent[828]) = Energy_and_Natural_Resources_Committee;
+obs Verb(Sent[828]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[829]) = Myrlie_Evers_Williams;
+obs Object(Sent[829]) = NAACP;
+obs Verb(Sent[829]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[830]) = John_Linder;
+obs Object(Sent[830]) = National_Republican_Congressional_Committee;
+obs Verb(Sent[830]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[831]) = Gen_Colin_L_Powell;
+obs Object(Sent[831]) = Joint_Chiefs_of_Staff;
+obs Verb(Sent[831]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[832]) = Mr_Sanders;
+obs Object(Sent[832]) = Advanced_Micro;
+obs Verb(Sent[832]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[833]) = J_David_Barnes;
+obs Object(Sent[833]) = Mellon;
+obs Verb(Sent[833]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[834]) = Henry_A_Bersani;
+obs Object(Sent[834]) = Thruway_Authority;
+obs Verb(Sent[834]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[835]) = Roger_L_Stevens;
+obs Object(Sent[835]) = John_F_Kennedy_Center;
+obs Verb(Sent[835]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[836]) = Robert_K_Swanson;
+obs Object(Sent[836]) = Del_E_Webb_Corporation;
+obs Verb(Sent[836]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[837]) = Robert_Clark;
+obs Object(Sent[837]) = Hill_Samuel__Co;
+obs Verb(Sent[837]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[838]) = Paul_A_Volcker;
+obs Object(Sent[838]) = Federal_Reserve_Board;
+obs Verb(Sent[838]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[839]) = Yasir_Arafat;
+obs Object(Sent[839]) = Palestine_Liberation_Organization;
+obs Verb(Sent[839]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[840]) = Mr_Rohatyn;
+obs Object(Sent[840]) = Municipal_Assistance_Corporation;
+obs Verb(Sent[840]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[841]) = Mr_Arafat;
+obs Object(Sent[841]) = Palestine_Liberation_Organization;
+obs Verb(Sent[841]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[842]) = Gen_Colin_L_Powell;
+obs Object(Sent[842]) = Joint_Chiefs_of_Staff;
+obs Verb(Sent[842]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[843]) = Beverly_Sills;
+obs Object(Sent[843]) = Lincoln_Center;
+obs Verb(Sent[843]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[844]) = Alan_Greenspan;
+obs Object(Sent[844]) = Federal_Reserve;
+obs Verb(Sent[844]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[845]) = Roger_B_Smith;
+obs Object(Sent[845]) = GM;
+obs Verb(Sent[845]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[846]) = Mr_Rogers;
+obs Object(Sent[846]) = NL;
+obs Verb(Sent[846]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[847]) = Mr_Maier;
+obs Object(Sent[847]) = Kaiser_Aluminum;
+obs Verb(Sent[847]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[848]) = Mark_Fowler;
+obs Object(Sent[848]) = FCC;
+obs Verb(Sent[848]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[849]) = Elie_Wiesel;
+obs Object(Sent[849]) = United_States_Holocaust_Memorial_Council;
+obs Verb(Sent[849]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[850]) = Donald_L_Dotson;
+obs Object(Sent[850]) = National_Labor_Relations_Board;
+obs Verb(Sent[850]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[851]) = William_H_Webster;
+obs Object(Sent[851]) = Federal_Bureau_of_Investigation;
+obs Verb(Sent[851]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+obs Rel(SourceFact(Sent[851])) = replace_leadership;
+
+obs Subject(Sent[852]) = Walter_Byers;
+obs Object(Sent[852]) = National_Collegiate_Athletic_Association;
+obs Verb(Sent[852]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[853]) = Zubin_Mehta;
+obs Object(Sent[853]) = New_York_Philharmonic;
+obs Verb(Sent[853]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[854]) = Wolfgang_Sawallisch;
+obs Object(Sent[854]) = Philadelphia_Orchestra;
+obs Verb(Sent[854]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[855]) = Trevor_Nunn;
+obs Object(Sent[855]) = Royal_National_Theater;
+obs Verb(Sent[855]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[856]) = Terry_Hands;
+obs Object(Sent[856]) = Royal_Shakespeare_Company;
+obs Verb(Sent[856]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[857]) = Rudolf_Nureyev;
+obs Object(Sent[857]) = Paris_Opera_Ballet;
+obs Verb(Sent[857]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[858]) = Riccardo_Muti;
+obs Object(Sent[858]) = Philadelphia_Orchestra;
+obs Verb(Sent[858]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[859]) = Kurt_Masur;
+obs Object(Sent[859]) = New_York_Philharmonic;
+obs Verb(Sent[859]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[860]) = Georg_Solti;
+obs Object(Sent[860]) = Chicago_Symphony_Orchestra;
+obs Verb(Sent[860]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[861]) = William_J_Casey;
+obs Object(Sent[861]) = Central_Intelligence;
+obs Verb(Sent[861]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[862]) = Kenneth_L_Adelman;
+obs Object(Sent[862]) = Arms_Control_and_Disarmament_Agency;
+obs Verb(Sent[862]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[863]) = Christian_Badea;
+obs Object(Sent[863]) = Spoleto_Festivals;
+obs Verb(Sent[863]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[864]) = Oliver_Roux;
+obs Object(Sent[864]) = Guinness_PLC;
+obs Verb(Sent[864]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[865]) = Karl_Muck;
+obs Object(Sent[865]) = Hamburg_State_Opera;
+obs Verb(Sent[865]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[866]) = Elizbeth_Irwin;
+obs Object(Sent[866]) = Little_Red_School_House;
+obs Verb(Sent[866]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[867]) = Washington;
+obs Object(Sent[867]) = Vinson__Elkins;
+obs Verb(Sent[867]) = nn__nn_office_prep_of_pobj__pobj;
+obs Rel(SourceFact(Sent[0])) = office;
+
+obs Subject(Sent[868]) = Washington;
+obs Object(Sent[868]) = Sojourner;
+obs Verb(Sent[868]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[869]) = Washington;
+obs Object(Sent[869]) = Paul;
+obs Verb(Sent[869]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[870]) = Washington;
+obs Object(Sent[870]) = International_Center_for_Development_Policy;
+obs Verb(Sent[870]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[871]) = Washington;
+obs Object(Sent[871]) = EF_Hutton__Company;
+obs Verb(Sent[871]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[872]) = Washington;
+obs Object(Sent[872]) = Earle_Palmer_Brown_Inc;
+obs Verb(Sent[872]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[873]) = Pompano_Beach;
+obs Object(Sent[873]) = American_Automobile_Association;
+obs Verb(Sent[873]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[874]) = New_York;
+obs Object(Sent[874]) = Bureau_of_Alcohol__Tobacco_and_Firearms;
+obs Verb(Sent[874]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[875]) = Detroit;
+obs Object(Sent[875]) = J_Walter_Thompson;
+obs Verb(Sent[875]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[876]) = Chicago;
+obs Object(Sent[876]) = Backer__Spielvogel;
+obs Verb(Sent[876]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[877]) = Washington;
+obs Object(Sent[877]) = Consumers_Union;
+obs Verb(Sent[877]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[878]) = Washington;
+obs Object(Sent[878]) = American_Civil_Liberties_Union;
+obs Verb(Sent[878]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[879]) = San_Francisco;
+obs Object(Sent[879]) = Foote;
+obs Verb(Sent[879]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[880]) = New_York;
+obs Object(Sent[880]) = Hill;
+obs Verb(Sent[880]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[881]) = New_York;
+obs Object(Sent[881]) = Federal_Bureau_of_Investigation;
+obs Verb(Sent[881]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[882]) = New_York;
+obs Object(Sent[882]) = Fallon_Worldwide;
+obs Verb(Sent[882]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[883]) = New_York;
+obs Object(Sent[883]) = DDB_Worldwide;
+obs Verb(Sent[883]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[884]) = New_York;
+obs Object(Sent[884]) = BBDO_Worldwide;
+obs Verb(Sent[884]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[885]) = New_York;
+obs Object(Sent[885]) = Bartle_Bogle_Hegarty;
+obs Verb(Sent[885]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[886]) = Chicago;
+obs Object(Sent[886]) = DDB_Worldwide;
+obs Verb(Sent[886]) = nn__nn_office_prep_of_pobj__pobj;
+
+obs Subject(Sent[887]) = Brooklyn_Borough;
+obs Object(Sent[887]) = Howard_Golden;
+obs Verb(Sent[887]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[888]) = WILLIAM_MCKECHNIE;
+obs Object(Sent[888]) = Transit_Patrolmen_s_Benevolent_Association_New_York;
+obs Verb(Sent[888]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[889]) = Transit_Authority;
+obs Object(Sent[889]) = David_L_Gunn;
+obs Verb(Sent[889]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[890]) = TING;
+obs Object(Sent[890]) = Data_Arts_Ltd;
+obs Verb(Sent[890]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[891]) = Stony_Brook;
+obs Object(Sent[891]) = Dr_John_Marburger;
+obs Verb(Sent[891]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[892]) = Stony_Brook;
+obs Object(Sent[892]) = Dr_John_H_Marburger;
+obs Verb(Sent[892]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[893]) = Senate;
+obs Object(Sent[893]) = John_F_Russo;
+obs Verb(Sent[893]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[894]) = Queens_Borough;
+obs Object(Sent[894]) = Donald_R_Manes;
+obs Verb(Sent[894]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[895]) = Manhattan;
+obs Object(Sent[895]) = David_N_Dinkins;
+obs Verb(Sent[895]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[896]) = Manhattan_Borough;
+obs Object(Sent[896]) = David_N_Dinkins;
+obs Verb(Sent[896]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[897]) = Yugoslav;
+obs Object(Sent[897]) = Slobodan_Milosevic;
+obs Verb(Sent[897]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[898]) = Soviet;
+obs Object(Sent[898]) = Mikhail_S_Gorbachev;
+obs Verb(Sent[898]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[899]) = Serbian;
+obs Object(Sent[899]) = Slobodan_Milosevic;
+obs Verb(Sent[899]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[900]) = Senate;
+obs Object(Sent[900]) = Donald_T_DiFrancesco;
+obs Verb(Sent[900]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[901]) = Russian;
+obs Object(Sent[901]) = Boris_N_Yeltsin;
+obs Verb(Sent[901]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[902]) = Queens_Borough;
+obs Object(Sent[902]) = Claire_Shulman;
+obs Verb(Sent[902]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[903]) = Croatian;
+obs Object(Sent[903]) = Franjo_Tudjman;
+obs Verb(Sent[903]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[904]) = Bronx_Borough;
+obs Object(Sent[904]) = Fernando_Ferrer;
+obs Verb(Sent[904]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[905]) = Bosnian;
+obs Object(Sent[905]) = Alija_Izetbegovic;
+obs Verb(Sent[905]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[906]) = Extebank;
+obs Object(Sent[906]) = George_Ruggiero;
+obs Verb(Sent[906]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[907]) = Exposition_Authority;
+obs Object(Sent[907]) = George_Zoffinger;
+obs Verb(Sent[907]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[908]) = Exchange_Prisoners_The_Red_Cross;
+obs Object(Sent[908]) = Cornelio_Sommaruga;
+obs Verb(Sent[908]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[909]) = E_WOLCOTT;
+obs Object(Sent[909]) = Aetna_Life__Casualty_Hartford;
+obs Verb(Sent[909]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[910]) = E_W_Deavenport;
+obs Object(Sent[910]) = Kingsport;
+obs Verb(Sent[910]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[911]) = EVE_W_PAUL;
+obs Object(Sent[911]) = Planned_Parenthood_Federation_of_America_New_York;
+obs Verb(Sent[911]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[912]) = EVELYN_E;
+obs Object(Sent[912]) = Brandeis_University_Waltham;
+obs Verb(Sent[912]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[913]) = Eva_Clayton;
+obs Object(Sent[913]) = Technical_Resources_Ltd;
+obs Verb(Sent[913]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[914]) = Eva_Clayton;
+obs Object(Sent[914]) = Technical_Resources_International_Ltd;
+obs Verb(Sent[914]) = nn__nn_president_appos__appos;
+
+obs Subject(Sent[915]) = Yannick_Noah;
+obs Object(Sent[915]) = Joakim_Nystrom;
+obs Verb(Sent[915]) = nsubj__nsubj_defeat_dobj__dobj;
+obs Rel(SourceFact(Sent[915])) = defeat;
+
+obs Subject(Sent[916]) = West;
+obs Object(Sent[916]) = East;
+obs Verb(Sent[916]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[917]) = Villanova;
+obs Object(Sent[917]) = Seton_Hall;
+obs Verb(Sent[917]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[918]) = Temple;
+obs Object(Sent[918]) = Rutgers;
+obs Verb(Sent[918]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[919]) = Temple;
+obs Object(Sent[919]) = Penn_State;
+obs Verb(Sent[919]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[920]) = Richard_G_Lugar;
+obs Object(Sent[920]) = Jesse_Helms;
+obs Verb(Sent[920]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[921]) = Mr_Washington;
+obs Object(Sent[921]) = Mayor_Jane_M_Byrne;
+obs Verb(Sent[921]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[922]) = Giants;
+obs Object(Sent[922]) = Denver_Broncos;
+obs Verb(Sent[922]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[923]) = Fordham;
+obs Object(Sent[923]) = Fairfield;
+obs Verb(Sent[923]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[924]) = Calgary_Flames;
+obs Object(Sent[924]) = Islanders;
+obs Verb(Sent[924]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[925]) = Toronto_Blue_Jays;
+obs Object(Sent[925]) = New_York_Yankees;
+obs Verb(Sent[925]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[926]) = St_Louis_Cardinals;
+obs Object(Sent[926]) = New_York_Mets;
+obs Verb(Sent[926]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[927]) = Seattle_Mariners;
+obs Object(Sent[927]) = New_York_Yankees;
+obs Verb(Sent[927]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[928]) = San_Diego_Padres;
+obs Object(Sent[928]) = New_York_Mets;
+obs Verb(Sent[928]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[929]) = Philadelphia_Phillies;
+obs Object(Sent[929]) = New_York_Mets;
+obs Verb(Sent[929]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[930]) = Montreal_Expos;
+obs Object(Sent[930]) = New_York_Mets;
+obs Verb(Sent[930]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[931]) = Florida_Marlins;
+obs Object(Sent[931]) = New_York_Mets;
+obs Verb(Sent[931]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[932]) = Boston_Red_Sox;
+obs Object(Sent[932]) = New_York_Yankees;
+obs Verb(Sent[932]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[933]) = Baltimore_Orioles;
+obs Object(Sent[933]) = New_York_Yankees;
+obs Verb(Sent[933]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[934]) = Atlanta_Braves;
+obs Object(Sent[934]) = New_York_Mets;
+obs Verb(Sent[934]) = nsubj__nsubj_defeat_dobj__dobj;
+
+obs Subject(Sent[935]) = New_York;
+obs Object(Sent[935]) = Rent_Stabilization_Association_of_New_York_City;
+obs Verb(Sent[935]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[936]) = Vaclav_Havel;
+obs Object(Sent[936]) = Czechoslovakia;
+obs Verb(Sent[936]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[937]) = Mr_Yeltsin;
+obs Object(Sent[937]) = Russia;
+obs Verb(Sent[937]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[938]) = Jon_Shure;
+obs Object(Sent[938]) = New_Jersey_Policy_Perspective;
+obs Verb(Sent[938]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[939]) = John_F_Kennedy;
+obs Object(Sent[939]) = United_States;
+obs Verb(Sent[939]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[940]) = George_W_Bush;
+obs Object(Sent[940]) = United_States;
+obs Verb(Sent[940]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[941]) = George_Bush;
+obs Object(Sent[941]) = United_States;
+obs Verb(Sent[941]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[942]) = Boris_Yeltsin;
+obs Object(Sent[942]) = Russia;
+obs Verb(Sent[942]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[943]) = Bill_Clinton;
+obs Object(Sent[943]) = United_States;
+obs Verb(Sent[943]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[944]) = Arthur_Levine;
+obs Object(Sent[944]) = Teachers_College;
+obs Verb(Sent[944]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[945]) = Vicki_Mechner;
+obs Object(Sent[945]) = OmniQuest_Inc;
+obs Verb(Sent[945]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[946]) = San_Mateo;
+obs Object(Sent[946]) = National_Federation_of_Independent_Business;
+obs Verb(Sent[946]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[947]) = Samaranch;
+obs Object(Sent[947]) = International_Olympic_Committee;
+obs Verb(Sent[947]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[948]) = Saddam_Hussein;
+obs Object(Sent[948]) = Iraq;
+obs Verb(Sent[948]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[949]) = Mr_Zigarlick;
+obs Object(Sent[949]) = Echo_Bay_Mines_Ltd;
+obs Verb(Sent[949]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[950]) = Mr_Wahl;
+obs Object(Sent[950]) = Vibra_Screw_Inc;
+obs Verb(Sent[950]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[951]) = Mr_Tabor;
+obs Object(Sent[951]) = Kidder;
+obs Verb(Sent[951]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[952]) = Mrs_Horn;
+obs Object(Sent[952]) = Cleveland_Fed;
+obs Verb(Sent[952]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[953]) = Mr_Salopek;
+obs Object(Sent[953]) = Elephant_Butte_Irrigation_District;
+obs Verb(Sent[953]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+
+obs Subject(Sent[954]) = WASHINGTON;
+obs Object(Sent[954]) = State_Department;
+obs Verb(Sent[954]) = nsubj__nsubj_say_nsubj__nsubj;
+obs Rel(SourceFact(Sent[954])) = say;
+
+obs Subject(Sent[955]) = WASHINGTON;
+obs Object(Sent[955]) = United_States;
+obs Verb(Sent[955]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[956]) = Spurs;
+obs Object(Sent[956]) = Gregg_Popovich;
+obs Verb(Sent[956]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[957]) = Sears;
+obs Object(Sent[957]) = Roebuck;
+obs Verb(Sent[957]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[958]) = Nets;
+obs Object(Sent[958]) = Lawrence_Frank;
+obs Verb(Sent[958]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[959]) = Nets;
+obs Object(Sent[959]) = Byron_Scott;
+obs Verb(Sent[959]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[960]) = Kohlberg;
+obs Object(Sent[960]) = Kravis;
+obs Verb(Sent[960]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[961]) = Hicks;
+obs Object(Sent[961]) = Muse;
+obs Verb(Sent[961]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[962]) = Goldman;
+obs Object(Sent[962]) = Sachs;
+obs Verb(Sent[962]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[963]) = Dad;
+obs Object(Sent[963]) = Adam;
+obs Verb(Sent[963]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[964]) = Washington;
+obs Object(Sent[964]) = Mr_Shamir;
+obs Verb(Sent[964]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[965]) = Washington;
+obs Object(Sent[965]) = Mr_Fonseca;
+obs Verb(Sent[965]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[966]) = Voila;
+obs Object(Sent[966]) = Duchamp;
+obs Verb(Sent[966]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[967]) = Vietnam;
+obs Object(Sent[967]) = A_James_Rudin;
+obs Verb(Sent[967]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[968]) = Vienna;
+obs Object(Sent[968]) = Carl_E_Schorske;
+obs Verb(Sent[968]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[969]) = United_States;
+obs Object(Sent[969]) = Mr_Schmid;
+obs Verb(Sent[969]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[970]) = United;
+obs Object(Sent[970]) = Mr_Shugrue;
+obs Verb(Sent[970]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[971]) = Julius;
+obs Object(Sent[971]) = English;
+obs Verb(Sent[971]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[972]) = George_P_Shultz;
+obs Object(Sent[972]) = Oliver_Tambo;
+obs Verb(Sent[972]) = nsubj__nsubj_say_nsubj__nsubj;
+
+obs Subject(Sent[973]) = Sullivan;
+obs Object(Sent[973]) = Mr_Merola;
+obs Verb(Sent[973]) = nsubj__nsubj_say_prep_of_pobj__pobj;
+
+obs Subject(Sent[974]) = Steward;
+obs Object(Sent[974]) = Rickey_Womack;
+obs Verb(Sent[974]) = nsubj__nsubj_say_prep_of_pobj__pobj;
+
+obs Subject(Sent[975]) = Simon_Feldman;
+obs Object(Sent[975]) = Mr_Gorbachev;
+obs Verb(Sent[975]) = nsubj__nsubj_say_prep_of_pobj__pobj;
+
+obs Subject(Sent[976]) = Shimon_Peres;
+obs Object(Sent[976]) = Americans;
+obs Verb(Sent[976]) = nsubj__nsubj_say_prep_of_pobj__pobj;
+
+obs Subject(Sent[977]) = Richard_A_Viguerie;
+obs Object(Sent[977]) = Mr_Channell;
+obs Verb(Sent[977]) = nsubj__nsubj_say_prep_of_pobj__pobj;
+
+obs Subject(Sent[978]) = Omolo_Siranga;
+obs Object(Sent[978]) = Mrs_Otieno;
+obs Verb(Sent[978]) = nsubj__nsubj_say_prep_of_pobj__pobj;
+
+obs Subject(Sent[979]) = Ms_Kraemer;
+obs Object(Sent[979]) = Alexander;
+obs Verb(Sent[979]) = nsubj__nsubj_say_prep_of_pobj__pobj;
+
+obs Subject(Sent[980]) = Mr_Tarshis;
+obs Object(Sent[980]) = Cablevision;
+obs Verb(Sent[980]) = nsubj__nsubj_say_prep_of_pobj__pobj;
+
+obs Subject(Sent[981]) = Mrs_Whitehead;
+obs Object(Sent[981]) = Mrs_Cahill;
+obs Verb(Sent[981]) = nsubj__nsubj_say_prep_of_pobj__pobj;
+
+obs Subject(Sent[982]) = Mrs_DAgostino;
+obs Object(Sent[982]) = Mr_Landis;
+obs Verb(Sent[982]) = nsubj__nsubj_say_prep_of_pobj__pobj;
+
+obs Subject(Sent[983]) = State_Department;
+obs Object(Sent[983]) = Congress;
+obs Verb(Sent[983]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[984]) = Spain;
+obs Object(Sent[984]) = Libyans;
+obs Verb(Sent[984]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[985]) = Sam_Nunn;
+obs Object(Sent[985]) = Reagan;
+obs Verb(Sent[985]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[986]) = Sam_Nunn;
+obs Object(Sent[986]) = Mr_Reagan;
+obs Verb(Sent[986]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[987]) = Robert_Gates;
+obs Object(Sent[987]) = Senate_Intelligence_Committee;
+obs Verb(Sent[987]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[988]) = Robert_C_McFarlane;
+obs Object(Sent[988]) = Congress;
+obs Verb(Sent[988]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[989]) = Reagan;
+obs Object(Sent[989]) = Javier_Perez_de_Cuellar;
+obs Verb(Sent[989]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[990]) = Paul_A_Volcker;
+obs Object(Sent[990]) = Congress;
+obs Verb(Sent[990]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[991]) = Colonel_North;
+obs Object(Sent[991]) = Mr_McFarlane;
+obs Verb(Sent[991]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[992]) = Colonel_North;
+obs Object(Sent[992]) = Admiral_Poindexter;
+obs Verb(Sent[992]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[993]) = Reagan;
+obs Object(Sent[993]) = Congress;
+obs Verb(Sent[993]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[994]) = Ms_Lewinsky;
+obs Object(Sent[994]) = Ms_Tripp;
+obs Verb(Sent[994]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[995]) = Mr_Greenspan;
+obs Object(Sent[995]) = Senate_Banking_Committee;
+obs Verb(Sent[995]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[996]) = Mr_Greenspan;
+obs Object(Sent[996]) = Congress;
+obs Verb(Sent[996]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[997]) = Mr_Bush;
+obs Object(Sent[997]) = Mr_Gorbachev;
+obs Verb(Sent[997]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[998]) = Mr_Bush;
+obs Object(Sent[998]) = Congress;
+obs Verb(Sent[998]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[999]) = Bush;
+obs Object(Sent[999]) = Congress;
+obs Verb(Sent[999]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[1000]) = Bush_Administration;
+obs Object(Sent[1000]) = Congress;
+obs Verb(Sent[1000]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[1001]) = Alan_Greenspan;
+obs Object(Sent[1001]) = Congress;
+obs Verb(Sent[1001]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[1002]) = Administration;
+obs Object(Sent[1002]) = Congress;
+obs Verb(Sent[1002]) = nsubj__nsubj_tell_dobj__dobj;
+
+obs Subject(Sent[1003]) = William_S_Sessions;
+obs Object(Sent[1003]) = Federal_Bureau_of_Investigation;
+obs Verb(Sent[1003]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1004]) = William_J_Casey;
+obs Object(Sent[1004]) = Central_Intelligence;
+obs Verb(Sent[1004]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1005]) = William_H_Webster;
+obs Object(Sent[1005]) = Central_Intelligence;
+obs Verb(Sent[1005]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1006]) = Mr_Webster;
+obs Object(Sent[1006]) = Central_Intelligence;
+obs Verb(Sent[1006]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1007]) = William_Casey;
+obs Object(Sent[1007]) = Central_Intelligence;
+obs Verb(Sent[1007]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1008]) = Whitney_Young;
+obs Object(Sent[1008]) = Urban_League;
+obs Verb(Sent[1008]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1009]) = Richard_Rodgers;
+obs Object(Sent[1009]) = Music_Theater_of_Lincoln_Center;
+obs Verb(Sent[1009]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1010]) = Frances_Henry_Taylor;
+obs Object(Sent[1010]) = Metropolitan;
+obs Verb(Sent[1010]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1011]) = Donna_E_Shalala;
+obs Object(Sent[1011]) = Office_of_Management_and_Budget;
+obs Verb(Sent[1011]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1012]) = Carol_M_Browner;
+obs Object(Sent[1012]) = Environmental_Protection_Agency;
+obs Verb(Sent[1012]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1013]) = Robert_S_McKinney;
+obs Object(Sent[1013]) = Kidder;
+obs Verb(Sent[1013]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1014]) = Mr_Zeisler;
+obs Object(Sent[1014]) = Theater_Communications_Group;
+obs Verb(Sent[1014]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1015]) = Bill_Casey;
+obs Object(Sent[1015]) = Central_Intelligence;
+obs Verb(Sent[1015]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1016]) = Carey_Perloff;
+obs Object(Sent[1016]) = CSC_Theater;
+obs Verb(Sent[1016]) = prep__prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1017]) = Staten_Island_Republican;
+obs Object(Sent[1017]) = Senate_Finance_Committee;
+obs Verb(Sent[1017]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1018]) = Scowcroft;
+obs Object(Sent[1018]) = Kissinger_Associates;
+obs Verb(Sent[1018]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1019]) = Rick_Wiener;
+obs Object(Sent[1019]) = Association;
+obs Verb(Sent[1019]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1020]) = Rhode_Island_Democrat;
+obs Object(Sent[1020]) = Foreign_Relations_Committee;
+obs Verb(Sent[1020]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1021]) = Republican;
+obs Object(Sent[1021]) = Select_Committee_on_Intelligence;
+obs Verb(Sent[1021]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1022]) = Republican;
+obs Object(Sent[1022]) = Child_Care_Committee;
+obs Verb(Sent[1022]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1023]) = Mr_Zimmerman;
+obs Object(Sent[1023]) = Canadian_Forest_Industries_Council;
+obs Verb(Sent[1023]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1024]) = Mr_Riley;
+obs Object(Sent[1024]) = Democratic_Governors_Association;
+obs Verb(Sent[1024]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1025]) = Mr_Howard;
+obs Object(Sent[1025]) = Xerox;
+obs Verb(Sent[1025]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1026]) = Frank_Stanton;
+obs Object(Sent[1026]) = Simmons_Market_Research;
+obs Verb(Sent[1026]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1027]) = Republican;
+obs Object(Sent[1027]) = Ways_and_Means_Committee;
+obs Verb(Sent[1027]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1028]) = Republican;
+obs Object(Sent[1028]) = Senate_Foreign_Relations_Committee;
+obs Verb(Sent[1028]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1029]) = Republican;
+obs Object(Sent[1029]) = Senate_Finance_Committee;
+obs Verb(Sent[1029]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1030]) = Republican;
+obs Object(Sent[1030]) = Judiciary_Committee;
+obs Verb(Sent[1030]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1031]) = Republican;
+obs Object(Sent[1031]) = House_Ways_and_Means_Committee;
+obs Verb(Sent[1031]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1032]) = Republican;
+obs Object(Sent[1032]) = Finance_Committee;
+obs Verb(Sent[1032]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1033]) = Illinois_Democrat;
+obs Object(Sent[1033]) = House_Ways_and_Means_Committee;
+obs Verb(Sent[1033]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1034]) = Democrat;
+obs Object(Sent[1034]) = Senate_Armed_Services_Committee;
+obs Verb(Sent[1034]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1035]) = Democrat;
+obs Object(Sent[1035]) = House_Armed_Services_Committee;
+obs Verb(Sent[1035]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1036]) = Democrat;
+obs Object(Sent[1036]) = Armed_Services_Committee;
+obs Verb(Sent[1036]) = rcmod__rcmod_chairman_prep_of_pobj__pobj;
+
+obs Subject(Sent[1037]) = William_J_Casey;
+obs Object(Sent[1037]) = Central_Intelligence;
+obs Verb(Sent[1037]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1038]) = Mr_Casey;
+obs Object(Sent[1038]) = Central_Intelligence;
+obs Verb(Sent[1038]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1039]) = Stamford;
+obs Object(Sent[1039]) = Singles_Network;
+obs Verb(Sent[1039]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1040]) = Rusty_Moore;
+obs Object(Sent[1040]) = Fashion_Center_Business_Improvement_District;
+obs Verb(Sent[1040]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1041]) = Robert_D_Reischauer;
+obs Object(Sent[1041]) = Congressional_Budget_Office;
+obs Verb(Sent[1041]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1042]) = Mr_Ozawa;
+obs Object(Sent[1042]) = Boston_Symphony_Orchestra;
+obs Verb(Sent[1042]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1043]) = Howard_Wolfson;
+obs Object(Sent[1043]) = Democratic_Congressional_Campaign_Committee;
+obs Verb(Sent[1043]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1044]) = Dr_Lee;
+obs Object(Sent[1044]) = Institute_for_Health_Policy_Studies;
+obs Verb(Sent[1044]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1045]) = Dr_Lamont;
+obs Object(Sent[1045]) = American_Civil_Liberties_Union;
+obs Verb(Sent[1045]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1046]) = Dr_E_Lewis_Sturtevant;
+obs Object(Sent[1046]) = New_York_Agricultural_Experiment_Station;
+obs Verb(Sent[1046]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1047]) = W_Richard_Bruner;
+obs Object(Sent[1047]) = Better_Business_Bureau;
+obs Verb(Sent[1047]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1048]) = William_J_Casey;
+obs Object(Sent[1048]) = Central_Intelligence_Agency;
+obs Verb(Sent[1048]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1049]) = Mr_Graffman;
+obs Object(Sent[1049]) = Curtis_Institute_of_Music;
+obs Verb(Sent[1049]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1050]) = Michael_Levey;
+obs Object(Sent[1050]) = National_Gallery;
+obs Verb(Sent[1050]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1051]) = Gloucester;
+obs Object(Sent[1051]) = Gloucester_Stage_Company;
+obs Verb(Sent[1051]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1052]) = Windows;
+obs Object(Sent[1052]) = Rainbow_Room;
+obs Verb(Sent[1052]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1053]) = William_Webster;
+obs Object(Sent[1053]) = Central_Intelligence;
+obs Verb(Sent[1053]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1054]) = United_States_Information_Agency;
+obs Object(Sent[1054]) = Office_of_Personnel_Management;
+obs Verb(Sent[1054]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1055]) = Sunell;
+obs Object(Sent[1055]) = Armored_Family_of_Vehicles_Task_Force;
+obs Verb(Sent[1055]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1056]) = S_McCartney;
+obs Object(Sent[1056]) = Kennedy_Space_Center;
+obs Verb(Sent[1056]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1057]) = Robert_M_Gates;
+obs Object(Sent[1057]) = Central_Intelligence;
+obs Verb(Sent[1057]) = rcmod__rcmod_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1058]) = Zeus_Goldberg;
+obs Object(Sent[1058]) = Woods;
+obs Verb(Sent[1058]) = rcmod__rcmod_own_dobj__dobj;
+obs Rel(SourceFact(Sent[1058])) = ownership;
+
+obs Subject(Sent[1059]) = USX;
+obs Object(Sent[1059]) = Marathon_Oil;
+obs Verb(Sent[1059]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1060]) = Tribune_Company;
+obs Object(Sent[1060]) = Cubs;
+obs Verb(Sent[1060]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1061]) = Texas_Air_Corporation;
+obs Object(Sent[1061]) = Continental_and_Eastern;
+obs Verb(Sent[1061]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1062]) = Texas_Air;
+obs Object(Sent[1062]) = Continental;
+obs Verb(Sent[1062]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1063]) = Tenneco_Inc;
+obs Object(Sent[1063]) = Tennessee_Gas_Pipeline_Company;
+obs Verb(Sent[1063]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1064]) = Taw_Kritakara;
+obs Object(Sent[1064]) = Tollgate_Restaurant;
+obs Verb(Sent[1064]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1065]) = Sherman_E_Graham;
+obs Object(Sent[1065]) = Restaurant;
+obs Verb(Sent[1065]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1066]) = Heublein;
+obs Object(Sent[1066]) = Inglenook;
+obs Verb(Sent[1066]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1067]) = EF_Hutton_Insurance_Group_Inc;
+obs Object(Sent[1067]) = EF_Hutton_Life_Insurance_Company;
+obs Verb(Sent[1067]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1068]) = Walt_Disney_Company;
+obs Object(Sent[1068]) = ABC;
+obs Verb(Sent[1068]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1069]) = Viacom;
+obs Object(Sent[1069]) = CBS;
+obs Verb(Sent[1069]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1070]) = Texas_Air_Corporation;
+obs Object(Sent[1070]) = Eastern;
+obs Verb(Sent[1070]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1071]) = Rupert_Murdoch;
+obs Object(Sent[1071]) = Fox;
+obs Verb(Sent[1071]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1072]) = News_Corporation;
+obs Object(Sent[1072]) = Fox;
+obs Verb(Sent[1072]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1073]) = General_Electric;
+obs Object(Sent[1073]) = NBC;
+obs Verb(Sent[1073]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1074]) = General_Electric_Company;
+obs Object(Sent[1074]) = NBC;
+obs Verb(Sent[1074]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1075]) = Federated_Department_Stores;
+obs Object(Sent[1075]) = Macy;
+obs Verb(Sent[1075]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1076]) = Cablevision;
+obs Object(Sent[1076]) = Madison_Square_Garden;
+obs Verb(Sent[1076]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1077]) = Cablevision;
+obs Object(Sent[1077]) = Garden;
+obs Verb(Sent[1077]) = rcmod__rcmod_own_dobj__dobj;
+
+obs Subject(Sent[1078]) = William_J_Casey;
+obs Object(Sent[1078]) = Central_Intelligence;
+obs Verb(Sent[1078]) = rcmod__rcmod_resign_prep_as_pobj_director_prep_of_pobj__pobj;
+obs Rel(SourceFact(Sent[1078])) = resign_from_leadership;
+
+obs Subject(Sent[1079]) = Mr_Casey;
+obs Object(Sent[1079]) = Central_Intelligence;
+obs Verb(Sent[1079]) = rcmod__rcmod_resign_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1080]) = Michael_Botwinick;
+obs Object(Sent[1080]) = Corcoran_Gallery_of_Art;
+obs Verb(Sent[1080]) = rcmod__rcmod_resign_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1081]) = William_H_Webster;
+obs Object(Sent[1081]) = Central_Intelligence;
+obs Verb(Sent[1081]) = rcmod__rcmod_resign_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1082]) = Victor_Kovner;
+obs Object(Sent[1082]) = Office;
+obs Verb(Sent[1082]) = rcmod__rcmod_resign_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1083]) = Ross_Stretton;
+obs Object(Sent[1083]) = Royal_Ballet;
+obs Verb(Sent[1083]) = rcmod__rcmod_resign_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1084]) = Ronald_A_Galotti;
+obs Object(Sent[1084]) = Esquire;
+obs Verb(Sent[1084]) = rcmod__rcmod_resign_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1085]) = Porter_J_Goss;
+obs Object(Sent[1085]) = Central_Intelligence;
+obs Verb(Sent[1085]) = rcmod__rcmod_resign_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1086]) = Norman_C_Berry;
+obs Object(Sent[1086]) = Ogilvy__Mather_New_York;
+obs Verb(Sent[1086]) = rcmod__rcmod_resign_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1087]) = Michael_Brown;
+obs Object(Sent[1087]) = Federal_Emergency_Management_Agency;
+obs Verb(Sent[1087]) = rcmod__rcmod_resign_prep_as_pobj_director_prep_of_pobj__pobj;
+
+obs Subject(Sent[1088]) = Lee_Watkins;
+obs Object(Sent[1088]) = Prison_Construction;
+obs Verb(Sent[1088]) = rcmod__rcmod_resign_prep_as_pobj_director_prep_of_pobj__pobj;
 

@@ -67,7 +67,7 @@ def main():
 	##### WRITE TO MODEL FILE #####
 
 	# Let's call number of relations to be some value. Write it to model file
-	num_relations = 10
+	num_relations = 20
 	model_file.write("\n\ndistinct Relation R[{0}];\n".format(num_relations))
 
 	# Write out number of sentences
@@ -104,7 +104,7 @@ def main():
 	print("Number of unique sentence arg pairs:" + str(len(uniq_arg_pairs)/2))
 
 def clean_sentences(sentences):
-	""" Replace all whitespace with underscores """
+	""" Replace all whitespace and crap with underscores """
 
 	for sentence in sentences:
 		sentence["source"] = sentence["source"].replace(' ', '_').replace('.', '').replace('&', '')

@@ -289,51 +289,81 @@ public class RelationExtractionProposer implements Proposer {
       }
       
       // 3a) Bootstrap Observed Sentences by Trigger (also has to instantiate some stuff)
-      // Loop through other sentences. If it has a sourceFact, use that relation.
-      for (Object sentenceToBootstrap : sentType.getGuaranteedObjects()) {
-        if (world.isInstantiated(makeVar(sourceFactFunc, sentenceToBootstrap))) {
-          continue;
-        }
+      HashMap<Object, ArrayList> triggerGroups = new HashMap<Object, ArrayList>();
+      for (Object sentence : sentType.getGuaranteedObjects()) {
         
-        Object trigger = world.getValue(makeVar(verbFunc, sentenceToBootstrap));
-        
-        for (Object sent : sentType.getGuaranteedObjects()) {
-          Object trig = world.getValue(makeVar(verbFunc, sent));
-          if (trig.equals(trigger) && world.isInstantiated(makeVar(sourceFactFunc, sent))) { // Only labeled sentences have this so far
-              Object rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc, sent))).getOriginFuncValue(relFunc);
-              Object arg1 = world.getValue(makeVar(subjectFunc, sentenceToBootstrap));
-              Object arg2 = world.getValue(makeVar(objectFunc, sentenceToBootstrap));
-              Object sourceFact = getFact(rel, arg1, arg2, world);
-              world.setValue(makeVar(sourceFactFunc, sentenceToBootstrap), sourceFact);
-              world.setValue(makeVar(holdsFunc, sourceFact), true);
-              //System.out.println("Setting " + sentenceToBootstrap + " to " + sourceFact);
-              break;
-          }
+        Object trigger = world.getValue(makeVar(verbFunc, sentence));
+        if (triggerGroups.containsKey(trigger)) {
+          triggerGroups.get(trigger).add(sentence);
+        } else {
+          ArrayList list = new ArrayList();
+          list.add(sentence);
+          triggerGroups.put(trigger, list);
         }
       }
       
-      // 3b) Bootstrap by arg pair
-      for (Object sentenceToBootstrap : sentType.getGuaranteedObjects()) {
-        
-        if (world.isInstantiated(makeVar(sourceFactFunc, sentenceToBootstrap))) {
-          continue;
+      // See if there is a label in a group, assign if so
+      for (ArrayList group : triggerGroups.values()) {
+        Object rel = null;
+        for (Object sent : group) {
+          if (world.isInstantiated(makeVar(sourceFactFunc, sent))) { // Only labeled sentences have this
+            rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc, sent))).getOriginFuncValue(relFunc);
+          }
         }
-        
-        Object arg1 = world.getValue(makeVar(subjectFunc, sentenceToBootstrap));
-        Object arg2 = world.getValue(makeVar(objectFunc, sentenceToBootstrap));
                 
-        for (Object sent : sentType.getGuaranteedObjects()) {
-          Object _arg1 = world.getValue(makeVar(subjectFunc, sent));
-          Object _arg2 = world.getValue(makeVar(objectFunc, sent));
-          if (arg1.equals(_arg1) && arg2.equals(_arg2) && world.isInstantiated(makeVar(sourceFactFunc, sent))) {
-            Object rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc, sent))).getOriginFuncValue(relFunc);
+        // One of the sentences was observed, cluster everything in that relation
+        if (rel != null) {
+          for (Object sent : group) {
+            Object arg1 = world.getValue(makeVar(subjectFunc, sent));
+            Object arg2 = world.getValue(makeVar(objectFunc, sent));
             Object sourceFact = getFact(rel, arg1, arg2, world);
             world.setValue(makeVar(sourceFactFunc, sent), sourceFact);
             world.setValue(makeVar(holdsFunc, sourceFact), true);
-            //System.out.println("Setting " + sentenceToBootstrap + " to " + sourceFact);
-            break;
+            //System.out.println("Trig: Setting " + sent + " to " + sourceFact);
           }
-        }         
+        } 
+      }
+ 
+      
+      // 3b) Bootstrap Observed Sentences by ArgPair 
+      HashMap<Object, ArrayList> argPairGroups = new HashMap<Object, ArrayList>();
+      for (Object sentence : sentType.getGuaranteedObjects()) {
+        Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
+        Object arg2 = world.getValue(makeVar(objectFunc, sentence));
+        String argPair = arg1.toString() + arg2.toString();
+
+        if (argPairGroups.containsKey(argPair)) {
+          argPairGroups.get(argPair).add(sentence);
+        } else {
+          ArrayList list = new ArrayList();
+          list.add(sentence);
+          argPairGroups.put(argPair, list);
+        }
+      }
+      
+      // See if there is a label in a group, assign if so
+      for (ArrayList group : argPairGroups.values()) {
+        Object rel = null;
+        for (Object sent : group) {
+          if (world.isInstantiated(makeVar(sourceFactFunc, sent))) { // Only labeled sentences have this
+            rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc, sent))).getOriginFuncValue(relFunc);
+          }
+        }
+                
+        // One of the sentences was observed, cluster everything in that relation
+        if (rel != null) {
+          for (Object sent : group) {
+            if (world.isInstantiated(makeVar(sourceFactFunc, sent))) {
+              continue;
+            }
+            Object arg1 = world.getValue(makeVar(subjectFunc, sent));
+            Object arg2 = world.getValue(makeVar(objectFunc, sent));
+            Object sourceFact = getFact(rel, arg1, arg2, world);
+            world.setValue(makeVar(sourceFactFunc, sent), sourceFact);
+            world.setValue(makeVar(holdsFunc, sourceFact), true);
+            //System.out.println("ArgPair: Setting " + sent + " to " + sourceFact);
+          }
+        } 
       }
       
   
