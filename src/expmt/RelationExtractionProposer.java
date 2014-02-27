@@ -122,6 +122,9 @@ public class RelationExtractionProposer implements Proposer {
   // HashMap of supporting fact -> List of sentences that express it
   protected HashMap<Object, List> supportedFacts;
   
+  // HashSet of labeled sentences
+  protected HashSet labeledSentences;
+  
   // Debug
   private int count;
 
@@ -175,20 +178,26 @@ public class RelationExtractionProposer implements Proposer {
     alpha = (Integer) model.getConstantValue("alpha");
     beta = (Integer) model.getConstantValue("beta");
     dir_alpha = (Double) model.getConstantValue("dir_alpha");
+    
+    // Random Number Generator
+    rng = new Random();
 
   }
 
   /**
    * Initialization:
    * 1) Set all observed variables (Subject, Object, Verb, TriggerID)
-   * 2) Choose SourceFact for all observed sentences uniformly from all facts
-   *     such that the argument pair matches
-   * 3) Set the Holds(f) variable for this fact to be True
+   * 2) Set SourceFact for all labeled sentences 
+   * 3) Bootstrap 
+   *    a) By trigger
+   *    b) By arg pair
+   *    c) Randomly choose everything else
    * 4) Sample everything else
    *    a) #Fact variables which are set to 1
-   * 	b) Sparsity
-   * 	c) Theta
-   * 	d) Holds for RELEVANT FACTS
+   * 	  b) Sparsity
+   * 	  c) Theta
+   * 	  d) Holds for RELEVANT FACTS
+   * 
    */
   public PartialWorldDiff initialize(Evidence evidence, List queries) {
 
@@ -238,7 +247,7 @@ public class RelationExtractionProposer implements Proposer {
             Object[] factArgs = {rel, arg1, arg2};
             NumberVar nFacts = new NumberVar(factPOP, factArgs);
   
-            // 4a) Instantiate the number variable, by definition of the model
+            // 5a) Instantiate the number variable, by definition of the model
             world.setValue(nFacts, 1);
   
             //Object value = world.getSatisfiers(nFacts).iterator().next(); // Should only be one fact that satisfies that number statement
@@ -248,7 +257,7 @@ public class RelationExtractionProposer implements Proposer {
         }
       }
       
-      // This is for labeled sentences, where a relation of a sentence is observed (along with the arg pair, of course)
+      // 2) This is for labeled sentences, where a relation of a sentence is observed (along with the arg pair, of course)
       for (Iterator iter = evidence.getEvidenceVars().iterator(); iter.hasNext(); ) {
         
         BayesNetVar evidenceVar = (BayesNetVar) iter.next();
@@ -270,74 +279,114 @@ public class RelationExtractionProposer implements Proposer {
         Object arg1 = world.getValue(new RandFuncAppVar(subjectFunc, Collections.singletonList(sentence)));
         Object arg2 = world.getValue(new RandFuncAppVar(objectFunc, Collections.singletonList(sentence)));
   
-        // 2) Set the sourceFact value in the world
+        // Set the sourceFact value in the world
         Object fact = getFact(rel, arg1, arg2, world);
         world.setValue(new RandFuncAppVar(sourceFactFunc, Collections.singletonList(sentence)), fact);
   
-        // 3) Set the Holds value in the world
-        world.setValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)), true);
-     
+        // Set the Holds value in the world
+        world.setValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)), true);    
         
       }
+      
+      // 3a) Bootstrap Observed Sentences by Trigger (also has to instantiate some stuff)
+      // Loop through other sentences. If it has a sourceFact, use that relation.
+      for (Object sentenceToBootstrap : sentType.getGuaranteedObjects()) {
+        if (world.isInstantiated(makeVar(sourceFactFunc, sentenceToBootstrap))) {
+          continue;
+        }
+        
+        Object trigger = world.getValue(makeVar(verbFunc, sentenceToBootstrap));
+        
+        for (Object sent : sentType.getGuaranteedObjects()) {
+          Object trig = world.getValue(makeVar(verbFunc, sent));
+          if (trig.equals(trigger) && world.isInstantiated(makeVar(sourceFactFunc, sent))) { // Only labeled sentences have this so far
+              Object rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc, sent))).getOriginFuncValue(relFunc);
+              Object arg1 = world.getValue(makeVar(subjectFunc, sentenceToBootstrap));
+              Object arg2 = world.getValue(makeVar(objectFunc, sentenceToBootstrap));
+              Object sourceFact = getFact(rel, arg1, arg2, world);
+              world.setValue(makeVar(sourceFactFunc, sentenceToBootstrap), sourceFact);
+              world.setValue(makeVar(holdsFunc, sourceFact), true);
+              //System.out.println("Setting " + sentenceToBootstrap + " to " + sourceFact);
+              break;
+          }
+        }
+      }
+      
+      // 3b) Bootstrap by arg pair
+      for (Object sentenceToBootstrap : sentType.getGuaranteedObjects()) {
+        
+        if (world.isInstantiated(makeVar(sourceFactFunc, sentenceToBootstrap))) {
+          continue;
+        }
+        
+        Object arg1 = world.getValue(makeVar(subjectFunc, sentenceToBootstrap));
+        Object arg2 = world.getValue(makeVar(objectFunc, sentenceToBootstrap));
+                
+        for (Object sent : sentType.getGuaranteedObjects()) {
+          Object _arg1 = world.getValue(makeVar(subjectFunc, sent));
+          Object _arg2 = world.getValue(makeVar(objectFunc, sent));
+          if (arg1.equals(_arg1) && arg2.equals(_arg2) && world.isInstantiated(makeVar(sourceFactFunc, sent))) {
+            Object rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc, sent))).getOriginFuncValue(relFunc);
+            Object sourceFact = getFact(rel, arg1, arg2, world);
+            world.setValue(makeVar(sourceFactFunc, sent), sourceFact);
+            world.setValue(makeVar(holdsFunc, sourceFact), true);
+            //System.out.println("Setting " + sentenceToBootstrap + " to " + sourceFact);
+            break;
+          }
+        }         
+      }
+      
   
-      // 2) For each observed sentence, choose SourceFact (basically randomly choose a relation
-      // to go with the argument pair). This assumes sentences are distinct.
-      // 3) Also, set the holds variable for this fact to be true
-      rng = new Random();
+            
+      // 3c) For all other observed sentences, choose SourceFact (basically randomly choose a relation
+      // to go with the argument pair)
       for (Object sentence : sentType.getGuaranteedObjects()) {
         
-        // Some of these may have been set from observing a relation
-        if (world.isInstantiated(makeVar(sourceFactFunc, Collections.singletonList(sentence)))) {
+        // Some of these may have been set from observing a relation or bootstrapping
+        if (world.isInstantiated(makeVar(sourceFactFunc, sentence))) {
           continue;
         }
   
         // Choose relation randomly from all relations
         int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
         Object rel = relType.getGuaranteedObject(relNum);
-        Object arg1 = world.getValue(new RandFuncAppVar(subjectFunc, Collections.singletonList(sentence)));
-        Object arg2 = world.getValue(new RandFuncAppVar(objectFunc, Collections.singletonList(sentence)));
+        Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
+        Object arg2 = world.getValue(makeVar(objectFunc, sentence));
   
-        // 2) Set the sourceFact value in the world
+        // Set the sourceFact value in the world
         Object fact = getFact(rel, arg1, arg2, world);
-        world.setValue(new RandFuncAppVar(sourceFactFunc, Collections.singletonList(sentence)), fact);
+        world.setValue(makeVar(sourceFactFunc, sentence), fact);
   
-        // 3) Set the Holds value in the world
-        world.setValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)), true);
+        // Set the Holds value in the world
+        world.setValue(makeVar(holdsFunc, fact), true);
         
       }
   
-      // 4b and c) Sample Sparsity(r) and Theta(r) for each relation r
+      // Beta 
       Integer[] params = {alpha, beta};
       Beta sparsitySampler = new Beta(Arrays.asList(params));
-      Dirichlet thetaSampler = new Dirichlet(trigType.getGuaranteedObjects().size(), dir_alpha);
       for (Object rel : relType.getGuaranteedObjects()) {
-  
-        // 4b) Sparsity(r)
-        RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel));
+        RandFuncAppVar sparsity = makeVar(sparsityFunc, rel);
         world.setValue(sparsity, sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType));
-        
-        // 4c) Theta(r)
-        RandFuncAppVar theta = new RandFuncAppVar(thetaFunc, Collections.singletonList(rel));
-        world.setValue(theta, thetaSampler.sampleVal(Collections.EMPTY_LIST, relType)); 
-  
       }
-  
+      
       // 4d) Sample all holds(f) values OF RELEVANT FACTS if they haven't been instantiated
       factMap = new HashMap<String, Object>();
       for (Object sentence: sentType.getGuaranteedObjects()) {
   
-        Object arg1 = world.getValue(new RandFuncAppVar(subjectFunc, Collections.singletonList(sentence)));
-        Object arg2 = world.getValue(new RandFuncAppVar(objectFunc, Collections.singletonList(sentence)));
+        Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
+        Object arg2 = world.getValue(makeVar(objectFunc, sentence));
         
         for (Object rel : relType.getGuaranteedObjects()) {
           
           // Get the fact, put it in the factMap, instantiate and sample if need be
           Object fact = getFact(rel, arg1, arg2, world);
           factMap.put(generateKey(rel, arg1, arg2), fact);
-          RandFuncAppVar holds = new RandFuncAppVar(holdsFunc, Collections.singletonList(fact));
+          RandFuncAppVar holds = makeVar(holdsFunc, fact);
+          Double sparsity = (Double) world.getValue(makeVar(sparsityFunc, rel));
           
           if (!world.isInstantiated(holds)) {
-              if (rng.nextDouble() < (Double) world.getValue(new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel)))) {
+              if (rng.nextDouble() < sparsity) {
               world.setValue(holds, true);
             } else {
               world.setValue(holds, false);
@@ -345,25 +394,47 @@ public class RelationExtractionProposer implements Proposer {
           }        
         }
       }
+      
+      // 4b and c) Sample Sparsity(r) and Theta(r) for each relation r
+      //Integer[] params = {alpha, beta};
+      //Beta sparsitySampler = new Beta(Arrays.asList(params));
+      Dirichlet thetaSampler = new Dirichlet(trigType.getGuaranteedObjects().size(), dir_alpha);
+      for (Object rel : relType.getGuaranteedObjects()) {
+  
+        // 4b) Sparsity(r)
+        //RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel));
+        //world.setValue(sparsity, sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType));
+        //sparsitySample(world, rel);
+        
+        // 4c) Theta(r)
+        //RandFuncAppVar theta = new RandFuncAppVar(thetaFunc, Collections.singletonList(rel));
+        //world.setValue(theta, thetaSampler.sampleVal(Collections.EMPTY_LIST, relType)); 
+        thetaSample(world, rel);
+  
+      }
+      
   
       // Debug
       if (Util.verbose()) {
         for (Object fact : allFacts(world)) {
   
-          Object holds = world.getValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)));
+          Object holds = world.getValue(makeVar(holdsFunc, fact));
           System.out.println("Fact: " + fact + ", Holds: " + holds);
   
         }
         System.out.println(world.toString());
       }
-  
-      count = 0;
+      
     
-    } while (this.evidence.getEvidenceProb(world) == 0);
+    } while (this.evidence.getEvidenceLogProb(world) < -1E6);
     // End do-while loop
+    
+    
     
     System.out.println("Number of sentences: " + sentType.getGuaranteedObjects().size());
     System.out.println("Number of facts: " + factMap.size());
+    
+    count = 0;
     
     return world;
 
@@ -381,11 +452,11 @@ public class RelationExtractionProposer implements Proposer {
    */
   public double proposeNextState(PartialWorldDiff proposedWorld) {
     count++;
-    double sample = rng.nextDouble();
     double logAcceptanceRatio;
     
     // Sample until a valid move has been made (where evidence was not changed)
     do {
+      double sample = rng.nextDouble();
       proposedWorld.revert();
       updateSupportedFacts(proposedWorld); // Used for sourceFactSwitch and holdsSwitch
       if (sample < 0.3) {
@@ -393,11 +464,11 @@ public class RelationExtractionProposer implements Proposer {
       } else if (sample < 0.6) {
         logAcceptanceRatio = holdsSwitch(proposedWorld);
       } else if (sample < 0.8) {
-        logAcceptanceRatio = sparsitySample(proposedWorld);
+        logAcceptanceRatio = randomSparsitySample(proposedWorld);
       } else {
-        logAcceptanceRatio = thetaSample(proposedWorld);
+        logAcceptanceRatio = randomThetaSample(proposedWorld);
       }
-    } while (this.evidence.getEvidenceProb(proposedWorld) == 0);
+    } while (this.evidence.getEvidenceLogProb(proposedWorld) < - 1E6);
     
     return logAcceptanceRatio;
   }
@@ -655,11 +726,16 @@ public class RelationExtractionProposer implements Proposer {
    * 
    * Sample from posterior Beta distribution
    */
-  private double sparsitySample(PartialWorldDiff proposedWorld) {
-
+  private double randomSparsitySample(PartialWorldDiff proposedWorld) {
+    
     // Choose relation randomly from all relations
     int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
     Object rel = relType.getGuaranteedObject(relNum);
+    
+    return sparsitySample(proposedWorld, rel);
+  }
+  
+  private double sparsitySample(PartialWorldDiff proposedWorld, Object rel) {
 
     // The size of Hr is simply the number of unique combinations of different entities
     int sizeOfHrf = (int) Math.pow(entType.getGuaranteedObjects().size(), 2);
@@ -677,7 +753,8 @@ public class RelationExtractionProposer implements Proposer {
     Integer[] params = {alpha + numOfTrueFactsInHrf, beta + sizeOfHrf - numOfTrueFactsInHrf};
     Beta sparsitySampler = new Beta(Arrays.asList(params));
     RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel));
-    proposedWorld.setValue(sparsity, sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType));
+    Object newVal = sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType);
+    proposedWorld.setValue(sparsity, newVal);
     
     //return Double.POSITIVE_INFINITY; // Gibbs, may have to figure this out later with MHSampler.java
     return 0; // Gibbs, for RelationExtractionMHSampler hack
@@ -691,11 +768,16 @@ public class RelationExtractionProposer implements Proposer {
    * 
    * Sample from posterior Dirichlet Distribution
    */
-  private double thetaSample(PartialWorldDiff proposedWorld) {
-
+  private double randomThetaSample(PartialWorldDiff proposedWorld) {
+    
     // Choose relation randomly from all relations
     int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
     Object rel = relType.getGuaranteedObject(relNum);
+    
+    return thetaSample(proposedWorld, rel);
+  }
+  
+  private double thetaSample(PartialWorldDiff proposedWorld, Object rel) {
 
     // Create parameter vector
     Double[] params = new Double[trigType.getGuaranteedObjects().size()];
@@ -705,7 +787,9 @@ public class RelationExtractionProposer implements Proposer {
     for (int i = 0; i < params.length; i++) {
       for (Object sentence : sentType.getGuaranteedObjects()) {
         RandFuncAppVar triggerID = new RandFuncAppVar(triggerIDFunc, Collections.singletonList(sentence));
-        if (proposedWorld.getValue(triggerID).equals(i)) {
+        Object sourceFact = proposedWorld.getValue(makeVar(sourceFactFunc, Collections.singletonList(sentence)));
+        Object sentRel = ((NonGuaranteedObject) sourceFact).getOriginFuncValue(relFunc);
+        if (proposedWorld.getValue(triggerID).equals(i) && sentRel == rel) {
           params[i]++;
         }
       }
@@ -713,7 +797,8 @@ public class RelationExtractionProposer implements Proposer {
     // Sample from posterior distribution, set the value in the world
     Dirichlet thetaSampler = new Dirichlet(Arrays.asList(params));
     RandFuncAppVar theta = new RandFuncAppVar(thetaFunc, Collections.singletonList(rel));
-    proposedWorld.setValue(theta, thetaSampler.sampleVal(Collections.EMPTY_LIST, relType));
+    Object newVal = thetaSampler.sampleVal(Collections.EMPTY_LIST, relType);
+    proposedWorld.setValue(theta, newVal);
     
     //return Double.POSITIVE_INFINITY; // Gibbs, may have to figure this out later with MHSampler.java
     return 0; // Gibbs, for RelationExtractionMHSampler hack
@@ -787,6 +872,22 @@ public class RelationExtractionProposer implements Proposer {
     
   }
   
+  // For debugging
+  private ArrayList allTrueFacts(PartialWorldDiff world) {
+    Collection facts = allFacts(world);
+    
+    ArrayList trueFacts = new ArrayList();
+    
+    for (Object fact : facts) {
+      if ((Boolean) world.getValue(makeVar(holdsFunc, Collections.singletonList(fact)))) {
+        trueFacts.add(fact);
+      }
+    }
+    
+    return trueFacts;
+    
+  }
+  
   // Update the supportedFacts hashmap given the world
   // Need to do this just in case last sample wasn't accepted
   private void updateSupportedFacts(PartialWorldDiff world) {
@@ -812,6 +913,10 @@ public class RelationExtractionProposer implements Proposer {
   
   private RandFuncAppVar makeVar(RandomFunction func, List args) {
     return new RandFuncAppVar(func, args);
+  }
+  
+  private RandFuncAppVar makeVar(RandomFunction func, Object obj) {
+    return makeVar(func, Collections.singletonList(obj));
   }
 
 

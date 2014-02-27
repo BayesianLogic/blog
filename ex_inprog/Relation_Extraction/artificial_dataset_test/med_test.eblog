@@ -1,0 +1,85 @@
+/* Observation file */
+
+obs Subject(Sent[0]) = Obama;
+obs Object(Sent[0]) = USA;
+obs Verb(Sent[0]) = is_the_president_of;
+obs Rel(SourceFact(Sent[0])) = leadership; // Relation Observation
+
+obs Subject(Sent[1]) = Pranab_Mukherjee;
+obs Object(Sent[1]) = India;
+obs Verb(Sent[1]) = is_the_president_of;
+
+obs Subject(Sent[2]) = Nicholas_Dirks;
+obs Object(Sent[2]) = UC_Berkeley;
+obs Verb(Sent[2]) = is_the_president_of;
+
+obs Subject(Sent[3]) = John_Hennessy;
+obs Object(Sent[3]) = Stanford;
+obs Verb(Sent[3]) = is_the_president_of;
+
+obs Subject(Sent[4]) = Nicholas_Dirks;
+obs Object(Sent[4]) = UC_Berkeley;
+obs Verb(Sent[4]) = is_the_chancellor_of;
+
+obs Subject(Sent[5]) = John_Hennessy;
+obs Object(Sent[5]) = Stanford;
+obs Verb(Sent[5]) = is_the_chancellor_of;
+
+obs Subject(Sent[6]) = Palpatine;
+obs Object(Sent[6]) = the_Jedi_Senate;
+obs Verb(Sent[6]) = is_the_chancellor_of;
+
+obs Subject(Sent[7]) = Stuart_Russell;
+obs Object(Sent[7]) = Artificial_Intelligence;
+obs Verb(Sent[7]) = teaches_a_class_in;
+obs Rel(SourceFact(Sent[7])) = teaches_class; // Relation Observation
+
+obs Subject(Sent[8]) = Jitendra_Malik;
+obs Object(Sent[8]) = Computer_Vision;
+obs Verb(Sent[8]) = teaches_a_class_in;
+
+obs Subject(Sent[9]) = Jitendra_Malik;
+obs Object(Sent[9]) = Machine_Learning;
+obs Verb(Sent[9]) = teaches_a_class_in;
+
+obs Subject(Sent[10]) = David_Wagner;
+obs Object(Sent[10]) = Security;
+obs Verb(Sent[10]) = teaches_a_class_in;
+
+obs Subject(Sent[11]) = Mike_Jordan;
+obs Object(Sent[11]) = Statistical_Learning_Theory;
+obs Verb(Sent[11]) = teaches_a_class_in;
+
+obs Subject(Sent[12]) = Stuart_Russell;
+obs Object(Sent[12]) = Artificial_Intelligence;
+obs Verb(Sent[12]) = teaches;
+
+obs Subject(Sent[13]) = Mike_Jordan;
+obs Object(Sent[13]) = Statistical_Learning_Theory;
+obs Verb(Sent[13]) = teaches;
+
+obs Subject(Sent[14]) = Chris;
+obs Object(Sent[14]) = Stuart_Russell;
+obs Verb(Sent[14]) = is_a_student_of;
+obs Rel(SourceFact(Sent[14])) = student_of; // Relation Observation
+
+obs Subject(Sent[15]) = Chris;
+obs Object(Sent[15]) = Mike_Jordan;
+obs Verb(Sent[15]) = is_a_student_of;
+
+obs Subject(Sent[16]) = Lei;
+obs Object(Sent[16]) = Stuart_Russell;
+obs Verb(Sent[16]) = is_a_student_of;
+
+obs Subject(Sent[17]) = Chris;
+obs Object(Sent[17]) = Lei;
+obs Verb(Sent[17]) = is_a_student_of;
+
+obs Subject(Sent[18]) = John;
+obs Object(Sent[18]) = Stuart_Russell;
+obs Verb(Sent[18]) = is_a_student_of;
+
+obs Subject(Sent[19]) = John;
+obs Object(Sent[19]) = Mike_Jordan;
+obs Verb(Sent[19]) = is_a_student_of;
+

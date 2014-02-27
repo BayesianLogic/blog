@@ -1,0 +1,29 @@
+/* Observation file */
+
+obs Subject(Sent[0]) = Obama;
+obs Object(Sent[0]) = USA;
+obs Verb(Sent[0]) = is_the_president_of;
+obs Rel(SourceFact(Sent[0])) = leadership;
+
+obs Subject(Sent[1]) = Nicholas_Dirks;
+obs Object(Sent[1]) = UC_Berkeley;
+obs Verb(Sent[1]) = is_the_president_of;
+obs Rel(SourceFact(Sent[1])) = leadership;
+
+obs Subject(Sent[2]) = Pranab;
+obs Object(Sent[2]) = India;
+obs Verb(Sent[2]) = is_the_president_of;
+
+//obs Subject(Sent[3]) = Pranab;
+//obs Object(Sent[3]) = India;
+//obs Verb(Sent[3]) = is_the_leader_of;
+
+obs Subject(Sent[3]) = Stuart_Russell;
+obs Object(Sent[3]) = Artifical_Intelligence;
+obs Verb(Sent[3]) = teaches_a_class_in;
+obs Rel(SourceFact(Sent[3])) = teaches;
+
+obs Subject(Sent[4]) = David_Wagner;
+obs Object(Sent[4]) = Security;
+obs Verb(Sent[4]) = teaches_a_class_in;
+

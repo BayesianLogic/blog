@@ -10,7 +10,7 @@ Constructed an artifial dataset consisting of 20 sentences, and 5 relations:
 I constructed these such that there are a lot of overlaps between the argument pairs and the relations. The goal is to see if the current model has a bootstrap (or semi-supervised clustering like) effect on the data when the entities and triggers are represented ONLY as strings.
 
 
-
+#############################
 
 Experiment 1:
 
@@ -18,7 +18,185 @@ Purpose: To test bootstrapping.
  - 20 Sentences
  - 3 Relations
  - 5 Verbs, 2 for R[0], 2 for R[1], 1 for R[2]
+ - Sentences 0-6 are leadership, 7-13 are teaches, 14-19 are student_of
 
   R[0] = Leadership
   R[1] = Teaches a Class
   R[2] = Student to Professor
+
+Triggers:
+  Leadership: is_the_president_of,
+  Leadership: is_the_chancellor_of,
+  Teaches a Class: teaches_a_class_in,
+  Teaches a Class: teaches,
+  Student Of: is_a_student_of
+
+Comments:
+ - Sometimes if two sentences with same arg pair are initialized with wrong relation (even though one of them has same trigger as observed leadership relation), they tend to stay in the wrong relation. This is problematic, but perhaps a different parameter choice of dir_alpha may help solve this.
+
+Results:
+
+(Good example)
+
+Distribution of values for Rel(SourceFact(Sent[0]))
+	1.0	leadership
+Distribution of values for Rel(SourceFact(Sent[1]))
+	0.84065	leadership
+	0.10501666666666666	student_of
+	0.05433333333333333	teaches_class
+Distribution of values for Rel(SourceFact(Sent[2]))
+	1.0	leadership
+Distribution of values for Rel(SourceFact(Sent[3]))
+	0.9998666666666667	leadership
+	1.3333333333333334E-4	student_of
+Distribution of values for Rel(SourceFact(Sent[4]))
+	0.9993166666666666	leadership
+	6.833333333333333E-4	student_of
+Distribution of values for Rel(SourceFact(Sent[5]))
+	1.0	leadership
+Distribution of values for Rel(SourceFact(Sent[6]))
+	0.7358666666666667	leadership
+	0.16183333333333333	student_of
+	0.1023	teaches_class
+Distribution of values for Rel(SourceFact(Sent[7]))
+	1.0	teaches_class
+Distribution of values for Rel(SourceFact(Sent[8]))
+	0.7595666666666666	teaches_class
+	0.15843333333333334	student_of
+	0.082	leadership
+Distribution of values for Rel(SourceFact(Sent[9]))
+	0.78525	teaches_class
+	0.13205	student_of
+	0.0827	leadership
+Distribution of values for Rel(SourceFact(Sent[10]))
+	0.7806833333333333	teaches_class
+	0.13636666666666666	student_of
+	0.08295	leadership
+Distribution of values for Rel(SourceFact(Sent[11]))
+	1.0	teaches_class
+Distribution of values for Rel(SourceFact(Sent[12]))
+	0.9985333333333334	teaches_class
+	0.0012333333333333332	leadership
+	2.3333333333333333E-4	student_of
+Distribution of values for Rel(SourceFact(Sent[13]))
+	0.9999166666666667	teaches_class
+	8.333333333333333E-5	leadership
+Distribution of values for Rel(SourceFact(Sent[14]))
+	1.0	student_of
+Distribution of values for Rel(SourceFact(Sent[15]))
+	0.7545166666666666	student_of
+	0.13466666666666666	leadership
+	0.11081666666666666	teaches_class
+Distribution of values for Rel(SourceFact(Sent[16]))
+	0.7544833333333333	student_of
+	0.12671666666666667	teaches_class
+	0.1188	leadership
+Distribution of values for Rel(SourceFact(Sent[17]))
+	0.7339	student_of
+	0.13433333333333333	teaches_class
+	0.13176666666666667	leadership
+Distribution of values for Rel(SourceFact(Sent[18]))
+	0.7514833333333333	student_of
+	0.13193333333333335	leadership
+	0.11658333333333333	teaches_class
+Distribution of values for Rel(SourceFact(Sent[19]))
+	0.77405	student_of
+	0.12601666666666667	teaches_class
+	0.09993333333333333	leadership
+======== Done ========
+
+(Bad Example)
+
+Distribution of values for Rel(SourceFact(Sent[0]))
+	1.0	leadership
+Distribution of values for Rel(SourceFact(Sent[1]))
+	0.6657333333333333	leadership
+	0.25976666666666665	teaches_class
+	0.0745	student_of
+Distribution of values for Rel(SourceFact(Sent[2]))
+	0.7427166666666667	teaches_class
+	0.2572833333333333	leadership
+Distribution of values for Rel(SourceFact(Sent[3]))
+	0.6430666666666667	leadership
+	0.3569333333333333	teaches_class
+Distribution of values for Rel(SourceFact(Sent[4]))
+	0.7481333333333333	teaches_class
+	0.2518666666666667	leadership
+Distribution of values for Rel(SourceFact(Sent[5]))
+	0.6416333333333334	leadership
+	0.35836666666666667	teaches_class
+Distribution of values for Rel(SourceFact(Sent[6]))
+	0.47641666666666665	teaches_class
+	0.42301666666666665	leadership
+	0.10056666666666667	student_of
+Distribution of values for Rel(SourceFact(Sent[7]))
+	1.0	teaches_class
+Distribution of values for Rel(SourceFact(Sent[8]))
+	0.6665666666666666	teaches_class
+	0.20301666666666668	student_of
+	0.13041666666666665	leadership
+Distribution of values for Rel(SourceFact(Sent[9]))
+	0.6403666666666666	teaches_class
+	0.22766666666666666	student_of
+	0.13196666666666668	leadership
+Distribution of values for Rel(SourceFact(Sent[10]))
+	0.6684333333333333	teaches_class
+	0.18321666666666667	student_of
+	0.14835	leadership
+Distribution of values for Rel(SourceFact(Sent[11]))
+	0.8259166666666666	teaches_class
+	0.16855	student_of
+	0.005533333333333334	leadership
+Distribution of values for Rel(SourceFact(Sent[12]))
+	1.0	teaches_class
+Distribution of values for Rel(SourceFact(Sent[13]))
+	0.8261833333333334	teaches_class
+	0.17381666666666667	student_of
+Distribution of values for Rel(SourceFact(Sent[14]))
+	1.0	student_of
+Distribution of values for Rel(SourceFact(Sent[15]))
+	0.7601	student_of
+	0.13803333333333334	leadership
+	0.10186666666666666	teaches_class
+Distribution of values for Rel(SourceFact(Sent[16]))
+	0.6902833333333334	student_of
+	0.2015	leadership
+	0.10821666666666667	teaches_class
+Distribution of values for Rel(SourceFact(Sent[17]))
+	0.7477666666666667	student_of
+	0.15618333333333334	leadership
+	0.09605	teaches_class
+Distribution of values for Rel(SourceFact(Sent[18]))
+	0.72345	student_of
+	0.15788333333333332	leadership
+	0.11866666666666667	teaches_class
+Distribution of values for Rel(SourceFact(Sent[19]))
+	0.7252	student_of
+	0.17025	leadership
+	0.10455	teaches_class
+======== Done ========
+
+
+##############################
+
+Smaller Experiment (#2):
+ - 5 sentences
+ - 2 relations
+ - 3 Verbs, 2 for Leadership, 1 for Teaches
+
+Results:
+
+Distribution of values for Rel(SourceFact(Sent[0]))
+	1.0	leadership
+Distribution of values for Rel(SourceFact(Sent[1]))
+	1.0	leadership
+Distribution of values for Rel(SourceFact(Sent[2]))
+	0.87815	leadership
+	0.12185	teaches
+Distribution of values for Rel(SourceFact(Sent[3]))
+	1.0	teaches
+Distribution of values for Rel(SourceFact(Sent[4]))
+	0.88195	teaches
+	0.11805	leadership
+
+Bootstrap seems to work. 

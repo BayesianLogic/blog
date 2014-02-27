@@ -1,0 +1,65 @@
+/* BLOG Model for Relationship Extraction
+ */
+
+type Relation;
+//#Relation = 100;
+
+fixed Real alpha = 10;
+fixed Real beta = 100;
+random Real Sparsity(Relation r) ~ Beta(alpha, beta);
+//random Real Sparsity(Relation r) = 0.1;
+
+type Entity;
+
+type Fact;
+origin Relation Rel(Fact);
+origin Entity Arg1(Fact);
+origin Entity Arg2(Fact);
+
+#Fact(Rel = r, Arg1 = a1, Arg2 = a2) = 1;
+
+random Boolean Holds(Fact f) ~ BooleanDistrib(Sparsity(Rel(f)));
+
+/* A trigger is a set of words that is specific to the relation.
+ * The categorical distribution is sampled from a Dirichlet distribution.
+ */
+
+type Trigger;
+
+/* alpha should be a vector of length #Triggers */
+fixed Real dir_alpha = 0.3;
+fixed Integer numTrigs = 3;
+random Real[] Theta(Relation r) ~ SymmetricDirichlet(numTrigs, dir_alpha);
+
+/* A sentence expresses a fact. The fact is chosen uniformly
+ * from the set of all true facts.
+ */
+
+type Sentence;
+random Fact SourceFact(Sentence s) ~ UniformChoice({Fact f : Holds(f) == true});
+random Entity Subject(Sentence s) = Arg1(SourceFact(s));
+random Entity Object(Sentence s) = Arg2(SourceFact(s));
+
+random Integer TriggerID(Sentence s) {
+ if (SourceFact(s) != null) then ~ Categorical(Theta(Rel(SourceFact(s))))
+};
+
+random Trigger Verb(Sentence s) = idToTrigger( TriggerID(s) );
+
+/* Observations go here */
+
+distinct Relation leadership, teaches;
+distinct Sentence Sent[5];
+
+distinct Entity David_Wagner, USA, UC_Berkeley, Stuart_Russell, Nicholas_Dirks, India, Pranab, Security, Artifical_Intelligence, Obama;
+
+distinct Trigger is_the_leader_of, is_the_president_of, teaches_a_class_in;
+
+fixed Trigger idToTrigger(Integer i)
+  = TabularInterp(1,
+    0, is_the_leader_of,
+    1, is_the_president_of,
+    2, teaches_a_class_in
+  );
+
+
