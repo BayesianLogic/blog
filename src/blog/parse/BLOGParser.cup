@@ -48,7 +48,7 @@ import blog.absyn.*;
 action code {:
 
   static blog.symbol.Symbol sym(String s) {
-	         return blog.symbol.Symbol.Symbol(s);
+           return blog.symbol.Symbol.Symbol(s);
   }
 
     LocationInFile getCurLocation() {
@@ -58,19 +58,19 @@ action code {:
     }
 
     int currLineno() {
-	return ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum();
+  return ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum();
     }
 
 
     int currColno() {
-	return ((ScannerWithLocInfo)parser.getScanner()).getCurColNum();
+  return ((ScannerWithLocInfo)parser.getScanner()).getCurColNum();
     }
 
 /* //TO-DO
     void semantic_error( String message ){
          System.err.println("\n" + curr_filename( ) + ":" + curr_lineno( )
                             + " Semantic error: " + message);
-	 parser.omerrs++;
+   parser.omerrs++;
     }
 */
   void error(String msg) {
@@ -83,7 +83,7 @@ action code {:
     }
 
     String curr_filename() {
-	  return ((ScannerWithLocInfo)parser.getScanner()).getCurFilename();
+    return ((ScannerWithLocInfo)parser.getScanner()).getCurFilename();
     }
 
 :}
@@ -169,6 +169,24 @@ nonterminal ExprTupleList expression_pair_list;
 nonterminal Ty type, list_type, map_type;
 nonterminal ArrayTy array_type;
 nonterminal String array_type_or_sub;
+
+//attempt catch array type errors
+nonterminal ArrayTy array_type_error;
+
+//attempt catch disctint decl errors
+nonterminal SymbolArray bracket_error;
+nonterminal String brackets;
+
+//attempt catch type var list errors
+nonterminal String extra_commas, extra_types;
+
+//attempt catch func decl errors
+nonterminal String paren, extra_parens;
+nonterminal String extra_lparens, extra_rparens;
+
+//attempt catch expression errors
+nonterminal String binop;
+
 //nonterminal Integer dims; //not used
 //nonterminal FieldList opt_parenthesized_type_lst, type_lst // Not Used
 nonterminal FieldList opt_parenthesized_type_var_lst, type_var_lst;
@@ -192,9 +210,10 @@ precedence left NOT;
 precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
 precedence left PLUS, MINUS;
 precedence left MULT, DIV, MOD, POWER;
-precedence right LBRACKET;
-precedence left RBRACKET;
-
+precedence left ID;
+precedence left RPAREN, RBRACKET, RBRACE;
+precedence right LBRACKET, LPAREN;
+precedence left SEMI, error;
 
 /* Grammar *******************************************************************/
 
@@ -217,9 +236,9 @@ statement_lst ::= statement:e statement_lst:slst
     :}
   | statement:e {: RESULT = new StmtList(e, null); :}
   | error
-	{: System.err.println(
-		"Possible cause: forgotten semicolon" );
-		RESULT = null; :}
+  {: System.err.println(
+    "Possible cause: forgotten semicolon" );
+    RESULT = null; :}
 ;
 
 /* A statement can be a declaration, an observation (assertion of some
@@ -240,14 +259,14 @@ statement ::= declaration_stmt : e {: RESULT = e; :}
  *        (Semantic checks:
  *            - whether the return type is a declared type;
  *            - whether the argument types have been declared (an error-check
- *		  propagated from the type_lst production.);
+ *      propagated from the type_lst production.);
  *    * a random function definition
  *    * a non-random function (or constant) declaration
  *    * a non-random function (or constant) definition, specifying the
  *      interpretation of the function
  *    * a random function dependency statement description
  *        (Semantic checks:
- *	      - whether the numbers of actual and declared parameters match;
+ *        - whether the numbers of actual and declared parameters match;
  *            - whether the function by this name has been declared.);
  *    * a guaranteed object declaration
  *        (Semantic checks:
@@ -279,8 +298,9 @@ declaration_stmt ::=
 
 type_decl ::= TYPE ID:typename SEMI
     {: RESULT = new TypeDec(currLineno(), currColno(), sym(typename)); :}
+    | TYPE ID:typename 
+    {: error("mising semicolon"); RESULT = new TypeDec(currLineno(), currColno(), sym(typename));:}
   ;
-
 
 /*
  * Represents a type that is built in or has already been declared.
@@ -296,20 +316,32 @@ type ::= refer_name:typename
 list_type ::= LIST LT refer_name:typename GT
     /* here general name is allowed, but internally only allow nametype as list */
     {: RESULT = new ListTy(currLineno(), currColno(), 
-			new NameTy(currLineno(), currColno(), sym(typename))); :}
+      new NameTy(currLineno(), currColno(), sym(typename))); :}
   ;
 
 array_type_or_sub ::= refer_name:typename LBRACKET
   {: RESULT = typename; :}
+
+  ;
+
+array_type_error ::= refer_name:typename LBRACKET LBRACKET
+  | refer_name:typename RBRACKET RBRACKET
+  | refer_name:typename RBRACKET LBRACKET
   ;
 
 array_type ::= array_type_or_sub:typename RBRACKET
     /* internally only allow nametype as array */
     {: RESULT = new ArrayTy(currLineno(), currColno(), 
-    	new NameTy(currLineno(), currColno(), sym(typename)), 1); :}
+      new NameTy(currLineno(), currColno(), sym(typename)), 1); :} 
+  | array_type_error:typename
+    {: error("array type error, possibly unmatched bracket"); RESULT = typename; :}
   | array_type : arrty LBRACKET RBRACKET
     {: arrty.dim += 1; 
       RESULT = arrty; :}    
+  | array_type : arrty LBRACKET
+    {: error("array type error, possibly unmatched left bracket"); RESULT = arrty; :}
+  | array_type : arrty RBRACKET
+    {: error("array type error, possibly unmatched right bracket"); RESULT = arrty; :}
   ;
 
 map_type ::= MAP LT type:t1 COMMA type:t2 GT
@@ -322,18 +354,18 @@ map_type ::= MAP LT type:t1 COMMA type:t2 GT
 // warnings. Uncomment once these rules are used elsewhere.
 //   
 //opt_parenthesized_type_lst ::= /* EMPTY */
-//	    {: RESULT = null; :}
-//	    | LPAREN RPAREN
-//	    {: RESULT = null; :}
-//	    | LPAREN type_lst:tl RPAREN
-//	    {: RESULT = tl; :}
-//	    ;
+//      {: RESULT = null; :}
+//      | LPAREN RPAREN
+//      {: RESULT = null; :}
+//      | LPAREN type_lst:tl RPAREN
+//      {: RESULT = tl; :}
+//      ;
 
 //type_lst ::= type:ty COMMA type_lst:tl
-//	  {: RESULT = new FieldList(null, ty, tl); :}
-//	| type:ty
-//	  {: RESULT = new FieldList(null, ty, null); :}
-//	;
+//    {: RESULT = new FieldList(null, ty, tl); :}
+//  | type:ty
+//    {: RESULT = new FieldList(null, ty, null); :}
+//  ;
 
 /* Represents a list of IDs denoting type names. */
 opt_parenthesized_type_var_lst ::= /* EMPTY */
@@ -342,14 +374,48 @@ opt_parenthesized_type_var_lst ::= /* EMPTY */
     {: RESULT = null; :}
   | LPAREN type_var_lst:tl RPAREN
     {: RESULT = tl; :}
+  | RPAREN type_var_lst:tl LPAREN
+    {: error("mismatched parentheses"); RESULT = null; :}
+  | extra_lparens type_var_lst:tl RPAREN
+    {: error("mismatched parentheses"); RESULT = null; :}
+  | LPAREN type_var_lst:tl extra_rparens
+    {: error("mismatched parentheses"); RESULT = null; :}
+  | extra_lparens type_var_lst:tl extra_rparens
+    {: error("mismatched parentheses"); RESULT = null; :}
+  ;
+
+extra_commas ::= COMMA COMMA
+    {: RESULT = "uh oh";:}
+  | extra_commas COMMA
+    {: RESULT = "uh oh";:}
+  ;
+
+extra_types ::= type:ty type:ty2
+    {: RESULT = "uh oh";:}
+  | extra_types type:ty
+    {: RESULT = "uh oh";:}
   ;
 
 type_var_lst ::= type:ty ID:id COMMA type_var_lst:tl
     {: RESULT = new FieldList(sym(id), ty, tl); :}
   | type:ty ID:id
     {: RESULT = new FieldList(sym(id), ty, null); :}
-  ;
 
+  | type:ty ID:id COMMA 
+    {: error("extra comma"); RESULT = null;:}
+
+  | type:ty ID:id extra_commas type_var_lst:tl
+    {: error("extra commas"); RESULT = null;:}
+
+  | type:ty ID:id type_var_lst:tl
+    {: error("missing comma"); RESULT = null;:}
+
+  | type:ty COMMA type_var_lst:tl
+    {: error("missing id"); RESULT = null;:}
+
+  | extra_types ID:id COMMA type_var_lst:tl
+    {: error("extra types"); RESULT = null;:}
+  ;
 
 /* A nonrandom function declaration may declare a nonrandom constant or
  * a non-random function.  The distinction is whether there is a
@@ -359,6 +425,9 @@ fixed_func_decl ::=
     FIXED type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
     EQ expression:ex SEMI
     {: RESULT = new FixedFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type, ex); :}
+    | FIXED type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
+    EQ expression:ex
+    {: error("mising semicolon"); RESULT = new FixedFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type, ex);:}
   ;
 
 /**
@@ -369,6 +438,9 @@ rand_func_decl ::=
     RANDOM type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
     dependency_statement_body:body SEMI
     {: RESULT = new RandomFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type, body); :}
+    | RANDOM type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
+    dependency_statement_body:body
+    {: error("missing semicolon"); RESULT = new RandomFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type, body);:}
   ;
 
 /**
@@ -376,18 +448,62 @@ rand_func_decl ::=
  */
 number_stmt ::=
     NUMSIGN refer_name:ty opt_parenthesized_origin_var_list:otl
-	dependency_statement_body:body SEMI
+  dependency_statement_body:body SEMI
     {: RESULT = new NumberDec(currLineno(), currColno(), 
     new NameTy(currLineno(), currColno(), sym(ty)), otl, body); :}
+   | NUMSIGN refer_name:ty opt_parenthesized_origin_var_list:otl
+  dependency_statement_body:body
+    {: error("missing semicolon"); RESULT = new NumberDec(currLineno(), currColno(), 
+    new NameTy(currLineno(), currColno(), sym(ty)), otl, body);:}
+   | NUMSIGN opt_parenthesized_origin_var_list:otl
+  dependency_statement_body:body SEMI
+    {: error("missing name"); RESULT = null; :}
+   | NUMSIGN refer_name:ty opt_parenthesized_origin_var_list:otl
+  error SEMI
+    {: error("error in number statement body"); RESULT = null; :}
+  ;
+
+paren ::= LPAREN {:RESULT = null;:}
+  | RPAREN {:RESULT = null;:}
+  ;
+
+extra_parens ::= paren paren {:RESULT = null;:}
+  | extra_parens paren {:RESULT = null;:}
+  ;
+
+extra_lparens ::= LPAREN LPAREN {:RESULT = null;:}
+  | extra_lparens LPAREN {:RESULT = null;:}
+  ;
+
+extra_rparens ::= RPAREN RPAREN {:RESULT = null;:}
+  | extra_rparens RPAREN {:RESULT = null;:}
   ;
 
 opt_parenthesized_origin_var_list ::= LPAREN origin_var_list:e RPAREN
     {: RESULT = e; :}
+  | extra_parens origin_var_list:e extra_parens 
+    {: error("unmatched parentheses"); RESULT = e;:}
+  | LPAREN origin_var_list:e extra_parens 
+    {: error("unmatched parentheses"); RESULT = e;:}
+  | extra_parens origin_var_list:e RPAREN
+    {: error("unmatched parentheses"); RESULT = e;:}
   | {: RESULT = null; :}
   ;
 
 origin_var_list ::= ID:func EQ ID:var COMMA origin_var_list:n
     {: RESULT = new OriginFieldList(currLineno(), currColno(), sym(func), sym(var), n); :}
+  | ID:func EQ ID:var extra_commas origin_var_list:n
+    {: error("extra commas");RESULT = null;:}
+  | ID:func EQ EQ ID:var COMMA origin_var_list:n
+    {: error("extra equal sign");RESULT = null;:}
+  | ID:func EQ ID:var ID:var2 COMMA origin_var_list:n
+    {: error("extra ids");RESULT = null;:}
+  | ID:func EQ COMMA origin_var_list:n
+    {: error("missing id");RESULT = null;:}
+  | ID:func EQ ID:var origin_var_list:n
+    {: error("missing comma");RESULT = null;:}
+  | ID:func ID:var COMMA origin_var_list:n
+    {: error("missing equal sign");RESULT = null;:}
   | ID:func EQ ID:var
     {: RESULT = new OriginFieldList(currLineno(), currColno(), sym(func), sym(var), null); :}
   ;
@@ -399,6 +515,24 @@ origin_func_decl ::=
     ORIGIN type:ret_type ID:fname LPAREN type:arg_type RPAREN SEMI
     {: RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
       new FieldList(null, arg_type, null), ret_type); :}
+    | ORIGIN type:ret_type ID:fname LPAREN type:arg_type RPAREN
+    {: error("missing semicolon"); RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
+      new FieldList(null, arg_type, null), ret_type);:}
+    | ORIGIN type:ret_type ID:fname extra_lparens type:arg_type RPAREN SEMI
+    {: error("mismatched parentheses"); RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
+      new FieldList(null, arg_type, null), ret_type); :}
+    | ORIGIN type:ret_type ID:fname extra_lparens type:arg_type extra_rparens SEMI
+    {: error("mismatched parentheses"); RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
+      new FieldList(null, arg_type, null), ret_type); :}
+    | ORIGIN type:ret_type ID:fname LPAREN type:arg_type extra_rparens SEMI
+    {: error("mismatched parentheses"); RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
+      new FieldList(null, arg_type, null), ret_type); :}
+    | ORIGIN type:ret_type ID:fname LPAREN type:arg_type SEMI
+    {: error("missing parentheses"); RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
+      new FieldList(null, arg_type, null), ret_type); :}
+    | ORIGIN type:ret_type ID:fname type:arg_type RPAREN SEMI
+    {: error("missing parentheses"); RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
+      new FieldList(null, arg_type, null), ret_type); :}
   ;
 
 /**
@@ -408,17 +542,42 @@ distinct_decl ::=
     DISTINCT refer_name:ty id_or_subid_list:e SEMI
     {: RESULT = new DistinctSymbolDec(currLineno(), currColno(), 
     new NameTy(currLineno(), currColno(), sym(ty)), e); :}
+    | DISTINCT refer_name:ty id_or_subid_list:e
+    {:error("missing semicolon"); RESULT = new DistinctSymbolDec(currLineno(), currColno(), 
+    new NameTy(currLineno(), currColno(), sym(ty)), e);:}
   ;
 
 id_or_subid_list ::= id_or_subid:e {: RESULT = new SymbolArrayList(e, null); :}
   | id_or_subid:e COMMA id_or_subid_list:n
     {: RESULT = new SymbolArrayList(e, n); :}
+  | id_or_subid:e id_or_subid_list:n
+    {: error("missing COMMA"); RESULT = null; :}
+  | id_or_subid:e extra_commas id_or_subid_list:n
+    {: error("extra COMMA"); RESULT = new SymbolArrayList(e, n); :}
+  ;
+
+brackets ::= LBRACKET {:RESULT = null;:}
+  | RBRACKET {:RESULT = null;:}
+  | brackets LBRACKET {:RESULT = null;:}
+  | brackets RBRACKET {:RESULT = null;:}
+  ;
+
+bracket_error ::= brackets {:error("missing integer literal in brackets"); RESULT = null;:}
+  | RBRACKET INT_LITERAL:s LBRACKET {:error("mismatched brackets"); RESULT = null;:}
+  | brackets INT_LITERAL:s {:error("missing brackets"); RESULT = null;:}
+  | INT_LITERAL:s brackets {:error("missing brackets"); RESULT = null;:}
+  | INT_LITERAL:s {:error("missing brackets"); RESULT = null;:}
+  | brackets LBRACKET INT_LITERAL:s RBRACKET {:error("mismatched brackets"); RESULT = null;:}
+  | LBRACKET INT_LITERAL:s RBRACKET brackets {:error("mismatched brackets"); RESULT = null;:}
+  | brackets LBRACKET INT_LITERAL:s RBRACKET brackets {:error("mismatched brackets"); RESULT = null;:}
   ;
 
 id_or_subid ::= ID:id
     {: RESULT = new SymbolArray(currLineno(), currColno(), sym(id)); :}
   | ID:id LBRACKET INT_LITERAL:s RBRACKET
     {: RESULT = new SymbolArray(currLineno(), currColno(), sym(id), s.intValue()); :}
+  | ID:id bracket_error
+    {: RESULT = new SymbolArray(currLineno(), currColno(), sym(id)); :}
   ;
 
 /**
@@ -429,8 +588,11 @@ distribution_decl ::=
     LPAREN opt_expression_list:e RPAREN SEMI
     {: RESULT = new DistributionDec(currLineno(), currColno(), sym(id),
       new ClassName(currLineno(), currColno(), sym(name)), e); :}
+    | DISTRIBUTION ID:id EQ refer_name:name
+    LPAREN opt_expression_list:e RPAREN 
+    {:error("missing semicolon"); RESULT = new DistributionDec(currLineno(), currColno(), sym(id),
+      new ClassName(currLineno(), currColno(), sym(name)), e);:}
   ;
-
 
 /* reference to function name or Java class */
 refer_name ::= ID:id {: RESULT = id; :}
@@ -463,8 +625,12 @@ elseif_list ::=
 
 parameter_decl ::= PARAM type:ty ID:id SEMI
     {: RESULT = new ParameterDec(currLineno(), currColno(), ty, sym(id), null); :}
+  | PARAM type:ty ID:id 
+    {:error("missing semicolon"); RESULT = new ParameterDec(currLineno(), currColno(), ty, sym(id), null);:}
   | PARAM type:ty ID:id COLON expression:e SEMI
     {: RESULT = new ParameterDec(currLineno(), currColno(), ty, sym(id), e); :}
+  | PARAM type:ty ID:id COLON expression:e
+    {: error("missing semicolon"); RESULT = new ParameterDec(currLineno(), currColno(), ty, sym(id), e);:}
   ;
 
 /* Represents a term, which can be either a 0-ary function application, a
@@ -502,7 +668,32 @@ literal ::= STRING_LITERAL:e
     {: RESULT = new NullExpr(currLineno(), currColno()); :}
   ;
 
-operation_expr ::= expression:e1 PLUS expression:e2
+binop ::= PLUS {:RESULT = null;:}
+  | MINUS {:RESULT = null;:}
+  | MULT {:RESULT = null;:}
+  | DIV {:RESULT = null;:}
+  | MOD {:RESULT = null;:}
+  | POWER {:RESULT = null;:}
+  | LT {:RESULT = null;:}
+  | GT {:RESULT = null;:}
+  | LEQ {:RESULT = null;:}
+  | GEQ {:RESULT = null;:}
+  | EQEQ {:RESULT = null;:}
+  | NEQ {:RESULT = null;:}
+  | AND {:RESULT = null;:}
+  | OR {:RESULT = null;:}
+  | DOUBLERIGHTARROW {:RESULT = null;:}
+  ;
+
+operation_expr ::= expression:e binop 
+    {:error("unmatched expression or mismatched parentheses"); RESULT = null;:}
+  | expression:e binop error
+    {:error("unmatched expression or mismatched parentheses"); RESULT = null;:}  
+  | binop expression:e
+    {:error("unmatched expression or mismatched parentheses"); RESULT = null;:}
+  | error binop expression:e
+    {:error("unmatched expression or mismatched parentheses"); RESULT = null;:}
+  | expression:e1 PLUS expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.PLUS, e2); :}
   | expression:e1 MINUS expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.MINUS, e2); :}
@@ -538,6 +729,10 @@ operation_expr ::= expression:e1 PLUS expression:e2
     {: RESULT = new OpExpr(currLineno(), currColno(), 
       new SymbolExpr(currLineno(), currColno(), sym(e1)), OpExpr.SUB, e2); :}
   | unary_operation_expr:e {: RESULT = e; :}
+  | LPAREN unary_operation_expr:e error {: error("mismatched parentheses"); RESULT = null;:}
+  | extra_lparens unary_operation_expr:e error {: error("mismatched parentheses"); RESULT = null;:}
+  | unary_operation_expr:e RPAREN error {: error("mismatched parentheses"); RESULT = null;:}
+  | unary_operation_expr:e RPAREN {: error("mismatched parentheses"); RESULT = null;:}
   ;
 
 unary_operation_expr ::=
@@ -549,6 +744,10 @@ unary_operation_expr ::=
     {: RESULT = new OpExpr(currLineno(), currColno(), null, OpExpr.AT, e); :}
   | LPAREN expression:e RPAREN
     {: RESULT = e; :}
+  | LPAREN expression:e error
+    {: error("mismatched parentheses"); RESULT = e; :}
+  | LPAREN expression:e
+    {: error("mismatched parentheses"); RESULT = e; :}
   ;
 
 quantified_formula ::= FORALL type:ty ID:id expression:e
@@ -557,6 +756,22 @@ quantified_formula ::= FORALL type:ty ID:id expression:e
   | EXISTS type:ty ID:id expression:e
     {: RESULT = new QuantifiedFormulaExpr(currLineno(), currColno(),
     QuantifiedFormulaExpr.EXISTS, ty, sym(id), e); :}
+  | FORALL error
+    {: error("error in for all formula"); RESULT = null; :}
+  | EXISTS error
+    {: error("error in exists formula"); RESULT = null; :}
+  | FORALL type:ty expression:e
+    {: error("missing id in for all statement"); RESULT = null;:}
+  | FORALL ID:id expression:e
+    {: error("missing type in for all statement"); RESULT = null;:}
+  | FORALL type:ty ID:id error
+    {: error("error in for all expression"); RESULT = null;:}
+  | EXISTS type:ty expression:e
+    {: error("missing id in exists statement"); RESULT = null;:}
+  | EXISTS ID:id expression:e
+    {: error("missing type in exists statement"); RESULT = null;:}
+  | EXISTS type:ty ID:id error
+    {: error("error in exists expression"); RESULT = null;:}
   ;
 
 function_call ::= refer_name:id LPAREN opt_expression_list:e RPAREN
@@ -573,8 +788,14 @@ opt_expression_list ::= expression_list:e {: RESULT = e; :}
 
 expression_list ::= expression:e COMMA expression_list:elst
     {: RESULT = new ExprList(e, elst); :}
+  | LPAREN expression:e COMMA expression_list:elst {: error("mismatched parentheses"); RESULT = null; :}
+  | extra_lparens expression:e COMMA expression_list:elst {: error("mismatched parentheses"); RESULT = null; :}
   | expression:e
     {: RESULT = new ExprList(e, null); :}
+  | expression:e RPAREN
+    {: error("mismatched parentheses"); RESULT = new ExprList(e, null); :}
+  | expression:e extra_rparens
+    {: error("mismatched parentheses"); RESULT = new ExprList(e, null); :}
   ;
 
 list_construct_expression ::= LBRACKET opt_expression_list:e RBRACKET
@@ -586,8 +807,16 @@ list_construct_expression ::= LBRACKET opt_expression_list:e RBRACKET
 semi_colon_separated_expression_list ::=
     expression_list:e SEMI semi_colon_separated_expression_list:elst
     {: RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), elst); :}
+  | expression_list:e SEMI SEMI semi_colon_separated_expression_list:elst
+    {: error("extra semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), elst); :}
   | expression_list:e SEMI expression_list:e2
     {: RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2left, e2), null)); :}
+  | expression_list:e SEMI  SEMI expression_list:e2
+    {: error("extra semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2left, e2), null)); :}
+  | expression_list:e semi_colon_separated_expression_list:elst
+    {: error("missing semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), elst); :}
+  | expression_list:e expression_list:e2
+    {: error("missing semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2left, e2), null)); :}
   ;
 
 map_construct_expression ::= LBRACE expression_pair_list:e RBRACE
@@ -607,9 +836,8 @@ number_expr ::= NUMSIGN set_expr:e
   | NUMSIGN type:ty
     {: RESULT = new NumberExpr(currLineno(), currColno(), new ImplicitSetExpr(currLineno(), currColno(), ty, null, null)); :}
   | NUMSIGN error
-    {: error("expecting number expresssion here. # should be followed by a type or a set"); :}
+    {: error("expecting number expression here. # should be followed by a type or a set"); :}
   ;
-
 
 set_expr ::= explicit_set:e {: RESULT = e; :}
   | implicit_set:e {: RESULT = e; :}
@@ -638,20 +866,21 @@ tuple_set ::= LBRACE expression_list:elst FOR type_var_lst:vars COLON expression
 /* Represents an evidence statement, which can be:
  *
  *    * a symbol evidence statement, listing observed objects of the specified
- *	  type subject to certain constraints
+ *    type subject to certain constraints
  *        (Semantic checks:
- *	      - whether the type for which the evidence is presented has been
- *		  declared;
- *	      - whether the formula is valid (error-check is propagated from
- *		  the productions for various kinds of formulas).);
+ *        - whether the type for which the evidence is presented has been
+ *      declared;
+ *        - whether the formula is valid (error-check is propagated from
+ *      the productions for various kinds of formulas).);
  *    * a value evidence statement, stating the value of the specified
- *	  function on the specified tuple of arguments
+ *    function on the specified tuple of arguments
  *        (Semantic checks:
- *	      - whether the numbers of the function's parameters and arguments
- *		  passed to it match;
+ *        - whether the numbers of the function's parameters and arguments
+ *      passed to it match;
  *            - whether the function has been declared.).
  */
 evidence_stmt ::= OBS evidence:e SEMI {: RESULT = e; :}
+   | OBS evidence:e {:error("missing semi"); RESULT = null;:}
   ;
 
 evidence ::=
@@ -668,15 +897,27 @@ evidence ::=
 value_evidence ::=
     expression:e1 EQ expression:e2
     {: RESULT = new ValueEvidence(currLineno(), currColno(), e1, e2); :}
+    | error EQ expression:e2
+    {:error("incorrect first expression"); RESULT = null;:}
+    | expression:e1 EQ error
+    {:error("incorrect second expression"); RESULT = null;:}
   ;
 
 symbol_evidence ::=
     implicit_set:e1 EQ explicit_set:e2
     {: RESULT = new SymbolEvidence(currLineno(), currColno(), e1, e2); :}
+    | error EQ error
+    {:error("error in first and second set"); RESULT = null;:}
   ;
 
 query_stmt ::= QUERY  query:q SEMI
     {: RESULT = q; :}
+    | QUERY  query:q 
+    {: error("missing semicolon"); RESULT = null;:}
+    | QUERY error SEMI
+    {: error("invalid query"); RESULT = null;:}
+    | QUERY error
+    {: error("missing semicolon"); RESULT = null;:} 
   ;
 
 query ::= expression:e {: RESULT = new QueryStmt(currLineno(), currColno(), e); :}
