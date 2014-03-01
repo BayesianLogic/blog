@@ -1,0 +1,4 @@
+fixed Real[] probs = [10.0; 5.0; 3.0; 1.0];
+random Real[] values ~ Multinomial(10000, probs);
+
+query values;

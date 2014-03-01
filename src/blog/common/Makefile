@@ -9,19 +9,14 @@ JCFLAGS = -g -classpath ${CLASSPATH}
 CLASSES = Bernoulli.class \
 	BinarySequenceDistrib.class \
 	BipartiteMatcher.class \
-	DefaultReferenceHistogram.class \
 	FilteredIterator.class \
 	FilteredMapIterator.class \
 	Geometric.class \
 	IntegerDist.class \
-	Multinomial.class \
-	MultinomialWithTail.class \
 	PermutationDistrib.class \
 	PermutationIterator.class \
 	Permutation.class \
 	Poisson.class \
-	ReferenceHistogram.class \
-	ReferenceHistogramPair.class \
 	RoundedLogNormal.class \
 	SubsetIterator.class \
 	SubstringReplacer.class \
@@ -112,9 +107,6 @@ BinarySequenceDistrib.class: BinarySequenceDistrib.java \
 BipartiteMatcher.class : BipartiteMatcher.java \
 	Util.java \
 
-DefaultReferenceHistogram.class : DefaultReferenceHistogram.java \
-	ReferenceHistogram.java \
-
 FilteredIterator.class : FilteredIterator.java \
 
 FilteredMapIterator.class : FilteredMapIterator.java \
@@ -125,15 +117,6 @@ Geometric.class : Geometric.java \
 
 IntegerDist.class : IntegerDist.java \
 
-Multinomial.class : Multinomial.java \
-	IntegerDist.java \
-	Util.java \
-
-MultinomialWithTail.class : MultinomialWithTail.java \
-	IntegerDist.java \
-	Multinomial.java \
-	Geometric.java \
-
 PermutationDistrib.class : PermutationDistrib.java \
 	Permutation.java \
 
@@ -143,13 +126,6 @@ Permutation.class : Permutation.java \
 
 Poisson.class : Poisson.java \
 	Util.java \
-
-ReferenceHistogram.class : ReferenceHistogram.java \
-	DefaultReferenceHistogram.java \
-
-ReferenceHistogramPair.class : ReferenceHistogramPair.java \
-	ReferenceHistogram.java \
-	DefaultReferenceHistogram.java \
 
 RoundedLogNormal.class : RoundedLogNormal.java \
 
