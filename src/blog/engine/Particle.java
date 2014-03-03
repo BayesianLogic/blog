@@ -66,12 +66,12 @@ public class Particle {
 		this.numTimeSlicesInMemory = numTimeSlicesInMemory;
 		this.idTypes = idTypes;
 		curWorld = new DefaultPartialWorld(idTypes);
-		weight = 1; // all particles are created equal.
+		logWeight = 1; // all particles are created equal.
 	}
 
 	/**
 	 * Takes evidence relative to some new time step, updates current world based
-	 * on it, and recalculates particle weight according to its probability.
+	 * on it, and recalculates particle logWeight according to its probability.
 	 */
 	public void take(Evidence evidence) {
 		sampler.initialize(evidence, Util.list());
@@ -82,18 +82,18 @@ public class Particle {
 		// System.out.println("Previous world: " + curWorld);
 
 		sampler.nextSample();
-		weight = sampler.getLatestWeight();
-		// if (Double.isNaN(weight)) {
-		// System.out.println("Particle.take: weight set to " + weight);
+		logWeight = sampler.getLatestLogWeight();
+		// if (Double.isNaN(logWeight)) {
+		// System.out.println("Particle.take: logWeight set to " + logWeight);
 		// System.out.println("Evidence: " + evidence);
 		// System.out.println("Updated world: " + curWorld);
 		// System.exit(-1);
 		// }
 
-		// System.out.println("Particle.take: weight set to " + weight);
+		// System.out.println("Particle.take: logWeight set to " + logWeight);
 		curWorld = sampler.getLatestWorld();
 
-		// System.out.println("Weight: " + weight);
+		// System.out.println("logWeight: " + logWeight);
 		// System.out.println("Updated world: " + curWorld);
 	}
 
@@ -126,8 +126,8 @@ public class Particle {
 		return curWorld;
 	}
 
-	public double getLatestWeight() {
-		return weight;
+	public double getLatestLogWeight() {
+		return logWeight;
 	}
 
 	public Particle copy() {
@@ -135,7 +135,7 @@ public class Particle {
 		DefaultPartialWorld newWorld = (DefaultPartialWorld) ((DefaultPartialWorld) curWorld)
 				.clone();
 		copy.setWorld(newWorld);
-		copy.weight = weight;
+		copy.logWeight = logWeight;
 		return copy;
 	}
 
@@ -145,24 +145,24 @@ public class Particle {
 
 	public void updateQueriesStats(Collection queries) {
 		// System.out.println("Particle.updateQueriesStats: start");
-		if (getLatestWeight() > 0) {
+		if (getLatestLogWeight() > Sampler.NEGLIGIBLE_LOG_WEIGHT) {
 			// System.out.println("Particle.updateQueriesStats: going over queries");
 			for (Iterator iter = queries.iterator(); iter.hasNext();) {
 				Query q = (Query) iter.next();
-				q.updateStats(getLatestWorld(), getLatestWeight());
+				q.updateStats(getLatestWorld(), getLatestLogWeight()); // XXX
 			}
 		}
 		// else
-		// System.out.println("Particle.updateQueriesStats: getLatestWeight was zero.");
+		// System.out.println("Particle.updateQueriesStats: getLatestLogWeight was zero.");
 	}
 
 	public String toString() {
-		return "(" + curWorld + "," + weight + ")";
+		return "(" + curWorld + "," + logWeight + ")";
 	}
 
 	protected Set idTypes; // of Type
 	public PartialWorld curWorld = null;
-	protected double weight;
+	protected double logWeight;
 	public int numTimeSlicesInMemory;
 	private Sampler sampler;
 }

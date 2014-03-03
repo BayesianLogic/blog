@@ -210,11 +210,11 @@ public class RejectionSampler extends Sampler {
 		return curWorld;
 	}
 
-	public double getLatestWeight() {
+	public double getLatestLogWeight() {
 		if (curWorld == null) {
 			throw new IllegalStateException("Sampler has no latest sample.");
 		}
-		return (curWorldAccepted ? 1.0 : 0.0);
+		return (curWorldAccepted ? 0.0 : Double.NEGATIVE_INFINITY);
 	}
 
 	public void printStats() {

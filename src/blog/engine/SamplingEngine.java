@@ -163,7 +163,7 @@ public class SamplingEngine extends InferenceEngine {
                 System.out.println("Iteration " + i + ":");
             }
             sampler.nextSample();
-            double logWeight = sampler.getLatestWeight();
+            double logWeight = sampler.getLatestLogWeight();
 
             if (Util.verbose()) {
                 printGeneratedWorld(sampler, logWeight);

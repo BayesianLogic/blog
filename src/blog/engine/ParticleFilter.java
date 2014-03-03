@@ -218,14 +218,15 @@ public class ParticleFilter extends InferenceEngine {
 //				}
 			}
 
-			double sum = 0;
+			double sumLogWeights = Double.NEGATIVE_INFINITY;
 			ListIterator particleIt = particles.listIterator();
 			while (particleIt.hasNext()) {
 				Particle particle = (Particle) particleIt.next();
-				if (particle.getLatestWeight() == 0.0) {
+				if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
 					particleIt.remove();
-				} else
-					sum += particle.getLatestWeight();
+				} else {
+          sumLogWeights = Util.logSum(sumLogWeights, particle.getLatestLogWeight());
+        }
 			}
 
 			if (particles.size() == 0)
@@ -233,7 +234,7 @@ public class ParticleFilter extends InferenceEngine {
 
 			// System.out.println("PF: Num of particles after taking evidence: " +
 			// particles.size());
-			// System.out.println("PF: Sum of weights after taking evidence: " + sum);
+			// System.out.println("PF: Log sum of weights after taking evidence: " + sumLogWeights);
 
 			needsToBeResampledBeforeFurtherSampling = true;
 
@@ -269,24 +270,29 @@ public class ParticleFilter extends InferenceEngine {
 	}
 
 	private void resample() {
-		double[] weights = new double[particles.size()];
+		double[] logWeights = new double[particles.size()];
 		boolean[] alreadySampled = new boolean[particles.size()];
-		double sum = 0.0;
+		double sumLogWeights = Double.NEGATIVE_INFINITY;
+    double[] normalizedWeights = new double[particles.size()];
 		List newParticles = new ArrayList();
 
 		for (int i = 0; i < particles.size(); i++) {
-			weights[i] = ((Particle) particles.get(i)).getLatestWeight();
-			sum += weights[i];
+			logWeights[i] = ((Particle) particles.get(i)).getLatestLogWeight();
+      sumLogWeights = Util.logSum(sumLogWeights, logWeights[i]);
 		}
 
-		if (sum == 0.0) {
+		if (sumLogWeights == Double.NEGATIVE_INFINITY) {
 			throw new IllegalArgumentException("All particles have zero weight");
 		}
 		// else
-		// System.out.println("PF.resample: sum of all particle weights is " + sum);
+		// System.out.println("PF.resample: log sum of all particle weights is " + sumLogWeights);
+
+		for (int i = 0; i < particles.size(); i++) {
+      normalizedWeights[i] = Math.exp(logWeights[i] - sumLogWeights);
+    }
 
 		for (int i = 0; i < numParticles; i++) {
-			int selection = Util.sampleWithWeights(weights, sum);
+			int selection = Util.sampleWithProbs(normalizedWeights);
 			if (!alreadySampled[selection]) {
 				newParticles.add(particles.get(selection));
 				alreadySampled[selection] = true;
@@ -297,10 +303,10 @@ public class ParticleFilter extends InferenceEngine {
 		particles = newParticles;
 	}
 
-	private void printWeights() {
+	private void printLogWeights() {
 		for (int i = 0; i < particles.size(); i++) {
 			System.out.println(i + ":"
-					+ ((Particle) particles.get(i)).getLatestWeight());
+					+ ((Particle) particles.get(i)).getLatestLogWeight());
 		}
 		System.out.println();
 	}
