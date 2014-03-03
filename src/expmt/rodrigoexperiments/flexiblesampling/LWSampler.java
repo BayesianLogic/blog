@@ -50,14 +50,14 @@ public class LWSampler extends Sampler {
 	}
 
 	@Override
-	public double getLatestWeight() {
+	public double getLatestLogWeight() {
 		if (context == null) {
 			throw new IllegalStateException("LWSampler has no latest sample.");
 		}
-		return context.getWeight() * evidence.getEvidenceProb(currentWorld);
+		return Math.log(context.getWeight() * evidence.getEvidenceProb(currentWorld));
 		// TODO: OPTIMIZATION: if a evidence variable's parents are evidence
 		// variables themselves, their probability can be factored out from here.
-		// Also, this can be cached in case getLatestWeight gets called more than
+		// Also, this can be cached in case getLatestLogWeight gets called more than
 		// once in between samples.
 	}
 

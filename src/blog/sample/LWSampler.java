@@ -158,7 +158,7 @@ public class LWSampler extends Sampler {
     return curWorld;
   }
 
-  public double getLatestWeight() {
+  public double getLatestLogWeight() {
     return latestSampleLogWeight;
   }
 
