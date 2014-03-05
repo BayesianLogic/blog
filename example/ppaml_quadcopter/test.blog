@@ -1,0 +1,18 @@
+/*
+ * Test that LaserInterp works from within BLOG.
+ *
+ * Run like this from the `example` directory:
+ *      blog -n 10 -k ppaml_quadcopter ppaml_quadcopter/test.blog
+ *
+ * Where `blog` is your launcher that sets the appropriate class path.
+ * Note: The `example` directory (i.e. `.`) has to be in the class path.
+ */
+
+fixed Real[] laserReadings(
+        Real laserX, Real laserY, Real laserTheta,
+        Real obstacleX, Real obstacleY, Real obstacleR)
+    = LaserInterp();
+
+fixed Real[] readings = laserReadings(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+
+query readings;
