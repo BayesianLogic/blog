@@ -155,17 +155,14 @@ public class Semant {
         name = pkg + '.' + classname;
       }
       try {
-        Class cls = Class.forName(name);
-        System.out.println(
-          "Loaded class " + classname + " from package " + pkg);
-        return cls;
+        return Class.forName(name);
       } catch (ClassNotFoundException e) {
-        System.out.println(
-          "Could not load class " + classname + " from package " + pkg);
-        e.printStackTrace();
         // continue loop
       }
     }
+    System.out.println(
+      "Could not load class '" + classname
+      + "'; looked in the following packages: " + packages);
     return null;
   }
 
