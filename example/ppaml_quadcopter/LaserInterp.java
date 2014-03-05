@@ -7,8 +7,9 @@ import blog.model.AbstractFunctionInterp;
 
 public class LaserInterp extends AbstractFunctionInterp {
 
-  public LaserInterp() {
+  public LaserInterp(List objs) {
     laserMaxRange = 10;
+    laserAngles = new double[361];
     for (int i = 0; i < 361; i++) {
       laserAngles[i] = (-90 + i * 0.5) * Math.PI / 180;
     }
