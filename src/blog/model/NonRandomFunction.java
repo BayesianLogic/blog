@@ -358,8 +358,8 @@ public class NonRandomFunction extends Function {
       Object[] constrArgs = { paramValues };
       interp = (FunctionInterp) ct.newInstance(constrArgs);
     } catch (InvocationTargetException e) {
-      System.err.println("Error initializing interpretation for " + this + ": "
-          + e.getCause().getMessage());
+      System.err.println("Error initializing interpretation for " + this + ":");
+      e.getTargetException().printStackTrace();
       ++errors;
     } catch (NoSuchMethodException e) {
       System.err.println("Error initializing interpretation for " + this + ": "
