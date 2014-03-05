@@ -227,11 +227,7 @@ public class Semant {
       error(type.line, type.col, "Type " + type.typ.toString() + " undefined!");
     }
 
-    // Type hierarchy: Array -> {type}Array -> {type}([])^{num_dims}
-    String typeName = termType.getName();
-    String arrTypeName = "Array_" + typeName;
-
-    ArrayType arrType = new ArrayType(termType, type.dim);
+    ArrayType arrType = new ArrayType(termType);
     arrType = (ArrayType) Type.getType(arrType.getName());
 
     return arrType;
@@ -509,21 +505,19 @@ public class Semant {
       else
         return null;
     } else if (value instanceof MatrixSpec) {
-      if (ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL)
-          || ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL_2))
+      if (ty.isSubtypeOf(BuiltInTypes.REAL_MATRIX)) {
         return value;
-      else
+      } else {
         return null;
+      }
     } else if (value instanceof ListSpec) {
-      // TODO add more checks with array
-      if (ty.isSubtypeOf(BuiltInTypes.ARRAY)) {
-        if (ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL)
-            || ty.isSubtypeOf(BuiltInTypes.ARRAY_REAL_2)) {
-          return ((ListSpec) value).transferToMatrix();
-        } else
-          return value;
-      } else
+      if (ty.isSubtypeOf(BuiltInTypes.REAL_MATRIX)) {
+        return ((ListSpec) value).transferToMatrix();
+      } else if (ty.isSubtypeOf(BuiltInTypes.REAL_ARRAY)) {
+        return ((ListSpec) value).transferToMatrix();
+      } else {
         return null;
+      }
     } else
       return null;
   }
@@ -1134,13 +1128,15 @@ public class Semant {
         }
         Object symbolMapping = model
             .getFuncsWithName(((SymbolTerm) left).getName()).iterator().next();
-        if (((Function) symbolMapping).getRetType() == BuiltInTypes.ARRAY_REAL) {
-          func = BuiltInFunctions.SUB_VEC;
+        if (((Function) symbolMapping).getRetType() == BuiltInTypes.REAL_ARRAY) {
+          func = BuiltInFunctions.SUB_REAL_ARRAY;
+        } else if (((Function) symbolMapping).getRetType() == BuiltInTypes.INTEGER_ARRAY) {
+          func = BuiltInFunctions.SUB_INT_ARRAY;
         } else {
           func = BuiltInFunctions.SUB_MAT;
         }
       } else {
-        func = BuiltInFunctions.SUB_VEC;
+        func = BuiltInFunctions.SUB_REAL_ARRAY;
       }
       term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
       return term;

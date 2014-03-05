@@ -263,9 +263,9 @@ public class NonRandomFunction extends Function {
           }
 
           Type expected = getRetType();
-          if ((expected.isSubtypeOf(BuiltInTypes.ARRAY_REAL) || expected
-              .isSubtypeOf(BuiltInTypes.ARRAY_REAL_2))
-              && (param instanceof ListSpec)) {
+          if ((expected.isSubtypeOf(BuiltInTypes.REAL_ARRAY) ||
+                expected.isSubtypeOf(BuiltInTypes.REAL_MATRIX))
+                  && (param instanceof ListSpec)) {
             interpParams = Collections.singletonList(((ListSpec) param)
                 .transferToMatrix());
           } else if ((paramType != null) && (expected != null)

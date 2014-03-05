@@ -140,11 +140,10 @@ public class BuiltInTypes {
    * are represented as blog.common.numerical.MatrixLib objects.
    */
   public static final Type ARRAY = new ArrayType(BUILT_IN);
-  public static final Type ARRAY_REAL = new ArrayType(REAL);
-  public static final Type ARRAY_REAL_2 = new ArrayType(REAL, 2);
-
-  public static final Type ARRAY_INTEGER = new ArrayType(INTEGER);
-  public static final Type ARRAY_INTEGER_2 = new ArrayType(INTEGER, 2);
+  public static final Type REAL_ARRAY = new ArrayType(REAL);
+  public static final Type REAL_MATRIX = new RealMatrixType();
+  public static final Type INTEGER_ARRAY = new ArrayType(INTEGER);
+  public static final Type INTEGER_MATRIX = new IntegerMatrixType();
 
   /**
    * Type for object sets. Objects of this type are represented as
@@ -338,6 +337,30 @@ public class BuiltInTypes {
   // }
   // }
 
+  /**
+   * Real Matrix type.
+   *
+   * Row vectors are represented as matrices with one row.
+   * Column vectors are represented as matrices with one column.
+   */
+  private static class RealMatrixType extends Type {
+    public RealMatrixType() {
+      super("RealMatrix", BUILT_IN);
+    }
+  }
+
+  /**
+   * Integer Matrix type.
+   *
+   * Row vectors are represented as matrices with one row.
+   * Column vectors are represented as matrices with one column.
+   */
+  private static class IntegerMatrixType extends Type {
+    public IntegerMatrixType() {
+      super("IntegerMatrix", BUILT_IN);
+    }
+  }
+
   /*
    * A reference to BuiltInTypes is necessary to load the class,
    * thereby loading built-in types into the type hierarchy
@@ -356,10 +379,10 @@ public class BuiltInTypes {
     addType(TIMESTEP);
     addType(STRING);
     addType(CHARACTER);
-    addType(ARRAY_REAL);
-    addType(ARRAY_REAL_2);
-    addType(ARRAY_INTEGER);
-    addType(ARRAY_INTEGER_2);
+    addType(REAL_ARRAY);
+    addType(REAL_MATRIX);
+    addType(INTEGER_ARRAY);
+    addType(INTEGER_MATRIX);
 
     // special treatment for NaturalNum
     // builtInTypes.put(NATURALNUM_TYPE_NAME, NATURAL_NUM);

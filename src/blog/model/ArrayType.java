@@ -5,8 +5,8 @@ package blog.model;
 
 /**
  * ArrayType for BLOG
- * e.g. Real[] will be ArrayType(Type("Real"), 1);
- * e.g. Real[][] will be ArrayType(Type("Real"), 2);
+ *
+ * One-dimensional array of any type.
  * 
  * @author leili
  * @since Feb 11, 2014
@@ -20,20 +20,7 @@ public class ArrayType extends Type {
    *          in Real[]
    */
   public ArrayType(Type elementType) {
-    this(elementType, 1);
-  }
-
-  /**
-   * 
-   * @param elementType
-   *          the element type for this ArrayType, e.g. Real is the element type
-   *          in Real[]
-   * @param dims
-   *          number of dimensions
-   */
-  public ArrayType(Type elementType, int dims) {
-    super("Array_" + dims + "<" + elementType.getName() + ">");
-    this.dims = dims;
+    super("Array<" + elementType.getName() + ">");
     this.elementType = elementType;
   }
 
@@ -46,11 +33,10 @@ public class ArrayType extends Type {
   public boolean isSubtypeOf(Type other) {
     if (other instanceof ArrayType) {
       ArrayType aty = (ArrayType) other;
-      return dims == aty.dims && elementType.isSubtypeOf(aty.elementType);
+      return elementType.isSubtypeOf(aty.elementType);
     }
     return false;
   }
 
-  private Type elementType; // element type
-  private int dims; // number of dimensions, for vector, = 1; matrix = 2
+  private Type elementType;
 }
