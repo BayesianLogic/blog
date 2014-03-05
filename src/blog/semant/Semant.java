@@ -148,9 +148,21 @@ public class Semant {
    */
   Class getClassWithName(String classname) {
     for (String pkg : packages) {
+      String name;
+      if (pkg.isEmpty()) {
+        name = classname;
+      } else {
+        name = pkg + '.' + classname;
+      }
       try {
-        return Class.forName(pkg + classname);
+        Class cls = Class.forName(name);
+        System.out.println(
+          "Loaded class " + classname + " from package " + pkg);
+        return cls;
       } catch (ClassNotFoundException e) {
+        System.out.println(
+          "Could not load class " + classname + " from package " + pkg);
+        e.printStackTrace();
         // continue loop
       }
     }
@@ -281,7 +293,7 @@ public class Semant {
   protected void initialize() {
     packages = new ArrayList<String>();
     packages.add("");
-    packages.add("blog.distrib.");
+    packages.add("blog.distrib");
   }
 
   public void addPackages(List<String> pkgs) {
