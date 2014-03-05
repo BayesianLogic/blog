@@ -280,8 +280,10 @@ public class Semant {
     packages.add("blog.distrib.");
   }
 
-  public void setPackages(List<String> pks) {
-    packages = pks;
+  public void addPackages(List<String> pkgs) {
+    for (String pkg: pkgs) {
+      packages.add(pkg);
+    }
   }
 
   void transDec(Dec e) {
