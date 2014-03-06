@@ -42,9 +42,13 @@ def read_data(data_dir):
     """
     Read data from given path and return a list of Readings sorted by time.
     """
-    readings = []
+
+    def _assert_sorted(items, key):
+        for i in xrange(1, len(items)):
+            assert key(items[i - 1]) <= key(items[i])
 
     # GPS data:
+    gps_readings = []
     with open(os.path.join(data_dir, 'slam_gps.csv')) as csv_file:
         reader = csv.reader(csv_file)
         header = reader.next()
@@ -58,9 +62,11 @@ def read_data(data_dir):
             reading.gps_longitude = float(row[2])
             assert LONGITUDE_MIN <= reading.gps_longitude <= LONGITUDE_MAX
             reading.gps_orientation = float(row[3])
-            readings.append(reading)
+            gps_readings.append(reading)
+    _assert_sorted(gps_readings, key=lambda reading: reading.time)
 
     # Control data:
+    control_readings = []
     with open(os.path.join(data_dir, 'slam_control.csv')) as csv_file:
         reader = csv.reader(csv_file)
         header = reader.next()
@@ -71,9 +77,11 @@ def read_data(data_dir):
             reading.time = float(row[0])
             reading.velocity = float(row[1])
             reading.steering = float(row[2])
-            readings.append(reading)
+            control_readings.append(reading)
+    _assert_sorted(control_readings, key=lambda reading: reading.time)
 
     # Laser data:
+    laser_readings = []
     shown_out_of_range_laser_warning = False
     shown_out_of_range_intensity_warning = False
     with open(os.path.join(data_dir, 'slam_laser.csv')) as csv_file:
@@ -96,8 +104,10 @@ def read_data(data_dir):
                      max(reading.intensity) > INTENSITY_MAX)):
                 print "Warning: found out-of-range intensity readings"
                 shown_out_of_range_intensity_warning = True
-            readings.append(reading)
+            laser_readings.append(reading)
+    _assert_sorted(gps_readings, key=lambda reading: reading.time)
 
+    readings = gps_readings + control_readings + laser_readings
     readings.sort(key=lambda reading: reading.time)
 
     # Sanity check against declared sensors:
@@ -110,9 +120,10 @@ def read_data(data_dir):
         for row in reader:
             assert len(row) == 2
             declared_sensors.append((float(row[0]), code_to_sensor[row[1]]))
+    _assert_sorted(declared_sensors, key=lambda item: item[0])
     assert len(declared_sensors) == len(readings)
     for reading, decl in zip(readings, declared_sensors):
-        assert abs(reading.time - decl[0]) < 1e-4
+        assert abs(reading.time - decl[0]) < 1e-3
         if decl[1] == 'gps':
             assert reading.gps_latitude is not None
         elif decl[1] == 'control':
