@@ -1,3 +1,9 @@
 Author: Chris Xie, 2/8/14
 
 I used a subset of the NYT dataset (provided by Wei Wang, not sure where he got it from) to run these experiments. Only subjects, objects, and verbs are observed. Queries are in the form of "What is the relation of each sentence?"
+
+Results:
+
+	Total number of data points: 1088
+	Number of Correct Labels: 310
+	Accuracy Rate: 0.2849264705882353

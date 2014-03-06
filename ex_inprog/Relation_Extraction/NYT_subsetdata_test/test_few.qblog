@@ -1,0 +1,48 @@
+/* Queries go here */
+
+query Rel(SourceFact(Sent[17]));    // Should be analyst
+query Rel(SourceFact(Sent[18]));    // Should be analyst
+
+query Rel(SourceFact(Sent[99]));    // Should be chairman
+query Rel(SourceFact(Sent[100]));    // Should be chairman
+
+query Rel(SourceFact(Sent[178]));    // Should be leadership
+query Rel(SourceFact(Sent[179]));    // Should be leadership
+
+query Rel(SourceFact(Sent[352]));    // Should be firm
+query Rel(SourceFact(Sent[353]));    // Should be firm
+
+query Rel(SourceFact(Sent[419]));    // Should be lawyer
+query Rel(SourceFact(Sent[420]));    // Should be lawyer
+
+query Rel(SourceFact(Sent[609]));    // Should be professor
+query Rel(SourceFact(Sent[610]));    // Should be professor
+
+query Rel(SourceFact(Sent[668]));    // Should be secretary
+query Rel(SourceFact(Sent[669]));    // Should be secretary
+
+query Rel(SourceFact(Sent[690]));    // Should be spokesman
+query Rel(SourceFact(Sent[691]));    // Should be spokesman
+
+query Rel(SourceFact(Sent[834]));    // Should be replace_chairman
+query Rel(SourceFact(Sent[835]));    // Should be replace_chairman
+
+query Rel(SourceFact(Sent[862]));    // Should be replace_leadership
+query Rel(SourceFact(Sent[863]));    // Should be replace_leadership
+
+query Rel(SourceFact(Sent[884]));    // Should be office
+query Rel(SourceFact(Sent[885]));    // Should be office
+
+query Rel(SourceFact(Sent[924]));    // Should be defeat
+query Rel(SourceFact(Sent[925]));    // Should be defeat
+
+query Rel(SourceFact(Sent[972]));    // Should be say
+query Rel(SourceFact(Sent[973]));    // Should be say
+
+query Rel(SourceFact(Sent[1070]));    // Should be ownership
+query Rel(SourceFact(Sent[1071]));    // Should be ownership
+
+query Rel(SourceFact(Sent[1084]));    // Should be resign_from_leadership
+query Rel(SourceFact(Sent[1085]));    // Should be resign_from_leadership
+
+

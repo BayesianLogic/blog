@@ -1,6 +1,5 @@
-/* Queries go here */
+/* Queries Go Here */
 
-query Rel(SourceFact(Sent[0]));
 query Rel(SourceFact(Sent[1]));
 query Rel(SourceFact(Sent[2]));
 query Rel(SourceFact(Sent[3]));

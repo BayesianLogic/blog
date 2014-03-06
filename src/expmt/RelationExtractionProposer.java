@@ -234,8 +234,27 @@ public class RelationExtractionProposer implements Proposer {
   
       // Create hashmap where key is a unique relation/arg pair, value is a fact
       //factMap = new HashMap<String, Object>(); 
+        
+      // Set number variables of RELEVANT FACTS: DATADRIVEN MCMC
+      factMap = new HashMap<String, Object>();
+      for (Object sentence: sentType.getGuaranteedObjects()) {
   
-      // Set number variables
+        Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
+        Object arg2 = world.getValue(makeVar(objectFunc, sentence));
+        
+        for (Object rel : relType.getGuaranteedObjects()) {
+          
+          // Use a NumberVar to grab the fact
+          Object[] factArgs = {rel, arg1, arg2};
+          NumberVar nFacts = new NumberVar(factPOP, factArgs);
+
+          // 5a) Instantiate the number variable, by definition of the model
+          world.setValue(nFacts, 1);
+          
+        }
+      }
+      
+      /* NOT DATADRIVEN, THIS MAKES MY COMPUTER RUN OUT OF DATA
       for (Object rel : relType.getGuaranteedObjects()) {
         for (Object arg1 : entType.getGuaranteedObjects()) {
           for (Object arg2 : entType.getGuaranteedObjects()) {
@@ -255,7 +274,7 @@ public class RelationExtractionProposer implements Proposer {
             //factMap.put(key, value);
           }
         }
-      }
+      }*/
       
       // 2) This is for labeled sentences, where a relation of a sentence is observed (along with the arg pair, of course)
       for (Iterator iter = evidence.getEvidenceVars().iterator(); iter.hasNext(); ) {
@@ -314,6 +333,9 @@ public class RelationExtractionProposer implements Proposer {
         // One of the sentences was observed, cluster everything in that relation
         if (rel != null) {
           for (Object sent : group) {
+            if (world.isInstantiated(makeVar(sourceFactFunc, sent))) {
+              continue;
+            }
             Object arg1 = world.getValue(makeVar(subjectFunc, sent));
             Object arg2 = world.getValue(makeVar(objectFunc, sent));
             Object sourceFact = getFact(rel, arg1, arg2, world);
@@ -345,7 +367,7 @@ public class RelationExtractionProposer implements Proposer {
       for (ArrayList group : argPairGroups.values()) {
         Object rel = null;
         for (Object sent : group) {
-          if (world.isInstantiated(makeVar(sourceFactFunc, sent))) { // Only labeled sentences have this
+          if (world.isInstantiated(makeVar(sourceFactFunc, sent))) {
             rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc, sent))).getOriginFuncValue(relFunc);
           }
         }
@@ -365,8 +387,6 @@ public class RelationExtractionProposer implements Proposer {
           }
         } 
       }
-      
-  
             
       // 3c) For all other observed sentences, choose SourceFact (basically randomly choose a relation
       // to go with the argument pair)

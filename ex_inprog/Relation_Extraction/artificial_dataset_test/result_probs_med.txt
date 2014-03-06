@@ -1,0 +1,61 @@
+Distribution of values for Rel(SourceFact(Sent[0]))
+	1.0	leadership
+Distribution of values for Rel(SourceFact(Sent[1]))
+	0.82755	leadership
+	0.0945	student_of
+	0.07795	teaches_class
+Distribution of values for Rel(SourceFact(Sent[2]))
+	1.0	leadership
+Distribution of values for Rel(SourceFact(Sent[3]))
+	1.0	leadership
+Distribution of values for Rel(SourceFact(Sent[4]))
+	1.0	leadership
+Distribution of values for Rel(SourceFact(Sent[5]))
+	0.9993666666666666	leadership
+	6.333333333333333E-4	student_of
+Distribution of values for Rel(SourceFact(Sent[6]))
+	0.7885	leadership
+	0.11601666666666667	student_of
+	0.09548333333333334	teaches_class
+Distribution of values for Rel(SourceFact(Sent[7]))
+	1.0	teaches_class
+Distribution of values for Rel(SourceFact(Sent[8]))
+	0.7811333333333333	teaches_class
+	0.11016666666666666	leadership
+	0.1087	student_of
+Distribution of values for Rel(SourceFact(Sent[9]))
+	0.7774166666666666	teaches_class
+	0.11176666666666667	leadership
+	0.11081666666666666	student_of
+Distribution of values for Rel(SourceFact(Sent[10]))
+	0.7746666666666666	teaches_class
+	0.13393333333333332	leadership
+	0.0914	student_of
+Distribution of values for Rel(SourceFact(Sent[11]))
+	1.0	teaches_class
+Distribution of values for Rel(SourceFact(Sent[12]))
+	1.0	teaches_class
+Distribution of values for Rel(SourceFact(Sent[13]))
+	1.0	teaches_class
+Distribution of values for Rel(SourceFact(Sent[14]))
+	1.0	student_of
+Distribution of values for Rel(SourceFact(Sent[15]))
+	0.76135	student_of
+	0.13245	leadership
+	0.1062	teaches_class
+Distribution of values for Rel(SourceFact(Sent[16]))
+	0.7728333333333334	student_of
+	0.11583333333333333	teaches_class
+	0.11133333333333334	leadership
+Distribution of values for Rel(SourceFact(Sent[17]))
+	0.7648666666666667	student_of
+	0.1202	leadership
+	0.11493333333333333	teaches_class
+Distribution of values for Rel(SourceFact(Sent[18]))
+	0.75985	student_of
+	0.15193333333333334	leadership
+	0.08821666666666667	teaches_class
+Distribution of values for Rel(SourceFact(Sent[19]))
+	0.74245	student_of
+	0.15461666666666668	leadership
+	0.10293333333333334	teaches_class

@@ -3481,7 +3481,7 @@ obs Verb(Sent[866]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pob
 obs Subject(Sent[867]) = Washington;
 obs Object(Sent[867]) = Vinson__Elkins;
 obs Verb(Sent[867]) = nn__nn_office_prep_of_pobj__pobj;
-obs Rel(SourceFact(Sent[0])) = office;
+obs Rel(SourceFact(Sent[867])) = office;
 
 obs Subject(Sent[868]) = Washington;
 obs Object(Sent[868]) = Sojourner;
