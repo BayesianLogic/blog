@@ -120,6 +120,10 @@ public class Particle {
 	public void removeAllDerivedVars() {
 		BLOGUtil.removeAllDerivedVars(curWorld);
 	}
+	
+	public void removeAllNonstateVars() {
+		BLOGUtil.removeAllNonstateVars(curWorld);
+	}
 
 	public PartialWorld getLatestWorld() {
 		if (curWorld == null) {

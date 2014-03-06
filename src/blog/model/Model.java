@@ -230,9 +230,11 @@ public class Model {
 			for (Iterator iter = funcsWithName.iterator(); iter.hasNext();) {
 				Function g = (Function) iter.next();
 				if (Arrays.equals(f.getArgTypes(), g.getArgTypes())) {
-					throw new IllegalStateException("Can't add function with signature "
+					return;
+                                        //this is a hack for now to allow generated symbols with same name; TO BE FIXED
+					/*throw new IllegalStateException("Can't add function with signature "
 							+ f.getSig() + " because there is already a user-defined "
-							+ " function with this signature.");
+							+ " function with this signature.");*/
 				}
 			}
 		} else {

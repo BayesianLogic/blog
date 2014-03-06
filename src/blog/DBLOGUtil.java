@@ -302,5 +302,5 @@ public class DBLOGUtil {
 		return result;
 	}
 	
-	public static int nsim = 2;
+	public static int nsim = 1;
 }

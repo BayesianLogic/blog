@@ -415,6 +415,17 @@ public class BLOGUtil {
 			world.removeDerivedVar(var);
 		}
 	}
+	
+	/** Removes all nonstate vars from a partial world. */
+	public static void removeAllNonstateVars(PartialWorld world) {
+		LinkedList vars = new LinkedList(world.getInstantiatedVars());
+		Iterator varIt = vars.iterator();
+		while (varIt.hasNext()) {
+			BasicVar var = (BasicVar) varIt.next();
+			if (var.toString().contains("nonstate_"))
+				uninstantiate(world, var);
+		}
+	}
 
 	public static void uninstantiate(PartialWorld world, BasicVar var) {
 		world.setValue(var, null);

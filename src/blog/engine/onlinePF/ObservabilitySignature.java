@@ -285,7 +285,7 @@ public class ObservabilitySignature {
 		String eviString = generateObservableTypeString();
 		myEvidence = new Evidence();
 		parseAndTranslateEvidence(model, myEvidence, Util.list(), new StringReader(eviString));
-		obsSetID++;
+		//obsSetID++;
 		return eviString;
 	}
 	

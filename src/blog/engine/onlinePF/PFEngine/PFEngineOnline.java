@@ -110,7 +110,7 @@ public abstract class PFEngineOnline extends InferenceEngine {
 
 		String samplerClassName = properties.getProperty("samplerClass",
 				"blog.sample.LWSampler");
-		System.out.println("Constructing sampler of class " + samplerClassName);
+		//System.out.println("Constructing sampler of class " + samplerClassName);
 		particleSampler = Sampler.make(samplerClassName, model, properties);
 		
 		this.properties = properties;
@@ -128,7 +128,7 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	 * - populating the particles arraylist
 	 */
 	protected void initialize() {
-		System.out.println("Using " + numParticles + " particles...");
+		//System.out.println("Using " + numParticles + " particles...");
 		if (evidence == null)
 			evidence = new Evidence();
 		if (queries == null)
@@ -284,6 +284,7 @@ public abstract class PFEngineOnline extends InferenceEngine {
 		for (TimedParticle p : particles) {
 			p.uninstantiatePreviousTimeslices();
 			p.removeAllDerivedVars();
+			p.removeAllNonstateVars();
 		}
 	}
 	

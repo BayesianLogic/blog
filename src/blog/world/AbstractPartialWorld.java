@@ -1138,13 +1138,16 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		//rtn = rtn && (otherWorld.basicVarToValue == (Map) ((HashMap) basicVarToValue));
 		for (Object o : changedVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
+			if (v.toString().contains("nonstate_")) continue;
 			//System.out.println("Compare? " + v);
 			if (v instanceof RandFuncAppVar){
 				RandFuncAppVar funcVar = (RandFuncAppVar) v;
 				if (funcVar.func().getObservableFun() != null)
 					continue;
 
-				if (funcVar.func().getName().equals("value") || funcVar.func().getName().equals("reward")) {
+				if (funcVar.func().getName().equals("value") || 
+						funcVar.func().getName().equals("reward") ||
+						funcVar.func().getName().contains("nonstate_")) {
 					continue;
 				}
 				if ((funcVar.func()) instanceof ObservableRandomFunction){
@@ -1156,8 +1159,9 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 						continue;
 				}
 			}
-			//System.out.println("Comparing " + v);
+			
 			if (UBT.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+				//System.out.println("Comparing " + v + " value: " + changedVarToValue.get(v));
 				rtn = rtn && (otherWorld.changedVarToValue.containsKey(v) && otherWorld.changedVarToValue.get(v).equals(changedVarToValue.get(v)));
 			}
 			/*
@@ -1205,9 +1209,12 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		*/
 		for (Object o : changedVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
+			if (v.toString().contains("nonstate_")) continue;
 			if (v instanceof RandFuncAppVar){
 				RandFuncAppVar funcVar = (RandFuncAppVar) v;
-				if (funcVar.func().getName().equals("value") || funcVar.func().getName().equals("reward")) {
+				if (funcVar.func().getName().equals("value") 
+						|| funcVar.func().getName().equals("reward")
+						|| funcVar.func().getName().contains("nonstate_")) {
 					continue;
 				}
 				if (funcVar.func().getObservableFun() != null)
@@ -1217,7 +1224,6 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 					if (UBT.currentScheme==UBT.schemes.allVariables ||
 							(UBT.currentScheme==UBT.schemes.nonObservableVariables && myObs.booleanValue())) {
 						v = (BasicVar) observableToReferenced.get(v);
-						System.out.println("Comparing " + v);
 				} else
 						continue;
 				}
@@ -1231,6 +1237,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				rtn = rtn ^ changedVarToValue.get(v).hashCode();
 			}*/
 			if (UBT.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+				//System.out.println("hash " + v + " value: " + changedVarToValue.get(v));
 				int a = v.hashCode();
 				rtn = rtn ^ v.hashCode();
 				Object b = changedVarToValue.get(v);

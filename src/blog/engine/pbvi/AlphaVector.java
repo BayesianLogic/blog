@@ -16,22 +16,19 @@ public class AlphaVector {
 	}
 	
 	public Double getValue(State s) {
-		Double value = values.get(s);
-		if (value == null) return -1000D;
-		return value;
+		return values.get(s);
 	}
 	
-	public Double getValue(PartialWorld w) {
-		return null;
-	}
-	
-	//TODO: remove
 	public Double getValue(Belief b) {
 		Double value = 0D;
-		for (State s : b.getStates().keySet()) {
-			value += getValue(s);
+		int total = 0;
+		for (State s : b.getStates()) {
+			Double v = getValue(s);
+			if (v == null) return null;
+			value += v * b.getCount(s);
+			total += b.getCount(s);
 		}
-		return value/b.getStates().size();
+		return value/total;
 	}
 	
 	public void setValue(State s, Double value) {

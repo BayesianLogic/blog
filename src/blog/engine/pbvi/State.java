@@ -29,6 +29,7 @@ public class State {
 		if (!(o instanceof State))
 			return false;
 		State s = (State) o;
+		if (timestep != s.timestep) return false;
 		return s.world.innerStateEquals(world, timestep);
 		
 	}
