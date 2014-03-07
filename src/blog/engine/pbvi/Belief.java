@@ -242,7 +242,7 @@ public class Belief {
 		unionStates.addAll(other.getStates());
 		int diff = 0;
 		for (State s : unionStates) {
-			diff += this.getCount(s) + other.getCount(s);
+			diff += Math.abs(this.getCount(s) - other.getCount(s));
 		}
 		return diff;
 	}

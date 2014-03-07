@@ -23,12 +23,14 @@ public class FiniteStatePolicy extends PolicyModel {
 	private AlphaVector alpha;
 	private Evidence action;
 	private Map<Evidence, FiniteStatePolicy> successors;
+	private Map<Evidence, String> notes;
 	
 	private Set<ArgSpec> requiredTerms;
 	
 	public FiniteStatePolicy(Evidence action, Map<Evidence, FiniteStatePolicy> successors) {
 		this.action = action;
 		this.successors = successors;
+		this.notes = new HashMap<Evidence, String>();
 		
 		requiredTerms = new HashSet<ArgSpec>();
 		DecisionEvidenceStatement a = (DecisionEvidenceStatement) action.getDecisionEvidence().iterator().next();
@@ -98,7 +100,7 @@ public class FiniteStatePolicy extends PolicyModel {
 			} else {
 				result += contingentPolicy.toDotStringHelper(nextName, included);
 			}
-			result = result + name + " -> " + nextName + " [label=\"" + evidenceString + "\"];\n";
+			result = result + name + " -> " + nextName + " [label=\"" + evidenceString +  " " + getNote(o) + "\"];\n";
 			
 			i++;
 		}
@@ -165,5 +167,33 @@ public class FiniteStatePolicy extends PolicyModel {
 		if (setHashCode == null)
 			setHashCode =  action.hashCode() ^ successors.hashCode();
 		return setHashCode;
+	}
+	
+	public boolean merge(FiniteStatePolicy policy) {
+		 if (!action.equals(policy.action)) return false;
+		 for (Evidence o : successors.keySet()) {
+			 if (policy.successors.containsKey(o) &&
+					 !successors.get(o).equals(policy.successors.get(o))) {
+				 return false;
+			 }
+		 }
+		 
+		 for (Evidence o : policy.successors.keySet()) {
+			 successors.put(o, policy.getNextPolicy(o));
+		 }
+		 
+		 return true;
+	}
+	
+	public void addObsNote(Evidence obs, String note) {
+		notes.put(obs, note);
+	}
+	
+	public String getNote(Evidence obs) {
+		String note = notes.get(obs);
+		if (note == null) {
+			return "";
+		}
+		return note;
 	}
 }
