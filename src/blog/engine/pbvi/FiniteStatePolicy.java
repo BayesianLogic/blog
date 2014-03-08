@@ -180,6 +180,7 @@ public class FiniteStatePolicy extends PolicyModel {
 		 
 		 for (Evidence o : policy.successors.keySet()) {
 			 successors.put(o, policy.getNextPolicy(o));
+			 addObsNote(o, "merged");
 		 }
 		 
 		 return true;

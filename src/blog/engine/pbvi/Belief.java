@@ -90,16 +90,30 @@ public class Belief {
 		}
 		return new Belief(next, pbvi);
 	}*/
-	
+	static long copyTime = 0;
+	static long takeActionTime = 0;
+	static long takeObsTime = 0;
+	static long resampleTime = 0;
+	static int numSampleNext = 0;
+	static Map<Integer, Integer> resampleStateCountStats = new HashMap<Integer, Integer>();
+	static Map<Integer, Integer> stateCountStats = new HashMap<Integer, Integer>();
 	public Belief sampleNextBelief(Evidence action) {
+		numSampleNext++;
+		
+		Timer.start();
 		PFEngineSampled nextPF = getParticleFilter().copy();
+		copyTime += Timer.getElapsed();
+		
+		Timer.start();
 		nextPF.beforeTakingEvidence();
 		nextPF.takeDecision(action);
 		nextPF.answer(pbvi.getQueries(getTimestep() + 1));
+		takeActionTime += Timer.getElapsed();
 		
 		for (TimedParticle p : nextPF.particles)
 			p.advanceTimestep();
 
+		Timer.start();
 		nextPF.updateOSforAllParticles();
 		nextPF.retakeObservability2();
 		int osIndex = nextPF.retakeObservability();	
@@ -108,9 +122,27 @@ public class Belief {
 			nextPF.dropHistory();
 			//ObservabilitySignature.dropHistory(((TimedParticle)Util.getFirst(nextPF.particles)).getTimestep());
 		}
+		takeObsTime += Timer.getElapsed();
+		
+		Timer.start();
 		nextPF.resample();
+		resampleTime += Timer.getElapsed();
+		
 		Belief nextBelief = new Belief(nextPF, pbvi);
 		nextBelief.latestEvidence = o;
+		
+		int numStatesAfterResample = nextBelief.getStates().size();
+		if (!resampleStateCountStats.containsKey(numStatesAfterResample)) {
+			resampleStateCountStats.put(numStatesAfterResample, 0);
+		}
+		resampleStateCountStats.put(numStatesAfterResample, resampleStateCountStats.get(numStatesAfterResample) + 1);
+		
+		int numStates = getStates().size();
+		if (!stateCountStats.containsKey(numStates)) {
+			stateCountStats.put(numStates, 0);
+		}
+		stateCountStats.put(numStates, stateCountStats.get(numStates) + 1);
+		
 		return nextBelief;
 	}
 	
@@ -133,7 +165,6 @@ public class Belief {
 	}
 	
 	public ActionPropagated beliefsAfterAction(Evidence action) {
-		Map<Evidence, Belief> result = new HashMap<Evidence, Belief>();
 		ActionPropagated ap = new ActionPropagated(this, action);
 		
 		PFEngineSampled apPF = getParticleFilter().copy();
@@ -245,5 +276,16 @@ public class Belief {
 			diff += Math.abs(this.getCount(s) - other.getCount(s));
 		}
 		return diff;
+	}
+	
+	public static void printTimingStats() {
+		System.out.println("Belief.resampleTime " + resampleTime);
+		System.out.println("Belief.copyTime " + copyTime);
+		System.out.println("Belief.takeActionTime " + takeActionTime);
+		System.out.println("Belief.takeObsTime " + takeObsTime);
+		System.out.println("Belief.numSampleNext " + numSampleNext);
+		
+		System.out.println("State counts " + stateCountStats);
+		System.out.println("Resample state counts " + resampleStateCountStats);
 	}
 }

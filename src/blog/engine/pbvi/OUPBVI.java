@@ -40,14 +40,16 @@ public class OUPBVI {
 	private List<Query> queries;
 	private Properties properties;
 	private int horizon;
+	private int numBeliefs;
 
 	private TemporalQueriesInstantiator setQI;
 	
-	public OUPBVI(Model model, Properties properties, List<Query> queries, List<String> queryStrings, int horizon) {
+	public OUPBVI(Model model, Properties properties, List<Query> queries, List<String> queryStrings, int horizon, int numBeliefs) {
 		this.model = model;
 		this.horizon = horizon;
 		this.properties = properties;
 		this.queries = queries;
+		this.numBeliefs = numBeliefs;
 		System.out.println("Queries " + queries);
 		
 		for (Type typ: (List<Type>) model.getObsTyp()){
@@ -80,12 +82,14 @@ public class OUPBVI {
 		Set<Belief> newBeliefs = new HashSet<Belief>(); //beliefs;
 		newBeliefs.addAll(beliefs);
 		
-		for (int i = 0; i < 7; i++) {
+		int numIter = 0;
+		while (newBeliefs.size() < numBeliefs) {
 			//newBeliefs.addAll(beliefExpansionDepthFirst(
 			//		new Belief(initBelief.copy(), this), pomdp));
 			newBeliefs = maxNormBeliefExpansion(newBeliefs, pomdp);
-			System.out.println("run.expansion.iteration: " + i);
+			System.out.println("run.expansion.iteration: " + numIter);
 			System.out.println("run.expansion.newsize: " + newBeliefs.size());
+			numIter++;
 		}
 		beliefs = newBeliefs;
 		
@@ -102,7 +106,7 @@ public class OUPBVI {
 			System.out.println("run policies " + policies.size() + " " + t);
 			int i = 0;
 			for (FiniteStatePolicy p : policies) {
-				System.out.println(p.toDotString("p" + "_" + t + "_" + i));
+				System.out.println(p.toDotString("p" + "_t" + t + "_i" + i));
 				i++;
 			}
 		}
@@ -116,11 +120,15 @@ public class OUPBVI {
 	
 	private Set<FiniteStatePolicy> createMergedPolicySet(Set<FiniteStatePolicy> policies, FiniteStatePolicy policy) {
 		Set<FiniteStatePolicy> newPolicies = new HashSet<FiniteStatePolicy>();
+		//System.out.println("merge new policy " + policy);
 		for (FiniteStatePolicy p : policies) {
 			if (!policy.merge(p)) {
-				newPolicies.add(p);
+			newPolicies.add(p);
+			} else {
+			//	System.out.println("merged " + p);
 			}
 		}
+		//System.out.println("adding policy " + policy);
 		newPolicies.add(policy);
 		return newPolicies;
 	}
@@ -261,6 +269,7 @@ public class OUPBVI {
 		Set<Belief> newBeliefs = new HashSet<Belief>(beliefs);
 		for (Belief belief : beliefs) {
 			if (belief.getTimestep() == horizon) continue;
+			if (newBeliefs.size() >= numBeliefs) break;
 			Set<Evidence> actions = pomdp.getActions(belief);
 			Belief bestBelief = null;
 			int maxDiff = 0;
@@ -458,6 +467,8 @@ public class OUPBVI {
 			Set<FiniteStatePolicy> oldPolicies,
 			Belief b,
 			SampledPOMDP pomdp) {
+		long startTime = System.currentTimeMillis();
+		
 		Map<Evidence, FiniteStatePolicy> bestPolicyMap = new HashMap<Evidence, FiniteStatePolicy>();
 		Evidence bestAction = null;
 		
@@ -519,7 +530,8 @@ public class OUPBVI {
 		
 		System.out.println("bestAction: " + bestAction + " " + bestValue);
 		FiniteStatePolicy newPolicy = new FiniteStatePolicy(bestAction, bestPolicyMap);
-		System.out.println("new policy" + newPolicy);
+		//System.out.println("new policy" + newPolicy);
+		System.out.println("singlebackupforbelief.time " + (System.currentTimeMillis() - startTime));
 		return newPolicy;		
 	}
 	
@@ -629,7 +641,8 @@ public class OUPBVI {
 	public static OUPBVI makeOUPBVI(List modelFilePath, 
 			String queryFile,
 			int numParticles,
-			int horizon) {
+			int horizon,
+			int numBeliefs) {
 		query_parser file = new query_parser(queryFile);
 		Collection linkStrings = Util.list();
 		List<String> queryStrings = file.queries;
@@ -645,7 +658,7 @@ public class OUPBVI {
 		properties.setProperty("numMoves", "1");
 		Util.initRandom(true);
 		Util.setVerbose(false);
-		return new OUPBVI(model, properties, queries, queryStrings, horizon);
+		return new OUPBVI(model, properties, queries, queryStrings, horizon, numBeliefs);
 	}
 	
 	public static void main(String[] args) {
@@ -656,12 +669,14 @@ public class OUPBVI {
 		OUPBVI oupbvi = makeOUPBVI(modelFiles, 
 				args[1], 
 				Integer.parseInt(args[2]), 
-				Integer.parseInt(args[3]));
+				Integer.parseInt(args[3]),
+				Integer.parseInt(args[4]));
 		Set<FiniteStatePolicy> policies = oupbvi.run();
 		for (FiniteStatePolicy p : policies) {
 			System.out.println(p.toDotString("p0"));
 		}
 		System.out.println("Running time: " + (System.currentTimeMillis() - now) + "ms");
+		Belief.printTimingStats();
 	}
 
 	public Model getModel() {
