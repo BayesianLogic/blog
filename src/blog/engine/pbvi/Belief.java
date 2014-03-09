@@ -131,18 +131,8 @@ public class Belief {
 		Belief nextBelief = new Belief(nextPF, pbvi);
 		nextBelief.latestEvidence = o;
 		
-		int numStatesAfterResample = nextBelief.getStates().size();
-		if (!resampleStateCountStats.containsKey(numStatesAfterResample)) {
-			resampleStateCountStats.put(numStatesAfterResample, 0);
-		}
-		resampleStateCountStats.put(numStatesAfterResample, resampleStateCountStats.get(numStatesAfterResample) + 1);
-		
-		int numStates = getStates().size();
-		if (!stateCountStats.containsKey(numStates)) {
-			stateCountStats.put(numStates, 0);
-		}
-		stateCountStats.put(numStates, stateCountStats.get(numStates) + 1);
-		
+		updateResampleStateCountStats(nextBelief);
+		updateStateCountStats(this);
 		return nextBelief;
 	}
 	
@@ -165,6 +155,7 @@ public class Belief {
 	}
 	
 	public ActionPropagated beliefsAfterAction(Evidence action) {
+		updateStateCountStats(this);
 		ActionPropagated ap = new ActionPropagated(this, action);
 		
 		PFEngineSampled apPF = getParticleFilter().copy();
@@ -287,5 +278,21 @@ public class Belief {
 		
 		System.out.println("State counts " + stateCountStats);
 		System.out.println("Resample state counts " + resampleStateCountStats);
+	}
+
+	public static void updateResampleStateCountStats(Belief nextBelief) {
+		int numStatesAfterResample = nextBelief.getStates().size();
+		if (!resampleStateCountStats.containsKey(numStatesAfterResample)) {
+			resampleStateCountStats.put(numStatesAfterResample, 0);
+		}
+		resampleStateCountStats.put(numStatesAfterResample, resampleStateCountStats.get(numStatesAfterResample) + 1);
+	}
+	
+	public static void updateStateCountStats(Belief belief) {
+		int numStates = belief.getStates().size();
+		if (!stateCountStats.containsKey(numStates)) {
+			stateCountStats.put(numStates, 0);
+		}
+		stateCountStats.put(numStates, stateCountStats.get(numStates) + 1);
 	}
 }

@@ -1,0 +1,10 @@
+query value(t);
+query #{nonstate_Sound s: Time_nonstate_Sound(s)==t};
+query reward(Prev(t));
+query Num_nonstate_Sound(t);
+query exists Integer d d < MaxDoor & NumMonstersAtDoor(d, t) == 0 & false;
+query nonstate_SoundAtDoor(0, t);
+query nonstate_SoundAtDoor(1, t);
+query nonstate_SoundAtDoor(2, t);
+query nonstate_SoundAtDoor(3, t);
+query end_state(t);

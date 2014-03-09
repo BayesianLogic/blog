@@ -1,0 +1,112 @@
+nonrandom Integer MaxDoor = 4;
+type Monster;
+#Monster ~ Poisson(1);
+//#Monster = 1;
+type nonstate_Sound;
+generating Monster Source(nonstate_Sound);
+generating Timestep Time_nonstate_Sound(nonstate_Sound);
+random Integer Num_nonstate_Sound(Timestep t) ~Cardinality({nonstate_Sound s : Time_nonstate_Sound(s)==t});
+random Boolean observable(Num_nonstate_Sound(Timestep t)) =true;
+
+random Integer DoorOf(Monster m, Timestep t) {
+   if t == @0 then ~ UniformChoice({Integer n: n< MaxDoor & n>=0})
+   //else if DoorOf(m, Prev(t)) == MaxDoor then
+   //  ~ Categorical({0->0.3, (MaxDoor-1)->0.3, MaxDoor->0.4})
+   //else if DoorOf(m, Prev(t)) == 0 then
+   //  ~ Categorical({0->0.4, 1->0.3, MaxDoor->0.3})
+   //else
+   //  ~ Categorical({DoorOf(m, Prev(t))->0.5, 0->0.5})
+     //~ Categorical({DoorOf(m, Prev(t))->0.4, (DoorOf(m, Prev(t))-1)->0.3, (DoorOf(m, Prev(t))+1)->0.3})
+   else if nonstate_movement(m, t)==1 then
+     = SuccMod(DoorOf(m, Prev(t)), MaxDoor)
+   else if nonstate_movement(m, t)==-1 then
+     = PredMod(DoorOf(m, Prev(t)), MaxDoor)
+   else if nonstate_movement(m, t)==0 then
+     = DoorOf(m, Prev(t))
+   //else ~ Categorical({SuccMod(DoorOf(m, Prev(t)), MaxDoor)->0.3, PredMod(DoorOf(m, Prev(t)), MaxDoor)->0.3, DoorOf(m, Prev(t))->0.4})
+};		
+
+random Integer nonstate_movement(Monster m, Timestep t) ~ Categorical({-1->0.3, 1->0.3, 0->0.4});
+
+#nonstate_Sound(Source = m, Time_nonstate_Sound = t) {if apply_listen(Prev(t)) then ~Categorical({0->0.5,1->0.5})
+                                        else = 0};
+
+random Boolean nonstate_SoundAtDoor(Integer d, Timestep t){
+  if t==@0 then = false
+  else if end_state(t) then = false
+  else if apply_listen(Prev(t)) & exists nonstate_Sound s Time_nonstate_Sound(s) == t & DoorOf(Source(s), t) == d then ~ Bernoulli(0.75)
+  else if apply_listen(Prev(t)) & exists nonstate_Sound s Time_nonstate_Sound(s) == t & SuccMod(DoorOf(Source(s), t), MaxDoor) == d then ~ Bernoulli(0.25)
+  else if apply_listen(Prev(t)) & exists nonstate_Sound s Time_nonstate_Sound(s) == t & PredMod(DoorOf(Source(s), t),  MaxDoor) == d then ~ Bernoulli(0.25)
+  else = false
+};
+
+random Boolean observable(nonstate_SoundAtDoor(Integer d, Timestep t)) {if true then = true};
+
+random Integer reward(Timestep t) {
+    if (end_state(t)) then
+      = 0
+    //else if (exists nonstate_Sound s Time_Sound(s) == t & apply_record(s, t) == true) then
+    //  = 1
+    else if apply_listen(t) then 
+      = -1
+    else if exists Monster m DoorOf(m, t) == 0 & apply_enter0(t)
+      then = -100
+    else if apply_enter0(t)
+      then = 10
+    else if exists Monster m DoorOf(m, t) == 1 & apply_enter1(t)
+      then = -100
+    else if apply_enter1(t)
+      then = 10
+    else if exists Monster m DoorOf(m, t) == 2 & apply_enter2(t)
+      then = -100
+    else if apply_enter2(t)
+      then = 10
+    else if exists Monster m DoorOf(m, t) == 3 & apply_enter3(t)
+      then = -100
+    else if apply_enter3(t)
+      then = 10
+    //else if exists Integer d d< MaxDoor & apply_enter(d, t) & exists Monster m
+    //  DoorOf(m, t) == d then = -100
+    //else if exists Integer d  d<MaxDoor & apply_enter(d, t) & !(exists Monster m
+    //  DoorOf(m, t) == d ) then = 10
+    else = -5
+};
+random Real value(Timestep t) {
+	if (t == @0) then 
+		= 0
+	else 
+		= value(Prev(t)) + reward(Prev(t))
+};
+
+random Boolean end_state(Timestep t) {
+  if (t == @0) then
+    = false
+  else if (apply_enter3(Prev(t)) | apply_enter2(Prev(t)) | apply_enter1(Prev(t)) | apply_enter0(Prev(t))) then
+    = true
+  else
+    = end_state(Prev(t))
+};
+
+//random Boolean apply_enter(Integer d, Timestep t) {
+ // if (d == 0 & apply_enter0(t)) then
+  //  = true
+  //else if (d == 1 & apply_enter1(t)) then
+   // = true
+  //else if (d == 2 & apply_enter2(t)) then
+  //  = true
+  //else if (d == 3 & apply_enter3(t)) then
+  //  = true
+  //else
+   // = false
+//};
+//decision Boolean apply_record(Sound s, Timestep t);
+decision Boolean apply_listen(Timestep t);
+decision Boolean apply_no_op(Timestep t);
+/*helpers for policy*/
+//random Boolean MonsterAtDoor(Integer d, Timestep t) = (exists Monster m DoorOf(m, t) == d);
+random Integer NumMonstersAtDoor(Integer d, Timestep t) ~ Cardinality({Monster m : DoorOf(m, t) == d}); 
+
+decision Boolean apply_enter0(Timestep t);
+decision Boolean apply_enter1(Timestep t);
+decision Boolean apply_enter2(Timestep t);
+decision Boolean apply_enter3(Timestep t);

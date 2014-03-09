@@ -63,6 +63,7 @@ public class ActionPropagated {
 		}
 		nextPF.resample();
 		Belief nextBelief = new Belief(nextPF, pbvi);
+		Belief.updateResampleStateCountStats(nextBelief);
 		return nextBelief;
 	}
 
