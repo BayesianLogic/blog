@@ -44,8 +44,10 @@ import java.util.ListIterator;
 import java.util.Properties;
 import java.util.Set;
 
+import blog.bn.BayesNetVar;
 import blog.DBLOGUtil;
 import blog.common.Util;
+import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -122,6 +124,13 @@ public class ParticleFilter extends InferenceEngine {
 		System.out.println("Constructing sampler of class " + samplerClassName);
 		particleSampler = Sampler.make(samplerClassName, model, properties);
 
+    String queryReportIntervalStr = properties.getProperty("queryReportInterval", "10");
+    try {
+      queryReportInterval = Integer.parseInt(queryReportIntervalStr);
+    } catch (NumberFormatException e) {
+      Util.fatalError("Invalid reporting interval: " + queryReportIntervalStr, false);
+    }
+
 		if (useDecayedMCMC)
 			dmhSampler = new DMHSampler(model, properties);
 	}
@@ -130,6 +139,7 @@ public class ParticleFilter extends InferenceEngine {
 	public void answerQueries() {
 		System.out.println("Evidence: " + evidence);
 		System.out.println("Query: " + queries);
+    System.out.println("Report every: " + queryReportInterval + " timesteps");
 		resetAndTakeInitialEvidence();
 		answer(queries);
 	}
@@ -173,6 +183,36 @@ public class ParticleFilter extends InferenceEngine {
 		for (Iterator it = evidenceInOrderOfMaxTimestep.iterator(); it.hasNext();) {
 			Evidence evidenceSlice = (Evidence) it.next();
 			take(evidenceSlice);
+
+      // FIXME: This is a very complicated way to obtain the timestep in this
+      // evidence slice. Ideally, splitEvidenceByMaxTimestep would return this
+      // information, since it already computes it.
+      int timestepIndex = -1;
+      for (BayesNetVar var : evidenceSlice.getEvidenceVars()) {
+        timestepIndex = DBLOGUtil.getTimestepIndex(var);
+        if (timestepIndex > -1) {
+          break;
+        }
+      }
+      if (timestepIndex > 0 && timestepIndex % queryReportInterval == 0) {
+        System.out.println("======== Query Results ========");
+        System.out.println("After " + timestepIndex + " timesteps:");
+        // We have to make a local copy of the queries, because we don't want
+        // to update the statistics on the "real" queries.
+        ArrayList<Query> queriesCopy = new ArrayList<Query>();
+        for (Query query : (List<Query>) queries) {
+          // FIXME: We have no clean way to create a copy of a Query.
+          // For now, just assume they are all of type ArgSpecQuery.
+          queriesCopy.add(new ArgSpecQuery((ArgSpecQuery) query));
+        }
+        for (Particle particle : (List<Particle>) particles) {
+          particle.answer(queriesCopy);
+        }
+        for (Query query : queriesCopy) {
+          query.printResults(System.out);
+        }
+        System.out.println("======== Done ========");
+      }
 		}
 	}
 
@@ -394,4 +434,5 @@ public class ParticleFilter extends InferenceEngine {
 	private Sampler particleSampler;
 	private AfterSamplingListener afterSamplingListener;
 	private DMHSampler dmhSampler;
+  private int queryReportInterval;
 }
