@@ -216,6 +216,9 @@ public class ParticleFilter extends InferenceEngine {
 //					p.uninstantiatePreviousTimeslices();
 //					p.removeAllDerivedVars();
 //				}
+
+        // For now we assume numTimeSlicesInMemory = 1.
+        p.uninstantiatePreviousTimeslices();
 			}
 
 			double sumLogWeights = Double.NEGATIVE_INFINITY;
