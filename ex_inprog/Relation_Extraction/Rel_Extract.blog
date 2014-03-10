@@ -28,7 +28,7 @@ type Trigger;
 
 /* alpha should be a vector of length #Triggers */
 fixed Real dir_alpha = 1.0;
-fixed Integer numTrigs = 31;
+fixed Integer numTrigs = 3;
 random Real[] Theta(Relation r) ~ SymmetricDirichlet(numTrigs, dir_alpha);
 
 /* A sentence expresses a fact. The fact is chosen uniformly
@@ -47,38 +47,53 @@ random Integer TriggerID(Sentence s) {
 random Trigger Verb(Sentence s) = idToTrigger( TriggerID(s) );
 
 /* Observations go here */
-/*
-obs Subject(Sent[0]) = X0;
-obs Object(Sent[0]) = Y0;
+
+obs Subject(Sent[0]) = A;
+obs Object(Sent[0]) = B;
 obs Verb(Sent[0]) = Trig[0];
-*/
-/*
-obs Subject(Sent[1]) = X0;
-obs Object(Sent[1]) = Y0;
-obs Verb(Sent[1]) = Trig[1];
-*/
-/*
-obs Subject(Sent[1]) = X1;
-obs Object(Sent[1]) = Y1;
+
+obs Subject(Sent[1]) = C;
+obs Object(Sent[1]) = D;
 obs Verb(Sent[1]) = Trig[0];
 
-distinct Entity X0,Y0,X1,Y1;
-distinct Relation R[2];
-distinct Sentence Sent[2];
+obs Subject(Sent[2]) = A;
+obs Object(Sent[2]) = B;
+obs Verb(Sent[2]) = Trig[1];
 
-distinct Trigger Trig[2];
+obs Subject(Sent[3]) = C;
+obs Object(Sent[3]) = D;
+obs Verb(Sent[3]) = Trig[2];
+
+obs Subject(Sent[4]) = E;
+obs Object(Sent[4]) = F;
+obs Verb(Sent[4]) = Trig[1];
+
+obs Subject(Sent[5]) = E;
+obs Object(Sent[5]) = F;
+obs Verb(Sent[5]) = Trig[2];
+
+
+
+distinct Entity A,B,C,D,E,F;
+distinct Relation R[3];
+distinct Sentence Sent[6];
+
+distinct Trigger Trig[3];
 fixed Trigger idToTrigger(Integer i) 
   = TabularInterp(1,
     0, Trig[0],
-    1, Trig[1]
+    1, Trig[1],
+	2, Trig[2]
   );
-*/
+
 
 
 /* Queries go here */
-/*
-query Rel(SourceFact(Sent[0])) == Rel(SourceFact(Sent[1]));
-query Rel(SourceFact(Sent[0])) == R[0];
-*/
+
+query Rel(SourceFact(Sent[0])) == Rel(SourceFact(Sent[2]));
+query Rel(SourceFact(Sent[1])) == Rel(SourceFact(Sent[3]));
+query Rel(SourceFact(Sent[4]));
+query Rel(SourceFact(Sent[5]));
+
 
 

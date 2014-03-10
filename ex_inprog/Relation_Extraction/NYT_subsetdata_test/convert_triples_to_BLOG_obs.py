@@ -20,16 +20,18 @@
 
 """
 
-import sys, json
+import sys, json, string
 
 def main():
 
 	args = sys.argv[1:]
 	
-	data_file = open(args[0], 'r')
+	data_file = open(args[0], 'r', encoding='latin-1')
 
 	sentences = json.load(data_file)
-	clean_sentences(sentences)
+	if type(sentences) == dict: # This is for full data set. Most data files I have created on my own, and manually configured.
+		sentences = sentences['sentences']
+	sentences = clean_sentences(sentences)
 
 	evidence_output_file = open(args[2] + '.eblog', 'w')
 	model_file = open(args[1], 'a')
@@ -67,7 +69,7 @@ def main():
 	##### WRITE TO MODEL FILE #####
 
 	# Let's call number of relations to be some value. Write it to model file
-	num_relations = 20
+	num_relations = 100
 	model_file.write("\n\ndistinct Relation R[{0}];\n".format(num_relations))
 
 	# Write out number of sentences
@@ -104,12 +106,32 @@ def main():
 	print("Number of unique sentence arg pairs:" + str(len(uniq_arg_pairs)/2))
 
 def clean_sentences(sentences):
-	""" Replace all whitespace and crap with underscores """
+	""" Replace all whitespace and crap with underscores 
+		For damaged sentences, have this workaround: Create a result list. Don't add damaged sentences.
+	"""
 
+	result_list = []
 	for sentence in sentences:
-		sentence["source"] = sentence["source"].replace(' ', '_').replace('.', '').replace('&', '')
-		sentence["dest"] = sentence["dest"].replace(' ', '_').replace('.', '').replace('&', '')
-		sentence["depPath"] = sentence["depPath"].replace('->', '_').replace('<-', '_').replace('|', '_')
+		sentence["source"] = clean_string(sentence["source"])
+		sentence["dest"] = clean_string(sentence["dest"])
+		sentence["depPath"] = clean_string(sentence["depPath"])
+
+		if not (sentence["source"] == "" or sentence["dest"] == "" or sentence["depPath"] == ""):
+			result_list.append(sentence)
+
+	return result_list
+
+def clean_string(str):
+	result = str
+	for char in str:
+		if char not in string.ascii_letters and char not in string.digits:
+			result = result.replace(char, '_')
+
+	# Clean sentences further
+	while result.startswith('_') or result[:1].isdigit():
+		result = result[1:]
+
+	return result
 
 
 if __name__ == '__main__':

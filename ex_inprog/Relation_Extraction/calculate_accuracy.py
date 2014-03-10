@@ -3,7 +3,7 @@
 	$:~ python3 calculate_accuracy.py <results_file> <sentences_file> <trigger_ground_truth_file>
 """
 
-import sys, json
+import sys, json, string
 
 def main():
 
@@ -11,7 +11,7 @@ def main():
 	results = open(args[0], 'r')
 
 	sentences = json.load(open(args[1], 'r'))
-	clean_sentences(sentences)
+	sentences = clean_sentences(sentences)
 
 	truth_dictionary = json.load(open(args[2], 'r')) # a dictionary from triggers to relation
 
@@ -44,12 +44,32 @@ def main():
 
 
 def clean_sentences(sentences):
-	""" Replace all whitespace and crap with underscores """
+	""" Replace all whitespace and crap with underscores 
+		For damaged sentences, have this workaround: Create a result list. Don't add damaged sentences.
+	"""
 
+	result_list = []
 	for sentence in sentences:
-		sentence["source"] = sentence["source"].replace(' ', '_').replace('.', '').replace('&', '')
-		sentence["dest"] = sentence["dest"].replace(' ', '_').replace('.', '').replace('&', '')
-		sentence["depPath"] = sentence["depPath"].replace('->', '_').replace('<-', '_').replace('|', '_')
+		sentence["source"] = clean_string(sentence["source"])
+		sentence["dest"] = clean_string(sentence["dest"])
+		sentence["depPath"] = clean_string(sentence["depPath"])
+
+		if not (sentence["source"] == "" or sentence["dest"] == "" or sentence["depPath"] == ""):
+			result_list.append(sentence)
+
+	return result_list
+
+def clean_string(str):
+	result = str
+	for char in str:
+		if char not in string.ascii_letters and char not in string.digits:
+			result = result.replace(char, '_')
+
+	# Clean sentences further
+	while result.startswith('_') or result[:1].isdigit():
+		result = result[1:]
+
+	return result
 
 if __name__ == '__main__':
 	main()
