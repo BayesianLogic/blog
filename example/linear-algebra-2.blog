@@ -3,3 +3,11 @@ fixed RealMatrix b = sum(a);
 
 query a;
 query b;
+
+
+fixed RealMatrix c = vstack(a, b);
+fixed RealMatrix d = [-1, -2, -3; -4, -5, -6];
+fixed RealMatrix e = vstack(a, d);
+
+query c;
+query e;

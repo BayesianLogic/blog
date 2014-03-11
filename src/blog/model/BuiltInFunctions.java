@@ -90,6 +90,7 @@ public class BuiltInFunctions {
   public static final String TAN_NAME = "tan";
   public static final String ATAN2_NAME = "atan2";
   public static final String COL_SUM_NAME = "sum";
+  public static final String VSTACK_NAME = "vstack";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -331,6 +332,11 @@ public class BuiltInFunctions {
    * columns of x.
    */
   public static NonRandomFunction COL_SUM;
+
+  /**
+   * Take RealMatrix x and y and return RealMatrix z which is the concatenation [x; y].
+   */
+  public static NonRandomFunction VSTACK;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -972,5 +978,33 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL_MATRIX;
     COL_SUM = new NonRandomFunction(COL_SUM_NAME, argTypes, retType, colSumInterp);
     addFunction(COL_SUM);
+
+    FunctionInterp vstackInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        MatrixLib a = (MatrixLib) args.get(0);
+        MatrixLib b = (MatrixLib) args.get(1);
+        if (a.colLen() != b.colLen()) {
+          throw new RuntimeException("matrices should have equal number of columns");
+        }
+        double[][] result = new double[a.rowLen() + b.rowLen()][a.colLen()];
+        for (int i = 0; i < a.rowLen(); i++) {
+          for (int j = 0; j < a.colLen(); j++) {
+            result[i][j] = a.elementAt(i, j);
+          }
+        }
+        for (int i = 0; i < b.rowLen(); i++) {
+          for (int j = 0; j < b.colLen(); j++) {
+            result[a.rowLen() + i][j] = b.elementAt(i, j);
+          }
+        }
+        return new JamaMatrixLib(result);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+    VSTACK = new NonRandomFunction(VSTACK_NAME, argTypes, retType, vstackInterp);
+    addFunction(VSTACK);
   };
 }
