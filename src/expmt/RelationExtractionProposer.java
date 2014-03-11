@@ -341,7 +341,7 @@ public class RelationExtractionProposer implements Proposer {
             Object sourceFact = getFact(rel, arg1, arg2, world);
             world.setValue(makeVar(sourceFactFunc, sent), sourceFact);
             world.setValue(makeVar(holdsFunc, sourceFact), true);
-            //System.out.println("Trig: Setting " + sent + " to " + sourceFact);
+            System.out.println("3a, Trig: Setting " + sent + " to " + sourceFact);
           }
         } 
       }
@@ -383,11 +383,41 @@ public class RelationExtractionProposer implements Proposer {
             Object sourceFact = getFact(rel, arg1, arg2, world);
             world.setValue(makeVar(sourceFactFunc, sent), sourceFact);
             world.setValue(makeVar(holdsFunc, sourceFact), true);
-            //System.out.println("ArgPair: Setting " + sent + " to " + sourceFact);
+            System.out.println("3b, ArgPair: Setting " + sent + " to " + sourceFact);
           }
         } 
       }
-            
+      
+      // 3c) For all other trigger groups, either bootstrap via triggers one more time, or throw them into some random relation
+      // See if there is a label in a group, assign if so
+      for (ArrayList group : triggerGroups.values()) {
+        Object rel = null;
+        for (Object sent : group) {
+          if (world.isInstantiated(makeVar(sourceFactFunc, sent))) { // Only labeled sentences have this
+            rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc, sent))).getOriginFuncValue(relFunc);
+          }
+        }
+                
+        // If one of the sentences was observed, cluster everything in that relation
+        // Otherwise, choose a random relation
+        if (rel == null) {
+          rel = relType.getGuaranteedObject(rng.nextInt(relType.getGuaranteedObjects().size()));
+        }
+        
+        for (Object sent : group) {
+          if (world.isInstantiated(makeVar(sourceFactFunc, sent))) {
+            continue;
+          }
+          Object arg1 = world.getValue(makeVar(subjectFunc, sent));
+          Object arg2 = world.getValue(makeVar(objectFunc, sent));
+          Object sourceFact = getFact(rel, arg1, arg2, world);
+          world.setValue(makeVar(sourceFactFunc, sent), sourceFact);
+          world.setValue(makeVar(holdsFunc, sourceFact), true);
+          System.out.println("3c, Trig: Setting " + sent + " to " + sourceFact);
+        }
+      }
+      
+      /*
       // 3c) For all other observed sentences, choose SourceFact (basically randomly choose a relation
       // to go with the argument pair)
       for (Object sentence : sentType.getGuaranteedObjects()) {
@@ -411,6 +441,7 @@ public class RelationExtractionProposer implements Proposer {
         world.setValue(makeVar(holdsFunc, fact), true);
         
       }
+      */
   
       // Beta 
       Integer[] params = {alpha, beta};
