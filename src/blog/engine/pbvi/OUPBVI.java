@@ -474,7 +474,7 @@ public class OUPBVI {
 		for (FiniteStatePolicy p : oldPolicies) {
 			p.setAlphaVector(null);
 		}*/
-		
+		Timer.print();
 		return newPolicies;
 	}
 	
@@ -499,7 +499,6 @@ public class OUPBVI {
 			Map<Evidence, FiniteStatePolicy> policyMap = new HashMap<Evidence, FiniteStatePolicy>();
 			//Map<Evidence, Integer> observations = pomdp.getObservations(b, action);
 			if (t < horizon - 1) {
-				//Timer.print();
 				ActionPropagated ap = b.beliefsAfterAction(action);
 
 				for (Evidence obs : ap.getObservations()) {

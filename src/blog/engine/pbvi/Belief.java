@@ -140,9 +140,11 @@ public class Belief {
 		Timer.record("dropHistory");
 		//takeObsTime += Timer.getElapsed();
 		
-		Timer.start();
-		nextPF.resample();
-		resampleTime += Timer.getElapsed();
+		if (nextPF.particles.size() > 1) {
+			Timer.start();
+			nextPF.resample();
+			resampleTime += Timer.getElapsed();
+		}
 		
 		Belief nextBelief = new Belief(nextPF, pbvi);
 		nextBelief.latestEvidence = o;
