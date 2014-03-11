@@ -133,6 +133,8 @@ public class ParticleFilter extends InferenceEngine {
 
 		if (useDecayedMCMC)
 			dmhSampler = new DMHSampler(model, properties);
+
+    dataLogLik = 0;
 	}
 
 	/** Answers the queries provided at construction time. */
@@ -142,6 +144,7 @@ public class ParticleFilter extends InferenceEngine {
     System.out.println("Report every: " + queryReportInterval + " timesteps");
 		resetAndTakeInitialEvidence();
 		answer(queries);
+    System.out.println("Log likelihood of data: " + dataLogLik);
 	}
 
 	/**
@@ -274,6 +277,8 @@ public class ParticleFilter extends InferenceEngine {
 
 			if (particles.size() == 0)
 				throw new IllegalArgumentException("All particles have zero weight");
+
+      dataLogLik += logSumWeights;
 
 			// System.out.println("PF: Num of particles after taking evidence: " +
 			// particles.size());
@@ -435,4 +440,5 @@ public class ParticleFilter extends InferenceEngine {
 	private AfterSamplingListener afterSamplingListener;
 	private DMHSampler dmhSampler;
   private int queryReportInterval;
+  private double dataLogLik;  // log likelihood of the data
 }
