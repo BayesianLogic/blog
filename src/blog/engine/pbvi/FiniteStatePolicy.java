@@ -145,6 +145,11 @@ public class FiniteStatePolicy extends PolicyModel {
 
 	public void setNextPolicy(Evidence obs,
 			FiniteStatePolicy nextPolicy) {
+		if (nextPolicy == null) {
+			System.err.println("You can't set next policy to null");
+			new Exception().printStackTrace();
+			System.exit(0);
+		}
 		successors.put(obs, nextPolicy);
 	}
 	

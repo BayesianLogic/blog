@@ -1097,6 +1097,11 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			this.skolemConstants.addAll(skolemConstants);
 		}
 	}
+	
+	public Set<BasicVar> getChangedVars() {
+		return changedVarToValue.keySet();
+	}
+	
 	/**
 	 * Storage for observability variables, for easy reference.
 	 */
@@ -1111,7 +1116,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 * TODO maybe find a better place to put this; right now it is specific to comparing POMDP states
 	 */
 	public boolean innerStateEquals(AbstractPartialWorld otherWorld, int maxTimestep) {
-		//System.out.println("comparing");
+		
 		UBT.Stopwatch timer = new UBT.Stopwatch();
 		timer.startTimer();
 		
@@ -1161,8 +1166,9 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			}
 			
 			if (UBT.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
-				//System.out.println("Comparing " + v + " value: " + changedVarToValue.get(v));
-				rtn = rtn && (otherWorld.changedVarToValue.containsKey(v) && otherWorld.changedVarToValue.get(v).equals(changedVarToValue.get(v)));
+				boolean sameValue = otherWorld.changedVarToValue.containsKey(v) && otherWorld.changedVarToValue.get(v).equals(changedVarToValue.get(v));
+				sameValue |= (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(changedVarToValue.get(v)));
+				rtn = rtn && sameValue;
 			}
 			/*
 			if (DBLOGUtil.getTimestepIndex(v) == maxTimestep){
@@ -1237,6 +1243,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				rtn = rtn ^ changedVarToValue.get(v).hashCode();
 			}*/
 			if (UBT.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
+				if (DBLOGUtil.getTimestepIndex(v) == -1) continue;
 				//System.out.println("hash " + v + " value: " + changedVarToValue.get(v));
 				int a = v.hashCode();
 				rtn = rtn ^ v.hashCode();

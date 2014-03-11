@@ -15,6 +15,7 @@ import blog.engine.Particle;
 import blog.engine.onlinePF.ObservabilitySignature;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
+import blog.engine.pbvi.Timer;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -159,11 +160,17 @@ public class PFEngineSampled extends PFEngineOnline{
 		resamplePartitionAndParticlesTimer.startTimer();
 		Evidence ev = null;
 		ObservabilitySignature selectedOS = ObservabilitySignature.getOSbyIndex(sampledOSindex);
+		Timer.start("retakeObs.prepareEvidence");
 		selectedOS.prepareEvidence(model);
 		ev = selectedOS.getEvidence();
+		Timer.record("retakeObs.prepareEvidence");
+		Timer.start("retakeObs.checkTypesAndScope");
 		ev.checkTypesAndScope(model);
+		Timer.record("retakeObs.checkTypesAndScope");
+		Timer.start("retakeObs.compile");
 		if (ev.compile()!=0)
 			System.exit(1);
+		Timer.record("retakeObs.compile");
 		/*for (Object o : ev.getValueEvidence())
 			UBT.obsOutput.printInput("obs " + o.toString()+";");
 		for (Object o : ev.getSymbolEvidence())
@@ -172,17 +179,21 @@ public class PFEngineSampled extends PFEngineOnline{
 		//	UBT.obsOutput.printInput(o.toString());
 		*/
 		//TODO: PAUL remove comments above
-		int i = 0;
-		for (Particle o : particles){
-			TimedParticle p = (TimedParticle) o;
-			//for (Object x : p.getLatestWorld().basicVarToValueMap().keySet())
-			//	UBT.worldOutput.printInput(x.toString()+"="+p.getLatestWorld().basicVarToValueMap().get(x).toString());
-			//UBT.worldOutput.printInput(">>>>>");
-			p.unInstantiateObservables(selectedOS);
-			p.take(ev);
-			p.setOS(sampledOSindex);
-			if (p.getLatestWeight()>0.00000001)
-				i++;
+		if (particles.size() > 1) {
+			Timer.start("reweight");
+			int i = 0;
+			for (Particle o : particles){
+				TimedParticle p = (TimedParticle) o;
+				//for (Object x : p.getLatestWorld().basicVarToValueMap().keySet())
+				//	UBT.worldOutput.printInput(x.toString()+"="+p.getLatestWorld().basicVarToValueMap().get(x).toString());
+				//UBT.worldOutput.printInput(">>>>>");
+				p.unInstantiateObservables(selectedOS);
+				p.take(ev);
+				p.setOS(sampledOSindex);
+				if (p.getLatestWeight()>0.00000001)
+					i++;
+			}
+			Timer.record("reweight");
 		}
 		//UBT.worldOutput.printInput("<<<<<>>>>>");
 		//TODO: PAUL revert UBT.numParticleOutput.printInput(""+i);

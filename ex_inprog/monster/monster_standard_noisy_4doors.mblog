@@ -17,16 +17,16 @@ random Integer DoorOf(Monster m, Timestep t) {
    //else
    //  ~ Categorical({DoorOf(m, Prev(t))->0.5, 0->0.5})
      //~ Categorical({DoorOf(m, Prev(t))->0.4, (DoorOf(m, Prev(t))-1)->0.3, (DoorOf(m, Prev(t))+1)->0.3})
-   else if nonstate_movement(m, t)==1 then
+   else if movement(m, t)==1 then
      = SuccMod(DoorOf(m, Prev(t)), MaxDoor)
-   else if nonstate_movement(m, t)==-1 then
+   else if movement(m, t)==-1 then
      = PredMod(DoorOf(m, Prev(t)), MaxDoor)
-   else if nonstate_movement(m, t)==0 then
+   else if movement(m, t)==0 then
      = DoorOf(m, Prev(t))
    //else ~ Categorical({SuccMod(DoorOf(m, Prev(t)), MaxDoor)->0.3, PredMod(DoorOf(m, Prev(t)), MaxDoor)->0.3, DoorOf(m, Prev(t))->0.4})
 };		
 
-random Integer nonstate_movement(Monster m, Timestep t) ~ Categorical({-1->0.3, 1->0.3, 0->0.4});
+random Integer movement(Monster m, Timestep t) ~ Categorical({-1->0.3, 1->0.3, 0->0.4});
 
 #nonstate_Sound(Source = m, Time_nonstate_Sound = t) {if apply_listen(Prev(t)) then ~Categorical({0->0.5,1->0.5})
                                         else = 0};

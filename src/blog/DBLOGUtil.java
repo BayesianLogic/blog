@@ -133,6 +133,9 @@ public class DBLOGUtil {
 			int timestepIndex = getTimestepIndex(var);
 			if (timestepIndex != -1 && timestepIndex <= largest - nsim) {
 				world.setValue(var, null);
+				if (timestepIndex <= largest - nsim - 1) {
+					System.out.println("Why is " + var.toString() + " instantiated when largest is " + largest + "?");
+				}
 			}
 		}
 		for (Iterator it = ((AbstractPartialWorld) world).getDecisionInterp().iterator(); it.hasNext();){

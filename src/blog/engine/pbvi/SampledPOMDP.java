@@ -102,8 +102,8 @@ public class SampledPOMDP {
 		int count = 0;
 		for (State s : b.getStates()) {
 			int weight = b.getCount(s);
-			//System.out.println("getReward: " + a + " " + getReward(s, a));
-			total += getReward(s, a) * weight;
+			double reward = getReward(s, a);
+			total +=  reward * weight;
 			count += weight;
 		}
 		return total/count;

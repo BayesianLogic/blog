@@ -70,14 +70,15 @@ public class OUPBVI {
 	
 	public Set<FiniteStatePolicy> run() {
 		Set<Belief> beliefs = new HashSet<Belief>();
-		PFEngineSampled initBelief = new PFEngineSampled(model, properties);
-		initBelief.answer(getQueries(0));
-		initBelief.afterAnsweringQueries2();
+		PFEngineSampled initPF = new PFEngineSampled(model, properties);
+		initPF.answer(getQueries(0));
+		initPF.afterAnsweringQueries2();
 		
 		//beliefs.add(new Belief(initBelief, this));
-		System.out.println(new Belief(initBelief, this));
+		Belief initBelief = new Belief(initPF, this);
+		System.out.println(initBelief);
 		SampledPOMDP pomdp = new SampledPOMDP(this);
-		beliefs.add(addToSampledPOMDP(new Belief(initBelief, this), pomdp));
+		beliefs.add(addToSampledPOMDP(new Belief(initPF, this), pomdp));
 		
 		Set<Belief> newBeliefs = new HashSet<Belief>(); //beliefs;
 		newBeliefs.addAll(beliefs);
@@ -96,8 +97,9 @@ public class OUPBVI {
 		for (Belief b : beliefs) {
 			System.out.println("Belief: " + b);
 		}
+		
 		System.out.println("run.expansion.beliefsize: " + beliefs.size());
-		//System.exit(0);
+		
 		Set<FiniteStatePolicy> policies = new HashSet<FiniteStatePolicy>();
 		for (int t = horizon - 1; t >= 0; t--) {
 			Set<FiniteStatePolicy> newPolicies = singleBackup(policies, beliefs, pomdp, t);
@@ -110,6 +112,20 @@ public class OUPBVI {
 				i++;
 			}
 		}
+		
+		double bestVal = Double.NEGATIVE_INFINITY;
+		FiniteStatePolicy bestPolicy = null;
+		for (FiniteStatePolicy p : policies) {
+			double val = evalPolicy(initBelief, p);
+			if (val > bestVal) {
+				bestVal = val;
+				bestPolicy = p;
+			}
+		}
+		System.out.println("Best policy for initial belief: " + bestPolicy.toDotString("p0"));
+		System.out.println("Best value: " + bestVal);
+		System.out.println("Init belief: " + initBelief);
+		System.out.println();
 		System.out.println("run num beliefs " + beliefs.size());
 		System.out.println("run num states " + pomdp.getStates().size());
 		System.out.println("Eval Policy Times " + evalPolicyTimes);
@@ -331,17 +347,17 @@ public class OUPBVI {
 		Double initialValue = 0D;
 		int startingTimestep = b.getTimestep();
 		Object initialTime = Type.getType("Timestep").getGuaranteedObject(startingTimestep);
-		for (TimedParticle particle : b.getParticleFilter().particles) {	
+		for (TimedParticle particle : b.getParticleFilter().particles) {
 			Number value = (Number) valueFunc.getValueSingleArg(initialTime, particle.curWorld);
 			initialValue += value.doubleValue();
 		}
 		initialValue /= b.getParticleFilter().particles.size();
-		int numTrials = 100;
+		int numTrials = 500;
 		for (int i = 0; i < numTrials; i++) {
 			Belief curBelief = b;
 			FiniteStatePolicy curPolicy = p;
 			double nextValue = 0; //set to nonzero if alpha vector can calc value of belief
-			while (curBelief.getTimestep() < horizon) {
+			while (curPolicy != null) {//curBelief.getTimestep() < horizon) {
 				Double alphaValue = curPolicy.getAlphaVector().getValue(curBelief);
 				if (alphaValue != null) {
 					nextValue = alphaValue;
@@ -351,13 +367,12 @@ public class OUPBVI {
 				curBelief = curBelief.sampleNextBelief(nextAction);		
 				Evidence nextObs = curBelief.getLatestEvidence();
 				FiniteStatePolicy nextPolicy = curPolicy.getNextPolicy(nextObs);
-				if (nextPolicy == null && curBelief.getTimestep() < horizon) {
-					System.out.println("evalPolicy: missing obs " 
-							+ nextObs 
-							+ " so picking some applicable policy");
+				if (nextPolicy == null) { 
 					nextPolicy = curPolicy.getApplicableNextPolicy(nextObs, curBelief);
-					curPolicy.setNextPolicy(nextObs, nextPolicy);
-					curPolicy.addObsNote(nextObs, "random applicable");
+					if (nextPolicy != null) {
+						curPolicy.setNextPolicy(nextObs, nextPolicy);
+						curPolicy.addObsNote(nextObs, "random applicable");
+					}
 				}
 				curPolicy = nextPolicy;
 			}
@@ -451,8 +466,8 @@ public class OUPBVI {
 			int t) {
 		Set<FiniteStatePolicy> newPolicies = new HashSet<FiniteStatePolicy>();
 		for (Belief b : beliefs) {
-			if (b.getTimestep() != t) continue;
-			newPolicies = createMergedPolicySet(newPolicies, singleBackupForBelief(oldPolicies, b, pomdp));
+			//if (b.getTimestep() != t) continue;
+			newPolicies = createMergedPolicySet(newPolicies, singleBackupForBelief(oldPolicies, b, pomdp, t));
 			System.out.println("SingleBackup numbeliefs: " + beliefs.size());
 		}
 		/* no longer need old alpha vectors? They might be still useful
@@ -466,7 +481,8 @@ public class OUPBVI {
 	private FiniteStatePolicy singleBackupForBelief(
 			Set<FiniteStatePolicy> oldPolicies,
 			Belief b,
-			SampledPOMDP pomdp) {
+			SampledPOMDP pomdp,
+			int t) {
 		long startTime = System.currentTimeMillis();
 		
 		Map<Evidence, FiniteStatePolicy> bestPolicyMap = new HashMap<Evidence, FiniteStatePolicy>();
@@ -482,7 +498,8 @@ public class OUPBVI {
 			double totalWeight = 0;
 			Map<Evidence, FiniteStatePolicy> policyMap = new HashMap<Evidence, FiniteStatePolicy>();
 			//Map<Evidence, Integer> observations = pomdp.getObservations(b, action);
-			if (b.getTimestep() < horizon - 1) {
+			if (t < horizon - 1) {
+				//Timer.print();
 				ActionPropagated ap = b.beliefsAfterAction(action);
 
 				for (Evidence obs : ap.getObservations()) {
@@ -517,7 +534,7 @@ public class OUPBVI {
 				value = value/totalWeight;
 			}
 			double reward = pomdp.getAvgReward(b, action);
-			//System.out.println("backup reward for action " + reward + " " + action);
+			System.out.println("backup reward for action " + reward + " " + action + " timestep: " + t);
 			value += reward;
 			//System.out.println("value for belief and policy map: " + value + " " + policyMap);
 			if (bestValue == null || value > bestValue) {
@@ -528,7 +545,7 @@ public class OUPBVI {
 		}
 			
 		
-		System.out.println("bestAction: " + bestAction + " " + bestValue);
+		System.out.println("bestAction: " + bestAction + " " + bestValue + " timestep: " + t);
 		FiniteStatePolicy newPolicy = new FiniteStatePolicy(bestAction, bestPolicyMap);
 		//System.out.println("new policy" + newPolicy);
 		System.out.println("singlebackupforbelief.time " + (System.currentTimeMillis() - startTime));
@@ -555,7 +572,7 @@ public class OUPBVI {
 		long now = System.currentTimeMillis();
 		int numStatesUpdated = 0;
 		for (State state : states) {
-			if (state.getTimestep() != timestep) continue;
+			//if (state.getTimestep() != timestep) continue;
 			numStatesUpdated++;
 			for (FiniteStatePolicy policy : policies) {
 				policy.getAlphaVector().setValue(state, evalPolicy(state, policy));
@@ -656,21 +673,27 @@ public class OUPBVI {
 		properties.setProperty("numParticles", "" + numParticles);
 		properties.setProperty("useDecayedMCMC", "false");
 		properties.setProperty("numMoves", "1");
-		Util.initRandom(true);
+		
 		Util.setVerbose(false);
 		return new OUPBVI(model, properties, queries, queryStrings, horizon, numBeliefs);
 	}
 	
 	public static void main(String[] args) {
-		System.out.println("Usage: modelFile queryFile numParticles horizon");
+		System.out.println("Usage: modelFile queryFile numParticles horizon numBeliefs (seed)");
 		List<String> modelFiles = new ArrayList<String>();
 		modelFiles.add(args[0]);
 		long now = System.currentTimeMillis();
+		if (args.length > 5) {
+			Util.initRandom(Long.parseLong(args[5]));
+		} else {
+			Util.initRandom(true);
+		}
 		OUPBVI oupbvi = makeOUPBVI(modelFiles, 
 				args[1], 
 				Integer.parseInt(args[2]), 
 				Integer.parseInt(args[3]),
 				Integer.parseInt(args[4]));
+
 		Set<FiniteStatePolicy> policies = oupbvi.run();
 		for (FiniteStatePolicy p : policies) {
 			System.out.println(p.toDotString("p0"));

@@ -34,6 +34,7 @@ public class Belief {
 			this.stateCounts.put(s, states.get(s)); 
 		}
 		this.pbvi = pbvi;
+		zeroTimestep();
 	}
 	
 	public Belief(PFEngineSampled pf, OUPBVI pbvi) {
@@ -92,6 +93,7 @@ public class Belief {
 	}*/
 	static long copyTime = 0;
 	static long takeActionTime = 0;
+	
 	static long takeObsTime = 0;
 	static long resampleTime = 0;
 	static int numSampleNext = 0;
@@ -113,16 +115,30 @@ public class Belief {
 		for (TimedParticle p : nextPF.particles)
 			p.advanceTimestep();
 
-		Timer.start();
+		Timer.start("updateOS");
 		nextPF.updateOSforAllParticles();
-		nextPF.retakeObservability2();
-		int osIndex = nextPF.retakeObservability();	
+		Timer.record("updateOS");
+		
+		int osIndex = nextPF.particles.get(0).getOS();
+		//if (nextPF.particles.size() > 1) {
+			Timer.start("retakeObs2");
+			nextPF.retakeObservability2();
+			Timer.record("retakeObs2");
+
+			Timer.start("retakeObs");
+			osIndex = nextPF.retakeObservability();	
+			Timer.record("retakeObs");
+		//} 
+		
 		Evidence o = ObservabilitySignature.getOSbyIndex(osIndex).getEvidence();
+		
+		Timer.start("dropHistory");
 		if (UBT.dropHistory) {
 			nextPF.dropHistory();
 			//ObservabilitySignature.dropHistory(((TimedParticle)Util.getFirst(nextPF.particles)).getTimestep());
 		}
-		takeObsTime += Timer.getElapsed();
+		Timer.record("dropHistory");
+		//takeObsTime += Timer.getElapsed();
 		
 		Timer.start();
 		nextPF.resample();
@@ -151,6 +167,7 @@ public class Belief {
 			Number reward = (Number) rewardFunc.getValueSingleArg(timestep, p.getLatestWorld());
 			total += reward.doubleValue();
 		}
+		System.out.println(total/apPF.particles.size());
 		return total/apPF.particles.size();
 	}
 	
@@ -269,6 +286,18 @@ public class Belief {
 		return diff;
 	}
 	
+	public void zeroTimestep() {
+		Set<State> states = getStates();
+		Map<State, Integer> newStateCounts = new HashMap<State, Integer>();
+		for (State s : states) {
+			int count = stateCounts.get(s);
+			s.zeroTimestep();
+			newStateCounts.put(s, count);
+		}
+		stateCounts = newStateCounts;
+		pf = null;
+	}
+	
 	public static void printTimingStats() {
 		System.out.println("Belief.resampleTime " + resampleTime);
 		System.out.println("Belief.copyTime " + copyTime);
@@ -278,6 +307,7 @@ public class Belief {
 		
 		System.out.println("State counts " + stateCountStats);
 		System.out.println("Resample state counts " + resampleStateCountStats);
+		Timer.print();
 	}
 
 	public static void updateResampleStateCountStats(Belief nextBelief) {
