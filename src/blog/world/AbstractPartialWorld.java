@@ -1141,7 +1141,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		}
 		*/
 		//rtn = rtn && (otherWorld.basicVarToValue == (Map) ((HashMap) basicVarToValue));
-		for (Object o : changedVarToValue.keySet()){
+		for (Object o : basicVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
 			if (v.toString().contains("nonstate_")) continue;
 			//System.out.println("Compare? " + v);
@@ -1166,8 +1166,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			}
 			
 			if (UBT.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
-				boolean sameValue = otherWorld.changedVarToValue.containsKey(v) && otherWorld.changedVarToValue.get(v).equals(changedVarToValue.get(v));
-				sameValue |= (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(changedVarToValue.get(v)));
+				boolean sameValue = otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v));
+				//sameValue |= (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(changedVarToValue.get(v)));
 				rtn = rtn && sameValue;
 			}
 			/*
@@ -1213,7 +1213,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			}
 		}
 		*/
-		for (Object o : changedVarToValue.keySet()){
+		for (Object o : basicVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
 			if (v.toString().contains("nonstate_")) continue;
 			if (v instanceof RandFuncAppVar){
@@ -1243,13 +1243,13 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				rtn = rtn ^ changedVarToValue.get(v).hashCode();
 			}*/
 			if (UBT.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
-				if (DBLOGUtil.getTimestepIndex(v) == -1) continue;
+				//if (DBLOGUtil.getTimestepIndex(v) == -1) continue;
 				//System.out.println("hash " + v + " value: " + changedVarToValue.get(v));
 				int a = v.hashCode();
 				rtn = rtn ^ v.hashCode();
-				Object b = changedVarToValue.get(v);
+				Object b = basicVarToValue.get(v);
 				int c = b.hashCode();
-				rtn = rtn ^ changedVarToValue.get(v).hashCode();
+				rtn = rtn ^ basicVarToValue.get(v).hashCode();
 			}
 		}
 		rtn = rtn ^ this.skolemConstants.hashCode();

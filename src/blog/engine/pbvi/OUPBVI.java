@@ -352,7 +352,7 @@ public class OUPBVI {
 			initialValue += value.doubleValue();
 		}
 		initialValue /= b.getParticleFilter().particles.size();
-		int numTrials = 500;
+		int numTrials = 100;
 		for (int i = 0; i < numTrials; i++) {
 			Belief curBelief = b;
 			FiniteStatePolicy curPolicy = p;
