@@ -99,7 +99,7 @@ public class LogicalVar extends Term {
 	}
 
 	public boolean containsRandomSymbol() {
-		return false;
+		return true;
 	}
 
 	public Set getFreeVars() {
