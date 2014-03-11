@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import blog.common.numerical.JamaMatrixLib;
 import blog.common.numerical.MatrixLib;
 import blog.objgen.ObjectSet;
 import blog.type.Timestep;
@@ -88,6 +89,7 @@ public class BuiltInFunctions {
   public static final String COS_NAME = "cos";
   public static final String TAN_NAME = "tan";
   public static final String ATAN2_NAME = "atan2";
+  public static final String COL_SUM_NAME = "sum";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -323,6 +325,12 @@ public class BuiltInFunctions {
    * Take scalars <code>x</code> and <code>y</code> and return <code>atan2(y, x)</code>.
    */
   public static NonRandomFunction ATAN2;
+
+  /**
+   * Take RealMatrix x and return RealMatrix y where elements are the sum of
+   * columns of x.
+   */
+  public static NonRandomFunction COL_SUM;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -945,5 +953,24 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL;
     ATAN2 = new NonRandomFunction(ATAN2_NAME, argTypes, retType, atan2Interp);
     addFunction(ATAN2);
+
+    FunctionInterp colSumInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        MatrixLib matrix = (MatrixLib) args.get(0);
+        double[][] result = new double[1][matrix.colLen()];
+        for (int i = 0; i < matrix.colLen(); i++) {
+          result[0][i] = 0;
+          for (int j = 0; j < matrix.rowLen(); j++) {
+            result[0][i] += matrix.elementAt(j, i);
+          }
+        }
+        return new JamaMatrixLib(result);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+    COL_SUM = new NonRandomFunction(COL_SUM_NAME, argTypes, retType, colSumInterp);
+    addFunction(COL_SUM);
   };
 }
