@@ -43,7 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.objgen.ObjectSet;
 import blog.type.Timestep;
@@ -988,7 +988,7 @@ public class BuiltInFunctions {
             result[0][i] += matrix.elementAt(j, i);
           }
         }
-        return new JamaMatrixLib(result);
+        return MatrixFactory.fromArray(result);
       }
     };
     argTypes.clear();
@@ -1015,7 +1015,7 @@ public class BuiltInFunctions {
             result[a.rowLen() + i][j] = b.elementAt(i, j);
           }
         }
-        return new JamaMatrixLib(result);
+        return MatrixFactory.fromArray(result);
       }
     };
     argTypes.clear();
@@ -1038,7 +1038,7 @@ public class BuiltInFunctions {
             }
           }
         }
-        return new JamaMatrixLib(result);
+        return MatrixFactory.fromArray(result);
       }
     };
     argTypes.clear();
@@ -1057,7 +1057,7 @@ public class BuiltInFunctions {
             result[i][j] = 0;
           }
         }
-        return new JamaMatrixLib(result);
+        return MatrixFactory.fromArray(result);
       }
     };
     argTypes.clear();
@@ -1077,7 +1077,7 @@ public class BuiltInFunctions {
             result[i][j] = 1;
           }
         }
-        return new JamaMatrixLib(result);
+        return MatrixFactory.fromArray(result);
       }
     };
     argTypes.clear();
