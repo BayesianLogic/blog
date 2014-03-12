@@ -91,6 +91,9 @@ public class BuiltInFunctions {
   public static final String ATAN2_NAME = "atan2";
   public static final String COL_SUM_NAME = "sum";
   public static final String VSTACK_NAME = "vstack";
+  public static final String EYE_NAME = "eye";
+  public static final String ZEROS_NAME = "zeros";
+  public static final String ONES_NAME = "ones";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -337,6 +340,21 @@ public class BuiltInFunctions {
    * Take RealMatrix x and y and return RealMatrix z which is the concatenation [x; y].
    */
   public static NonRandomFunction VSTACK;
+
+  /**
+   * Return an identity matrix.
+   */
+  public static NonRandomFunction EYE;
+
+  /**
+   * Return a matrix of zeros.
+   */
+  public static NonRandomFunction ZEROS;
+
+  /**
+   * Return a matrix of ones.
+   */
+  public static NonRandomFunction ONES;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -1006,5 +1024,67 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL_MATRIX;
     VSTACK = new NonRandomFunction(VSTACK_NAME, argTypes, retType, vstackInterp);
     addFunction(VSTACK);
+
+    FunctionInterp eyeInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Integer size = (Integer) args.get(0);
+        double[][] result = new double[size][size];
+        for (int i = 0; i < size; i++) {
+          for (int j = 0; j < size; j++) {
+            if (i == j) {
+              result[i][j] = 1;
+            } else {
+              result[i][j] = 0;
+            }
+          }
+        }
+        return new JamaMatrixLib(result);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    EYE = new NonRandomFunction(EYE_NAME, argTypes, retType, eyeInterp);
+    addFunction(EYE);
+
+    FunctionInterp zerosInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Integer rows = (Integer) args.get(0);
+        Integer cols = (Integer) args.get(1);
+        double[][] result = new double[rows][cols];
+        for (int i = 0; i < rows; i++) {
+          for (int j = 0; j < cols; j++) {
+            result[i][j] = 0;
+          }
+        }
+        return new JamaMatrixLib(result);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    ZEROS = new NonRandomFunction(ZEROS_NAME, argTypes, retType, zerosInterp);
+    addFunction(ZEROS);
+
+    FunctionInterp onesInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Integer rows = (Integer) args.get(0);
+        Integer cols = (Integer) args.get(1);
+        double[][] result = new double[rows][cols];
+        for (int i = 0; i < rows; i++) {
+          for (int j = 0; j < cols; j++) {
+            result[i][j] = 1;
+          }
+        }
+        return new JamaMatrixLib(result);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    ONES = new NonRandomFunction(ONES_NAME, argTypes, retType, onesInterp);
+    addFunction(ONES);
   };
 }
