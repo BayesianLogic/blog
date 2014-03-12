@@ -40,9 +40,9 @@ public class LaserInterp extends AbstractFunctionInterp {
 
     // Convert to JamaMatrixLib.
     // Additional step required because JamaMatrixLib only takes a double[][].
-    double[][] tmp = new double[1][readings.length];
+    double[][] tmp = new double[readings.length][1];
     for (int i = 0; i < readings.length; i++) {
-      tmp[0][i] = readings[i];
+      tmp[i][0] = readings[i];
     }
     return new JamaMatrixLib(tmp);
   }
