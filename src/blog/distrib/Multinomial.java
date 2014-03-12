@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Random;
 
 import blog.common.Util;
-import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.model.MatrixSpec;
 import blog.model.Type;
@@ -233,7 +233,7 @@ public class Multinomial extends AbstractCondProbDistrib {
     for (int i = 0; i < numBuckets; i++) {
       doubleResult[i][0] = result[i];
     }
-    return new JamaMatrixLib(doubleResult);
+    return MatrixFactory.fromArray(doubleResult);
   }
   
   private void ensureTrialsInited(List args) {
