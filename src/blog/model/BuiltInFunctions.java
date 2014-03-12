@@ -981,14 +981,7 @@ public class BuiltInFunctions {
     FunctionInterp colSumInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         MatrixLib matrix = (MatrixLib) args.get(0);
-        double[][] result = new double[1][matrix.colLen()];
-        for (int i = 0; i < matrix.colLen(); i++) {
-          result[0][i] = 0;
-          for (int j = 0; j < matrix.rowLen(); j++) {
-            result[0][i] += matrix.elementAt(j, i);
-          }
-        }
-        return MatrixFactory.fromArray(result);
+        return matrix.columnSum();
       }
     };
     argTypes.clear();
@@ -1001,21 +994,7 @@ public class BuiltInFunctions {
       public Object getValue(List args) {
         MatrixLib a = (MatrixLib) args.get(0);
         MatrixLib b = (MatrixLib) args.get(1);
-        if (a.colLen() != b.colLen()) {
-          throw new RuntimeException("matrices should have equal number of columns");
-        }
-        double[][] result = new double[a.rowLen() + b.rowLen()][a.colLen()];
-        for (int i = 0; i < a.rowLen(); i++) {
-          for (int j = 0; j < a.colLen(); j++) {
-            result[i][j] = a.elementAt(i, j);
-          }
-        }
-        for (int i = 0; i < b.rowLen(); i++) {
-          for (int j = 0; j < b.colLen(); j++) {
-            result[a.rowLen() + i][j] = b.elementAt(i, j);
-          }
-        }
-        return MatrixFactory.fromArray(result);
+        return MatrixFactory.vstack(a, b);
       }
     };
     argTypes.clear();
@@ -1028,17 +1007,7 @@ public class BuiltInFunctions {
     FunctionInterp eyeInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         Integer size = (Integer) args.get(0);
-        double[][] result = new double[size][size];
-        for (int i = 0; i < size; i++) {
-          for (int j = 0; j < size; j++) {
-            if (i == j) {
-              result[i][j] = 1;
-            } else {
-              result[i][j] = 0;
-            }
-          }
-        }
-        return MatrixFactory.fromArray(result);
+        return MatrixFactory.eye(size);
       }
     };
     argTypes.clear();
@@ -1051,13 +1020,7 @@ public class BuiltInFunctions {
       public Object getValue(List args) {
         Integer rows = (Integer) args.get(0);
         Integer cols = (Integer) args.get(1);
-        double[][] result = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-          for (int j = 0; j < cols; j++) {
-            result[i][j] = 0;
-          }
-        }
-        return MatrixFactory.fromArray(result);
+        return MatrixFactory.zeros(rows, cols);
       }
     };
     argTypes.clear();
@@ -1071,13 +1034,7 @@ public class BuiltInFunctions {
       public Object getValue(List args) {
         Integer rows = (Integer) args.get(0);
         Integer cols = (Integer) args.get(1);
-        double[][] result = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-          for (int j = 0; j < cols; j++) {
-            result[i][j] = 1;
-          }
-        }
-        return MatrixFactory.fromArray(result);
+        return MatrixFactory.ones(rows, cols);
       }
     };
     argTypes.clear();
