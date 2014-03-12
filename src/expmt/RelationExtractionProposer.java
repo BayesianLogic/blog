@@ -341,7 +341,7 @@ public class RelationExtractionProposer implements Proposer {
             Object sourceFact = getFact(rel, arg1, arg2, world);
             world.setValue(makeVar(sourceFactFunc, sent), sourceFact);
             world.setValue(makeVar(holdsFunc, sourceFact), true);
-            System.out.println("3a, Trig: Setting " + sent + " to " + sourceFact);
+            //System.out.println("3a, Trig: Setting " + sent + " to " + sourceFact);
           }
         } 
       }
@@ -383,7 +383,7 @@ public class RelationExtractionProposer implements Proposer {
             Object sourceFact = getFact(rel, arg1, arg2, world);
             world.setValue(makeVar(sourceFactFunc, sent), sourceFact);
             world.setValue(makeVar(holdsFunc, sourceFact), true);
-            System.out.println("3b, ArgPair: Setting " + sent + " to " + sourceFact);
+            //System.out.println("3b, ArgPair: Setting " + sent + " to " + sourceFact);
           }
         } 
       }
@@ -413,7 +413,7 @@ public class RelationExtractionProposer implements Proposer {
           Object sourceFact = getFact(rel, arg1, arg2, world);
           world.setValue(makeVar(sourceFactFunc, sent), sourceFact);
           world.setValue(makeVar(holdsFunc, sourceFact), true);
-          System.out.println("3c, Trig: Setting " + sent + " to " + sourceFact);
+          //System.out.println("3c, Trig: Setting " + sent + " to " + sourceFact);
         }
       }
       
