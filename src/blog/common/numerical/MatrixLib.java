@@ -12,8 +12,8 @@ public interface MatrixLib {
 	/**
 	 * Gives the value of an element of this matrix
 	 * 
-	 * @param x the x-index
-	 * @param y the y-index
+	 * @param x the row index
+	 * @param y the column index
 	 * @return 
 	 */
 	public double elementAt(int x, int y);
@@ -21,8 +21,8 @@ public interface MatrixLib {
 	/**
 	 * Sets the value of the given element of this matrix
 	 * 
-	 * @param x the x-index
-	 * @param y the y-index
+	 * @param x the row index
+	 * @param y the column index
 	 * @param val the value to set mat[x][y] to
 	 * @return null
 	 */
@@ -90,4 +90,9 @@ public interface MatrixLib {
 	 * decomposition of this matrix 
 	 */
 	public MatrixLib choleskyFactor();
+
+  /**
+   * Returns a row vector representing the column sum of the matrix.
+   */
+  public MatrixLib columnSum();
 }
