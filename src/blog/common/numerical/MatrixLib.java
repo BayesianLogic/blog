@@ -90,4 +90,9 @@ public interface MatrixLib {
 	 * decomposition of this matrix 
 	 */
 	public MatrixLib choleskyFactor();
+
+  /**
+   * Returns a row vector representing the column sum of the matrix.
+   */
+  public MatrixLib columnSum();
 }
