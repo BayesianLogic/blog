@@ -73,7 +73,6 @@ def generate_model(disc_readings, car_params):
     model_vars['obstacle_r'] = 1.0
     model_vars['laser_angles'] = np.arange(-90, 90.5, 0.5) * np.pi / 180
     model_vars['lasers_mu'] = np.zeros(LASER_COLS)
-    model_vars['lasers_sigma'] = np.eye(LASER_COLS)
 
     # Observations and controls:
     # (We fill in controls even at time steps where they are not observed.)

@@ -113,26 +113,27 @@ random Real state_theta(Integer timestep) {
 /*
  * Observation model.
  * For now, we assume a single obstacle with known location and radius.
+ * We also assume uncorrelated noise for the laser observations.
  */
 
 fixed Real obstacle_x = {{ model.obstacle_x }};
 fixed Real obstacle_y = {{ model.obstacle_y }};
 fixed Real obstacle_r = {{ model.obstacle_r }};
 
-fixed Real[] laser_solns(
+fixed RealMatrix laser_solns(
         Real laser_x, Real laser_y, Real laser_theta,
         Real obstacle_x, Real obstacle_y, Real obstacle_r)
     = LaserInterp();
 
-fixed Real[][] lasers_sigma = {{ model.lasers_sigma |blog_matrix }};
+fixed RealMatrix lasers_sigma = eye(361);
 
-random Real[] lasers_func(Real x, Real y, Real theta) {
+random RealMatrix lasers_func(Real x, Real y, Real theta) {
     ~ MultivarGaussian(
         laser_solns(x, y, theta, obstacle_x, obstacle_y, obstacle_r),
         lasers_sigma)
 };
 
-random Real[] lasers(Integer timestep) {
+random RealMatrix lasers(Integer timestep) {
     = lasers_func(state_x(timestep), state_y(timestep), state_theta(timestep))
 };
 
