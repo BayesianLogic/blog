@@ -87,8 +87,8 @@ public abstract class AbstractProposer implements Proposer {
 
 			if (evidence.isTrue(initWorld)) {
 				if (Util.verbose()) {
-					System.out.println("Probability of " + numInitialStateTriesThisTrial
-							+ "th initial state = " + initialStateSampler.getLatestWeight());
+					System.out.println("Log probability of " + numInitialStateTriesThisTrial
+							+ "th initial state = " + initialStateSampler.getLatestLogWeight());
 					initWorld.print(System.out);
 				}
 

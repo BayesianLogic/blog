@@ -20,6 +20,9 @@ TARGETNAME=${TAGNAME}
 compile:
 	./compile.sh
 
+debug:
+	./compile.sh debug
+
 tar: zip
 
 zip: 
