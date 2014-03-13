@@ -130,8 +130,8 @@ public class FormulaQuery extends ArgSpecQuery {
 
 	public Histogram getHistogram() {
 		histogram.clear();
-		histogram.increaseWeight(Boolean.TRUE, trueSum);
-		histogram.increaseWeight(Boolean.FALSE, totalSum - trueSum);
+		histogram.increaseWeight(Boolean.TRUE, java.lang.Math.log(trueSum));
+		histogram.increaseWeight(Boolean.FALSE, java.lang.Math.log(totalSum - trueSum));
 		return histogram;
 	}
 

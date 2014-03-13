@@ -93,10 +93,10 @@ public class LWSampler extends Sampler {
 
     numSamplesThisTrial = 0;
     numConsistentThisTrial = 0;
-    sumWeightsThisTrial = 0;
+    logSumWeightsThisTrial = Double.NEGATIVE_INFINITY;
 
     curWorld = null;
-    weight = -1;
+    latestSampleLogWeight = Double.NEGATIVE_INFINITY;
   }
 
   /**
@@ -128,30 +128,27 @@ public class LWSampler extends Sampler {
     else
       curWorld = new DefaultPartialWorld(idTypes);
 
-    weight = supportEvidenceAndCalculateWeight();
+    latestSampleLogWeight = supportEvidenceAndCalculateLogWeight();
     BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
         afterSamplingListener);
-
     //if (Util.verbose()) {
     //	System.out.println("Generated world:");
     //	curWorld.print(System.out);
-    //	System.out.println("Weight: " + weight);
+    //	System.out.println("Log weight: " + latestSampleLogWeight);
     //}
 
     ++totalNumSamples;
     ++numSamplesThisTrial;
-    if (weight > 0) {
+    if (latestSampleLogWeight > NEGLIGIBLE_LOG_WEIGHT) {
       ++totalNumConsistent;
       ++numConsistentThisTrial;
     }
-    sumWeightsThisTrial += weight;
+    logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, latestSampleLogWeight);
   }
 
-  /**
-   * Calculates weight for evidence and current world.
-   */
-  protected double supportEvidenceAndCalculateWeight() {
-    return evidence.setEvidenceEnsureSupportedAndReturnLikelihood(curWorld);
+  protected double supportEvidenceAndCalculateLogWeight() {
+    evidence.setEvidenceAndEnsureSupported(curWorld);
+    return evidence.getEvidenceLogProb(curWorld);
   }
 
   public PartialWorld getLatestWorld() {
@@ -161,12 +158,8 @@ public class LWSampler extends Sampler {
     return curWorld;
   }
 
-  public double getLatestWeight() {
-    // leili: this code is not correct, should not compare double with ==
-    // if (weight == -1) {
-    // throw new IllegalStateException("LWSampler has no latest sample.");
-    // }
-    return weight;
+  public double getLatestLogWeight() {
+    return latestSampleLogWeight;
   }
 
   /**
@@ -182,8 +175,11 @@ public class LWSampler extends Sampler {
     System.out.println("======== " + samplerType + " LW Trial Stats =========");
 
     if (numSamplesThisTrial > 0) {
+      double logAvgWeight = logSumWeightsThisTrial - java.lang.Math.log(numSamplesThisTrial);
+      System.out.println("Log of average likelihood weight (this trial): "
+        + logAvgWeight);
       System.out.println("Average likelihood weight (this trial): "
-          + (sumWeightsThisTrial / (double) numSamplesThisTrial));
+        + java.lang.Math.exp(logAvgWeight));
       System.out.println("Fraction of consistent worlds (this trial): "
           + (numConsistentThisTrial / (double) numSamplesThisTrial));
     }
@@ -202,7 +198,7 @@ public class LWSampler extends Sampler {
 
   protected PartialWorld curWorld = null;
   private PartialWorld baseWorld = null;
-  protected double weight = -1;
+  protected double latestSampleLogWeight = Double.NEGATIVE_INFINITY;
 
   // overall statistics
   protected int totalNumSamples = 0;
@@ -211,5 +207,5 @@ public class LWSampler extends Sampler {
   // statistics since last call to initialize()
   protected int numSamplesThisTrial = 0;
   protected int numConsistentThisTrial = 0;
-  protected double sumWeightsThisTrial = 0;
+  protected double logSumWeightsThisTrial = 0;
 }
