@@ -37,7 +37,7 @@ package blog.distrib;
 
 import java.util.List;
 
-import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.model.MatrixSpec;
 import blog.model.Type;
@@ -174,7 +174,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
 		for (int i = 0; i < d; i++) {
 			mat[i][0] = UnivarGaussian.STANDARD.sampleVal();
 		}
-		MatrixLib temp = new JamaMatrixLib(mat);
+		MatrixLib temp = MatrixFactory.fromArray(mat);
 		return mu.plus(sqrtSigma.timesMat(temp));
 	}
 
