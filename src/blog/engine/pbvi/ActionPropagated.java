@@ -52,6 +52,10 @@ public class ActionPropagated {
 		
 	}*/
 	
+	public Boolean ended() {
+		return belief.ended();
+	}
+	
 	public Belief getNextBelief(Evidence o, OUPBVI pbvi) {
 		int osIndex = osIndices.get(o);
 		PFEngineSampled nextPF = actionPropagatedPF.copy();

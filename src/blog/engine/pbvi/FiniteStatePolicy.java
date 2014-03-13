@@ -55,7 +55,7 @@ public class FiniteStatePolicy extends PolicyModel {
 	}
 	
 	public AlphaVector getAlphaVector() { 
-		return alpha; 
+		return alpha;
 	}
 	
 	public void setAlphaVector(AlphaVector alpha) { 

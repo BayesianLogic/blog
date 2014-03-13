@@ -95,4 +95,9 @@ public class State {
 		}
 		return s.world.innerStateEquals(world, timestep);
 	}
+	
+	@Override
+	public String toString() {
+		return "State: " + world.toString();
+	}
 }

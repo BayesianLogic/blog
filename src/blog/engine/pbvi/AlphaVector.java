@@ -15,6 +15,10 @@ public class AlphaVector {
 		values = new HashMap<State, Double>();
 	}
 	
+	public int getSize() {
+		return values.keySet().size();
+	}
+	
 	public Double getValue(State s) {
 		return values.get(s);
 	}
@@ -43,5 +47,9 @@ public class AlphaVector {
 		for (State s : values.keySet()) {
 			setValue(s, getValue(s)/denom);
 		}
+	}
+	
+	public String toString() {
+		return values.toString();
 	}
 }

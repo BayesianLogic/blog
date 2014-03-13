@@ -10,23 +10,28 @@ random Boolean observable(Num_nonstate_Sound(Timestep t)) =true;
 
 random Integer DoorOf(Monster m, Timestep t) {
    if t == @0 then ~ UniformChoice({Integer n: n< MaxDoor & n>=0})
-   //else if DoorOf(m, Prev(t)) == MaxDoor then
-   //  ~ Categorical({0->0.3, (MaxDoor-1)->0.3, MaxDoor->0.4})
-   //else if DoorOf(m, Prev(t)) == 0 then
-   //  ~ Categorical({0->0.4, 1->0.3, MaxDoor->0.3})
-   //else
+   else if DoorOf(m, Prev(t)) == 0 then
+     ~ Categorical({0->0.4, 1->0.3, 3->0.3})
+   else if DoorOf(m, Prev(t)) == 1 then
+     ~ Categorical({1->0.4, 2->0.3, 0->0.3})
+   else if DoorOf(m, Prev(t)) == 2 then
+     ~ Categorical({2->0.4, 3->0.3, 1->0.3})
+   else if DoorOf(m, Prev(t)) == 3 then
+     ~ Categorical({3->0.3, 0->0.3, 2->0.4})
+   else
+     = 0
    //  ~ Categorical({DoorOf(m, Prev(t))->0.5, 0->0.5})
      //~ Categorical({DoorOf(m, Prev(t))->0.4, (DoorOf(m, Prev(t))-1)->0.3, (DoorOf(m, Prev(t))+1)->0.3})
-   else if movement(m, t)==1 then
-     = SuccMod(DoorOf(m, Prev(t)), MaxDoor)
-   else if movement(m, t)==-1 then
-     = PredMod(DoorOf(m, Prev(t)), MaxDoor)
-   else if movement(m, t)==0 then
-     = DoorOf(m, Prev(t))
+   //else if movement(m, t)==1 then
+   //  = SuccMod(DoorOf(m, Prev(t)), MaxDoor)
+   //else if movement(m, t)==-1 then
+     //= PredMod(DoorOf(m, Prev(t)), MaxDoor)
+   //else if movement(m, t)==0 then
+    // = DoorOf(m, Prev(t))
    //else ~ Categorical({SuccMod(DoorOf(m, Prev(t)), MaxDoor)->0.3, PredMod(DoorOf(m, Prev(t)), MaxDoor)->0.3, DoorOf(m, Prev(t))->0.4})
 };		
 
-random Integer movement(Monster m, Timestep t) ~ Categorical({-1->0.3, 1->0.3, 0->0.4});
+//random Integer movement(Monster m, Timestep t) ~ Categorical({-1->0.3, 1->0.3, 0->0.4});
 
 #nonstate_Sound(Source = m, Time_nonstate_Sound = t) {if apply_listen(Prev(t)) then ~Categorical({0->0.5,1->0.5})
                                         else = 0};

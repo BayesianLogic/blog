@@ -300,6 +300,18 @@ public class Belief {
 		pf = null;
 	}
 	
+	public boolean ended() {
+		Function endStateFunc = (Function) pbvi.getModel().getRandomFunc("end_state", 1);
+		Object timestep = Type.getType("Timestep").getGuaranteedObject(getTimestep());
+		Boolean ended = 
+				(Boolean) endStateFunc.getValueSingleArg(timestep, getParticleFilter().particles.get(0).curWorld);
+		if (ended == null) { 
+			System.out.println("Why is ended null?");
+			return false;
+		}
+		return ended;
+	}
+	
 	public static void printTimingStats() {
 		System.out.println("Belief.resampleTime " + resampleTime);
 		System.out.println("Belief.copyTime " + copyTime);

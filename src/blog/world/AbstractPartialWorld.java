@@ -1144,7 +1144,6 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		for (Object o : basicVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
 			if (v.toString().contains("nonstate_")) continue;
-			//System.out.println("Compare? " + v);
 			if (v instanceof RandFuncAppVar){
 				RandFuncAppVar funcVar = (RandFuncAppVar) v;
 				if (funcVar.func().getObservableFun() != null)
@@ -1164,7 +1163,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 						continue;
 				}
 			}
-			
+
+			//System.out.println("Compare? " + v);
 			if (UBT.rememberHistory || DBLOGUtil.getTimestepIndex(v) == maxTimestep){
 				boolean sameValue = otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v));
 				//sameValue |= (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(changedVarToValue.get(v)));
