@@ -1,5 +1,6 @@
 package blog.engine.pbvi;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,6 +12,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import blog.Main;
 import blog.TemporalQueriesInstantiator;
@@ -41,6 +47,7 @@ public class OUPBVI {
 	private List<Query> queries;
 	private Properties properties;
 	private int horizon;
+	private double gamma = 0.9;
 	private int numBeliefs;
 	private boolean usePerseus = true;
 	
@@ -64,13 +71,19 @@ public class OUPBVI {
 		setQI = new TemporalQueriesInstantiator(model, EvidenceQueryDecisionGeneratorOnline.makeQueryTemplates(queryStrings));	
 	}
 	
+	private Map<Integer, Collection<Query>> compiledQueries = new HashMap<Integer, Collection<Query>>();
+	
 	public Collection<Query> getQueries(int t) {
-		Collection<Query> newQs = setQI.getQueries(t);
-		for (Query q : newQs) {
-			q.compile();
+		if (!compiledQueries.containsKey(t)) {
+			Collection<Query> newQs = setQI.getQueries(t);
+			for (Query q : newQs) {
+				q.compile();
+			}
+			newQs.addAll(this.queries);
+			compiledQueries.put(t, newQs);
 		}
-		newQs.addAll(this.queries);
-		return newQs;
+		
+		return compiledQueries.get(t);
 	}
 	
 	public Set<FiniteStatePolicy> run() {
@@ -494,50 +507,78 @@ public class OUPBVI {
 	private Map<Belief, FiniteStatePolicy> prevBestPolicies = 
 			new HashMap<Belief, FiniteStatePolicy>();
 	
-	private Set<FiniteStatePolicy> singleBackup(Set<FiniteStatePolicy> oldPolicies, 
+	private Set<FiniteStatePolicy> singleBackup(final Set<FiniteStatePolicy> oldPolicies, 
 			Set<Belief> beliefs, 
-			SampledPOMDP pomdp,
-			int t) {
+			final SampledPOMDP pomdp,
+			final int t) {
 		Set<FiniteStatePolicy> newPolicies = new HashSet<FiniteStatePolicy>();
+		final List<FiniteStatePolicy> tempNewPolicies = new ArrayList<FiniteStatePolicy>();
 		List<Belief> shuffledBeliefs = new ArrayList<Belief>(beliefs);
 		Collections.shuffle(shuffledBeliefs);
-		for (Belief b : shuffledBeliefs) {
-			if (usePerseus) {
-				boolean foundBetterPolicy = false;
-				for (FiniteStatePolicy newPolicy : newPolicies) {
-					double v = evalPolicy(b, newPolicy);
-					Double bestPrevVal = prevBestVals.get(b);
-					if (bestPrevVal == null) bestPrevVal = -5.0 * horizon;
-					if (v > bestPrevVal) {
-						prevBestVals.put(b, v);
-						prevBestPolicies.put(b, newPolicy);
-						foundBetterPolicy = true;
-						break;
-					}
-				}
-				if (foundBetterPolicy) {
-					System.out.println("Skipping belief");
-					continue;
-				}
-			}
-			//if (b.getTimestep() != t) continue;
-			FiniteStatePolicy newPolicy = singleBackupForBelief(oldPolicies, b, pomdp, t);
-			if (usePerseus) {
-				setAlphaVector(newPolicy, pomdp);
-				//newPolicy.setAlphaVector(new AlphaVector());
-				double newVal = evalPolicy(b, newPolicy);
-				if (!prevBestVals.containsKey(b) || prevBestVals.get(b) < newVal) {
-					prevBestVals.put(b, newVal);
-					prevBestPolicies.put(b, newPolicy);
-				} else {
-					newPolicies.add(prevBestPolicies.get(b));
-				}
-			}
-			
-			newPolicies = createMergedPolicySet(newPolicies, newPolicy);
-			System.out.println("SingleBackup numbeliefs: " + beliefs.size());
-			
+		
+	    int threads = 1; //Runtime.getRuntime().availableProcessors();
+	    System.out.println(threads);
+	    ExecutorService service = Executors.newFixedThreadPool(threads);
+	    
+	    List<Future<Belief>> futures = new ArrayList<Future<Belief>>();
+	    for (final Belief b : shuffledBeliefs) {
+	    	Callable callable = new Callable() {
+	    		public Object call() {
+	    			/*if (usePerseus) {
+	    				boolean foundBetterPolicy = false;
+	    				for (FiniteStatePolicy newPolicy : newPolicies) {
+	    					double v = evalPolicy(b, newPolicy);
+	    					Double bestPrevVal = prevBestVals.get(b);
+	    					if (bestPrevVal == null) bestPrevVal = -5.0 * horizon;
+	    					if (v > bestPrevVal) {
+	    						prevBestVals.put(b, v);
+	    						prevBestPolicies.put(b, newPolicy);
+	    						foundBetterPolicy = true;
+	    						break;
+	    					}
+	    				}
+	    				if (foundBetterPolicy) {
+	    					System.out.println("Skipping belief");
+	    					continue;
+	    				}
+	    			}*/
+	    			//if (b.getTimestep() != t) continue;
+	    			FiniteStatePolicy newPolicy = singleBackupForBelief(oldPolicies, b, pomdp, t);
+	    			/*if (usePerseus) {
+	    				setAlphaVector(newPolicy, pomdp);
+	    				//newPolicy.setAlphaVector(new AlphaVector());
+	    				double newVal = evalPolicy(b, newPolicy);
+	    				if (!prevBestVals.containsKey(b) || prevBestVals.get(b) < newVal) {
+	    					prevBestVals.put(b, newVal);
+	    					prevBestPolicies.put(b, newPolicy);
+	    				} else {
+	    					newPolicies.add(prevBestPolicies.get(b));
+	    				}
+	    			}*/
+	    			synchronized(this) {
+	    				tempNewPolicies.add(newPolicy);
+	    			}
+	    			return null;
+	    		}
+	    	};
+
+	    	futures.add(service.submit(callable));
+	    }
+    	System.out.println("shutdown");
+    	service.shutdown();
+    	try {
+			service.awaitTermination(1000, TimeUnit.DAYS);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+    	System.out.println("shutdown done");
+	    
+	    for (FiniteStatePolicy p : tempNewPolicies) {
+	    	newPolicies = createMergedPolicySet(newPolicies, p);
+	    	System.out.println("SingleBackup numbeliefs: " + beliefs.size());
+	    }
+
 		/* no longer need old alpha vectors? They might be still useful
 		for (FiniteStatePolicy p : oldPolicies) {
 			p.setAlphaVector(null);

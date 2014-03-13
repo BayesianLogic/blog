@@ -102,15 +102,15 @@ public class Belief {
 	public Belief sampleNextBelief(Evidence action) {
 		numSampleNext++;
 		
-		Timer.start();
-		PFEngineSampled nextPF = getParticleFilter().copy();
-		copyTime += Timer.getElapsed();
 		
-		Timer.start();
+		PFEngineSampled nextPF = getParticleFilter().copy();
+		
+		
+		Timer.start("takeAction");
 		nextPF.beforeTakingEvidence();
 		nextPF.takeDecision(action);
 		nextPF.answer(pbvi.getQueries(getTimestep() + 1));
-		takeActionTime += Timer.getElapsed();
+		Timer.record("takeAction");
 		
 		for (TimedParticle p : nextPF.particles)
 			p.advanceTimestep();
@@ -120,24 +120,15 @@ public class Belief {
 		Timer.record("updateOS");
 		
 		int osIndex = nextPF.particles.get(0).getOS();
-		//if (nextPF.particles.size() > 1) {
-			Timer.start("retakeObs2");
-			nextPF.retakeObservability2();
-			Timer.record("retakeObs2");
-
-			Timer.start("retakeObs");
-			osIndex = nextPF.retakeObservability();	
-			Timer.record("retakeObs");
-		//} 
-		
+		nextPF.retakeObservability2();
+		osIndex = nextPF.retakeObservability();	
 		Evidence o = ObservabilitySignature.getOSbyIndex(osIndex).getEvidence();
+
 		
-		Timer.start("dropHistory");
 		if (UBT.dropHistory) {
 			nextPF.dropHistory();
 			//ObservabilitySignature.dropHistory(((TimedParticle)Util.getFirst(nextPF.particles)).getTimestep());
 		}
-		Timer.record("dropHistory");
 		//takeObsTime += Timer.getElapsed();
 		
 		if (nextPF.particles.size() > 1) {

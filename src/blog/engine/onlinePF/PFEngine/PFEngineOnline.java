@@ -49,6 +49,7 @@ import blog.engine.InferenceEngine;
 import blog.engine.onlinePF.Util.Communicator;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
+import blog.engine.pbvi.Timer;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -281,11 +282,13 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	 * Also clears the decisionInterps in abstractPartialWorld
 	 */
 	public void dropHistory(){
+		Timer.start("dropHistory");
 		for (TimedParticle p : particles) {
 			p.uninstantiatePreviousTimeslices();
 			p.removeAllDerivedVars();
 			p.removeAllNonstateVars();
 		}
+		Timer.record("dropHistory");
 	}
 	
 	/**
