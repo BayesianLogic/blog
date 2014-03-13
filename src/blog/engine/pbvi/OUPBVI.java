@@ -110,6 +110,7 @@ public class OUPBVI {
 			Set<FiniteStatePolicy> newPolicies = singleBackup(policies, beliefs, pomdp, t);
 			setAlphaVectors(newPolicies, policies, t, pomdp);
 			policies = newPolicies;
+			
 			System.out.println("run policies " + policies.size() + " " + t);
 			int i = 0;
 			for (FiniteStatePolicy p : policies) {
@@ -349,14 +350,12 @@ public class OUPBVI {
 			return v;
 		}
 		
-		if (p.getAlphaVector().getSize() == alphaKeys.size()) {
+		/*if (p.getAlphaVector().getSize() == alphaKeys.size()) {
 			System.out.println("alpha vector missing states in belief");
 			System.out.println(b);
 			System.out.println(p.getAlphaVector());
 			//System.exit(0);
-		}
-		
-		long startTime = System.currentTimeMillis();
+		}*/
 		
 		Function valueFunc = (Function) model.getRandomFunc("value", 1);
 		v = 0D;
@@ -415,12 +414,14 @@ public class OUPBVI {
 			v += nextValue + curValue/particles.size() - initialValue;
 		}
 		
+		/*
 		if (!evalPolicyTimes.containsKey(startingTimestep)) {
 			evalPolicyTimes.put(startingTimestep, 0L);
 			evalPolicyCounts.put(startingTimestep, 0);
 		}
 		evalPolicyTimes.put(startingTimestep, evalPolicyTimes.get(startingTimestep) + (System.currentTimeMillis() - startTime));
 		evalPolicyCounts.put(startingTimestep, evalPolicyCounts.get(startingTimestep) + 1);
+		*/
 		return v/numTrials;
 	}
 	
@@ -720,9 +721,9 @@ public class OUPBVI {
 			oupbvi.setUsePerseus(Boolean.parseBoolean(args[5]));
 		} 
 		Set<FiniteStatePolicy> policies = oupbvi.run();
-		for (FiniteStatePolicy p : policies) {
+		/*for (FiniteStatePolicy p : policies) {
 			System.out.println(p.toDotString("p0"));
-		}
+		}*/
 		System.out.println("Running time: " + (System.currentTimeMillis() - now) + "ms");
 		Belief.printTimingStats();
 	}
