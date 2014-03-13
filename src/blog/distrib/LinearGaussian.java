@@ -38,7 +38,7 @@ package blog.distrib;
 import java.util.Iterator;
 import java.util.List;
 
-import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.model.Type;
 
@@ -157,7 +157,7 @@ public class LinearGaussian extends AbstractCondProbDistrib {
 							+ "parents is less than number of columns in W.");
 		}
 
-		return new JamaMatrixLib(vect);
+		return MatrixFactory.fromArray(vect);
 	}
 
 	private int d; // dimension of child vector

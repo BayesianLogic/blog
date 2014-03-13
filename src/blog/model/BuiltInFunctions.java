@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.objgen.ObjectSet;
 import blog.type.Timestep;
@@ -88,6 +89,11 @@ public class BuiltInFunctions {
   public static final String COS_NAME = "cos";
   public static final String TAN_NAME = "tan";
   public static final String ATAN2_NAME = "atan2";
+  public static final String COL_SUM_NAME = "sum";
+  public static final String VSTACK_NAME = "vstack";
+  public static final String EYE_NAME = "eye";
+  public static final String ZEROS_NAME = "zeros";
+  public static final String ONES_NAME = "ones";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -323,6 +329,32 @@ public class BuiltInFunctions {
    * Take scalars <code>x</code> and <code>y</code> and return <code>atan2(y, x)</code>.
    */
   public static NonRandomFunction ATAN2;
+
+  /**
+   * Take RealMatrix x and return RealMatrix y where elements are the sum of
+   * columns of x.
+   */
+  public static NonRandomFunction COL_SUM;
+
+  /**
+   * Take RealMatrix x and y and return RealMatrix z which is the concatenation [x; y].
+   */
+  public static NonRandomFunction VSTACK;
+
+  /**
+   * Return an identity matrix.
+   */
+  public static NonRandomFunction EYE;
+
+  /**
+   * Return a matrix of zeros.
+   */
+  public static NonRandomFunction ZEROS;
+
+  /**
+   * Return a matrix of ones.
+   */
+  public static NonRandomFunction ONES;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -945,5 +977,71 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL;
     ATAN2 = new NonRandomFunction(ATAN2_NAME, argTypes, retType, atan2Interp);
     addFunction(ATAN2);
+
+    FunctionInterp colSumInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        MatrixLib matrix = (MatrixLib) args.get(0);
+        return matrix.columnSum();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+    COL_SUM = new NonRandomFunction(COL_SUM_NAME, argTypes, retType, colSumInterp);
+    addFunction(COL_SUM);
+
+    FunctionInterp vstackInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        MatrixLib a = (MatrixLib) args.get(0);
+        MatrixLib b = (MatrixLib) args.get(1);
+        return MatrixFactory.vstack(a, b);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+    VSTACK = new NonRandomFunction(VSTACK_NAME, argTypes, retType, vstackInterp);
+    addFunction(VSTACK);
+
+    FunctionInterp eyeInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Integer size = (Integer) args.get(0);
+        return MatrixFactory.eye(size);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    EYE = new NonRandomFunction(EYE_NAME, argTypes, retType, eyeInterp);
+    addFunction(EYE);
+
+    FunctionInterp zerosInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Integer rows = (Integer) args.get(0);
+        Integer cols = (Integer) args.get(1);
+        return MatrixFactory.zeros(rows, cols);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    ZEROS = new NonRandomFunction(ZEROS_NAME, argTypes, retType, zerosInterp);
+    addFunction(ZEROS);
+
+    FunctionInterp onesInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Integer rows = (Integer) args.get(0);
+        Integer cols = (Integer) args.get(1);
+        return MatrixFactory.ones(rows, cols);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    ONES = new NonRandomFunction(ONES_NAME, argTypes, retType, onesInterp);
+    addFunction(ONES);
   };
 }
