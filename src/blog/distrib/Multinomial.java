@@ -87,11 +87,11 @@ public class Multinomial extends AbstractCondProbDistrib {
 //      throw new IllegalArgumentException("expected numTrials and pi");
 //    }
 
-      if (!(params.get(0) instanceof Integer)) {
+      if (!(params.get(0) instanceof Number)) {
         throw new IllegalArgumentException(
-            "expected first arg to be integer numTrials");
+            "expected first arg to be number numTrials");
       }
-      int numTrials = (Integer) params.get(0);
+      int numTrials = ((Number) params.get(0)).intValue();
   
       Object objectPi = params.get(1);
       if (objectPi instanceof MatrixSpec) {
@@ -245,11 +245,11 @@ public class Multinomial extends AbstractCondProbDistrib {
                 + "specified as parameters.");
       }
       
-      if (!(args.get(0) instanceof Integer)) {
+      if (!(args.get(0) instanceof Number)) {
         throw new IllegalArgumentException(
-            "expected first arg to be integer numTrials");
+            "expected first arg to be number numTrials");
       }
-      int numTrials = (Integer) args.get(0);
+      int numTrials = ((Number) args.get(0)).intValue();
       this.numTrials = numTrials;
       
     } else if (args != null) {
