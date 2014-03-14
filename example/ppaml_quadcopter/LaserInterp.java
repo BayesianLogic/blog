@@ -2,8 +2,7 @@ package ppaml_quadcopter;
 
 import java.util.List;
 
-import blog.common.numerical.JamaMatrixLib;
-import blog.common.numerical.MatrixLib;
+import blog.common.numerical.MatrixFactory;
 import blog.model.AbstractFunctionInterp;
 
 
@@ -38,13 +37,13 @@ public class LaserInterp extends AbstractFunctionInterp {
       laserAngles, laserMaxRange,
       obstacleX, obstacleY, obstacleR);
 
-    // Convert to JamaMatrixLib.
-    // Additional step required because JamaMatrixLib only takes a double[][].
+    // Convert to MatrixLib.
+    // Additional step required because MatrixLib only takes a double[][].
     double[][] tmp = new double[readings.length][1];
     for (int i = 0; i < readings.length; i++) {
       tmp[i][0] = readings[i];
     }
-    return new JamaMatrixLib(tmp);
+    return MatrixFactory.fromArray(tmp);
   }
 
   private double laserMaxRange;
