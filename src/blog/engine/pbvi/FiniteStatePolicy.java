@@ -24,10 +24,12 @@ public class FiniteStatePolicy extends PolicyModel {
 	private Evidence action;
 	private Map<Evidence, FiniteStatePolicy> successors;
 	private Map<Evidence, String> notes;
-	
+	private int id;
 	private Set<ArgSpec> requiredTerms;
 	
 	public FiniteStatePolicy(Evidence action, Map<Evidence, FiniteStatePolicy> successors) {
+		this.id = count;
+		count++;
 		this.action = action;
 		this.successors = successors;
 		this.notes = new HashMap<Evidence, String>();
@@ -75,7 +77,7 @@ public class FiniteStatePolicy extends PolicyModel {
 	//works only for a tree right now
 	public String toDotString(String name) {
 		Map<FiniteStatePolicy, String> included = new HashMap<FiniteStatePolicy, String>();
-		return toDotStringHelper(name, included);
+		return toDotStringHelper(name + "_" + id, included);
 	}
 	
 	private String toDotStringHelper(String name, Map<FiniteStatePolicy, String> included) {
@@ -202,4 +204,11 @@ public class FiniteStatePolicy extends PolicyModel {
 		}
 		return note;
 	}
+
+	public int getID() {
+		return id;
+	}
+	
+	private static int count = 0;
+	
 }

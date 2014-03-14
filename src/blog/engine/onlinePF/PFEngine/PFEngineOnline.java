@@ -224,6 +224,7 @@ public abstract class PFEngineOnline extends InferenceEngine {
 	 * Resamples particles according to their weight
 	 */
 	public void resample() {
+		Timer.start("resample");
 		UBT.Stopwatch resampleTimer = new UBT.Stopwatch();
 		resampleTimer.startTimer();
 
@@ -254,6 +255,7 @@ public abstract class PFEngineOnline extends InferenceEngine {
 			p.resetWeight();
 		particles = newParticles;
 		UBT.resampleTime += resampleTimer.elapsedTime();
+		Timer.record("resample");
 	}
 	
 	/**

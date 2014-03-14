@@ -22,6 +22,7 @@ public class Belief {
 	private OUPBVI pbvi;
 	private Map<State, Integer> stateCounts;
 	private Evidence latestEvidence;
+	private Double latestReward;
 	
 	public Belief(OUPBVI pbvi) {
 		this.stateCounts = new HashMap<State, Integer>();
@@ -91,26 +92,18 @@ public class Belief {
 		}
 		return new Belief(next, pbvi);
 	}*/
-	static long copyTime = 0;
-	static long takeActionTime = 0;
-	
-	static long takeObsTime = 0;
-	static long resampleTime = 0;
-	static int numSampleNext = 0;
 	static Map<Integer, Integer> resampleStateCountStats = new HashMap<Integer, Integer>();
 	static Map<Integer, Integer> stateCountStats = new HashMap<Integer, Integer>();
 	public Belief sampleNextBelief(Evidence action) {
-		numSampleNext++;
-		
-		
 		PFEngineSampled nextPF = getParticleFilter().copy();
-		
 		
 		Timer.start("takeAction");
 		nextPF.beforeTakingEvidence();
 		nextPF.takeDecision(action);
 		nextPF.answer(pbvi.getQueries(getTimestep() + 1));
 		Timer.record("takeAction");
+		
+		double reward = getAvgReward(nextPF);
 		
 		for (TimedParticle p : nextPF.particles)
 			p.advanceTimestep();
@@ -123,7 +116,6 @@ public class Belief {
 		nextPF.retakeObservability2();
 		osIndex = nextPF.retakeObservability();	
 		Evidence o = ObservabilitySignature.getOSbyIndex(osIndex).getEvidence();
-
 		
 		if (UBT.dropHistory) {
 			nextPF.dropHistory();
@@ -132,12 +124,13 @@ public class Belief {
 		//takeObsTime += Timer.getElapsed();
 		
 		if (nextPF.particles.size() > 1) {
-			Timer.start();
+			
 			nextPF.resample();
-			resampleTime += Timer.getElapsed();
+			Timer.record("resample");
 		}
 		
 		Belief nextBelief = new Belief(nextPF, pbvi);
+		nextBelief.latestReward = reward;
 		nextBelief.latestEvidence = o;
 		
 		updateResampleStateCountStats(nextBelief);
@@ -146,22 +139,31 @@ public class Belief {
 	}
 	
 	public double getReward(Evidence action) {
-		double total = 0;
-		
 		PFEngineSampled apPF = getParticleFilter().copy();
 		apPF.beforeTakingEvidence();
 		apPF.takeDecision(action);
 		apPF.answer(pbvi.getQueries(getTimestep() + 1));
 		
+		double total = getAvgReward(apPF);
+		System.out.println(total/apPF.particles.size());
+		return total/apPF.particles.size();
+	}
+
+	/**
+	 * Should be called after applying action but before advancing particles' timestep
+	 * @param pf
+	 * @return
+	 */
+	private double getAvgReward(PFEngineSampled pf) {
+		double total = 0;
 		Function rewardFunc = (Function) pbvi.getModel().getRandomFunc("reward", 1);
-		Object timestep = Type.getType("Timestep").getGuaranteedObject(getTimestep());
-		
-		for (TimedParticle p : apPF.particles) {
+		Object timestep = Type.getType("Timestep").getGuaranteedObject(0);
+		//System.out.println("Get reward: " + timestep);
+		for (TimedParticle p : pf.particles) {
 			Number reward = (Number) rewardFunc.getValueSingleArg(timestep, p.getLatestWorld());
 			total += reward.doubleValue();
 		}
-		System.out.println(total/apPF.particles.size());
-		return total/apPF.particles.size();
+		return total;
 	}
 	
 	public ActionPropagated beliefsAfterAction(Evidence action) {
@@ -303,16 +305,18 @@ public class Belief {
 		return ended;
 	}
 	
+	public double getLatestReward() {
+		return latestReward;
+	}
+	
 	public static void printTimingStats() {
-		System.out.println("Belief.resampleTime " + resampleTime);
-		System.out.println("Belief.copyTime " + copyTime);
-		System.out.println("Belief.takeActionTime " + takeActionTime);
-		System.out.println("Belief.takeObsTime " + takeObsTime);
-		System.out.println("Belief.numSampleNext " + numSampleNext);
+		System.out.println("Belief.resampleTime " + Timer.niceTimeString(Timer.getAggregate("resample")));
+		System.out.println("Belief.copyTime " + Timer.niceTimeString(Timer.getAggregate("copy")));
+		System.out.println("Belief.takeActionTime " + Timer.niceTimeString(Timer.getAggregate("takeAction")));
+		System.out.println("Belief.takeObsTime " + Timer.niceTimeString(Timer.getAggregate("takeObs")));
 		
 		System.out.println("State counts " + stateCountStats);
 		System.out.println("Resample state counts " + resampleStateCountStats);
-		Timer.print();
 	}
 
 	public static void updateResampleStateCountStats(Belief nextBelief) {
