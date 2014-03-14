@@ -404,37 +404,35 @@ public class Util {
 		return choose(n + k - 1, n - 1);
 	}
 
-	/**
-	 * Addition in the log domain. Returns an approximation to ln(e^a + e^b). Just
-	 * doing it naively might lead to underflow if a and b are very negative.
-	 * Without loss of generality, let b<a . If a>-10, calculates it in the
-	 * standard way. Otherwise, rewrite it as a + ln(1 + e^(b-a)) and approximate
-	 * that by the first-order Taylor expansion to be a + (e^(b-a)). So if b is
-	 * much smaller than a, there will still be underflow in the last term, but in
-	 * that case, the error is small relative to the final answer.
-	 */
-	public static double logSum(double a, double b) {
+    /**
+     * Addition in the log domain.
+     *
+     * @return approximation to ln(e^logX + e^logY)
+     */
+    public static double logSum(double logX, double logY) {
+        // Ensure X is greater than Y.
+        if(logY > logX) {
+            double temp = logX;
+            logX = logY;
+            logY = temp;
+        }
 
-		if (a > b) {
-			if (b == Double.NEGATIVE_INFINITY) {
-				return a;
-			} else if (a > -10) {
-				return Math.log(Math.exp(a) + Math.exp(b));
-			}
+        // Adding zero is a no-op.
+        if(logX == Double.NEGATIVE_INFINITY) {
+            return logX;
+        }
 
-			else {
-				return a + Math.exp(b - a);
-			}
-		} else {
-			if (a == Double.NEGATIVE_INFINITY) {
-				return b;
-			} else if (b > -10) {
-				return Math.log(Math.exp(a) + Math.exp(b));
-			} else {
-				return b + Math.exp(a - b);
-			}
-		}
-	}
+        // If Y is many orders of magnitude less than X, then ignore it.
+        double negDiff = logY - logX;
+        if (negDiff < -20) {
+            return logX;
+        }
+
+        // Otherwise use some nice algebra to stay in the log domain.
+        // See proof at
+        // https://facwiki.cs.byu.edu/nlp/index.php/Log_Domain_Computations
+        return logX + java.lang.Math.log(1.0 + java.lang.Math.exp(negDiff));
+    }
 
 	/**
 	 * Maximum difference that we are willing to ignore between two floating-point
