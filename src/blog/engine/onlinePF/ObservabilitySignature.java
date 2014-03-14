@@ -307,7 +307,7 @@ public class ObservabilitySignature {
 		return myEvidence;
 	}
 	
-	private Evidence myEvidence;
+	protected Evidence myEvidence;
 	
 	public String generateObservableTypeString(){
 		String rtn = "";
@@ -376,5 +376,9 @@ public class ObservabilitySignature {
 		}
 		OStoBucketSize.clear();
 		
+	}
+
+	public void setEvidence(Evidence evidence) {
+		myEvidence = evidence;
 	}
 }

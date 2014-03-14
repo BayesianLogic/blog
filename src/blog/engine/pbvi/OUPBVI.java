@@ -55,8 +55,8 @@ public class OUPBVI {
 	private int numParticles;
 	private boolean usePerseus = false;
 	
-	private Set<State> alphaKeys;
-	private Set<State> addedAlphaKeys;
+	private Map<State, State> alphaKeys;
+	private Map<State, State> addedAlphaKeys;
 	private boolean useVisitedStates = true;
 	private int maxNumAlphaKeys; 
 	
@@ -73,7 +73,7 @@ public class OUPBVI {
 		this.numBeliefs = numBeliefs;
 		numParticles = Integer.parseInt((String) properties.get("numParticles"));
 		this.maxNumAlphaKeys = numParticles * numBeliefs;
-		alphaKeys = new HashSet<State>();
+		alphaKeys = new HashMap<State, State>();
 		System.out.println("Queries " + queries);
 		
 		for (Type typ: (List<Type>) model.getObsTyp()){
@@ -129,11 +129,13 @@ public class OUPBVI {
 		for (Belief b : beliefs) {
 			System.out.println("Belief: " + beliefIDs.get(b) + " " + b);
 		}
-		alphaKeys.addAll(pomdp.getStates());
+		for (State s : pomdp.getStates()) {
+			alphaKeys.put(s, s);
+		}
 		System.out.println("Alpha Keys: " + alphaKeys);
 		System.out.println("run.expansion.beliefsize: " + beliefs.size());
 		
-		addedAlphaKeys = new HashSet<State>();
+		addedAlphaKeys = new HashMap<State, State>();
 		Set<FiniteStatePolicy> policies = new HashSet<FiniteStatePolicy>();
 		for (int t = horizon - 1; t >= 0; t--) {
 			Set<FiniteStatePolicy> newPolicies = singleBackup(policies, beliefs, pomdp, t);
@@ -336,10 +338,12 @@ public class OUPBVI {
 
 	private Double evalPolicy(State s, FiniteStatePolicy p) {
 		Double val = evalPolicyDFS(getSingletonBelief(s, 1), p);
-		if (alphaKeys.contains(s) || addedAlphaKeys.contains(s)) {
-			p.getAlphaVector().setValue(s, val);
+		if (alphaKeys.containsKey(s)) { 
+			p.getAlphaVector().setValue(alphaKeys.get(s), val);
+		} else if (addedAlphaKeys.containsKey(s)) {
+			p.getAlphaVector().setValue(addedAlphaKeys.get(s), val);
 		} else if (addedAlphaKeys.size() < maxNumAlphaKeys) {
-			addedAlphaKeys.add(s);
+			addedAlphaKeys.put(s, s);
 			p.getAlphaVector().setValue(s, val);
 		}
 		return val;
@@ -757,6 +761,11 @@ public class OUPBVI {
 		} else {
 			Util.initRandom(true);
 		}
+		
+		if (args.length > 5) {
+			Timer.off = Boolean.parseBoolean(args[5]);
+		}
+		
 		OUPBVI oupbvi = makeOUPBVI(modelFiles, 
 				args[1], 
 				Integer.parseInt(args[2]), 
@@ -766,6 +775,7 @@ public class OUPBVI {
 		
 		Belief.printTimingStats();
 		System.out.println("Total elapsed: " + Timer.getElapsedStr());
+		Timer.print();
 	}
 
 	private void setUsePerseus(boolean usePerseus) {
