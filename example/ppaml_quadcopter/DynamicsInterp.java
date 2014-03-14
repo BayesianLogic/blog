@@ -3,6 +3,7 @@ package ppaml_quadcopter;
 import java.util.List;
 
 import blog.common.numerical.MatrixFactory;
+import blog.common.numerical.MatrixLib;
 import blog.model.AbstractFunctionInterp;
 
 
@@ -22,18 +23,24 @@ public class DynamicsInterp extends AbstractFunctionInterp {
       throw new IllegalArgumentException("DynamicsInterp expected 5 arguments");
     }
 
-    double[] carParams = (double[]) args.get(0);
-    if (carParams.length != 4) {
-      throw new IllegalArgumentException("carParams must have 4 values");
+    MatrixLib carParams = (MatrixLib) args.get(0);
+    if (carParams.rowLen() != 4 || carParams.colLen() != 1) {
+      throw new IllegalArgumentException(
+        "carParams must be a column vector of size 4");
     }
-    double a = carParams[0];
-    double b = carParams[1];
-    double h = carParams[2];
-    double L = carParams[4];
+    double a = carParams.elementAt(0, 0);
+    double b = carParams.elementAt(1, 0);
+    double h = carParams.elementAt(2, 0);
+    double L = carParams.elementAt(3, 0);
 
-    double[] oldState = (double[]) args.get(1);
-    if (oldState.length != 6) {
-      throw new IllegalArgumentException("oldState must have 6 values");
+    MatrixLib oldStateTmp = (MatrixLib) args.get(1);
+    if (oldStateTmp.rowLen() != 6 || oldStateTmp.colLen() != 1) {
+      throw new IllegalArgumentException(
+        "oldState must be a column vector of size 6");
+    }
+    double[] oldState = new double[6];
+    for (int i = 0; i < 6; i++) {
+      oldState[i] = oldStateTmp.elementAt(i, 0);
     }
 
     double velocity = (double) args.get(2);
