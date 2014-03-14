@@ -27,84 +27,24 @@ because of time discretization.
  * We assume delta_t is the fixed step size.
  */
 
-fixed Real param_a = {{ model.param_a }};
-fixed Real param_b = {{ model.param_b }};
-fixed Real param_h = {{ model.param_h }};
-fixed Real param_L = {{ model.param_L }};
 fixed Real delta_t = {{ model.delta_t }};
-fixed Real xdot_sigma = {{ model.xdot_sigma }};
-fixed Real ydot_sigma = {{ model.ydot_sigma }};
-fixed Real thetadot_sigma = {{ model.thetadot_sigma }};
-fixed Real x_sigma = {{ model.x_sigma }};
-fixed Real y_sigma = {{ model.y_sigma }};
-fixed Real theta_sigma = {{ model.theta_sigma }};
+fixed RealMatrix car_params = {{ model.car_params |blog_column_vector }};
+fixed RealMatrix initial_state = {{ model.initial_state |blog_column_vector }};
+fixed RealMatrix state_sigma = {{ model.state_sigma |blog_matrix }};
 
-random Real new_xdot(Real theta, Real vel, Real steer) {
-    = vel * cos(theta) - tan(steer) * (vel / param_L) * (
-        (param_a * sin(theta) + param_b * cos(theta)))
-};
+fixed RealMatrix dynamics(
+        RealMatrix car_params, RealMatrix old_state,
+        Real velocity, Real steering, Real delta_t)
+    = DynamicsInterp();
 
-random Real state_xdot(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
-    else ~ UnivarGaussian(
-        new_xdot(state_theta(timestep - 1), velocity(timestep), steering(timestep)),
-        xdot_sigma)
-};
-
-random Real new_ydot(Real theta, Real vel, Real steer) {
-    = vel * sin(theta) - tan(steer) * (vel / param_L) * (
-        (param_a * cos(theta) + param_b * sin(theta)))
-};
-
-random Real state_ydot(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
-    else ~ UnivarGaussian(
-        new_ydot(state_theta(timestep - 1), velocity(timestep), steering(timestep)),
-        ydot_sigma)
-};
-
-random Real new_thetadot(Real vel, Real steer) {
-    = tan(steer) * (vel / param_L)
-};
-
-random Real state_thetadot(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
-    else ~ UnivarGaussian(
-        new_thetadot(velocity(timestep), steering(timestep)),
-        thetadot_sigma)
-};
-
-random Real new_x(Real x, Real xdot) {
-    = x + delta_t * xdot
-};
-
-random Real state_x(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
-    else ~ UnivarGaussian(
-        new_x(state_x(timestep - 1), state_xdot(timestep - 1)),
-        x_sigma)
-};
-
-random Real new_y(Real y, Real ydot) {
-    = y + delta_t * ydot
-};
-
-random Real state_y(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
-    else ~ UnivarGaussian(
-        new_y(state_y(timestep - 1), state_ydot(timestep - 1)),
-        y_sigma)
-};
-
-random Real new_theta(Real theta, Real thetadot) {
-    = theta + delta_t * thetadot
-};
-
-random Real state_theta(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
-    else ~ UnivarGaussian(
-        new_theta(state_theta(timestep - 1), state_thetadot(timestep - 1)),
-        theta_sigma)
+random RealMatrix state(Integer timestep) {
+    if timestep == 0 then = initial_state
+    else ~ MultivarGaussian(
+        dynamics(
+            car_params, state(timestep - 1),
+            velocity(timestep), steering(timestep),
+            delta_t),
+        state_sigma)
 };
 
 
@@ -134,7 +74,8 @@ random RealMatrix lasers_func(Real x, Real y, Real theta) {
 };
 
 random RealMatrix lasers(Integer timestep) {
-    = lasers_func(state_x(timestep), state_y(timestep), state_theta(timestep))
+    = lasers_func(
+        state(timestep)[0], state(timestep)[1], state(timestep)[2])
 };
 
 
@@ -174,7 +115,5 @@ obs lasers({{ obs.timestep }}) = {{ obs.laser|blog_column_vector }};
 /* Query the hidden state: */
 
 {% for timestep in range(last_timestep + 1) %}
-query state_x({{ timestep }});
-query state_y({{ timestep }});
-query state_theta({{ timestep }});
+query state({{ timestep }});
 {%- endfor %}

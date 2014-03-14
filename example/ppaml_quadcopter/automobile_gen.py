@@ -4,8 +4,6 @@
 Generate the BLOG model for the automobile problem.
 """
 
-from automobile_data import INTENSITY_COLS
-from automobile_data import LASER_COLS
 from automobile_data import read_data
 from automobile_data import read_metadata
 from automobile_data import Reading
@@ -57,22 +55,14 @@ def generate_model(disc_readings, car_params):
     """
     # Model parameters (values completely made up):
     model_vars = {}
-    model_vars['param_a'] = car_params.a
-    model_vars['param_b'] = car_params.b
-    model_vars['param_h'] = car_params.h
-    model_vars['param_L'] = car_params.L
     model_vars['delta_t'] = TIME_CHUNK
-    model_vars['xdot_sigma'] = 1.0
-    model_vars['ydot_sigma'] = 1.0
-    model_vars['thetadot_sigma'] = 1.0
-    model_vars['x_sigma'] = 1.0
-    model_vars['y_sigma'] = 1.0
-    model_vars['theta_sigma'] = 1.0
+    model_vars['car_params'] = [
+        car_params.a, car_params.b, car_params.h, car_params.L]
+    model_vars['initial_state'] = np.zeros(6)
+    model_vars['state_sigma'] = np.eye(6)
     model_vars['obstacle_x'] = 3.0
     model_vars['obstacle_y'] = 2.0
     model_vars['obstacle_r'] = 1.0
-    model_vars['laser_angles'] = np.arange(-90, 90.5, 0.5) * np.pi / 180
-    model_vars['lasers_mu'] = np.zeros(LASER_COLS)
 
     # Observations and controls:
     # (We fill in controls even at time steps where they are not observed.)

@@ -27,84 +27,31 @@ because of time discretization.
  * We assume delta_t is the fixed step size.
  */
 
-fixed Real param_a = 0.299541;
-fixed Real param_b = 0.0500507;
-fixed Real param_h = 0.0;
-fixed Real param_L = 0.257717;
 fixed Real delta_t = 0.005;
-fixed Real xdot_sigma = 1.0;
-fixed Real ydot_sigma = 1.0;
-fixed Real thetadot_sigma = 1.0;
-fixed Real x_sigma = 1.0;
-fixed Real y_sigma = 1.0;
-fixed Real theta_sigma = 1.0;
+fixed RealMatrix car_params = [0.299541; 0.0500507; 0.0; 0.257717];
+fixed RealMatrix initial_state = [0.0; 0.0; 0.0; 0.0; 0.0; 0.0];
+fixed RealMatrix state_sigma = [
+    [1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+    [0.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+];
 
-random Real new_xdot(Real theta, Real vel, Real steer) {
-    = vel * cos(theta) - tan(steer) * (vel / param_L) * (
-        (param_a * sin(theta) + param_b * cos(theta)))
-};
+fixed RealMatrix dynamics(
+        RealMatrix car_params, RealMatrix old_state,
+        Real velocity, Real steering, Real delta_t)
+    = DynamicsInterp();
 
-random Real state_xdot(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
-    else ~ UnivarGaussian(
-        new_xdot(state_theta(timestep - 1), velocity(timestep), steering(timestep)),
-        xdot_sigma)
-};
-
-random Real new_ydot(Real theta, Real vel, Real steer) {
-    = vel * sin(theta) - tan(steer) * (vel / param_L) * (
-        (param_a * cos(theta) + param_b * sin(theta)))
-};
-
-random Real state_ydot(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
-    else ~ UnivarGaussian(
-        new_ydot(state_theta(timestep - 1), velocity(timestep), steering(timestep)),
-        ydot_sigma)
-};
-
-random Real new_thetadot(Real vel, Real steer) {
-    = tan(steer) * (vel / param_L)
-};
-
-random Real state_thetadot(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
-    else ~ UnivarGaussian(
-        new_thetadot(velocity(timestep), steering(timestep)),
-        thetadot_sigma)
-};
-
-random Real new_x(Real x, Real xdot) {
-    = x + delta_t * xdot
-};
-
-random Real state_x(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
-    else ~ UnivarGaussian(
-        new_x(state_x(timestep - 1), state_xdot(timestep - 1)),
-        x_sigma)
-};
-
-random Real new_y(Real y, Real ydot) {
-    = y + delta_t * ydot
-};
-
-random Real state_y(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
-    else ~ UnivarGaussian(
-        new_y(state_y(timestep - 1), state_ydot(timestep - 1)),
-        y_sigma)
-};
-
-random Real new_theta(Real theta, Real thetadot) {
-    = theta + delta_t * thetadot
-};
-
-random Real state_theta(Integer timestep) {
-    if timestep == 0 then ~ UnivarGaussian(0, 1)  /* TODO prior */
-    else ~ UnivarGaussian(
-        new_theta(state_theta(timestep - 1), state_thetadot(timestep - 1)),
-        theta_sigma)
+random RealMatrix state(Integer timestep) {
+    if timestep == 0 then = initial_state
+    else ~ MultivarGaussian(
+        dynamics(
+            car_params, state(timestep - 1),
+            velocity(timestep), steering(timestep),
+            delta_t),
+        state_sigma)
 };
 
 
@@ -134,7 +81,8 @@ random RealMatrix lasers_func(Real x, Real y, Real theta) {
 };
 
 random RealMatrix lasers(Integer timestep) {
-    = lasers_func(state_x(timestep), state_y(timestep), state_theta(timestep))
+    = lasers_func(
+        state(timestep)[0], state(timestep)[1], state(timestep)[2])
 };
 
 
@@ -218,75 +166,27 @@ obs lasers(22) = [10.0; 10.0; 10.0; 10.0; 10.0; 10.0; 10.0; 10.0; 10.0; 10.0; 10
 /* Query the hidden state: */
 
 
-query state_x(0);
-query state_y(0);
-query state_theta(0);
-query state_x(1);
-query state_y(1);
-query state_theta(1);
-query state_x(2);
-query state_y(2);
-query state_theta(2);
-query state_x(3);
-query state_y(3);
-query state_theta(3);
-query state_x(4);
-query state_y(4);
-query state_theta(4);
-query state_x(5);
-query state_y(5);
-query state_theta(5);
-query state_x(6);
-query state_y(6);
-query state_theta(6);
-query state_x(7);
-query state_y(7);
-query state_theta(7);
-query state_x(8);
-query state_y(8);
-query state_theta(8);
-query state_x(9);
-query state_y(9);
-query state_theta(9);
-query state_x(10);
-query state_y(10);
-query state_theta(10);
-query state_x(11);
-query state_y(11);
-query state_theta(11);
-query state_x(12);
-query state_y(12);
-query state_theta(12);
-query state_x(13);
-query state_y(13);
-query state_theta(13);
-query state_x(14);
-query state_y(14);
-query state_theta(14);
-query state_x(15);
-query state_y(15);
-query state_theta(15);
-query state_x(16);
-query state_y(16);
-query state_theta(16);
-query state_x(17);
-query state_y(17);
-query state_theta(17);
-query state_x(18);
-query state_y(18);
-query state_theta(18);
-query state_x(19);
-query state_y(19);
-query state_theta(19);
-query state_x(20);
-query state_y(20);
-query state_theta(20);
-query state_x(21);
-query state_y(21);
-query state_theta(21);
-query state_x(22);
-query state_y(22);
-query state_theta(22);
-query state_x(23);
-query state_y(23);
-query state_theta(23);
+query state(0);
+query state(1);
+query state(2);
+query state(3);
+query state(4);
+query state(5);
+query state(6);
+query state(7);
+query state(8);
+query state(9);
+query state(10);
+query state(11);
+query state(12);
+query state(13);
+query state(14);
+query state(15);
+query state(16);
+query state(17);
+query state(18);
+query state(19);
+query state(20);
+query state(21);
+query state(22);
+query state(23);
