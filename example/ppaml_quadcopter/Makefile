@@ -1,5 +1,5 @@
-BLOG_HOME = "/home/cberzan/berkeley/dblog"
-CLASSPATH = "${BLOG_HOME}/bin:${BLOG_HOME}/*:${BLOG_HOME}/lib/*"
+BLOG_HOME = /home/cberzan/berkeley/dblog
+CLASSPATH = ${BLOG_HOME}/bin:${BLOG_HOME}/*:${BLOG_HOME}/lib/*
 
 
 all: standalone_stuff blog_glue
