@@ -334,4 +334,13 @@ public class Belief {
 		}
 		stateCountStats.put(numStates, stateCountStats.get(numStates) + 1);
 	}
+	
+
+	public static Belief getSingletonBelief(State state, int numParticles, OUPBVI pbvi) {
+		Properties properties = (Properties) pbvi.getProperties().clone();
+		properties.setProperty("numParticles", "" + numParticles);
+		PFEngineSampled pf = new PFEngineSampled(pbvi.getModel(), properties, state.getWorld(), state.getTimestep());
+		Belief b = new Belief(pf, pbvi);
+		return b;
+	}
 }

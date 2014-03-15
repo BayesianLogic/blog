@@ -189,7 +189,7 @@ public class FiniteStatePolicy extends PolicyModel {
 			 successors.put(o, policy.getNextPolicy(o));
 			 addObsNote(o, "merged");
 		 }
-		 
+		 this.alpha = null;
 		 return true;
 	}
 	
