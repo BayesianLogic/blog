@@ -122,7 +122,7 @@ public class ObservabilitySignature {
 			rtn = this.cachedHashcode;
 		}
 		else{
-			rtn = parentIndex != -1 ? ObservabilitySignature.getOSbyIndex(parentIndex).hashCode() : 0;
+			//rtn = parentIndex != -1 ? ObservabilitySignature.getOSbyIndex(parentIndex).hashCode() : 0;
 			for (Iterator<BayesNetVar> i = observedValues.keySet().iterator(); i.hasNext();){
 				BayesNetVar bnv = i.next();
 				rtn = rtn ^ bnv.hashCode();
@@ -146,13 +146,13 @@ public class ObservabilitySignature {
 			if (this.indexValid && other.indexValid){
 				rtn = rtn && (myIndex == other.myIndex);
 			}
-			else{
-				rtn = rtn && (parentIndex == other.parentIndex);
+			else {
+				//rtn = rtn && (parentIndex == other.parentIndex);
 				HashMap<BayesNetVar, Object> m = other.observedValues;
 				for (Iterator<BayesNetVar> i = observedValues.keySet().iterator(); i.hasNext();){
 					BayesNetVar bnv = i.next();
 					if (m.get(bnv)==null || !observedValues.get(bnv).equals(m.get(bnv)))
-						rtn = false;
+						return false;
 				}
 			}
 		}

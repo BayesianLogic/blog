@@ -64,7 +64,7 @@ public class Timer {
 		if (!off) {
 			System.out.println("Aggregated: " + timeStr(aggregatedTimes) + 
 					"\nLongest: " + timeStr(longestTimes) + 
-					"\n# Records: " + timeStr(numRecords));
+					"\n# Records: " + numRecords);
 		}
 	}
 	

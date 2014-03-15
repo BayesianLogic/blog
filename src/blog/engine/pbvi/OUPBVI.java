@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import blog.Main;
 import blog.TemporalQueriesInstantiator;
 import blog.engine.experiments.query_parser;
+import blog.engine.onlinePF.ObservabilitySignature;
 import blog.engine.onlinePF.PFEngine.PFEngineSampled;
 import blog.engine.onlinePF.evidenceGenerator.EvidenceQueryDecisionGeneratorOnline;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
@@ -51,9 +52,12 @@ public class OUPBVI {
 	private Properties properties;
 	private int horizon;
 	private double gamma = .9;
+	private double minReward = -10;
+	private double maxReward = 10;
 	private int numBeliefs;
 	private int numParticles;
-	private boolean usePerseus = false;
+	private boolean usePerseus = true;
+	private static boolean debugOn = false;
 	
 	private Map<State, State> alphaKeys;
 	private Map<State, State> addedAlphaKeys;
@@ -98,6 +102,12 @@ public class OUPBVI {
 		return compiledQueries.get(t);
 	}
 	
+	private void debug(String s) {
+		if (debugOn) {
+			System.out.println(s);
+		}
+	}
+	
 	public Set<FiniteStatePolicy> run() {
 		Set<Belief> beliefs = new HashSet<Belief>();
 		PFEngineSampled initPF = new PFEngineSampled(model, properties);
@@ -129,10 +139,12 @@ public class OUPBVI {
 		for (Belief b : beliefs) {
 			System.out.println("Belief: " + beliefIDs.get(b) + " " + b);
 		}
+		
+		System.out.println("Alpha keys: ");
 		for (State s : pomdp.getStates()) {
 			alphaKeys.put(s, s);
+			System.out.println(s);
 		}
-		System.out.println("Alpha Keys: " + alphaKeys);
 		System.out.println("run.expansion.beliefsize: " + beliefs.size());
 		
 		addedAlphaKeys = new HashMap<State, State>();
@@ -148,6 +160,7 @@ public class OUPBVI {
 				System.out.println(p.toDotString("p" + "_t" + t + "_i" + i));
 				i++;
 			}
+			System.out.println("Number of OS: " + ObservabilitySignature.OStoIndex.size());
 		}
 		
 		double bestVal = Double.NEGATIVE_INFINITY;
@@ -364,18 +377,18 @@ public class OUPBVI {
 			state = s;
 		}
 		
-		if (b.ended()) {
-			System.out.println("Time[EVAL]->pid" + p.getID() + " end " + Timer.getElapsedStr() + " " + state);
-			return 0;
+		if (b.ended() && !usePerseus) {
+			debug(Timer.getElapsedStr() + "[EVAL]->pid" + p.getID() + " end " + state);
+			return worstValue();
 		}
 		
 		Double v = p.getAlphaVector().getValue(b);
 		if (v != null) {
-			System.out.println("Time[EVAL]->pid" + p.getID() + " found " + Timer.getElapsedStr() + " " + state);
+			debug(Timer.getElapsedStr() + "[EVAL]->pid" + p.getID() + " found " + state);
 			return v;
 		}
 		
-		System.out.println("Time[EVAL]->pid" + p.getID() + " not found " + Timer.getElapsedStr() + " " + state);
+		debug(Timer.getElapsedStr() + "[EVAL]->pid" + p.getID() + " not found " + state);
 		
 		/*if (p.getAlphaVector().getSize() == alphaKeys.size()) {
 			System.out.println("alpha vector missing states in belief");
@@ -401,11 +414,10 @@ public class OUPBVI {
 			FiniteStatePolicy curPolicy = p;
 			boolean alphaFound = false;
 			double nextValue = 0; //set to nonzero if alpha vector can calc value of belief
-			int stepsLeft = horizon;
 			double curValue = 0D;
 			double discount = 1;
 			while (curPolicy != null) {//curBelief.getTimestep() < horizon) {
-				if (curBelief.ended()) break;
+				if (!usePerseus && curBelief.ended()) break;
 				Double alphaValue = curPolicy.getAlphaVector().getValue(curBelief);
 				if (alphaValue != null) {
 					nextValue = discount * alphaValue;
@@ -424,24 +436,14 @@ public class OUPBVI {
 					}
 				}
 				curPolicy = nextPolicy;
-				stepsLeft--;
 				
 				curValue += discount * curBelief.getLatestReward();
 				discount = discount * gamma;
 			}
 			
-			/*Object timestep = Type.getType("Timestep").getGuaranteedObject(curBelief.getTimestep());
-			List<TimedParticle> particles = curBelief.getParticleFilter().particles;
-			for (TimedParticle particle : particles) {	
-				Number value = (Number) valueFunc.getValueSingleArg(timestep, particle.curWorld);
-				curValue += value.doubleValue();
+			if (usePerseus && !alphaFound) {
+				nextValue = worstValue() * discount;
 			}
-			if (usePerseus && !alphaFound && !curBelief.ended()) {
-				v += stepsLeft * -5 * particles.size();
-			} else if (usePerseus && alphaFound && !curBelief.ended()) {
-				v += (horizon - stepsLeft) * 5 * particles.size(); //not using horizon - stepsLeft from the policy found
-			}*/
-			//v += nextValue + curValue/particles.size() - initialValue;
 			v += curValue + nextValue;
 		}
 		
@@ -454,6 +456,10 @@ public class OUPBVI {
 		evalPolicyCounts.put(startingTimestep, evalPolicyCounts.get(startingTimestep) + 1);
 		*/
 		return v/numTrials;
+	}
+
+	private double worstValue() {
+		return minReward/(1 - gamma);
 	}
 	
 	private Belief addToSampledPOMDP(Belief belief, SampledPOMDP pomdp) {
@@ -477,25 +483,6 @@ public class OUPBVI {
 			pomdp.addStateActions(s, actions);
 	
 			for (Evidence a : actions) {
-				//ActionPropagated ap = b.beliefsAfterAction(a);
-				/*Set<Evidence> observations = ap.getObservations();
-				for (Evidence o : observations) {
-					Belief next = ap.getNextBelief(o, this);
-					next.setParticleFilter(null);
-					Set<State> nextStates = new HashSet<State>(next.getStates());
-					pomdp.addStates(nextStates);
-					
-					int count = (int) ap.getObservationCount(o);
-					pomdp.addObsWeights(s, a, o, count);
-					pomdp.addNextBelief(s, a, o, next);
-
-					if (next.getTimestep() < horizon) {
-						nextStates.removeAll(expanded);
-						nextStates.removeAll(pomdp.getPropagatedStates());
-						nextStates.removeAll(toExpand);
-						//toExpand.addAll(nextStates);
-					}
-				}*/
 				pomdp.addReward(s, a, b.getReward(a));
 			}
 			System.out.println("# states left to expand " + toExpand.size());
@@ -517,76 +504,63 @@ public class OUPBVI {
 	
 	private Set<FiniteStatePolicy> singleBackup(final Set<FiniteStatePolicy> oldPolicies, 
 			Set<Belief> beliefs, 
-			final SampledPOMDP pomdp,
-			final int t) {
+			SampledPOMDP pomdp,
+			int t) {
 		Set<FiniteStatePolicy> newPolicies = new HashSet<FiniteStatePolicy>();
-		final List<FiniteStatePolicy> tempNewPolicies = new ArrayList<FiniteStatePolicy>();
+		List<FiniteStatePolicy> tempNewPolicies = new ArrayList<FiniteStatePolicy>();
 		List<Belief> shuffledBeliefs = new ArrayList<Belief>(beliefs);
 		Collections.shuffle(shuffledBeliefs);
-		
-	    int threads = 1; //Runtime.getRuntime().availableProcessors();
-	    System.out.println(threads);
-	    ExecutorService service = Executors.newFixedThreadPool(threads);
-	    
-	    List<Future<Belief>> futures = new ArrayList<Future<Belief>>();
-	    for (final Belief b : shuffledBeliefs) {
-	    	Callable callable = new Callable() {
-	    		public Object call() {
-	    			/*if (usePerseus) {
-	    				boolean foundBetterPolicy = false;
-	    				for (FiniteStatePolicy newPolicy : newPolicies) {
-	    					double v = evalPolicy(b, newPolicy);
-	    					Double bestPrevVal = prevBestVals.get(b);
-	    					if (bestPrevVal == null) bestPrevVal = -5.0 * horizon;
-	    					if (v > bestPrevVal) {
-	    						prevBestVals.put(b, v);
-	    						prevBestPolicies.put(b, newPolicy);
-	    						foundBetterPolicy = true;
-	    						break;
-	    					}
-	    				}
-	    				if (foundBetterPolicy) {
-	    					System.out.println("Skipping belief");
-	    					continue;
-	    				}
-	    			}*/
-	    			//if (b.getTimestep() != t) continue;
-	    			FiniteStatePolicy newPolicy = singleBackupForBelief(oldPolicies, b, pomdp, t);
-	    			/*if (usePerseus) {
-	    				setAlphaVector(newPolicy, pomdp);
-	    				//newPolicy.setAlphaVector(new AlphaVector());
-	    				double newVal = evalPolicy(b, newPolicy);
-	    				if (!prevBestVals.containsKey(b) || prevBestVals.get(b) < newVal) {
-	    					prevBestVals.put(b, newVal);
-	    					prevBestPolicies.put(b, newPolicy);
-	    				} else {
-	    					newPolicies.add(prevBestPolicies.get(b));
-	    				}
-	    			}*/
-	    			synchronized(this) {
-	    				tempNewPolicies.add(newPolicy);
-	    			}
-	    			return null;
-	    		}
-	    	};
+		for (Belief b : shuffledBeliefs) {
+			System.out.println("New policies size:" + tempNewPolicies.size());
+			if (usePerseus) {
+				boolean foundBetterPolicy = false;
+				for (FiniteStatePolicy newPolicy : tempNewPolicies) {
+					double v = evalPolicy(b, newPolicy);
+					Double bestPrevVal = prevBestVals.get(b);
+					if (bestPrevVal == null) bestPrevVal = worstValue();
+					if (v > bestPrevVal) {
+						prevBestVals.put(b, v);
+						prevBestPolicies.put(b, newPolicy);
+						foundBetterPolicy = true;
+						break;
+					}
+				}
+				if (foundBetterPolicy) {
+					System.out.println("Skipping belief");
+					continue;
+				}
+			}
 
-	    	futures.add(service.submit(callable));
-	    }
-    	System.out.println("shutdown");
-    	service.shutdown();
-    	try {
-			service.awaitTermination(1000, TimeUnit.DAYS);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			FiniteStatePolicy newPolicy = singleBackupForBelief(oldPolicies, b, pomdp, t);
+			if (usePerseus) {
+				setAlphaVector(newPolicy, pomdp);
+				//newPolicy.setAlphaVector(new AlphaVector());
+				double newVal = evalPolicy(b, newPolicy);
+				if (!prevBestVals.containsKey(b) || prevBestVals.get(b) < newVal) {
+					prevBestVals.put(b, newVal);
+					prevBestPolicies.put(b, newPolicy);
+					tempNewPolicies.add(newPolicy);
+				} else {
+					double bestOldVal = prevBestVals.get(b);
+					FiniteStatePolicy bestOldPolicy = prevBestPolicies.get(b);
+					for (FiniteStatePolicy oldPolicy : oldPolicies) {
+						double oldVal = evalPolicy(b, oldPolicy);
+						if (oldVal > bestOldVal) {
+							bestOldVal = oldVal;
+							bestOldPolicy = oldPolicy;
+						}
+					}
+					tempNewPolicies.add(bestOldPolicy);
+				}
+			} else {
+				tempNewPolicies.add(newPolicy);
+			}
+			System.out.println("handled bid" + beliefIDs.get(b));
 		}
-    	System.out.println("shutdown done");
-	    
-	    for (FiniteStatePolicy p : tempNewPolicies) {
-	    	newPolicies = createMergedPolicySet(newPolicies, p);
-	    	System.out.println("SingleBackup numbeliefs: " + beliefs.size());
-	    }
-
+		for (FiniteStatePolicy p : tempNewPolicies) {
+			newPolicies = createMergedPolicySet(newPolicies, p);
+			System.out.println("SingleBackup numbeliefs: " + beliefs.size());
+		}
 		/* no longer need old alpha vectors? They might be still useful
 		for (FiniteStatePolicy p : oldPolicies) {
 			p.setAlphaVector(null);
@@ -620,15 +594,20 @@ public class OUPBVI {
 				ActionPropagated ap = b.beliefsAfterAction(action);
 				for (Evidence obs : ap.getObservations()) {
 					Belief next = ap.getNextBelief(obs, this);//pomdp.getNextBelief(b, action, obs);
-					if (next.ended()) {
+					debug(Timer.getElapsedStr() + "[FWD]->bid" + beliefIDs.get(b) + " " + action + " " + obs);
+					/*if (next.ended()) {
+						value = worstValue();
 						ended = true;
+						break;
+					}*/
+					if (next.ended() && !usePerseus) {
 						break;
 					}
 					Double bestContingentValue = Double.NEGATIVE_INFINITY;
 					FiniteStatePolicy bestContingentPolicy = null;
 					for (FiniteStatePolicy p : oldPolicies) {
 						if (!p.isApplicable(next)) continue;
-						System.out.println("Time[FWD]->bid" + beliefIDs.get(b) + " " + action + " " + obs + " " + Timer.getElapsedStr());
+						
 						//System.out.println("action before eval contingent policy: " + action);
 						Double v = evalPolicy(next, p);
 						//System.out.println("value: " + v);
@@ -653,17 +632,11 @@ public class OUPBVI {
 				if (totalWeight > 0)
 					value = value/totalWeight;
 			} else if (usePerseus){
-				value = -5.0 * horizon;
+				value = worstValue();
 			}
 			double reward = pomdp.getAvgReward(b, action);
-			if (usePerseus) {
-				value += 5.0;
-				if (ended) {
-					value += (horizon - t - 1) * 5;
-				}
-			}
-			//System.out.println("backup reward for action " + reward + " " + action + "value " + value + " timestep: " + t);
 			value = reward + value * gamma;
+			System.out.println("backup reward for action " + reward + " " + action + "value " + value + " timestep: " + t);
 			//System.out.println("value for belief and policy map: " + value + " " + policyMap);
 			if (bestValue == null || value > bestValue) {
 				bestValue = value;
@@ -756,14 +729,16 @@ public class OUPBVI {
 		modelFiles.add(args[0]);
 		Timer.off = false;
 		Timer.start();
-		if (args.length > 6) {
-			Util.initRandom(Long.parseLong(args[6]));
+		if (args.length > 7) {
+			Util.initRandom(Long.parseLong(args[7]));
 		} else {
 			Util.initRandom(true);
 		}
 		
 		if (args.length > 5) {
-			Timer.off = Boolean.parseBoolean(args[5]);
+			 boolean debugOff = Boolean.parseBoolean(args[5]);
+			 Timer.off = debugOff;
+			 OUPBVI.debugOn = !debugOff;
 		}
 		
 		OUPBVI oupbvi = makeOUPBVI(modelFiles, 
@@ -771,8 +746,18 @@ public class OUPBVI {
 				Integer.parseInt(args[2]), 
 				Integer.parseInt(args[3]),
 				Integer.parseInt(args[4]));
+		
+		if (args.length > 6) {
+			 if (Boolean.parseBoolean(args[6])) {
+				 oupbvi.setUsePerseus(true);
+			 } else {
+				 oupbvi.setUsePerseus(false);
+			 }
+		}
+		
 		oupbvi.run();
 		
+
 		Belief.printTimingStats();
 		System.out.println("Total elapsed: " + Timer.getElapsedStr());
 		Timer.print();
@@ -780,6 +765,7 @@ public class OUPBVI {
 
 	private void setUsePerseus(boolean usePerseus) {
 		this.usePerseus = usePerseus;
+		System.out.println("Setting usePerseus: " + usePerseus);
 	}
 
 	public Model getModel() {
