@@ -51,7 +51,7 @@ public class OUPBVI {
 	
 	private int numBeliefs;
 	private int numParticles;
-	private int numPbviIterations = 3;
+	private int numPbviIterations = 4;
 	private boolean usePerseus = true;
 	private static boolean debugOn = false;
 	
@@ -173,7 +173,8 @@ public class OUPBVI {
 					i++;
 				}
 				System.out.println("Number of OS: " + ObservabilitySignature.OStoIndex.size());
-
+				
+				System.out.println(Timer.getElapsedStr() + "[DELTA]");
 				double maxDelta = 0;
 				for (Belief b : beliefs) {
 					Pair<FiniteStatePolicy, Double> bestPolicyValueForBelief = bestPolicyValue(policies, b);
@@ -188,6 +189,7 @@ public class OUPBVI {
 					prevBestVals.put(b, bestPolicyValueForBelief.y);
 					prevBestPolicies.put(b, bestPolicyValueForBelief.x);
 				}
+				System.out.println(Timer.getElapsedStr() + "[DELTA_DONE]");
 				if (maxDelta < epsilon) {
 					System.out.println("Converged: " + maxDelta);
 					break;
@@ -202,14 +204,7 @@ public class OUPBVI {
 			System.out.println();
 			System.out.println("run num beliefs " + beliefs.size());
 			System.out.println("run num states " + pomdp.getStates().size());
-			
-			
-			System.out.println("Evaluating best policy");
-			FiniteStatePolicyEvaluator evaluator = new FiniteStatePolicyEvaluator(this, gamma);
-			System.out.println("Evaluation of init belief:" + evaluator.eval(initBelief, bestPolicyValue.x, 100));
-			System.out.println("Missing observations encountered: " + evaluator.getMissingObs());
-			System.out.println("Value function's predicted value: " + bestPolicyValue.y);
-			
+				
 			if (pbviIteration < numPbviIterations) {
 				numBeliefs = numBeliefs * 2;
 				newBeliefs = maxNormBeliefExpansion(newBeliefs, pomdp);
@@ -220,6 +215,13 @@ public class OUPBVI {
 			}
 		}
 		
+		System.out.println("Evaluating best policy");
+		System.out.println(Timer.getElapsedStr() + "[EVAL]");
+		FiniteStatePolicyEvaluator evaluator = new FiniteStatePolicyEvaluator(this, gamma);
+		System.out.println("Evaluation of init belief:" + evaluator.eval(initBelief, bestPolicyValue.x, 100));
+		System.out.println(Timer.getElapsedStr() + "[EVAL_DONE]");
+		System.out.println("Missing observations encountered: " + evaluator.getMissingObs());
+		System.out.println("Value function's predicted value: " + bestPolicyValue.y);
 		return policies;
 	}
 
@@ -338,6 +340,7 @@ public class OUPBVI {
 
 
 	private Set<Belief> maxNormBeliefExpansion(Set<Belief> beliefs, SampledPOMDP pomdp) {
+		System.out.println(Timer.getElapsedStr() + "[EXPAND]");
 		Set<Belief> newBeliefs = new HashSet<Belief>(beliefs);
 		for (Belief belief : beliefs) {
 			if (belief.getTimestep() == horizon) continue;
@@ -368,6 +371,7 @@ public class OUPBVI {
 			addToSampledPOMDP(bestBelief, pomdp);
 			System.out.println("max diff: " + maxDiff);
 		}
+		System.out.println(Timer.getElapsedStr() + "[EXPAND_DONE]");
 		return newBeliefs;
 	}
 	
