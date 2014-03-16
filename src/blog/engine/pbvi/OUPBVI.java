@@ -51,6 +51,7 @@ public class OUPBVI {
 	
 	private int numBeliefs;
 	private int numParticles;
+	private int numPbviIterations = 3;
 	private boolean usePerseus = true;
 	private static boolean debugOn = false;
 	
@@ -145,70 +146,89 @@ public class OUPBVI {
 			System.out.println("Belief: " + beliefIDs.get(b) + " " + b);
 		}
 		
+		updateAlphaKeys(pomdp);
+		System.out.println("run.expansion.beliefsize: " + beliefs.size());
+		
+		addedAlphaKeys = new HashMap<State, State>();
+		Set<FiniteStatePolicy> policies = new HashSet<FiniteStatePolicy>();
+		int pbviIteration = 0;
+		Pair<FiniteStatePolicy, Double> bestPolicyValue;
+		while (true) {
+			System.out.println("Starting pbvi iteration: " + pbviIteration + "/" + numPbviIterations);
+			System.out.println("Number of beliefs: " + beliefs.size());
+			System.out.println("Number of policies: " + policies.size());
+			for (int t = horizon - 1; t >= 0; t--) {
+				Set<FiniteStatePolicy> newPolicies; 
+				if (usePerseus)
+					newPolicies = singleBackupPerseus(policies, beliefs, pomdp, t);
+				else
+					newPolicies = singleBackup(policies, beliefs, pomdp, t);
+				setAlphaVectors(newPolicies, policies, t, pomdp);
+				policies = newPolicies;
+
+				System.out.println("run policies " + policies.size() + " " + t);
+				int i = 0;
+				for (FiniteStatePolicy p : policies) {
+					System.out.println(p.toDotString("p" + "_t" + t + "_i" + i));
+					i++;
+				}
+				System.out.println("Number of OS: " + ObservabilitySignature.OStoIndex.size());
+
+				double maxDelta = 0;
+				for (Belief b : beliefs) {
+					Pair<FiniteStatePolicy, Double> bestPolicyValueForBelief = bestPolicyValue(policies, b);
+					Double oldValue = prevBestVals.get(b);
+					if (oldValue == null) {
+						oldValue = Double.NEGATIVE_INFINITY;
+					}
+					double delta = Math.abs(bestPolicyValueForBelief.y - oldValue);
+					if (delta > maxDelta) {
+						maxDelta = delta;
+					}
+					prevBestVals.put(b, bestPolicyValueForBelief.y);
+					prevBestPolicies.put(b, bestPolicyValueForBelief.x);
+				}
+				if (maxDelta < epsilon) {
+					System.out.println("Converged: " + maxDelta);
+					break;
+				}
+			}
+			pbviIteration++;
+			bestPolicyValue = bestPolicyValue(policies, initBelief);
+			System.out.println("Best policy for initial belief: " + bestPolicyValue.x.toDotString("p0"));
+			System.out.println("Best value: " + bestPolicyValue.y);
+			System.out.println("Best value previously computed: " + prevBestVals.get(initBelief));
+			System.out.println("Init belief: " + initBelief);
+			System.out.println();
+			System.out.println("run num beliefs " + beliefs.size());
+			System.out.println("run num states " + pomdp.getStates().size());
+			
+			
+			System.out.println("Evaluating best policy");
+			FiniteStatePolicyEvaluator evaluator = new FiniteStatePolicyEvaluator(this, gamma);
+			System.out.println("Evaluation of init belief:" + evaluator.eval(initBelief, bestPolicyValue.x, 100));
+			System.out.println("Missing observations encountered: " + evaluator.getMissingObs());
+			System.out.println("Value function's predicted value: " + bestPolicyValue.y);
+			
+			if (pbviIteration < numPbviIterations) {
+				numBeliefs = numBeliefs * 2;
+				newBeliefs = maxNormBeliefExpansion(newBeliefs, pomdp);
+				beliefs = newBeliefs;
+				updateAlphaKeys(pomdp);
+			} else {
+				break;
+			}
+		}
+		
+		return policies;
+	}
+
+	private void updateAlphaKeys(SampledPOMDP pomdp) {
 		System.out.println("Alpha keys: ");
 		for (State s : pomdp.getStates()) {
 			alphaKeys.put(s, s);
 			System.out.println(s);
 		}
-		System.out.println("run.expansion.beliefsize: " + beliefs.size());
-		
-		addedAlphaKeys = new HashMap<State, State>();
-		Set<FiniteStatePolicy> policies = new HashSet<FiniteStatePolicy>();
-		for (int t = horizon - 1; t >= 0; t--) {
-			Set<FiniteStatePolicy> newPolicies; 
-			if (usePerseus)
-				newPolicies = singleBackupPerseus(policies, beliefs, pomdp, t);
-			else 
-				newPolicies = singleBackup(policies, beliefs, pomdp, t);
-			setAlphaVectors(newPolicies, policies, t, pomdp);
-			policies = newPolicies;
-			
-			System.out.println("run policies " + policies.size() + " " + t);
-			int i = 0;
-			for (FiniteStatePolicy p : policies) {
-				System.out.println(p.toDotString("p" + "_t" + t + "_i" + i));
-				i++;
-			}
-			System.out.println("Number of OS: " + ObservabilitySignature.OStoIndex.size());
-		
-			double maxDelta = 0;
-			for (Belief b : beliefs) {
-				Pair<FiniteStatePolicy, Double> bestPolicyValue = bestPolicyValue(policies, b);
-				Double oldValue = prevBestVals.get(b);
-				if (oldValue == null) {
-					oldValue = Double.NEGATIVE_INFINITY;
-				}
-				double delta = Math.abs(bestPolicyValue.y - oldValue);
-				if (delta > maxDelta) {
-					maxDelta = delta;
-				}
-				prevBestVals.put(b, bestPolicyValue.y);
-				prevBestPolicies.put(b, bestPolicyValue.x);
-			}
-			if (maxDelta < epsilon)
-				break;
-		}
-		
-		Pair<FiniteStatePolicy, Double> bestPolicyValue = bestPolicyValue(policies, initBelief);
-		
-		System.out.println("Best policy for initial belief: " + bestPolicyValue.x.toDotString("p0"));
-		System.out.println("Best value: " + bestPolicyValue.y);
-		System.out.println("Best value previously computed: " + prevBestVals.get(initBelief));
-		System.out.println("Init belief: " + initBelief);
-		System.out.println();
-		System.out.println("run num beliefs " + beliefs.size());
-		System.out.println("run num states " + pomdp.getStates().size());
-		System.out.println("Eval Policy Times " + evalPolicyTimes);
-		System.out.println("Eval Policy Counts " + evalPolicyCounts);
-		System.out.println("Eval State Count " + evalStateCount);
-		
-		/*
-		System.out.println("Evaluating best policy");
-		FiniteStatePolicyEvaluator evaluator = new FiniteStatePolicyEvaluator(this, gamma);
-		for (State state : initBelief.getStates()) {
-			evaluator.eval(state, bestPolicy, horizon, 100);
-		}*/
-		return policies;
 	}
 	
 	private Set<FiniteStatePolicy> createMergedPolicySet(Set<FiniteStatePolicy> policies, FiniteStatePolicy policy) {
@@ -615,7 +635,7 @@ public class OUPBVI {
 			double totalWeight = 0;
 			boolean ended = false;
 			Map<Evidence, FiniteStatePolicy> policyMap = new HashMap<Evidence, FiniteStatePolicy>();
-			if (t < horizon - 1) {
+			if (oldPolicies.size() > 0) {
 				ActionPropagated ap = b.beliefsAfterAction(action);
 				for (Evidence obs : ap.getObservations()) {
 					Belief next = ap.getNextBelief(obs, this);

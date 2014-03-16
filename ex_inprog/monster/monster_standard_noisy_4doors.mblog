@@ -17,7 +17,7 @@ random Integer DoorOf(Monster m, Timestep t) {
    else if DoorOf(m, Prev(t)) == 2 then
      ~ Categorical({2->0.4, 3->0.3, 1->0.3})
    else if DoorOf(m, Prev(t)) == 3 then
-     ~ Categorical({3->0.3, 0->0.3, 2->0.4})
+     ~ Categorical({3->0.4, 0->0.3, 2->0.3})
    else
      = 0
    //  ~ Categorical({DoorOf(m, Prev(t))->0.5, 0->0.5})
