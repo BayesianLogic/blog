@@ -70,6 +70,7 @@ public class Geometric extends AbstractCondProbDistrib {
 	 *           if <code>alpha</code> is not in the range [0, 1)
 	 */
 	public Geometric(double alpha) {
+	  alpha = 1 - alpha;
 		if ((alpha < 0) || (alpha >= 1)) {
 			throw new IllegalArgumentException(
 					"Parameter of geometric distribution must be in the "
@@ -100,7 +101,7 @@ public class Geometric extends AbstractCondProbDistrib {
 							+ params.get(0).getClass());
 		}
 
-		alpha = ((Number) params.get(0)).doubleValue();
+		alpha = 1 - ((Number) params.get(0)).doubleValue();
 		if ((alpha < 0) || (alpha >= 1)) {
 			throw new IllegalArgumentException(
 					"Illegal alpha parameter for geometric distribution.");
