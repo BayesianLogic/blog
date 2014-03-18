@@ -47,11 +47,11 @@ public class OUPBVI {
 	private double minReward = -10; 
 	private double maxReward = 100;
 	
-	private double epsilon = 0.05;
+	private double epsilon = 0.1;
 	
 	private int numBeliefs;
 	private int numParticles;
-	private int numPbviIterations = 4;
+	private int numPbviIterations = 1;
 	private boolean usePerseus = true;
 	private static boolean debugOn = false;
 	
@@ -118,6 +118,7 @@ public class OUPBVI {
 	}
 	
 	public Set<FiniteStatePolicy> run() {
+		FiniteStatePolicyEvaluator evaluator = new FiniteStatePolicyEvaluator(this, gamma);
 		Set<Belief> beliefs = new HashSet<Belief>();
 		PFEngineSampled initPF = new PFEngineSampled(model, properties);
 		initPF.answer(getQueries(0));
@@ -189,7 +190,10 @@ public class OUPBVI {
 					prevBestVals.put(b, bestPolicyValueForBelief.y);
 					prevBestPolicies.put(b, bestPolicyValueForBelief.x);
 				}
+				
+				System.out.println("Best value for initial belief " + prevBestVals.get(initBelief));
 				System.out.println(Timer.getElapsedStr() + "[DELTA_DONE]");
+				System.out.println("Max Delta" + maxDelta);
 				if (maxDelta < epsilon) {
 					System.out.println("Converged: " + maxDelta);
 					break;
@@ -199,12 +203,11 @@ public class OUPBVI {
 			bestPolicyValue = bestPolicyValue(policies, initBelief);
 			System.out.println("Best policy for initial belief: " + bestPolicyValue.x.toDotString("p0"));
 			System.out.println("Best value: " + bestPolicyValue.y);
-			System.out.println("Best value previously computed: " + prevBestVals.get(initBelief));
 			System.out.println("Init belief: " + initBelief);
 			System.out.println();
 			System.out.println("run num beliefs " + beliefs.size());
 			System.out.println("run num states " + pomdp.getStates().size());
-				
+			
 			if (pbviIteration < numPbviIterations) {
 				numBeliefs = numBeliefs * 2;
 				newBeliefs = maxNormBeliefExpansion(newBeliefs, pomdp);
@@ -217,11 +220,14 @@ public class OUPBVI {
 		
 		System.out.println("Evaluating best policy");
 		System.out.println(Timer.getElapsedStr() + "[EVAL]");
-		FiniteStatePolicyEvaluator evaluator = new FiniteStatePolicyEvaluator(this, gamma);
-		System.out.println("Evaluation of init belief:" + evaluator.eval(initBelief, bestPolicyValue.x, 100));
+		PFEngineSampled pfToEval = new PFEngineSampled(model, properties);
+		pfToEval.answer(getQueries(0));
+		pfToEval.afterAnsweringQueries2();
+		System.out.println("Evaluation of init belief:" + evaluator.eval(new Belief(pfToEval, this), bestPolicyValue.x, 100));
 		System.out.println(Timer.getElapsedStr() + "[EVAL_DONE]");
 		System.out.println("Missing observations encountered: " + evaluator.getMissingObs());
 		System.out.println("Value function's predicted value: " + bestPolicyValue.y);
+		
 		return policies;
 	}
 
