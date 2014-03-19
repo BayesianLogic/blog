@@ -317,7 +317,7 @@ public class ParticleFilter extends InferenceEngine {
 		answer(Util.list(query));
 	}
 
-	private void resample() {
+	protected void resample() {
 		double[] logWeights = new double[particles.size()];
 		boolean[] alreadySampled = new boolean[particles.size()];
 		double logSumWeights = Double.NEGATIVE_INFINITY;
