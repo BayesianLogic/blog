@@ -144,9 +144,11 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 
 		if (value == null) {
 			basicVarToValue.remove(var);
+      nameToBasicVar.remove(var.toString());
 		} else {
 			// checkIdentifiers(var, value); // allow any identifiers
 			basicVarToValue.put(var, value);
+      nameToBasicVar.put(var.toString(), var);
 		}
 
 		dirtyVars.add(var);
@@ -156,6 +158,10 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			((WorldListener) iter.next()).varChanged(var, oldValue, value);
 		}
 	}
+
+  public BasicVar getBasicVarByName(String name) {
+    return nameToBasicVar.get(name);
+  }
 
 	public void truncateList(RandomFunction f, Object[] initialArgs, int len) {
 		Object[] args = new Object[initialArgs.length + 1];
@@ -1009,6 +1015,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 */
 	public void cloneFields(AbstractPartialWorld newWorld) {
 		newWorld.basicVarToValue = (Map) ((HashMap) basicVarToValue).clone();
+    newWorld.nameToBasicVar = (Map) ((HashMap) nameToBasicVar).clone();
 		newWorld.objToUsesAsValue = (MultiMap) ((HashMultiMap) objToUsesAsValue)
 				.clone();
 		newWorld.objToUsesAsArg = (MultiMap) ((HashMultiMap) objToUsesAsArg)
@@ -1037,6 +1044,11 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	 * Map from instantiated basic variables to their values.
 	 */
 	protected Map basicVarToValue;
+
+  /**
+   * Map from name to BasicVar.
+   */
+  protected Map<String, BasicVar> nameToBasicVar;
 
 	/**
 	 * Map from objects to the instantiated BasicVars that have them as values.

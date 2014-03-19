@@ -166,6 +166,11 @@ public interface PartialWorld {
 	 */
 	Object getValue(BayesNetVar var);
 
+  /**
+   * Returns the BasicVar with the given name, or null if not found.
+   */
+  public BasicVar getBasicVarByName(String name);
+
 	/**
 	 * Instantiates the given variable to the given value (replacing any previous
 	 * value), or uninstantiates the variable if the given value is null. This
