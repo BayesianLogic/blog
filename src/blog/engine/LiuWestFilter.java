@@ -89,6 +89,9 @@ public class LiuWestFilter extends ParticleFilter {
     }
   }
 
+  // FIXME: explain rho is 'a' in paper.
+  // FIXME: debug why it's getting slower with increasing timestep.
+
   // Amount of perturbation; between 0 and 1.
   // Recommended value is between 0.95 and 0.99.
   double rho;
