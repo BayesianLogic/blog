@@ -95,6 +95,7 @@ public class Belief {
 	static Map<Integer, Integer> resampleStateCountStats = new HashMap<Integer, Integer>();
 	static Map<Integer, Integer> stateCountStats = new HashMap<Integer, Integer>();
 	public Belief sampleNextBelief(Evidence action) {
+		Timer.start("BELIEF_PROP");
 		PFEngineSampled nextPF = getParticleFilter().copy();
 		
 		Timer.start("takeAction");
@@ -133,6 +134,7 @@ public class Belief {
 		nextBelief.latestReward = reward;
 		nextBelief.latestEvidence = o;
 		
+		Timer.record("BELIEF_PROP");
 		updateResampleStateCountStats(nextBelief);
 		updateStateCountStats(this);
 		return nextBelief;
@@ -168,6 +170,7 @@ public class Belief {
 	
 	public ActionPropagated beliefsAfterAction(Evidence action) {
 		updateStateCountStats(this);
+		Timer.start("BELIEF_PROP");
 		ActionPropagated ap = new ActionPropagated(this, action);
 		
 		PFEngineSampled apPF = getParticleFilter().copy();
@@ -212,6 +215,7 @@ public class Belief {
 			ap.setObservationWeight(o, osWeights.get(osIndex));
 			ap.setOSIndex(o, osIndex);
 		}
+		Timer.record("BELIEF_PROP");
 		return ap;
 	}
 	

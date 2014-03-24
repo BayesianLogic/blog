@@ -57,6 +57,7 @@ public class ActionPropagated {
 	}
 	
 	public Belief getNextBelief(Evidence o, OUPBVI pbvi) {
+		Timer.start("BELIEF_PROP");
 		int osIndex = osIndices.get(o);
 		PFEngineSampled nextPF = actionPropagatedPF.copy();
 		nextPF.retakeObservability2(osIndex);
@@ -67,6 +68,7 @@ public class ActionPropagated {
 		}
 		nextPF.resample();
 		Belief nextBelief = new Belief(nextPF, pbvi);
+		Timer.record("BELIEF_PROP");
 		Belief.updateResampleStateCountStats(nextBelief);
 		return nextBelief;
 	}

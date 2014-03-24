@@ -535,7 +535,7 @@ public class Evidence {
 		return stringSet().equals(e.stringSet());
 	}
 	
-	private Set<String> stringSet() {
+	public Set<String> stringSet() {
 		if (stringSet != null) return stringSet;
 		Set<String> result = new HashSet<String>();
 		for (Object o : getValueEvidence()) {
@@ -555,4 +555,5 @@ public class Evidence {
 	}
 	
 	private Set<String> stringSet;
+	
 }

@@ -120,9 +120,7 @@ public class OUPBVI {
 	public Set<FiniteStatePolicy> run() {
 		FiniteStatePolicyEvaluator evaluator = new FiniteStatePolicyEvaluator(this, gamma);
 		Set<Belief> beliefs = new HashSet<Belief>();
-		PFEngineSampled initPF = new PFEngineSampled(model, properties);
-		initPF.answer(getQueries(0));
-		initPF.afterAnsweringQueries2();
+		PFEngineSampled initPF = genInitialPF();
 
 		SampledPOMDP pomdp = new SampledPOMDP(this);
 		Belief initBelief = addToSampledPOMDP(new Belief(initPF, this), pomdp);
@@ -217,20 +215,24 @@ public class OUPBVI {
 				break;
 			}
 		}
+		System.out.println("Value function's predicted value: " + bestPolicyValue.y);
 		
 		System.out.println("Evaluating best policy");
-		System.out.println(Timer.getElapsedStr() + "[EVAL]");
-		PFEngineSampled pfToEval = new PFEngineSampled(model, properties);
-		pfToEval.answer(getQueries(0));
-		pfToEval.afterAnsweringQueries2();
-		System.out.println("Evaluation of init belief:" + evaluator.eval(new Belief(pfToEval, this), bestPolicyValue.x, 100));
-		System.out.println(Timer.getElapsedStr() + "[EVAL_DONE]");
-		System.out.println("Missing observations encountered: " + evaluator.getMissingObs());
-		System.out.println("Value function's predicted value: " + bestPolicyValue.y);
+		evaluate(bestPolicyValue.x);
+		debug(Timer.getElapsedStr() + "[EVAL]");
+		debug(Timer.getElapsedStr() + "[EVAL_DONE]");
 		
 		return policies;
 	}
 
+	private PFEngineSampled genInitialPF() {
+		PFEngineSampled initPF = new PFEngineSampled(model, properties);
+		initPF.answer(getQueries(0));
+		initPF.afterAnsweringQueries2();
+		return initPF;
+	}
+
+	
 	private void updateAlphaKeys(SampledPOMDP pomdp) {
 		System.out.println("Alpha keys: ");
 		for (State s : pomdp.getStates()) {
@@ -255,7 +257,7 @@ public class OUPBVI {
 	}
 
 	
-	private Set<Evidence> getActions(Belief b) {
+	public Set<Evidence> getActions(Belief b) {
 		State s = (State) Util.getFirst(b.getStates());
 		PartialWorld w = s.getWorld();
 		int timestep = b.getTimestep();
@@ -726,7 +728,6 @@ public class OUPBVI {
 		long now = System.currentTimeMillis();
 		int numStatesUpdated = 0;
 		for (State state : states) {
-			System.out.println("Computing alpha values for state " + state);
 			numStatesUpdated++;
 			for (FiniteStatePolicy policy : policies) {
 				evalPolicy(state, policy);
@@ -775,8 +776,8 @@ public class OUPBVI {
 		if (args.length > 5) {
 			 boolean debugOff = Boolean.parseBoolean(args[5]);
 			 Timer.off = debugOff;
-			 OUPBVI.debugOn = !debugOff;
-			 System.out.println("Turn debug off?" + debugOff);
+			 //OUPBVI.debugOn = !debugOff;
+			 System.out.println("Turn timer off?" + debugOff);
 		}
 		
 		OUPBVI oupbvi = makeOUPBVI(modelFiles, 
@@ -793,12 +794,44 @@ public class OUPBVI {
 			 }
 		}
 		
-		oupbvi.run();
+		if (args.length > 8)
+			oupbvi.evaluate(args[8]);
+		else
+			oupbvi.run();
 
 		Belief.printTimingStats();
 		System.out.println("Total elapsed: " + Timer.getElapsedStr());
 		Timer.print();
 		
+	}
+	
+	private void evaluate(FiniteStatePolicy p) {
+		Timer.start("FINAL EVALUATION");
+		FiniteStatePolicyEvaluator evaluator = new FiniteStatePolicyEvaluator(this, gamma);
+		Belief b;
+
+		for (int i = 0; i < 10; i++) {
+			b = new Belief(genInitialPF(), this);
+			System.out.println("Iter: " + i);
+			System.out.println("Evaluated: " + evaluator.eval(b, p, 100));
+			System.out.println("Unhandled obs: " + evaluator.getMissingObs());
+		}
+		Timer.record("FINAL EVALUATION");
+	}
+
+	private void evaluate(String string) {
+		DotToPolicy p = new DotToPolicy();
+		p.createPolicy(string);
+		FiniteStatePolicyEvaluator evaluator = new FiniteStatePolicyEvaluator(this, gamma);
+		Belief b;
+
+		for (int i = 0; i < 10; i++) {
+			b = new Belief(genInitialPF(), this);
+			System.out.println("Iter: " + i);
+			System.out.println("Evaluated: " + evaluator.eval(b, p, 100));
+			System.out.println("Unhandled obs: " + p.unhandledObs);
+			p.unhandledObs = 0;
+		}
 	}
 
 	private void setUsePerseus(boolean usePerseus) {

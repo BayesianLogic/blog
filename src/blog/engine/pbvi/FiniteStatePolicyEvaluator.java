@@ -78,5 +78,49 @@ public class FiniteStatePolicyEvaluator {
 		}
 		return accumulatedValue/numTrials;
 	}
+	
+	public Double eval(Belief b, DotToPolicy p, int numTrials) {
+		Double value = 0D;
+		int totalCount = 0;
+		for (State s : b.getStates()) {
+			Double v = eval(s, p, numTrials);
+			if (v == null) return v;
+			value += v * b.getCount(s);
+			totalCount += b.getCount(s);
+		}
+		System.out.println("Total count " + totalCount);
+		return value/totalCount;
+	}
+	
+	public Double eval(State state, DotToPolicy p, int numTrials) {
+		numMissingObs = new HashMap<Evidence, Integer>();
+		Belief initState = Belief.getSingletonBelief(state, 1, pbvi);
+		//System.out.println(initState);
+		double accumulatedValue = 0;
+		
+		for (int i = 0; i < numTrials; i++) {
+			Belief curState = initState;
+			double curValue = 0D;
+			double discount = 1;
+			int iter = 0;
+			p.resetSim();
+			while (true) {
+				if (curState.ended()) break;
+				Evidence nextAction = p.getAction(pbvi.getActions(curState));
+				//System.out.println(nextAction);
+				curState = curState.sampleNextBelief(nextAction);		
+				Evidence nextObs = curState.getLatestEvidence();
+				boolean nextAvailable = p.advancePolicy(nextObs);
+				curValue += discount * curState.getLatestReward();
+				discount = discount * gamma;
+				iter++;
+				if (!nextAvailable) break;
+			}
+
+			accumulatedValue += curValue;
+		}
+		//System.out.println("Accum value " + accumulatedValue);
+		return accumulatedValue/numTrials;
+	}
 
 }

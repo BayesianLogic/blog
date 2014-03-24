@@ -93,7 +93,12 @@ public class State {
 			System.out.println("TIMESTEP ERROR");
 			return false;
 		}
-		return s.world.innerStateEquals(world, timestep);
+		boolean equality = false; 
+		Timer.start("STATE_COMPARISON");
+		equality = s.world.innerStateEquals(world, timestep);
+		Timer.record("STATE_COMPARISON");
+		return equality;
+		
 	}
 	
 	@Override
