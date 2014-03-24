@@ -69,8 +69,7 @@ public class ArgSpecQuery extends AbstractQuery {
     this.argSpec = argSpec;
 
     if (Main.histOut() != null) {
-      outputFile = Main.filePrintStream(Main.histOut() + "-trial" + +trialNum
-          + ".data");
+      outputFile = Main.filePrintStream(Main.histOut() + ".data");
     }
   }
 
@@ -193,24 +192,6 @@ public class ArgSpecQuery extends AbstractQuery {
     }
   }
 
-  public void zeroOut() {
-    trialNum++;
-    if ((outputFile != null) && (trialNum != Main.numTrials())) {
-      outputFile = Main.filePrintStream(Main.histOut() + "-trial" + trialNum
-          + ".data");
-    }
-    outputFiles = new HashMap();
-
-    histogram.clear();
-
-    // We don't record across-run statistics
-  }
-
-  public void printVarianceResults(PrintStream s) {
-    s.println("\tVariance of " + getArgSpec() + " results is not computed.");
-    // printVarStats(s);
-  }
-
   /**
    * Every object should have an output file. If it does not yet exist, create
    * one; otherwise return it.
@@ -218,7 +199,7 @@ public class ArgSpecQuery extends AbstractQuery {
   private PrintStream getOutputFile(Object o) {
     PrintStream s = (PrintStream) outputFiles.get(o);
     if (s == null) {
-      s = Main.filePrintStream(Main.outputPath() + "-trial" + trialNum + "."
+      s = Main.filePrintStream(Main.outputPath() + "."
           + o.toString() + ".data");
       outputFiles.put(o, s);
     }
@@ -314,7 +295,6 @@ public class ArgSpecQuery extends AbstractQuery {
   protected ArgSpec argSpec;
   protected BayesNetVar variable;
   protected Histogram histogram = new Histogram();
-  protected int trialNum = 0;
 
   protected Map outputFiles = new HashMap(); // of PrintStream
   protected PrintStream outputFile = null;
