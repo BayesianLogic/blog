@@ -66,15 +66,6 @@ public interface Query {
 	void printResults(PrintStream s);
 
 	/**
-	 * If a log file has been specified, prints the results so far to that file.
-	 * 
-	 * @param numSamples
-	 *          the number of samples taken by the inference engine so far (can be
-	 *          set to zero for non-sampling inference engines)
-	 */
-	void logResults(int numSamples);
-
-	/**
 	 * Returns a collection of (basic or derived) random variables such that the
 	 * result of this query depends only on the posterior joint distribution for
 	 * these variables.

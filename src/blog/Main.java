@@ -129,12 +129,7 @@ import blog.semant.Semant;
  * <dd>Print model, evidence, and queries for debugging. Default: false
  * 
  * <dt>-w <i>file-prefix</i>, --write=<i>file-prefix</i>
- * <dd>Write sampling results to file specified by this argument. Use with the
- * -i flag.
- * 
- * <dt>-h <i>file-prefix</i>, --histogram_output=<i>file-prefix</i>
- * <dd>Output the histogram of an ArgSpecQuery to a file. The results are taken
- * after the final sample completes.
+ * <dd>Write query results to file specified by this argument.
  * 
  * <dt>-P <i>key</i>=<i>value</i>
  * <dd>Include the entry <i>key</i>=<i>value</i> in the properties table that is
@@ -306,9 +301,7 @@ public class Main {
     BooleanOption optDebug = new BooleanOption("g", "debug", false,
         "Print model, evidence, and queries");
     StringOption optWrite = new StringOption("w", "write", null,
-        "Write sampling results to file <s>");
-    StringOption optHist = new StringOption("h", "histogram_output", null,
-        "Write histogram output to file <s>");
+        "Write query results to file <s>");
     PropertiesOption optInferenceProps = new PropertiesOption("P", null, null,
         "Set inference configuration properties");
 
@@ -330,21 +323,7 @@ public class Main {
     verbose = optVerbose.getValue();
     print = optPrint.getValue();
     debug = optDebug.getValue();
-
     outputPath = optWrite.getValue();
-    if (outputPath != null) {
-      // Need to determine output interval
-      outputInterval = optInterval.getValue();
-      if (outputInterval == 0) {
-        // default value is num samples / 100
-        outputInterval = Math.max(optNumSamples.getValue() / 100, 1);
-      }
-    } else if (optInterval.wasPresent()) {
-      System.err.println("Warning: ignoring --interval option "
-          + "because no output file specified.");
-    }
-
-    histOut = optHist.getValue();
 
     // Make sure properties that have special-purpose options weren't
     // specified with -P.
@@ -435,31 +414,6 @@ public class Main {
       ps.print(s);
     }
     ps.println();
-  }
-
-  /**
-   * Returns a PrintStream representing the newly created file, with given
-   * pathname s. Guaranteed not to be null.
-   */
-  public static PrintStream filePrintStream(String s) {
-    try {
-      File f = new File(s);
-      if (!f.createNewFile()) {
-        System.err.println("Cannot create file (already exists): "
-            + f.getPath());
-        System.exit(1);
-      }
-      if (!f.canWrite()) {
-        System.err.println("Cannot write to file: " + f.getPath());
-        System.exit(1);
-      }
-      return new PrintStream(new FileOutputStream(f));
-    } catch (Exception e) {
-      System.err.println("Cannot create/open a file for output: " + s);
-      System.err.println(e);
-      System.exit(1);
-      return null; // for some reason, the compiler needs this.
-    }
   }
 
   /**
@@ -617,20 +571,8 @@ public class Main {
     stringSetup(model, evidence, queries, modelString);
   }
 
-  public static String outputPath() {
-    return outputPath;
-  }
-
-  public static int outputInterval() {
-    return outputInterval;
-  }
-
   public static int numSamples() {
     return numSamples;
-  }
-
-  public static String histOut() {
-    return histOut;
   }
 
   public static List<Query> getQueries() {
@@ -654,7 +596,5 @@ public class Main {
   private static boolean debug;
   private static boolean fromString;
   private static String outputPath;
-  private static int outputInterval;
-  private static String histOut;
   private static List setupExtenders = new ArrayList(); // of SetupExtender
 }

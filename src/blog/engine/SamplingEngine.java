@@ -198,13 +198,6 @@ public class SamplingEngine extends InferenceEngine {
                         query.updateStats(sampler.getLatestWorld(), logWeight);
                     }
                 }
-
-                if ((Main.outputPath() != null)
-                        && ((i + 1) % Main.outputInterval() == 0)) {
-                    for (Iterator iter = queries.iterator(); iter.hasNext();) {
-                        ((Query) iter.next()).logResults(i + 1);
-                    }
-                }
             }
 
             if (reportInterval != -1 && (i + 1) % reportInterval == 0) {
