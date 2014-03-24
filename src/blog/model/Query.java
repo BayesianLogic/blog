@@ -39,6 +39,7 @@ import java.util.*;
 import java.io.PrintStream;
 
 import blog.bn.BayesNetVar;
+import blog.common.Histogram;
 import blog.world.PartialWorld;
 import ve.Factor;
 
@@ -125,4 +126,9 @@ public interface Query {
 	 * location where this query occurred in an input file.
 	 */
 	public abstract Object getLocation();
+
+  /**
+   * Return Histogram object representing results of this query.
+   */
+  public Histogram getHistogram();
 }
