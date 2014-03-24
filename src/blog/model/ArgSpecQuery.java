@@ -67,10 +67,6 @@ public class ArgSpecQuery extends AbstractQuery {
 
   public ArgSpecQuery(ArgSpec argSpec) {
     this.argSpec = argSpec;
-
-    if (Main.histOut() != null) {
-      outputFile = Main.filePrintStream(Main.histOut() + ".data");
-    }
   }
 
   public ArgSpecQuery(ArgSpecQuery another) {
@@ -98,34 +94,6 @@ public class ArgSpecQuery extends AbstractQuery {
       Histogram.Entry entry = (Histogram.Entry) iter.next();
       double prob = histogram.getProb(entry.getElement());
       s.println("\t" + prob + "\t" + entry.getElement());
-    }
-  }
-
-  public void logResults(int numSamples) {
-    final List entries = new ArrayList(histogram.entrySet());
-    for (Iterator iter = entries.iterator(); iter.hasNext();) {
-      Histogram.Entry entry = (Histogram.Entry) iter.next();
-      double prob = histogram.getProb(entry.getElement());
-      PrintStream s = getOutputFile(entry.getElement());
-      s.println("\t" + numSamples + "\t" + prob);
-    }
-
-    if ((numSamples == Main.numSamples()) && (Main.histOut() != null)) {
-      Comparator c = new Comparator() {
-        public int compare(Object o1, Object o2) {
-          Integer i1 = new Integer(((Histogram.Entry) o1).getElement()
-              .toString());
-          Integer i2 = new Integer(((Histogram.Entry) o2).getElement()
-              .toString());
-          return i1.compareTo(i2);
-        }
-      };
-      Collections.sort(entries, c);
-      for (Iterator iter = entries.iterator(); iter.hasNext();) {
-        Histogram.Entry entry = (Histogram.Entry) iter.next();
-        double prob = histogram.getProb(entry.getElement());
-        outputFile.println("\t" + entry.getElement() + "\t" + prob);
-      }
     }
   }
 
@@ -190,20 +158,6 @@ public class ArgSpecQuery extends AbstractQuery {
     for (Object o : type.getGuaranteedObjects()) {
       histogram.increaseWeight(o, pot.getValue(Collections.singletonList(o)));
     }
-  }
-
-  /**
-   * Every object should have an output file. If it does not yet exist, create
-   * one; otherwise return it.
-   */
-  private PrintStream getOutputFile(Object o) {
-    PrintStream s = (PrintStream) outputFiles.get(o);
-    if (s == null) {
-      s = Main.filePrintStream(Main.outputPath() + "."
-          + o.toString() + ".data");
-      outputFiles.put(o, s);
-    }
-    return s;
   }
 
   public Histogram getHistogram() {
@@ -295,7 +249,4 @@ public class ArgSpecQuery extends AbstractQuery {
   protected ArgSpec argSpec;
   protected BayesNetVar variable;
   protected Histogram histogram = new Histogram();
-
-  protected Map outputFiles = new HashMap(); // of PrintStream
-  protected PrintStream outputFile = null;
 }

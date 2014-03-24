@@ -49,10 +49,6 @@ public class FormulaQuery extends ArgSpecQuery {
 
 	public FormulaQuery(Formula formula) {
 		super(formula);
-
-		if (Main.outputPath() != null) {
-			outputFile = Main.filePrintStream(Main.outputPath() + ".data");
-		}
 	}
 
 	public Formula formula() {
@@ -61,12 +57,6 @@ public class FormulaQuery extends ArgSpecQuery {
 
 	public void printResults(PrintStream s) {
 		s.println("Probability of " + getArgSpec() + " is " + calculateResult());
-	}
-
-	public void logResults(int numSamples) {
-		if (outputFile != null) {
-			outputFile.println("\t" + numSamples + "\t" + calculateResult());
-		}
 	}
 
 	public void updateStats(PartialWorld world, double weight) {
