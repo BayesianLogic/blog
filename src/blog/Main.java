@@ -136,11 +136,6 @@ import blog.semant.Semant;
  * <dd>Write sampling results to file specified by this argument. Use with the
  * -i flag.
  * 
- * <dt>-i, --interval
- * <dd>To be used with the -w option, specify the interval at which output is
- * written. Note that if -i and -n are the same, output is written only once, at
- * the last iteration.
- * 
  * <dt>-h <i>file-prefix</i>, --histogram_output=<i>file-prefix</i>
  * <dd>Output the histogram of an ArgSpecQuery to a file. The results are taken
  * after the final sample completes.
@@ -304,7 +299,7 @@ public class Main {
     specialOptions.put("queryReportInterval", optQueryReportInterval);
 
     IntOption optInterval = new IntOption("i", "interval", 500,
-        "Write results after every <n> samples");
+        "Report progress after every <n> samples");
     specialOptions.put("reportInterval", optInterval);
 
     IntOption optBurnIn = new IntOption("b", "burn_in", 0,
