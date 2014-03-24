@@ -109,10 +109,6 @@ import blog.semant.Semant;
  * Metropolis-Hastings sampler. Default: blog.GenericProposer (samples each var
  * given its parents)
  * 
- * <dt>-t, <i>num</i>, --num_trials=<i>num</i>
- * <dd>Do <i>num</i> independent runs (trials) of the inference algorithm.
- * Default: 1
- * 
  * <dt>--generate
  * <dd>Rather than answering queries, just sample possible worlds from the prior
  * distribution defined by the model, and print them out. Default: false
@@ -198,39 +194,23 @@ public class Main {
     if (generate) {
       generateWorlds();
     } else {
-      // Run inference for the specified number of trials
+      // Run inference.
       InferenceEngine engine = InferenceEngine.constructEngine(model,
           inferenceProps);
-      for (int i = 0; i < numStatSamples; i++) {
-        printTimes(System.out, "-", 80);
-        System.out.println("Trial " + i + ": ");
+      engine.setEvidence(evidence);
+      engine.setQueries(queries);
+      engine.answerQueries();
 
-        engine.setEvidence(evidence);
-        engine.setQueries(queries);
-        engine.answerQueries();
-
-        // Print query results
-        System.out.println("======== Query Results =========");
-        System.out.println("Iteration: " + numSamples);
-        for (Iterator iter = queries.iterator(); iter.hasNext();) {
-          Query q = (Query) iter.next();
-          q.printResults(System.out);
-          // leili: why to zero out???
-          // q.zeroOut();
-        }
-        System.out.println("======== Done ========");
-
-        System.out.println();
+      // Print query results
+      System.out.println("======== Query Results =========");
+      System.out.println("Iteration: " + numSamples);
+      for (Iterator iter = queries.iterator(); iter.hasNext();) {
+        Query q = (Query) iter.next();
+        q.printResults(System.out);
       }
+      System.out.println("======== Done ========");
 
-      if (numStatSamples > 1) {
-        printTimes(System.out, "=", 80);
-        System.out.println("Summary of statistics for all trials:");
-        for (Iterator iter = queries.iterator(); iter.hasNext();) {
-          Query q = (Query) iter.next();
-          q.printVarianceResults(System.out);
-        }
-      }
+      System.out.println();
     }
 
     Timer.printAllTimers();
@@ -315,8 +295,6 @@ public class Main {
         "Use Metropolis-Hastings proposer class <s>");
     specialOptions.put("proposerClass", optProposer);
 
-    IntOption optNumTrials = new IntOption("t", "num_trials", 1,
-        "Do <n> independent runs of inference");
     BooleanOption optGenerate = new BooleanOption(null, "generate", false,
         "Sample worlds from prior and print them");
     StringListOption optPackages = new StringListOption("k", "package",
@@ -347,7 +325,6 @@ public class Main {
     }
 
     randomize = optRandomize.getValue();
-    numStatSamples = optNumTrials.getValue();
     generate = optGenerate.getValue();
     packages = optPackages.getValue();
     verbose = optVerbose.getValue();
@@ -652,10 +629,6 @@ public class Main {
     return numSamples;
   }
 
-  public static int numTrials() {
-    return numStatSamples;
-  }
-
   public static String histOut() {
     return histOut;
   }
@@ -671,7 +644,6 @@ public class Main {
   private static int numSamples;
   private static int queryReportInterval;
   private static int reportInterval;
-  private static int numStatSamples;
   private static Model model;
   private static Evidence evidence;
   private static List<Query> queries;

@@ -130,17 +130,6 @@ public interface Query {
 	void setPosterior(Factor posterior);
 
 	/**
-	 * Ends the current run, records across-run statistics for it, and clears the
-	 * within-run statistics.
-	 */
-	void zeroOut();
-
-	/**
-	 * Prints across-run statistics.
-	 */
-	void printVarianceResults(PrintStream s);
-
-	/**
 	 * Returns an object whose toString method yields a description of the
 	 * location where this query occurred in an input file.
 	 */
