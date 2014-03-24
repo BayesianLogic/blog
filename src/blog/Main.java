@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
@@ -52,6 +53,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.google.gson.Gson;
+
+import blog.common.Histogram;
 import blog.common.Timer;
 import blog.common.Util;
 import blog.common.cmdline.BooleanOption;
@@ -62,6 +66,7 @@ import blog.common.cmdline.PropertiesOption;
 import blog.common.cmdline.StringListOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.InferenceEngine;
+import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -204,8 +209,46 @@ public class Main {
         q.printResults(System.out);
       }
       System.out.println("======== Done ========");
-
       System.out.println();
+
+      // Write query results to file.
+      if (outputPath != null) {
+        System.out.println("Writing query results to " + outputPath + "...");
+
+        // Assemble results.
+        // Assumes queries are ArgSpecQuery or subclasses.
+        ArrayList<Object> allResults = new ArrayList<Object>();
+        for (Query query : queries) {
+          Histogram histogram = query.getHistogram();
+          ArrayList<Object> histogramEntries = new ArrayList<Object>();
+          for (Object entry_obj : histogram.entrySet()) {
+            Histogram.Entry entry = (Histogram.Entry) entry_obj;
+            ArrayList<Object> entryPair = new ArrayList<Object>();
+            entryPair.add(entry.getLogWeight());
+            entryPair.add(entry.getElement().toString());
+            histogramEntries.add(entryPair);
+          }
+
+          ArrayList<Object> results = new ArrayList<Object>();
+          results.add(((ArgSpecQuery) query).getArgSpec().toString());
+          results.add(histogramEntries);
+          allResults.add(results);
+        }
+
+        // Write results to file.
+        Gson gson = new Gson();
+        String json = gson.toJson(allResults);
+        try {
+          PrintWriter writer = new PrintWriter(outputPath, "UTF-8");
+          writer.println(json);
+          writer.close();
+        } catch (Exception e) {
+          System.err.println("Could not write to file: " + outputPath);
+          Util.fatalError(e);
+        }
+
+        System.out.println("Done.");
+      }
     }
 
     Timer.printAllTimers();
