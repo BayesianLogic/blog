@@ -211,57 +211,9 @@ public class Main {
       System.out.println("======== Done ========");
       System.out.println();
 
-      /*
-      Write query results to file, in JSON format.
-      For every query, we output the a list of (log_prob, value) pairs.
-      Example output:
-      [
-          ["Damage(A)", [
-              [2.639057329615258, "Mild"],
-              [3.526360524616161, "Severe"]
-          ]],
-          ["Damage(B)", [
-              [2.9957322735539904, "Mild"],
-              [3.3322045101752034, "Severe"]
-          ]]
-      ]
-      */
+      // Write query results to file, in JSON format.
       if (outputPath != null) {
-        System.out.println("Writing query results to " + outputPath + "...");
-
-        // Assemble results.
-        // Assumes queries are ArgSpecQuery or subclasses.
-        ArrayList<Object> allResults = new ArrayList<Object>();
-        for (Query query : queries) {
-          Histogram histogram = query.getHistogram();
-          ArrayList<Object> histogramEntries = new ArrayList<Object>();
-          for (Object entry_obj : histogram.entrySet()) {
-            Histogram.Entry entry = (Histogram.Entry) entry_obj;
-            ArrayList<Object> entryPair = new ArrayList<Object>();
-            entryPair.add(entry.getLogWeight());
-            entryPair.add(entry.getElement().toString());
-            histogramEntries.add(entryPair);
-          }
-
-          ArrayList<Object> results = new ArrayList<Object>();
-          results.add(((ArgSpecQuery) query).getArgSpec().toString());
-          results.add(histogramEntries);
-          allResults.add(results);
-        }
-
-        // Write results to file.
-        Gson gson = new Gson();
-        String json = gson.toJson(allResults);
-        try {
-          PrintWriter writer = new PrintWriter(outputPath, "UTF-8");
-          writer.println(json);
-          writer.close();
-        } catch (Exception e) {
-          System.err.println("Could not write to file: " + outputPath);
-          Util.fatalError(e);
-        }
-
-        System.out.println("Done.");
+        writeResultsJson(queries, outputPath);
       }
     }
 
@@ -618,6 +570,60 @@ public class Main {
     readersAndOrigins.add(new Object[] { reader, origin });
     setup(model, evidence, queries, readersAndOrigins, new LinkedList(),
         false /* verbose */, false);
+  }
+
+  /**
+   * Write query results to file, in JSON format.
+   *
+   * For every query, we output the a list of (log_prob, value) pairs.
+   * Example output:
+   * [
+   *     ["Damage(A)", [
+   *         [2.639057329615258, "Mild"],
+   *         [3.526360524616161, "Severe"]
+   *     ]],
+   *     ["Damage(B)", [
+   *         [2.9957322735539904, "Mild"],
+   *         [3.3322045101752034, "Severe"]
+   *     ]]
+   * ]
+  */
+  private static void writeResultsJson(List<Query> queries, String outputPath) {
+    System.out.println("Writing query results to " + outputPath + "...");
+
+    // Assemble results into one hierarchical object.
+    // Assumes queries are ArgSpecQuery or subclasses.
+    ArrayList<Object> allResults = new ArrayList<Object>();
+    for (Query query : queries) {
+      Histogram histogram = query.getHistogram();
+      ArrayList<Object> histogramEntries = new ArrayList<Object>();
+      for (Object entry_obj : histogram.entrySet()) {
+        Histogram.Entry entry = (Histogram.Entry) entry_obj;
+        ArrayList<Object> entryPair = new ArrayList<Object>();
+        entryPair.add(entry.getLogWeight());
+        entryPair.add(entry.getElement().toString());
+        histogramEntries.add(entryPair);
+      }
+
+      ArrayList<Object> results = new ArrayList<Object>();
+      results.add(((ArgSpecQuery) query).getArgSpec().toString());
+      results.add(histogramEntries);
+      allResults.add(results);
+    }
+
+    // Write results to file.
+    Gson gson = new Gson();
+    String json = gson.toJson(allResults);
+    try {
+      PrintWriter writer = new PrintWriter(outputPath, "UTF-8");
+      writer.println(json);
+      writer.close();
+    } catch (Exception e) {
+      System.err.println("Could not write to file: " + outputPath);
+      Util.fatalError(e);
+    }
+
+    System.out.println("Done.");
   }
 
   /**
