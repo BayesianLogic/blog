@@ -211,7 +211,21 @@ public class Main {
       System.out.println("======== Done ========");
       System.out.println();
 
-      // Write query results to file.
+      /*
+      Write query results to file, in JSON format.
+      For every query, we output the a list of (log_prob, value) pairs.
+      Example output:
+      [
+          ["Damage(A)", [
+              [2.639057329615258, "Mild"],
+              [3.526360524616161, "Severe"]
+          ]],
+          ["Damage(B)", [
+              [2.9957322735539904, "Mild"],
+              [3.3322045101752034, "Severe"]
+          ]]
+      ]
+      */
       if (outputPath != null) {
         System.out.println("Writing query results to " + outputPath + "...");
 
