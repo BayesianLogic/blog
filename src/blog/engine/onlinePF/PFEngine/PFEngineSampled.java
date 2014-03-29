@@ -66,6 +66,7 @@ public class PFEngineSampled extends PFEngineOnline{
 			dropHistory();
 			ObservabilitySignature.dropHistory(((TimedParticle)Util.getFirst(particles)).getTimestep());
 		}
+		
 		resample();
 		//super.afterAnsweringQueries();
 		//outputIndexData();
@@ -80,7 +81,6 @@ public class PFEngineSampled extends PFEngineOnline{
 		resample();
 		//super.afterAnsweringQueries();
 		//outputIndexData();
-		System.out.println("Evidence: " + evs);
 		return evs;
 	}
 	
@@ -187,13 +187,13 @@ public class PFEngineSampled extends PFEngineOnline{
 		if (ev.compile()!=0)
 			System.exit(1);
 		Timer.record("retakeObs.compile");
-		/*for (Object o : ev.getValueEvidence())
+		for (Object o : ev.getValueEvidence())
 			UBT.obsOutput.printInput("obs " + o.toString()+";");
 		for (Object o : ev.getSymbolEvidence())
 			UBT.obsOutput.printInput("obs "+o.toString()+";");
-		//for (Object o : ev.getDecisionEvidence())
-		//	UBT.obsOutput.printInput(o.toString());
-		*/
+		for (Object o : ev.getDecisionEvidence())
+			UBT.obsOutput.printInput(o.toString());
+		
 		//TODO: PAUL remove comments above
 		if (particles.size() > 1) {
 			Timer.start("reweight");
@@ -211,7 +211,7 @@ public class PFEngineSampled extends PFEngineOnline{
 			}
 			Timer.record("reweight");
 		}
-		//UBT.worldOutput.printInput("<<<<<>>>>>");
+		UBT.worldOutput.printInput("<<<<<>>>>>");
 		//TODO: PAUL revert UBT.numParticleOutput.printInput(""+i);
 		
 		//System.out.println("rtObs1" + ev);

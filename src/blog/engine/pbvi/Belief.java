@@ -146,9 +146,7 @@ public class Belief {
 		apPF.takeDecision(action);
 		apPF.answer(pbvi.getQueries(getTimestep() + 1));
 		
-		double total = getAvgReward(apPF);
-		System.out.println(total/apPF.particles.size());
-		return total/apPF.particles.size();
+		return getAvgReward(apPF);
 	}
 
 	/**
@@ -165,7 +163,7 @@ public class Belief {
 			Number reward = (Number) rewardFunc.getValueSingleArg(timestep, p.getLatestWorld());
 			total += reward.doubleValue();
 		}
-		return total;
+		return total/pf.particles.size();
 	}
 	
 	public ActionPropagated beliefsAfterAction(Evidence action) {

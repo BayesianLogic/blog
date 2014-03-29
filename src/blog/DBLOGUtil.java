@@ -132,6 +132,7 @@ public class DBLOGUtil {
 			BasicVar var = (BasicVar) varIt.next();
 			int timestepIndex = getTimestepIndex(var);
 			if (timestepIndex != -1 && timestepIndex <= largest - nsim) {
+				//System.out.println("uninstantiating" + var);
 				world.setValue(var, null);
 				if (timestepIndex <= largest - nsim - 1) {
 					System.out.println("Why is " + var.toString() + " instantiated when largest is " + largest + "?");
@@ -305,5 +306,5 @@ public class DBLOGUtil {
 		return result;
 	}
 	
-	public static int nsim = 1;
+	public static int nsim = 2;
 }

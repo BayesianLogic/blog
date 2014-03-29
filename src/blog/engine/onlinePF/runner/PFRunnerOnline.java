@@ -88,14 +88,15 @@ public class PFRunnerOnline{
 			System.err.println("Evidence/Query should not be null");
 			System.exit(1);
 		}
-		System.out.println("AP1 " + evidence);
-		System.out.println("AP1 " + queries);
 		particleFilter.beforeTakingEvidence();
 		particleFilter.take(evidence);
 		particleFilter.answer(queries);
 		particleFilter.afterAnsweringQueries();
+		//System.out.println("after dropping" + particleFilter.particles.get(0).curWorld.basicVarToValueMap());
 		
 		postEvidenceAndQueryIO();
+		//System.out.println("after postqueryio" + particleFilter.particles.get(0).curWorld.basicVarToValueMap());
+		
 	}
 	
 	
@@ -134,7 +135,8 @@ public class PFRunnerOnline{
 			
 			if (i==0){
 				query.printResults(UBT.valueOutput.p);
-				//UBT.varianceOutput.printInput("" + getQueryVariance(query));				
+				//UBT.varianceOutput.printInput("" + getQueryVariance(query));
+				//UBT.valueOutput.printInput("" + averageQueryResult(query));
 			}
 			if (i==1){
 				query.printResults(UBT.valueOutput2.p);
@@ -143,7 +145,6 @@ public class PFRunnerOnline{
 			if (i==2){
 				query.printResults(UBT.valueOutput3.p);
 			}
-			
 			i++;
 		}
 		particleFilter.printResultToCommunicator(queries, queryResultCommunicator);

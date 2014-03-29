@@ -118,7 +118,6 @@ public class OUPBVI {
 	}
 	
 	public Set<FiniteStatePolicy> run() {
-		FiniteStatePolicyEvaluator evaluator = new FiniteStatePolicyEvaluator(this, gamma);
 		Set<Belief> beliefs = new HashSet<Belief>();
 		PFEngineSampled initPF = genInitialPF();
 
@@ -812,6 +811,7 @@ public class OUPBVI {
 
 		for (int i = 0; i < 10; i++) {
 			b = new Belief(genInitialPF(), this);
+			System.out.println(b);
 			System.out.println("Iter: " + i);
 			System.out.println("Evaluated: " + evaluator.eval(b, p, 100));
 			System.out.println("Unhandled obs: " + evaluator.getMissingObs());

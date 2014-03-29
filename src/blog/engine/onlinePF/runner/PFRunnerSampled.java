@@ -74,7 +74,6 @@ public class PFRunnerSampled extends PFRunnerOnline {
 		particleFilter.beforeTakingEvidence();
 		particleFilter.answer(queries);
 		String evs = ((PFEngineSampled)particleFilter).afterAnsweringQueries2();
-		System.out.println("AP0 " + evs);
 		((EvidenceQueryDecisionGeneratorwPolicy)this.evidenceGenerator).updateGenObj(evs);
 		particleFilter.backtrack();
 	}
@@ -86,7 +85,7 @@ public class PFRunnerSampled extends PFRunnerOnline {
 		while (!shouldTerminate()){
 			advancePhase0();
 			advancePhase1();
-			advancePhase2();
+			advancePhase2();	
 			//i++;
 		}
 	}
