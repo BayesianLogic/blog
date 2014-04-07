@@ -21,18 +21,21 @@ import blog.world.PartialWorld;
 
 public class FiniteStatePolicy extends PolicyModel {
 	private AlphaVector alpha;
-	private Evidence action;
-	private Map<Evidence, FiniteStatePolicy> successors;
-	private Map<Evidence, String> notes;
+	private LiftedEvidence action;
+	private Map<LiftedEvidence, FiniteStatePolicy> successors;
+	private Map<LiftedEvidence, String> notes;
 	private int id;
 	private Set<ArgSpec> requiredTerms;
 	
 	public FiniteStatePolicy(Evidence action, Map<Evidence, FiniteStatePolicy> successors) {
 		this.id = count;
 		count++;
-		this.action = action;
-		this.successors = successors;
-		this.notes = new HashMap<Evidence, String>();
+		this.action = new LiftedEvidence(action);
+		this.successors = new HashMap<LiftedEvidence, FiniteStatePolicy>();
+		for (Evidence e : successors.keySet()) {
+			setNextPolicy(e, successors.get(e));
+		}
+		this.notes = new HashMap<LiftedEvidence, String>();
 		
 		requiredTerms = new HashSet<ArgSpec>();
 		DecisionEvidenceStatement a = (DecisionEvidenceStatement) action.getDecisionEvidence().iterator().next();
@@ -71,7 +74,7 @@ public class FiniteStatePolicy extends PolicyModel {
 	}
 	
 	public Evidence getAction() {
-		return action;
+		return action.getEvidence();
 	}
 	
 	//works only for a tree right now
@@ -84,13 +87,13 @@ public class FiniteStatePolicy extends PolicyModel {
 		included.put(this, name);
 		String result = name + " [label=\"" + action + "\"];\n";
 		int i = 0;
-		for (Evidence o : successors.keySet()) {
+		for (LiftedEvidence o : successors.keySet()) {
 			String evidenceString = "";
-			Collection valueEvidence = o.getValueEvidence();
+			Collection valueEvidence = o.getEvidence().getValueEvidence();
 			for (Object v : valueEvidence) {
 				evidenceString += v.toString() + "\\n";
 			}
-			Collection symbolEvidence = o.getSymbolEvidence();
+			Collection symbolEvidence = o.getEvidence().getSymbolEvidence();
 			for (Object s : symbolEvidence) {
 				evidenceString += s.toString() + "\\n";
 			}
@@ -102,7 +105,7 @@ public class FiniteStatePolicy extends PolicyModel {
 			} else {
 				result += contingentPolicy.toDotStringHelper(nextName, included);
 			}
-			result = result + name + " -> " + nextName + " [label=\"" + evidenceString +  " " + getNote(o) + "\"];\n";
+			result = result + name + " -> " + nextName + " [label=\"" + evidenceString +  " " + getNote(o.getEvidence()) + "\"];\n";
 			
 			i++;
 		}
@@ -133,11 +136,11 @@ public class FiniteStatePolicy extends PolicyModel {
 	}
 
 	public FiniteStatePolicy getNextPolicy(Evidence latestEvidence) {
-		return successors.get(latestEvidence);
+		return successors.get(new LiftedEvidence(latestEvidence));
 	}
 	
 	public FiniteStatePolicy getApplicableNextPolicy(Evidence latestEvidence, Belief nextBelief) {
-		for (Evidence o : successors.keySet()) {
+		for (LiftedEvidence o : successors.keySet()) {
 			if (successors.get(o).isApplicable(nextBelief)) {
 				return successors.get(o);
 			}
@@ -156,7 +159,7 @@ public class FiniteStatePolicy extends PolicyModel {
 			new Exception().printStackTrace();
 			System.exit(0);
 		}
-		successors.put(obs, nextPolicy);
+		successors.put(new LiftedEvidence(obs), nextPolicy);
 	}
 	
 	@Override
@@ -182,15 +185,15 @@ public class FiniteStatePolicy extends PolicyModel {
 	
 	public boolean merge(FiniteStatePolicy policy) {
 		 if (!action.equals(policy.action)) return false;
-		 for (Evidence o : successors.keySet()) {
+		 for (LiftedEvidence o : successors.keySet()) {
 			 if (policy.successors.containsKey(o) &&
 					 !successors.get(o).equals(policy.successors.get(o))) {
 				 return false;
 			 }
 		 }
 		 
-		 for (Evidence o : policy.successors.keySet()) {
-			 successors.put(o, policy.getNextPolicy(o));
+		 for (LiftedEvidence o : policy.successors.keySet()) {
+			 setNextPolicy(o.getEvidence(), policy.getNextPolicy(o.getEvidence()));
 			 addObsNote(o, "merged");
 		 }
 		 this.alpha = null;
@@ -198,11 +201,15 @@ public class FiniteStatePolicy extends PolicyModel {
 	}
 	
 	public void addObsNote(Evidence obs, String note) {
+		notes.put(new LiftedEvidence(obs), note);
+	}
+	
+	public void addObsNote(LiftedEvidence obs, String note) {
 		notes.put(obs, note);
 	}
 	
 	public String getNote(Evidence obs) {
-		String note = notes.get(obs);
+		String note = notes.get(new LiftedEvidence(obs));
 		if (note == null) {
 			return "";
 		}

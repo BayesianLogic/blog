@@ -15,7 +15,7 @@ public class LiftedEvidence {
 	private static Term emptyTimestep;
 	
 	static {
-		emptyTimestep = BuiltInTypes.TIMESTEP.getCanonicalTerm(BuiltInTypes.TIMESTEP.getGuaranteedObject(-1));
+		emptyTimestep = BuiltInTypes.TIMESTEP.getCanonicalTerm(BuiltInTypes.TIMESTEP.getGuaranteedObject(0));
 	}
 	
 	private Evidence evidence;
@@ -30,9 +30,7 @@ public class LiftedEvidence {
 	public LiftedEvidence(Evidence evidence) {
 		int timestep = DBLOGUtil.getTimestepIndex(Util.getFirst(evidence.getEvidenceVars()));
 		Term toReplace = BuiltInTypes.TIMESTEP.getCanonicalTerm(BuiltInTypes.TIMESTEP.getGuaranteedObject(timestep));	
-		this.evidence = new Evidence();
-		this.evidence.addAll(evidence);
-		this.evidence.replace(toReplace, emptyTimestep);
+		this.evidence = evidence.replace(toReplace, emptyTimestep);
 	}
 	
 	/**
@@ -44,10 +42,8 @@ public class LiftedEvidence {
 	public Evidence getEvidence(Belief b) {
 		int timestep = b.getTimestep();
 		Term replace = BuiltInTypes.TIMESTEP.getCanonicalTerm(BuiltInTypes.TIMESTEP.getGuaranteedObject(timestep));
-		Evidence groundedAction = new Evidence();
-		groundedAction.addAll(evidence);
-		groundedAction.replace(emptyTimestep, replace);
-		return groundedAction;
+		Evidence grounded = evidence.replace(emptyTimestep, replace);
+		return grounded;
 	}
 	
 	@Override
@@ -56,5 +52,19 @@ public class LiftedEvidence {
 			return false;
 		LiftedEvidence otherEvidence = (LiftedEvidence) other;
 		return this.evidence.equals(otherEvidence.evidence);
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.evidence.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return this.evidence.toString();
+	}
+
+	public Evidence getEvidence() {
+		return evidence;
 	}
 }
