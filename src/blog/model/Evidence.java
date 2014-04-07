@@ -149,6 +149,9 @@ public class Evidence {
 		for (Iterator it = another.getValueEvidence().iterator(); it.hasNext();) {
 			addValueEvidence((ValueEvidenceStatement) it.next());
 		}
+		for (Iterator it = another.getDecisionEvidence().iterator(); it.hasNext();) {
+			addDecisionEvidence((DecisionEvidenceStatement) it.next());
+		}
 		if (compiled || another.compiled)
 			compile();
 	}

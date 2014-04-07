@@ -24,8 +24,8 @@ public class State {
 
 	public State(AbstractPartialWorld w, int t) {
 		world = w;
-		timestep = 0;
-		zeroTimestep();
+		timestep = t;
+		//zeroTimestep();
 	}
 
 	public AbstractPartialWorld getWorld() {
@@ -90,7 +90,6 @@ public class State {
 			return false;
 		State s = (State) o;
 		if (timestep != s.timestep) {
-			System.out.println("TIMESTEP ERROR");
 			return false;
 		}
 		boolean equality = false; 

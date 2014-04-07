@@ -56,7 +56,7 @@ public class ActionPropagated {
 		return belief.ended();
 	}
 	
-	public Belief getNextBelief(Evidence o, OUPBVI pbvi) {
+	public Belief getNextBelief(Evidence o, OUPOMDPModel pomdp) {
 		Timer.start("BELIEF_PROP");
 		int osIndex = osIndices.get(o);
 		PFEngineSampled nextPF = actionPropagatedPF.copy();
@@ -67,7 +67,7 @@ public class ActionPropagated {
 			//ObservabilitySignature.dropHistory(((TimedParticle)Util.getFirst(nextPF.particles)).getTimestep());
 		}
 		nextPF.resample();
-		Belief nextBelief = new Belief(nextPF, pbvi);
+		Belief nextBelief = new Belief(nextPF, pomdp);
 		Timer.record("BELIEF_PROP");
 		Belief.updateResampleStateCountStats(nextBelief);
 		return nextBelief;

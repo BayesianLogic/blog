@@ -1167,9 +1167,6 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			//System.out.println("Compare? " + v);
 			int timestepIndex = DBLOGUtil.getTimestepIndex(v);
 			if (UBT.rememberHistory || timestepIndex == maxTimestep){
-				if (timestepIndex > 0) {
-					System.out.println("comparing non zero timestep var " + v);
-				}
 				boolean sameValue = otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v));
 				//sameValue |= (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(changedVarToValue.get(v)));
 				rtn = rtn && sameValue;
@@ -1248,9 +1245,6 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			}*/
 			int timestepIndex = DBLOGUtil.getTimestepIndex(v);
 			if (UBT.rememberHistory || timestepIndex == maxTimestep){
-				if (timestepIndex > 0) {
-					System.out.println("hashing non zero timestep var " + v);
-				}
 				//if (DBLOGUtil.getTimestepIndex(v) == -1) continue;
 				//System.out.println("hash " + v + " value: " + changedVarToValue.get(v));
 				int a = v.hashCode();

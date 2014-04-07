@@ -189,7 +189,8 @@ public class DecisionEvidenceStatement {
 	 */
 	public DecisionEvidenceStatement replace(Term t, ArgSpec another) {
 		FuncAppTerm newLeftSide = (FuncAppTerm) leftSide.replace(t, another);
-		Term newOutput = (Term) output.replace(t, another);
+		//Term newOutput = (Term) output.replace(t, another);
+		ArgSpec newOutput = output;
 		if (newOutput != leftSide || newOutput != output) {
 			DecisionEvidenceStatement newVES = new DecisionEvidenceStatement(newLeftSide,
 					newOutput);

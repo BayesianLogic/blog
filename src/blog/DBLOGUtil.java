@@ -1,5 +1,6 @@
 package blog;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -13,16 +14,22 @@ import java.util.regex.Pattern;
 
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
+import blog.bn.NumberVar;
+import blog.bn.RandFuncAppVar;
 import blog.common.*;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
+import blog.model.BuiltInTypes;
 import blog.model.ConstantInterp;
 import blog.model.DecisionEvidenceStatement;
 import blog.model.Evidence;
 import blog.model.FuncAppTerm;
 import blog.model.Model;
 import blog.model.NonRandomFunction;
+import blog.model.POP;
+import blog.model.RandomFunction;
 import blog.model.SymbolEvidenceStatement;
+import blog.model.Type;
 import blog.model.ValueEvidenceStatement;
 import blog.type.Timestep;
 import blog.world.PartialWorld;
@@ -46,6 +53,48 @@ public class DBLOGUtil {
 		if (largestTimestepIndex != -1)
 			uninstantiateAllTemporalsWithAnIndexDifferentFrom(largestTimestepIndex,
 					world);
+	}
+	
+	public static BasicVar getVarWithTimestep(BasicVar var, int timestep) {
+		if (timestep < 0) {
+			System.out.println("DBLOGUtil.getVarWithTimestep: Illegal timestep: " + timestep);
+			System.exit(0);
+		}
+		
+		int curTimestep = DBLOGUtil.getTimestepIndex(var);
+		if (curTimestep == -1) return var;
+		Object[] args = var.args();
+		BasicVar newVar = null;
+		if (var instanceof RandFuncAppVar) {
+			RandFuncAppVar funcAppVar = (RandFuncAppVar) var;
+			RandomFunction f = funcAppVar.func();
+			List newArgs = getArgsWithTimestep(args, f.getArgTypes());
+			newVar = new RandFuncAppVar(f, newArgs);
+		} 
+		
+		if (var instanceof NumberVar) {
+			NumberVar numVar = (NumberVar) var;
+			POP pop = numVar.pop();
+			List newArgs = getArgsWithTimestep(args, pop.getArgTypes());
+			newVar = new NumberVar(pop, newArgs);
+		}
+		if (newVar == null) {
+			System.err.println("DBLOGUtil.getVarWithTimestep: failed to set " + var);
+			System.exit(0);
+		}
+		return newVar;
+	}
+	
+	public static List getArgsWithTimestep(Object[] args, Type[] argTypes) {
+		List newArgs = new ArrayList();
+		for (int i = 0; i < argTypes.length; i++) {
+			if (argTypes[i].equals(BuiltInTypes.TIMESTEP)) {
+				newArgs.add(BuiltInTypes.TIMESTEP.getGuaranteedObject(0));
+			} else {
+				newArgs.add(args[i]);
+			}
+		}
+		return newArgs;
 	}
 
 	/**

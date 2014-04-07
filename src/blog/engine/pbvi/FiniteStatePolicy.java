@@ -144,6 +144,10 @@ public class FiniteStatePolicy extends PolicyModel {
 		}
 		return null;
 	}
+	
+	public boolean isLeafPolicy() {
+		return successors.isEmpty();
+	}
 
 	public void setNextPolicy(Evidence obs,
 			FiniteStatePolicy nextPolicy) {

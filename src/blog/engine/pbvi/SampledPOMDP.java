@@ -18,9 +18,9 @@ public class SampledPOMDP {
 	private Map<Triplet<State, Evidence, Evidence>, Belief> nextBeliefs;
 	private Map<Pair<State, Evidence>, Double> rewards;
 	
-	private OUPBVI pbvi;
+	private OUPOMDPModel pbvi;
 	
-	public SampledPOMDP(OUPBVI pbvi) {
+	public SampledPOMDP(OUPOMDPModel pbvi) {
 		states = new HashMap<State, State>();
 		actions = new HashMap<Evidence, Evidence>();
 		observations = new HashMap<Evidence, Evidence>();

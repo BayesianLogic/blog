@@ -7,40 +7,43 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import blog.DBLOGUtil;
 import blog.common.Util;
 import blog.engine.onlinePF.ObservabilitySignature;
 import blog.engine.onlinePF.PFEngine.PFEngineSampled;
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.engine.onlinePF.inverseBucket.UBT;
+import blog.model.BuiltInTypes;
 import blog.model.Evidence;
 import blog.model.Function;
+import blog.model.Term;
 import blog.model.Type;
 import blog.world.AbstractPartialWorld;
 
 public class Belief {
 	private PFEngineSampled pf;
-	private OUPBVI pbvi;
+	private OUPOMDPModel pomdp;
 	private Map<State, Integer> stateCounts;
 	private Evidence latestEvidence;
 	private Double latestReward;
 	
-	public Belief(OUPBVI pbvi) {
+	public Belief(OUPOMDPModel pomdp) {
 		this.stateCounts = new HashMap<State, Integer>();
-		this.pbvi = pbvi;
+		this.pomdp = pomdp;
 	}
 	
-	public Belief(Map<State, Integer> states, OUPBVI pbvi) {
+	public Belief(Map<State, Integer> states, OUPOMDPModel pomdp) {
 		this.stateCounts = new HashMap<State, Integer>();
 		for (State s : states.keySet()) {
 			this.stateCounts.put(s, states.get(s)); 
 		}
-		this.pbvi = pbvi;
-		zeroTimestep();
+		this.pomdp = pomdp;
+		//zeroTimestep();
 	}
 	
-	public Belief(PFEngineSampled pf, OUPBVI pbvi) {
+	public Belief(PFEngineSampled pf, OUPOMDPModel pomdp) {
 		this.pf = pf;
-		this.pbvi = pbvi;
+		this.pomdp = pomdp;
 		
 		stateCounts = new HashMap<State, Integer>();
 		for (TimedParticle tp : pf.particles) {
@@ -70,38 +73,17 @@ public class Belief {
 		}
 	}
 	
-	public Belief takeAction(Evidence action) {
-		PFEngineSampled actionPropagated = pf.copy();
-		actionPropagated.beforeTakingEvidence();
-		actionPropagated.takeDecision(action);
-		for (TimedParticle p : actionPropagated.particles)
-			p.advanceTimestep();
-		actionPropagated.answer(pbvi.getQueries(getTimestep() + 1));
-		return new Belief(actionPropagated, pbvi);
-	}
-	
-/*	public Belief takeObservation(Evidence obs) {
-		PFEngineSampled next = pf.copy();
-		next.beforeTakingEvidence();
-		next.takeDecision(obs);
-		next.answer(pbvi.getQueries(getTimestep()));
-		try {
-			next.resample();
-		} catch (IllegalArgumentException e) {
-			return null;
-		}
-		return new Belief(next, pbvi);
-	}*/
 	static Map<Integer, Integer> resampleStateCountStats = new HashMap<Integer, Integer>();
 	static Map<Integer, Integer> stateCountStats = new HashMap<Integer, Integer>();
 	public Belief sampleNextBelief(Evidence action) {
+		action = translateAction(action);
 		Timer.start("BELIEF_PROP");
 		PFEngineSampled nextPF = getParticleFilter().copy();
 		
 		Timer.start("takeAction");
 		nextPF.beforeTakingEvidence();
 		nextPF.takeDecision(action);
-		nextPF.answer(pbvi.getQueries(getTimestep() + 1));
+		nextPF.answer(pomdp.getQueries(getTimestep() + 1));
 		Timer.record("takeAction");
 		
 		double reward = getAvgReward(nextPF);
@@ -130,7 +112,7 @@ public class Belief {
 			Timer.record("resample");
 		}
 		
-		Belief nextBelief = new Belief(nextPF, pbvi);
+		Belief nextBelief = new Belief(nextPF, pomdp);
 		nextBelief.latestReward = reward;
 		nextBelief.latestEvidence = o;
 		
@@ -141,10 +123,11 @@ public class Belief {
 	}
 	
 	public double getReward(Evidence action) {
+		action = translateAction(action);
 		PFEngineSampled apPF = getParticleFilter().copy();
 		apPF.beforeTakingEvidence();
 		apPF.takeDecision(action);
-		apPF.answer(pbvi.getQueries(getTimestep() + 1));
+		apPF.answer(pomdp.getQueries(getTimestep() + 1));
 		
 		return getAvgReward(apPF);
 	}
@@ -156,17 +139,23 @@ public class Belief {
 	 */
 	private double getAvgReward(PFEngineSampled pf) {
 		double total = 0;
-		Function rewardFunc = (Function) pbvi.getModel().getRandomFunc("reward", 1);
-		Object timestep = Type.getType("Timestep").getGuaranteedObject(0);
+		Function rewardFunc = (Function) pomdp.getModel().getRandomFunc("reward", 1);
+		Object timestep = Type.getType("Timestep").getGuaranteedObject(pf.particles.get(0).getTimestep());
 		//System.out.println("Get reward: " + timestep);
 		for (TimedParticle p : pf.particles) {
 			Number reward = (Number) rewardFunc.getValueSingleArg(timestep, p.getLatestWorld());
+			if (reward == null) {
+				System.out.println("Reward is null at " + timestep);
+				System.out.println(p.getLatestWorld());
+			}
 			total += reward.doubleValue();
 		}
 		return total/pf.particles.size();
 	}
 	
 	public ActionPropagated beliefsAfterAction(Evidence action) {
+		action = translateAction(action);
+		
 		updateStateCountStats(this);
 		Timer.start("BELIEF_PROP");
 		ActionPropagated ap = new ActionPropagated(this, action);
@@ -174,9 +163,9 @@ public class Belief {
 		PFEngineSampled apPF = getParticleFilter().copy();
 		apPF.beforeTakingEvidence();
 		apPF.takeDecision(action);
-		apPF.answer(pbvi.getQueries(getTimestep() + 1));
+		apPF.answer(pomdp.getQueries(getTimestep() + 1));
 		
-		Function rewardFunc = (Function) pbvi.getModel().getRandomFunc("reward", 1);
+		Function rewardFunc = (Function) pomdp.getModel().getRandomFunc("reward", 1);
 		Object timestep = Type.getType("Timestep").getGuaranteedObject(getTimestep());
 	
 		Number reward = (Number) rewardFunc.getValueSingleArg(timestep, 
@@ -217,6 +206,20 @@ public class Belief {
 		return ap;
 	}
 	
+	private Evidence translateAction(Evidence action) {
+		int actionTimestep = DBLOGUtil.getTimestepIndex(Util.getFirst(action.getEvidenceVars()));
+		Term toReplace = BuiltInTypes.TIMESTEP.getCanonicalTerm(
+				BuiltInTypes.TIMESTEP.getGuaranteedObject(actionTimestep));
+		Term replacement = BuiltInTypes.TIMESTEP.getCanonicalTerm(BuiltInTypes.TIMESTEP.getGuaranteedObject(this.getTimestep()));
+		
+		if (actionTimestep == this.getTimestep()) return action;	
+		//System.out.println(actionTimestep + " " + this.getTimestep());
+		//System.out.println("action" + action);
+		Evidence newAction = action.replace(toReplace, replacement);
+		//System.out.println("replace " + action + " replacement" + newAction);	
+		return newAction;
+	}
+
 	public PFEngineSampled getParticleFilter() {
 		if (pf != null)
 			return pf;
@@ -226,9 +229,9 @@ public class Belief {
 			count += stateCounts.get(s);
 		}
 		
-		Properties properties = (Properties) pbvi.getProperties().clone();
+		Properties properties = (Properties) pomdp.getProperties().clone();
 		properties.setProperty("numParticles", "" + count);
-		pf = new PFEngineSampled(pbvi.getModel(), properties);
+		pf = new PFEngineSampled(pomdp.getModel(), properties);
 		List<TimedParticle> particles = pf.particles;
 		int j = 0;
 		for (State s : getStates()) {
@@ -265,11 +268,15 @@ public class Belief {
 		this.pf = particleFilter;
 	}
 
-	public void setPBVI(OUPBVI oupbvi) {
-		this.pbvi = oupbvi;
+	public void setPBVI(OUPOMDPModel pomdp) {
+		this.pomdp = pomdp;
 	}
 	
 	public Evidence getLatestEvidence() {
+		//System.out.println("getLatestEvidence " + latestEvidence);
+		//Evidence translated = translateAction(latestEvidence);
+		//System.out.println("translated " + translated);
+		//return translated;
 		return latestEvidence;
 	}
 	
@@ -283,7 +290,7 @@ public class Belief {
 		return diff;
 	}
 	
-	public void zeroTimestep() {
+	private void zeroTimestep() {
 		Set<State> states = getStates();
 		Map<State, Integer> newStateCounts = new HashMap<State, Integer>();
 		for (State s : states) {
@@ -296,12 +303,13 @@ public class Belief {
 	}
 	
 	public boolean ended() {
-		Function endStateFunc = (Function) pbvi.getModel().getRandomFunc("end_state", 1);
+		Function endStateFunc = (Function) pomdp.getModel().getRandomFunc("end_state", 1);
 		Object timestep = Type.getType("Timestep").getGuaranteedObject(getTimestep());
 		Boolean ended = 
 				(Boolean) endStateFunc.getValueSingleArg(timestep, getParticleFilter().particles.get(0).curWorld);
 		if (ended == null) { 
-			System.out.println("Why is ended null?");
+			System.out.println("Why is ended null?" + timestep);
+			System.out.println(this);
 			return false;
 		}
 		return ended;
@@ -338,11 +346,11 @@ public class Belief {
 	}
 	
 
-	public static Belief getSingletonBelief(State state, int numParticles, OUPBVI pbvi) {
-		Properties properties = (Properties) pbvi.getProperties().clone();
+	public static Belief getSingletonBelief(State state, int numParticles, OUPOMDPModel pomdp) {
+		Properties properties = (Properties) pomdp.getProperties().clone();
 		properties.setProperty("numParticles", "" + numParticles);
-		PFEngineSampled pf = new PFEngineSampled(pbvi.getModel(), properties, state.getWorld(), state.getTimestep());
-		Belief b = new Belief(pf, pbvi);
+		PFEngineSampled pf = new PFEngineSampled(pomdp.getModel(), properties, state.getWorld(), state.getTimestep());
+		Belief b = new Belief(pf, pomdp);
 		return b;
 	}
 }

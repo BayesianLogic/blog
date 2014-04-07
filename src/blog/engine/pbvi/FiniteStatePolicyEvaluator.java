@@ -6,12 +6,12 @@ import java.util.Map;
 import blog.model.Evidence;
 
 public class FiniteStatePolicyEvaluator {
-	private OUPBVI pbvi; //TODO: remove dependence
+	private OUPOMDPModel pomdp;
 	private double gamma;
 	private Map<Evidence, Integer> numMissingObs;
 	
-	public FiniteStatePolicyEvaluator(OUPBVI pbvi, double gamma) {
-		this.pbvi = pbvi;
+	public FiniteStatePolicyEvaluator(OUPOMDPModel pbvi, double gamma) {
+		this.pomdp = pbvi;
 		this.gamma = gamma;
 	}
 	
@@ -48,7 +48,7 @@ public class FiniteStatePolicyEvaluator {
 	
 	public Double eval(State state, FiniteStatePolicy p, int numTrials) {
 		numMissingObs = new HashMap<Evidence, Integer>();
-		Belief initState = Belief.getSingletonBelief(state, 1, pbvi);
+		Belief initState = Belief.getSingletonBelief(state, 1, pomdp);
 		double accumulatedValue = 0;
 		
 		for (int i = 0; i < numTrials; i++) {
@@ -94,7 +94,7 @@ public class FiniteStatePolicyEvaluator {
 	
 	public Double eval(State state, DotToPolicy p, int numTrials) {
 		numMissingObs = new HashMap<Evidence, Integer>();
-		Belief initState = Belief.getSingletonBelief(state, 1, pbvi);
+		Belief initState = Belief.getSingletonBelief(state, 1, pomdp);
 		//System.out.println(initState);
 		double accumulatedValue = 0;
 		
@@ -106,7 +106,7 @@ public class FiniteStatePolicyEvaluator {
 			p.resetSim();
 			while (true) {
 				if (curState.ended()) break;
-				Evidence nextAction = p.getAction(pbvi.getActions(curState));
+				Evidence nextAction = p.getAction(pomdp.getActions(curState));
 				//System.out.println(nextAction);
 				curState = curState.sampleNextBelief(nextAction);		
 				Evidence nextObs = curState.getLatestEvidence();
