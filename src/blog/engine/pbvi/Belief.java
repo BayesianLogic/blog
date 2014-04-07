@@ -295,7 +295,7 @@ public class Belief {
 		Map<State, Integer> newStateCounts = new HashMap<State, Integer>();
 		for (State s : states) {
 			int count = stateCounts.get(s);
-			s.zeroTimestep();
+			s.zeroTimestep(0);
 			newStateCounts.put(s, count);
 		}
 		stateCounts = newStateCounts;

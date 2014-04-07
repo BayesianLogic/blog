@@ -223,7 +223,7 @@ public class OUPBVI {
 				if (next.ended()) continue;
 				if (bestBelief == null) bestBelief = next;
 				for (Belief other : newBeliefs) {
-					if (other.getTimestep() != next.getTimestep()) continue;
+					//if (other.getTimestep() != next.getTimestep()) continue;
 					int diff = next.diffNorm(other);
 					if (minDiff > diff) {
 						minDiff = diff;
