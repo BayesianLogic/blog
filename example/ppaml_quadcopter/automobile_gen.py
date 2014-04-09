@@ -115,7 +115,9 @@ if __name__ == "__main__":
     car_params, obstacles = read_metadata(data_dir)
     disc_readings = discretize_time(readings)
     # XXX Output only a few, to keep model size small.
-    disc_readings = disc_readings[:10]
+    # XXX Note in updated dataset, there are no control readings until 0.246
+    # sec, which is in disc_readings[11]... So need to output more than 11.
+    disc_readings = disc_readings[:20]
     model = generate_model(disc_readings, car_params)
     with open('automobile.blog', 'w') as f:
         f.write(model)
