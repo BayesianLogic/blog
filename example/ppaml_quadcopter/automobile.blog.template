@@ -67,15 +67,14 @@ fixed RealMatrix laser_solns(
 
 fixed RealMatrix lasers_sigma = eye(361);
 
-random RealMatrix lasers_func(Real x, Real y, Real theta) {
-    ~ MultivarGaussian(
-        laser_solns(x, y, theta, obstacle_x, obstacle_y, obstacle_r),
-        lasers_sigma)
-};
-
 random RealMatrix lasers(Timestep timestep) {
-    = lasers_func(
-        state(timestep)[0], state(timestep)[1], state(timestep)[2])
+    ~ MultivarGaussian(
+        laser_solns(
+            state(timestep)[0],
+            state(timestep)[1],
+            state(timestep)[2],
+            obstacle_x, obstacle_y, obstacle_r),
+        lasers_sigma)
 };
 
 
