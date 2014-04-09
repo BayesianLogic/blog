@@ -82,36 +82,64 @@ public class Multinomial extends AbstractCondProbDistrib {
   }
 
   public Multinomial(List params) {
-    if (params.size() != 2) {
-      throw new IllegalArgumentException("expected numTrials and pi");
-    }
+    if (params.size() == 2) {
+//    if (params.size() != 2) {
+//      throw new IllegalArgumentException("expected numTrials and pi");
+//    }
 
-    if (!(params.get(0) instanceof Integer)) {
-      throw new IllegalArgumentException(
-          "expected first arg to be integer numTrials");
+      if (!(params.get(0) instanceof Number)) {
+        throw new IllegalArgumentException(
+            "expected first arg to be number numTrials");
+      }
+      int numTrials = ((Number) params.get(0)).intValue();
+  
+      Object objectPi = params.get(1);
+      if (objectPi instanceof MatrixSpec) {
+        objectPi = ((MatrixSpec) objectPi).getValueIfNonRandom();
+      }
+      if (!(objectPi instanceof MatrixLib)) {
+        throw new IllegalArgumentException(
+            "expected second arg to be array of reals; got " + objectPi
+                + " instead, which is of type " + objectPi.getClass().getName());
+      }
+      MatrixLib pi = (MatrixLib) objectPi;
+      if (pi.colLen() != 1) {
+        throw new IllegalArgumentException(
+            "expected second arg to be column vector");
+      }
+      double[] nativePi = new double[pi.rowLen()];
+      for (int i = 0; i < pi.rowLen(); i++) {
+        nativePi[i] = pi.elementAt(i, 0);
+      }
+  
+      init(numTrials, nativePi);
+      expectTrialsAsArg = false;
+      
+    } else if (params.size() == 1) { // numTrials is a random variable
+      
+      Object objectPi = params.get(0);
+      if (objectPi instanceof MatrixSpec) {
+        objectPi = ((MatrixSpec) objectPi).getValueIfNonRandom();
+      }
+      if (!(objectPi instanceof MatrixLib)) {
+        throw new IllegalArgumentException(
+            "expected second arg to be array of reals; got " + objectPi
+                + " instead, which is of type " + objectPi.getClass().getName());
+      }
+      MatrixLib pi = (MatrixLib) objectPi;
+      if (pi.colLen() != 1) {
+        throw new IllegalArgumentException(
+            "expected second arg to be column vector");
+      }
+      double[] nativePi = new double[pi.rowLen()];
+      for (int i = 0; i < pi.rowLen(); i++) {
+        nativePi[i] = pi.elementAt(i, 0);
+      }
+      
+      init(0, nativePi);
+      expectTrialsAsArg = true;
+      
     }
-    int numTrials = (Integer) params.get(0);
-
-    Object objectPi = params.get(1);
-    if (objectPi instanceof MatrixSpec) {
-      objectPi = ((MatrixSpec) objectPi).getValueIfNonRandom();
-    }
-    if (!(objectPi instanceof MatrixLib)) {
-      throw new IllegalArgumentException(
-          "expected second arg to be array of reals; got " + objectPi
-              + " instead, which is of type " + objectPi.getClass().getName());
-    }
-    MatrixLib pi = (MatrixLib) objectPi;
-    if (pi.colLen() != 1) {
-      throw new IllegalArgumentException(
-          "expected second arg to be column vector");
-    }
-    double[] nativePi = new double[pi.rowLen()];
-    for (int i = 0; i < pi.rowLen(); i++) {
-      nativePi[i] = pi.elementAt(i, 0);
-    }
-
-    init(numTrials, nativePi);
   }
 
   /**
@@ -174,6 +202,8 @@ public class Multinomial extends AbstractCondProbDistrib {
    * Returns a vector chosen at random according to this distribution.
    */
   public MatrixLib sampleVal(List args, Type childType) {
+    ensureTrialsInited(args);
+    
     final int numBuckets = pi.length;
     double[] cdf = new double[numBuckets];
     cdf[0] = pi[0];
@@ -205,7 +235,33 @@ public class Multinomial extends AbstractCondProbDistrib {
     }
     return MatrixFactory.fromArray(doubleResult);
   }
-
+  
+  private void ensureTrialsInited(List args) {
+    if (expectTrialsAsArg) {
+      if (args.isEmpty() || args.size() > 1) {
+        throw new IllegalArgumentException(
+            "Arguments to Multinomial should consist of an "
+                + "integer only, since the number of trials were not "
+                + "specified as parameters.");
+      }
+      
+      if (!(args.get(0) instanceof Number)) {
+        throw new IllegalArgumentException(
+            "expected first arg to be number numTrials");
+      }
+      int numTrials = ((Number) args.get(0)).intValue();
+      this.numTrials = numTrials;
+      
+    } else if (args != null) {
+      if (!args.isEmpty()) {
+        throw new IllegalArgumentException(
+            "Multinomial expects no arguments (number of trials "
+                + "were specified as parameters).");
+      }
+    }
+  }
+  
   private int numTrials;
   private double[] pi;
+  private boolean expectTrialsAsArg;
 }
