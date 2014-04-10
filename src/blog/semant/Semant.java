@@ -1125,7 +1125,8 @@ public class Semant {
           func = BuiltInFunctions.SUB_MAT;
         }
       } else {
-        func = BuiltInFunctions.SUB_REAL_ARRAY;
+        // a hack now, need to consider IntegerMatrix as well.
+        func = BuiltInFunctions.SUB_MAT;
       }
       term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
       return term;

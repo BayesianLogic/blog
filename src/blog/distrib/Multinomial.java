@@ -35,6 +35,7 @@
 
 package blog.distrib;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -83,40 +84,45 @@ public class Multinomial extends AbstractCondProbDistrib {
 
   public Multinomial(List params) {
     if (params.size() == 2) {
-//    if (params.size() != 2) {
-//      throw new IllegalArgumentException("expected numTrials and pi");
-//    }
+      // if (params.size() != 2) {
+      // throw new IllegalArgumentException("expected numTrials and pi");
+      // }
 
       if (!(params.get(0) instanceof Number)) {
         throw new IllegalArgumentException(
             "expected first arg to be number numTrials");
       }
       int numTrials = ((Number) params.get(0)).intValue();
-  
+
       Object objectPi = params.get(1);
+      double[] nativePi;
       if (objectPi instanceof MatrixSpec) {
         objectPi = ((MatrixSpec) objectPi).getValueIfNonRandom();
       }
-      if (!(objectPi instanceof MatrixLib)) {
+      if (objectPi instanceof MatrixLib) {
+        MatrixLib pi = (MatrixLib) objectPi;
+        if (pi.colLen() != 1) {
+          throw new IllegalArgumentException(
+              "expected second arg to be column vector");
+        }
+        nativePi = new double[pi.rowLen()];
+        for (int i = 0; i < pi.rowLen(); i++) {
+          nativePi[i] = pi.elementAt(i, 0);
+        }
+      } else if (objectPi instanceof ArrayList) {
+        ArrayList arrayPi = (ArrayList) objectPi;
+        int size = arrayPi.size();
+        nativePi = new double[size];
+        for (int i = 0; i < size; i++)
+          nativePi[i] = (double) arrayPi.get(i);
+      } else {
         throw new IllegalArgumentException(
             "expected second arg to be array of reals; got " + objectPi
                 + " instead, which is of type " + objectPi.getClass().getName());
       }
-      MatrixLib pi = (MatrixLib) objectPi;
-      if (pi.colLen() != 1) {
-        throw new IllegalArgumentException(
-            "expected second arg to be column vector");
-      }
-      double[] nativePi = new double[pi.rowLen()];
-      for (int i = 0; i < pi.rowLen(); i++) {
-        nativePi[i] = pi.elementAt(i, 0);
-      }
-  
       init(numTrials, nativePi);
       expectTrialsAsArg = false;
-      
     } else if (params.size() == 1) { // numTrials is a random variable
-      
       Object objectPi = params.get(0);
       if (objectPi instanceof MatrixSpec) {
         objectPi = ((MatrixSpec) objectPi).getValueIfNonRandom();
@@ -135,10 +141,10 @@ public class Multinomial extends AbstractCondProbDistrib {
       for (int i = 0; i < pi.rowLen(); i++) {
         nativePi[i] = pi.elementAt(i, 0);
       }
-      
+
       init(0, nativePi);
       expectTrialsAsArg = true;
-      
+
     }
   }
 
@@ -203,7 +209,7 @@ public class Multinomial extends AbstractCondProbDistrib {
    */
   public MatrixLib sampleVal(List args, Type childType) {
     ensureTrialsInited(args);
-    
+
     final int numBuckets = pi.length;
     double[] cdf = new double[numBuckets];
     cdf[0] = pi[0];
@@ -235,7 +241,7 @@ public class Multinomial extends AbstractCondProbDistrib {
     }
     return MatrixFactory.fromArray(doubleResult);
   }
-  
+
   private void ensureTrialsInited(List args) {
     if (expectTrialsAsArg) {
       if (args.isEmpty() || args.size() > 1) {
@@ -244,14 +250,14 @@ public class Multinomial extends AbstractCondProbDistrib {
                 + "integer only, since the number of trials were not "
                 + "specified as parameters.");
       }
-      
+
       if (!(args.get(0) instanceof Number)) {
         throw new IllegalArgumentException(
             "expected first arg to be number numTrials");
       }
       int numTrials = ((Number) args.get(0)).intValue();
       this.numTrials = numTrials;
-      
+
     } else if (args != null) {
       if (!args.isEmpty()) {
         throw new IllegalArgumentException(
@@ -260,7 +266,7 @@ public class Multinomial extends AbstractCondProbDistrib {
       }
     }
   }
-  
+
   private int numTrials;
   private double[] pi;
   private boolean expectTrialsAsArg;
