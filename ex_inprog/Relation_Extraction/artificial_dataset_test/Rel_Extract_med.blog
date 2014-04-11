@@ -27,7 +27,7 @@ random Boolean Holds(Fact f) ~ BooleanDistrib(Sparsity(Rel(f)));
 type Trigger;
 
 /* alpha should be a vector of length #Triggers */
-fixed Real dir_alpha = 0.3;
+fixed Real dir_alpha = 0.1;
 fixed Integer numTrigs = 5;
 random Real[] Theta(Relation r) ~ SymmetricDirichlet(numTrigs, dir_alpha);
 
@@ -49,8 +49,8 @@ random Trigger Verb(Sentence s) = idToTrigger( TriggerID(s) );
 /* Observations go here */
 
 distinct Sentence Sent[20];
-distinct Relation leadership, teaches_class, student_of;
-
+//distinct Relation leadership, teaches_class, student_of;
+distinct Relation R[3];
 
 
 distinct Entity USA, UC_Berkeley, Stuart_Russell, Pranab_Mukherjee, Nicholas_Dirks, Jitendra_Malik, John, John_Hennessy, Lei, Chris, the_Jedi_Senate, Obama, Stanford, Machine_Learning, Security, Computer_Vision, David_Wagner, Mike_Jordan, India, Artificial_Intelligence, Palpatine, Statistical_Learning_Theory;

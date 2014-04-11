@@ -540,11 +540,13 @@ public class RelationExtractionProposer implements Proposer {
       double sample = rng.nextDouble();
       proposedWorld.revert();
       updateSupportedFacts(proposedWorld); // Used for sourceFactSwitch and holdsSwitch
-      if (sample < 0.3) {
+      if (sample < 0.25) {
+        logAcceptanceRatio = blockSourceFactSwitch(proposedWorld);
+      } else if (sample < 0.5) {
         logAcceptanceRatio = sourceFactSwitch(proposedWorld);
       } else if (sample < 0.6) {
         logAcceptanceRatio = holdsSwitch(proposedWorld);
-      } else if (sample < 0.8) {
+      } else if (sample < 0.7) {
         logAcceptanceRatio = randomSparsitySample(proposedWorld);
       } else {
         logAcceptanceRatio = randomThetaSample(proposedWorld);
@@ -569,7 +571,11 @@ public class RelationExtractionProposer implements Proposer {
 
     int sentNum = rng.nextInt(sentType.getGuaranteedObjects().size());
     Object sentence = sentType.getGuaranteedObject(sentNum);
-
+    
+    return sourceFactSwitchForSentence(proposedWorld, sentence);
+  }
+  
+  private double sourceFactSwitchForSentence(PartialWorldDiff proposedWorld, Object sentence) {
     // Get previous source fact
     Object previousSourceFact = proposedWorld.getValue(new RandFuncAppVar(sourceFactFunc, Collections.singletonList(sentence)));
     
@@ -702,6 +708,174 @@ public class RelationExtractionProposer implements Proposer {
 
   }
 
+  /**
+   * Method for performing a block sourceFact(s) switch
+   * 
+   * 1) Choose a random sentence s
+   * 2) Find all other sentences with the same argument pair
+   *    Call this set movedSentences
+   * 3) If they all exhibit the same fact,
+   *  3a) Choose a relation r (sampling from M)
+   *  3b) Set new fact to be sourceFact for all sentences in MovedSentences
+   *  3c) Sample PSF
+   * 4) Else, do sourceFactSwitch on s
+   */
+  private double blockSourceFactSwitch(PartialWorldDiff proposedWorld) {
+    
+    // Choose sentence s randomly from all sentences
+
+    int sentNum = rng.nextInt(sentType.getGuaranteedObjects().size());
+    Object sentence = sentType.getGuaranteedObject(sentNum);
+    
+    // Get movedSentences set
+    HashSet movedSentences = getAllOtherSentencesWithSameArgPair(sentence, proposedWorld);
+
+    // Get previous source fact
+    Object previousSourceFact = proposedWorld.getValue(makeVar(sourceFactFunc, sentence));
+    
+    // Check to see if all movedSentences has same previousSourceFact
+    boolean samePreviousSourceFact = true;
+    for (Object movedSentence : movedSentences) {
+      Object psf = proposedWorld.getValue(makeVar(sourceFactFunc, movedSentence));
+      if (!psf.equals(previousSourceFact)) {
+        samePreviousSourceFact = false;
+      }
+    }
+    
+    // If not all points to same source fact, just normal source fact switch for sentence s
+    if (!samePreviousSourceFact) {
+      return sourceFactSwitchForSentence(proposedWorld, sentence);
+    }
+    
+    /*
+     * Block SourceFactSwitch Starts Here!
+     */
+    
+    // Get previous source fact relation
+    Object oldRel = ((NonGuaranteedObject) previousSourceFact).getOriginFuncValue(relFunc);
+
+    // Get triggerID's of all sentences
+    int[] triggerIDs = new int[movedSentences.size()];
+    int index = 0;
+    for (Object sent : movedSentences) {
+      triggerIDs[index] = (Integer) proposedWorld.getValue(makeVar(triggerIDFunc, sent));
+      index++;
+    }
+    
+
+    // Create the multinomial vector M
+    double[] M = new double[relType.getGuaranteedObjects().size()];
+    double total = 0;
+    
+    // The outer loop is for every relation
+    for (int i = 0; i < relType.getGuaranteedObjects().size(); i++) {
+      Object rel = relType.getGuaranteedObject(i);
+      JamaMatrixLib theta = (JamaMatrixLib) proposedWorld.getValue(makeVar(thetaFunc, rel)); // \theta(r_i)
+      M[i] = 1;
+      // The inner loop is for every triggerID
+      for (int s = 0; s < triggerIDs.length; s++) {
+        M[i] *= theta.elementAt(0, triggerIDs[s]);
+      }
+      total += M[i];
+    }
+    
+    // Normalize M
+    for (int i = 0; i < M.length; i++) {
+      M[i] /= total;
+    }
+
+    
+    // Sample relation from M
+    int newRelNum = Util.sampleWithProbs(M);
+    Object newRel = relType.getGuaranteedObject(newRelNum);
+    
+    
+    // Get new sourceFact, set it to be sourceFact for every sentence
+    Object arg1 = proposedWorld.getValue(makeVar(subjectFunc, sentence));
+    Object arg2 = proposedWorld.getValue(makeVar(objectFunc, sentence));
+    Object newSourceFact = getFact(newRel, arg1, arg2, proposedWorld);
+    proposedWorld.setValue(makeVar(holdsFunc, newSourceFact),  true);
+
+    // Set new sourceFact for every movedSentence
+    for (Object sent : movedSentences) {
+      proposedWorld.setValue(makeVar(sourceFactFunc, sent), newSourceFact);
+    }
+
+    // Sample previous source fact IF IT IS NOT THE SAME AS NEW SOURCE FACT
+    if (!previousSourceFact.equals(newSourceFact)) {
+      Object psfRel = ((NonGuaranteedObject) previousSourceFact).getOriginFuncValue(relFunc);
+      double sparsity = (Double) proposedWorld.getValue(makeVar(sparsityFunc, psfRel));
+      RandFuncAppVar holds = makeVar(holdsFunc, previousSourceFact);
+      if (rng.nextDouble() < sparsity) {
+        proposedWorld.setValue(holds, true);
+      } else {
+        proposedWorld.setValue(holds, false);
+      }
+    }
+    
+
+    // Calculate and return log acceptance ratio    
+    PartialWorld oldWorld = proposedWorld.getSaved();
+  
+    
+    // The two values, h(nsf_y) and h(nsf_x) are both true, since in their respective moves
+    //   they were selected and forced to be true in order to express the sentence. Therefore,
+    //   P(h(nsf_i)) is simply equal to the sparsity value of the corresponding relation.
+    double logProbOfNSFy = Math.log((Double) proposedWorld.getValue(makeVar(sparsityFunc, newRel))); 
+    double logProbOfNSFx = Math.log((Double) oldWorld.getValue(makeVar(sparsityFunc, oldRel))); 
+    int numTrueFactsInOldState = 0;
+    int numTrueFactsInNewState = 0;
+    for (Object fact : allFacts(proposedWorld)) {
+      if ((Boolean) oldWorld.getValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)))) {
+        numTrueFactsInOldState++;
+      }
+      if ((Boolean) proposedWorld.getValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)))) {
+        numTrueFactsInNewState++;
+      }
+    }
+    
+    double logTrueFactRatio = sentType.getGuaranteedObjects().size() * Math.log((float) numTrueFactsInOldState/numTrueFactsInNewState);
+    
+    
+    // now print it..
+//    if (count % 100 == 0) {
+//      System.out.println("Source Fact Iteration #: " + count);
+//      System.out.println("Correct logStateRatio: " + logStateRatio);
+//      System.out.println("Correct logTrueFactRatio: " + logTrueFactRatio);
+//      int sdjfkl = 5+2; // lol this is here so I can put a breakpoint after the system print
+//    }
+    
+    double logAcceptanceRatio = logProbOfNSFy - logProbOfNSFx + logTrueFactRatio;
+    double acceptanceRatio = Math.exp(logAcceptanceRatio);
+    
+    return logAcceptanceRatio; // RelationExtractionMHSampler hack
+    
+    //return logProposalRatio;
+
+  }
+  
+  // Linear scan through all other sentences
+  private HashSet getAllOtherSentencesWithSameArgPair(Object sentence, PartialWorldDiff proposedWorld) {
+    
+    HashSet movedSentences = new HashSet();
+    movedSentences.add(sentence);
+    
+    // Get arg pair
+    Object arg1 = proposedWorld.getValue(makeVar(subjectFunc, sentence));
+    Object arg2 = proposedWorld.getValue(makeVar(objectFunc, sentence));
+    
+    for (int i = 0; i < sentType.getGuaranteedObjects().size(); i++) {
+      Object sent = sentType.getGuaranteedObject(i);
+      Object sent_arg1 = proposedWorld.getValue(makeVar(subjectFunc, sent));
+      Object sent_arg2 = proposedWorld.getValue(makeVar(objectFunc, sent));
+      if (arg1.equals(sent_arg1) && arg2.equals(sent_arg2)) {
+        movedSentences.add(sent);
+      }
+    }
+    
+    return movedSentences;
+  }
+  
   /**
    * Method for performing Holds(f) switch
    * 

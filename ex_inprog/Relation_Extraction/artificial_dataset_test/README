@@ -63,3 +63,97 @@ Distribution of values for Rel(SourceFact(Sent[4]))
 	0.11805	leadership
 
 Bootstrap seems to work. 
+
+##############################
+
+Experiment (#3):
+ - 20 sentences, medium dataset
+ - 3 relations
+ - NO LABELS
+
+Results: Almost clusters consistently. Does a pretty good job, much better mixing.
+
+Here is a sample of the distribution after 100k samples, 40k burn in samples. Dir_alpha = 0.1, making the Dirichlet Distribution very spiky. This answer is very confident.
+
+Distribution of values for Rel(SourceFact(Sent[0]))
+	0.8781333333333333	R[0]
+	0.07331666666666667	R[2]
+	0.04855	R[1]
+Distribution of values for Rel(SourceFact(Sent[1]))
+	0.8681166666666666	R[0]
+	0.08008333333333334	R[2]
+	0.0518	R[1]
+Distribution of values for Rel(SourceFact(Sent[2]))
+	0.9599833333333333	R[0]
+	0.033883333333333335	R[2]
+	0.0061333333333333335	R[1]
+Distribution of values for Rel(SourceFact(Sent[3]))
+	0.9523666666666667	R[0]
+	0.03693333333333333	R[2]
+	0.0107	R[1]
+Distribution of values for Rel(SourceFact(Sent[4]))
+	0.96015	R[0]
+	0.033716666666666666	R[2]
+	0.0061333333333333335	R[1]
+Distribution of values for Rel(SourceFact(Sent[5]))
+	0.95015	R[0]
+	0.03693333333333333	R[2]
+	0.012916666666666667	R[1]
+Distribution of values for Rel(SourceFact(Sent[6]))
+	0.8880333333333333	R[0]
+	0.07948333333333334	R[2]
+	0.032483333333333336	R[1]
+Distribution of values for Rel(SourceFact(Sent[7]))
+	0.8838333333333334	R[1]
+	0.11256666666666666	R[2]
+	0.0036	R[0]
+Distribution of values for Rel(SourceFact(Sent[8]))
+	0.8039	R[1]
+	0.15693333333333334	R[2]
+	0.03916666666666667	R[0]
+Distribution of values for Rel(SourceFact(Sent[9]))
+	0.7738333333333334	R[1]
+	0.17408333333333334	R[2]
+	0.052083333333333336	R[0]
+Distribution of values for Rel(SourceFact(Sent[10]))
+	0.7734	R[1]
+	0.1755	R[2]
+	0.0511	R[0]
+Distribution of values for Rel(SourceFact(Sent[11]))
+	0.8799166666666667	R[1]
+	0.11258333333333333	R[2]
+	0.0075	R[0]
+Distribution of values for Rel(SourceFact(Sent[12]))
+	0.8845	R[1]
+	0.11205	R[2]
+	0.00345	R[0]
+Distribution of values for Rel(SourceFact(Sent[13]))
+	0.8799166666666667	R[1]
+	0.11258333333333333	R[2]
+	0.0075	R[0]
+Distribution of values for Rel(SourceFact(Sent[14]))
+	0.7311333333333333	R[2]
+	0.1635	R[0]
+	0.10536666666666666	R[1]
+Distribution of values for Rel(SourceFact(Sent[15]))
+	0.7304166666666667	R[2]
+	0.16541666666666666	R[0]
+	0.10416666666666667	R[1]
+Distribution of values for Rel(SourceFact(Sent[16]))
+	0.72595	R[2]
+	0.16805	R[0]
+	0.106	R[1]
+Distribution of values for Rel(SourceFact(Sent[17]))
+	0.7225	R[2]
+	0.17013333333333333	R[0]
+	0.10736666666666667	R[1]
+Distribution of values for Rel(SourceFact(Sent[18]))
+	0.7082666666666667	R[2]
+	0.17891666666666667	R[0]
+	0.11281666666666666	R[1]
+Distribution of values for Rel(SourceFact(Sent[19]))
+	0.6841333333333334	R[2]
+	0.18323333333333333	R[0]
+	0.13263333333333333	R[1]
+======== Done ========
+

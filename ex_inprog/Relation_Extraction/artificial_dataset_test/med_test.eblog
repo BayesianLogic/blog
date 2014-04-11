@@ -3,7 +3,7 @@
 obs Subject(Sent[0]) = Obama;
 obs Object(Sent[0]) = USA;
 obs Verb(Sent[0]) = is_the_president_of;
-obs Rel(SourceFact(Sent[0])) = leadership; // Relation Observation
+//obs Rel(SourceFact(Sent[0])) = leadership; // Relation Observation
 
 obs Subject(Sent[1]) = Pranab_Mukherjee;
 obs Object(Sent[1]) = India;
@@ -32,7 +32,7 @@ obs Verb(Sent[6]) = is_the_chancellor_of;
 obs Subject(Sent[7]) = Stuart_Russell;
 obs Object(Sent[7]) = Artificial_Intelligence;
 obs Verb(Sent[7]) = teaches_a_class_in;
-obs Rel(SourceFact(Sent[7])) = teaches_class; // Relation Observation
+//obs Rel(SourceFact(Sent[7])) = teaches_class; // Relation Observation
 
 obs Subject(Sent[8]) = Jitendra_Malik;
 obs Object(Sent[8]) = Computer_Vision;
@@ -61,7 +61,7 @@ obs Verb(Sent[13]) = teaches;
 obs Subject(Sent[14]) = Chris;
 obs Object(Sent[14]) = Stuart_Russell;
 obs Verb(Sent[14]) = is_a_student_of;
-obs Rel(SourceFact(Sent[14])) = student_of; // Relation Observation
+//obs Rel(SourceFact(Sent[14])) = student_of; // Relation Observation
 
 obs Subject(Sent[15]) = Chris;
 obs Object(Sent[15]) = Mike_Jordan;
