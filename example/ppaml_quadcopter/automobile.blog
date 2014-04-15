@@ -30,14 +30,7 @@ because of time discretization.
 fixed Real delta_t = 0.005;
 fixed RealMatrix car_params = [0.299541; 0.0500507; 0.0; 0.257717];
 fixed RealMatrix initial_state = [0.0; 0.0; 0.0; 0.0; 0.0; 0.0];
-fixed RealMatrix state_sigma = [
-    [1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    [0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
-    [0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
-    [0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
-    [0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-    [0.0, 0.0, 0.0, 0.0, 0.0, 1.0]
-];
+fixed RealMatrix state_sigma = 0.001 * eye(6);
 
 fixed RealMatrix dynamics(
         RealMatrix car_params, RealMatrix old_state,
@@ -72,7 +65,7 @@ fixed RealMatrix laser_solns(
         Real obstacle_x, Real obstacle_y, Real obstacle_r)
     = LaserInterp();
 
-fixed RealMatrix lasers_sigma = eye(361);
+fixed RealMatrix lasers_sigma = 0.001 * eye(361);
 
 random RealMatrix lasers(Timestep timestep) {
     ~ MultivarGaussian(

@@ -59,7 +59,6 @@ def generate_model(disc_readings, car_params):
     model_vars['car_params'] = [
         car_params.a, car_params.b, car_params.h, car_params.L]
     model_vars['initial_state'] = np.zeros(6)
-    model_vars['state_sigma'] = np.eye(6)
     model_vars['obstacle_x'] = 3.0
     model_vars['obstacle_y'] = 2.0
     model_vars['obstacle_r'] = 1.0
