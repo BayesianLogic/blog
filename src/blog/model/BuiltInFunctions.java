@@ -95,6 +95,7 @@ public class BuiltInFunctions {
   public static final String ZEROS_NAME = "zeros";
   public static final String ONES_NAME = "ones";
   public static final String TOINT_NAME = "toInt";
+  public static final String TOREAL_NAME = "toReal";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -703,12 +704,17 @@ public class BuiltInFunctions {
     argTypes.add(BuiltInTypes.INTEGER);
     retType = BuiltInTypes.REAL_MATRIX;
 
-    // get the i-th row of the matrix
+    // Return the i-th row of the matrix,
+    // or if the matrix has a single row, return the i-th column.
     FunctionInterp subMatInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         MatrixLib mat = (MatrixLib) args.get(0);
         int i = (Integer) args.get(1);
-        return mat.sliceRow(i);
+        if (mat.rowLen() > 1) {
+          return mat.sliceRow(i);
+        } else {
+          return mat.elementAt(0, i);
+        }
       }
     };
     SUB_MAT = new NonRandomFunction(SUB_MAT_NAME, argTypes, retType,
@@ -1077,5 +1083,26 @@ public class BuiltInFunctions {
     TO_INT = new NonRandomFunction(TOINT_NAME, argTypes, retType, toIntInterp);
     addFunction(TO_INT);
 
+    FunctionInterp toRealInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Object obj = args.get(0);
+        if (obj instanceof Number) {
+          return ((Number) obj).doubleValue();
+        } else if (obj instanceof Boolean) {
+          return ((Boolean) obj).booleanValue() ? 1 : 0;
+        } else if (obj instanceof MatrixLib) {
+          return ((MatrixLib) obj).elementAt(0, 0);
+        } else {
+          System.err.println(obj.toString()
+              + " cannot be converted to Real");
+          return 0;
+        }
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.BUILT_IN);
+    retType = BuiltInTypes.REAL;
+    TO_INT = new NonRandomFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
+    addFunction(TO_INT);
   };
 }
