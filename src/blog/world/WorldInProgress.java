@@ -60,6 +60,8 @@ import blog.model.RandomFunction;
 import blog.model.SkolemConstant;
 import blog.model.Type;
 
+import blog.type.Timestep;
+
 /**
  * PartialWorld implementation that maintains a list of uninstantiated
  * VarWithDistrib objects, and allows variables to be instantiated using a
@@ -97,14 +99,18 @@ public class WorldInProgress extends DefaultPartialWorld {
 	 *          objects have depth one greater than the maximum depth of their
 	 *          generating objects. To allow unbounded depths, pass -1 for this
 	 *          parameter.
+   *
+   * @param timestepBound
+   *          maximum value for a Timestep variable
 	 */
 	public WorldInProgress(Model model, Evidence evidence, int intBound,
-			int depthBound) {
+			int depthBound, int timestepBound) {
 		super(Collections.EMPTY_SET);
 		this.model = model;
 		this.evidence = evidence;
 		this.intBound = intBound;
 		this.depthBound = depthBound;
+    this.timestepBound = timestepBound;
 
 		// Determine what types serve as arguments to basic RVs. Initialize
 		// their object lists to be empty. As we're doing this, add any
@@ -156,6 +162,12 @@ public class WorldInProgress extends DefaultPartialWorld {
 				intsAreArgs = true;
 			} else if (type == BuiltInTypes.BOOLEAN) {
 				addObjects(type, type.getGuaranteedObjects());
+      } else if (type == BuiltInTypes.TIMESTEP) {
+        ArrayList<Timestep> timesteps = new ArrayList();
+        for (int i = 0; i <= timestepBound; i++) {
+          timesteps.add(Timestep.at(i));
+        }
+        addObjects(type, timesteps);
 			} else if (type.isBuiltIn()) {
 				Util.fatalError("Illegal argument type for random function: " + type,
 						false);
@@ -339,4 +351,5 @@ public class WorldInProgress extends DefaultPartialWorld {
 
 	private int intBound;
 	private int depthBound;
+  private int timestepBound;
 }

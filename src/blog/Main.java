@@ -324,6 +324,8 @@ public class Main {
         "Do <n> independent runs of inference");
     BooleanOption optGenerate = new BooleanOption(null, "generate", false,
         "Sample worlds from prior and print them");
+    IntOption optTimestepBound = new IntOption(null, "max_timestep",
+        10, "If model is dynamic, generate up to <n> timesteps");
     StringListOption optPackages = new StringListOption("k", "package",
         "Parser looks for classes in package <s>");
     BooleanOption optVerbose = new BooleanOption("v", "verbose", false,
@@ -401,6 +403,8 @@ public class Main {
     inferenceProps.setProperty("burnIn", String.valueOf(optBurnIn.getValue()));
     inferenceProps.setProperty("samplerClass", optSampler.getValue());
     inferenceProps.setProperty("proposerClass", optProposer.getValue());
+    inferenceProps.setProperty("timestepBound",
+        String.valueOf(optTimestepBound.getValue()));
 
     for (Iterator iter = optSetupExtenders.getValue().iterator(); iter
         .hasNext();) {
