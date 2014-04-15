@@ -81,20 +81,17 @@ def generate_model(disc_readings, car_params):
         elif reading.velocity:
             # Fill in unobserved timesteps with the previous control.
             while next_control_timestep < reading.timestep:
-                controls.append(Control(
-                    timestep=next_control_timestep,
-                    velocity=prev_control_reading.velocity,
-                    steering=prev_control_reading.steering))
+                controls.append([
+                    prev_control_reading.velocity,
+                    prev_control_reading.steering])
                 next_control_timestep += 1
             # Add the new control:
-            controls.append(Control(
-                timestep=reading.timestep,
-                velocity=reading.velocity,
-                steering=reading.steering))
+            controls.append([reading.velocity, reading.steering])
             next_control_timestep += 1
             prev_control_reading = reading
         else:
             pass  # skip GPS readings
+    controls = np.array(controls)
 
     # Generate the model.
     env = Environment(loader=FileSystemLoader('.'))

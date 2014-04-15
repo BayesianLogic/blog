@@ -42,7 +42,8 @@ random RealMatrix state(Timestep timestep) {
     else ~ MultivarGaussian(
         dynamics(
             car_params, state(Prev(timestep)),
-            velocity(timestep), steering(timestep),
+            toReal(controls[toInt(timestep)][0]),
+            toReal(controls[toInt(timestep)][1]),
             delta_t),
         state_sigma)
 };
@@ -80,166 +81,84 @@ random RealMatrix lasers(Timestep timestep) {
 
 //////////////////////////////////////////////////////////////////////////////
 
-/*
- * The controls are fixed values.
- * Using "random" instead of "fixed" because of bug in BLOG.
- */
+/* Controls: */
 
-random Real velocity(Timestep timestep) {
-    if false then = 0
-    else if timestep == @0 then = 0.0
-    else if timestep == @1 then = 0.0
-    else if timestep == @2 then = 0.0
-    else if timestep == @3 then = 0.0
-    else if timestep == @4 then = 0.0
-    else if timestep == @5 then = 0.0
-    else if timestep == @6 then = 0.0
-    else if timestep == @7 then = 0.0
-    else if timestep == @8 then = 0.0
-    else if timestep == @9 then = 0.0
-    else if timestep == @10 then = 0.0
-    else if timestep == @11 then = 0.0
-    else if timestep == @12 then = 0.0
-    else if timestep == @13 then = 0.0
-    else if timestep == @14 then = 0.0
-    else if timestep == @15 then = 0.0
-    else if timestep == @16 then = 0.0
-    else if timestep == @17 then = 0.0
-    else if timestep == @18 then = 0.0
-    else if timestep == @19 then = 0.0
-    else if timestep == @20 then = 0.0
-    else if timestep == @21 then = 0.0
-    else if timestep == @22 then = 0.0
-    else if timestep == @23 then = 0.0
-    else if timestep == @24 then = 0.0
-    else if timestep == @25 then = 0.0
-    else if timestep == @26 then = 0.0
-    else if timestep == @27 then = 0.0
-    else if timestep == @28 then = 0.0
-    else if timestep == @29 then = 0.0
-    else if timestep == @30 then = 0.0
-    else if timestep == @31 then = 0.0
-    else if timestep == @32 then = 0.0
-    else if timestep == @33 then = 0.0
-    else if timestep == @34 then = 0.0
-    else if timestep == @35 then = 0.0
-    else if timestep == @36 then = 0.0
-    else if timestep == @37 then = 0.0
-    else if timestep == @38 then = 0.0
-    else if timestep == @39 then = 0.0
-    else if timestep == @40 then = 0.0
-    else if timestep == @41 then = 0.0
-    else if timestep == @42 then = 0.0
-    else if timestep == @43 then = 0.0
-    else if timestep == @44 then = 0.0
-    else if timestep == @45 then = 0.0
-    else if timestep == @46 then = 0.0
-    else if timestep == @47 then = 0.0
-    else if timestep == @48 then = 0.0
-    else if timestep == @49 then = 0.0
-    else if timestep == @50 then = 0.0316302
-    else if timestep == @51 then = 0.0316302
-    else if timestep == @52 then = 0.0316302
-    else if timestep == @53 then = 0.0316302
-    else if timestep == @54 then = 0.0316302
-    else if timestep == @55 then = 0.0066694
-    else if timestep == @56 then = 0.0066694
-    else if timestep == @57 then = 0.0066694
-    else if timestep == @58 then = 0.0066694
-    else if timestep == @59 then = 0.0066694
-    else if timestep == @60 then = 0.0115716
-    else if timestep == @61 then = 0.0115716
-    else if timestep == @62 then = 0.0115716
-    else if timestep == @63 then = 0.0115716
-    else if timestep == @64 then = 0.0272438
-    else if timestep == @65 then = 0.0272438
-    else if timestep == @66 then = 0.0272438
-    else if timestep == @67 then = 0.0272438
-    else if timestep == @68 then = 0.0272438
-    else if timestep == @69 then = 0.022349
-    else if timestep == @70 then = 0.022349
-    else if timestep == @71 then = 0.022349
-    else if timestep == @72 then = 0.022349
-    else if timestep == @73 then = 0.00975375
-};
-
-random Real steering(Timestep timestep) {
-    if false then = 0
-    else if timestep == @0 then = 0.0
-    else if timestep == @1 then = 0.0
-    else if timestep == @2 then = 0.0
-    else if timestep == @3 then = 0.0
-    else if timestep == @4 then = 0.0
-    else if timestep == @5 then = 0.0
-    else if timestep == @6 then = 0.0
-    else if timestep == @7 then = 0.0
-    else if timestep == @8 then = 0.0
-    else if timestep == @9 then = 0.0
-    else if timestep == @10 then = 0.0
-    else if timestep == @11 then = 0.0
-    else if timestep == @12 then = 0.0
-    else if timestep == @13 then = 0.0
-    else if timestep == @14 then = 0.0
-    else if timestep == @15 then = 0.0
-    else if timestep == @16 then = 0.0
-    else if timestep == @17 then = 0.0
-    else if timestep == @18 then = 0.0
-    else if timestep == @19 then = 0.0
-    else if timestep == @20 then = 0.0
-    else if timestep == @21 then = 0.0
-    else if timestep == @22 then = 0.0
-    else if timestep == @23 then = 0.0
-    else if timestep == @24 then = 0.0
-    else if timestep == @25 then = 0.0
-    else if timestep == @26 then = 0.0
-    else if timestep == @27 then = 0.0
-    else if timestep == @28 then = 0.0
-    else if timestep == @29 then = 0.0
-    else if timestep == @30 then = 0.0
-    else if timestep == @31 then = 0.0
-    else if timestep == @32 then = 0.0
-    else if timestep == @33 then = 0.0
-    else if timestep == @34 then = 0.0
-    else if timestep == @35 then = 0.0
-    else if timestep == @36 then = 0.0
-    else if timestep == @37 then = 0.0
-    else if timestep == @38 then = 0.0
-    else if timestep == @39 then = 0.0
-    else if timestep == @40 then = 0.0
-    else if timestep == @41 then = 0.0
-    else if timestep == @42 then = 0.0
-    else if timestep == @43 then = 0.0
-    else if timestep == @44 then = 0.0
-    else if timestep == @45 then = 0.0
-    else if timestep == @46 then = 0.0
-    else if timestep == @47 then = 0.0
-    else if timestep == @48 then = 0.0
-    else if timestep == @49 then = 0.0
-    else if timestep == @50 then = 0.00630037
-    else if timestep == @51 then = 0.00630037
-    else if timestep == @52 then = 0.00630037
-    else if timestep == @53 then = 0.00630037
-    else if timestep == @54 then = 0.00630037
-    else if timestep == @55 then = 0.00407235
-    else if timestep == @56 then = 0.00407235
-    else if timestep == @57 then = 0.00407235
-    else if timestep == @58 then = 0.00407235
-    else if timestep == @59 then = 0.00407235
-    else if timestep == @60 then = 0.0029854
-    else if timestep == @61 then = 0.0029854
-    else if timestep == @62 then = 0.0029854
-    else if timestep == @63 then = 0.0029854
-    else if timestep == @64 then = 0.00211613
-    else if timestep == @65 then = 0.00211613
-    else if timestep == @66 then = 0.00211613
-    else if timestep == @67 then = 0.00211613
-    else if timestep == @68 then = 0.00211613
-    else if timestep == @69 then = 0.00120382
-    else if timestep == @70 then = 0.00120382
-    else if timestep == @71 then = 0.00120382
-    else if timestep == @72 then = 0.00120382
-    else if timestep == @73 then = 0.00131373
-};
+fixed RealMatrix controls = [
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0, 0.0],
+    [0.0316302, 0.00630037],
+    [0.0316302, 0.00630037],
+    [0.0316302, 0.00630037],
+    [0.0316302, 0.00630037],
+    [0.0316302, 0.00630037],
+    [0.0066694, 0.00407235],
+    [0.0066694, 0.00407235],
+    [0.0066694, 0.00407235],
+    [0.0066694, 0.00407235],
+    [0.0066694, 0.00407235],
+    [0.0115716, 0.0029854],
+    [0.0115716, 0.0029854],
+    [0.0115716, 0.0029854],
+    [0.0115716, 0.0029854],
+    [0.0272438, 0.00211613],
+    [0.0272438, 0.00211613],
+    [0.0272438, 0.00211613],
+    [0.0272438, 0.00211613],
+    [0.0272438, 0.00211613],
+    [0.022349, 0.00120382],
+    [0.022349, 0.00120382],
+    [0.022349, 0.00120382],
+    [0.022349, 0.00120382],
+    [0.00975375, 0.00131373]
+];
 
 
 //////////////////////////////////////////////////////////////////////////////

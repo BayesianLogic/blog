@@ -42,7 +42,8 @@ random RealMatrix state(Timestep timestep) {
     else ~ MultivarGaussian(
         dynamics(
             car_params, state(Prev(timestep)),
-            velocity(timestep), steering(timestep),
+            toReal(controls[toInt(timestep)][0]),
+            toReal(controls[toInt(timestep)][1]),
             delta_t),
         state_sigma)
 };
@@ -80,24 +81,9 @@ random RealMatrix lasers(Timestep timestep) {
 
 //////////////////////////////////////////////////////////////////////////////
 
-/*
- * The controls are fixed values.
- * Using "random" instead of "fixed" because of bug in BLOG.
- */
+/* Controls: */
 
-random Real velocity(Timestep timestep) {
-    if false then = 0
-    {%- for timestep in range(last_timestep + 1) %}
-    else if timestep == @{{ timestep }} then = {{ controls[timestep].velocity }}
-    {%- endfor %}
-};
-
-random Real steering(Timestep timestep) {
-    if false then = 0
-    {%- for timestep in range(last_timestep + 1) %}
-    else if timestep == @{{ timestep }} then = {{ controls[timestep].steering }}
-    {%- endfor %}
-};
+fixed RealMatrix controls = {{ controls |blog_matrix }};
 
 
 //////////////////////////////////////////////////////////////////////////////
