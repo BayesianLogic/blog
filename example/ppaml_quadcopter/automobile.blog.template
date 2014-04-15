@@ -70,9 +70,9 @@ fixed RealMatrix lasers_sigma = eye(361);
 random RealMatrix lasers(Timestep timestep) {
     ~ MultivarGaussian(
         laser_solns(
-            state(timestep)[0],
-            state(timestep)[1],
-            state(timestep)[2],
+            toReal(state(timestep)[0]),
+            toReal(state(timestep)[1]),
+            toReal(state(timestep)[2]),
             obstacle_x, obstacle_y, obstacle_r),
         lasers_sigma)
 };
