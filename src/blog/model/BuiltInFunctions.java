@@ -94,6 +94,7 @@ public class BuiltInFunctions {
   public static final String EYE_NAME = "eye";
   public static final String ZEROS_NAME = "zeros";
   public static final String ONES_NAME = "ones";
+  public static final String TOINT_NAME = "toInt";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -326,7 +327,8 @@ public class BuiltInFunctions {
   public static NonRandomFunction TAN;
 
   /**
-   * Take scalars <code>x</code> and <code>y</code> and return <code>atan2(y, x)</code>.
+   * Take scalars <code>x</code> and <code>y</code> and return
+   * <code>atan2(y, x)</code>.
    */
   public static NonRandomFunction ATAN2;
 
@@ -337,7 +339,8 @@ public class BuiltInFunctions {
   public static NonRandomFunction COL_SUM;
 
   /**
-   * Take RealMatrix x and y and return RealMatrix z which is the concatenation [x; y].
+   * Take RealMatrix x and y and return RealMatrix z which is the concatenation
+   * [x; y].
    */
   public static NonRandomFunction VSTACK;
 
@@ -355,6 +358,12 @@ public class BuiltInFunctions {
    * Return a matrix of ones.
    */
   public static NonRandomFunction ONES;
+
+  /**
+   * The function takes an Integer, an Real or a MatrixLib with single element,
+   * and converts it to an Integer
+   */
+  public static NonRandomFunction TO_INT;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -706,7 +715,7 @@ public class BuiltInFunctions {
         subMatInterp);
     addFunction(SUB_MAT);
 
-    // Array subscription (aka indexing) 
+    // Array subscription (aka indexing)
     FunctionInterp subVecInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         MatrixLib mat = (MatrixLib) args.get(0);
@@ -909,7 +918,7 @@ public class BuiltInFunctions {
         return Math.round(num);
       }
     };
-    
+
     ROUND = new NonRandomFunction(ROUND_NAME, argTypes, retType, roundInterp);
     addFunction(ROUND);
 
@@ -925,18 +934,19 @@ public class BuiltInFunctions {
       }
     };
 
-    TRANSPOSE_REAL_MAT = new NonRandomFunction(
-        TRANSPOSE_NAME, argTypes, retType, transposeInterp);
+    TRANSPOSE_REAL_MAT = new NonRandomFunction(TRANSPOSE_NAME, argTypes,
+        retType, transposeInterp);
     addFunction(TRANSPOSE_REAL_MAT);
 
-    // Transpose function for Integer matrices (uses the same FunctionInterp above)
+    // Transpose function for Integer matrices (uses the same FunctionInterp
+    // above)
     // Does not work yet ("java.util.ArrayList cannot be cast to
     // blog.common.numerical.MatrixLib")
     argTypes.clear();
     argTypes.add(BuiltInTypes.INTEGER_MATRIX);
     retType = BuiltInTypes.INTEGER_MATRIX;
-    TRANSPOSE_INT_MAT = new NonRandomFunction(
-        TRANSPOSE_NAME, argTypes, retType, transposeInterp);
+    TRANSPOSE_INT_MAT = new NonRandomFunction(TRANSPOSE_NAME, argTypes,
+        retType, transposeInterp);
     addFunction(TRANSPOSE_INT_MAT);
 
     // Trigonometric functions on scalars:
@@ -994,7 +1004,8 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(BuiltInTypes.REAL_MATRIX);
     retType = BuiltInTypes.REAL_MATRIX;
-    COL_SUM = new NonRandomFunction(COL_SUM_NAME, argTypes, retType, colSumInterp);
+    COL_SUM = new NonRandomFunction(COL_SUM_NAME, argTypes, retType,
+        colSumInterp);
     addFunction(COL_SUM);
 
     FunctionInterp vstackInterp = new AbstractFunctionInterp() {
@@ -1050,5 +1061,28 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL_MATRIX;
     ONES = new NonRandomFunction(ONES_NAME, argTypes, retType, onesInterp);
     addFunction(ONES);
+
+    FunctionInterp toIntInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Object obj = args.get(0);
+        if (obj instanceof Number) {
+          return ((Number) obj).intValue();
+        } else if (obj instanceof Boolean) {
+          return ((Boolean) obj).booleanValue() ? 1 : 0;
+        } else if (obj instanceof MatrixLib) {
+          return (int) ((MatrixLib) obj).elementAt(0, 0);
+        } else {
+          System.err.println(obj.toString()
+              + " cannot be converted to Integer ");
+          return 0;
+        }
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.BUILT_IN);
+    retType = BuiltInTypes.INTEGER;
+    TO_INT = new NonRandomFunction(TOINT_NAME, argTypes, retType, toIntInterp);
+    addFunction(TO_INT);
+
   };
 }
