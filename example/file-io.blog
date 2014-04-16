@@ -1,0 +1,3 @@
+fixed RealMatrix a = loadRealMatrix("a.txt");
+
+query a;

@@ -1,7 +1,14 @@
 package blog.common.numerical;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import blog.common.numerical.JamaMatrixLib;
 import blog.common.numerical.MatrixLib;
+import blog.common.Util;
 
 
 /**
@@ -66,6 +73,47 @@ public class MatrixFactory {
         result[a.rowLen() + i][j] = b.elementAt(i, j);
       }
     }
+    return fromArray(result);
+  }
+
+  /**
+   * Read matrix from space-separated text file.
+   *
+   * To save in this format from numpy: savetxt('a.txt', a)
+   * To save in this format from matlab: save('a.txt', 'a', '-ascii')
+   */
+  static public MatrixLib fromTxt(String filename) {
+    ArrayList<ArrayList<Double>> rows = new ArrayList<ArrayList<Double>>();
+    try {
+      BufferedReader reader = new BufferedReader(new FileReader(filename));
+      while (true) {
+        String line = reader.readLine();
+        if (line == null) {
+          break;
+        }
+        ArrayList<Double> row = new ArrayList<Double>();
+        for (String word : line.trim().split(" +", -1)) {
+          row.add(Double.parseDouble(word));
+        }
+        rows.add(row);
+      }
+      reader.close();
+    } catch (FileNotFoundException e) {
+      Util.fatalError(e);
+    } catch (IOException e) {
+      Util.fatalError(e);
+    }
+
+    double[][] result = new double[rows.size()][rows.get(0).size()];
+    for (int r = 0; r < rows.size(); r++) {
+      ArrayList<Double> row = rows.get(r);
+      // TODO: should check that all rows have the same size
+      for (int c = 0; c < row.size(); c++) {
+        result[r][c] = row.get(c);
+      }
+    }
+    System.out.println("Loaded " + result.length + "x" + result[0].length +
+      " matrix from " + filename);
     return fromArray(result);
   }
 }
