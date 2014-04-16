@@ -366,6 +366,12 @@ public class BuiltInFunctions {
    */
   public static NonRandomFunction TO_INT;
 
+  /**
+   * The function takes a Real or a MatrixLib with single element,
+   * and converts it to a Real
+   */
+  public static NonRandomFunction TO_REAL;
+
   private BuiltInFunctions() {
     // prevent instantiation
   }
@@ -1102,7 +1108,7 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(BuiltInTypes.BUILT_IN);
     retType = BuiltInTypes.REAL;
-    TO_INT = new NonRandomFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
-    addFunction(TO_INT);
+    TO_REAL = new NonRandomFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
+    addFunction(TO_REAL);
   };
 }
