@@ -291,9 +291,9 @@ public class ObservabilitySignature {
 	
 	public void prepareEvidence(Model model){
 		String eviString = generateObservableString();
-		if (myEvidence == null)
-			myEvidence = new Evidence();
-		parseAndTranslateEvidence(model, myEvidence, Util.list(), new StringReader(eviString));
+		Evidence evidence = new Evidence();
+		parseAndTranslateEvidence(model, evidence, Util.list(), new StringReader(eviString));
+		setNonSymbolEvidence(evidence);
 	}
 	
 	private boolean parseAndTranslateEvidence(Model model, Evidence e, List<Query> q, Reader reader) {
@@ -307,7 +307,12 @@ public class ObservabilitySignature {
 		return myEvidence;
 	}
 	
+	public Evidence getNonSymbolEvidence(){
+		return myNonSymbolEvidence;
+	}
+	
 	protected Evidence myEvidence;
+	protected Evidence myNonSymbolEvidence;
 	
 	public String generateObservableTypeString(){
 		String rtn = "";
@@ -350,7 +355,7 @@ public class ObservabilitySignature {
 		//System.out.println("genSetObs" + rtn);
 		return rtn;
 	}
-	private static Pattern obsnumPattern = Pattern.compile("Number_([a-zA-Z0-9]*)");
+	private static Pattern obsnumPattern = Pattern.compile("Number_([a-zA-Z0-9_]*)");
 	public static String getTypeString(String strrep) {
 		Matcher matcher = obsnumPattern.matcher(strrep);
 		matcher.find();
@@ -380,5 +385,13 @@ public class ObservabilitySignature {
 
 	public void setEvidence(Evidence evidence) {
 		myEvidence = evidence;
+	}
+	
+	public void setNonSymbolEvidence(Evidence nonSymbolEvidence) {
+		myNonSymbolEvidence = nonSymbolEvidence;
+		
+		if (myEvidence == null)
+			myEvidence = new Evidence();
+		myEvidence.addAll(myNonSymbolEvidence);
 	}
 }

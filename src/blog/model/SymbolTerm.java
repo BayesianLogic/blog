@@ -240,8 +240,15 @@ public class SymbolTerm extends Term {
 	}
 
 	public ArgSpec replace(Term t, ArgSpec another) {
-		Util.fatalError("replace not supported for SymbolTerm.");
-		return null;
+		if (t.equals(this)) {
+			return another;
+		}
+		return this;
+		/*System.err.println("This " + this);
+		System.err.println("Term " + t);
+		System.err.println("Another " + another);
+		Util.fatalError("replace not supported for SymbolTerm.");*/
+		//return null;
 	}
 
 	private String name;

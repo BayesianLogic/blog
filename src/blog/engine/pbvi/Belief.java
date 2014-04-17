@@ -95,9 +95,9 @@ public class Belief {
 		nextPF.updateOSforAllParticles();
 		Timer.record("updateOS");
 		
-		int osIndex = nextPF.particles.get(0).getOS();
-		nextPF.retakeObservability2();
-		osIndex = nextPF.retakeObservability();	
+		int osIndex = nextPF.sampleOS(); //nextPF.particles.get(0).getOS();
+		nextPF.retakeObservability2(osIndex);
+		nextPF.retakeObservability(osIndex);	
 		Evidence o = ObservabilitySignature.getOSbyIndex(osIndex).getEvidence();
 		
 		if (UBT.dropHistory) {

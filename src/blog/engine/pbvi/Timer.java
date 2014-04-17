@@ -89,4 +89,8 @@ public class Timer {
 		ms = ms % 1000;
 		return h + "h" + m + "m" + s + "s" + ms + "ms";
 	}
+
+	public static Long getElapsed(String string) {
+		return System.currentTimeMillis() - startTimes.get(string);
+	}
 }

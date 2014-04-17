@@ -64,7 +64,7 @@ public class SymbolEvidenceStatement {
 	 * @param symbols
 	 *          a List of Strings representing Skolem constant names
 	 */
-	public SymbolEvidenceStatement(ImplicitSetSpec setSpec, List symbols) {
+	public SymbolEvidenceStatement(ImplicitSetSpec setSpec, List<String> symbols) {
 		this.setSpec = setSpec;
 
 		List predecessors = new ArrayList();
@@ -248,8 +248,12 @@ public class SymbolEvidenceStatement {
 	public SymbolEvidenceStatement replace(Term t, ArgSpec another) {
 		ImplicitSetSpec newSetSpec = (ImplicitSetSpec) setSpec.replace(t, another);
 		if (newSetSpec != setSpec) {
+			List<String> skolemConstantNames = new ArrayList<String>();
+			for (SkolemConstant s : skolemConstants) {
+				skolemConstantNames.add(s.getName());
+			}
 			SymbolEvidenceStatement result = new SymbolEvidenceStatement(newSetSpec,
-					skolemConstants);
+					skolemConstantNames);
 			if (compiled)
 				result.compile(new LinkedHashSet());
 			return result;

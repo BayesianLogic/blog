@@ -118,7 +118,7 @@ public class PFEngineSampled extends PFEngineOnline{
 	 * according to its weight
 	 * @return the index of the sampled observability signature
 	 */
-	private Integer sampleOS(){
+	public Integer sampleOS(){
 		return ((TimedParticle) sampleParticle()).getOS();
 	}
 	
@@ -171,15 +171,15 @@ public class PFEngineSampled extends PFEngineOnline{
 		SimpleObservabilitySignature simpleOS = SimpleObservabilitySignature.simplifyOS(selectedOS);
 		if (preparedOS.containsKey(simpleOS)) {
 			simpleOS = preparedOS.get(simpleOS);
-			selectedOS.setEvidence(simpleOS.getEvidence());
+			selectedOS.setNonSymbolEvidence(simpleOS.getNonSymbolEvidence());
 		} else {
 			Timer.start("retakeObs.prepareEvidence");
 			selectedOS.prepareEvidence(model);
-			simpleOS.setEvidence(selectedOS.getEvidence());
+			simpleOS.setNonSymbolEvidence(selectedOS.getNonSymbolEvidence());
 			preparedOS.put(simpleOS, simpleOS);
 			Timer.record("retakeObs.prepareEvidence");
 		}
-		ev = selectedOS.getEvidence();
+		ev = selectedOS.getNonSymbolEvidence();
 		Timer.start("retakeObs.checkTypesAndScope");
 		ev.checkTypesAndScope(model);
 		Timer.record("retakeObs.checkTypesAndScope");
@@ -199,18 +199,26 @@ public class PFEngineSampled extends PFEngineOnline{
 		if (particles.size() > 1) {
 			Timer.start("reweight");
 			int i = 0;
-			for (Particle o : particles){
+			for (Particle o : particles) {
 				TimedParticle p = (TimedParticle) o;
 				//for (Object x : p.getLatestWorld().basicVarToValueMap().keySet())
 				//	UBT.worldOutput.printInput(x.toString()+"="+p.getLatestWorld().basicVarToValueMap().get(x).toString());
 				//UBT.worldOutput.printInput(">>>>>");
 				p.unInstantiateObservables(selectedOS);
+				Timer.start("takeEv");
 				p.take(ev);
+				Timer.record("takeEv");
+				if (Timer.getElapsed("takeEv") > 2000) {
+					System.out.println("ALERT: This particle took more than 2s to take ev" + p.getLatestWorld());
+				}
 				p.setOS(sampledOSindex);
 				if (p.getLatestWeight()>0.00000001)
 					i++;
 			}
 			Timer.record("reweight");
+			if (Timer.getElapsed("reweight") > 30000) {
+				System.out.println("ALERT: This evidence took more than 30s to reweight" + ev);
+			}
 			
 
 			if (UBT.worldOutput != null) {

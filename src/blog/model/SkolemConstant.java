@@ -45,7 +45,7 @@ import java.util.*;
  * @see blog.model.SymbolEvidenceStatement
  */
 public class SkolemConstant extends RandomFunction {
-
+	
 	/**
 	 * Creates a new SkolemConstant with the given name and return type. The
 	 * dependency model is created automatically.
@@ -63,7 +63,7 @@ public class SkolemConstant extends RandomFunction {
 	 */
 	public SkolemConstant(String name, ImplicitSetSpec setSpec, List predecessors) {
 		super(name, Collections.EMPTY_LIST, setSpec.getType(), null);
-
+		this.name = name;
 		// Create formula that excludes objects denoted by the predecessors
 		// from the set of eligible objects
 		LogicalVar x = setSpec.getGenericSetElt();
@@ -90,4 +90,9 @@ public class SkolemConstant extends RandomFunction {
 		setArgVars(Collections.EMPTY_LIST); // no arguments
 		setDepModel(new DependencyModel(clauseList, setSpec.getType(), Model.NULL));
 	}
+	
+	
+	private String name;
+	
+	public String getName() { return name; }
 }
