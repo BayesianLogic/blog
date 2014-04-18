@@ -114,7 +114,7 @@ public class Multinomial extends AbstractCondProbDistrib {
         int size = arrayPi.size();
         nativePi = new double[size];
         for (int i = 0; i < size; i++)
-          nativePi[i] = (double) arrayPi.get(i);
+          nativePi[i] = (Double) arrayPi.get(i);
       } else {
         throw new IllegalArgumentException(
             "expected second arg to be array of reals; got " + objectPi
