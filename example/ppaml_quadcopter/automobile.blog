@@ -25,6 +25,15 @@ because of time discretization.
  * Dynamics model.
  * We assume H = 0 so the velocity is measured at the center of the back axle.
  * We assume delta_t is the fixed step size.
+ * The dynamics equations are taken from guivant_2000.
+ * See DynamicsLogic.java for the implementation.
+ *
+ * xdot <- vc * cos(phi) - vc/L * (a * sin(phi) + b * cos(phi)) * tan(alpha)
+ * ydot <- vc * sin(phi) - vc/L * (a * cos(phi) - b * sin(phi)) * tan(alpha)
+ * thetadot <- vc/L * tan(alpha)
+ * x <- x + delta_t * xdot
+ * y <- y + delta_t * ydot
+ * theta <- theta + delta_t * thetadot
  */
 
 fixed Real delta_t = 0.005;
