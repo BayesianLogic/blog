@@ -64,7 +64,7 @@ public class LiftedEvidence {
 		return this.evidence.toString();
 	}
 
-	public Evidence getEvidence() {
+	public Evidence getStoredEvidence() {
 		return evidence;
 	}
 }

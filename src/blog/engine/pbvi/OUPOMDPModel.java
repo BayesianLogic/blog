@@ -50,11 +50,12 @@ public class OUPOMDPModel {
 		this.queries = queries;
 		this.properties = properties;
 		
-		System.out.println("Queries " + queries);
 		
 		for (Type typ: (List<Type>) model.getObsTyp()){
 			queryStrings.add("Number_"+typ+"(t)");
 		}
+
+		System.out.println("Queries " + queryStrings);
 		setQI = new TemporalQueriesInstantiator(model, EvidenceQueryDecisionGeneratorOnline.makeQueryTemplates(queryStrings));
 	}
 	
@@ -90,7 +91,7 @@ public class OUPOMDPModel {
 	 * @param b
 	 * @return
 	 */
-	public Set<Evidence> getActions(Belief b) {
+	public Set<LiftedEvidence> getActions(Belief b) {
 		State s = (State) Util.getFirst(b.getStates());
 		PartialWorld w = s.getWorld();
 		int timestep = b.getTimestep();
@@ -99,7 +100,7 @@ public class OUPOMDPModel {
 		Map<Type, Set<BayesNetVar>> observedVarsByType = partitionVarsByType(observableMap, w);
 		List<DecisionFunction> decisionFunctions = model.getDecisionFunctions();
 
-		Set<Evidence> actions = new HashSet<Evidence>();
+		Set<LiftedEvidence> actions = new HashSet<LiftedEvidence>();
 		for (DecisionFunction f : decisionFunctions) {
 			Set<List<Term>> argLists = enumArgListsForFunc(f, observedVarsByType);
 			for (List<Term> argList : argLists) {
@@ -115,7 +116,7 @@ public class OUPOMDPModel {
 				DecisionEvidenceStatement decisionStatement = new DecisionEvidenceStatement(left, TrueFormula.TRUE);
 				action.addDecisionEvidence(decisionStatement);
 				action.compile();
-				actions.add(action);
+				actions.add(new LiftedEvidence(action));
 			}
 			
 		}
@@ -190,14 +191,24 @@ public class OUPOMDPModel {
 		return new Belief(initPF, this);
 	}
 	
-	public double getReward(State s, Evidence a) {
+	public Belief generateInitialBelief(int numParticles) {
+		Properties properties = (Properties) this.properties.clone();
+		properties.setProperty("numParticles", "" + numParticles);
+		PFEngineSampled initPF = new PFEngineSampled(this.getModel(), properties);
+		initPF.answer(getQueries(0));
+		initPF.afterAnsweringQueries2();
+		return new Belief(initPF, this);
+	}
+	
+	
+	public double getReward(State s, LiftedEvidence a) {
 		Belief b = Belief.getSingletonBelief(s, 1, this);
 		Belief next = b.sampleNextBelief(a);
 		Double reward = next.getLatestReward();
 		return reward;
 	}
 
-	public double getAvgReward(Belief b, Evidence a) {
+	public double getAvgReward(Belief b, LiftedEvidence a) {
 		double total = 0;
 		int count = 0;
 		for (State s : b.getStates()) {

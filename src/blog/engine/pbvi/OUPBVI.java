@@ -24,8 +24,7 @@ public class OUPBVI {
 	private Properties properties;
 	private int horizon;
 	
-	private double minReward = -10; 
-	private double maxReward = 100;
+	private double minReward = -10;
 	
 	private double epsilon = 0.1;
 	
@@ -214,10 +213,10 @@ public class OUPBVI {
 		for (Belief belief : beliefs) {
 			if (belief.getTimestep() == horizon) continue;
 			if (newBeliefs.size() >= numBeliefs) break;
-			Set<Evidence> actions = pomdp.getActions(belief);
+			Set<LiftedEvidence> actions = pomdp.getActions(belief);
 			Belief bestBelief = null;
 			int maxDiff = 0;
-			for (Evidence action : actions) {
+			for (LiftedEvidence action : actions) {
 				int minDiff = Integer.MAX_VALUE;
 				Belief next = belief.sampleNextBelief(action);
 				if (next.ended()) continue;
@@ -315,14 +314,14 @@ public class OUPBVI {
 					alphaFound = true;
 					break;
 				}
-				Evidence nextAction = curPolicy.getAction();
+				LiftedEvidence nextAction = curPolicy.getAction();
 				curBelief = curBelief.sampleNextBelief(nextAction);		
 				Evidence nextObs = curBelief.getLatestEvidence();
 				FiniteStatePolicy nextPolicy = curPolicy.getNextPolicy(nextObs);
 				if (nextPolicy == null && !curBelief.ended() && !curPolicy.isLeafPolicy()) { 
 					nextPolicy = curPolicy.getApplicableNextPolicy(nextObs, curBelief);
 					if (nextPolicy != null) {
-						curPolicy.setNextPolicy(nextObs, nextPolicy);
+						curPolicy.setNextPolicy(new LiftedEvidence(nextObs), nextPolicy);
 						curPolicy.addObsNote(nextObs, "random applicable");
 					} else {
 						System.out.println("No applicable next policy for " + curBelief);
@@ -481,13 +480,13 @@ public class OUPBVI {
 			Belief b,
 			int t) {
 		Map<Evidence, FiniteStatePolicy> bestPolicyMap = new HashMap<Evidence, FiniteStatePolicy>();
-		Evidence bestAction = null;
+		LiftedEvidence bestAction = null;
 		
-		Set<Evidence> actions = pomdp.getActions(b);
+		Set<LiftedEvidence> actions = pomdp.getActions(b);
 		System.out.println("single backup actions: " + actions);
 		System.out.println("single backup num oldpolicies: " + oldPolicies.size());
 		Double bestValue = null;
-		for (Evidence action : actions) {
+		for (LiftedEvidence action : actions) {
 			double value = 0;
 			double totalWeight = 0;
 			Map<Evidence, FiniteStatePolicy> policyMap = new HashMap<Evidence, FiniteStatePolicy>();
@@ -532,6 +531,7 @@ public class OUPBVI {
 			
 		
 		System.out.println("bestAction: " + bestAction + " " + bestValue + " depth: " + (horizon - t));
+		
 		FiniteStatePolicy newPolicy = new FiniteStatePolicy(bestAction, bestPolicyMap);
 		System.out.println("singlebackupforbelief.time " + Timer.getElapsedStr());
 		System.out.println("num dfs visited states " + addedAlphaKeys.size());
@@ -653,7 +653,7 @@ public class OUPBVI {
 		Belief b;
 
 		for (int i = 0; i < 10; i++) {
-			b = pomdp.generateInitialBelief();
+			b = pomdp.generateInitialBelief(500);
 			System.out.println(b);
 			System.out.println("Iter: " + i);
 			System.out.println("Evaluated: " + evaluator.eval(b, p, 100));

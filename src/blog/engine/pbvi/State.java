@@ -9,10 +9,7 @@ import blog.DBLOGUtil;
 import blog.bn.BasicVar;
 import blog.bn.NumberVar;
 import blog.bn.RandFuncAppVar;
-import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
-import blog.model.FuncAppTerm;
-import blog.model.Function;
 import blog.model.POP;
 import blog.model.RandomFunction;
 import blog.model.Type;
@@ -84,12 +81,21 @@ public class State {
 	}
 
 
+	private AbstractPartialWorld zeroWorld;
+	
+	public AbstractPartialWorld getZeroWorld() {
+		if (zeroWorld == null) {
+			AbstractPartialWorld thisWorld = (DefaultPartialWorld) ((DefaultPartialWorld) world).clone();
+			State zeroState = new State(thisWorld, timestep);
+			zeroState.zeroTimestep(0);
+			zeroWorld = zeroState.world;
+		}
+		return zeroWorld;
+	}
+	
 	@Override
 	public int hashCode() {
-		AbstractPartialWorld w = (DefaultPartialWorld) ((DefaultPartialWorld) world).clone();
-		State s = new State(w, timestep);
-		s.zeroTimestep(0);
-		return s.world.innerStatehashCode(0);
+		return this.getZeroWorld().innerStatehashCode(0);
 	}
 
 	@Override
@@ -97,16 +103,17 @@ public class State {
 		if (!(o instanceof State))
 			return false;
 		State s = (State) o;
-		boolean equality = false; 
+		boolean equality = false;
 		Timer.start("STATE_COMPARISON");
-		State toCompare = s;
+		
+		AbstractPartialWorld thisWorld = world;
+		AbstractPartialWorld toCompareWorld = s.world;
+		
 		if (timestep != s.timestep) {
-			AbstractPartialWorld w = (DefaultPartialWorld) ((DefaultPartialWorld) s.world).clone();
-			toCompare = new State(w, s.timestep);
-			toCompare.zeroTimestep(timestep);
-			//return false;
+			toCompareWorld = s.getZeroWorld();
+			thisWorld = getZeroWorld();
 		}
-		equality = toCompare.world.innerStateEquals(world, timestep);
+		equality = toCompareWorld.innerStateEquals(thisWorld, 0);
 		Timer.record("STATE_COMPARISON");
 		return equality;
 		

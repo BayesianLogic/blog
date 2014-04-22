@@ -26,11 +26,11 @@ public class DotToPolicy {
 	
 	private String curPolicyID;
 	
-	public Evidence getAction(Set<Evidence> nextActions) {
+	public LiftedEvidence getAction(Set<LiftedEvidence> nextActions) {
 		String actionString = nodeIDAction.get(curPolicyID);
-		Evidence action = null;
+		LiftedEvidence action = null;
 		//System.out.println("the right action" + actionString);
-		for (Evidence a : nextActions) {
+		for (LiftedEvidence a : nextActions) {
 			if (a.toString().equals(actionString)) {
 				action = a;
 				break;

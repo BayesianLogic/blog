@@ -10,7 +10,6 @@ import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.Evidence;
 
 public class ActionPropagated {
-	private Evidence action;
 	private Belief belief;
 	
 	private Map<Evidence, Double> observationWeight;
@@ -20,12 +19,10 @@ public class ActionPropagated {
 	private double reward;
 	private PFEngineSampled actionPropagatedPF;
 	
-	public ActionPropagated(Belief belief, Evidence action) {
+	public ActionPropagated(Belief belief) {
 		this.belief = belief;
-		this.action = action;
 		
 		observationWeight = new HashMap<Evidence, Double>();
-		//nextBeliefs = new HashMap<Evidence, Belief>();
 		osIndices = new HashMap<Evidence, Integer>();
 	}
 	

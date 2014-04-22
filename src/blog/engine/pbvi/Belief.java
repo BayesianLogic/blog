@@ -75,14 +75,13 @@ public class Belief {
 	
 	static Map<Integer, Integer> resampleStateCountStats = new HashMap<Integer, Integer>();
 	static Map<Integer, Integer> stateCountStats = new HashMap<Integer, Integer>();
-	public Belief sampleNextBelief(Evidence action) {
-		action = translateAction(action);
+	public Belief sampleNextBelief(LiftedEvidence action) {
 		Timer.start("BELIEF_PROP");
 		PFEngineSampled nextPF = getParticleFilter().copy();
 		
 		Timer.start("takeAction");
 		nextPF.beforeTakingEvidence();
-		nextPF.takeDecision(action);
+		nextPF.takeDecision(action.getEvidence(this));
 		nextPF.answer(pomdp.getQueries(getTimestep() + 1));
 		Timer.record("takeAction");
 		
@@ -153,16 +152,14 @@ public class Belief {
 		return total/pf.particles.size();
 	}
 	
-	public ActionPropagated beliefsAfterAction(Evidence action) {
-		action = translateAction(action);
-		
+	public ActionPropagated beliefsAfterAction(LiftedEvidence action) {
 		updateStateCountStats(this);
 		Timer.start("BELIEF_PROP");
-		ActionPropagated ap = new ActionPropagated(this, action);
+		ActionPropagated ap = new ActionPropagated(this);
 		
 		PFEngineSampled apPF = getParticleFilter().copy();
 		apPF.beforeTakingEvidence();
-		apPF.takeDecision(action);
+		apPF.takeDecision(action.getEvidence(this));
 		apPF.answer(pomdp.getQueries(getTimestep() + 1));
 		
 		Function rewardFunc = (Function) pomdp.getModel().getRandomFunc("reward", 1);

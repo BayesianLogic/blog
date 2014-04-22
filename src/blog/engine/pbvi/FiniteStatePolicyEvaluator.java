@@ -59,7 +59,7 @@ public class FiniteStatePolicyEvaluator {
 			
 			while (curPolicy != null) {
 				if (curState.ended()) break;
-				Evidence nextAction = curPolicy.getAction();
+				LiftedEvidence nextAction = curPolicy.getAction();
 				curState = curState.sampleNextBelief(nextAction);		
 				Evidence nextObs = curState.getLatestEvidence();
 				FiniteStatePolicy nextPolicy = curPolicy.getNextPolicy(nextObs);
@@ -106,7 +106,7 @@ public class FiniteStatePolicyEvaluator {
 			p.resetSim();
 			while (true) {
 				if (curState.ended()) break;
-				Evidence nextAction = p.getAction(pomdp.getActions(curState));
+				LiftedEvidence nextAction = p.getAction(pomdp.getActions(curState));
 				//System.out.println(nextAction);
 				curState = curState.sampleNextBelief(nextAction);		
 				Evidence nextObs = curState.getLatestEvidence();

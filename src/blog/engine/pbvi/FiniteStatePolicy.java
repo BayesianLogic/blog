@@ -27,18 +27,18 @@ public class FiniteStatePolicy extends PolicyModel {
 	private int id;
 	private Set<ArgSpec> requiredTerms;
 	
-	public FiniteStatePolicy(Evidence action, Map<Evidence, FiniteStatePolicy> successors) {
+	public FiniteStatePolicy(LiftedEvidence action, Map<Evidence, FiniteStatePolicy> successors) {
 		this.id = count;
 		count++;
-		this.action = new LiftedEvidence(action);
+		this.action = action;
 		this.successors = new HashMap<LiftedEvidence, FiniteStatePolicy>();
 		for (Evidence e : successors.keySet()) {
-			setNextPolicy(e, successors.get(e));
+			setNextPolicy(new LiftedEvidence(e), successors.get(e));
 		}
 		this.notes = new HashMap<LiftedEvidence, String>();
 		
 		requiredTerms = new HashSet<ArgSpec>();
-		DecisionEvidenceStatement a = (DecisionEvidenceStatement) action.getDecisionEvidence().iterator().next();
+		DecisionEvidenceStatement a = (DecisionEvidenceStatement) action.getStoredEvidence().getDecisionEvidence().iterator().next();
 		FuncAppTerm f = ((FuncAppTerm) a.getLeftSide());
 		ArgSpec[] args = f.getArgs();
 		requiredTerms.addAll(Arrays.asList(args));
@@ -73,8 +73,8 @@ public class FiniteStatePolicy extends PolicyModel {
 		return s;
 	}
 	
-	public Evidence getAction() {
-		return action.getEvidence();
+	public LiftedEvidence getAction() {
+		return action;
 	}
 	
 	//works only for a tree right now
@@ -89,11 +89,11 @@ public class FiniteStatePolicy extends PolicyModel {
 		int i = 0;
 		for (LiftedEvidence o : successors.keySet()) {
 			String evidenceString = "";
-			Collection valueEvidence = o.getEvidence().getValueEvidence();
+			Collection valueEvidence = o.getStoredEvidence().getValueEvidence();
 			for (Object v : valueEvidence) {
 				evidenceString += v.toString() + "\\n";
 			}
-			Collection symbolEvidence = o.getEvidence().getSymbolEvidence();
+			Collection symbolEvidence = o.getStoredEvidence().getSymbolEvidence();
 			for (Object s : symbolEvidence) {
 				evidenceString += s.toString() + "\\n";
 			}
@@ -105,7 +105,7 @@ public class FiniteStatePolicy extends PolicyModel {
 			} else {
 				result += contingentPolicy.toDotStringHelper(nextName, included);
 			}
-			result = result + name + " -> " + nextName + " [label=\"" + evidenceString +  " " + getNote(o.getEvidence()) + "\"];\n";
+			result = result + name + " -> " + nextName + " [label=\"" + evidenceString +  " " + getNote(o.getStoredEvidence()) + "\"];\n";
 			
 			i++;
 		}
@@ -152,14 +152,14 @@ public class FiniteStatePolicy extends PolicyModel {
 		return successors.isEmpty();
 	}
 
-	public void setNextPolicy(Evidence obs,
+	public void setNextPolicy(LiftedEvidence obs,
 			FiniteStatePolicy nextPolicy) {
 		if (nextPolicy == null) {
 			System.err.println("You can't set next policy to null");
 			new Exception().printStackTrace();
 			System.exit(0);
 		}
-		successors.put(new LiftedEvidence(obs), nextPolicy);
+		successors.put(obs, nextPolicy);
 	}
 	
 	@Override
@@ -193,7 +193,7 @@ public class FiniteStatePolicy extends PolicyModel {
 		 }
 		 
 		 for (LiftedEvidence o : policy.successors.keySet()) {
-			 setNextPolicy(o.getEvidence(), policy.getNextPolicy(o.getEvidence()));
+			 setNextPolicy(o, policy.getNextPolicy(o.getStoredEvidence()));
 			 addObsNote(o, "merged");
 		 }
 		 this.alpha = null;
