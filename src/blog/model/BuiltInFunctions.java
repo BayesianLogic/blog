@@ -97,6 +97,10 @@ public class BuiltInFunctions {
   public static final String TOINT_NAME = "toInt";
   public static final String TOREAL_NAME = "toReal";
 
+  
+  public static final String CONCATE_NAME = "concate";
+  
+  
   /**
    * Constant that always denotes Model.NULL.
    */
@@ -372,6 +376,13 @@ public class BuiltInFunctions {
    */
   public static NonRandomFunction TO_REAL;
 
+  
+  /*
+   * Take a list of arguments, and convert them to a row-vector
+   * TODO: Currently only accept double elements as input arguments
+   */
+  public static TemplateFunction CONCATE;
+  
   private BuiltInFunctions() {
     // prevent instantiation
   }
@@ -395,6 +406,15 @@ public class BuiltInFunctions {
       }
     }
 
+    // find template functions compatible with sig
+    // TODO: to add more template functions
+    for(int i = 0; i < templateFunctions.size(); ++ i) {
+    	if(templateFunctions.get(i).getName().equals(sig.getName())) {
+    		NonRandomFunction f = templateFunctions.get(i).getSpecificFunc(sig.getArgTypes());
+    		if(f != null) return f;
+    	}
+    }
+    
     return null;
   }
 
@@ -446,6 +466,12 @@ public class BuiltInFunctions {
 
   static Map functions = new HashMap(); // from String to List of Function
 
+  private static void addTemplate(TemplateFunction t) {
+	  templateFunctions.add(t);
+  }
+  
+  static ArrayList<TemplateFunction> templateFunctions = new ArrayList<TemplateFunction>();
+  
   static {
     // Add non-random constants
     NULL = getLiteral("null", BuiltInTypes.NULL, Model.NULL);
@@ -1027,6 +1053,47 @@ public class BuiltInFunctions {
     VSTACK = new NonRandomFunction(VSTACK_NAME, argTypes, retType, vstackInterp);
     addFunction(VSTACK);
 
+    
+  //TODO: to complete CONCATE
+    CONCATE = new TemplateFunction(CONCATE_NAME){
+
+		@Override
+		public NonRandomFunction getSpecificFunc(Type[] argTypes) {
+			int n = argTypes.length;
+			if(n < 1) return null;
+			
+			for(int i=1;i<n;++i)
+				if(!argTypes[i].equals(argTypes[0])) return null;
+			
+			/*
+			 * TODO: Currently only support convert elements to Real Matrix!!!
+			 */
+			for(int i=0;i<n;++i)
+				if(!argTypes[i].isSubtypeOf(BuiltInTypes.REAL)) return null;
+			
+			FunctionInterp concateInterp = new AbstractFunctionInterp() {
+			      public Object getValue(List args) {
+			    	  int n = args.size();
+			    	  double[][] val = new double[1][n];
+			    	  for(int i=0;i<n;++i)
+			    		  val[0][i] = (Double)args.get(i);
+			    	  return MatrixFactory.fromArray(val);
+			      }
+			    };
+			List<Type> args = new ArrayList<Type>();
+			for(int i=0;i<n;++i)
+				args.add(BuiltInTypes.REAL);
+			 
+			// TODO: convert REAL_ARRAY to REAL_MATRIX
+			NonRandomFunction retFunc = 
+					new NonRandomFunction(CONCATE_NAME, args, BuiltInTypes.REAL_ARRAY, concateInterp);
+			return retFunc;
+		}
+    	
+    };
+    addTemplate(CONCATE);
+    
+    
     FunctionInterp eyeInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         Integer size = (Integer) args.get(0);
@@ -1111,4 +1178,20 @@ public class BuiltInFunctions {
     TO_REAL = new NonRandomFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
     addFunction(TO_REAL);
   };
+}
+
+
+/*
+ * Author: yiwu
+ * Date: 2014-4-22
+ */
+abstract class TemplateFunction {
+	private String name;
+	public TemplateFunction(String _name) {
+		name = _name;
+	}
+	public String getName() {
+		return name;
+	}
+	public abstract NonRandomFunction getSpecificFunc(Type[] argTypes);
 }
