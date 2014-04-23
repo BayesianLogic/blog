@@ -19,155 +19,158 @@ import blog.sample.EvalContext;
 
 public class ListSpec extends ArgSpec {
 
-	List<ArgSpec> elements;
-	Type listType;
-	boolean compiled;
+  List<ArgSpec> elements;
+  Type listType;
+  boolean compiled;
 
-	public ListSpec() {
-		elements = new ArrayList<ArgSpec>();
-		compiled = false;
-	}
+  public ListSpec() {
+    elements = new ArrayList<ArgSpec>();
+    compiled = false;
+  }
 
-	public ListSpec(List<ArgSpec> args) {
-		elements = args;
-		compiled = false;
-	}
+  public ListSpec(List<ArgSpec> args) {
+    elements = args;
+    compiled = false;
+  }
 
-	public ListSpec(List<ArgSpec> args, Type typeOfContents) {
-		elements = args;
-		listType = typeOfContents;
-		compiled = false;
-	}
+  public ListSpec(List<ArgSpec> args, Type typeOfContents) {
+    elements = args;
+    listType = typeOfContents;
+    compiled = false;
+  }
 
-	/**
-	 * To compile a list, it is only necessary to compile
-	 * each of its possible values.
-	 */
-	public int compile(LinkedHashSet callStack) {
-		compiled = true;
-		callStack.add(this);
-		int errors = 0;
+  /**
+   * To compile a list, it is only necessary to compile
+   * each of its possible values.
+   */
+  public int compile(LinkedHashSet callStack) {
+    compiled = true;
+    callStack.add(this);
+    int errors = 0;
 
-		if (elements.isEmpty()) {
-			System.err.println("List or array expression is empty");
-			errors = 1;
-		} else {
-			for (ArgSpec listTerm : elements) {
-				errors += listTerm.compile(callStack);
-			}
-		}
+    if (elements.isEmpty()) {
+      System.err.println("List or array expression is empty");
+      errors = 1;
+    } else {
+      for (ArgSpec listTerm : elements) {
+        errors += listTerm.compile(callStack);
+      }
+    }
 
-		callStack.remove(this);
-		return errors;
-	}
+    callStack.remove(this);
+    return errors;
+  }
 
-	@Override
-	public Object evaluate(EvalContext context) {
-		List<Object> evalContents = new ArrayList<Object>();
-		for (ArgSpec element : elements) {
-			evalContents.add(element.evaluate(context));
-		}
-		return evalContents;
-	}
+  @Override
+  public Object evaluate(EvalContext context) {
+    List<Object> evalContents = new ArrayList<Object>();
+    for (ArgSpec element : elements) {
+      evalContents.add(element.evaluate(context));
+    }
+    return evalContents;
+  }
 
-	/**
-	 * Lists only handle distinct objects and built-in types for now.
-	 */
-	@Override
-	public boolean containsRandomSymbol() {
-		for (ArgSpec item : elements) {
-			if (item.containsRandomSymbol()) {
-				return true;
-			}
-		}
-		return false;
-	}
+  /**
+   * Lists only handle distinct objects and built-in types for now.
+   */
+  @Override
+  public boolean containsRandomSymbol() {
+    for (ArgSpec item : elements) {
+      if (item.containsRandomSymbol()) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-	@Override
-	public boolean checkTypesAndScope(Model model, Map scope) {
-		// Check typing of all symbols in the multiset
-		for (ArgSpec obj : elements) {
-			if (!obj.checkTypesAndScope(model, scope)) {
-				return false;
-			}
-		}
-		return true;
-	}
+  @Override
+  public boolean checkTypesAndScope(Model model, Map scope) {
+    // Check typing of all symbols in the multiset
+    for (ArgSpec obj : elements) {
+      if (!obj.checkTypesAndScope(model, scope)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-	/**
-	 * Returns term in ArgSpec equal to a given term t, or null if there isn't
-	 * any.
-	 */
-	@Override
-	public ArgSpec find(Term t) {
-		for (ArgSpec listTerm : elements) {
-			if (listTerm.equals(t)) {
-				return listTerm;
-			}
-		}
-		return null;
-	}
+  /**
+   * Returns term in ArgSpec equal to a given term t, or null if there isn't
+   * any.
+   */
+  @Override
+  public ArgSpec find(Term t) {
+    for (ArgSpec listTerm : elements) {
+      if (listTerm.equals(t)) {
+        return listTerm;
+      }
+    }
+    return null;
+  }
 
-	/**
-	 * Applies a procedure to all terms in this ArgSpec which satisfy a given
-	 * predicate to a given collection.
-	 */
-	@Override
-	public void applyToTerms(UnaryProcedure procedure) {
-	}
+  /**
+   * Applies a procedure to all terms in this ArgSpec which satisfy a given
+   * predicate to a given collection.
+   */
+  @Override
+  public void applyToTerms(UnaryProcedure procedure) {
+  }
 
-	/**
-	 * Returns an ArgSpec resulting from the replacement of all occurrences of a
-	 * term by another, if there is any, or self. A new ArgSpec is compiled if
-	 * this is compiled.
-	 */
-	@Override
-	public ArgSpec replace(Term t, ArgSpec another) {
-		return null;
-	}
+  /**
+   * Returns an ArgSpec resulting from the replacement of all occurrences of a
+   * term by another, if there is any, or self. A new ArgSpec is compiled if
+   * this is compiled.
+   */
+  @Override
+  public ArgSpec replace(Term t, ArgSpec another) {
+    return null;
+  }
 
-	/**
-	 * Returns the result of applying the substitution <code>subst</code> to this
-	 * expression, excluding the logical variables in <code>boundVars</code>. This
-	 * method is used for recursive calls. The set <code>boundVars</code> should
-	 * contain those variables that are bound in the syntax tree between this
-	 * sub-expression and the top-level expression to which the substitution is
-	 * being applied.
-	 */
-	@Override
-	public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
-		return null;
-	}
+  /**
+   * Returns the result of applying the substitution <code>subst</code> to this
+   * expression, excluding the logical variables in <code>boundVars</code>. This
+   * method is used for recursive calls. The set <code>boundVars</code> should
+   * contain those variables that are bound in the syntax tree between this
+   * sub-expression and the top-level expression to which the substitution is
+   * being applied.
+   */
+  @Override
+  public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
+    return null;
+  }
 
-	/**
-	 * transfer ListSpec to Matrix type
-	 * 
-	 * @return
-	 */
-	public MatrixSpec transferToMatrix() {
-		return new MatrixSpec((List<ArgSpec>) (this.getSubExprs()));
-	}
+  /**
+   * transfer ListSpec to Matrix type
+   * 
+   * @return
+   */
+  public MatrixSpec transferToMatrix() {
+    if (this.containsRandomSymbol()) {
+      return 
+    } else {
+      return new MatrixSpec((List<ArgSpec>) (this.getSubExprs()));
+    }
+  }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see blog.model.ArgSpec#getSubExprs()
-	 */
-	@Override
-	public Collection getSubExprs() {
-		// TODO Auto-generated method stub
-		return elements;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.model.ArgSpec#getSubExprs()
+   */
+  @Override
+  public Collection getSubExprs() {
+    return elements;
+  }
 
-	public String toString() {
-		return elements.toString();
-	}
+  public String toString() {
+    return elements.toString();
+  }
 
-	public int hashCode() {
-		return this.toString().hashCode();
-	}
+  public int hashCode() {
+    return this.toString().hashCode();
+  }
 
-	public boolean equals(Object o) {
-		return o.hashCode() == this.hashCode();
-	}
+  public boolean equals(Object o) {
+    return o.hashCode() == this.hashCode();
+  }
 }

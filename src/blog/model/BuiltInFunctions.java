@@ -72,6 +72,7 @@ public class BuiltInFunctions {
   public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
   public static final String LT_NAME = "__LESSTHAN";
   public static final String LEQ_NAME = "__LESSTHANOREQUAL";
+  public static final String TO_MATRIX_NAME = "__TO_MATRIX";
 
   // can be called by user
   public static final String SUCC_NAME = "Succ";
@@ -80,7 +81,6 @@ public class BuiltInFunctions {
   public static final String INV_NAME = "inv";
   public static final String DET_NAME = "det";
   public static final String IS_EMPTY_NAME = "IsEmptyString";
-  // public static final String CONCAT_NAME = "Concat"; //Concat replaced by +
   public static final String MIN_NAME = "min";
   public static final String MAX_NAME = "max";
   public static final String ROUND_NAME = "round";
@@ -97,10 +97,6 @@ public class BuiltInFunctions {
   public static final String TOINT_NAME = "toInt";
   public static final String TOREAL_NAME = "toReal";
 
-  
-  public static final String CONCATE_NAME = "concate";
-  
-  
   /**
    * Constant that always denotes Model.NULL.
    */
@@ -376,13 +372,12 @@ public class BuiltInFunctions {
    */
   public static NonRandomFunction TO_REAL;
 
-  
   /*
    * Take a list of arguments, and convert them to a row-vector
    * TODO: Currently only accept double elements as input arguments
    */
   public static TemplateFunction CONCATE;
-  
+
   private BuiltInFunctions() {
     // prevent instantiation
   }
@@ -408,13 +403,15 @@ public class BuiltInFunctions {
 
     // find template functions compatible with sig
     // TODO: to add more template functions
-    for(int i = 0; i < templateFunctions.size(); ++ i) {
-    	if(templateFunctions.get(i).getName().equals(sig.getName())) {
-    		NonRandomFunction f = templateFunctions.get(i).getSpecificFunc(sig.getArgTypes());
-    		if(f != null) return f;
-    	}
+    for (int i = 0; i < templateFunctions.size(); ++i) {
+      if (templateFunctions.get(i).getName().equals(sig.getName())) {
+        NonRandomFunction f = templateFunctions.get(i).getSpecificFunc(
+            sig.getArgTypes());
+        if (f != null)
+          return f;
+      }
     }
-    
+
     return null;
   }
 
@@ -440,17 +437,17 @@ public class BuiltInFunctions {
    * 
    * @return unmodifiable List of Function
    */
-  public static List getFuncsWithName(String name) {
-    List funcsWithName = (List) functions.get(name);
-    return (funcsWithName == null) ? Collections.EMPTY_LIST : Collections
-        .unmodifiableList(funcsWithName);
+  public static List<Function> getFuncsWithName(String name) {
+    List<Function> funcsWithName = functions.get(name);
+    return (funcsWithName == null) ? Collections.<Function> emptyList()
+        : Collections.unmodifiableList(funcsWithName);
   }
 
   private static void addFunction(Function f) {
-    List funcsWithName = (List) functions.get(f.getName());
+    List<Function> funcsWithName = functions.get(f.getName());
     if (funcsWithName != null) {
-      for (Iterator iter = funcsWithName.iterator(); iter.hasNext();) {
-        Function g = (Function) iter.next();
+      for (Iterator<Function> iter = funcsWithName.iterator(); iter.hasNext();) {
+        Function g = iter.next();
         if (Arrays.equals(g.getArgTypes(), f.getArgTypes())) {
           System.err.println("Warning: overwriting existing " + "function "
               + g.getSig());
@@ -458,20 +455,20 @@ public class BuiltInFunctions {
         }
       }
     } else {
-      funcsWithName = new ArrayList();
+      funcsWithName = new ArrayList<Function>();
       functions.put(f.getName(), funcsWithName);
     }
     funcsWithName.add(f);
   }
 
-  static Map functions = new HashMap(); // from String to List of Function
+  static Map<String, List<Function>> functions = new HashMap<String, List<Function>>(); // from String to List of Function
 
-  private static void addTemplate(TemplateFunction t) {
-	  templateFunctions.add(t);
+  private static void addVarArgFunction(TemplateFunction t) {
+    templateFunctions.add(t);
   }
-  
+
   static ArrayList<TemplateFunction> templateFunctions = new ArrayList<TemplateFunction>();
-  
+
   static {
     // Add non-random constants
     NULL = getLiteral("null", BuiltInTypes.NULL, Model.NULL);
@@ -1053,47 +1050,45 @@ public class BuiltInFunctions {
     VSTACK = new NonRandomFunction(VSTACK_NAME, argTypes, retType, vstackInterp);
     addFunction(VSTACK);
 
-    
-  //TODO: to complete CONCATE
-    CONCATE = new TemplateFunction(CONCATE_NAME){
+    CONCATE = new TemplateFunction(TO_MATRIX_NAME) {
+      @Override
+      public NonRandomFunction getSpecificFunc(Type[] argTypes) {
+        int n = argTypes.length;
+        if (n < 1)
+          return null;
 
-		@Override
-		public NonRandomFunction getSpecificFunc(Type[] argTypes) {
-			int n = argTypes.length;
-			if(n < 1) return null;
-			
-			for(int i=1;i<n;++i)
-				if(!argTypes[i].equals(argTypes[0])) return null;
-			
-			/*
-			 * TODO: Currently only support convert elements to Real Matrix!!!
-			 */
-			for(int i=0;i<n;++i)
-				if(!argTypes[i].isSubtypeOf(BuiltInTypes.REAL)) return null;
-			
-			FunctionInterp concateInterp = new AbstractFunctionInterp() {
-			      public Object getValue(List args) {
-			    	  int n = args.size();
-			    	  double[][] val = new double[1][n];
-			    	  for(int i=0;i<n;++i)
-			    		  val[0][i] = (Double)args.get(i);
-			    	  return MatrixFactory.fromArray(val);
-			      }
-			    };
-			List<Type> args = new ArrayList<Type>();
-			for(int i=0;i<n;++i)
-				args.add(BuiltInTypes.REAL);
-			 
-			// TODO: convert REAL_ARRAY to REAL_MATRIX
-			NonRandomFunction retFunc = 
-					new NonRandomFunction(CONCATE_NAME, args, BuiltInTypes.REAL_ARRAY, concateInterp);
-			return retFunc;
-		}
-    	
+        for (int i = 1; i < n; ++i)
+          if (!argTypes[i].equals(argTypes[0]))
+            return null;
+
+        /*
+         * TODO: Currently only support convert elements to Real Matrix!!!
+         */
+        for (int i = 0; i < n; ++i)
+          if (!argTypes[i].isSubtypeOf(BuiltInTypes.REAL))
+            return null;
+
+        FunctionInterp concateInterp = new AbstractFunctionInterp() {
+          public Object getValue(List args) {
+            int n = args.size();
+            double[][] val = new double[1][n];
+            for (int i = 0; i < n; ++i)
+              val[0][i] = (Double) args.get(i);
+            return MatrixFactory.fromArray(val);
+          }
+        };
+        List<Type> args = new ArrayList<Type>();
+        for (int i = 0; i < n; ++i)
+          args.add(BuiltInTypes.REAL);
+
+        // TODO: convert REAL_ARRAY to REAL_MATRIX
+        NonRandomFunction retFunc = new NonRandomFunction(TO_MATRIX_NAME, args,
+            BuiltInTypes.REAL_ARRAY, concateInterp);
+        return retFunc;
+      }
     };
-    addTemplate(CONCATE);
-    
-    
+    addVarArgFunction(CONCATE);
+
     FunctionInterp eyeInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         Integer size = (Integer) args.get(0);
@@ -1166,8 +1161,7 @@ public class BuiltInFunctions {
         } else if (obj instanceof MatrixLib) {
           return ((MatrixLib) obj).elementAt(0, 0);
         } else {
-          System.err.println(obj.toString()
-              + " cannot be converted to Real");
+          System.err.println(obj.toString() + " cannot be converted to Real");
           return 0;
         }
       }
@@ -1175,23 +1169,26 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(BuiltInTypes.BUILT_IN);
     retType = BuiltInTypes.REAL;
-    TO_REAL = new NonRandomFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
+    TO_REAL = new NonRandomFunction(TOREAL_NAME, argTypes, retType,
+        toRealInterp);
     addFunction(TO_REAL);
   };
 }
-
 
 /*
  * Author: yiwu
  * Date: 2014-4-22
  */
 abstract class TemplateFunction {
-	private String name;
-	public TemplateFunction(String _name) {
-		name = _name;
-	}
-	public String getName() {
-		return name;
-	}
-	public abstract NonRandomFunction getSpecificFunc(Type[] argTypes);
+  private String name;
+
+  public TemplateFunction(String _name) {
+    name = _name;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public abstract NonRandomFunction getSpecificFunc(Type[] argTypes);
 }

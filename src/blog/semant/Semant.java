@@ -788,10 +788,16 @@ public class Semant {
     return t;
   }
 
+  /**
+   * translate ListInitExpr into ArgSpec
+   * It supports both constants and variables as elements.
+   * 
+   * @param e
+   * @return
+   */
   ArgSpec transExpr(ListInitExpr e) {
     List<ArgSpec> values = transExprList(e.values, true);
-    // todo support stack and concatenation
-    return new ListSpec(values, getType(e.type));
+    return new ListSpec(values, BuiltInTypes.REAL);
   }
 
   MapSpec transExpr(MapInitExpr e) {
