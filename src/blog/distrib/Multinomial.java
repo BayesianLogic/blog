@@ -81,6 +81,9 @@ public class Multinomial extends AbstractCondProbDistrib {
         expectTrialsAsArg = true;
         expectWeightAsArg = false;
       }
+    } else {
+      expectTrialsAsArg = true;
+      expectWeightAsArg = true;
     }
   }
 
