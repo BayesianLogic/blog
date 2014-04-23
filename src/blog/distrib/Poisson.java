@@ -92,6 +92,9 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
   }
 
   public double computeLogProb(int n) {
+    if (lambda == 0) {
+      return n == 0 ? 0 : Double.NEGATIVE_INFINITY;
+    }
     return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
   }
 
