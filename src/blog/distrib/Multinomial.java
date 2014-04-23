@@ -204,13 +204,18 @@ public class Multinomial extends AbstractCondProbDistrib {
       }
       if (objectPi instanceof MatrixLib) {
         MatrixLib pi = (MatrixLib) objectPi;
-        if (pi.colLen() != 1) {
-          throw new IllegalArgumentException(
-              "expected second arg to be column vector");
-        }
-        nativePi = new double[pi.rowLen()];
-        for (int i = 0; i < pi.rowLen(); i++) {
-          nativePi[i] = pi.elementAt(i, 0);
+        if (pi.colLen() == 1) {
+          nativePi = new double[pi.rowLen()];
+          for (int i = 0; i < pi.rowLen(); i++) {
+            nativePi[i] = pi.elementAt(i, 0);
+          }
+        } else if (pi.rowLen() == 1) {
+          nativePi = new double[pi.colLen()];
+          for (int i = 0; i < pi.colLen(); i++) {
+            nativePi[i] = pi.elementAt(0, i);
+          }
+        } else {
+          throw new IllegalArgumentException("expect either a row vector or column vector");
         }
       } else if (objectPi instanceof ArrayList) {
         ArrayList<?> arrayPi = (ArrayList<?>) objectPi;
