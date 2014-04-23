@@ -373,10 +373,9 @@ public class BuiltInFunctions {
   public static NonRandomFunction TO_REAL;
 
   /*
-   * Take a list of arguments, and convert them to a row-vector
-   * TODO: Currently only accept double elements as input arguments
+   * Take a list of arguments, and convert them to a matrix
    */
-  public static TemplateFunction CONCATE;
+  public static NonRandomFunction TO_MATRIX;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -398,17 +397,6 @@ public class BuiltInFunctions {
         if (Arrays.equals(sig.getArgTypes(), f.getArgTypes())) {
           return f;
         }
-      }
-    }
-
-    // find template functions compatible with sig
-    // TODO: to add more template functions
-    for (int i = 0; i < templateFunctions.size(); ++i) {
-      if (templateFunctions.get(i).getName().equals(sig.getName())) {
-        NonRandomFunction f = templateFunctions.get(i).getSpecificFunc(
-            sig.getArgTypes());
-        if (f != null)
-          return f;
       }
     }
 
@@ -462,12 +450,6 @@ public class BuiltInFunctions {
   }
 
   static Map<String, List<Function>> functions = new HashMap<String, List<Function>>(); // from String to List of Function
-
-  private static void addVarArgFunction(TemplateFunction t) {
-    templateFunctions.add(t);
-  }
-
-  static ArrayList<TemplateFunction> templateFunctions = new ArrayList<TemplateFunction>();
 
   static {
     // Add non-random constants
@@ -1050,44 +1032,21 @@ public class BuiltInFunctions {
     VSTACK = new NonRandomFunction(VSTACK_NAME, argTypes, retType, vstackInterp);
     addFunction(VSTACK);
 
-    CONCATE = new TemplateFunction(TO_MATRIX_NAME) {
-      @Override
-      public NonRandomFunction getSpecificFunc(Type[] argTypes) {
-        int n = argTypes.length;
-        if (n < 1)
-          return null;
-
-        for (int i = 1; i < n; ++i)
-          if (!argTypes[i].equals(argTypes[0]))
-            return null;
-
-        /*
-         * TODO: Currently only support convert elements to Real Matrix!!!
-         */
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.BUILT_IN);
+    retType = BuiltInTypes.REAL_MATRIX;
+    FunctionInterp toMatrixInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        int n = args.size();
+        double[][] val = new double[1][n];
         for (int i = 0; i < n; ++i)
-          if (!argTypes[i].isSubtypeOf(BuiltInTypes.REAL))
-            return null;
-
-        FunctionInterp concateInterp = new AbstractFunctionInterp() {
-          public Object getValue(List args) {
-            int n = args.size();
-            double[][] val = new double[1][n];
-            for (int i = 0; i < n; ++i)
-              val[0][i] = (Double) args.get(i);
-            return MatrixFactory.fromArray(val);
-          }
-        };
-        List<Type> args = new ArrayList<Type>();
-        for (int i = 0; i < n; ++i)
-          args.add(BuiltInTypes.REAL);
-
-        // TODO: convert REAL_ARRAY to REAL_MATRIX
-        NonRandomFunction retFunc = new NonRandomFunction(TO_MATRIX_NAME, args,
-            BuiltInTypes.REAL_ARRAY, concateInterp);
-        return retFunc;
+          val[0][i] = (Double) args.get(i);
+        return MatrixFactory.fromArray(val);
       }
     };
-    addVarArgFunction(CONCATE);
+    TO_MATRIX = new NonRandomFunction(TO_MATRIX_NAME, argTypes, retType,
+        toMatrixInterp);
+    addFunction(TO_MATRIX);
 
     FunctionInterp eyeInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
@@ -1173,22 +1132,4 @@ public class BuiltInFunctions {
         toRealInterp);
     addFunction(TO_REAL);
   };
-}
-
-/*
- * Author: yiwu
- * Date: 2014-4-22
- */
-abstract class TemplateFunction {
-  private String name;
-
-  public TemplateFunction(String _name) {
-    name = _name;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public abstract NonRandomFunction getSpecificFunc(Type[] argTypes);
 }

@@ -144,9 +144,9 @@ public class ListSpec extends ArgSpec {
    * 
    * @return
    */
-  public MatrixSpec transferToMatrix() {
+  public ArgSpec transferToMatrix() {
     if (this.containsRandomSymbol()) {
-      return 
+      return new FuncAppTerm(BuiltInFunctions.TO_MATRIX, elements);
     } else {
       return new MatrixSpec((List<ArgSpec>) (this.getSubExprs()));
     }
