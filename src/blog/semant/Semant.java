@@ -514,9 +514,11 @@ public class Semant {
   DependencyModel transDependency(Expr e, Type resTy, Object defVal) {
     Object body = transExpr(e);
     List<Clause> cl = new ArrayList<Clause>(1);
-    if (body instanceof Term || body instanceof Formula) {
+    if (body instanceof Term || body instanceof Formula
+        || body instanceof ListSpec) {
       cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-          .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
+          .<ArgSpec> emptyList(), Collections.singletonList(getTypedValue(
+          resTy, (ArgSpec) body))));
     } else if (body instanceof Clause) {
       cl.add((Clause) body);
     } else if (e instanceof IfExpr) {
@@ -797,7 +799,10 @@ public class Semant {
    */
   ArgSpec transExpr(ListInitExpr e) {
     List<ArgSpec> values = transExprList(e.values, true);
-    return new ListSpec(values, BuiltInTypes.REAL);
+    ListSpec ls = new ListSpec(values, BuiltInTypes.REAL);
+    if (ls.containsRandomSymbol())
+      return ls.transferToMatrix();
+    return ls;
   }
 
   MapSpec transExpr(MapInitExpr e) {

@@ -1,10 +1,6 @@
-fixed Real[][] a = [[1.0, 2.0, 3.0],
-      	       	    [4.0, 5.0, 6.0],
-		    [7.0, 8.0, 9.0]];
+random Real x ~ Gaussian(0, 10);
+random Real y ~ Gaussian(10, 10);
+random Real z ~ Gaussian(20, 10);
+random RealMatrix w = [x, y, z];
 
-query a[0][2];
-query a[1][1];
-query a[2][0];
-
-query a;
-query a[1];
+query w;
