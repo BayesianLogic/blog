@@ -87,24 +87,29 @@ public class Multinomial extends AbstractCondProbDistrib {
     }
   }
 
-  /**
-   * Returns the probability of given vector.
-   */
-  public double getProb(List args, Object value) {
-    initParams(args);
-
+  MatrixLib ensureValueFormat(Object value) {
     if (!(value instanceof MatrixLib)) {
       throw new IllegalArgumentException("expected vector value");
     }
     final int numBuckets = pi.length;
     MatrixLib valueVector = (MatrixLib) value;
-    if (valueVector.rowLen() != numBuckets || valueVector.colLen() != 1) {
+    if (valueVector.numRows() == 1 && (valueVector.numCols() != 1)) {
+      valueVector = valueVector.transpose();
+    }
+    if (valueVector.numRows() != numBuckets) {
       throw new IllegalArgumentException("value has wrong dimension");
     }
-    int sum = 0;
-    for (int i = 0; i < numBuckets; i++) {
-      sum += valueVector.elementAt(i, 0);
-    }
+    return valueVector;
+  }
+
+  /**
+   * Returns the probability of given vector.
+   */
+  public double getProb(List args, Object value) {
+    initParams(args);
+    final int numBuckets = pi.length;
+    MatrixLib valueVector = ensureValueFormat(value);
+    int sum = (int) valueVector.columnSum().elementAt(0, 0);
     if (sum != numTrials) {
       return 0;
     }
@@ -123,22 +128,14 @@ public class Multinomial extends AbstractCondProbDistrib {
    */
   public double getLogProb(List args, Object value) {
     initParams(args);
-    if (!(value instanceof MatrixLib)) {
-      throw new IllegalArgumentException("expected vector value");
-    }
-    MatrixLib valueVector = (MatrixLib) value;
-    if (valueVector.rowLen() != numTrials) {
-      throw new IllegalArgumentException("value has wrong dimension");
-    }
-    int sum = 0;
-    for (int i = 0; i < numTrials; i++) {
-      sum += valueVector.elementAt(i, 0);
-    }
+    final int numBuckets = pi.length;
+    MatrixLib valueVector = ensureValueFormat(value);
+    int sum = (int) valueVector.columnSum().elementAt(0, 0);
     if (sum != numTrials) {
       return 0;
     }
     double logProb = Util.logFactorial(numTrials);
-    for (int i = 0; i < numTrials; i++) {
+    for (int i = 0; i < numBuckets; i++) {
       logProb += valueVector.elementAt(i, 0) * Math.log(pi[i]);
       logProb -= Util
           .logFactorial((int) Math.round(valueVector.elementAt(i, 0)));
@@ -207,18 +204,19 @@ public class Multinomial extends AbstractCondProbDistrib {
       }
       if (objectPi instanceof MatrixLib) {
         MatrixLib pi = (MatrixLib) objectPi;
-        if (pi.colLen() == 1) {
-          nativePi = new double[pi.rowLen()];
-          for (int i = 0; i < pi.rowLen(); i++) {
+        if (pi.numCols() == 1) {
+          nativePi = new double[pi.numRows()];
+          for (int i = 0; i < pi.numRows(); i++) {
             nativePi[i] = pi.elementAt(i, 0);
           }
-        } else if (pi.rowLen() == 1) {
-          nativePi = new double[pi.colLen()];
-          for (int i = 0; i < pi.colLen(); i++) {
+        } else if (pi.numRows() == 1) {
+          nativePi = new double[pi.numCols()];
+          for (int i = 0; i < pi.numCols(); i++) {
             nativePi[i] = pi.elementAt(0, i);
           }
         } else {
-          throw new IllegalArgumentException("expect either a row vector or column vector");
+          throw new IllegalArgumentException(
+              "expect either a row vector or column vector");
         }
       } else if (objectPi instanceof ArrayList) {
         ArrayList<?> arrayPi = (ArrayList<?>) objectPi;
