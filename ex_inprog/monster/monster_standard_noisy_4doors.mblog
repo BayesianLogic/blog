@@ -5,8 +5,8 @@ type Monster;
 type nonstate_Sound;
 generating Monster Source(nonstate_Sound);
 generating Timestep Time_nonstate_Sound(nonstate_Sound);
-random Integer Num_nonstate_Sound(Timestep t) ~Cardinality({nonstate_Sound s : Time_nonstate_Sound(s)==t});
-random Boolean observable(Num_nonstate_Sound(Timestep t)) =true;
+random Integer Number_nonstate_Sound(Timestep t) ~Cardinality({nonstate_Sound s : Time_nonstate_Sound(s)==t});
+random Boolean observable(Number_nonstate_Sound(Timestep t)) =true;
 
 random Integer DoorOf(Monster m, Timestep t) {
    if t == @0 then ~ UniformChoice({Integer n: n< MaxDoor & n>=0})
