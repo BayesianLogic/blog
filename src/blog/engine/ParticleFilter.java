@@ -44,8 +44,10 @@ import java.util.ListIterator;
 import java.util.Properties;
 import java.util.Set;
 
+import blog.bn.BayesNetVar;
 import blog.DBLOGUtil;
 import blog.common.Util;
+import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -122,16 +124,27 @@ public class ParticleFilter extends InferenceEngine {
 		System.out.println("Constructing sampler of class " + samplerClassName);
 		particleSampler = Sampler.make(samplerClassName, model, properties);
 
+    String queryReportIntervalStr = properties.getProperty("queryReportInterval", "10");
+    try {
+      queryReportInterval = Integer.parseInt(queryReportIntervalStr);
+    } catch (NumberFormatException e) {
+      Util.fatalError("Invalid reporting interval: " + queryReportIntervalStr, false);
+    }
+
 		if (useDecayedMCMC)
 			dmhSampler = new DMHSampler(model, properties);
+
+    dataLogLik = 0;
 	}
 
 	/** Answers the queries provided at construction time. */
 	public void answerQueries() {
 		System.out.println("Evidence: " + evidence);
 		System.out.println("Query: " + queries);
+    System.out.println("Report every: " + queryReportInterval + " timesteps");
 		resetAndTakeInitialEvidence();
 		answer(queries);
+    System.out.println("Log likelihood of data: " + dataLogLik);
 	}
 
 	/**
@@ -173,6 +186,36 @@ public class ParticleFilter extends InferenceEngine {
 		for (Iterator it = evidenceInOrderOfMaxTimestep.iterator(); it.hasNext();) {
 			Evidence evidenceSlice = (Evidence) it.next();
 			take(evidenceSlice);
+
+      // FIXME: This is a very complicated way to obtain the timestep in this
+      // evidence slice. Ideally, splitEvidenceByMaxTimestep would return this
+      // information, since it already computes it.
+      int timestepIndex = -1;
+      for (BayesNetVar var : evidenceSlice.getEvidenceVars()) {
+        timestepIndex = DBLOGUtil.getTimestepIndex(var);
+        if (timestepIndex > -1) {
+          break;
+        }
+      }
+      if (timestepIndex > 0 && timestepIndex % queryReportInterval == 0) {
+        System.out.println("======== Query Results ========");
+        System.out.println("After " + timestepIndex + " timesteps:");
+        // We have to make a local copy of the queries, because we don't want
+        // to update the statistics on the "real" queries.
+        ArrayList<Query> queriesCopy = new ArrayList<Query>();
+        for (Query query : (List<Query>) queries) {
+          // FIXME: We have no clean way to create a copy of a Query.
+          // For now, just assume they are all of type ArgSpecQuery.
+          queriesCopy.add(new ArgSpecQuery((ArgSpecQuery) query));
+        }
+        for (Particle particle : (List<Particle>) particles) {
+          particle.answer(queriesCopy);
+        }
+        for (Query query : queriesCopy) {
+          query.printResults(System.out);
+        }
+        System.out.println("======== Done ========");
+      }
 		}
 	}
 
@@ -216,25 +259,30 @@ public class ParticleFilter extends InferenceEngine {
 //					p.uninstantiatePreviousTimeslices();
 //					p.removeAllDerivedVars();
 //				}
+
+        // For now we assume numTimeSlicesInMemory = 1.
+        p.uninstantiatePreviousTimeslices();
 			}
 
-			double sumLogWeights = Double.NEGATIVE_INFINITY;
+			double logSumWeights = Double.NEGATIVE_INFINITY;
 			ListIterator particleIt = particles.listIterator();
 			while (particleIt.hasNext()) {
 				Particle particle = (Particle) particleIt.next();
 				if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
 					particleIt.remove();
 				} else {
-          sumLogWeights = Util.logSum(sumLogWeights, particle.getLatestLogWeight());
+          logSumWeights = Util.logSum(logSumWeights, particle.getLatestLogWeight());
         }
 			}
 
 			if (particles.size() == 0)
 				throw new IllegalArgumentException("All particles have zero weight");
 
+      dataLogLik += logSumWeights;
+
 			// System.out.println("PF: Num of particles after taking evidence: " +
 			// particles.size());
-			// System.out.println("PF: Log sum of weights after taking evidence: " + sumLogWeights);
+			// System.out.println("PF: Log sum of weights after taking evidence: " + logSumWeights);
 
 			needsToBeResampledBeforeFurtherSampling = true;
 
@@ -272,23 +320,23 @@ public class ParticleFilter extends InferenceEngine {
 	private void resample() {
 		double[] logWeights = new double[particles.size()];
 		boolean[] alreadySampled = new boolean[particles.size()];
-		double sumLogWeights = Double.NEGATIVE_INFINITY;
+		double logSumWeights = Double.NEGATIVE_INFINITY;
     double[] normalizedWeights = new double[particles.size()];
 		List newParticles = new ArrayList();
 
 		for (int i = 0; i < particles.size(); i++) {
 			logWeights[i] = ((Particle) particles.get(i)).getLatestLogWeight();
-      sumLogWeights = Util.logSum(sumLogWeights, logWeights[i]);
+      logSumWeights = Util.logSum(logSumWeights, logWeights[i]);
 		}
 
-		if (sumLogWeights == Double.NEGATIVE_INFINITY) {
+		if (logSumWeights == Double.NEGATIVE_INFINITY) {
 			throw new IllegalArgumentException("All particles have zero weight");
 		}
 		// else
-		// System.out.println("PF.resample: log sum of all particle weights is " + sumLogWeights);
+		// System.out.println("PF.resample: log sum of all particle weights is " + logSumWeights);
 
 		for (int i = 0; i < particles.size(); i++) {
-      normalizedWeights[i] = Math.exp(logWeights[i] - sumLogWeights);
+      normalizedWeights[i] = Math.exp(logWeights[i] - logSumWeights);
     }
 
 		for (int i = 0; i < numParticles; i++) {
@@ -391,4 +439,6 @@ public class ParticleFilter extends InferenceEngine {
 	private Sampler particleSampler;
 	private AfterSamplingListener afterSamplingListener;
 	private DMHSampler dmhSampler;
+  private int queryReportInterval;
+  private double dataLogLik;  // log likelihood of the data
 }
