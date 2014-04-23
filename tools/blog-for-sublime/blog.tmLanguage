@@ -5,6 +5,7 @@
 	<key>fileTypes</key>
 	<array>
 		<string>blog</string>
+		<string>dblog</string>
 	</array>
 	<key>name</key>
 	<string>BLOG</string>
@@ -59,7 +60,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>(\-\&gt;|\&lt;|\&gt;|\=|\=\=|\&gt;\=|\&lt;\=|\!|~|:|\+|\-|\*|\/|\%|\=\&gt;|\&amp;|\|)</string>
+			<string>(\-\&gt;|\&lt;|\&gt;|\=|\=\=|\&gt;\=|\&lt;\=|\!|~|:|\+|\-|\*|\/|\%|\=\&gt;|\&amp;|\||\[|\])</string>
 			<key>name</key>
 			<string>keyword.operator.blog</string>
 		</dict>
@@ -84,28 +85,7 @@
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>\b(fixed|random)\s+(Integer|Real|Boolean|NaturalNum|Timestep)\b</string>
-			<key>name</key>
-			<string>funcdecl.blog</string>
-		</dict>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>storage.modifier.blog</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>storage.type.blog</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>\b(fixed|random)\s+(\w+)\b</string>
-			<key>name</key>
-			<string>funcdecl.blog</string>
+			<string>\b(fixed|random|origin)\b\s+\b(Integer|Real|Boolean|NaturalNum|Timestep|\w+)((\[\])*)\s+</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -123,8 +103,6 @@
 			</dict>
 			<key>match</key>
 			<string>\b(distinct)\s+(\w+)\b</string>
-			<key>name</key>
-			<string>distinctdecl.blog</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -145,7 +123,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\b(Integer|Real|Boolean|NaturalNum|Timestep)\b</string>
+			<string>\b(Integer|Real|Boolean|NaturalNum|Timestep)((\[\])*)\b</string>
 			<key>name</key>
 			<string>storage.type.primitive.blog</string>
 		</dict>
@@ -157,7 +135,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\b(TabularCPD|Distribution|Gaussian|UniformChoice|MultivarGaussian|Poisson|Bernoulli|BooleanDistrib|Binomial|Beta|BoundedGenometric|Categorical|Dirichlet|EqualsCPD|Gamma|Geometric|Iota|LinearGaussian|MixtureDistrib|NegativeBinamial|RoundedLogNormal|TabularInterp|UniformVector|UnivarGaussian|Exponential|UniformInt|UniformReal)\b</string>
+			<string>\b(TabularCPD|Distribution|Gaussian|UniformChoice|MultivarGaussian|Poisson|Bernoulli|BooleanDistrib|Binomial|Beta|BoundedGenometric|Categorical|Dirichlet|EqualsCPD|Gamma|Geometric|Iota|LinearGaussian|MixtureDistrib|NegativeBinamial|RoundedLogNormal|TabularInterp|UniformVector|UnivarGaussian|Exponential|UniformInt|UniformReal|Multinomial)\b</string>
 			<key>name</key>
 			<string>support.function.blog</string>
 		</dict>
