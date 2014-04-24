@@ -800,9 +800,13 @@ public class Semant {
   ArgSpec transExpr(ListInitExpr e) {
     List<ArgSpec> values = transExprList(e.values, true);
     ListSpec ls = new ListSpec(values, BuiltInTypes.REAL);
+    /*
     if (ls.containsRandomSymbol())
       return ls.transferToMatrix();
     return ls;
+    */
+    // TODO: to make list support types other than real
+    return ls.transferToMatrix();
   }
 
   MapSpec transExpr(MapInitExpr e) {

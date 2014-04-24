@@ -1038,10 +1038,27 @@ public class BuiltInFunctions {
     FunctionInterp toMatrixInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         int n = args.size();
-        double[][] val = new double[1][n];
-        for (int i = 0; i < n; ++i)
-          val[0][i] = (Double) args.get(i);
-        return MatrixFactory.fromArray(val);
+        // TODO: here we only support list of double and list of list of double
+        // two dimension
+        //  e.g. [[a,b],[c,d]]
+        if(n > 0 && args.get(0) instanceof MatrixLib) {
+        	int m = ((MatrixLib)args.get(0)).colLen();
+        	for (int i=1;i<n;++i)
+        		m = Math.max(m, ((MatrixLib)args.get(i)).colLen());
+        	double[][] val = new double[n][m];
+        	for (int i=0;i<n;++i) {
+        		MatrixLib mat = (MatrixLib)args.get(i);
+        		for(int j=0;j<mat.colLen();++j)
+        			val[i][j] = mat.elementAt(0, j);
+        	}
+        	return MatrixFactory.fromArray(val);
+        } else {
+        // single dimension: e.g. [a,b,c]
+        	double[][] val = new double[1][n];
+        	for (int i = 0; i < n; ++i)
+        		val[0][i] = (Double) args.get(i);
+        	return MatrixFactory.fromArray(val);
+        }
       }
     };
     TO_MATRIX = new NonRandomFunction(TO_MATRIX_NAME, argTypes, retType,

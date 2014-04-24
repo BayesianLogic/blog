@@ -145,11 +145,15 @@ public class ListSpec extends ArgSpec {
    * @return
    */
   public ArgSpec transferToMatrix() {
+	  return new FuncAppTerm(BuiltInFunctions.TO_MATRIX, elements);
+	  // TODO: to add special check for fixed matrix
+	  /*
     if (this.containsRandomSymbol()) {
       return new FuncAppTerm(BuiltInFunctions.TO_MATRIX, elements);
     } else {
       return new MatrixSpec((List<ArgSpec>) (this.getSubExprs()));
     }
+    */
   }
 
   /*
