@@ -1,0 +1,16 @@
+- Aggregate bird model
+  birds_agg_obs.blog
+  birds_flow_prob.blog
+  birds_agg_model.blog
+  birds_agg_queries.blog
+  birds_flow_prob_vec.blog
+
+  to run the example:
+
+  run_pf.sh birds_agg_model.blog birds_flow_prob.blog birds_flow_prob_vec.blog birds_agg_obs.blog birds_agg_queries.blog
+
+- Individual bird model
+  bird_individual.blog
+
+  run_pf.sh bird_individual.blog
+
