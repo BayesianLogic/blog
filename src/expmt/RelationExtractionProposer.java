@@ -233,10 +233,9 @@ public class RelationExtractionProposer implements Proposer {
       }
   
       // Create hashmap where key is a unique relation/arg pair, value is a fact
-      //factMap = new HashMap<String, Object>(); 
+      factMap = new HashMap<String, Object>(); 
         
       // Set number variables of RELEVANT FACTS: DATADRIVEN MCMC
-      factMap = new HashMap<String, Object>();
       for (Object sentence: sentType.getGuaranteedObjects()) {
   
         Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
@@ -275,6 +274,7 @@ public class RelationExtractionProposer implements Proposer {
           }
         }
       }*/
+
       
       // 2) This is for labeled sentences, where a relation of a sentence is observed (along with the arg pair, of course)
       for (Iterator iter = evidence.getEvidenceVars().iterator(); iter.hasNext(); ) {
@@ -307,6 +307,7 @@ public class RelationExtractionProposer implements Proposer {
         
       }
       
+      
       // 3a) Bootstrap Observed Sentences by Trigger (also has to instantiate some stuff)
       HashMap<Object, ArrayList> triggerGroups = new HashMap<Object, ArrayList>();
       for (Object sentence : sentType.getGuaranteedObjects()) {
@@ -320,6 +321,7 @@ public class RelationExtractionProposer implements Proposer {
           triggerGroups.put(trigger, list);
         }
       }
+
       
       // See if there is a label in a group, assign if so
       for (ArrayList group : triggerGroups.values()) {
@@ -345,6 +347,7 @@ public class RelationExtractionProposer implements Proposer {
           }
         } 
       }
+      
  
       
       // 3b) Bootstrap Observed Sentences by ArgPair 
@@ -362,6 +365,7 @@ public class RelationExtractionProposer implements Proposer {
           argPairGroups.put(argPair, list);
         }
       }
+
       
       // See if there is a label in a group, assign if so
       for (ArrayList group : argPairGroups.values()) {
@@ -388,15 +392,18 @@ public class RelationExtractionProposer implements Proposer {
         } 
       }
       
+      
       // 3c) For all other trigger groups, either bootstrap via triggers one more time, or throw them into some random relation
       // See if there is a label in a group, assign if so
       for (ArrayList group : triggerGroups.values()) {
         Object rel = null;
+        
         for (Object sent : group) {
           if (world.isInstantiated(makeVar(sourceFactFunc, sent))) { // Only labeled sentences have this
             rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc, sent))).getOriginFuncValue(relFunc);
           }
         }
+        
                 
         // If one of the sentences was observed, cluster everything in that relation
         // Otherwise, choose a random relation
@@ -452,7 +459,6 @@ public class RelationExtractionProposer implements Proposer {
       }
       
       // 4d) Sample all holds(f) values OF RELEVANT FACTS if they haven't been instantiated
-      factMap = new HashMap<String, Object>();
       for (Object sentence: sentType.getGuaranteedObjects()) {
   
         Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
@@ -533,10 +539,13 @@ public class RelationExtractionProposer implements Proposer {
    */
   public double proposeNextState(PartialWorldDiff proposedWorld) {
     count++;
+    if (count % 10000 == 0) {
+      int t = 2;
+    }
     double logAcceptanceRatio;
     
     // Sample until a valid move has been made (where evidence was not changed)
-    do {
+    //do {
       double sample = rng.nextDouble();
       proposedWorld.revert();
       updateSupportedFacts(proposedWorld); // Used for sourceFactSwitch and holdsSwitch
@@ -551,7 +560,7 @@ public class RelationExtractionProposer implements Proposer {
       } else {
         logAcceptanceRatio = randomThetaSample(proposedWorld);
       }
-    } while (this.evidence.getEvidenceLogProb(proposedWorld) < - 1E6);
+    //} while (this.evidence.getEvidenceLogProb(proposedWorld) < - 1E6);
     
     return logAcceptanceRatio;
   }
@@ -1039,16 +1048,14 @@ public class RelationExtractionProposer implements Proposer {
     Arrays.fill(params, dir_alpha);
 
     // For each trigger (indexed by i), find how many TriggerID(s) rv's have that value
-    for (int i = 0; i < params.length; i++) {
       for (Object sentence : sentType.getGuaranteedObjects()) {
         RandFuncAppVar triggerID = new RandFuncAppVar(triggerIDFunc, Collections.singletonList(sentence));
         Object sourceFact = proposedWorld.getValue(makeVar(sourceFactFunc, Collections.singletonList(sentence)));
         Object sentRel = ((NonGuaranteedObject) sourceFact).getOriginFuncValue(relFunc);
-        if (proposedWorld.getValue(triggerID).equals(i) && sentRel == rel) {
-          params[i]++;
+        if (sentRel == rel) {
+          params[(Integer) proposedWorld.getValue(triggerID)]++;
         }
       }
-    }
     // Sample from posterior distribution, set the value in the world
     Dirichlet thetaSampler = new Dirichlet(Arrays.asList(params));
     RandFuncAppVar theta = new RandFuncAppVar(thetaFunc, Collections.singletonList(rel));

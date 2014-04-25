@@ -157,3 +157,159 @@ Distribution of values for Rel(SourceFact(Sent[19]))
 	0.13263333333333333	R[1]
 ======== Done ========
 
+######################################################
+
+Experiment 4a: Trigger Disambiguation
+	- 10 sentences
+		- 4 sentences with "operate", 4 sentences with "sprint", 2 sentences with "run", where there is an overlap of argument pairs.
+	- 2 Relations
+	- 3 Verbs, 1 for R[0], 1 for R[1], and 1 that belongs to both, that needs to be disambiguated.
+
+In the ground truth, Sentence 4 should be lumped with Sentences 0 - 3, and Sentence 5 should be lumped with Sentences 6 - 9.
+
+Results: The corect disambiguation happens here:
+
+Distribution of values for Rel(SourceFact(Sent[0]))
+	0.5888	R[0]
+	0.4112	R[1]
+Distribution of values for Rel(SourceFact(Sent[1]))
+	0.5644833333333333	R[0]
+	0.43551666666666666	R[1]
+Distribution of values for Rel(SourceFact(Sent[2]))
+	0.5737333333333333	R[0]
+	0.4262666666666667	R[1]
+Distribution of values for Rel(SourceFact(Sent[3]))
+	0.50885	R[0]
+	0.49115	R[1]
+Distribution of values for Rel(SourceFact(Sent[4]))
+	0.5119166666666667	R[1]
+	0.4880833333333333	R[0]
+Distribution of values for Rel(SourceFact(Sent[5]))
+	0.5952	R[1]
+	0.4048	R[0]
+Distribution of values for Rel(SourceFact(Sent[6]))
+	0.5929666666666666	R[1]
+	0.40703333333333336	R[0]
+Distribution of values for Rel(SourceFact(Sent[7]))
+	0.5959666666666666	R[1]
+	0.40403333333333336	R[0]
+Distribution of values for Rel(SourceFact(Sent[8]))
+	0.59985	R[1]
+	0.40015	R[0]
+Distribution of values for Rel(SourceFact(Sent[9]))
+	0.5997666666666667	R[1]
+	0.40023333333333333	R[0]
+======== Done ========
+
+Experiment 4b:
+	- 10 sentences
+		- 3 sentences with "operate", 3 sentences with "sprint", 4 sentences with "run", two should go with operate, two should go with "sprint"
+	- 2 Relations
+	- 3 Verbs, same as Experiment 4a
+
+In the ground truth, Sentences 0 - 4 should be lumped together, and Sentences 5 - 9 should be lumped together.
+
+Results:
+
+Not good, clustering everything into one relation, with very little confidence..
+
+Distribution of values for Rel(SourceFact(Sent[0]))
+	0.5256133333333334	R[0]
+	0.4743866666666667	R[1]
+Distribution of values for Rel(SourceFact(Sent[1]))
+	0.5314433333333334	R[0]
+	0.4685566666666667	R[1]
+Distribution of values for Rel(SourceFact(Sent[2]))
+	0.5318788888888889	R[0]
+	0.4681211111111111	R[1]
+Distribution of values for Rel(SourceFact(Sent[3]))
+	0.5298366666666666	R[0]
+	0.4701633333333333	R[1]
+Distribution of values for Rel(SourceFact(Sent[4]))
+	0.5304788888888889	R[0]
+	0.4695211111111111	R[1]
+Distribution of values for Rel(SourceFact(Sent[5]))
+	0.5145933333333333	R[0]
+	0.48540666666666665	R[1]
+Distribution of values for Rel(SourceFact(Sent[6]))
+	0.5145611111111111	R[0]
+	0.48543888888888886	R[1]
+Distribution of values for Rel(SourceFact(Sent[7]))
+	0.5171522222222222	R[0]
+	0.48284777777777776	R[1]
+Distribution of values for Rel(SourceFact(Sent[8]))
+	0.51814	R[0]
+	0.48186	R[1]
+Distribution of values for Rel(SourceFact(Sent[9]))
+	0.5101166666666667	R[0]
+	0.48988333333333334	R[1]
+======== Done ========
+
+Here is a trial where the clustering is correct, still with not much confidence:
+
+Distribution of values for Rel(SourceFact(Sent[0]))
+	0.54079	R[0]
+	0.45921	R[1]
+Distribution of values for Rel(SourceFact(Sent[1]))
+	0.527655	R[0]
+	0.472345	R[1]
+Distribution of values for Rel(SourceFact(Sent[2]))
+	0.53103	R[0]
+	0.46897	R[1]
+Distribution of values for Rel(SourceFact(Sent[3]))
+	0.530565	R[0]
+	0.469435	R[1]
+Distribution of values for Rel(SourceFact(Sent[4]))
+	0.528745	R[0]
+	0.471255	R[1]
+Distribution of values for Rel(SourceFact(Sent[5]))
+	0.53461	R[1]
+	0.46539	R[0]
+Distribution of values for Rel(SourceFact(Sent[6]))
+	0.53312	R[1]
+	0.46688	R[0]
+Distribution of values for Rel(SourceFact(Sent[7]))
+	0.535155	R[1]
+	0.464845	R[0]
+Distribution of values for Rel(SourceFact(Sent[8]))
+	0.53077	R[1]
+	0.46923	R[0]
+Distribution of values for Rel(SourceFact(Sent[9]))
+	0.543125	R[1]
+	0.456875	R[0]
+======== Done ========
+
+
+BUT!! If I label two sentences' relations, I get the right results, with good confidence:
+
+Distribution of values for Rel(SourceFact(Sent[0]))
+	1.0	R[0]
+Distribution of values for Rel(SourceFact(Sent[1]))
+	0.829815	R[0]
+	0.170185	R[1]
+Distribution of values for Rel(SourceFact(Sent[2]))
+	0.83593	R[0]
+	0.16407	R[1]
+Distribution of values for Rel(SourceFact(Sent[3]))
+	0.83557	R[0]
+	0.16443	R[1]
+Distribution of values for Rel(SourceFact(Sent[4]))
+	0.830165	R[0]
+	0.169835	R[1]
+Distribution of values for Rel(SourceFact(Sent[5]))
+	0.815655	R[1]
+	0.184345	R[0]
+Distribution of values for Rel(SourceFact(Sent[6]))
+	0.82122	R[1]
+	0.17878	R[0]
+Distribution of values for Rel(SourceFact(Sent[7]))
+	0.82334	R[1]
+	0.17666	R[0]
+Distribution of values for Rel(SourceFact(Sent[8]))
+	0.8199	R[1]
+	0.1801	R[0]
+Distribution of values for Rel(SourceFact(Sent[9]))
+	1.0	R[1]
+======== Done ========
+
+Hmm.. maybe not enough data? At least we know with semi-supervised clustering, it will work.

@@ -1,0 +1,14 @@
+/* Queries go here */
+
+query Rel(SourceFact(Sent[0]));
+query Rel(SourceFact(Sent[1]));
+query Rel(SourceFact(Sent[2]));
+query Rel(SourceFact(Sent[3]));
+query Rel(SourceFact(Sent[4]));
+query Rel(SourceFact(Sent[5]));
+query Rel(SourceFact(Sent[6]));
+query Rel(SourceFact(Sent[7]));
+query Rel(SourceFact(Sent[8]));
+query Rel(SourceFact(Sent[9]));
+
+query (Rel(SourceFact(Sent[0])) == Rel(SourceFact(Sent[4])) & Rel(SourceFact(Sent[5])) == Rel(SourceFact(Sent[9]))) ;

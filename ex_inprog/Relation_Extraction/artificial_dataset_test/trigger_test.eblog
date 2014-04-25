@@ -1,0 +1,52 @@
+/* Observation File */
+
+obs Subject(Sent[0]) = John;
+obs Object(Sent[0]) = party;
+obs Verb(Sent[0]) = operate;
+//obs Rel(SourceFact(Sent[0])) = R[0];
+
+//obs Subject(Sent[1]) = Tom;
+//obs Object(Sent[1]) = machine;
+//obs Verb(Sent[1]) = operate;
+
+obs Subject(Sent[1]) = Lei;
+obs Object(Sent[1]) = party;
+obs Verb(Sent[1]) = run; // Should be lumped with operate relation
+
+obs Subject(Sent[2]) = Lei;
+obs Object(Sent[2]) = party;
+obs Verb(Sent[2]) = operate;
+
+obs Subject(Sent[3]) = Chris;
+obs Object(Sent[3]) = event;
+obs Verb(Sent[3]) = operate;
+
+obs Subject(Sent[4]) = Chris;
+obs Object(Sent[4]) = event;
+obs Verb(Sent[4]) = run; // Should be lumped with operate relation
+
+obs Subject(Sent[5]) = John;
+obs Object(Sent[5]) = fifty_feet;
+obs Verb(Sent[5]) = run; // Should be lumped with sprinting relation
+
+obs Subject(Sent[6]) = John;
+obs Object(Sent[6]) = fifty_feet;
+obs Verb(Sent[6]) = sprint;
+
+obs Subject(Sent[7]) = Lei;
+obs Object(Sent[7]) = the_block;
+obs Verb(Sent[7]) = sprint;
+
+//obs Subject(Sent[8]) = Stuart;
+//obs Object(Sent[8]) = the_hallway;
+//obs Verb(Sent[8]) = sprint;
+
+obs Subject(Sent[8]) = Lei;
+obs Object(Sent[8]) = the_block;
+obs Verb(Sent[8]) = run; // Should be lumped with sprinting relation
+
+obs Subject(Sent[9]) = Tom;
+obs Object(Sent[9]) = twenty_yards;
+obs Verb(Sent[9]) = sprint;
+//obs Rel(SourceFact(Sent[9])) = R[1];
+
