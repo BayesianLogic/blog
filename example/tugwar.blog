@@ -13,54 +13,56 @@
  */
 
 type Person;
+type Match;
 distinct Person James, David,
   Jason, Brian, Mary, Nancy, Susan, Karen;
-fixed Real mu = 10;
-fixed Real sigma = 2;
-random Real strength(Person p) ~ Gaussian(mu, sigma);
+distinct Match M[4];
+//fixed Real mu = 10;
+//fixed Real sigma = 2;
+random Real strength(Person p) ~ Gaussian(10, 2);
 
-random Person team1player1(Integer i) // i-th match
+random Person team1player1(Match m) 
   ~ UniformChoice({Person p});
 
-random Person team1player2(Integer i) // i-th match
-  ~ UniformChoice({Person p : p != team1player1(i)});
+random Person team1player2(Match m)
+  ~ UniformChoice({Person p : p != team1player1(m)});
 
-random Person team2player1(Integer i) // i-th match
-  ~ UniformChoice({Person p : (p != team1player1(i)) 
-                          & (p != team1player2(i))});
+random Person team2player1(Match m) 
+  ~ UniformChoice({Person p : (p != team1player1(m)) 
+                          & (p != team1player2(m))});
 
-random Person team2player2(Integer i) // i-th match
-  ~ UniformChoice({Person p : (p != team1player1(i)) 
-                          & (p != team1player2(i))
-                          & (p != team2player1(i))});
+random Person team2player2(Match m) 
+  ~ UniformChoice({Person p : (p != team1player1(m)) 
+                          & (p != team1player2(m))
+                          & (p != team2player1(m))});
 
-random Boolean lazy(Person p, Integer i) 
+random Boolean lazy(Person p, Match m) 
   ~ BooleanDistrib(0.1);
 
-random Real pulling_power(Person p, Integer i) 
-	if lazy(p, i) then = strength(p) / 2
+random Real pulling_power(Person p, Match m) 
+	if lazy(p, m) then = strength(p) / 2.0
 	else = strength(p);
 
-random Boolean team1win(Integer i)
-	if (pulling_power(team1player1(i), i) + pulling_power(team1player2(i), i)
-	  > pulling_power(team2player1(i), i)	+ pulling_power(team2player2(i), i) ) 
+random Boolean team1win(Match m)
+	if (pulling_power(team1player1(m), m) + pulling_power(team1player2(m), m)
+	  > pulling_power(team2player1(m), m)	+ pulling_power(team2player2(m), m) ) 
 	then = true
 	else = false;
 
-obs team1player1(1) = James;
-obs team1player2(1) = David;
-obs team2player1(1) = Brian;
-obs team2player2(1) = Jason;
+obs team1player1(M[0]) = James;
+obs team1player2(M[0]) = David;
+obs team2player1(M[0]) = Brian;
+obs team2player2(M[0]) = Jason;
 
-obs team1player1(2) = James;
-obs team1player2(2) = David;
-obs team2player1(2) = Mary;
-obs team2player2(2) = Nancy;
+obs team1player1(M[1]) = James;
+obs team1player2(M[1]) = David;
+obs team2player1(M[1]) = Mary;
+obs team2player2(M[1]) = Nancy;
 
-obs team1player1(3) = James;
-obs team1player2(3) = Karen;
+obs team1player1(M[2]) = James;
+obs team1player2(M[2]) = Karen;
 
-obs team1win(1) = true;
+obs team1win(M[0]) = true;
 
 /**
  * The first query is comparing the strength of members 
@@ -83,7 +85,7 @@ obs team1win(1) = true;
  */
 
 query strength(James) > strength(Brian); // is James stronger than Brian?
-query team1win(2); // is team1 winning in second match?
-query team1win(3); // is team1 winning in third match?
+query team1win(M[1]); // is team1 winning in second match?
+query team1win(M[2]); // is team1 winning in third match?
 // query about unknown opponent
-query (!team1win(3)) & (team2player1(3) == Mary) & (team2player2(3) == Susan);
+query (!team1win(M[3])) & (team2player1(M[3]) == Mary) & (team2player2(M[3]) == Susan);
