@@ -3,7 +3,7 @@
 obs Subject(Sent[0]) = Kevin_Phillips;
 obs Object(Sent[0]) = Republican;
 obs Verb(Sent[0]) = appos__appos_analyst_nn__nn;
-obs Rel(SourceFact(Sent[0])) = analyst;
+//obs Rel(SourceFact(Sent[0])) = analyst;
 
 obs Subject(Sent[1]) = Jonathan_Jay_Pollard;
 obs Object(Sent[1]) = Navy;
@@ -312,7 +312,7 @@ obs Verb(Sent[76]) = appos__appos_analyst_prep_with_pobj__pobj;
 obs Subject(Sent[77]) = Paul_A_Volcker;
 obs Object(Sent[77]) = Federal_Reserve;
 obs Verb(Sent[77]) = appos__appos_chairman_nn__nn;
-obs Rel(SourceFact(Sent[77])) = chairman;
+//obs Rel(SourceFact(Sent[77])) = chairman;
 
 obs Subject(Sent[78]) = Alan_Greenspan;
 obs Object(Sent[78]) = Federal_Reserve;
@@ -645,7 +645,7 @@ obs Verb(Sent[159]) = appos__appos_chairman_prep_of_pobj__pobj;
 obs Subject(Sent[160]) = Patrick_J_Buchanan;
 obs Object(Sent[160]) = White_House;
 obs Verb(Sent[160]) = appos__appos_director_nn__nn;
-obs Rel(SourceFact(Sent[160])) = leadership;
+//obs Rel(SourceFact(Sent[160])) = leadership;
 
 obs Subject(Sent[161]) = Sonny_Reizner;
 obs Object(Sent[161]) = Sports_Book;
@@ -1342,7 +1342,7 @@ obs Verb(Sent[333]) = appos__appos_executive_prep_of_pobj__pobj;
 obs Subject(Sent[334]) = Kohlberg;
 obs Object(Sent[334]) = New_York;
 obs Verb(Sent[334]) = appos__appos_firm_nn__nn;
-obs Rel(SourceFact(Sent[334])) = firm;
+//obs Rel(SourceFact(Sent[334])) = firm;
 
 obs Subject(Sent[335]) = Working_Assets_Money_Fund;
 obs Object(Sent[335]) = San_Francisco;
@@ -1639,7 +1639,7 @@ obs Verb(Sent[407]) = appos__appos_head_prep_of_pobj__pobj;
 obs Subject(Sent[408]) = Thomas_C_Troy;
 obs Object(Sent[408]) = Mr_Doherty;
 obs Verb(Sent[408]) = appos__appos_lawyer_prep_for_pobj__pobj;
-obs Rel(SourceFact(Sent[408])) = lawyer;
+//obs Rel(SourceFact(Sent[408])) = lawyer;
 
 obs Subject(Sent[409]) = Mr_Morin;
 obs Object(Sent[409]) = Puerto_Rican_Legal_Defense_and_Education_Fund;
@@ -2332,7 +2332,7 @@ obs Verb(Sent[580]) = appos__appos_president_prep_of_pobj__pobj;
 obs Subject(Sent[581]) = Laurence_H_Tribe;
 obs Object(Sent[581]) = Harvard;
 obs Verb(Sent[581]) = appos__appos_professor_nn__nn;
-obs Rel(SourceFact(Sent[581])) = professor;
+//obs Rel(SourceFact(Sent[581])) = professor;
 
 obs Subject(Sent[582]) = Samuel_L_Hayes;
 obs Object(Sent[582]) = Harvard_Business_School;
@@ -2617,7 +2617,7 @@ obs Verb(Sent[651]) = appos__appos_professor_prep_at_pobj__pobj;
 obs Subject(Sent[652]) = Sheila_Tate;
 obs Object(Sent[652]) = Mr_Bush;
 obs Verb(Sent[652]) = appos__appos_secretary_poss__poss;
-obs Rel(SourceFact(Sent[652])) = secretary;
+//obs Rel(SourceFact(Sent[652])) = secretary;
 
 obs Subject(Sent[653]) = Mo_Mowlam;
 obs Object(Sent[653]) = Britain;
@@ -2698,7 +2698,7 @@ obs Verb(Sent[671]) = appos__appos_secretary_poss__poss;
 obs Subject(Sent[672]) = Marlin_Fitzwater;
 obs Object(Sent[672]) = White_House;
 obs Verb(Sent[672]) = appos__appos_spokesman_nn__nn;
-obs Rel(SourceFact(Sent[672])) = spokesman;
+//obs Rel(SourceFact(Sent[672])) = spokesman;
 
 obs Subject(Sent[673]) = Gennadi_I_Gerasimov;
 obs Object(Sent[673]) = Foreign_Ministry;
@@ -3299,7 +3299,7 @@ obs Verb(Sent[821]) = dep__dep_director_prep_of_pobj__pobj;
 obs Subject(Sent[822]) = Paul_Volcker;
 obs Object(Sent[822]) = Federal_Reserve;
 obs Verb(Sent[822]) = dobj__dobj_replace_prep_as_pobj_chairman_prep_of_pobj__pobj;
-obs Rel(SourceFact(Sent[822])) = replace_chairman;
+//obs Rel(SourceFact(Sent[822])) = replace_chairman;
 
 obs Subject(Sent[823]) = Paul_A_Volcker;
 obs Object(Sent[823]) = Federal_Reserve_Board;
@@ -3416,7 +3416,7 @@ obs Verb(Sent[850]) = dobj__dobj_succeed_prep_as_pobj_chairman_prep_of_pobj__pob
 obs Subject(Sent[851]) = William_H_Webster;
 obs Object(Sent[851]) = Federal_Bureau_of_Investigation;
 obs Verb(Sent[851]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pobj;
-obs Rel(SourceFact(Sent[851])) = replace_leadership;
+//obs Rel(SourceFact(Sent[851])) = replace_leadership;
 
 obs Subject(Sent[852]) = Walter_Byers;
 obs Object(Sent[852]) = National_Collegiate_Athletic_Association;
@@ -3481,7 +3481,7 @@ obs Verb(Sent[866]) = dobj__dobj_succeed_prep_as_pobj_director_prep_of_pobj__pob
 obs Subject(Sent[867]) = Washington;
 obs Object(Sent[867]) = Vinson__Elkins;
 obs Verb(Sent[867]) = nn__nn_office_prep_of_pobj__pobj;
-obs Rel(SourceFact(Sent[867])) = office;
+//obs Rel(SourceFact(Sent[867])) = office;
 
 obs Subject(Sent[868]) = Washington;
 obs Object(Sent[868]) = Sojourner;
@@ -3674,7 +3674,7 @@ obs Verb(Sent[914]) = nn__nn_president_appos__appos;
 obs Subject(Sent[915]) = Yannick_Noah;
 obs Object(Sent[915]) = Joakim_Nystrom;
 obs Verb(Sent[915]) = nsubj__nsubj_defeat_dobj__dobj;
-obs Rel(SourceFact(Sent[915])) = defeat;
+//obs Rel(SourceFact(Sent[915])) = defeat;
 
 obs Subject(Sent[916]) = West;
 obs Object(Sent[916]) = East;
@@ -3831,7 +3831,7 @@ obs Verb(Sent[953]) = nsubj__nsubj_president_prep_of_pobj__pobj;
 obs Subject(Sent[954]) = WASHINGTON;
 obs Object(Sent[954]) = State_Department;
 obs Verb(Sent[954]) = nsubj__nsubj_say_nsubj__nsubj;
-obs Rel(SourceFact(Sent[954])) = say;
+//obs Rel(SourceFact(Sent[954])) = say;
 
 obs Subject(Sent[955]) = WASHINGTON;
 obs Object(Sent[955]) = United_States;
@@ -4248,7 +4248,7 @@ obs Verb(Sent[1057]) = rcmod__rcmod_director_prep_of_pobj__pobj;
 obs Subject(Sent[1058]) = Zeus_Goldberg;
 obs Object(Sent[1058]) = Woods;
 obs Verb(Sent[1058]) = rcmod__rcmod_own_dobj__dobj;
-obs Rel(SourceFact(Sent[1058])) = ownership;
+//obs Rel(SourceFact(Sent[1058])) = ownership;
 
 obs Subject(Sent[1059]) = USX;
 obs Object(Sent[1059]) = Marathon_Oil;
@@ -4329,7 +4329,7 @@ obs Verb(Sent[1077]) = rcmod__rcmod_own_dobj__dobj;
 obs Subject(Sent[1078]) = William_J_Casey;
 obs Object(Sent[1078]) = Central_Intelligence;
 obs Verb(Sent[1078]) = rcmod__rcmod_resign_prep_as_pobj_director_prep_of_pobj__pobj;
-obs Rel(SourceFact(Sent[1078])) = resign_from_leadership;
+//obs Rel(SourceFact(Sent[1078])) = resign_from_leadership;
 
 obs Subject(Sent[1079]) = Mr_Casey;
 obs Object(Sent[1079]) = Central_Intelligence;

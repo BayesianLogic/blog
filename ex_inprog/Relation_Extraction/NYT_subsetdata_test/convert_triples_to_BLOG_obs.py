@@ -99,7 +99,8 @@ def main():
 	query_output_file = open(args[2] + '.qblog', 'w')
 	query_output_file.write("/* Queries go here */\n\n")
 	for i in range(len(sentences)):
-		query_output_file.write("query Rel(SourceFact(Sent[{0}]));\n".format(i))
+		for j in range(len(sentences)):
+			query_output_file.write("query Rel(SourceFact(Sent[{0}])) == Rel(SourceFact(Sent[{1}]));\n".format(i, j))
 
 	query_output_file.close()
 

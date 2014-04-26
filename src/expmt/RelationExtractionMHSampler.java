@@ -198,6 +198,7 @@ public class RelationExtractionMHSampler extends Sampler {
       // according to the model's distribution, it still converges to it.
       // I moved this to SamplingEngine to keep the MHSampler's "purity".
       curWorld.save();
+      ((RelationExtractionProposer) proposer).applyDiff(); // Hack to keep track of true Facts
       worldUpdateTimer.stop();
       if (Util.verbose()) {
         System.out.println("\taccepted");
