@@ -65,6 +65,7 @@ public class OUPBVI {
 		double bestValue = Double.NEGATIVE_INFINITY;
 		FiniteStatePolicy bestPolicy = null;
 		for (FiniteStatePolicy p : policies) {
+			if (!p.isApplicable(b)) continue;
 			double value = evalPolicy(b, p);
 			if (value > bestValue) {
 				bestValue = value;
@@ -78,7 +79,7 @@ public class OUPBVI {
 		Set<Belief> beliefs = new HashSet<Belief>();
 
 		Belief initBelief = pomdp.generateInitialBelief();
-		System.out.println(initBelief);
+		System.out.println("Initial Belief: " + initBelief);
 		beliefs.add(initBelief);
 		beliefIDs.put(initBelief, beliefID);
 		beliefID++;
@@ -127,6 +128,7 @@ public class OUPBVI {
 				}
 				System.out.println("Number of OS: " + ObservabilitySignature.OStoIndex.size());
 				
+				//TODO: can move some of this into backup?
 				System.out.println(Timer.getElapsedStr() + "[DELTA]");
 				double maxDelta = 0;
 				for (Belief b : beliefs) {
@@ -339,57 +341,12 @@ public class OUPBVI {
 			}
 			v += curValue + nextValue;
 		}
-		
-		/*
-		if (!evalPolicyTimes.containsKey(startingTimestep)) {
-			evalPolicyTimes.put(startingTimestep, 0L);
-			evalPolicyCounts.put(startingTimestep, 0);
-		}
-		evalPolicyTimes.put(startingTimestep, evalPolicyTimes.get(startingTimestep) + (System.currentTimeMillis() - startTime));
-		evalPolicyCounts.put(startingTimestep, evalPolicyCounts.get(startingTimestep) + 1);
-		*/
 		return v/numTrials;
 	}
 
 	private double worstValue() {
 		return minReward/(1 - pomdp.getGamma());
 	}
-	/*
-	private Belief addToSampledPOMDP(Belief belief) {
-		Stack<State> toExpand = new Stack<State>();
-		Set<State> expanded = new HashSet<State>();
-		Set<State> initStates = new HashSet<State>();
-		initStates.addAll(belief.getStates());	
-		//initStates.removeAll(pomdp.getStates());
-		toExpand.addAll(initStates);
-		
-		while (!toExpand.isEmpty()) {
-			State s = toExpand.pop();
-			if (expanded.contains(s)) continue;
-			if (pomdp.getActions(s) != null) continue;
-			pomdp.addState(s);
-			s = pomdp.getState(s);
-			expanded.add(s);
-			Belief b = getSingletonBelief(s, 1);
-			Set<Evidence> actions = model.getActions(b);
-			
-			pomdp.addStateActions(s, actions);
-	
-			for (Evidence a : actions) {
-				pomdp.addReward(s, a, b.getReward(a));
-			}
-			System.out.println("# states left to expand " + toExpand.size());
-			System.out.println("# states expanded " + expanded.size());
-		}
-		System.out.println("# states " + pomdp.getStates().size());
-		System.out.println("# states expanded " + expanded.size());
-		
-		Belief newBelief = new Belief(this.model);
-		for (State s : belief.getStates()) {
-			newBelief.addState(pomdp.getState(s), belief.getCount(s));
-		}
-		return newBelief;
-	}*/
 	
 	private Map<Belief, Double> prevBestVals = new HashMap<Belief, Double>();
 	private Map<Belief, FiniteStatePolicy> prevBestPolicies = 
@@ -572,7 +529,9 @@ public class OUPBVI {
 		for (State state : states) {
 			numStatesUpdated++;
 			for (FiniteStatePolicy policy : policies) {
-				evalPolicy(state, policy);
+				if (policy.isApplicable(state.getWorld())) {
+					evalPolicy(state, policy);
+				}
 			}
 		}
 

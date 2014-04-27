@@ -1,0 +1,56 @@
+observable type Suspect;
+
+generating Timestep Time_Suspect(Suspect);
+
+#Suspect(Time_Suspect = t) {
+    if t == null then
+      = 0
+    else if t == @0 then
+      = 1
+    else if (exists Timestep pastT pastT < t & exists Suspect s Time_Suspect(s) == pastT & apply_interrogate(s, Prev(t)) == true) then 
+      ~ Categorical({0 -> 0.5, 1 -> 0.5}) 
+    else = 0
+};
+
+random Boolean isGuilty(Suspect s) ~ Bernoulli(0.3);
+
+random Boolean isNervous(Suspect s, Timestep t) {
+  if (isGuilty(s)) then ~ Bernoulli(0.8)
+  else ~ Bernoulli(0.01)
+};
+
+random Boolean observable(isNervous(Suspect s, Timestep t)) = apply_interrogate(s, Prev(t));
+
+random Boolean end_state(Timestep t) {
+  if (t == @0) then
+    = false
+  else if (exists Timestep pastT pastT < t & exists Suspect s true == apply_arrest(s, Prev(t)) & Time_Suspect(s) == pastT) then
+    = true
+  else
+    = end_state(Prev(t))
+};
+
+random Integer reward(Timestep t) {
+    if (end_state(t)) then
+      = 0
+    else if (exists Timestep pastT pastT <= t & exists Suspect s true == apply_interrogate(s, t) & Time_Suspect(s) == pastT) then
+      = -1
+    else if (exists Timestep pastT pastT <= t & exists Suspect s true == apply_arrest(s, t) & Time_Suspect(s) == pastT & isGuilty(s)) then
+      = 100
+    else if (exists Timestep pastT pastT <= t & exists Suspect s true == apply_arrest(s, t) & Time_Suspect(s) == pastT & !isGuilty(s)) then
+      = -1000 
+    else = -5
+};
+
+random Real value(Timestep t) {
+    if (t == @0) then 
+      = 0
+    else 
+      = value(Prev(t)) + reward(Prev(t))
+};
+
+decision Boolean apply_interrogate(Suspect s, Timestep t);
+decision Boolean apply_arrest(Suspect s, Timestep t);
+
+random Integer Number_Suspect(Timestep t) ~ Cardinality({Suspect s : Time_Suspect(s)==t});
+random Boolean observable(Number_Suspect(Timestep t)) = true;

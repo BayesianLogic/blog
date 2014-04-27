@@ -1,6 +1,9 @@
 package blog.engine.pbvi;
 
+import java.util.Set;
+
 import blog.DBLOGUtil;
+import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.model.BuiltInTypes;
 import blog.model.Evidence;
@@ -28,7 +31,19 @@ public class LiftedEvidence {
 	 * @param evidence
 	 */
 	public LiftedEvidence(Evidence evidence) {
-		int timestep = DBLOGUtil.getTimestepIndex(Util.getFirst(evidence.getEvidenceVars()));
+		int timestep = 0;
+		Set<? extends BayesNetVar> evidenceVars = evidence.getEvidenceVars();
+		if (evidenceVars.size() > 0) {
+			for (BayesNetVar var : evidenceVars) {
+				timestep = DBLOGUtil.getTimestepIndex(var);
+				if (timestep >= 0) break;
+			}
+
+			if (timestep < 0) {
+				System.out.println("Evidence has no timestep? " + evidence);
+				System.exit(0);
+			}
+		}
 		Term toReplace = BuiltInTypes.TIMESTEP.getCanonicalTerm(BuiltInTypes.TIMESTEP.getGuaranteedObject(timestep));	
 		this.evidence = evidence.replace(toReplace, emptyTimestep);
 	}

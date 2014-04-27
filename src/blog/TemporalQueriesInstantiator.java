@@ -31,6 +31,8 @@ public class TemporalQueriesInstantiator {
 		for (Iterator it = templates.iterator(); it.hasNext();) {
 			String template = (String) it.next();
 			ArgSpecQuery query = getQuery(template, t);
+			if (query.toString().contains("Prev(@0)")) continue; //TODO
+			//System.out.println(query);
 			list.add(query);
 			templatesByLatestQueries.put(query, template);
 		}

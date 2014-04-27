@@ -72,9 +72,9 @@ public class ObservabilitySignature {
 					observables.add(maskVar(bnv,world.genObjToVar));
 				}
 			}
-			else
+			else {
 				unobservables.add(maskVar(bnv,world.genObjToVar));
-				
+			}
 		}
 		//world.getChangedObservableMap().clear();
 		myTimestep = maxTimestep;
@@ -154,6 +154,9 @@ public class ObservabilitySignature {
 					if (m.get(bnv)==null || !observedValues.get(bnv).equals(m.get(bnv)))
 						return false;
 				}
+				
+				if (!this.observables.equals(other.observables)) return false;
+				if (!this.unobservables.equals(other.unobservables)) return false;
 			}
 		}
 		UBT.specialTimingData3 += (timer.elapsedTime());

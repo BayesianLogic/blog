@@ -1069,7 +1069,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 
 	public String toString() {
 		return "{Basic: " + basicVarToValueMap() + ", Derived: "
-				+ derivedVarToValueMap() + "}";
+				+ derivedVarToValueMap() + this.getSkolemConstants() + "}";
 	}
 
 	/**
@@ -1176,7 +1176,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				rtn = rtn && (otherWorld.changedVarToValue.containsKey(v) && otherWorld.changedVarToValue.get(v).equals(changedVarToValue.get(v)));
 			}*/
 		}
-		//rtn = rtn && otherWorld.skolemConstants.equals(this.skolemConstants);
+		rtn = rtn && otherWorld.skolemConstants.equals(this.skolemConstants);
 		/*
 		if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.nonObservableVariables){
 			for (BayesNetVar v : this.observableToReferenced.keySet()){
@@ -1254,7 +1254,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				rtn = rtn ^ basicVarToValue.get(v).hashCode();
 			}
 		}
-		//rtn = rtn ^ this.skolemConstants.hashCode();
+		rtn = rtn ^ this.skolemConstants.hashCode();
 		/*
 		if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.nonObservableVariables){
 			for (BayesNetVar v : this.observableToReferenced.keySet()){

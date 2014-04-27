@@ -158,19 +158,22 @@ public class DBLOGUtil {
 		return new TimestepIndicesIterator(world);
 	}
 
-	private static Pattern timestepPattern = Pattern.compile("@\\d+");
+	private static Pattern timestepPattern = Pattern.compile("@\\d+\\)\\z");
 
 	public static int getTimestepIndex(BayesNetVar var) {
-		Matcher matcher = timestepPattern.matcher(var.toString());
-		if (matcher.find())
-			return Integer.parseInt(matcher.group().substring(1));
-		return -1;
+		return getTimestepIndex((Object) var);
 	}
+	
 	public static int getTimestepIndex(Object var) {
 		Matcher matcher = timestepPattern.matcher(var.toString());
-		if (matcher.find())
-			return Integer.parseInt(matcher.group().substring(1));
-		return -1;
+		int time = -1;
+		while (matcher.find()) {
+			String match = matcher.group();
+			int endIndex = match.length() - 1;
+			time = Integer.parseInt(match.substring(1, endIndex));
+		}
+		//System.out.println(time + " " + var);
+		return time;
 	}
 
 	public static void uninstantiateAllTemporalsWithAnIndexDifferentFrom(
@@ -179,6 +182,8 @@ public class DBLOGUtil {
 		Iterator varIt = instantiatedVars.iterator();
 		while (varIt.hasNext()) {
 			BasicVar var = (BasicVar) varIt.next();
+			if (var.toString().contains("#")) continue; //TODO: avoid clearing number statements?
+			//System.out.println("calling getTimestepIndex");
 			int timestepIndex = getTimestepIndex(var);
 			if (timestepIndex != -1 && timestepIndex <= largest - nsim) {
 				//System.out.println("uninstantiating" + var);
