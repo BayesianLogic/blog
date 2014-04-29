@@ -41,6 +41,9 @@ import java.util.List;
 import blog.common.Util;
 import blog.model.Type;
 
+import blog.distrib.Binomial;
+import blog.distrib.Gamma;
+
 /**
  * A Poisson distribution with mean and variance lambda. This is a distribution
  * over non-negative integers. The probability of n is exp(-lambda) lambda^n /
@@ -95,11 +98,14 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
     if (lambda == 0) {
       return n == 0 ? 0 : Double.NEGATIVE_INFINITY;
     }
-    return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
+    return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n)); // this evaluates to NaN if n == 0 & lambda ==0
   }
 
   public static double computeLogProb(double lambda, int n) {
-    return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
+    if (lambda == 0) {
+      return n == 0 ? 0 : Double.NEGATIVE_INFINITY;
+    }
+    return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n)); // this evaluates to NaN if n == 0 & lambda ==0
   }
 
   /**
@@ -121,7 +127,7 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
     return sampleInt(lambda);
   }
 
-  public static int sampleInt(double lambda) {
+  protected static int sampleSmall(double lambda) {
     int n = 0;
     double probOfN = Math.exp(-lambda); // start with prob of 0
     double cumProb = probOfN;
@@ -135,6 +141,24 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
     }
 
     return n;
+  }
+
+  public static int sampleInt(double lambda){
+    if(lambda < 15)
+      return sampleSmall(lambda);
+
+    int r;
+    double alpha = 7.0/8.0;
+    int m = (int) Math.floor(lambda*alpha);
+    double x = Gamma.sampleVal(m,1);
+    if(x <= lambda){
+      r = m + sampleInt(lambda-x);
+    }
+    else{
+      r = Binomial.sampleVal(m-1,lambda/x);
+    }
+    return r;
+
   }
 
   /**
