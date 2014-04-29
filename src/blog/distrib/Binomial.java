@@ -139,6 +139,22 @@ public class Binomial extends AbstractCondProbDistrib {
 		return new Integer(x - 1);
 	}
 
+	public static int sampleVal(int n, double p) {
+
+		double q = -Math.log(1 - p);
+		double sum = 0;
+		int x = 0;
+		double u, e;
+		while (sum <= q) {
+			u = Util.random();
+			e = -Math.log(u); // exponential random variate
+			sum += (e / (n - x));
+			x += 1;
+		}
+		return x - 1;
+	}
+
+
 	public String toString() {
 		return getClass().getName();
 	}

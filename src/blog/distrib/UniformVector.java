@@ -124,18 +124,18 @@ public class UniformVector extends AbstractCondProbDistrib {
 							+ args.size() + ".");
 		}
 
-		if (!((value instanceof MatrixLib) && (((MatrixLib) value).colLen() == 1))) {
+		if (!((value instanceof MatrixLib) && (((MatrixLib) value).numCols() == 1))) {
 			throw new IllegalArgumentException(
 					"The value passed to the uniform vector distribution's "
 							+ "getProb method must be a column vector.");
 		}
 		MatrixLib x = (MatrixLib) value;
 
-		if (x.rowLen() != dim) {
+		if (x.numRows() != dim) {
 			throw new IllegalArgumentException(
 					"The vector passed to the uniform vector distribution's "
 							+ "getProb method must be " + dim + "-dimensional, not "
-							+ x.rowLen() + "-dimensional");
+							+ x.numRows() + "-dimensional");
 		}
 
 		return x;

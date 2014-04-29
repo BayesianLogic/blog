@@ -36,12 +36,12 @@ public interface MatrixLib {
 	/**
 	 * Returns number of rows in this matrix
 	 */
-	public int rowLen();
+	public int numRows();
 	
 	/**
 	 * Returns number of columns in this matrix
 	 */
-	public int colLen();
+	public int numCols();
 	
 	/**
 	 * Returns a row of the matrix as specified
