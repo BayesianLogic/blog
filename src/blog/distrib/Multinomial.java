@@ -37,7 +37,6 @@ package blog.distrib;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
@@ -222,9 +221,8 @@ public class Multinomial extends AbstractCondProbDistrib {
       result[i] = 0;
     }
 
-    Random rng = new java.util.Random();
     for (int trial = 0; trial < numTrials; trial++) {
-      double val = rng.nextDouble();
+      double val = Util.random();
       int bucket;
       for (bucket = 0; bucket < numBuckets; bucket++) {
         if (val <= cdf[bucket]) {
