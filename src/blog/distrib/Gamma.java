@@ -35,11 +35,10 @@
 
 package blog.distrib;
 
-import blog.*;
+import java.util.List;
+
 import blog.common.Util;
 import blog.model.Type;
-
-import java.util.*;
 
 /**
  * A Gamma distribution with shape parameter k and scale parameter 1/lambda.
@@ -48,172 +47,142 @@ import java.util.*;
  */
 
 public class Gamma extends AbstractCondProbDistrib {
-	/**
-	 * Creates a new Gamma distribution with parameters k and lambda.
-	 */
-	public Gamma(List params) {
-		if (!((params.get(0) instanceof Number) && (params.get(1) instanceof Number))) {
-			throw new IllegalArgumentException(
-					"Gamma expects two numerical arguments "
-							+ "{k, lambda} where both are Numbers. Got: " + params);
-		}
-		k = ((Number) params.get(0)).doubleValue();
-		lambda = ((Number) params.get(1)).doubleValue();
-	}
+  /**
+   * Creates a new Gamma distribution with parameters k and lambda.
+   */
+  public Gamma(List params) {
+    if (!((params.get(0) instanceof Number) && (params.get(1) instanceof Number))) {
+      throw new IllegalArgumentException(
+          "Gamma expects two numerical arguments "
+              + "{k, lambda} where both are Numbers. Got: " + params);
+    }
+    k = ((Number) params.get(0)).doubleValue();
+    lambda = ((Number) params.get(1)).doubleValue();
+  }
 
-	/**
-	 * Creates a new Gamma distribution with parameters k and lambda.
-	 */
-	public Gamma(double k, double lambda) {
-		this.k = k;
-		this.lambda = lambda;
-	}
+  /**
+   * Creates a new Gamma distribution with parameters k and lambda.
+   */
+  public Gamma(double k, double lambda) {
+    this.k = k;
+    this.lambda = lambda;
+  }
 
-	/**
-	 * Returns the probability of x under this distribution
-	 */
-	public double getProb(List args, Object value) {
-		if (!(value instanceof Number)) {
-			throw new IllegalArgumentException(
-					"Gamma CPD defines a distribution over objects"
-							+ " of class Number, not " + value.getClass() + ".");
-		} else {
-			double x = ((Number) value).doubleValue();
-			return (lambda * Math.exp(-lambda * x) * Math.pow(lambda * x, k - 1) / gamma(k));
-		}
-	}
+  /**
+   * Returns the probability of x under this distribution
+   */
+  public double getProb(List args, Object value) {
+    if (!(value instanceof Number)) {
+      throw new IllegalArgumentException(
+          "Gamma CPD defines a distribution over objects"
+              + " of class Number, not " + value.getClass() + ".");
+    } else {
+      double x = ((Number) value).doubleValue();
+      return (lambda * Math.exp(-lambda * x) * Math.pow(lambda * x, k - 1) / gamma(k));
+    }
+  }
 
-	/**
-	 * Returns the log of the probability of x under this distribution.
-	 */
-	public double getLogProb(List args, Object value) {
-		if (!(value instanceof Number)) {
-			throw new IllegalArgumentException(
-					"Gamma CPD defines a distribution over objects"
-							+ " of class Number, not " + value.getClass() + ".");
-		} else {
-			return Math.log(getProb(args, value));
-		}
-	}
+  /**
+   * Returns the log of the probability of x under this distribution.
+   */
+  public double getLogProb(List args, Object value) {
+    if (!(value instanceof Number)) {
+      throw new IllegalArgumentException(
+          "Gamma CPD defines a distribution over objects"
+              + " of class Number, not " + value.getClass() + ".");
+    } else {
+      return Math.log(getProb(args, value));
+    }
+  }
 
-	/**
-	 * Returns a double sampled according to this distribution. Uniformly fast for
-	 * all k > 0. (Reference: Non-Uniform Random Variate Generation, Devroye
-	 * http://cgm.cs.mcgill.ca/~luc/rnbookindex.html) Uses Cheng's rejection
-	 * algorithm (GB) for k>=1, rejection from Weibull distribution for 0 < k < 1.
-	 */
-	// Should be compared with Marsiaglia's algorithm used in MATLAB.
-	public Object sampleVal(List args, Type childType) {
-		boolean accept = false;
-		if (k >= 1) {
-			// Cheng's algorithm
-			double b = (k - Math.log(4));
-			double c = (k + Math.sqrt(2 * k - 1));
-			double lam = Math.sqrt(2 * k - 1);
-			double cheng = (1 + Math.log(4.5));
-			double u, v, x, y, z, r;
-			do {
-				u = Util.random();
-				v = Util.random();
-				y = ((1 / lam) * Math.log(v / (1 - v)));
-				x = (k * Math.exp(y));
-				z = (u * v * v);
-				r = (b + (c * y) - x);
-				if ((r >= ((4.5 * z) - cheng)) || (r >= Math.log(z))) {
-					accept = true;
-				}
-			} while (!accept);
-			return new Double(x / lambda);
-		} else {
-			// Weibull algorithm
-			// By a simple transformation (k+1) one can use Cheng's algorithm only
-			double c = (1 / k);
-			double d = ((1 - k) * Math.pow(k, (k / (1 - k))));
-			double u, v, z, e, x;
-			do {
-				u = Util.random();
-				v = Util.random();
-				z = -Math.log(u); // generating random exponential variates
-				e = -Math.log(v);
-				x = Math.pow(z, c);
-				if ((z + e) >= (d + x)) {
-					accept = true;
-				}
-			} while (!accept);
-			return new Double(x / lambda);
-		}
-	}
+  /**
+   * Returns a double sampled according to this distribution. Uniformly fast for
+   * all k > 0. (Reference: Non-Uniform Random Variate Generation, Devroye
+   * http://cgm.cs.mcgill.ca/~luc/rnbookindex.html) Uses Cheng's rejection
+   * algorithm (GB) for k>=1, rejection from Weibull distribution for 0 < k < 1.
+   */
+  // Should be compared with Marsiaglia's algorithm used in MATLAB.
+  public Object sampleVal(List args, Type childType) {
+    return sampleVal(k, lambda);
+  }
 
-	public static double sampleVal(double alpha, double beta) {
-		boolean accept = false;
-		if (alpha >= 1) {
-			// Cheng's algorithm
-			double b = (alpha - Math.log(4));
-			double c = (alpha + Math.sqrt(2 * alpha - 1));
-			double lam = Math.sqrt(2 * alpha - 1);
-			double cheng = (1 + Math.log(4.5));
-			double u, v, x, y, z, r;
-			do {
-				u = Util.random();
-				v = Util.random();
-				y = ((1 / lam) * Math.log(v / (1 - v)));
-				x = (alpha * Math.exp(y));
-				z = (u * v * v);
-				r = (b + (c * y) - x);
-				if ((r >= ((4.5 * z) - cheng)) || (r >= Math.log(z))) {
-					accept = true;
-				}
-			} while (!accept);
-			return x / beta;
-		} else {
-			// Weibull algorithm
-			double c = (1 / alpha);
-			double d = ((1 - alpha) * Math.pow(alpha, (alpha / (1 - alpha))));
-			double u, v, z, e, x;
-			do {
-				u = Util.random();
-				v = Util.random();
-				z = -Math.log(u); // generating random exponential variates
-				e = -Math.log(v);
-				x = Math.pow(z, c);
-				if ((z + e) >= (d + x)) {
-					accept = true;
-				}
-			} while (!accept);
-			return x / beta;
-		}
-	}
+  /**
+   * TODO add description of the algorithm
+   * 
+   * @param alpha
+   * @param beta
+   * @return
+   */
+  public static double sampleVal(double alpha, double beta) {
+    boolean accept = false;
+    if (alpha >= 1) {
+      // Cheng's algorithm
+      double b = (alpha - Math.log(4));
+      double c = (alpha + Math.sqrt(2 * alpha - 1));
+      double lam = Math.sqrt(2 * alpha - 1);
+      double cheng = (1 + Math.log(4.5));
+      double u, v, x, y, z, r;
+      do {
+        u = Util.random();
+        v = Util.random();
+        y = ((1 / lam) * Math.log(v / (1 - v)));
+        x = (alpha * Math.exp(y));
+        z = (u * v * v);
+        r = (b + (c * y) - x);
+        if ((r >= ((4.5 * z) - cheng)) || (r >= Math.log(z))) {
+          accept = true;
+        }
+      } while (!accept);
+      return x / beta;
+    } else {
+      // Weibull algorithm
+      double c = (1 / alpha);
+      double d = ((1 - alpha) * Math.pow(alpha, (alpha / (1 - alpha))));
+      double u, v, z, e, x;
+      do {
+        u = Util.random();
+        v = Util.random();
+        z = -Math.log(u); // generating random exponential variates
+        e = -Math.log(v);
+        x = Math.pow(z, c);
+        if ((z + e) >= (d + x)) {
+          accept = true;
+        }
+      } while (!accept);
+      return x / beta;
+    }
+  }
 
-	/*
-	 * Returns an approximation of the Gamma function of x r(x) = integral from 0
-	 * to infinity of (t^(x-1) * e^(-t) dt) with |error| < 2e-10. Laczos
-	 * Approximation Reference: Numerical Recipes in C
-	 * http://www.library.cornell.edu/nr/cbookcpdf.html
-	 */
-	public static double gamma(double x) {
-		return Math.exp(lgamma(x));
-	}
+  /*
+   * Returns an approximation of the Gamma function of x r(x) = integral from 0
+   * to infinity of (t^(x-1) * e^(-t) dt) with |error| < 2e-10. Laczos
+   * Approximation Reference: Numerical Recipes in C
+   * http://www.library.cornell.edu/nr/cbookcpdf.html
+   */
+  public static double gamma(double x) {
+    return Math.exp(lgamma(x));
+  }
 
-	/*
-	 * Returns an approximation of the log of the Gamma function of x. Laczos
-	 * Approximation Reference: Numerical Recipes in C
-	 * http://www.library.cornell.edu/nr/cbookcpdf.html
-	 */
-	public static double lgamma(double x) {
-		double[] cof = { 76.18009172947146, -86.50532032941677, 24.01409824083091,
-				-1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5 };
-		double y, z, ser, tmp;
-		y = x;
-		tmp = x + 5.5;
-		tmp -= ((x + 0.5) * Math.log(tmp));
-		ser = 1.000000000190015;
-		for (int j = 0; j < 6; j += 1) {
-			y += 1;
-			ser += (cof[j] / y);
-		}
-		return (-tmp + Math.log(2.5066282746310005 * ser / x));
-	}
+  /*
+   * Returns an approximation of the log of the Gamma function of x. Laczos
+   * Approximation Reference: Numerical Recipes in C
+   * http://www.library.cornell.edu/nr/cbookcpdf.html
+   */
+  public static double lgamma(double x) {
+    double[] cof = { 76.18009172947146, -86.50532032941677, 24.01409824083091,
+        -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5 };
+    double y, z, ser, tmp;
+    y = x;
+    tmp = x + 5.5;
+    tmp -= ((x + 0.5) * Math.log(tmp));
+    ser = 1.000000000190015;
+    for (int j = 0; j < 6; j += 1) {
+      y += 1;
+      ser += (cof[j] / y);
+    }
+    return (-tmp + Math.log(2.5066282746310005 * ser / x));
+  }
 
-	private double lambda;
-	private double k;
+  private double lambda;
+  private double k;
 }
