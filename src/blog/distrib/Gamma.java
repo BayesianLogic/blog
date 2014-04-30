@@ -102,6 +102,7 @@ public class Gamma extends AbstractCondProbDistrib {
 	 * http://cgm.cs.mcgill.ca/~luc/rnbookindex.html) Uses Cheng's rejection
 	 * algorithm (GB) for k>=1, rejection from Weibull distribution for 0 < k < 1.
 	 */
+	// Should be compared with Marsiaglia's algorithm used in MATLAB.
 	public Object sampleVal(List args, Type childType) {
 		boolean accept = false;
 		if (k >= 1) {
@@ -125,6 +126,7 @@ public class Gamma extends AbstractCondProbDistrib {
 			return new Double(x / lambda);
 		} else {
 			// Weibull algorithm
+			// By a simple transformation (k+1) one can use Cheng's algorithm only
 			double c = (1 / k);
 			double d = ((1 - k) * Math.pow(k, (k / (1 - k))));
 			double u, v, z, e, x;
@@ -139,6 +141,46 @@ public class Gamma extends AbstractCondProbDistrib {
 				}
 			} while (!accept);
 			return new Double(x / lambda);
+		}
+	}
+
+	public static double sampleVal(double alpha, double beta) {
+		boolean accept = false;
+		if (alpha >= 1) {
+			// Cheng's algorithm
+			double b = (alpha - Math.log(4));
+			double c = (alpha + Math.sqrt(2 * alpha - 1));
+			double lam = Math.sqrt(2 * alpha - 1);
+			double cheng = (1 + Math.log(4.5));
+			double u, v, x, y, z, r;
+			do {
+				u = Util.random();
+				v = Util.random();
+				y = ((1 / lam) * Math.log(v / (1 - v)));
+				x = (alpha * Math.exp(y));
+				z = (u * v * v);
+				r = (b + (c * y) - x);
+				if ((r >= ((4.5 * z) - cheng)) || (r >= Math.log(z))) {
+					accept = true;
+				}
+			} while (!accept);
+			return x / beta;
+		} else {
+			// Weibull algorithm
+			double c = (1 / alpha);
+			double d = ((1 - alpha) * Math.pow(alpha, (alpha / (1 - alpha))));
+			double u, v, z, e, x;
+			do {
+				u = Util.random();
+				v = Util.random();
+				z = -Math.log(u); // generating random exponential variates
+				e = -Math.log(v);
+				x = Math.pow(z, c);
+				if ((z + e) >= (d + x)) {
+					accept = true;
+				}
+			} while (!accept);
+			return x / beta;
 		}
 	}
 
