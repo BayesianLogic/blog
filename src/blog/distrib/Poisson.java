@@ -41,6 +41,9 @@ import java.util.List;
 import blog.common.Util;
 import blog.model.Type;
 
+import blog.distrib.Gamma;
+import blog.distrib.Binomial;
+
 /**
  * A Poisson distribution with mean and variance lambda. This is a distribution
  * over non-negative integers. The probability of n is exp(-lambda) lambda^n /
@@ -92,10 +95,16 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
   }
 
   public double computeLogProb(int n) {
+    if (lambda == 0) {
+      return n == 0 ? 0 : Double.NEGATIVE_INFINITY;
+    }
     return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
   }
 
   public static double computeLogProb(double lambda, int n) {
+    if (lambda == 0) {
+      return n == 0 ? 0 : Double.NEGATIVE_INFINITY;
+    }
     return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
   }
 
@@ -118,12 +127,13 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
     return sampleInt(lambda);
   }
 
-  public static int sampleInt(double lambda) {
+  public static int sampleSmall(double lambda) {
     int n = 0;
     double probOfN = Math.exp(-lambda); // start with prob of 0
     double cumProb = probOfN;
 
     double u = Util.random();
+
     while (cumProb < u) {
       n++;
       // ratio between P(n) and P(n-1) is lambda / n
@@ -132,6 +142,23 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
     }
 
     return n;
+  }
+  // Following MATLAB's implementation for poissrnd
+  public static int sampleInt(double lambda){
+    if(lambda < 15)
+      return sampleSmall(lambda);
+
+    double alpha = 7.0/8.0;
+    int m = (int) Math.floor(alpha*lambda);
+    double x = Gamma.sampleVal(m,1);
+    int r;
+    if(x<lambda){
+      r = m + sampleInt(lambda - x);
+    }
+    else{
+      r= Binomial.sampleVal(m-1,lambda/x);
+    }
+    return r;
   }
 
   /**
