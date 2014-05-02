@@ -68,4 +68,3 @@ obs team1win(1) = true;
 
 query team1win(2);
 query team1win(3);
-query strength(James);
