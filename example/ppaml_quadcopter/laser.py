@@ -88,6 +88,27 @@ def readings_for_obstacle_vectorized(
     return solns
 
 
+def plot_lasers(
+        laser_x, laser_y, laser_theta,
+        laser_angles, laser_max_range,
+        obstacle_x, obstacle_y, obstacle_r,
+        readings, ax):
+    """
+    Plot the given lasers scene.
+    """
+    ax.plot([laser_x], [laser_y], 'go')
+    obst = plt.Circle((obstacle_x, obstacle_y), radius=obstacle_r, color='r')
+    ax.add_patch(obst)
+    for i, angle in enumerate(laser_angles):
+        ax.add_line(plt.Line2D(
+            [laser_x,
+             laser_x + readings[i] * np.cos(laser_theta + angle)],
+            [laser_y,
+             laser_y + readings[i] * np.sin(laser_theta + angle)]))
+    ax.set_xlim(-10, 20)
+    ax.set_ylim(-10, 20)
+
+
 def demo(readings_for_obstacle):
     laser_x = 2.0
     laser_y = 3.0
@@ -104,17 +125,11 @@ def demo(readings_for_obstacle):
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.plot([laser_x], [laser_y], 'go')
-    obst = plt.Circle((obstacle_x, obstacle_y), radius=obstacle_r, color='r')
-    ax.add_patch(obst)
-    for i, angle in enumerate(laser_angles):
-        ax.add_line(plt.Line2D(
-            [laser_x,
-             laser_x + readings[i] * np.cos(laser_theta + angle)],
-            [laser_y,
-             laser_y + readings[i] * np.sin(laser_theta + angle)]))
-    ax.set_xlim(-10, 20)
-    ax.set_ylim(-10, 20)
+    plot_lasers(
+        laser_x, laser_y, laser_theta,
+        laser_angles, laser_max_range,
+        obstacle_x, obstacle_y, obstacle_r,
+        readings, ax)
     plt.show()
 
 
