@@ -464,6 +464,11 @@ public interface PartialWorld {
 	 */
 	Map basicVarToValueMap();
 
+  /**
+   * Map from variable name to BasicVar.
+   */
+  public Map<String, BasicVar> nameToBasicVarMap();
+
 	/**
 	 * MultiMap from objects to the instantiated BasicVars that have them as
 	 * values.

@@ -437,6 +437,10 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		return basicVarToValue;
 	}
 
+  public Map<String, BasicVar> nameToBasicVarMap() {
+    return nameToBasicVar;
+  }
+
 	public MultiMap objToUsesAsValueMap() {
 		return objToUsesAsValue;
 	}
