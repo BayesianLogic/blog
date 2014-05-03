@@ -67,6 +67,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
 	public PartialWorldDiff(PartialWorld underlying) {
 		super(underlying.getIdTypes());
 		basicVarToValue = new HashMapDiff(underlying.basicVarToValueMap());
+    nameToBasicVar = new HashMapDiff(underlying.nameToBasicVarMap());
 		objToUsesAsValue = new HashMultiMapDiff(underlying.objToUsesAsValueMap());
 		objToUsesAsArg = new HashMultiMapDiff(underlying.objToUsesAsArgMap());
 		assertedIdToPOPApp = new HashMapDiff(underlying.assertedIdToPOPAppMap());
