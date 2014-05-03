@@ -225,7 +225,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
 
   private double getLogProbInternal(MatrixLib x) {
     return ((-0.5 * x.minus(mu).transpose().timesMat(sigmaInverse)
-        .timesMat(x.minus(mu)).elementAt(0, 0)) - Math.log(normConst));
+        .timesMat(x.minus(mu)).elementAt(0, 0)) - logNormConst);
   }
 
   private void initParams(List args) {
@@ -269,6 +269,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
 
     d = dim;
     dimFactor = Math.pow(2 * Math.PI, d / 2.0);
+    logDimFactor = Math.log(2 * Math.PI) * d / 2.0;
   }
 
   private void setMean(Object mean) {
@@ -314,6 +315,11 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
     }
 
     normConst = Math.sqrt(sigma.det()) * dimFactor;
+    double logDet = 0.0;
+    for (double val : sigma.eigenvals()) {
+      logDet += Math.log(val);
+    }
+    logNormConst = 0.5 * logDet + logDimFactor;
     sigmaInverse = sigma.inverse();
     sqrtSigma = sigma.choleskyFactor();
   }
@@ -326,7 +332,9 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
   private MatrixLib sigma;
 
   private double dimFactor;
+  private double logDimFactor;
   private double normConst;
+  private double logNormConst;
   private MatrixLib sigmaInverse;
   private MatrixLib sqrtSigma;
 }
