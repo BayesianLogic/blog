@@ -111,6 +111,18 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
+  public MatrixLib columnSum() {
+    double[][] result = new double[1][colLen()];
+    for (int i = 0; i < colLen(); i++) {
+      result[0][i] = 0;
+      for (int j = 0; j < rowLen(); j++) {
+        result[0][i] += elementAt(j, i);
+      }
+    }
+    return new JamaMatrixLib(result);
+  }
+
+  @Override
   public boolean equals(Object obj) {
     // in general you need to check the dimensionality of the matrix as well.
     if (obj instanceof JamaMatrixLib) {

@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.model.Type;
 
@@ -180,7 +180,7 @@ public class Dirichlet extends AbstractCondProbDistrib {
 		for (int i = 0; i < vec_size; i++) {
 			samples[0][i] /= sum;
 		}
-		return new JamaMatrixLib(samples);
+		return MatrixFactory.fromArray(samples);
 	}
 	
 	/**
