@@ -63,6 +63,8 @@ public class BuiltInTypes {
   public static final String BOOLEAN_TYPE_NAME = "Boolean";
   public static final String SET_TYPE_NAME = "Set";
   public static final String MAP_TYPE_NAME = "Map";
+  public static final String REAL_MATRIX_NAME = "RealMatrix";
+  public static final String INTEGER_MATRIX_NAME = "IntegerMatrix";
 
   /**
    * Supertype for all built-in types. Used to determine whether a type is
@@ -339,25 +341,25 @@ public class BuiltInTypes {
 
   /**
    * Real Matrix type.
-   *
+   * 
    * Row vectors are represented as matrices with one row.
    * Column vectors are represented as matrices with one column.
    */
   private static class RealMatrixType extends Type {
     public RealMatrixType() {
-      super("RealMatrix", BUILT_IN);
+      super(REAL_MATRIX_NAME, BUILT_IN);
     }
   }
 
   /**
    * Integer Matrix type.
-   *
+   * 
    * Row vectors are represented as matrices with one row.
    * Column vectors are represented as matrices with one column.
    */
   private static class IntegerMatrixType extends Type {
     public IntegerMatrixType() {
-      super("IntegerMatrix", BUILT_IN);
+      super(INTEGER_MATRIX_NAME, BUILT_IN);
     }
   }
 
