@@ -35,11 +35,10 @@
 
 package blog.distrib;
 
-import blog.*;
+import java.util.List;
+
 import blog.common.Util;
 import blog.model.Type;
-
-import java.util.*;
 
 /**
  * A Binomial distribution with parameters n (number of trials) and p
@@ -54,147 +53,158 @@ import java.util.*;
  */
 
 public class Binomial extends AbstractCondProbDistrib {
-	/**
-	 * Creates a new Binomial distribution with parameters n and p.
-	 */
-	public Binomial(int n, double p) {
-		nFixed = true;
-		this.n = n;
-		pFixed = true;
-		this.p = p;
-	}
+  /**
+   * Creates a new Binomial distribution with parameters n and p.
+   */
+  public Binomial(int n, double p) {
+    nFixed = true;
+    this.n = n;
+    pFixed = true;
+    this.p = p;
+  }
 
-	/**
-	 * Creates a new Binomial distribution. If two parameters are given, they are
-	 * interpreted as n and p. If one parameter is given, it is interpreted as p
-	 * and this distribution expects n as an argument. If no parameters are given,
-	 * this distribution expects both n and p as arguments.
-	 */
-	public Binomial(List params) {
-		if (params.size() == 0) {
-			nFixed = false;
-			pFixed = false;
-		} else if (params.size() == 1) {
-			nFixed = false;
-			pFixed = true;
-			setP(params.get(0));
-		} else if (params.size() == 2) {
-			nFixed = true;
-			setN(params.get(0));
-			pFixed = true;
-			setP(params.get(1));
-		} else {
-			throw new IllegalArgumentException(
-					"Binomial CPD expects at most two parameters, n and p.");
-		}
-	}
+  /**
+   * Creates a new Binomial distribution. If two parameters are given, they are
+   * interpreted as n and p. If one parameter is given, it is interpreted as p
+   * and this distribution expects n as an argument. If no parameters are given,
+   * this distribution expects both n and p as arguments.
+   */
+  public Binomial(List params) {
+    if (params.size() == 0) {
+      nFixed = false;
+      pFixed = false;
+    } else if (params.size() == 1) {
+      nFixed = false;
+      pFixed = true;
+      setP(params.get(0));
+    } else if (params.size() == 2) {
+      nFixed = true;
+      setN(params.get(0));
+      pFixed = true;
+      setP(params.get(1));
+    } else {
+      throw new IllegalArgumentException(
+          "Binomial CPD expects at most two parameters, n and p.");
+    }
+  }
 
-	/**
-	 * Returns the probability of integer k under this distribution.
-	 */
-	public double getProb(List args, Object value) {
-		processArgs(args);
-		if (!(value instanceof Integer)) {
-			throw new IllegalArgumentException(
-					"Binomial CPD defines a distribution over objects"
-							+ " of class Integer, not " + value.getClass() + ".");
-		}
-		int k = ((Integer) value).intValue();
-		return ((Util.factorial(n) / (Util.factorial(k) * Util.factorial(n - k)))
-				* Math.pow(p, k) * Math.pow((1 - p), (n - k)));
-	}
+  /**
+   * Returns the probability of integer k under this distribution.
+   */
+  public double getProb(List args, Object value) {
+    processArgs(args);
+    if (!(value instanceof Integer)) {
+      throw new IllegalArgumentException(
+          "Binomial CPD defines a distribution over objects"
+              + " of class Integer, not " + value.getClass() + ".");
+    }
+    int k = ((Integer) value).intValue();
+    return ((Util.factorial(n) / (Util.factorial(k) * Util.factorial(n - k)))
+        * Math.pow(p, k) * Math.pow((1 - p), (n - k)));
+  }
 
-	/**
-	 * Returns the log of the probability of integer k under the distribution.
-	 */
-	public double getLogProb(List args, Object value) {
-		processArgs(args);
-		if (!(value instanceof Integer)) {
-			throw new IllegalArgumentException(
-					"Binomial CPD defines a distribution over objects"
-							+ " of class Integer, not " + value.getClass() + ".");
-		}
-		return Math.log(getProb(args, value));
-	}
+  /**
+   * Returns the log of the probability of integer k under the distribution.
+   */
+  public double getLogProb(List args, Object value) {
+    processArgs(args);
+    if (!(value instanceof Integer)) {
+      throw new IllegalArgumentException(
+          "Binomial CPD defines a distribution over objects"
+              + " of class Integer, not " + value.getClass() + ".");
+    }
+    return Math.log(getProb(args, value));
+  }
 
-	/**
-	 * Returns an integer sampled according to this distribution. Takes time
-	 * proprotional to np + 1. (Reference: Non-Uniform Random Variate Generation,
-	 * Devroye http://cgm.cs.mcgill.ca/~luc/rnbookindex.html) Second time-waiting
-	 * algorithm.
-	 */
-	public Object sampleVal(List args, Type childType) {
-		processArgs(args);
+  /**
+   * Returns an integer sampled according to this distribution. Takes time
+   * proprotional to np + 1. (Reference: Non-Uniform Random Variate Generation,
+   * Devroye http://cgm.cs.mcgill.ca/~luc/rnbookindex.html) Second time-waiting
+   * algorithm.
+   * 
+   */
+  // May need to implement a faster Binomial sampler
+  public Object sampleVal(List args, Type childType) {
+    processArgs(args);
+    return sampleVal(n, p);
+  }
 
-		double q = -Math.log(1 - p);
-		double sum = 0;
-		int x = 0;
-		double u, e;
-		while (sum <= q) {
-			u = Util.random();
-			e = -Math.log(u); // exponential random variate
-			sum += (e / (n - x));
-			x += 1;
-		}
-		return new Integer(x - 1);
-	}
+  /**
+   * generate a random value from Binomial(n, p)
+   * 
+   * @param n
+   * @param p
+   * @return
+   */
+  public static int sampleVal(int n, double p) {
+    double q = -Math.log(1 - p);
+    double sum = 0;
+    int x = 0;
+    double e;
+    while (sum <= q) {
+      e = Exponential.sampleVal(1);
+      sum += (e / (n - x));
+      x += 1;
+    }
+    return x - 1;
+  }
 
-	public String toString() {
-		return getClass().getName();
-	}
+  public String toString() {
+    return getClass().getName();
+  }
 
-	private void processArgs(List args) {
-		if (!pFixed) {
-			if (args.size() != 2) {
-				throw new IllegalArgumentException(
-						"Binomial distribution created with no parameters "
-								+ "expects n and p as arguments.");
-			}
-			setN(args.get(0));
-			setP(args.get(1));
-		} else if (!nFixed) {
-			if (args.size() != 1) {
-				throw new IllegalArgumentException(
-						"Binomial distribution created with no \"n\" parameter "
-								+ "expects n as an argument.");
-			}
-			setN(args.get(0));
-		} else if (args.size() != 0) {
-			throw new IllegalArgumentException(
-					"Binomial distribution created with two parameters "
-							+ "expects no arguments.");
-		}
-	}
+  private void processArgs(List args) {
+    if (!pFixed) {
+      if (args.size() != 2) {
+        throw new IllegalArgumentException(
+            "Binomial distribution created with no parameters "
+                + "expects n and p as arguments.");
+      }
+      setN(args.get(0));
+      setP(args.get(1));
+    } else if (!nFixed) {
+      if (args.size() != 1) {
+        throw new IllegalArgumentException(
+            "Binomial distribution created with no \"n\" parameter "
+                + "expects n as an argument.");
+      }
+      setN(args.get(0));
+    } else if (args.size() != 0) {
+      throw new IllegalArgumentException(
+          "Binomial distribution created with two parameters "
+              + "expects no arguments.");
+    }
+  }
 
-	private void setN(Object obj) {
-		if (!(obj instanceof Integer)) {
-			throw new IllegalArgumentException(
-					"Number of trials (n) in binomial distribution must "
-							+ "be an integer, not " + obj.getClass());
-		}
-		n = ((Integer) obj).intValue();
-		if (n < 0) {
-			throw new IllegalArgumentException(
-					"Number of trials (n) in binomial distribution cannot "
-							+ "be negative.");
-		}
-	}
+  private void setN(Object obj) {
+    if (!(obj instanceof Integer)) {
+      throw new IllegalArgumentException(
+          "Number of trials (n) in binomial distribution must "
+              + "be an integer, not " + obj.getClass());
+    }
+    n = ((Integer) obj).intValue();
+    if (n < 0) {
+      throw new IllegalArgumentException(
+          "Number of trials (n) in binomial distribution cannot "
+              + "be negative.");
+    }
+  }
 
-	private void setP(Object obj) {
-		if (!(obj instanceof Number)) {
-			throw new IllegalArgumentException(
-					"Success probability (p) in binomial distribution must "
-							+ "be a number, not " + obj.getClass());
-		}
-		p = ((Number) obj).doubleValue();
-		if ((p < 0) || (p > 1)) {
-			throw new IllegalArgumentException(
-					"Illegal success probability for binomial disribution: " + p);
-		}
-	}
+  private void setP(Object obj) {
+    if (!(obj instanceof Number)) {
+      throw new IllegalArgumentException(
+          "Success probability (p) in binomial distribution must "
+              + "be a number, not " + obj.getClass());
+    }
+    p = ((Number) obj).doubleValue();
+    if ((p < 0) || (p > 1)) {
+      throw new IllegalArgumentException(
+          "Illegal success probability for binomial disribution: " + p);
+    }
+  }
 
-	private boolean nFixed;
-	private int n;
-	private boolean pFixed;
-	private double p;
+  private boolean nFixed;
+  private int n;
+  private boolean pFixed;
+  private double p;
 }
