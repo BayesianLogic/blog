@@ -1117,5 +1117,23 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL;
     TO_REAL = new NonRandomFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
     addFunction(TO_REAL);
+
+    // XXX (cberzan) this is a function for debugging only.
+    FunctionInterp fryInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        ObjectSet set = (ObjectSet) args.get(0);
+        System.out.println("--- fry got set of " + set.size() + " elements:");
+        for (Object obj : set) {
+          System.out.println(obj);
+        }
+        System.out.println("--- end");
+        return 0;
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.SET);
+    retType = BuiltInTypes.REAL;
+    NonRandomFunction fry = new NonRandomFunction("fry", argTypes, retType, fryInterp);
+    addFunction(fry);
   };
 }
