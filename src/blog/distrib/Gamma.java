@@ -101,14 +101,14 @@ public class Gamma extends AbstractCondProbDistrib {
    * http://cgm.cs.mcgill.ca/~luc/rnbookindex.html) Uses Cheng's rejection
    * algorithm (GB) for k>=1, rejection from Weibull distribution for 0 < k < 1.
    */
-  // Should be compared with Marsiaglia's algorithm used in MATLAB.
   public Object sampleVal(List args, Type childType) {
     return sampleVal(k, lambda);
   }
 
   /**
-   * TODO add description of the algorithm
-   * 
+   * Should be compared with Marsiaglia's algorithm used in MATLAB.
+   * Uses Cheng's rejection algorithm (GB) for k>=1, 
+   * rejection from Weibull distribution for 0 < k < 1.
    * @param alpha
    * @param beta
    * @return
