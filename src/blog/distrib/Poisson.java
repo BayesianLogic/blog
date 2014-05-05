@@ -125,7 +125,7 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
   }
 
   /**
-   * sample from Poisson distribution when the parameter lambda is small
+   * sample from Poisson distribution when the parameter lambda is small (< 15)
    * 
    * @param lambda
    * @return
@@ -148,7 +148,10 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
   }
 
   /**
-   * TODO please add description of the algorithm
+   * Naive inverse CDF approach for Poisson is not advisable for lambda > 15. 
+   * Here we are following MATLAB's implementation, where gamma random variables
+   * are subtracted from lambda until it falls into the range of lambda <= 15. Then,
+   * standard naive inverse CDF sampling is applied via sampleSmall.
    * 
    * @param lambda
    * @return
