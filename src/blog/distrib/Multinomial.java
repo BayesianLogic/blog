@@ -159,7 +159,7 @@ public class Multinomial extends AbstractCondProbDistrib {
     for (int i = 0; i < numBuckets; i++) {
       result[i] = 0;
     }
-    
+
     for (int trial = 0; trial < numTrials; trial++) {
       double val = Util.random();
       int bucket;
