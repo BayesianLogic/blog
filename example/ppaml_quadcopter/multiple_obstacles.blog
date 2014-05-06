@@ -6,15 +6,10 @@ random Real obstX(Obstacle o) ~ UniformReal(-7, 7);
 random Real obstY(Obstacle o) ~ UniformReal(-7, 7);
 fixed Real obstR = 1;
 
-/* query #{Obstacle o}; */
-/* query {Obstacle o}; */
-/* query obstX({Obstacle o}); */
-/* query forall Obstacle o obstX(o); */
+/* query fry({obstX(o), obstY(o), obstR for Obstacle o}); */
 
-/* query fry({Obstacle o}); */
+/* random Real foo = fry({obstX(o), obstY(o), obstR for Obstacle o}); */
+/* query foo; */
 
-/* query {Obstacle o: obstX(o)}; */
-
-query {obstX(o) for Obstacle o}; // null pointer exception
-
-// query {obstX(o) for Obstacle o: true};  // error, although syntax looks ok
+random Set coords = {obstX(o), obstY(o), obstR for Obstacle o};
+query coords;

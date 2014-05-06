@@ -37,6 +37,7 @@ package blog.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1121,7 +1122,7 @@ public class BuiltInFunctions {
     // XXX (cberzan) this is a function for debugging only.
     FunctionInterp fryInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        ObjectSet set = (ObjectSet) args.get(0);
+        Collection set = (Collection) args.get(0);
         System.out.println("--- fry got set of " + set.size() + " elements:");
         for (Object obj : set) {
           System.out.println(obj);

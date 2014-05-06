@@ -271,6 +271,8 @@ public class Clause {
           argType = BuiltInTypes.BOOLEAN;
         } else if (arg instanceof CardinalitySpec) {
           argType = BuiltInTypes.NATURAL_NUM;
+        } else if (arg instanceof TupleSetSpec) {
+          argType = BuiltInTypes.SET;
         } else {
           System.err.println(arg.getLocation() + ": Illegal value for "
               + "deterministic distribution: " + arg);
