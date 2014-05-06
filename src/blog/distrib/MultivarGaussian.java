@@ -112,7 +112,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
 	 */
 	public double getProb(List args, Object value) {
 		initParams(args);
-
+		
 		if (!((value instanceof MatrixLib) && (((MatrixLib) value).numRows() == d) && (((MatrixLib) value)
 				.numCols() == 1)))
 			throw new IllegalArgumentException("The value passed to the " + d
