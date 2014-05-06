@@ -50,112 +50,112 @@ import java.util.*;
 
 public class UniformVector extends AbstractCondProbDistrib {
 
-	/**
-	 * The constructor takes an even number of parameters. For all i,
-	 * 0<=i<=(n-1)/2, the (2i)-th parameter is treated as the lower bound of the
-	 * generated vectors' i-th component, and every (2i+1)-th argument as the i-th
-	 * component upper bound. All parameters must be of type Number.
-	 * 
-	 * @throws IllegalArgumentException
-	 */
-	public UniformVector(List params) {
-		if ((params.size() % 2) != 0) {
-			throw new IllegalArgumentException(
-					"Uniform vector distribution require an even number "
-							+ "of parameters, not " + params.size() + ".");
-		}
-		for (int i = 0; i < params.size(); ++i) {
-			if (!(params.get(i) instanceof Number)) {
-				throw new IllegalArgumentException("Parameter " + i
-						+ " to the uniform vector "
-						+ "distribution must be of class Number, not "
-						+ params.get(i).getClass() + ".");
-			}
-		}
+  /**
+   * The constructor takes an even number of parameters. For all i,
+   * 0<=i<=(n-1)/2, the (2i)-th parameter is treated as the lower bound of the
+   * generated vectors' i-th component, and every (2i+1)-th argument as the i-th
+   * component upper bound. All parameters must be of type Number.
+   * 
+   * @throws IllegalArgumentException
+   */
+  public UniformVector(List params) {
+    if ((params.size() % 2) != 0) {
+      throw new IllegalArgumentException(
+          "Uniform vector distribution require an even number "
+              + "of parameters, not " + params.size() + ".");
+    }
+    for (int i = 0; i < params.size(); ++i) {
+      if (!(params.get(i) instanceof Number)) {
+        throw new IllegalArgumentException("Parameter " + i
+            + " to the uniform vector "
+            + "distribution must be of class Number, not "
+            + params.get(i).getClass() + ".");
+      }
+    }
 
-		dim = params.size() / 2;
-		mins = new double[dim];
-		maxes = new double[dim];
-		volume = 1;
+    dim = params.size() / 2;
+    mins = new double[dim];
+    maxes = new double[dim];
+    volume = 1;
 
-		int paramIndex = 0;
-		for (int i = 0; i < dim; ++i) {
-			mins[i] = ((Number) params.get(paramIndex++)).doubleValue();
-			maxes[i] = ((Number) params.get(paramIndex++)).doubleValue();
-			if (maxes[i] <= mins[i]) {
-				throw new IllegalArgumentException("Specified maximum value "
-						+ maxes[i] + " must be greater than specified minimum " + mins[i]);
-			}
-			volume *= (maxes[i] - mins[i]);
-		}
+    int paramIndex = 0;
+    for (int i = 0; i < dim; ++i) {
+      mins[i] = ((Number) params.get(paramIndex++)).doubleValue();
+      maxes[i] = ((Number) params.get(paramIndex++)).doubleValue();
+      if (maxes[i] <= mins[i]) {
+        throw new IllegalArgumentException("Specified maximum value "
+            + maxes[i] + " must be greater than specified minimum " + mins[i]);
+      }
+      volume *= (maxes[i] - mins[i]);
+    }
 
-		densityInBox = 1 / volume;
-		logDensityInBox = -Math.log(volume);
-	}
+    densityInBox = 1 / volume;
+    logDensityInBox = -Math.log(volume);
+  }
 
-	public double getProb(List args, Object value) {
-		MatrixLib x = checkArgs(args, value);
-		return inBox(x) ? densityInBox : 0;
-	}
+  public double getProb(List args, Object value) {
+    MatrixLib x = checkArgs(args, value);
+    return inBox(x) ? densityInBox : 0;
+  }
 
-	public double getLogProb(List args, Object value) {
-		MatrixLib x = checkArgs(args, value);
-		return inBox(x) ? logDensityInBox : Double.NEGATIVE_INFINITY;
-	}
+  public double getLogProb(List args, Object value) {
+    MatrixLib x = checkArgs(args, value);
+    return inBox(x) ? logDensityInBox : Double.NEGATIVE_INFINITY;
+  }
 
-	public Object sampleVal(List args, Type childType) {
-		if (args.size() != 0) {
-			throw new IllegalArgumentException(
-					"Uniform vector distribution takes 0 arguments, " + " not "
-							+ args.size() + ".");
-		}
+  public Object sampleVal(List args, Type childType) {
+    if (args.size() != 0) {
+      throw new IllegalArgumentException(
+          "Uniform vector distribution takes 0 arguments, " + " not "
+              + args.size() + ".");
+    }
 
-		MatrixLib sample = MatrixFactory.fromArray(new double[dim][1]);
-		for (int i = 0; i < dim; ++i) {
-			sample.setElement(i, 0, mins[i] + (Util.random() * (maxes[i] - mins[i])));
-		}
-		return sample;
-	}
+    MatrixLib sample = MatrixFactory.fromArray(new double[dim][1]);
+    for (int i = 0; i < dim; ++i) {
+      sample.setElement(i, 0, mins[i] + (Util.random() * (maxes[i] - mins[i])));
+    }
+    return sample;
+  }
 
-	private MatrixLib checkArgs(List args, Object value) {
-		if (args.size() != 0) {
-			throw new IllegalArgumentException(
-					"Uniform vector distribution takes 0 arguments, " + " not "
-							+ args.size() + ".");
-		}
+  private MatrixLib checkArgs(List args, Object value) {
+    if (args.size() != 0) {
+      throw new IllegalArgumentException(
+          "Uniform vector distribution takes 0 arguments, " + " not "
+              + args.size() + ".");
+    }
 
-		if (!((value instanceof MatrixLib) && (((MatrixLib) value).numCols() == 1))) {
-			throw new IllegalArgumentException(
-					"The value passed to the uniform vector distribution's "
-							+ "getProb method must be a column vector.");
-		}
-		MatrixLib x = (MatrixLib) value;
+    if (!((value instanceof MatrixLib) && (((MatrixLib) value).numCols() == 1))) {
+      throw new IllegalArgumentException(
+          "The value passed to the uniform vector distribution's "
+              + "getProb method must be a column vector.");
+    }
+    MatrixLib x = (MatrixLib) value;
 
-		if (x.numRows() != dim) {
-			throw new IllegalArgumentException(
-					"The vector passed to the uniform vector distribution's "
-							+ "getProb method must be " + dim + "-dimensional, not "
-							+ x.numRows() + "-dimensional");
-		}
+    if (x.numRows() != dim) {
+      throw new IllegalArgumentException(
+          "The vector passed to the uniform vector distribution's "
+              + "getProb method must be " + dim + "-dimensional, not "
+              + x.numRows() + "-dimensional");
+    }
 
-		return x;
-	}
+    return x;
+  }
 
-	private boolean inBox(MatrixLib x) {
-		for (int i = 0; i < dim; ++i) {
-			double val = x.elementAt(i, 0);
-			if ((val < mins[i]) || (val > maxes[i])) {
-				return false;
-			}
-		}
-		return true;
-	}
+  private boolean inBox(MatrixLib x) {
+    for (int i = 0; i < dim; ++i) {
+      double val = x.elementAt(i, 0);
+      if ((val < mins[i]) || (val > maxes[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-	private int dim;
-	private double[] mins;
-	private double[] maxes;
+  private int dim;
+  private double[] mins;
+  private double[] maxes;
 
-	private double volume;
-	private double densityInBox;
-	private double logDensityInBox;
+  private double volume;
+  private double densityInBox;
+  private double logDensityInBox;
 }
