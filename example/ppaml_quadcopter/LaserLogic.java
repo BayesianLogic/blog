@@ -62,4 +62,23 @@ public class LaserLogic {
     }
     return readings;
   }
+
+  public static double[] readingsForObstacles(
+          double laserX, double laserY, double laserTheta,
+          double[] laserAngles, double laserMaxRange,
+          double[] obstacleXs, double[] obstacleYs, double[] obstacleRs) {
+    double[] readingsForAll = new double[laserAngles.length];
+    for (int a = 0; a < laserAngles.length; a++) {
+      readingsForAll[a] = laserMaxRange;
+    }
+    for (int o = 0; o < obstacleXs.length; o++) {
+      double[] readingsForOne = readingsForObstacle(
+        laserX, laserY, laserTheta, laserAngles, laserMaxRange,
+        obstacleXs[o], obstacleYs[o], obstacleRs[o]);
+      for (int a = 0; a < laserAngles.length; a++) {
+        readingsForAll[a] = Math.min(readingsForAll[a], readingsForOne[a]);
+      }
+    }
+    return readingsForAll;
+  }
 };
