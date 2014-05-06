@@ -1,6 +1,7 @@
 package ppaml_quadcopter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import blog.common.numerical.MatrixFactory;
@@ -21,25 +22,42 @@ public class LaserInterp extends AbstractFunctionInterp {
   /**
    * Compute ground-truth laser readings.
    *
-   * Input: laserX, laserY, laserTheta, obstacleXs, obstacleYs, obstacleRs.
+   * Input: laserX, laserY, laserTheta, obstacles,
+   *        where obstacles is a set of (x, y, r) lists.
    * Output: double[361] laser readings.
    */
   public Object getValue(List args) {
-    if (args.size() != 6) {
+    // Parse input args.
+    if (args.size() != 4) {
       throw new IllegalArgumentException("LaserInterp expected 6 arguments");
     }
     double laserX = (double) args.get(0);
     double laserY = (double) args.get(1);
     double laserTheta = (double) args.get(2);
-    double[] obstacleXs = squeezeDoublesFromObject(args.get(3));
-    double[] obstacleYs = squeezeDoublesFromObject(args.get(4));
-    double[] obstacleRs = squeezeDoublesFromObject(args.get(5));
+    Collection obstacles = (Collection) args.get(3);
+    // obstacles is a blog.common.HashMultiset of ArrayLists...
+    double[] obstacleXs = new double[obstacles.size()];
+    double[] obstacleYs = new double[obstacles.size()];
+    double[] obstacleRs = new double[obstacles.size()];
+    int index = 0;
+    for (Object obj : obstacles) {
+      ArrayList coords = (ArrayList) obj;
+      if (coords.size() != 3) {
+        throw new IllegalArgumentException("Expected 3 coords per obstacle");
+      }
+      obstacleXs[index] = (double) coords.get(0);
+      obstacleYs[index] = (double) coords.get(1);
+      obstacleRs[index] = (double) coords.get(2);
+      index++;
+    }
+
+    // Compute laser readings.
     double[] readings = LaserLogic.readingsForObstacles(
       laserX, laserY, laserTheta,
       laserAngles, laserMaxRange,
       obstacleXs, obstacleYs, obstacleRs);
 
-    // Convert to MatrixLib.
+    // Convert result to MatrixLib.
     // Additional step required because MatrixLib only takes a double[][].
     double[][] tmp = new double[readings.length][1];
     for (int i = 0; i < readings.length; i++) {
