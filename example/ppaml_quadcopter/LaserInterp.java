@@ -1,8 +1,10 @@
 package ppaml_quadcopter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import blog.common.numerical.MatrixFactory;
+import blog.common.numerical.MatrixLib;
 import blog.model.AbstractFunctionInterp;
 
 
@@ -19,7 +21,7 @@ public class LaserInterp extends AbstractFunctionInterp {
   /**
    * Compute ground-truth laser readings.
    *
-   * Input: laserX, laserY, laserTheta, obstacleX, obstacleY, obstacleR.
+   * Input: laserX, laserY, laserTheta, obstacleXs, obstacleYs, obstacleRs.
    * Output: double[361] laser readings.
    */
   public Object getValue(List args) {
@@ -29,13 +31,13 @@ public class LaserInterp extends AbstractFunctionInterp {
     double laserX = (double) args.get(0);
     double laserY = (double) args.get(1);
     double laserTheta = (double) args.get(2);
-    double obstacleX = (double) args.get(3);
-    double obstacleY = (double) args.get(4);
-    double obstacleR = (double) args.get(5);
-    double[] readings = LaserLogic.readingsForObstacle(
+    double[] obstacleXs = squeezeDoublesFromObject(args.get(3));
+    double[] obstacleYs = squeezeDoublesFromObject(args.get(4));
+    double[] obstacleRs = squeezeDoublesFromObject(args.get(5));
+    double[] readings = LaserLogic.readingsForObstacles(
       laserX, laserY, laserTheta,
       laserAngles, laserMaxRange,
-      obstacleX, obstacleY, obstacleR);
+      obstacleXs, obstacleYs, obstacleRs);
 
     // Convert to MatrixLib.
     // Additional step required because MatrixLib only takes a double[][].
@@ -44,6 +46,21 @@ public class LaserInterp extends AbstractFunctionInterp {
       tmp[i][0] = readings[i];
     }
     return MatrixFactory.fromArray(tmp);
+  }
+
+  /**
+   * Convert an Object which is really an ArrayList<Double> to double[].
+   */
+  private static double[] squeezeDoublesFromObject(Object obj) {
+    // Note: If I cast it to ArrayList<Double> directly, I get a stupid
+    // "unchecked cast" warning, because of "type erasure". So I have to
+    // cast it to a generic ArrayList here, and then cast each element.
+    ArrayList list = (ArrayList) obj;
+    double[] result = new double[list.size()];
+    for (int i = 0; i < list.size(); i++) {
+      result[i] = (double) list.get(i);
+    }
+    return result;
   }
 
   private double laserMaxRange;
