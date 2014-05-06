@@ -11,6 +11,10 @@ fixed Real obstR = 1;
 /* query obstX({Obstacle o}); */
 /* query forall Obstacle o obstX(o); */
 
-query fry({Obstacle o});
+/* query fry({Obstacle o}); */
 
 /* query {Obstacle o: obstX(o)}; */
+
+query {obstX(o) for Obstacle o}; // null pointer exception
+
+// query {obstX(o) for Obstacle o: true};  // error, although syntax looks ok

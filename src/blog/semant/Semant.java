@@ -977,7 +977,7 @@ public class Semant {
     List<Term> tupleTerms = new ArrayList<Term>();
     List<Type> varTypes = new ArrayList<Type>();
     List<String> varNames = new ArrayList<String>();
-    Formula cond = null;
+    Formula cond = TrueFormula.TRUE;
 
     while (e.setTuple != null) {
       Object tuple = transExpr(e.setTuple.head);
