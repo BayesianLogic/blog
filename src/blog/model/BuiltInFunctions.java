@@ -72,6 +72,7 @@ public class BuiltInFunctions {
   public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
   public static final String LT_NAME = "__LESSTHAN";
   public static final String LEQ_NAME = "__LESSTHANOREQUAL";
+  public static final String TO_MATRIX_NAME = "__TO_MATRIX";
 
   // can be called by user
   public static final String SUCC_NAME = "Succ";
@@ -80,7 +81,6 @@ public class BuiltInFunctions {
   public static final String INV_NAME = "inv";
   public static final String DET_NAME = "det";
   public static final String IS_EMPTY_NAME = "IsEmptyString";
-  // public static final String CONCAT_NAME = "Concat"; //Concat replaced by +
   public static final String MIN_NAME = "min";
   public static final String MAX_NAME = "max";
   public static final String ROUND_NAME = "round";
@@ -372,6 +372,11 @@ public class BuiltInFunctions {
    */
   public static NonRandomFunction TO_REAL;
 
+  /*
+   * Take a list of arguments, and convert them to a matrix
+   */
+  public static NonRandomFunction TO_MATRIX;
+
   private BuiltInFunctions() {
     // prevent instantiation
   }
@@ -420,17 +425,17 @@ public class BuiltInFunctions {
    * 
    * @return unmodifiable List of Function
    */
-  public static List getFuncsWithName(String name) {
-    List funcsWithName = (List) functions.get(name);
-    return (funcsWithName == null) ? Collections.EMPTY_LIST : Collections
-        .unmodifiableList(funcsWithName);
+  public static List<Function> getFuncsWithName(String name) {
+    List<Function> funcsWithName = functions.get(name);
+    return (funcsWithName == null) ? Collections.<Function> emptyList()
+        : Collections.unmodifiableList(funcsWithName);
   }
 
   private static void addFunction(Function f) {
-    List funcsWithName = (List) functions.get(f.getName());
+    List<Function> funcsWithName = functions.get(f.getName());
     if (funcsWithName != null) {
-      for (Iterator iter = funcsWithName.iterator(); iter.hasNext();) {
-        Function g = (Function) iter.next();
+      for (Iterator<Function> iter = funcsWithName.iterator(); iter.hasNext();) {
+        Function g = iter.next();
         if (Arrays.equals(g.getArgTypes(), f.getArgTypes())) {
           System.err.println("Warning: overwriting existing " + "function "
               + g.getSig());
@@ -438,13 +443,13 @@ public class BuiltInFunctions {
         }
       }
     } else {
-      funcsWithName = new ArrayList();
+      funcsWithName = new ArrayList<Function>();
       functions.put(f.getName(), funcsWithName);
     }
     funcsWithName.add(f);
   }
 
-  static Map functions = new HashMap(); // from String to List of Function
+  static Map<String, List<Function>> functions = new HashMap<String, List<Function>>(); // from String to List of Function
 
   static {
     // Add non-random constants
@@ -1027,6 +1032,39 @@ public class BuiltInFunctions {
     VSTACK = new NonRandomFunction(VSTACK_NAME, argTypes, retType, vstackInterp);
     addFunction(VSTACK);
 
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.BUILT_IN);
+    retType = BuiltInTypes.REAL_MATRIX;
+    FunctionInterp toMatrixInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        int n = args.size();
+        // TODO: here we only support list of double and list of list of double
+        // two dimension
+        //  e.g. [[a,b],[c,d]]
+        if(n > 0 && args.get(0) instanceof MatrixLib) {
+        	int m = ((MatrixLib)args.get(0)).colLen();
+        	for (int i=1;i<n;++i)
+        		m = Math.max(m, ((MatrixLib)args.get(i)).colLen());
+        	double[][] val = new double[n][m];
+        	for (int i=0;i<n;++i) {
+        		MatrixLib mat = (MatrixLib)args.get(i);
+        		for(int j=0;j<mat.colLen();++j)
+        			val[i][j] = mat.elementAt(0, j);
+        	}
+        	return MatrixFactory.fromArray(val);
+        } else {
+        // single dimension: e.g. [a,b,c]
+        	double[][] val = new double[1][n];
+        	for (int i = 0; i < n; ++i)
+        		val[0][i] = (Double) args.get(i);
+        	return MatrixFactory.fromArray(val);
+        }
+      }
+    };
+    TO_MATRIX = new NonRandomFunction(TO_MATRIX_NAME, argTypes, retType,
+        toMatrixInterp);
+    addFunction(TO_MATRIX);
+
     FunctionInterp eyeInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         Integer size = (Integer) args.get(0);
@@ -1099,8 +1137,7 @@ public class BuiltInFunctions {
         } else if (obj instanceof MatrixLib) {
           return ((MatrixLib) obj).elementAt(0, 0);
         } else {
-          System.err.println(obj.toString()
-              + " cannot be converted to Real");
+          System.err.println(obj.toString() + " cannot be converted to Real");
           return 0;
         }
       }
@@ -1108,7 +1145,8 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(BuiltInTypes.BUILT_IN);
     retType = BuiltInTypes.REAL;
-    TO_REAL = new NonRandomFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
+    TO_REAL = new NonRandomFunction(TOREAL_NAME, argTypes, retType,
+        toRealInterp);
     addFunction(TO_REAL);
   };
 }

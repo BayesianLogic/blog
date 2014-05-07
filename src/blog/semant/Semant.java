@@ -514,9 +514,11 @@ public class Semant {
   DependencyModel transDependency(Expr e, Type resTy, Object defVal) {
     Object body = transExpr(e);
     List<Clause> cl = new ArrayList<Clause>(1);
-    if (body instanceof Term || body instanceof Formula) {
+    if (body instanceof Term || body instanceof Formula
+        || body instanceof ListSpec) {
       cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-          .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
+          .<ArgSpec> emptyList(), Collections.singletonList(getTypedValue(
+          resTy, (ArgSpec) body))));
     } else if (body instanceof Clause) {
       cl.add((Clause) body);
     } else if (e instanceof IfExpr) {
@@ -788,10 +790,23 @@ public class Semant {
     return t;
   }
 
+  /**
+   * translate ListInitExpr into ArgSpec
+   * It supports both constants and variables as elements.
+   * 
+   * @param e
+   * @return
+   */
   ArgSpec transExpr(ListInitExpr e) {
     List<ArgSpec> values = transExprList(e.values, true);
-    // todo support stack and concatenation
-    return new ListSpec(values, getType(e.type));
+    ListSpec ls = new ListSpec(values, BuiltInTypes.REAL);
+    /*
+    if (ls.containsRandomSymbol())
+      return ls.transferToMatrix();
+    return ls;
+    */
+    // TODO: to make list support types other than real
+    return ls.transferToMatrix();
   }
 
   MapSpec transExpr(MapInitExpr e) {

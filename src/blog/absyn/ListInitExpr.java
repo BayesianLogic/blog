@@ -6,23 +6,22 @@ package blog.absyn;
  */
 public class ListInitExpr extends Expr {
 
-	public ExprList values;
-	public Ty type;
+  public ExprList values;
 
-	public ListInitExpr(int p, ExprList v) {
-		this(0, p, v);
-	}
+  public ListInitExpr(int p, ExprList v) {
+    this(0, p, v);
+  }
 
-	public ListInitExpr(int line, int col, ExprList v) {
-		super(line, col);
-		values = v;
-	}
+  public ListInitExpr(int line, int col, ExprList v) {
+    super(line, col);
+    values = v;
+  }
 
-	@Override
-	public void printTree(Printer pr, int d) {
-		pr.indent(d);
-		pr.sayln("ListInitExpr(");
-		values.printTree(pr, d + 1);
-		pr.say(")");
-	}
+  @Override
+  public void printTree(Printer pr, int d) {
+    pr.indent(d);
+    pr.sayln("ListInitExpr(");
+    values.printTree(pr, d + 1);
+    pr.say(")");
+  }
 }
