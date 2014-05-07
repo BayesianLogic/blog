@@ -59,7 +59,7 @@ public class MiscTest extends TestCase {
 	public void testParsingTupleSetSpec() { // to be removed
 		Util.initRandom(true);
 		Model model = Model.readFromString("random Boolean Weather(Timestep);"
-				+ "Weather(t) ~ Bernoulli[0.8]();");
+				+ "Weather(t) ~ Bernoulli(0.8);");
 		ArgSpecQuery query = parseQuery_NE(
 				"query {Weather(t) for Timestep t : t = @0 | t = @1 | t = @2};", model);
 		InferenceEngine engine = new SamplingEngine(model);
