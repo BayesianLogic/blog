@@ -8,6 +8,9 @@ import blog.common.numerical.MatrixLib;
  * Compare performance for two ways to compute the log determinant.
  *
  * This is a standalone program.
+ *
+ * Usage:
+ *    java -cp "..." test.blog.BenchmarkLogDet
  */
 public class BenchmarkLogDet {
   public static void main(String[] args) {
