@@ -332,7 +332,7 @@ public class FuncAppTerm extends Term {
         argTypes[i] = BuiltInTypes.REAL_ARRAY;
         // FIXME: handle arrays of other types?
         // FIXME: correct = ?
-			} else {
+      } else {
         throw new RuntimeException(
           "don't know how to process ArgSpec of type " +
           args[i].getClass().getName());

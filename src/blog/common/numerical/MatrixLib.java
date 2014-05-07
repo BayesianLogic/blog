@@ -76,6 +76,11 @@ public interface MatrixLib {
   public double det();
 
   /**
+   * Returns the log of the determinant of this matrix
+   */
+  public double logDet();
+
+  /**
    * Returns the transpose of this matrix
    */
   public MatrixLib transpose();
