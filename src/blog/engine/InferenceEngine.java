@@ -65,7 +65,7 @@ public abstract class InferenceEngine {
 	 * Returns a new InferenceEngine object for the given BLOG model, with
 	 * properties specified by the given Properties table. In particular, the
 	 * InferenceEngine subclass is specified by the <code>engineClass</code>
-	 * property (the default is blog.SamplingEngine).
+	 * property (the default is blog.engine.SamplingEngine).
 	 */
 	public static InferenceEngine constructEngine(Model model,
 			Properties properties) {
