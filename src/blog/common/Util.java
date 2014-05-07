@@ -544,9 +544,7 @@ public class Util {
 		if (trace) {
 			Thread.currentThread().dumpStack();
 		}
-		// modified by leili
-		// throw new Error(msg);
-		// System.exit(1);
+		throw new Error(msg);
 	}
 
 	/**
