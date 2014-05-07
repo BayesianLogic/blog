@@ -1,11 +1,10 @@
 package test;
 
-import Jama.Matrix;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import static org.junit.Assert.assertEquals;
 
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
