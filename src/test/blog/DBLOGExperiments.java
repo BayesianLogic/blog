@@ -72,7 +72,7 @@ public class DBLOGExperiments {
 					"numSamplesForTrueDistribution",
 					10,
 					Axis("inferenceEngineClassName",
-							Util.list("blog.SamplingEngine", "blog.ParticleFilter")),
+							Util.list("blog.engine.SamplingEngine", "blog.engine.ParticleFilter")),
 					Axis("numSamples", 10, 200, 50),
 					Averaging("run", 1, 2),
 					getDistanceGivenTrueAndEstimatedDistributions,
@@ -94,7 +94,7 @@ public class DBLOGExperiments {
 					"numSamplesForTrueDistribution",
 					100000,
 					Axis("inferenceEngineClassName",
-							Util.list("blog.SamplingEngine", "blog.ParticleFilter")),
+							Util.list("blog.engine.SamplingEngine", "blog.engine.ParticleFilter")),
 					Axis("numSamples", 10, 600, 40),
 					Averaging("run", 1, 10),
 					getDistanceGivenTrueAndEstimatedDistributions,
@@ -122,7 +122,7 @@ public class DBLOGExperiments {
 					finalTimestepIndex,
 					Axis("timestepIndex", 1, finalTimestepIndex),
 					Axis("inferenceEngineClassName",
-							Util.list("blog.SamplingEngine", "blog.ParticleFilter")),
+							Util.list("blog.engine.SamplingEngine", "blog.engine.ParticleFilter")),
 					Averaging("run", 1, 10),
 					getDistanceGivenTrueAndEstimatedDistributions,
 					YSeriesSpec(
@@ -152,7 +152,7 @@ public class DBLOGExperiments {
 					finalTimestepIndex,
 					Axis("timestepIndex", 1, finalTimestepIndex),
 					Axis("inferenceEngineClassName",
-							Util.list("blog.SamplingEngine", "blog.ParticleFilter")),
+							Util.list("blog.engine.SamplingEngine", "blog.engine.ParticleFilter")),
 					Averaging("run", 1, 5),
 					getDistanceGivenTrueAndEstimatedDistributions,
 					YSeriesSpec(
@@ -175,7 +175,7 @@ public class DBLOGExperiments {
 							8 /* finalTimestepIndex */)),
 					Axis("numSamples", 10, 500, 100),
 					Axis("inferenceEngineClassName",
-							Util.list("blog.SamplingEngine", "blog.ParticleFilter")),
+							Util.list("blog.engine.SamplingEngine", "blog.engine.ParticleFilter")),
 					getDistanceGivenTrueAndEstimatedDistributions,
 					YSeriesSpec(
 							"inferenceEngineClassName",
@@ -536,7 +536,7 @@ public class DBLOGExperiments {
 	private static Object computeQuery(DependencyAwareEnvironment environment,
 			String inferenceEngineClassNamePropertyName, String numSamplesPropertyName) {
 		String engineClassName = (String) environment.getWithDefault(
-				inferenceEngineClassNamePropertyName, "blog.SamplingEngine");
+				inferenceEngineClassNamePropertyName, "blog.engine.SamplingEngine");
 		String samplerClassName = (String) environment.getWithDefault(
 				"samplerClassName", "blog.LWImportanceSampler");
 		Problem problem = (Problem) environment.getResultOrRecompute(getProblem);
@@ -951,7 +951,7 @@ public class DBLOGExperiments {
 				+ "random Boolean RainyRegion();"
 				+
 
-				"RainyRegion ~ Bernoulli[0.5]();"
+				"RainyRegion ~ Bernoulli(0.5);"
 				+
 
 				"Weather(d) ~ TabularCPD[[0.3, 0.7],[0.7, 0.3]](RainyRegion);"
@@ -1310,7 +1310,7 @@ public class DBLOGExperiments {
 				"random RainEvent Weather(Timestep);" + "random Boolean RainyRegion();"
 				+
 
-				"RainyRegion ~ Bernoulli[0.5]();" +
+				"RainyRegion ~ Bernoulli(0.5);" +
 
 				"Weather(d) "
 				+ " 	if (d = @0) then ~ TabularCPD[[0.7, 0.3],[0.3, 0.7]](RainyRegion)"
