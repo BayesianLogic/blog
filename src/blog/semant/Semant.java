@@ -521,6 +521,14 @@ public class Semant {
       cl.add((Clause) body);
     } else if (e instanceof IfExpr) {
       cl = (List<Clause>) body;
+    } else if (e instanceof TupleSetExpr) {
+      // FIXME: no idea if I'm doing the right thing here...
+      cl.add(new Clause(
+        TrueFormula.TRUE,
+        EqualsCPD.class,
+        Collections.<ArgSpec> emptyList(),
+        Collections.singletonList((ArgSpec) body)
+      ));
     } else {
       error(e.line, e.col, "invalid body of dependency clause");
     }
@@ -966,7 +974,7 @@ public class Semant {
     List<Term> tupleTerms = new ArrayList<Term>();
     List<Type> varTypes = new ArrayList<Type>();
     List<String> varNames = new ArrayList<String>();
-    Formula cond = null;
+    Formula cond = TrueFormula.TRUE;
 
     while (e.setTuple != null) {
       Object tuple = transExpr(e.setTuple.head);
