@@ -1,0 +1,45 @@
+fixed RealMatrix initial_value = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+random RealMatrix birds(Timestep t){
+	if t==@0 then = initial_value
+    else if t==@20 then = initial_value
+    else if t==@40 then = initial_value
+    else if t==@60 then = initial_value
+    else if t==@80 then = initial_value
+	else = sum( transferMat(Prev(t)) )
+};
+
+random RealMatrix b1(Timestep t) ~ Multinomial(toInt(birds(t)[0]), probs1(t)) ;
+random RealMatrix b2(Timestep t) ~ Multinomial(toInt(birds(t)[1]), probs2(t)) ;
+random RealMatrix b3(Timestep t) ~ Multinomial(toInt(birds(t)[2]), probs3(t)) ;
+random RealMatrix b4(Timestep t) ~ Multinomial(toInt(birds(t)[3]), probs4(t)) ;
+random RealMatrix b5(Timestep t) ~ Multinomial(toInt(birds(t)[4]), probs5(t)) ;
+random RealMatrix b6(Timestep t) ~ Multinomial(toInt(birds(t)[5]), probs6(t)) ;
+random RealMatrix b7(Timestep t) ~ Multinomial(toInt(birds(t)[6]), probs7(t)) ;
+random RealMatrix b8(Timestep t) ~ Multinomial(toInt(birds(t)[7]), probs8(t)) ;
+random RealMatrix b9(Timestep t) ~ Multinomial(toInt(birds(t)[8]), probs9(t)) ;
+random RealMatrix b10(Timestep t) ~ Multinomial(toInt(birds(t)[9]), probs10(t)) ;
+random RealMatrix b11(Timestep t) ~ Multinomial(toInt(birds(t)[10]), probs11(t)) ;
+random RealMatrix b12(Timestep t) ~ Multinomial(toInt(birds(t)[11]), probs12(t)) ;
+random RealMatrix b13(Timestep t) ~ Multinomial(toInt(birds(t)[12]), probs13(t)) ;
+random RealMatrix b14(Timestep t) ~ Multinomial(toInt(birds(t)[13]), probs14(t)) ;
+random RealMatrix b15(Timestep t) ~ Multinomial(toInt(birds(t)[14]), probs15(t)) ;
+random RealMatrix b16(Timestep t) ~ Multinomial(toInt(birds(t)[15]), probs16(t)) ;
+
+random RealMatrix transferMat(Timestep t) = vstack(vstack(vstack(vstack(vstack(vstack(vstack(vstack(vstack(vstack(vstack(vstack(vstack(vstack(vstack( transpose(b1(t)), transpose(b2(t)) ),  transpose(b3(t)) ),  transpose(b4(t)) ),  transpose(b5(t)) ),  transpose(b6(t)) ),  transpose(b7(t)) ),  transpose(b8(t)) ),  transpose(b9(t)) ),  transpose(b10(t)) ),  transpose(b11(t)) ),  transpose(b12(t)) ),  transpose(b13(t)) ),  transpose(b14(t)) ),  transpose(b15(t)) ),  transpose(b16(t)) );
+
+random Integer NoisyObs1(Timestep t) ~ Poisson(birds(t)[0]);
+random Integer NoisyObs2(Timestep t) ~ Poisson(birds(t)[1]);
+random Integer NoisyObs3(Timestep t) ~ Poisson(birds(t)[2]);
+random Integer NoisyObs4(Timestep t) ~ Poisson(birds(t)[3]);
+random Integer NoisyObs5(Timestep t) ~ Poisson(birds(t)[4]);
+random Integer NoisyObs6(Timestep t) ~ Poisson(birds(t)[5]);
+random Integer NoisyObs7(Timestep t) ~ Poisson(birds(t)[6]);
+random Integer NoisyObs8(Timestep t) ~ Poisson(birds(t)[7]);
+random Integer NoisyObs9(Timestep t) ~ Poisson(birds(t)[8]);
+random Integer NoisyObs10(Timestep t) ~ Poisson(birds(t)[9]);
+random Integer NoisyObs11(Timestep t) ~ Poisson(birds(t)[10]);
+random Integer NoisyObs12(Timestep t) ~ Poisson(birds(t)[11]);
+random Integer NoisyObs13(Timestep t) ~ Poisson(birds(t)[12]);
+random Integer NoisyObs14(Timestep t) ~ Poisson(birds(t)[13]);
+random Integer NoisyObs15(Timestep t) ~ Poisson(birds(t)[14]);
+random Integer NoisyObs16(Timestep t) ~ Poisson(birds(t)[15]);
