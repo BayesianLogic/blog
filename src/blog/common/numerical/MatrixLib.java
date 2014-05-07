@@ -76,6 +76,11 @@ public interface MatrixLib {
   public double det();
 
   /**
+   * Returns the log of the determinant of this matrix
+   */
+  public double logDet();
+
+  /**
    * Returns the transpose of this matrix
    */
   public MatrixLib transpose();
@@ -95,4 +100,9 @@ public interface MatrixLib {
    * Returns a row vector representing the column sum of the matrix.
    */
   public MatrixLib columnSum();
+
+  /**
+   * Return the real parts of the eigenvalues of the matrix.
+   */
+  public double[] eigenvals();
 }
