@@ -315,11 +315,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
     }
 
     normConst = Math.sqrt(sigma.det()) * dimFactor;
-    double logDet = 0.0;
-    for (double val : sigma.eigenvals()) {
-      logDet += Math.log(val);
-    }
-    logNormConst = 0.5 * logDet + logDimFactor;
+    logNormConst = 0.5 * sigma.logDet() + logDimFactor;
     sigmaInverse = sigma.inverse();
     sqrtSigma = sigma.choleskyFactor();
   }
