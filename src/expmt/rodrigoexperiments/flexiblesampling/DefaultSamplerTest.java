@@ -17,8 +17,8 @@ public class DefaultSamplerTest extends TestCase {
 	public void testBasic() {
 
 		Model model = Model
-				.readFromString("random Boolean X ~ Bernoulli[0.7]();"
-						+ "random Boolean Y   if X then ~ Bernoulli[0.3]() else ~ Bernoulli[0.9]();");
+				.readFromString("random Boolean X ~ Bernoulli(0.7);"
+						+ "random Boolean Y   if X then ~ Bernoulli(0.3) else ~ Bernoulli(0.9);");
 
 		SamplerFactory factory = new DefaultSamplerFactory();
 

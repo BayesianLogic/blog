@@ -91,7 +91,7 @@ import blog.semant.Semant;
  * 
  * <dt>-e <i>classname</i>, --engine=<i>classname</i>
  * <dd>Use <i>classname</i> as the inference engine. Default:
- * blog.SamplingEngine
+ * blog.engine.SamplingEngine
  * 
  * <dt>-n <i>num</i>, --num_samples=<i>num</i>
  * <dd>Run the sampling engine for <i>num</i> samples. Default: 10000 samples.
