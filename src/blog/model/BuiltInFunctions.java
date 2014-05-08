@@ -733,9 +733,9 @@ public class BuiltInFunctions {
       public Object getValue(List args) {
         MatrixLib mat = (MatrixLib) args.get(0);
         int i = (Integer) args.get(1);
-        if (mat.rowLen() == 1) {
+        if (mat.numRows() == 1) {
           return mat.elementAt(0, i);
-        } else if (mat.colLen() == 1) {
+        } else if (mat.numCols() == 1) {
           return mat.elementAt(i, 0);
         } else {
           throw new IllegalArgumentException(
