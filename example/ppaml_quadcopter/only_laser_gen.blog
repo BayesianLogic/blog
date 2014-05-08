@@ -1,9 +1,3 @@
-// random Real x ~ UniformReal(-8.0, 8.0);
-// random Real y ~ UniformReal(-8.0, 8.0);
-// random Real theta ~ UniformReal(0.0 - pi, pi);
-
-// FIXME: For some reason, "-pi" gets parsed as a Boolean.
-
 fixed Real x = 6.0;
 fixed Real y = 4.0;
 fixed Real theta = 1.7;

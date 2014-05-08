@@ -148,6 +148,11 @@ if __name__ == "__main__":
     y = 4.373940752990642
     theta = 1.7315791301475265
 
+    # MH, 100K samples, sigma = 0.1 * eye, trial 1:
+    x = 5.9914188919234261
+    y = 6.9911134074268464
+    theta = 2.3398027558646413
+
     laser_angles = np.arange(-90, 90.5, 0.5) * np.pi / 180
     laser_max_range = 10
     obstacles = [
