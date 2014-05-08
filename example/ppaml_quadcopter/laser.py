@@ -91,14 +91,16 @@ def readings_for_obstacle_vectorized(
 def plot_lasers(
         laser_x, laser_y, laser_theta,
         laser_angles, laser_max_range,
-        obstacle_x, obstacle_y, obstacle_r,
-        readings, ax):
+        obstacles, readings, ax):
     """
     Plot the given lasers scene.
+
+    `obstacles` is a list of (x, y, r) tuples.
     """
     ax.plot([laser_x], [laser_y], 'go')
-    obst = plt.Circle((obstacle_x, obstacle_y), radius=obstacle_r, color='r')
-    ax.add_patch(obst)
+    for x, y, r in obstacles:
+        obst = plt.Circle((x, y), radius=r, color='r')
+        ax.add_patch(obst)
     for i, angle in enumerate(laser_angles):
         ax.add_line(plt.Line2D(
             [laser_x,
@@ -128,7 +130,7 @@ def demo(readings_for_obstacle):
     plot_lasers(
         laser_x, laser_y, laser_theta,
         laser_angles, laser_max_range,
-        obstacle_x, obstacle_y, obstacle_r,
+        [(obstacle_x, obstacle_y, obstacle_r)],
         readings, ax)
     plt.show()
 

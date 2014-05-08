@@ -1,23 +1,23 @@
-random Real x ~ UniformReal(-8.0, 8.0);
-random Real y ~ UniformReal(-8.0, 8.0);
-random Real theta ~ UniformReal(0.0 - pi, pi);
+// random Real x ~ UniformReal(-8.0, 8.0);
+// random Real y ~ UniformReal(-8.0, 8.0);
+// random Real theta ~ UniformReal(0.0 - pi, pi);
 
 // FIXME: For some reason, "-pi" gets parsed as a Boolean.
 
-fixed Real obstacle_x = 3.0;
-fixed Real obstacle_y = 2.0;
-fixed Real obstacle_r = 1.0;
+fixed Real x = 6.0;
+fixed Real y = 4.0;
+fixed Real theta = 1.7;
 
-fixed RealMatrix laser_solns(
-        Real laser_x, Real laser_y, Real laser_theta,
-        Real obstacle_x, Real obstacle_y, Real obstacle_r)
+fixed Set obstacles = { [7.0, 9.0, 1.0], [8.0, 5.0, 1.0] };
+
+fixed Real[] laserReadings(
+        Real laserX, Real laserY, Real laserTheta, Set obstacles)
     = LaserInterp();
 
 fixed RealMatrix lasers_sigma = 0.001 * eye(361);
 
 random RealMatrix lasers ~ MultivarGaussian(
-    laser_solns(x, y, theta, obstacle_x, obstacle_y, obstacle_r),
-    lasers_sigma);
+    laserReadings(x, y, theta, obstacles), lasers_sigma);
 
 query x;
 query y;
