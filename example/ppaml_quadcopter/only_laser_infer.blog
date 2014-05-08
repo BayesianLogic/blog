@@ -139,6 +139,4 @@ obs lasers = [
     10.0023486034769
 ];
 
-query x;
-query y;
-query theta;
+query [x, y, theta];
