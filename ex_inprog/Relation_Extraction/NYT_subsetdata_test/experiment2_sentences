@@ -1,0 +1,100 @@
+Sent[51]: Stephen_Gillers professor at New_York_University								Relation: Professor
+Sent[54]: Merle_Black professor at Emory_University										Relation: Professor
+Sent[68]: Stephen_S__Roach economist at Morgan_Stanley									Relation: Economist/Analyst
+Sent[79]: Bob_Dole leader Senate														Relation: Leadership
+Sent[112]: Stephen_Gillers professor New_York_University								Relation: Professor
+Sent[126]: Kalman_Ruttenstein president at Bloomingdale									Relation: President_Of
+Sent[191]: Mr__Casey director of Central_Intelligence									Relation: Director_Of
+Sent[197]: Alan_Greenspan chairman Federal_Reserve 										Relation: Chairman_Of
+Sent[221]: Yasir_Arafat chairman Palestine_Liberation_Organization						Relation: Chairman_Of
+Sent[234]: Mr__Arafat succeed as chairman of Palestine_Liberation_Organization			Relation: Chairman_Of
+Sent[252]: Donald_E__Petersen chairman Ford 											Relation: Chairman_Of
+Sent[271]: Paul_A__Volcker chairman Federal_Reserve_Board								Relation: Chairman_Of
+Sent[276]: Lawrence_Kohlberg professor at Harvard										Relation: Professor
+Sent[339]: Republican head Appropriations_Committee										Relation: Leadership
+Sent[357]: Ziegler say in Quinn															Relation: To_Say
+Sent[367]: William_Carrick manager Mr__Gephardt											Relation: Manager_Of
+Sent[372]: Walter_M__Cadette economist at Morgan_Guaranty_Trust_Company					Relation: Economist/Analyst
+Sent[395]: Sally_Stewart_Ronk economist at United_States_Treasury_Department			Relation: Economist/Analyst
+Sent[400]: Rollin_Post analyst for KRON													Relation: Economist/Analyst
+Sent[435]: J__Walter_Thompson_Company subsidiary of JWT_Group							Relation: Subsidiary_Of
+Sent[447]: Ira_Revich lawyer Beverly_Hills												Relation: Lawyer_Of
+Sent[448]: Ira_Nerken lawyer Washington 												Relation: Lawyer_Of
+Sent[482]: Arturo_Cruz leader Nicaraguan												Relation: Leadership
+Sent[508]: William_V__Bidwell owner of St__Louis_Cardinals								Relation: Ownership
+Sent[525]: William_German editor of The_San_Francisco_Chronicle							Relation: Editor_Of
+Sent[555]: Warren_Goodwin join Herman_Associates										Relation: To_Join
+Sent[584]: Tribune_Company own Cubs														Relation: Ownership
+Sent[613]: THE_Salzburg_Musici play Vivaldi												Relation: To_Play
+Sent[645]: Stella_Isaacs bear in Russian 												Relation: To_Bear
+Sent[745]: Reagan meet with Jesse_Jackson												Relation: To_Meet
+Sent[767]: Pratt___Whitney unit of United_Technologies_Corporation						Relation: Subsidiary_Of
+Sent[806]: Ms__Richards bear in Birmingham												Relation: To_Bear
+Sent[829]: Mr__Howard chairman of Xerox													Relation: Chairman_Of
+Sent[857]: Maurice_Villency die at home in Brookville									Relation: Die_At_Home
+Sent[861]: Martin_Kaplan dean at University_of_Southern_California						Relation: Dean_Of
+Sent[876]: Liberace die at home in Palm_Springs											Relation: Die_At_Home
+Sent[888]: Larry_Wolff teach at Boston_College											Relation: Professor
+Sent[900]: Jonathan_Waxman come to New_York 											Relation: To_Come
+Sent[919]: Jeffrey_A__Sonnenfeld dean at Yale_School_of_Management						Relation: Dean_Of
+Sent[931]: Jack_Regan strategist at Josephthal											Relation: Strategist
+Sent[1000]: Charles_Ryskamp replace Everett_Fahy										Relation: To_Replace
+Sent[1040]: Yale president Benno_C__Schmidt_Jr_											Relation: President_Of
+Sent[1110]: Roger_Tremblay move to Chicago												Relation: To_Move
+Sent[1147]: New_York office of Bureau_of_Alcohol___Tobacco_and_Firearms					Relation: Office_Of
+Sent[1222]: Gen__John_M__Shalikashvili officer chairman of Joint_Chiefs_of_Staff		Relation: Chairman_Of
+Sent[1269]: Tom_Keenan coach Dolphins													Relation: To_Coach
+Sent[1369]: Advanced_Genetic_Sciences_Inc_ company in Oakland							Relation: Company_In
+Sent[1402]: United_States give Mr__Gorbachev											Relation: To_Give
+Sent[1406]: Tom_O_Neil lobbyist with Marcus_Group										Relation: Lobbyist
+Sent[1490]: Lucia_DiVenere lobbyist with National_Association_for_Home_Care				Relation: Lobbyist
+Sent[1554]: Tom_Webb economist for National_Automobile_Dealers_Association				Relation: Economist/Analyst
+Sent[1577]: Rabbi_Schach leader of wing Sephardic_Lithuanian							Relation: Leadership
+Sent[1628]: Dr__Norman_Fost ethicist at University_of_Wisconsin							Relation: Ethicist
+Sent[1630]: Dr__Mildred_K__Cho ethicist at Stanford_University							Relation: Ethicist
+Sent[1639]: Dr__Arthur_Caplan ethicist at University_of_Minnesota						Relation: Ethicist
+Sent[1649]: Carleton_S__Fiorina executive of Hewlett_Packard							Relation: Executive_Of
+Sent[1689]: Trevor_Nunn succeed as director of Royal_National_Theater					Relation: Director_Of
+Sent[1715]: Rudolf_Nureyev succeed as director of Paris_Opera_Ballet					Relation: Director_Of
+Sent[1744]: Ralph_Reed strategist of Christian_Coalition								Relation: Strategist
+Sent[1768]: Merle_Black scientist Emory_University										Relation: Professor
+Sent[1920]: Mr__Bush say at White_House													Relation: To_Say
+Sent[1930]: Manhattan coach Fran_Fraschilla												Relation: To_Coach
+Sent[2002]: Norman_Tebbit chairman Conservative_Party									Relation: Chairman_Of
+Sent[2012]: Mr__Shanker succeed as president of United_Federation_of_Teachers			Relation: President_Of
+Sent[2021]: Mireille_Durocher_Bertin lawyer of Mr__Aristide								Relation: Lawyer_Of
+Sent[2033]: Ken_Rose lawyer director of Center_for_Death_Penalty_Litigation_in_Durham	Relation: Director_Of
+Sent[2038]: John_Pinney director of Institute											Relation: Director_Of
+Sent[2069]: Zambia buy Dunavant															Relation: To_Buy
+Sent[2092]: William_Ryan secretary for United_States 									Relation: Secretary_Of
+Sent[2169]: Timothy_Edgar counsel for American_Civil_Liberties_Union					Relation: Counsel_Of
+Sent[2185]: Teresa_Grimes officer with Los_Angeles_Conservancy							Relation: Officer_Of
+Sent[2193]: Susan_T_ offer Mr__Trump 													Relation: To_Offer
+Sent[2217]: Shostakovich receive Suite 													Relation: To_Receive
+Sent[2335]: New_York chapter of National_Organization									Relation: Subsidiary_Of
+Sent[2339]: New_York office of Federal_Bureau_of_Investigation							Relation: Office_Of
+Sent[2418]: Marjorie_Anders spokeswoman for Metro_North									Relation: Spokesperson_Of
+Sent[2465]: Kersti_Boiko chairman of program at University_of_Latvia					Relation: Chairman_Of
+Sent[2480]: Josh_Bernstein student at Nassau_Community_College							Relation: Student_Of
+Sent[2505]: James_D__Speros officer for United_States 									Relation: Officer_Of
+Sent[2511]: Irene_Natividad head of National_Women__s_Political_Caucus					Relation: Leadership
+Sent[2573]: Edward_Skyler secretary Mr__Bloomberg										Relation: Secretary_Of
+Sent[2578]: Dr__Sternberg professor I_B_M_												Relation: Professor
+Sent[2625]: Chris_Meyer lawyer with New_York_Public_Interest_Research_Group				Relation: Lawyer_Of
+Sent[2634]: Charles_M__Elson chairman of program at University_of_Delaware				Relation: Chairman_Of
+Sent[2680]: Zev_Yaroslavsky member Council 												Relation: Member_Of
+Sent[2709]: William_L__Silber professor New_York_University								Relation: Professor
+Sent[2718]: William_C__Barrett professor Pace 											Relation: Professor
+Sent[2757]: Thomas_C__Dawson aide to Donald_T__Regan									Relation: Helper_Of
+Sent[2772]: Tara fly to Yale_New_Haven_Hospital											Relation: To_Fly_To
+Sent[2835]: Russian president of Boris_N__Yeltsin										Relation: President_Of
+Sent[2837]: Roulette center TriBeCa 													Relation: Center_Of
+Sent[2838]: Rose_Washington director of Spofford_Juvenile_Center						Relation: Director_Of
+Sent[2980]: Mr__Wolf succeed Robert_P__Jensen											Relation: To_Succeed
+Sent[2999]: Mr__Saint businessman New_York 												Relation: Businessman
+Sent[3005]: Mr__Pittman telephone Mr__Hunt 												Relation: To_Call
+Sent[3020]: Mr__Johnston leadership of JWT 												Relation: Leadership
+Sent[3031]: Mr__Clore chairman of Kaisertech											Relation: Chairman_Of
+Sent[3146]: James_Major score as Seton_Hall 											Relation: To_Score
+Sent[3168]: HAWK missile to Iran 														Relation: Missile_To
+Sent[3201]: Financial_Corporation_of_America member Federal_Home_Loan_Bank_Board		Relation: Member_Of
