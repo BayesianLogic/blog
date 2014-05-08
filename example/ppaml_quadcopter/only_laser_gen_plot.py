@@ -135,6 +135,19 @@ if __name__ == "__main__":
     y = 4.0
     theta = 1.7
 
+    # LW, 100K samples, sigma = 0.001 * eye or 0.01 * eye
+    # results in all samples having zero likelihood.
+
+    # LW, 100K samples, sigma = 0.1 * eye, trial 1:
+    x = 5.933714824453618
+    y = 3.645168075995226
+    theta = 1.7602662352791922
+
+    # LW, 100K samples, sigma = 0.1 * eye, trial 2:
+    x = 6.288088918010219
+    y = 4.373940752990642
+    theta = 1.7315791301475265
+
     laser_angles = np.arange(-90, 90.5, 0.5) * np.pi / 180
     laser_max_range = 10
     obstacles = [
