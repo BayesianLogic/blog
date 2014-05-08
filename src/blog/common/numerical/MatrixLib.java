@@ -2,7 +2,7 @@ package blog.common.numerical;
 
 /**
  * Exposes different matrix libraries to BLOG using a consistent set of
- * methods.  Different libraries may be used with BLOG without significant
+ * methods. Different libraries may be used with BLOG without significant
  * code modifications.
  *
  * @author awong
@@ -11,19 +11,24 @@ package blog.common.numerical;
 public interface MatrixLib {
   /**
    * Gives the value of an element of this matrix
-   *
-   * @param x the row index
-   * @param y the column index
+   * 
+   * @param x
+   *          the row index
+   * @param y
+   *          the column index
    * @return
    */
   public double elementAt(int x, int y);
 
   /**
    * Sets the value of the given element of this matrix
-   *
-   * @param x the row index
-   * @param y the column index
-   * @param val the value to set mat[x][y] to
+   * 
+   * @param x
+   *          the row index
+   * @param y
+   *          the column index
+   * @param val
+   *          the value to set mat[x][y] to
    * @return null
    */
   public void setElement(int x, int y, double val);
@@ -36,17 +41,18 @@ public interface MatrixLib {
   /**
    * Returns number of rows in this matrix
    */
-  public int rowLen();
+  public int numRows();
 
   /**
    * Returns number of columns in this matrix
    */
-  public int colLen();
+  public int numCols();
 
   /**
    * Returns a row of the matrix as specified
-   *
-   * @param i the index of the row
+   * 
+   * @param i
+   *          the index of the row
    */
   public MatrixLib sliceRow(int i);
 

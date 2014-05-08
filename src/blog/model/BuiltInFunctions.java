@@ -717,7 +717,7 @@ public class BuiltInFunctions {
       public Object getValue(List args) {
         MatrixLib mat = (MatrixLib) args.get(0);
         int i = (Integer) args.get(1);
-        if (mat.rowLen() > 1) {
+        if (mat.numRows() > 1) {
           return mat.sliceRow(i);
         } else {
           return mat.elementAt(0, i);
