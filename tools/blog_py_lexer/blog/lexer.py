@@ -22,6 +22,7 @@ class BlogLexer(RegexLexer):
              'RoundedLogNormal', 'TabularInterp',
              'UniformVector', 'UnivarGaussian', 
              'Exponential', 'UniformInt', 'UniformReal']
+  idname_reg = '[a-zA-Z_]\w*'
 
   def gen_regex(ops):
     return "|".join(ops)
@@ -30,14 +31,14 @@ class BlogLexer(RegexLexer):
     'root' : [
       (r'//.*?\n', Comment.Single),
       (r'(?s)/\*.*?\*/', Comment.Multiline),
-      (r'([a-zA-Z]+[0-9]*)(\()', bygroups(Name.Function, Punctuation)),
+      (r'('+idname_reg+')(\()', bygroups(Name.Function, Punctuation)),
       (r'('+gen_regex(types)+')\\b', Keyword.Type),
       (r'('+gen_regex(distribs)+')\\b', Name.Class),
       (r'('+gen_regex(keywords)+')\\b', Keyword),
       (gen_regex(operators), Operator),
       (r'(' + gen_regex(wordops) +')\\b', Operator.Word),
       (r'(true|false|null)\b', Keyword.Constant),
-      (r'([a-zA-Z_]\w*)\b', Name),
+      (r'('+idname_reg+')\b', Name),
       (r'"(\\\\|\\"|[^"])*"', String),
       (gen_regex(deliminators), Punctuation),
       (r'\d*\.\d+', Number.Float),
