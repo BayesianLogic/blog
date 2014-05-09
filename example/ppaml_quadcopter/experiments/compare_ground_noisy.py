@@ -51,6 +51,21 @@ def plot_components(fig, label, traj):
     y_ax.legend()
 
 
+def compute_error(ground_traj, my_traj):
+    """
+    Compute error between trajectories, in the same way as the evaluator does.
+    """
+    # Times should match.
+    if ground_traj.shape != my_traj.shape:
+        raise ValueError("ground_traj and my_traj must have the same shape")
+    if np.sum(np.abs(ground_traj[:, 0] - my_traj[:, 0])) > 1e-10:
+        raise ValueError("ground_traj and my_traj must have the same times")
+
+    d = ground_traj[:, 1:] - my_traj[:, 1:]
+    norm2 = np.sqrt(np.sum(d * d, axis=1))
+    return np.sum(norm2)
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         raise RuntimeError("Usage example: {} 1_straight".format(sys.argv[0]))
@@ -72,5 +87,8 @@ if __name__ == "__main__":
     fig2 = plt.figure()
     plot_components(fig2, 'ground', ground_traj)
     plot_components(fig2, 'noisy', noisy_traj)
+
+    err = compute_error(ground_traj, noisy_traj)
+    print "Error between trajectories:", err
 
     plt.show()
