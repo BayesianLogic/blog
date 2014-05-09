@@ -39,6 +39,17 @@ def write_obstacles(obst_path, obstacles):
             writer.writerow([x, y])
 
 
+def write_obstacles_empty(obst_path):
+    """
+    Write empty obstacles output file.
+
+    This is what their evaluation framework expects if our solution does not
+    do mapping.
+    """
+    with open(obst_path, 'w') as csv_file:
+        csv_file  # no-op
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print >>sys.stderr, "Usage: {} input_dir output_dir".format(
@@ -59,6 +70,5 @@ if __name__ == "__main__":
     # Write output:
     traj_path = os.path.join(out_dir, "slam_out_path.csv")
     write_traj(traj_path, traj)
-    obstacles = []
     obst_path = os.path.join(out_dir, "slam_out_landmarks.csv")
-    write_obstacles(obst_path, obstacles)
+    write_obstacles_empty(obst_path)
