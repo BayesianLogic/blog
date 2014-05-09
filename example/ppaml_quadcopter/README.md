@@ -1,5 +1,7 @@
 # PPAML challenge problem: automobile
 
+**TODO: This is out of date**
+
 Files in this directory:
 
 - `automobile.blog`: the main model (generated file)
@@ -35,11 +37,11 @@ make test
 ## Generating the BLOG model from the data
 
 ```
-# download the data into some directory $DATADIR
 cd example/ppaml_quadcopter
-ln -s $DATADIR data
-python automobile_gen.py
-# this will create automobile.blog
+# make sure data/ is a symlink to the data dir (containing 1_straight etc)
+source setup_env
+python -m ppaml_car.blog_gen
+# this will create car.blog in the current directory
 ```
 
 

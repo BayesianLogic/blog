@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
 """
-Read the automobile data.
+Read the car data.
 """
+
+import ppaml_car
 
 import csv
 import os
@@ -175,9 +177,10 @@ def path_for_dataset(name, kind):
     Return path to dataset of given name and kind.
 
     >>> path_for_dataset('1_straight', 'ground')
-    './data/automobile/1_straight/data/ground/'
+    '<ppaml_car_path>/../../data/1_straight/data/ground/'
     """
-    return os.path.join('./data/automobile', name, 'data', kind)
+    return os.path.join(
+        ppaml_car.__path__[0], '../../data', name, 'data', kind)
 
 
 def demo(dataset_name, dataset_kind):

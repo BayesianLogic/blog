@@ -1,0 +1,8 @@
+# Source this file to set up your environment.
+
+# Get the dir where this file is located:
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Set up PYTHONPATH
+export PYTHONPATH="${DIR}/python-src"
+echo "PYTHONPATH=${PYTHONPATH}"

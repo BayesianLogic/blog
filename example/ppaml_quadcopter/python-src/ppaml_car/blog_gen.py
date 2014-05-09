@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 
 """
-Generate the BLOG model for the automobile problem.
+Generate `car.blog` in the current directory.
 """
 
-from automobile_data import read_data
-from automobile_data import read_metadata
-from automobile_data import Reading
-import filters
+from ppaml_car.data import path_for_dataset
+from ppaml_car.data import read_data
+from ppaml_car.data import read_metadata
+from ppaml_car.data import Reading
+import blog_jinja
+import ppaml_car
 
 from collections import namedtuple
 from copy import copy
@@ -94,10 +96,10 @@ def generate_model(disc_readings, car_params):
     controls = np.array(controls)
 
     # Generate the model.
-    env = Environment(loader=FileSystemLoader('.'))
-    env.filters['blog_column_vector'] = filters.blog_column_vector_filter
-    env.filters['blog_matrix'] = filters.blog_matrix_filter
-    template = env.get_template('automobile.blog.template')
+    env = Environment(loader=FileSystemLoader(ppaml_car.__path__))
+    env.filters['blog_column_vector'] = blog_jinja.blog_column_vector_filter
+    env.filters['blog_matrix'] = blog_jinja.blog_matrix_filter
+    template = env.get_template('car.blog.template')
     return template.render(
         model=model_vars,
         observations=observations,
@@ -106,7 +108,7 @@ def generate_model(disc_readings, car_params):
 
 
 if __name__ == "__main__":
-    data_dir = "./data/automobile/1_straight/data/ground/"
+    data_dir = path_for_dataset('1_straight', 'ground')
     readings = read_data(data_dir)
     car_params, obstacles = read_metadata(data_dir)
     disc_readings = discretize_time(readings)
@@ -115,5 +117,5 @@ if __name__ == "__main__":
     # sec, which is in disc_readings[11]... So need to output more than 11.
     disc_readings = disc_readings[:20]
     model = generate_model(disc_readings, car_params)
-    with open('automobile.blog', 'w') as f:
+    with open('car.blog', 'w') as f:
         f.write(model)
