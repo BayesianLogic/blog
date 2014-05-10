@@ -3,7 +3,7 @@ import numpy as np
 
 from ppaml_car import data
 from ppaml_car import lasers
-from numutil import norm_log_pdf
+from numutil import norm_log_pdf_eval
 
 
 # Defaults as globals for now:
@@ -142,7 +142,7 @@ def log_likelihood(readings, noise_const, x, y, theta):
     mu = lasers.readings_for_obstacles(
         x, y, theta, laser_angles, laser_max_range, obstacles)
     sigma = noise_const * np.eye(len(readings))
-    return norm_log_pdf(readings, mu, sigma)
+    return norm_log_pdf_eval(readings, mu, sigma)
 
 
 if __name__ == "__main__":
