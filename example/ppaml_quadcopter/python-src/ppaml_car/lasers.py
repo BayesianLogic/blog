@@ -37,13 +37,14 @@ def readings_for_obstacle(
              (laser_y - obstacle_y) ** 2 -
              obstacle_r ** 2)
         k1, k2 = solve_quadratic_equation(a, b, c)
-        if k1 is None or k2 < 0:
-            # Does not intersect ray.
+        if k1 is None or k2 < 0 or k1 > laser_max_range:
+            # Does not intersect ray, or intersects but too far.
             readings[i] = laser_max_range
         elif k1 < 0:
             readings[i] = k2
         else:
             readings[i] = k1
+        assert 0 <= readings[i] <= laser_max_range
     return readings
 
 
@@ -84,8 +85,10 @@ def readings_for_obstacle_vectorized(
     eqn_k2s = (-eqn_bs + np.sqrt(eqn_deltas_safe)) / (2.0 * eqn_a)
     k2_behind_indicators = (eqn_k2s < 0).astype(np.int)
     k1_behind_indicators = (eqn_k1s < 0).astype(np.int)
+    k1_beyond_indicators = (eqn_k1s > laser_max_range).astype(np.int)
     max_range_indicators = (
-        (no_soln_indicators + k2_behind_indicators) > 0).astype(np.int)
+        (no_soln_indicators + k2_behind_indicators + k1_beyond_indicators)
+        > 0).astype(np.int)
     soln_k2_indicators = (
         (-max_range_indicators + k1_behind_indicators) > 0).astype(np.int)
     soln_k1_indicators = ((

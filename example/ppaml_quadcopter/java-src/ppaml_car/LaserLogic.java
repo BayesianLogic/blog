@@ -51,8 +51,10 @@ public class LaserLogic {
                   (2 * dy * Math.sin(laserTheta + angle)));
       double c = dx * dx + dy * dy - obstacleR * obstacleR;
       Double[] solutions = solveQuadraticEquation(a, b, c);
-      if (solutions[0] == null || solutions[1] < 0) {
-        // Does not intersect ray.
+      if (solutions[0] == null ||
+              solutions[1] < 0 ||
+              solutions[0] > laserMaxRange) {
+        // Does not intersect ray, or intersects but too far.
         readings[i] = laserMaxRange;
       } else if (solutions[0] < 0) {
         readings[i] = solutions[1];
