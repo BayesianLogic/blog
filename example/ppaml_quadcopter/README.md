@@ -1,35 +1,36 @@
 # PPAML challenge problem: automobile
 
-**TODO: This is out of date**
+Directory structure:
 
-Files in this directory:
-
-- `automobile.blog`: the main model (generated file)
-- `automobile.blog.template`: template for the main model
-- `automobile_gen.py`: script to generate model from template and data
 - `data`: symlink to data dir
-- `DynamicsLogic.java`: logic for the dynamics function
-- `TestDynamicsLogic.java`: unit test for the dynamics function
-- `DynamicsInterp.java`: BLOG glue code for the dynamics function
-- `LaserLogic.java`: logic for the observations function
-- `TestLaserLogic.java`: unit test for the observations function
-- `LaserInterp.java`: BLOG glue code for the observations function
+- `java-src`: dynamics and observation functions
+- `python-src`: code for generating the model from data
+- `experiments`: stuff that's in flux all the time
 
-The other files are various helpers and experiments.
+
+## Setting up your environment
+
+All examples below assume that you have done the following:
+
+```
+cd example/ppaml_quadcopter
+
+# Make sure data/ is a symlink to the data dir (containing 1_straight etc)
+
+# Set up the appropriate PYTHONPATH and CLASSPATH:
+source setup_env
+```
 
 
 ## Compiling the Java components
 
 ```
-cd example/ppaml_quadcopter
+cd java-src
+
+# Compile:
 make
-```
 
-
-## Running the unit tests
-
-```
-cd example/ppaml_quadcopter
+# Run unit tests:
 make test
 ```
 
@@ -37,11 +38,8 @@ make test
 ## Generating the BLOG model from the data
 
 ```
-cd example/ppaml_quadcopter
-# make sure data/ is a symlink to the data dir (containing 1_straight etc)
-source setup_env
+# Generate car.blog in the current directory:
 python -m ppaml_car.blog_gen
-# this will create car.blog in the current directory
 ```
 
 
@@ -50,13 +48,9 @@ python -m ppaml_car.blog_gen
 To run with MCMC:
 
 ```
-cd example/ppaml_quadcopter
-(cd .. && blog -s blog.sample.MHSampler -k ppaml_quadcopter ppaml_quadcopter/automobile.blog)
-```
+# Run with MCMC:
+blog -s blog.sample.MHSampler -k ppaml_car car.blog
 
-To run with Particle Filtering:
-
-```
-cd example/ppaml_quadcopter
-(cd .. && blog -e blog.engine.ParticleFilter -k ppaml_quadcopter ppaml_quadcopter/automobile.blog)
+# Run with particle filter:
+blog -e blog.engine.ParticleFilter -k ppaml_car car.blog
 ```
