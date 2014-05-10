@@ -187,17 +187,27 @@ if __name__ == "__main__":
     xs, ys, thetas = np.mgrid[
         min_x:max_x + 0.1:0.25,
         min_y:max_y + 0.1:0.25,
-        min_theta:max_theta + 0.1:0.25]
+        min_theta:max_theta + 0.1:0.1]
     func = lambda x, y, theta: log_likelihood(readings, 0.1, x, y, theta)
     func = np.vectorize(func)
     vals = func(xs, ys, thetas)
     thresh = -50000
     vals[vals < thresh] = thresh
 
-    # Mayavi 3D plot:
-    from mayavi import mlab
-    surf = mlab.contour3d(xs, ys, thetas, vals, opacity=0.3, contours=10)
-    mlab.axes()
-    mlab.colorbar()
-    mlab.gcf().scene.background = (0.5, 0.5, 0.5)
-    mlab.show()
+    # # Mayavi 3D plot:
+    # from mayavi import mlab
+    # surf = mlab.contour3d(xs, ys, thetas, vals, opacity=0.3, contours=10)
+    # mlab.axes()
+    # mlab.colorbar()
+    # mlab.gcf().scene.background = (0.5, 0.5, 0.5)
+    # mlab.show()
+
+    # Plot likelihood for all x, y, given best theta for that x, y.
+    xs = xs[:, :, 0]
+    ys = ys[:, :, 0]
+    zs = np.max(vals, axis=2)
+    plt.pcolormesh(xs, ys, zs)
+    plt.colorbar()
+    plt.xlim(-7, 7)
+    plt.ylim(-7, 7)
+    plt.show()
