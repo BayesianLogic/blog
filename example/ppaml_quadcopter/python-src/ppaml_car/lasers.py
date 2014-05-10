@@ -59,7 +59,7 @@ def readings_for_obstacles(
     """
     readings = np.ones_like(laser_angles) * laser_max_range
     for x, y, r in obstacles:
-        single_readings = readings_for_obstacle(
+        single_readings = readings_for_obstacle_vectorized(
             laser_x, laser_y, laser_theta,
             laser_angles, laser_max_range, x, y, r)
         readings = np.minimum(readings, single_readings)

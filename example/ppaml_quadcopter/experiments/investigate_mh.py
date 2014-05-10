@@ -3,7 +3,7 @@ import numpy as np
 
 from ppaml_car import data
 from ppaml_car import lasers
-from numutil import norm_log_pdf_eval
+from numutil import norm_log_pdf_fixed_sigma
 
 
 # Defaults as globals for now:
@@ -135,14 +135,27 @@ readings = np.array([
 ])
 
 
+_pdf_for_noise_const = {}
+
+
+def get_pdf_for_noise_const(noise_const):
+    """
+    Caches result of norm_log_pdf_fixed_sigma.
+    """
+    if noise_const not in _pdf_for_noise_const:
+        sigma = noise_const * np.eye(len(readings))
+        _pdf_for_noise_const[noise_const] = norm_log_pdf_fixed_sigma(sigma)
+    return _pdf_for_noise_const[noise_const]
+
+
 def log_likelihood(readings, noise_const, x, y, theta):
     """
     Return log likelihood of seeing given readings from given location.
     """
     mu = lasers.readings_for_obstacles(
         x, y, theta, laser_angles, laser_max_range, obstacles)
-    sigma = noise_const * np.eye(len(readings))
-    return norm_log_pdf_eval(readings, mu, sigma)
+    pdf = get_pdf_for_noise_const(noise_const)
+    return pdf(readings, mu)
 
 
 if __name__ == "__main__":

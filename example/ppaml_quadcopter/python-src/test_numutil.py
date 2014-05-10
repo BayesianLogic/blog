@@ -6,12 +6,14 @@ from numutil import norm_pdf
 
 def test_norm_pdf():
     # TODO
+    pass
 
 
 def test_norm_log_pdf():
     # TODO
     # TODO: doesn't blow up if determinant is too big / small for double
     # precision
+    pass
 
 
 # normpdf in matlab stats toolbox, which I don't have...
