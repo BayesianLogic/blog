@@ -163,20 +163,41 @@ if __name__ == "__main__":
     max_x = data.LONGITUDE_MAX
     min_y = data.LATITUDE_MIN
     max_y = data.LATITUDE_MAX
+    min_theta = -np.pi
+    max_theta = np.pi
 
     true_x = 0.0
     true_y = 0.0
     true_theta = 1.5
 
-    xs = np.arange(min_x, max_x + 0.1, 0.25)
-    ys = np.arange(min_y, max_y + 0.1, 0.25)
-    xs, ys = np.meshgrid(xs, ys)
-    func = lambda x, y: log_likelihood(readings, 0.1, x, y, true_theta)
+    # # Plot likelihood for all x, y and the true theta:
+    # xs = np.arange(min_x, max_x + 0.1, 0.25)
+    # ys = np.arange(min_y, max_y + 0.1, 0.25)
+    # xs, ys = np.meshgrid(xs, ys)
+    # func = lambda x, y: log_likelihood(readings, 0.1, x, y, true_theta)
+    # func = np.vectorize(func)
+    # zs = func(xs, ys)
+    # thresh = -50000
+    # zs[zs < thresh] = thresh
+    # print np.sum(zs)
+    # plt.pcolormesh(xs, ys, zs)
+    # plt.colorbar()
+    # plt.show()
+
+    xs, ys, thetas = np.mgrid[
+        min_x:max_x + 0.1:0.25,
+        min_y:max_y + 0.1:0.25,
+        min_theta:max_theta + 0.1:0.25]
+    func = lambda x, y, theta: log_likelihood(readings, 0.1, x, y, theta)
     func = np.vectorize(func)
-    zs = func(xs, ys)
+    vals = func(xs, ys, thetas)
     thresh = -50000
-    zs[zs < thresh] = thresh
-    print np.sum(zs)
-    plt.pcolormesh(xs, ys, zs)
-    plt.colorbar()
-    plt.show()
+    vals[vals < thresh] = thresh
+
+    # Mayavi 3D plot:
+    from mayavi import mlab
+    surf = mlab.contour3d(xs, ys, thetas, vals, opacity=0.3, contours=10)
+    mlab.axes()
+    mlab.colorbar()
+    mlab.gcf().scene.background = (0.5, 0.5, 0.5)
+    mlab.show()
