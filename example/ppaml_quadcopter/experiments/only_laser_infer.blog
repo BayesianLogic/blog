@@ -15,6 +15,7 @@ fixed RealMatrix lasers_sigma = 0.1 * eye(361);
 random RealMatrix lasers ~ MultivarGaussian(
     laserReadings(x, y, theta, obstacles), lasers_sigma);
 
+// FIXME: this is out of date
 obs lasers = [
     1.4199551039020832; 1.4731361624855104; 1.4436131301697084;
     1.4572615502637063; 1.3818078606039672; 1.3687651038986963;

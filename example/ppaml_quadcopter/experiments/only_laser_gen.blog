@@ -1,8 +1,8 @@
-fixed Real x = 6.0;
-fixed Real y = 4.0;
-fixed Real theta = 1.7;
+fixed Real x = 0.0;
+fixed Real y = 0.0;
+fixed Real theta = 1.5;
 
-fixed Set obstacles = { [7.0, 9.0, 1.0], [8.0, 5.0, 1.0] };
+fixed Set obstacles = { [3.0, 4.0, 1.0], [5.0, 2.0, 1.0] };
 
 fixed Real[] laserReadings(
         Real laserX, Real laserY, Real laserTheta, Set obstacles)
