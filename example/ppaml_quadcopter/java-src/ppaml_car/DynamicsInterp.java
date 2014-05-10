@@ -1,4 +1,4 @@
-package ppaml_quadcopter;
+package ppaml_car;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class DynamicsInterp extends AbstractFunctionInterp {
     }
 
     MatrixLib carParams = (MatrixLib) args.get(0);
-    if (carParams.rowLen() != 4 || carParams.colLen() != 1) {
+    if (carParams.numRows() != 4 || carParams.numCols() != 1) {
       throw new IllegalArgumentException(
         "carParams must be a column vector of size 4");
     }
@@ -34,7 +34,7 @@ public class DynamicsInterp extends AbstractFunctionInterp {
     double L = carParams.elementAt(3, 0);
 
     MatrixLib oldStateTmp = (MatrixLib) args.get(1);
-    if (oldStateTmp.rowLen() != 6 || oldStateTmp.colLen() != 1) {
+    if (oldStateTmp.numRows() != 6 || oldStateTmp.numCols() != 1) {
       throw new IllegalArgumentException(
         "oldState must be a column vector of size 6");
     }
