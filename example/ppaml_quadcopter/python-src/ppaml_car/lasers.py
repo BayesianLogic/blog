@@ -26,7 +26,7 @@ def readings_for_obstacle(
 
     Obstacle is a cylinder.
 
-    Readings span from -90 deg to +90 deg, in increments of 0.5 deg.
+    Readings are computed for the angles provided in `laser_angles`.
     """
     readings = np.empty(len(laser_angles))
     for i, angle in enumerate(laser_angles):
@@ -44,6 +44,24 @@ def readings_for_obstacle(
             readings[i] = k2
         else:
             readings[i] = k1
+    return readings
+
+
+def readings_for_obstacles(
+        laser_x, laser_y, laser_theta,
+        laser_angles, laser_max_range,
+        obstacles):
+    """
+    Like readings_for_obstacle, but accepts multiple obstacles.
+
+    `obstacles` is a list of (x, y, r) tuples.
+    """
+    readings = np.ones_like(laser_angles) * laser_max_range
+    for x, y, r in obstacles:
+        single_readings = readings_for_obstacle(
+            laser_x, laser_y, laser_theta,
+            laser_angles, laser_max_range, x, y, r)
+        readings = np.minimum(readings, single_readings)
     return readings
 
 
@@ -111,12 +129,23 @@ def plot_lasers(
     ax.set_ylim(-10, 20)
 
 
+def default_laser_angles():
+    """
+    Return `laser_angles` from -90 deg to +90 deg, in increments of 0.5 deg.
+    """
+    return np.arange(-90, 90.5, 0.5) * np.pi / 180
+
+
+def default_laser_max_range():
+    return 10.0
+
+
 def demo(readings_for_obstacle):
     laser_x = 2.0
     laser_y = 3.0
     laser_theta = 0.3
-    laser_angles = np.arange(-90, 90.5, 0.5) * np.pi / 180
-    laser_max_range = 10
+    laser_angles = default_laser_angles()
+    laser_max_range = default_laser_max_range()
     obstacle_x = 7.0
     obstacle_y = 9.0
     obstacle_r = 2.0
