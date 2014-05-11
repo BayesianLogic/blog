@@ -104,13 +104,9 @@ public class MHSampler extends Sampler {
 	public void initialize(Evidence evidence, List queries) {
 		super.initialize(evidence, queries);
 
-    initEvidence = evidence;
-    initQueries = queries;
-
 		++numTrials;
 		numSamplesThisTrial = 0;
 		numAcceptedThisTrial = 0;
-    numRejectedInARow = 0;
 
 		if (Util.verbose())
 			System.out.println("Creating initial world...");
@@ -155,11 +151,6 @@ public class MHSampler extends Sampler {
 	 * world.
 	 */
 	public void nextSample() {
-    if (numRejectedInARow > 500) {
-      System.out.println("Stuck; restarting.");
-      initialize(initEvidence, initQueries);
-    }
-
 		curWorld.save(); // make sure we start with saved world.
 
 		++totalNumSamples;
@@ -217,7 +208,6 @@ public class MHSampler extends Sampler {
 			}
 			++totalNumAccepted;
 			++numAcceptedThisTrial;
-      numRejectedInARow = 0;
 			proposer.updateStats(true);
 		} else {
       proposalResult = "rejected";
@@ -226,7 +216,6 @@ public class MHSampler extends Sampler {
 				System.out.println("\trejected");
 			}
 			proposer.updateStats(false);
-      ++numRejectedInARow;
 		}
 
     // XXX
@@ -456,9 +445,4 @@ public class MHSampler extends Sampler {
 
 	protected int numSamplesThisTrial = 0;
 	protected int numAcceptedThisTrial = 0;
-
-  // HACK to restart if stuck:
-  private Evidence initEvidence;
-  private List initQueries;
-	private int numRejectedInARow = 0;
 }
