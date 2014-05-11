@@ -171,9 +171,11 @@ if __name__ == "__main__":
         (3.0, 4.0, 1.0),
         (5.0, 2.0, 1.0)
     ]
+    plt.figure(figsize=(8, 8))
     plot_lasers(
         x, y, theta, laser_angles, laser_max_range,
         obstacles, lasers, plt.gca())
-    plt.xlim(-7, 7)
-    plt.ylim(-7, 7)
+    plt.plot([-7, -7, 7, 7, -7], [-7, 7, 7, -7, -7], 'k')
+    plt.xlim(-15, 15)
+    plt.ylim(-15, 15)
     plt.show()
