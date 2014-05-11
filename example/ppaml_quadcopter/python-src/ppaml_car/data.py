@@ -20,6 +20,15 @@ LATITUDE_MIN = -7
 LATITUDE_MAX = 7
 LONGITUDE_MIN = -7
 LONGITUDE_MAX = 7
+ALL_DATASETS = [
+    "1_straight",
+    "2_bend",
+    "3_curvy",
+    "4_circle",
+    "5_eight",
+    "6_loop",
+    "7_random",
+]
 
 
 class Reading(object):

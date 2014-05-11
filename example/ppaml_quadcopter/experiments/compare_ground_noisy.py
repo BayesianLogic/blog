@@ -30,6 +30,8 @@ def plot_traj(ax, label, traj):
     """
     # Traj has rows (time, lat, lon). Note x=lon, y=lat.
     ax.plot(traj[:, 2], traj[:, 1], label=label)
+    ax.set_xlim(LONGITUDE_MIN - 1, LONGITUDE_MAX + 1)
+    ax.set_ylim(LATITUDE_MIN - 1, LATITUDE_MAX + 1)
 
 
 def plot_components(fig, label, traj):
@@ -79,8 +81,6 @@ if __name__ == "__main__":
     ax1 = fig1.add_subplot(111)
     plot_traj(ax1, 'ground', ground_traj)
     plot_traj(ax1, 'noisy', noisy_traj)
-    ax1.set_xlim(LONGITUDE_MIN - 1, LONGITUDE_MAX + 1)
-    ax1.set_ylim(LATITUDE_MIN - 1, LATITUDE_MAX + 1)
     ax1.legend()
 
     # Plots of the components of the trajectory:

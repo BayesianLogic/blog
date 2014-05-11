@@ -4,17 +4,17 @@
 Draw map of laser readings and intensity data, using ground-truth GPS location.
 """
 
-from automobile_data import INTENSITY_COLS
-from automobile_data import INTENSITY_MAX
-from automobile_data import LASER_COLS
-from automobile_data import LASER_MAX
-from automobile_data import LATITUDE_MIN
-from automobile_data import LATITUDE_MAX
-from automobile_data import LONGITUDE_MIN
-from automobile_data import LONGITUDE_MAX
-from automobile_data import path_for_dataset
-from automobile_data import read_data
-from automobile_data import read_metadata
+from ppaml_car.data import INTENSITY_COLS
+from ppaml_car.data import INTENSITY_MAX
+from ppaml_car.data import LASER_COLS
+from ppaml_car.data import LASER_MAX
+from ppaml_car.data import LATITUDE_MIN
+from ppaml_car.data import LATITUDE_MAX
+from ppaml_car.data import LONGITUDE_MIN
+from ppaml_car.data import LONGITUDE_MAX
+from ppaml_car.data import path_for_dataset
+from ppaml_car.data import read_data
+from ppaml_car.data import read_metadata
 
 import numpy as np
 import matplotlib.pyplot as plt
