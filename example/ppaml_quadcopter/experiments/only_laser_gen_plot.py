@@ -135,6 +135,21 @@ if __name__ == "__main__":
     y = 0.0
     theta = 1.5
 
+    # LW MAP with 100K samples, noise_const = 0.1, trial 1:
+    x = 0.15397048745357012
+    y = -0.00802185622331919
+    theta = 1.5222800673665793
+
+    # LW MAP with 100K samples, noise_const = 0.1, trial 2:
+    x = -0.1606658408510171
+    y = 0.28112808408611656
+    theta = 1.421723880219318
+
+    # MH MAP with 100K samples, noise_const = 0.1, trial 1:
+    x = -1.1172277759440288
+    y = 1.8946804607426415
+    theta = 1.0574685440138412
+
     laser_angles = np.arange(-90, 90.5, 0.5) * np.pi / 180
     laser_max_range = 10
     obstacles = [
