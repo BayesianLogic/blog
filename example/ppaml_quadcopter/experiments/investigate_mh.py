@@ -186,9 +186,20 @@ if __name__ == "__main__":
     # plt.ylabel('y')
     # plt.colorbar()
 
-    fixed_x = 6.79784863041229
-    fixed_y = -5.441997979153877
-    fixed_theta = 3.034126918526253
+    # Example of local maximum (good one):
+    fixed_x = 0.032377733574172396
+    fixed_y = -0.5030562949237432
+    fixed_theta = 1.5726841555295543
+
+    # Example of local maximum (meh one):
+    fixed_x = 3.105170314565397
+    fixed_y = -2.06161504094708
+    fixed_theta = 2.2156561087804754
+
+    # Example of local maximum (terrible one):
+    fixed_x = 3.4031253938603836
+    fixed_y = 7.179940541243255
+    fixed_theta = -0.7109847463421968
 
     # Plot likelihood for all x, given fixed y and theta:
     xs = np.arange(min_x, max_x + 0.01, 0.1)
