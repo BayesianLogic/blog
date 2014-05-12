@@ -99,6 +99,9 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
   }
 
   public static double computeLogProb(double lambda, int n) {
+    if (lambda == 0) {
+      return n == 0 ? 0 : Double.NEGATIVE_INFINITY;
+    }
     return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
   }
 
@@ -118,15 +121,22 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
   }
 
   public int sampleInt() {
-    return sampleInt(lambda);
+    return sampleVal(lambda);
   }
 
-  public static int sampleInt(double lambda) {
+  /**
+   * sample from Poisson distribution when the parameter lambda is small (< 15)
+   * 
+   * @param lambda
+   * @return
+   */
+  private static int sampleSmall(double lambda) {
     int n = 0;
     double probOfN = Math.exp(-lambda); // start with prob of 0
     double cumProb = probOfN;
 
     double u = Util.random();
+
     while (cumProb < u) {
       n++;
       // ratio between P(n) and P(n-1) is lambda / n
@@ -135,6 +145,31 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
     }
 
     return n;
+  }
+
+  /**
+   * Naive inverse CDF approach for Poisson is not advisable for lambda > 15. 
+   * Here we are following MATLAB's implementation, where gamma random variables
+   * are subtracted from lambda until it falls into the range of lambda <= 15. Then,
+   * standard naive inverse CDF sampling is applied via sampleSmall.
+   * 
+   * @param lambda
+   * @return
+   */
+  public static int sampleVal(double lambda) {
+    if (lambda < 15)
+      return sampleSmall(lambda);
+
+    double alpha = 7.0 / 8.0;
+    int m = (int) Math.floor(alpha * lambda);
+    double x = Gamma.sampleVal(m, 1);
+    int r;
+    if (x < lambda) {
+      r = m + sampleVal(lambda - x);
+    } else {
+      r = Binomial.sampleVal(m - 1, lambda / x);
+    }
+    return r;
   }
 
   /**
