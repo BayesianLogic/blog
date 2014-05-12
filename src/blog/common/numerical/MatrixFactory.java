@@ -3,7 +3,6 @@ package blog.common.numerical;
 import blog.common.numerical.JamaMatrixLib;
 import blog.common.numerical.MatrixLib;
 
-
 /**
  * Creates MatrixLib objects.
  *
@@ -50,8 +49,7 @@ public class MatrixFactory {
     return fromArray(result);
   }
 
-  static public MatrixLib vstack(MatrixLib a, MatrixLib b)
-  {
+  static public MatrixLib vstack(MatrixLib a, MatrixLib b) {
     if (a.numCols() != b.numCols()) {
       throw new RuntimeException("matrices should have equal number of columns");
     }

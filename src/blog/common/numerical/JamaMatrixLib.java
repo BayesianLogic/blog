@@ -2,6 +2,7 @@ package blog.common.numerical;
 
 import java.util.Arrays;
 
+import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
 /**
@@ -96,6 +97,15 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
+  public double logDet() {
+    double logDet = 0.0;
+    for (double val : eigenvals()) {
+      logDet += Math.log(val);
+    }
+    return logDet;
+  }
+
+  @Override
   public MatrixLib transpose() {
     return new JamaMatrixLib(values.transpose());
   }
@@ -120,6 +130,12 @@ public class JamaMatrixLib implements MatrixLib {
       }
     }
     return new JamaMatrixLib(result);
+  }
+
+  @Override
+  public double[] eigenvals() {
+    EigenvalueDecomposition decomp = new EigenvalueDecomposition(values);
+    return decomp.getRealEigenvalues();
   }
 
   @Override
