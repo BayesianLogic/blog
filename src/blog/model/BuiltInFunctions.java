@@ -96,6 +96,7 @@ public class BuiltInFunctions {
   public static final String ONES_NAME = "ones";
   public static final String TOINT_NAME = "toInt";
   public static final String TOREAL_NAME = "toReal";
+  public static final String ABS_NAME = "abs";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -371,6 +372,11 @@ public class BuiltInFunctions {
    * and converts it to a Real
    */
   public static NonRandomFunction TO_REAL;
+
+  /**
+   * Return the absolute value of a Real value.
+   */
+  public static NonRandomFunction ABS;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -1110,5 +1116,17 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL;
     TO_REAL = new NonRandomFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
     addFunction(TO_REAL);
+
+    FunctionInterp absInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        double val = ((Number) args.get(0)).doubleValue();
+        return Math.abs(val);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+    ABS = new NonRandomFunction(ABS_NAME, argTypes, retType, absInterp);
+    addFunction(ABS);
   };
 }
