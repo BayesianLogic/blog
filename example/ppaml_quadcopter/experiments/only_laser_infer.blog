@@ -1,6 +1,4 @@
-random Real x ~ UniformReal(-8.0, 8.0);
-random Real y ~ UniformReal(-8.0, 8.0);
-random Real theta ~ UniformReal(0.0 - pi, pi);
+random Real[] pose ~ UniformVector(-7.0, 7.0, -7.0, 7.0, 0.0 - pi, pi);
 
 // FIXME: For some reason, "-pi" gets parsed as a Boolean.
 
@@ -13,7 +11,7 @@ fixed Real[] laserReadings(
 fixed RealMatrix lasers_sigma = 0.1 * eye(361);
 
 random RealMatrix lasers ~ MultivarGaussian(
-    laserReadings(x, y, theta, obstacles), lasers_sigma);
+    laserReadings(pose[0], pose[1], pose[2], obstacles), lasers_sigma);
 
 obs lasers = [
     9.946559703406278; 9.961598165725846; 9.978896883570828;
@@ -139,4 +137,4 @@ obs lasers = [
     9.99040514485353
 ];
 
-query [x, y, theta];
+query pose;

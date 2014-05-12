@@ -158,6 +158,66 @@ def log_likelihood(readings, noise_const, x, y, theta):
     return pdf(readings, mu)
 
 
+def plot_liks(fixed_x, fixed_y, fixed_theta, true_x, true_y, true_theta):
+    true_kwargs = {
+        's': 200,
+        'color': 'green',
+        'marker': 'o',
+        'label': 'true pose',
+    }
+    fixed_kwargs = {
+        's': 200,
+        'color': 'red',
+        'marker': 'x',
+        'label': 'MH pose',
+    }
+
+    # Plot likelihood for all x, given fixed y and theta:
+    xs = np.arange(min_x, max_x + 0.01, 0.1)
+    func = lambda x: log_likelihood(readings, 0.1, x, fixed_y, fixed_theta)
+    func = np.vectorize(func)
+    zs = func(xs)
+    thresh = -50000
+    zs[zs < thresh] = thresh
+    plt.figure()
+    plt.plot(xs, zs)
+    plt.scatter([true_x], [func(true_x)], **true_kwargs)
+    plt.scatter([fixed_x], [func(fixed_x)], **fixed_kwargs)
+    plt.xlabel('x')
+    plt.ylabel('log_lik')
+    plt.legend(loc='upper left', scatterpoints=1)
+
+    # Plot likelihood for all y, given fixed x and theta:
+    ys = np.arange(min_y, max_y + 0.01, 0.1)
+    func = lambda y: log_likelihood(readings, 0.1, fixed_x, y, fixed_theta)
+    func = np.vectorize(func)
+    zs = func(ys)
+    thresh = -50000
+    zs[zs < thresh] = thresh
+    plt.figure()
+    plt.plot(ys, zs)
+    plt.scatter([true_y], [func(true_y)], **true_kwargs)
+    plt.scatter([fixed_y], [func(fixed_y)], **fixed_kwargs)
+    plt.xlabel('y')
+    plt.ylabel('log_lik')
+    plt.legend(loc='upper left', scatterpoints=1)
+
+    # Plot likelihood for all theta, given fixed x and y:
+    thetas = np.arange(min_theta, max_theta + 0.01, 0.02)
+    func = lambda theta: log_likelihood(readings, 0.1, fixed_x, fixed_y, theta)
+    func = np.vectorize(func)
+    zs = func(thetas)
+    thresh = -50000
+    zs[zs < thresh] = thresh
+    plt.figure()
+    plt.plot(thetas, zs)
+    plt.scatter([true_theta], [func(true_theta)], **true_kwargs)
+    plt.scatter([fixed_theta], [func(fixed_theta)], **fixed_kwargs)
+    plt.xlabel('theta')
+    plt.ylabel('log_lik')
+    plt.legend(loc='upper left', scatterpoints=1)
+
+
 if __name__ == "__main__":
     min_x = data.LONGITUDE_MIN
     max_x = data.LONGITUDE_MAX
@@ -201,62 +261,19 @@ if __name__ == "__main__":
     fixed_y = 7.179940541243255
     fixed_theta = -0.7109847463421968
 
-    # Plot likelihood for all x, given fixed y and theta:
-    xs = np.arange(min_x, max_x + 0.01, 0.1)
-    func = lambda x: log_likelihood(readings, 0.1, x, fixed_y, fixed_theta)
+    # plot_liks(fixed_x, fixed_y, fixed_theta, true_x, true_y, true_theta)
+    # plt.show()
+
+    # 3D data across a grid for x, y, and theta:
+    xs, ys, thetas = np.mgrid[
+        min_x:max_x + 0.1:0.25,
+        min_y:max_y + 0.1:0.25,
+        min_theta:max_theta + 0.1:0.1]
+    func = lambda x, y, theta: log_likelihood(readings, 0.1, x, y, theta)
     func = np.vectorize(func)
-    zs = func(xs)
+    vals = func(xs, ys, thetas)
     thresh = -50000
-    zs[zs < thresh] = thresh
-    plt.figure()
-    plt.plot(xs, zs)
-    plt.scatter([true_x], [func(true_x)], s=200, color='green', marker='o')
-    plt.scatter([fixed_x], [func(fixed_x)], s=200, color='red', marker='x')
-    plt.xlabel('x')
-    plt.ylabel('log_lik')
-
-    # Plot likelihood for all y, given fixed x and theta:
-    ys = np.arange(min_y, max_y + 0.01, 0.1)
-    func = lambda y: log_likelihood(readings, 0.1, fixed_x, y, fixed_theta)
-    func = np.vectorize(func)
-    zs = func(ys)
-    thresh = -50000
-    zs[zs < thresh] = thresh
-    plt.figure()
-    plt.plot(ys, zs)
-    plt.scatter([true_y], [func(true_y)], s=200, color='green', marker='o')
-    plt.scatter([fixed_y], [func(fixed_y)], s=200, color='red', marker='x')
-    plt.xlabel('y')
-    plt.ylabel('log_lik')
-
-    # Plot likelihood for all theta, given fixed x and y:
-    thetas = np.arange(min_theta, max_theta + 0.01, 0.02)
-    func = lambda theta: log_likelihood(readings, 0.1, fixed_x, fixed_y, theta)
-    func = np.vectorize(func)
-    zs = func(thetas)
-    thresh = -50000
-    zs[zs < thresh] = thresh
-    plt.figure()
-    plt.plot(thetas, zs)
-    plt.scatter(
-        [true_theta], [func(true_theta)], s=200, color='green', marker='o')
-    plt.scatter(
-        [fixed_theta], [func(fixed_theta)], s=200, color='red', marker='x')
-    plt.xlabel('theta')
-    plt.ylabel('log_lik')
-
-    plt.show()
-
-    # # 3D data across a grid for x, y, and theta:
-    # xs, ys, thetas = np.mgrid[
-    #     min_x:max_x + 0.1:0.25,
-    #     min_y:max_y + 0.1:0.25,
-    #     min_theta:max_theta + 0.1:0.1]
-    # func = lambda x, y, theta: log_likelihood(readings, 0.1, x, y, theta)
-    # func = np.vectorize(func)
-    # vals = func(xs, ys, thetas)
-    # thresh = -50000
-    # vals[vals < thresh] = thresh
+    vals[vals < thresh] = thresh
 
     # # Mayavi 3D plot:
     # from mayavi import mlab
@@ -266,12 +283,16 @@ if __name__ == "__main__":
     # mlab.gcf().scene.background = (0.5, 0.5, 0.5)
     # mlab.show()
 
-    # # Plot likelihood for all x, y, given best theta for that x, y.
-    # xs = xs[:, :, 0]
-    # ys = ys[:, :, 0]
-    # zs = np.max(vals, axis=2)
-    # plt.pcolormesh(xs, ys, zs)
-    # plt.colorbar()
-    # plt.xlim(-7, 7)
-    # plt.ylim(-7, 7)
-    # plt.show()
+    # Plot likelihood for all x, y, given best theta for that x, y.
+    xs = xs[:, :, 0]
+    ys = ys[:, :, 0]
+    zs = np.max(vals, axis=2)
+    plt.pcolormesh(xs, ys, zs)
+    plt.colorbar()
+    plt.xlim(-7, 7)
+    plt.ylim(-7, 7)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.show()
+
+    # LEFT TODO: hires lik grid for report

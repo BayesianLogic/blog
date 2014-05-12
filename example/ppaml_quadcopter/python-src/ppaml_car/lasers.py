@@ -131,6 +131,8 @@ def plot_lasers(
     ax.set_xlim(-10, 20)
     ax.set_ylim(-10, 20)
 
+    # TODO: use transparency s.t. the rays don't cover the obstacles...
+
 
 def default_laser_angles():
     """

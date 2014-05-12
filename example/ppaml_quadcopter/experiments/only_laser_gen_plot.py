@@ -165,6 +165,21 @@ if __name__ == "__main__":
     y = 7.179940541243255
     theta = -0.7109847463421968
 
+    # joint-MH MAP with 100K samples, noise_const = 0.1, trial 1:
+    x = 0.20273350495999232
+    y = -0.13471588768960352
+    theta = 1.5412309129919066
+
+    # joint-MH MAP with 100K samples, noise_const = 0.1, trial 2:
+    x = -0.1930165844708931
+    y = 0.36191375779860824
+    theta = 1.417323182564358
+
+    # joint-MH MAP with 100K samples, noise_const = 0.1, trial 3:
+    x = -0.25731216316587435
+    y = 0.38052174798705973
+    theta = 1.406474945197652
+
     laser_angles = np.arange(-90, 90.5, 0.5) * np.pi / 180
     laser_max_range = 10
     obstacles = [

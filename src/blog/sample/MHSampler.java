@@ -176,9 +176,7 @@ public class MHSampler extends Sampler {
 		}
 
     // XXX
-    double x = (Double) curWorld.getValue(curWorld.getBasicVarByName("x"));
-    double y = (Double) curWorld.getValue(curWorld.getBasicVarByName("y"));
-    double theta = (Double) curWorld.getValue(curWorld.getBasicVarByName("theta"));
+    Object pose = curWorld.getValue(curWorld.getBasicVarByName("pose"));
     String proposalResult;
 
 		// Compute the acceptance probability
@@ -220,7 +218,7 @@ public class MHSampler extends Sampler {
 
     // XXX
     System.out.println(
-      "proposed x = " + x + "  y = " + y + "  theta = " + theta +
+      "proposed pose = " + pose +
       "  (logAcceptRatio = " + logAcceptRatio +
       "  acceptRatio = " + Math.exp(logAcceptRatio) +
       ")  -> " + proposalResult);
