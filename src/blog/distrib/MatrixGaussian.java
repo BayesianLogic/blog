@@ -65,11 +65,11 @@ public class MatrixGaussian extends AbstractCondProbDistrib {
     }
 
     private void initParams(MatrixLib location, MatrixLib uScale, MatrixLib vScale) {
-        if (location.rowLen() != uScale.rowLen() || location.rowLen() != uScale.colLen()) {
+        if (location.numRows() != uScale.numRows() || location.numRows() != uScale.numCols()) {
             throw new IllegalArgumentException(
                 "uScale does not match dimension of location");
         }
-        if (location.colLen() != vScale.rowLen() || location.colLen() != vScale.colLen()) {
+        if (location.numCols() != vScale.numRows() || location.numCols() != vScale.numCols()) {
             throw new IllegalArgumentException(
                 "vScale does not match dimension of location");
         }
@@ -83,9 +83,9 @@ public class MatrixGaussian extends AbstractCondProbDistrib {
         uScaleSqrt = uScale.choleskyFactor();
         vScaleSqrt = vScale.choleskyFactor().transpose();
         logDenom = (
-            location.rowLen() * location.colLen() / 2 * java.lang.Math.log(2 * java.lang.Math.PI) +
-            location.rowLen() / 2 * java.lang.Math.log(vScale.det()) +
-            location.colLen() / 2 * java.lang.Math.log(uScale.det()));
+            location.numRows() * location.numCols() / 2 * java.lang.Math.log(2 * java.lang.Math.PI) +
+            location.numRows() / 2 * java.lang.Math.log(vScale.det()) +
+            location.numCols() / 2 * java.lang.Math.log(uScale.det()));
     }
 
     public double getProb(List args, Object value) {
@@ -101,7 +101,7 @@ public class MatrixGaussian extends AbstractCondProbDistrib {
     }
 
     public double getLogProb(MatrixLib value) {
-        if (value.rowLen() != location.rowLen() || value.colLen() != location.colLen()) {
+        if (value.numRows() != location.numRows() || value.numCols() != location.numCols()) {
             throw new IllegalArgumentException(
                 "value does not match dimensions of distribution");
         }
@@ -125,9 +125,9 @@ public class MatrixGaussian extends AbstractCondProbDistrib {
      * the desired parameters of the matrix normal distribution.
      */
     public MatrixLib sampleVal() {
-        double[][] mat = new double[location.rowLen()][location.colLen()];
-        for (int r = 0; r < location.rowLen(); r++) {
-            for (int c = 0; c < location.colLen(); c++) {
+        double[][] mat = new double[location.numRows()][location.numCols()];
+        for (int r = 0; r < location.numRows(); r++) {
+            for (int c = 0; c < location.numCols(); c++) {
                 mat[r][c] = UnivarGaussian.STANDARD.sampleVal();
             }
         }
