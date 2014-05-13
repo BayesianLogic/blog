@@ -5,10 +5,10 @@ Model for the automobile problem (simple version with access to noisy GPS).
 
 At each time step, we have:
 - controls: velocity, steering (observed in all timesteps)
-- true_state: x, y, theta (never observed)
-- noisy_state: x, y, theta (observed in some timesteps)
+- state: x, y, theta (never observed)
+- observations: x, y, theta (observed in some timesteps)
 
-We ignore the obstacles and the laser / intensity observations, for now.
+For now, we completely ignore the obstacles and the laser / intensity data.
 */
 
 
@@ -31,19 +31,22 @@ We ignore the obstacles and the laser / intensity observations, for now.
 
 fixed RealMatrix car_params = {{ model.car_params |blog_column_vector }};
 fixed RealMatrix initial_state = {{ model.initial_state |blog_column_vector }};
+fixed RealMatrix dynamics_noise = 0.1 * eye(3);
 
 fixed RealMatrix dynamics(
         RealMatrix car_params, RealMatrix old_state,
         Real velocity, Real steering, Real delta_t)
     = DynamicsInterp();
 
-random RealMatrix true_state(Timestep timestep) {
-    if timestep == @0 then = initial_state
-    else = dynamics(
-        car_params, true_state(Prev(timestep)),
-        toReal(controls[toInt(timestep)][0]),
-        toReal(controls[toInt(timestep)][1]),
-        toReal(time[toInt(timestep)] - time[toInt(Prev(timestep))]))
+random RealMatrix state(Timestep timestep) {
+    if timestep == @0 then ~ MultivarGaussian(initial_state, dynamics_noise)
+    else = ~ MultivarGaussian(
+        dynamics(
+            car_params, state(Prev(timestep)),
+            toReal(controls[toInt(timestep)][0]),
+            toReal(controls[toInt(timestep)][1]),
+            toReal(time[toInt(timestep)] - time[toInt(Prev(timestep))])),
+        dynamics_noise)
 };
 
 
@@ -54,10 +57,10 @@ random RealMatrix true_state(Timestep timestep) {
  * We assume Gaussian noise on top of the true location.
  */
 
-fixed RealMatrix state_sigma = 0.001 * eye(3);
+fixed RealMatrix observation_noise = 0.1 * eye(3);
 
-random RealMatrix noisy_state(Timestep timestep) {
-    ~ MultivarGaussian(true_state(timestep), state_sigma)
+random RealMatrix observations(Timestep timestep) {
+    ~ MultivarGaussian(state(timestep), observation_noise)
 };
 
 
@@ -80,7 +83,7 @@ fixed RealMatrix controls = {{ controls |blog_matrix }};
 /* Observations: */
 
 {% for timestep, state in observations %}
-obs noisy_state(@{{ timestep }}) = {{ state |blog_column_vector }};
+obs observations(@{{ timestep }}) = {{ state |blog_column_vector }};
 {%- endfor %}
 
 
@@ -89,6 +92,6 @@ obs noisy_state(@{{ timestep }}) = {{ state |blog_column_vector }};
 /* Query the hidden state: */
 
 {% for timestep in query_timesteps %}
-query true_state(@{{ timestep }});
+query state(@{{ timestep }});
 {%- endfor %}
 
