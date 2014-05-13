@@ -183,8 +183,7 @@ public class ParticleFilteringVsLikelihoodWeightingMay2008Experiment {
 		for (Iterator it = query.getHistogram().entrySet().iterator(); it.hasNext();) {
 			Histogram.Entry entry = (Histogram.Entry) it.next();
 			if (valueString.equals(entry.getElement().toString())) {
-				double prob = entry.getWeight() / query.getHistogram().getTotalWeight();
-				return prob;
+                return query.getHistogram().getProb(entry.getElement());
 			}
 		}
 		throw new Exception(valueString + " not present.");
@@ -196,7 +195,7 @@ public class ParticleFilteringVsLikelihoodWeightingMay2008Experiment {
 			for (Iterator it2 = query.getHistogram().entrySet().iterator(); it2
 					.hasNext();) {
 				Histogram.Entry entry = (Histogram.Entry) it2.next();
-				double prob = entry.getWeight() / query.getHistogram().getTotalWeight();
+                double prob = query.getHistogram().getProb(entry.getElement());
 				System.out.println("Prob. of " + query + " = " + entry.getElement()
 						+ " is " + prob);
 			}

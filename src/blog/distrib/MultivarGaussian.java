@@ -37,7 +37,7 @@ package blog.distrib;
 
 import java.util.List;
 
-import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.model.MatrixSpec;
 import blog.model.Type;
@@ -54,267 +54,283 @@ import blog.model.Type;
  */
 public class MultivarGaussian extends AbstractCondProbDistrib {
 
-	/**
-	 * Creates a new MultivarGaussian distribution with the given mean vector and
-	 * covariance matrix. The dimension is inferred from the length of the mean
-	 * vector.
-	 * 
-	 * @param mean
-	 *          1-by-d mean vector
-	 * @param covariance
-	 *          d-by-d covariance matrix
-	 */
-	public MultivarGaussian(MatrixLib mean, MatrixLib covariance) {
-		fixedMean = true;
-		setMean(mean);
-		fixedCovariance = true;
-		setCovariance(covariance);
-	}
+  /**
+   * Creates a new MultivarGaussian distribution with the given mean vector and
+   * covariance matrix. The dimension is inferred from the length of the mean
+   * vector.
+   * 
+   * @param mean
+   *          1-by-d mean vector
+   * @param covariance
+   *          d-by-d covariance matrix
+   */
+  public MultivarGaussian(MatrixLib mean, MatrixLib covariance) {
+    setDimension(mean.numRows());
+    fixedMean = true;
+    setMean(mean);
+    fixedCovariance = true;
+    setCovariance(covariance);
+  }
 
-	/** Sets mean and covariance and ensures that their dimensions match. */
-	public MultivarGaussian(List params) {
-		if (params.size() == 0) {
-			fixedMean = false;
-			fixedCovariance = false;
-		} else if (params.size() == 1) {
-			fixedMean = false;
-			fixedCovariance = true;
-			setCovariance(params.get(0));
-		} else if (params.size() == 2) {
-			fixedMean = true;
-			setMean(params.get(0));
-			fixedCovariance = true;
-			setCovariance(params.get(1));
-		} else {
-			throw new IllegalArgumentException(
-					"MultivarGaussian CPD expects at most 2 parameters, not "
-							+ params.size());
-		}
-	}
+  /** Sets mean and covariance and ensures that their dimensions match. */
+  public MultivarGaussian(List params) {
+    if (params.size() == 0) {
+      throw new IllegalArgumentException(
+          "Dimension of MultivarGaussian distribution must be "
+              + "specified as parameter.");
+    }
 
-	/**
-	 * Ensures that x = value is a column matrix of appropriate dimension d and
-	 * returns the density of this Gaussian distribution at x.
-	 */
-	public double getProb(List args, Object value) {
-		initParams(args);
+    Object ob = params.get(0);
+    int dims = 0;
+    if (ob instanceof MatrixSpec) {
+      dims = ((MatrixLib) ((MatrixSpec) ob).getValueIfNonRandom()).numRows();
+    } else {
+      dims = ((MatrixLib) ob).numRows();
+    }
 
-		if (!((value instanceof MatrixLib) && (((MatrixLib) value).rowLen() == d) && (((MatrixLib) value)
-				.colLen() == 1)))
-			throw new IllegalArgumentException("The value passed to the " + d
-					+ "-dimensional " + "multivariate Gaussian distribution's getProb "
-					+ "method must be a column vector of length " + d + ", not " + value);
+    setDimension(dims);
 
-		return getProbInternal((MatrixLib) value);
-	}
+    if (params.size() == 1) {
+      fixedMean = false;
+      fixedCovariance = true;
+      setCovariance(params.get(0));
+    } else if (params.size() == 2) {
+      fixedMean = true;
+      setMean(params.get(0));
+      fixedCovariance = true;
+      setCovariance(params.get(1));
+    } else {
+      throw new IllegalArgumentException(
+          "MultivarGaussian CPD expects at most 2 parameters, not "
+              + params.size());
+    }
+  }
 
-	/**
-	 * Given a d-dimensional column vector x, returns the density value p =
-	 * 1/sqrt((2*pi)^d*|sigma|)*exp{-0.5(x-mean)'*inverse(sigma)*(x-mean)}
-	 * 
-	 * @throws IllegalStateException
-	 *           if this distribution does not have fixed mean and covariance
-	 */
-	public double getProb(MatrixLib x) {
-		if (!dimInited) {
-			throw new IllegalStateException("Distribution not initialized.");
-		}
-		return getProbInternal(x);
-	}
+  /**
+   * Ensures that x = value is a column matrix of appropriate dimension d and
+   * returns the density of this Gaussian distribution at x.
+   */
+  public double getProb(List args, Object value) {
+    initParams(args);
 
-	/**
-	 * Returns the natural log of the probability returned by getProb.
-	 */
-	public double getLogProb(MatrixLib x) {
-		if (!dimInited) {
-			throw new IllegalStateException("Distribution not initialized.");
-		}
-		return getLogProbInternal(x);
-	}
+    if (!((value instanceof MatrixLib) && (((MatrixLib) value).numRows() == d) && (((MatrixLib) value)
+        .numCols() == 1)))
+      throw new IllegalArgumentException("The value passed to the " + d
+          + "-dimensional " + "multivariate Gaussian distribution's getProb "
+          + "method must be a column vector of length " + d + ", not " + value);
 
-	/**
-	 * Samples a value from this multivariate Gaussian by generating <i>d </i>
-	 * independent samples from univariate Gaussians with unit variance, one for
-	 * each dimension, and multiplying the obtained vector on the left by the
-	 * square root of sigma (Cholesky decomposition of sigma). This method should
-	 * only be called if this distribution was constructed with a fixed mean and
-	 * covariance matrix (internal calls are ok if the private method
-	 * <code>initParams</code> is called first).
-	 */
-	public Object sampleVal(List args, Type childType) {
-		initParams(args);
-		return sampleVal();
-	}
+    return getProbInternal((MatrixLib) value);
+  }
 
-	/**
-	 * Samples a value from this multivariate Gaussian by generating <i>d </i>
-	 * independent samples from univariate Gaussians with unit variance, one for
-	 * each mean in the mean vector, and multiplying the obtained vector on the
-	 * left by the square root of sigma (Cholesky decomposition of sigma). This
-	 * method should only be called if this distribution was constructed with a
-	 * fixed mean and covariance matrix (internal calls are ok if the private
-	 * method <code>initParams</code> is called first).
-	 */
-	public MatrixLib sampleVal() {
-		double[][] mat = new double[d][1];
-		for (int i = 0; i < d; i++) {
-			mat[i][0] = UnivarGaussian.STANDARD.sampleVal();
-		}
-		MatrixLib temp = new JamaMatrixLib(mat);
-		return mu.plus(sqrtSigma.timesMat(temp));
-	}
+  /**
+   * Given a d-dimensional column vector x, returns the density value p =
+   * 1/sqrt((2*pi)^d*|sigma|)*exp{-0.5(x-mean)'*inverse(sigma)*(x-mean)}
+   * 
+   * @throws IllegalStateException
+   *           if this distribution does not have fixed mean and covariance
+   */
+  public double getProb(MatrixLib x) {
+    if (!fixedMean || !fixedCovariance) {
+      throw new IllegalStateException("Mean and covariance are not fixed.");
+    }
+    return getProbInternal(x);
+  }
 
-	/**
-	 * Returns the mean of this distribution, or null if the mean is not fixed.
-	 */
-	public MatrixLib getMean() {
-		if (fixedMean) {
-			return mu;
-		}
-		return null;
-	}
+  /**
+   * Returns the natural log of the probability returned by getProb.
+   */
+  public double getLogProb(MatrixLib x) {
+    if (!fixedMean || !fixedCovariance) {
+      throw new IllegalStateException("Mean and covariance are not fixed.");
+    }
+    return getLogProbInternal(x);
+  }
 
-	/**
-	 * Returns the covariance matrix of this distribution, or null if the
-	 * covariance is not fixed.
-	 */
-	public MatrixLib getCovar() {
-		if (fixedCovariance) {
-			return sigma;
-		}
-		return null;
-	}
+  public double getLogProb(List args, Object value) {
+    initParams(args);
 
-	/**
-	 * Given a d-dimensional column vector x, returns the density value p =
-	 * 1/sqrt((2*pi)^d*|sigma|)*exp{-0.5(x-mean)'*inverse(sigma)*(x-mean)}
-	 */
-	private double getProbInternal(MatrixLib x) {
-		return Math.exp(-0.5
-				* x.minus(mu).transpose().timesMat(sigmaInverse).timesMat(x.minus(mu))
-						.elementAt(0, 0))
-				/ normConst;
-	}
+    if (!((value instanceof MatrixLib) && (((MatrixLib) value).numRows() == d) && (((MatrixLib) value)
+        .numCols() == 1)))
+      throw new IllegalArgumentException("The value passed to the " + d
+          + "-dimensional "
+          + "multivariate Gaussian distribution's getLogProb "
+          + "method must be a column vector of length " + d + ", not " + value);
 
-	private double getLogProbInternal(MatrixLib x) {
-		return ((-0.5 * x.minus(mu).transpose().timesMat(sigmaInverse)
-				.timesMat(x.minus(mu)).elementAt(0, 0)) - Math.log(normConst));
-	}
+    return getLogProbInternal((MatrixLib) value);
+  }
 
-	private void initParams(List args) {
-		if (fixedMean && fixedCovariance) {
-			if (args.size() > 0) {
-				throw new IllegalArgumentException(
-					"MultivarGaussian CPD with fixed mean and covariance " +
-					"expects no arguments.");
-			}
-		} else if (fixedMean && !fixedCovariance) {
-			if (args.size() != 1) {
-				throw new IllegalArgumentException(
-					"MultivarGaussian CPD without a fixed covariance requires " +
-					"the covariance as an argument.");
-			}
-			setCovariance(args.get(0));
-		} else if (!fixedMean && fixedCovariance) {
-			if (args.size() != 1) {
-				throw new IllegalArgumentException(
-					"MultivarGaussian CPD without a fixed mean requires " +
-					"the mean as an argument.");
-			}
-			setMean(args.get(0));
-		} else {
-			if (args.size() != 2) {
-				throw new IllegalArgumentException(
-					"MultivarGaussian CPD without a fixed mean and covariance " +
-					"requires mean and covariance as arguments.");
-			}
-			setMean(args.get(0));
-			setCovariance(args.get(1));
-		}
-	}
+  /**
+   * Samples a value from this multivariate Gaussian by generating <i>d </i>
+   * independent samples from univariate Gaussians with unit variance, one for
+   * each dimension, and multiplying the obtained vector on the left by the
+   * square root of sigma (Cholesky decomposition of sigma). This method should
+   * only be called if this distribution was constructed with a fixed mean and
+   * covariance matrix (internal calls are ok if the private method
+   * <code>initParams</code> is called first).
+   */
+  public Object sampleVal(List args, Type childType) {
+    initParams(args);
+    return sampleVal();
+  }
 
-	private void setDimension(int dim) {
-		if (dim <= 0) {
-			throw new IllegalArgumentException(
-					"Dimension of MultivarGaussian distribution must be "
-							+ "positive, not " + dim);
-		}
+  /**
+   * Samples a value from this multivariate Gaussian by generating <i>d </i>
+   * independent samples from univariate Gaussians with unit variance, one for
+   * each mean in the mean vector, and multiplying the obtained vector on the
+   * left by the square root of sigma (Cholesky decomposition of sigma). This
+   * method should only be called if this distribution was constructed with a
+   * fixed mean and covariance matrix (internal calls are ok if the private
+   * method <code>initParams</code> is called first).
+   */
+  public MatrixLib sampleVal() {
+    double[][] mat = new double[d][1];
+    for (int i = 0; i < d; i++) {
+      mat[i][0] = UnivarGaussian.STANDARD.sampleVal();
+    }
+    MatrixLib temp = MatrixFactory.fromArray(mat);
+    return mu.plus(sqrtSigma.timesMat(temp));
+  }
 
-		d = dim;
-		dimFactor = Math.pow(2 * Math.PI, d / 2.0);
-		dimInited = true;
-	}
+  /**
+   * Returns the mean of this distribution, or null if the mean is not fixed.
+   */
+  public MatrixLib getMean() {
+    if (fixedMean) {
+      return mu;
+    }
+    return null;
+  }
 
-	private void setMean(Object mean) {
-		if (mean instanceof MatrixSpec) {
-			mean = ((MatrixSpec) mean).getValueIfNonRandom();
-		}
+  /**
+   * Returns the covariance matrix of this distribution, or null if the
+   * covariance is not fixed.
+   */
+  public MatrixLib getCovar() {
+    if (fixedCovariance) {
+      return sigma;
+    }
+    return null;
+  }
 
-		if (!((mean instanceof MatrixLib) && (((MatrixLib) mean).colLen() == 1))) {
-			throw new IllegalArgumentException(
-					"The mean of a MultivarGaussian distribution must be a "
-							+ "column vector, not " + mean + " of " + mean.getClass());
-		}
+  /**
+   * Given a d-dimensional column vector x, returns the density value p =
+   * 1/sqrt((2*pi)^d*|sigma|)*exp{-0.5(x-mean)'*inverse(sigma)*(x-mean)}
+   */
+  private double getProbInternal(MatrixLib x) {
+    return Math.exp(-0.5
+        * x.minus(mu).transpose().timesMat(sigmaInverse).timesMat(x.minus(mu))
+            .elementAt(0, 0))
+        / normConst;
+  }
 
-		mu = (MatrixLib) mean;
+  private double getLogProbInternal(MatrixLib x) {
+    return ((-0.5 * x.minus(mu).transpose().timesMat(sigmaInverse)
+        .timesMat(x.minus(mu)).elementAt(0, 0)) - logNormConst);
+  }
 
-		if (!dimInited) {
-			setDimension(mu.rowLen());
-		} else if(mu.rowLen() != d) {
-			throw new IllegalArgumentException("Mean of " + d
-					+ "-dimensional Gaussian distribution must "
-					+ "be column vector of length " + d);
-		}
-	}
+  private void initParams(List args) {
+    if (fixedMean) {
+      if (args.size() > 0) {
+        throw new IllegalArgumentException(
+            "MultivarGaussian CPD with fixed mean expects no " + "arguments.");
+      }
+    } else {
+      if (args.size() < 1) {
+        throw new IllegalArgumentException(
+            "MultivarGaussian CPD created without a fixed mean; "
+                + "requires mean as an argument.");
+      }
+      setMean(args.get(0));
 
-	private void setCovariance(Object cov) {
-		if (cov instanceof MatrixSpec) {
-			cov = ((MatrixSpec) cov).getValueIfNonRandom();
-		}
-		if (!(cov instanceof MatrixLib)) {
-			throw new IllegalArgumentException(
-				"The covariance matrix of a MultivarGaussian must be a " +
-				"matrix, not " + cov + " of type " + cov.getClass());
-		}
+      if (fixedCovariance) {
+        if (args.size() > 1) {
+          throw new IllegalArgumentException(
+              "MultivarGaussian CPD with fixed covariance matrix "
+                  + "expects only one argument.");
+        }
+      } else {
+        if (args.size() < 2) {
+          throw new IllegalArgumentException(
+              "MultivarGaussian CPD created without a fixed "
+                  + "covariance matrix; requires covariance matrix "
+                  + "as argument.");
+        }
+        setCovariance(args.get(1));
+      }
+    }
+  }
 
-		sigma = (MatrixLib) cov;
+  private void setDimension(int dim) {
+    if (dim <= 0) {
+      throw new IllegalArgumentException(
+          "Dimension of MultivarGaussian distribution must be "
+              + "positive, not " + dim);
+    }
 
-		if (sigma.rowLen() != sigma.colLen()) {
-			throw new IllegalArgumentException(
-				"The covariance matrix of a MultivarGaussian must be square");
-		}
-		if (!dimInited) {
-			setDimension(sigma.rowLen());
-		} else if(sigma.rowLen() != d) {
-			throw new IllegalArgumentException("The covariance matrix of a " + d
-					+ "-dimensional Gaussian " + "distribution must be a " + d + "-by-"
-					+ d + " Matrix, " + "not " + cov + " of " + cov.getClass());
-		}
+    d = dim;
+    dimFactor = Math.pow(2 * Math.PI, d / 2.0);
+    logDimFactor = Math.log(2 * Math.PI) * d / 2.0;
+  }
 
-		for (int i = 0; i < sigma.rowLen(); i++) {
-			for (int j = 0; j < sigma.colLen(); j++) {
-				double ratio = sigma.elementAt(i, j) / sigma.elementAt(j, i);
-				if (Math.abs(ratio - 1) > 1e-6)
-					throw new IllegalArgumentException(
-							"Invalid covariance matrix (not symmetric): " + sigma);
-			}
-		}
+  private void setMean(Object mean) {
+    if (mean instanceof MatrixSpec) {
+      mean = ((MatrixSpec) mean).getValueIfNonRandom();
+    }
 
-		normConst = Math.sqrt(sigma.det()) * dimFactor;
-		sigmaInverse = sigma.inverse();
-		sqrtSigma = sigma.choleskyFactor();
-	}
+    if (!((mean instanceof MatrixLib) && (((MatrixLib) mean).numCols() == 1))) {
+      throw new IllegalArgumentException(
+          "The mean of a MultivarGaussian distribution must be a "
+              + "column vector, not " + mean + " of " + mean.getClass());
+    }
 
-	private boolean dimInited = false;
-	private boolean fixedMean;
-	private boolean fixedCovariance;
+    mu = (MatrixLib) mean;
 
-	private int d;
-	private MatrixLib mu;
-	private MatrixLib sigma;
+    if (mu.numRows() != d) {
+      throw new IllegalArgumentException("Mean of " + d
+          + "-dimensional Gaussian distribution must "
+          + "be column vector of length " + d);
+    }
+  }
 
-	private double dimFactor;
-	private double normConst;
-	private MatrixLib sigmaInverse;
-	private MatrixLib sqrtSigma;
+  private void setCovariance(Object cov) {
+    if (cov instanceof MatrixSpec) {
+      cov = ((MatrixSpec) cov).getValueIfNonRandom();
+    }
+    if (!((cov instanceof MatrixLib) && (((MatrixLib) cov).numRows() == d) && (((MatrixLib) cov)
+        .numCols() == d))) {
+      throw new IllegalArgumentException("The covariance matrix of a " + d
+          + "-dimensional Gaussian " + "distribution must be a " + d + "-by-"
+          + d + " Matrix, " + "not " + cov + " of " + cov.getClass());
+    }
+
+    sigma = (MatrixLib) cov;
+
+    for (int i = 0; i < sigma.numRows(); i++) {
+      for (int j = 0; j < sigma.numCols(); j++) {
+        double ratio = sigma.elementAt(i, j) / sigma.elementAt(j, i);
+        if (Math.abs(ratio - 1) > 1e-6)
+          throw new IllegalArgumentException(
+              "Invalid covariance matrix (not symmetric): " + sigma);
+      }
+    }
+
+    normConst = Math.sqrt(sigma.det()) * dimFactor;
+    logNormConst = 0.5 * sigma.logDet() + logDimFactor;
+    sigmaInverse = sigma.inverse();
+    sqrtSigma = sigma.choleskyFactor();
+  }
+
+  private boolean fixedMean;
+  private boolean fixedCovariance;
+
+  private int d;
+  private MatrixLib mu;
+  private MatrixLib sigma;
+
+  private double dimFactor;
+  private double logDimFactor;
+  private double normConst;
+  private double logNormConst;
+  private MatrixLib sigmaInverse;
+  private MatrixLib sqrtSigma;
 }

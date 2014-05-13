@@ -1,7 +1,17 @@
 package blog.common.numerical;
 
+import java.util.Arrays;
+
+import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
 
+/**
+ * Matrix and linear algebra operations
+ * 
+ * @author awong
+ * @author leili
+ * @date Feb 11, 2014
+ */
 public class JamaMatrixLib implements MatrixLib {
 
   private Matrix values;
@@ -31,12 +41,12 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
-  public int rowLen() {
+  public int numRows() {
     return values.getRowDimension();
   }
 
   @Override
-  public int colLen() {
+  public int numCols() {
     return values.getColumnDimension();
   }
 
@@ -87,6 +97,15 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
+  public double logDet() {
+    double logDet = 0.0;
+    for (double val : eigenvals()) {
+      logDet += Math.log(val);
+    }
+    return logDet;
+  }
+
+  @Override
   public double trace() {
     return values.trace();
   }
@@ -107,11 +126,40 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
+  public MatrixLib columnSum() {
+    double[][] result = new double[1][numCols()];
+    for (int i = 0; i < numCols(); i++) {
+      result[0][i] = 0;
+      for (int j = 0; j < numRows(); j++) {
+        result[0][i] += elementAt(j, i);
+      }
+    }
+    return new JamaMatrixLib(result);
+  }
+
+  @Override
+  public double[] eigenvals() {
+    EigenvalueDecomposition decomp = new EigenvalueDecomposition(values);
+    return decomp.getRealEigenvalues();
+  }
+
+  @Override
   public boolean equals(Object obj) {
     // in general you need to check the dimensionality of the matrix as well.
     if (obj instanceof JamaMatrixLib) {
-      return values.minus(((JamaMatrixLib) obj).values).normInf() < ZERO_THRESHOLD;
+      return Arrays.deepEquals(values.getArray(),
+          ((JamaMatrixLib) obj).values.getArray());
     }
     return false;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    return Arrays.deepHashCode(values.getArray());
   }
 }

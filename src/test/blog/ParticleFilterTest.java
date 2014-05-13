@@ -147,7 +147,7 @@ public class ParticleFilterTest extends TestCase {
 			for (Iterator it2 = query.getHistogram().entrySet().iterator(); it2
 					.hasNext();) {
 				Histogram.Entry entry = (Histogram.Entry) it2.next();
-				double prob = entry.getWeight() / query.getHistogram().getTotalWeight();
+                double prob = query.getHistogram().getProb(entry.getElement());
 				System.out.println("Prob. of " + query + " = " + entry.getElement()
 						+ " is " + prob);
 			}

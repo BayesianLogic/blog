@@ -1,0 +1,19 @@
+// Trigonometric functions.
+
+fixed Real thirty_degrees = pi / 6.0;
+fixed Real sin_thirty = sin(thirty_degrees);
+fixed Real cos_thirty = cos(thirty_degrees);
+fixed Real tan_thirty = tan(thirty_degrees);
+
+fixed Real y = 1.0 / 2.0;
+fixed Real x = (3.0 ^ 0.5) / 2.0;
+fixed Real atan_result = atan2(y, x);
+
+query thirty_degrees;
+query sin_thirty;
+query cos_thirty;
+query tan_thirty;
+
+query y;
+query x;
+query atan_result;

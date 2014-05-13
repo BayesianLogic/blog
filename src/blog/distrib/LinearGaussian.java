@@ -38,7 +38,7 @@ package blog.distrib;
 import java.util.Iterator;
 import java.util.List;
 
-import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.model.Type;
 
@@ -73,23 +73,23 @@ public class LinearGaussian extends AbstractCondProbDistrib {
 		}
 
 		mu = (MatrixLib) params.get(0);
-		if (mu.colLen() != 1) {
+		if (mu.numCols() != 1) {
 			throw new IllegalArgumentException(
 					"First parameter to LinearGaussian CPD (mean mu) should "
 							+ "be a column vector.");
 		}
-		d = mu.rowLen();
+		d = mu.numRows();
 
 		W = (MatrixLib) params.get(1);
-		if (W.rowLen() != d) {
+		if (W.numRows() != d) {
 			throw new IllegalArgumentException(
 					"Second parameter to LinearGaussian CPD (weight matrix W) "
 							+ "should have same number of rows as first parameter.");
 		}
-		c = W.colLen();
+		c = W.numCols();
 
 		Sigma = (MatrixLib) params.get(2);
-		if (!((Sigma.rowLen() == d) && (Sigma.colLen() == d))) {
+		if (!((Sigma.numRows() == d) && (Sigma.numCols() == d))) {
 			throw new IllegalArgumentException(
 					"Third parameter to LinearGaussian CPD (covariance matrix "
 							+ "sigma) should be square matrix of same dimension as "
@@ -97,7 +97,7 @@ public class LinearGaussian extends AbstractCondProbDistrib {
 		}
 
 		// Make sure Sigma is symmetric
-		for (int i = 0; i < Sigma.rowLen(); ++i) {
+		for (int i = 0; i < Sigma.numRows(); ++i) {
 			for (int j = 0; j < i; ++j) {
 				if (Sigma.elementAt(i, j) != Sigma.elementAt(j, i)) {
 					throw new IllegalArgumentException(
@@ -133,22 +133,22 @@ public class LinearGaussian extends AbstractCondProbDistrib {
 		int curRow = 0;
 		for (Iterator iter = args.iterator(); iter.hasNext();) {
 			Object arg = iter.next();
-			if (!((arg instanceof MatrixLib) && (((MatrixLib) arg).colLen() == 1))) {
+			if (!((arg instanceof MatrixLib) && (((MatrixLib) arg).numCols() == 1))) {
 				throw new IllegalArgumentException(
 						"Arguments for LinearGaussian CPD must be " + "column vectors.");
 			}
 
 			MatrixLib parent = (MatrixLib) arg;
-			if (curRow + parent.rowLen() > c) {
+			if (curRow + parent.numRows() > c) {
 				throw new IllegalArgumentException(
 						"Error in LinearGaussian CPD: sum of dimensions of "
 								+ "parents exceeds number of columns in W.");
 			}
 
-			for (int i = curRow; i < curRow + parent.rowLen(); i++) {
+			for (int i = curRow; i < curRow + parent.numRows(); i++) {
 				vect[i][0] = parent.elementAt(i - curRow, 0);
 			}
-			curRow += parent.rowLen();
+			curRow += parent.numRows();
 		}
 
 		if (curRow < c) {
@@ -157,7 +157,7 @@ public class LinearGaussian extends AbstractCondProbDistrib {
 							+ "parents is less than number of columns in W.");
 		}
 
-		return new JamaMatrixLib(vect);
+		return MatrixFactory.fromArray(vect);
 	}
 
 	private int d; // dimension of child vector
