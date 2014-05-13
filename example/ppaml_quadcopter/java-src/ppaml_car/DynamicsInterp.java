@@ -34,12 +34,12 @@ public class DynamicsInterp extends AbstractFunctionInterp {
     double L = carParams.elementAt(3, 0);
 
     MatrixLib oldStateTmp = (MatrixLib) args.get(1);
-    if (oldStateTmp.numRows() != 6 || oldStateTmp.numCols() != 1) {
+    if (oldStateTmp.numRows() != 3 || oldStateTmp.numCols() != 1) {
       throw new IllegalArgumentException(
-        "oldState must be a column vector of size 6");
+        "oldState must be a column vector of size 3");
     }
-    double[] oldState = new double[6];
-    for (int i = 0; i < 6; i++) {
+    double[] oldState = new double[3];
+    for (int i = 0; i < 3; i++) {
       oldState[i] = oldStateTmp.elementAt(i, 0);
     }
 

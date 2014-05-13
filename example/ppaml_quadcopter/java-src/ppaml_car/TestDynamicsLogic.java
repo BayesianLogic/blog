@@ -17,13 +17,14 @@ public class TestDynamicsLogic {
     double b = 0.0500507;
     double h = 0;
     double L = 0.257717;
-    double[] oldState = new double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    double[] oldState = new double[]{1.0, 2.0, 3.0};
     double velocity = 0.5;
     double steering = 0.2;
     double deltaT = 0.1;
+    // Values obtained using AckermanVehicle from their example:
     double[] referenceNewState = new double[]{
-      1.4, 2.5, -2.683185307179586,
-      -0.4921337226266671, -0.048842448876763131, 0.39328029487513927};
+      0.95078663, 1.99511576, 3.03932803};
+
     double newState[] = DynamicsLogic.dynamics(
       a, b, h, L, oldState, velocity, steering, deltaT);
     assertEquals(oldState.length, referenceNewState.length);
