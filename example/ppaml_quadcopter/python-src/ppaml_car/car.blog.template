@@ -40,7 +40,7 @@ fixed RealMatrix dynamics(
 
 random RealMatrix state(Timestep timestep) {
     if timestep == @0 then ~ MultivarGaussian(initial_state, dynamics_noise)
-    else = ~ MultivarGaussian(
+    else ~ MultivarGaussian(
         dynamics(
             car_params, state(Prev(timestep)),
             toReal(controls[toInt(timestep)][0]),
