@@ -41,8 +41,8 @@ random RealMatrix true_state(Timestep timestep) {
     if timestep == @0 then = initial_state
     else = dynamics(
         car_params, true_state(Prev(timestep)),
-        toReal(controls[toInt(timestep)][0]),
-        toReal(controls[toInt(timestep)][1]),
+        jittered_velocity(timestep),
+        jittered_steering(timestep),
         toReal(time[toInt(timestep)] - time[toInt(Prev(timestep))]))
 };
 
@@ -70,9 +70,23 @@ fixed RealMatrix time = {{ time |blog_column_vector }};
 
 //////////////////////////////////////////////////////////////////////////////
 
-/* Controls: */
+/*
+ * Controls.
+ * We put some Gaussian noise on top of the observed controls.
+ */
 
 fixed RealMatrix controls = {{ controls |blog_matrix }};
+
+fixed Real velocity_variance = 0.01;
+fixed Real steering_variance = 0.01;
+
+random Real jittered_velocity(Timestep timestep) {
+    ~ UnivarGaussian(toReal(controls[toInt(timestep)][0]), velocity_variance)
+};
+
+random Real jittered_steering(Timestep timestep) {
+    ~ UnivarGaussian(toReal(controls[toInt(timestep)][1]), steering_variance)
+};
 
 
 //////////////////////////////////////////////////////////////////////////////
