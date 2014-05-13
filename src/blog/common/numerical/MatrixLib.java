@@ -2,9 +2,9 @@ package blog.common.numerical;
 
 /**
  * Exposes different matrix libraries to BLOG using a consistent set of
- * methods.  Different libraries may be used with BLOG without significant
+ * methods. Different libraries may be used with BLOG without significant
  * code modifications.
- * 
+ *
  * @author awong
  * @date November 5, 2012
  */
