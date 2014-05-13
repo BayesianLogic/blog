@@ -86,10 +86,10 @@ public interface MatrixLib {
    */
   public double logDet();
 
-	/**
-	 * Return the trace of this matrix.
-	 */
-	public double trace();
+  /**
+   * Return the trace of this matrix.
+   */
+  public double trace();
 
   /**
    * Returns the transpose of this matrix
