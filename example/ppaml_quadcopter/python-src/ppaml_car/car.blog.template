@@ -54,13 +54,14 @@ random RealMatrix state(Timestep timestep) {
 
 /*
  * Observation model.
- * We assume Gaussian noise on top of the true location.
+ * We observe the x and y (but not theta), with noise.
  */
 
-fixed RealMatrix observation_noise = 0.1 * eye(3);
+fixed RealMatrix observation_matrix = [[1, 0, 0], [0, 1, 0]];
+fixed RealMatrix observation_noise = 0.1 * eye(2);
 
 random RealMatrix observations(Timestep timestep) {
-    ~ MultivarGaussian(state(timestep), observation_noise)
+    ~ MultivarGaussian(observation_matrix * state(timestep), observation_noise)
 };
 
 

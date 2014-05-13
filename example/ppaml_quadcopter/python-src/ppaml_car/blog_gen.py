@@ -67,7 +67,7 @@ def generate_model(readings, car_params):
         elif reading.gps_latitude:
             observations.append((
                 current_timestep,
-                gps_reading_to_state(reading)))
+                gps_reading_to_state(reading)[:2]))
             query_timesteps.append(current_timestep)
             current_timestep += 1
         else:
