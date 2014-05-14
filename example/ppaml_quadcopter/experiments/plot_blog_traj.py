@@ -40,6 +40,6 @@ if __name__ == "__main__":
     ys = states[:, 1]
     plt.plot(xs, ys)
     plt.plot([-7, -7, 7, 7, -7], [-7, 7, 7, -7, -7], 'k')
-    plt.xlim(-15, 15)
-    plt.ylim(-15, 15)
+    plt.xlim(-8, 8)
+    plt.ylim(-8, 8)
     plt.show()

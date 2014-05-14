@@ -187,10 +187,6 @@ def demo(dataset_name, dataset_kind):
     readings = read_data(data_dir)
     car_params, obstacles = read_metadata(data_dir)
 
-    # # HACK: We ignore the first 0.5 seconds, because the velocity and
-    # # steering data is broken at the beginning of a run.
-    # readings = [reading for reading in readings if reading.time > 0.5]
-
     # Ground-truth trajectory vs trajectory from dynamics model:
     fig1 = plt.figure()
     ax1 = fig1.add_subplot(111)
