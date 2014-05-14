@@ -48,7 +48,7 @@ demo:
 
 buildparser: 
 	./gen_parser.sh
-	./compile
+	./compile.sh
 
 sync:
 	git remote prune origin
