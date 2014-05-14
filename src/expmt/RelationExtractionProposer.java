@@ -580,13 +580,13 @@ public class RelationExtractionProposer implements Proposer {
       proposedWorld.revert();
       trueFactDiff = constructNewTrueFactDiff();
       //updateSupportedFacts(proposedWorld); // Used for sourceFactSwitch and holdsSwitch
-      if (sample < 0.25) {
+      if (sample < 0.4) {
         logAcceptanceRatio = blockSourceFactSwitch(proposedWorld);
-      } else if (sample < 0.5) {
-        logAcceptanceRatio = sourceFactSwitch(proposedWorld);
       } else if (sample < 0.6) {
-        logAcceptanceRatio = holdsSwitch(proposedWorld);
+        logAcceptanceRatio = sourceFactSwitch(proposedWorld);
       } else if (sample < 0.7) {
+        logAcceptanceRatio = holdsSwitch(proposedWorld);
+      } else if (sample < 0.8) {
         logAcceptanceRatio = randomSparsitySample(proposedWorld);
       } else {
         logAcceptanceRatio = randomThetaSample(proposedWorld);
