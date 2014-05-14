@@ -1,52 +1,47 @@
-Hand-found clusters:
-
-Professor
-Scientist
-Economist/Analyst
-Leadership
-Businessman
-Strategist
-Ownership
-Company_In
-Lobbyist
-Ethicist
-
-President_Of
-Director_Of
-Chairman_Of
-Manager_Of
-Subsidiary_Of
-Lawyer_Of
-Editor_Of
-Dean_Of
-Office_Of
-Executive_Of
-Secretary_Of
-Counsel_Of
-Officer_Of
-Spokesperson_Of
-Student_Of
-Member_Of
-Helper_Of
-Center_Of
-
-To_Call
-To_Score
-To_Succeed
-To_Fly_To
-To_Offer
-To_Receive
-To_Buy
-To_Join
-To_Come
-To_Replace
-To_Move
-To_Say
-To_Play
-To_Bear
-To_Meet
-To_Coach
-To_Give
-
-Missile_To
-Die_At_Home
+R[0]: Professor
+R[1]: Scientist
+R[2]: Economist/Analyst
+R[3]: Leadership
+R[4]: Businessman
+R[5]: Strategist
+R[6]: Ownership
+R[7]: Company_In
+R[8]: Lobbyist
+R[9]: Ethicist
+R[10]: President_Of
+R[11]: Director_Of
+R[12]: Chairman_Of
+R[13]: Manager_Of
+R[14]: Subsidiary_Of
+R[15]: Lawyer_Of
+R[16]: Editor_Of
+R[17]: Dean_Of
+R[18]: Office_Of
+R[19]: Executive_Of
+R[20]: Secretary_Of
+R[21]: Counsel_Of
+R[22]: Officer_Of
+R[23]: Spokesperson_Of
+R[24]: Student_Of
+R[25]: Member_Of
+R[26]: Helper_Of
+R[27]: Center_Of
+R[28]: To_Call
+R[29]: To_Score
+R[30]: To_Succeed
+R[31]: To_Fly_To
+R[32]: To_Offer
+R[33]: To_Receive
+R[34]: To_Buy
+R[35]: To_Join
+R[36]: To_Come
+R[37]: To_Replace
+R[38]: To_Move
+R[39]: To_Say
+R[40]: To_Play
+R[41]: To_Bear
+R[42]: To_Meet
+R[43]: To_Coach
+R[44]: To_Give
+R[45]: Missile_To
+R[46]: Die_At_Home

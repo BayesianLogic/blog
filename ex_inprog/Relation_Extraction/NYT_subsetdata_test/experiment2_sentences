@@ -1,4 +1,4 @@
-Sent[51]: Stephen_Gillers professor at New_York_University								Relation: Professor
+Sent[51]: Stephen_Gillers professor at New_York_University								Relation: Professor 
 Sent[54]: Merle_Black professor at Emory_University										Relation: Professor
 Sent[68]: Stephen_S__Roach economist at Morgan_Stanley									Relation: Economist/Analyst
 Sent[79]: Bob_Dole leader Senate														Relation: Leadership
@@ -57,7 +57,7 @@ Sent[1649]: Carleton_S__Fiorina executive of Hewlett_Packard							Relation: Exe
 Sent[1689]: Trevor_Nunn succeed as director of Royal_National_Theater					Relation: Director_Of
 Sent[1715]: Rudolf_Nureyev succeed as director of Paris_Opera_Ballet					Relation: Director_Of
 Sent[1744]: Ralph_Reed strategist of Christian_Coalition								Relation: Strategist
-Sent[1768]: Merle_Black scientist Emory_University										Relation: Professor
+Sent[1768]: Merle_Black scientist Emory_University										Relation: Scientist
 Sent[1920]: Mr__Bush say at White_House													Relation: To_Say
 Sent[1930]: Manhattan coach Fran_Fraschilla												Relation: To_Coach
 Sent[2002]: Norman_Tebbit chairman Conservative_Party									Relation: Chairman_Of
