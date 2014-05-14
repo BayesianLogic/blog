@@ -1174,8 +1174,7 @@ public class BuiltInFunctions {
      */
     FunctionInterp absMatInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        double val = ((Number) args.get(0)).doubleValue();
-        return Math.abs(val);
+        return ((MatrixLib) args.get(0)).abs();
       }
     };
     argTypes.clear();
