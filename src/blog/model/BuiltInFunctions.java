@@ -1135,30 +1135,30 @@ public class BuiltInFunctions {
         toRealInterp);
     addFunction(TO_REAL);
 
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
     FunctionInterp absInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         double val = ((Number) args.get(0)).doubleValue();
         return Math.abs(val);
       }
     };
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.REAL);
-    retType = BuiltInTypes.REAL;
     ABS = new NonRandomFunction(ABS_NAME, argTypes, retType, absInterp);
     addFunction(ABS);
 
     /**
      * exponential function for real argument
      */
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.REAL);
-    retType = BuiltInTypes.REAL;
     FunctionInterp expInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         double val = ((Number) args.get(0)).doubleValue();
         return Math.exp(val);
       }
     };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
     EXP = new NonRandomFunction(EXP_NAME, argTypes, retType, expInterp);
     addFunction(EXP);
 
@@ -1174,14 +1174,14 @@ public class BuiltInFunctions {
     /**
      * exponential function for real matrix argument
      */
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.REAL_MATRIX);
-    retType = BuiltInTypes.REAL_MATRIX;
     FunctionInterp expMatInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         return ((MatrixLib) args.get(0)).exp();
       }
     };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
     EXP_MAT = new NonRandomFunction(EXP_NAME, argTypes, retType, expMatInterp);
     addFunction(EXP_MAT);
   };
