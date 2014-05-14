@@ -4,7 +4,7 @@ package blog.common.numerical;
  * Exposes different matrix libraries to BLOG using a consistent set of
  * methods. Different libraries may be used with BLOG without significant
  * code modifications.
- *
+ * 
  * @author awong
  * @date November 5, 2012
  */
@@ -80,6 +80,11 @@ public interface MatrixLib {
    * Returns the determinant of this matrix
    */
   public double det();
+
+  /**
+   * Returns the exponential function applied to every element of this matrix
+   */
+  public MatrixLib exp();
 
   /**
    * Returns the log of the determinant of this matrix
