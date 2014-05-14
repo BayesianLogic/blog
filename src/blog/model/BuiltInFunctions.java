@@ -90,7 +90,7 @@ public class BuiltInFunctions {
   public static final String COS_NAME = "cos";
   public static final String TAN_NAME = "tan";
   public static final String ATAN2_NAME = "atan2";
-  public static final String COL_SUM_NAME = "sum";
+  public static final String SUM_NAME = "sum";
   public static final String VSTACK_NAME = "vstack";
   public static final String EYE_NAME = "eye";
   public static final String ZEROS_NAME = "zeros";
@@ -1032,8 +1032,7 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(BuiltInTypes.REAL_MATRIX);
     retType = BuiltInTypes.REAL_MATRIX;
-    COL_SUM = new NonRandomFunction(COL_SUM_NAME, argTypes, retType,
-        colSumInterp);
+    COL_SUM = new NonRandomFunction(SUM_NAME, argTypes, retType, colSumInterp);
     addFunction(COL_SUM);
 
     FunctionInterp vstackInterp = new AbstractFunctionInterp() {
