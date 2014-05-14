@@ -17,7 +17,8 @@ import blog.model.Model;
 public class BLOGTest {
 
 	@Before
-	protected void setUp() throws Exception {
+	// needs to be public for JUnit 4
+	public void setUp() throws Exception {
 		Util.initRandom(true);
 	}
 
@@ -37,13 +38,13 @@ public class BLOGTest {
 
 		// /////////////////////////////////////////////////////////////////////////////////////////////
 
-		modelDescription = "random Boolean Y ~ Bernoulli[0.3]();";
+		modelDescription = "random Boolean Y ~ Bernoulli(0.3);";
 		evidenceDescription = "";
 		queryDescription = "query Y;";
 		queryValueDescription = "true";
 		expectedProbability = 0.3;
 		margin = 0.1;
-		engineClassName = "blog.SamplingEngine";
+		engineClassName = "blog.engine.SamplingEngine";
 		properties = Util.properties("samplerClass", samplerClassDefault);
 
 		testProblem(modelDescription, properties, evidenceDescription,
@@ -52,14 +53,14 @@ public class BLOGTest {
 
 		// /////////////////////////////////////////////////////////////////////////////////////////////
 
-		modelDescription = "random Boolean X ~ Bernoulli[0.7]();"
-				+ "random Boolean Y if X then ~ Bernoulli[0.3]() else ~ Bernoulli[0.9]();";
+		modelDescription = "random Boolean X ~ Bernoulli(0.7);"
+				+ "random Boolean Y if X then ~ Bernoulli(0.3) else ~ Bernoulli(0.9);";
 		evidenceDescription = "";
 		queryDescription = "query Y;";
 		queryValueDescription = "true";
 		expectedProbability = 0.48;
 		margin = 0.1;
-		engineClassName = "blog.SamplingEngine";
+		engineClassName = "blog.engine.SamplingEngine";
 		properties = Util.properties("samplerClass", samplerClassDefault);
 
 		testProblem(modelDescription, properties, evidenceDescription,
@@ -68,14 +69,14 @@ public class BLOGTest {
 
 		// /////////////////////////////////////////////////////////////////////////////////////////////
 
-		modelDescription = "random Boolean X ~ Bernoulli[0.7]();"
-				+ "random Boolean Y if X then ~ Bernoulli[0.3]() else ~ Bernoulli[0.9]();";
+		modelDescription = "random Boolean X ~ Bernoulli(0.7);"
+				+ "random Boolean Y if X then ~ Bernoulli(0.3) else ~ Bernoulli(0.9);";
 		evidenceDescription = "obs Y = true;";
 		queryDescription = "query X;";
 		queryValueDescription = "true";
 		expectedProbability = 0.4375;
 		margin = 0.1;
-		engineClassName = "blog.SamplingEngine";
+		engineClassName = "blog.engine.SamplingEngine";
 		properties = Util.properties("samplerClass", samplerClassDefault);
 
 		testProblem(modelDescription, properties, evidenceDescription,
@@ -98,7 +99,7 @@ public class BLOGTest {
 		queryValueDescription = "Rainy";
 		expectedProbability = 0.625; // not necessarily the exact solution
 		margin = 0.1;
-		engineClassName = "blog.SamplingEngine";
+		engineClassName = "blog.engine.SamplingEngine";
 		properties = Util.properties("samplerClass", samplerClassDefault,
 				"numSamples", "20000");
 
@@ -116,7 +117,7 @@ public class BLOGTest {
 				+ "random Boolean RainyRegion(); "
 				+
 
-				"RainyRegion ~ Bernoulli[0.5](); "
+				"RainyRegion ~ Bernoulli(0.5); "
 				+
 
 				"Weather(d)  "
@@ -130,7 +131,7 @@ public class BLOGTest {
 		queryValueDescription = "Rainy";
 		expectedProbability = 0.52; // not necessarily the exact solution
 		margin = 0.1;
-		engineClassName = "blog.SamplingEngine";
+		engineClassName = "blog.engine.SamplingEngine";
 		properties = Util.properties("samplerClass", samplerClassDefault,
 				"numSamples", "20000");
 

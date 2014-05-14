@@ -115,13 +115,13 @@ public class Dirichlet extends AbstractCondProbDistrib {
 		}
 		
 		MatrixLib mat = (MatrixLib)childValue;
-		if (mat.rowLen() != 1 || mat.colLen() == 0) {
+		if (mat.numRows() != 1 || mat.numCols() == 0) {
 			throw new IllegalArgumentException("Dirichlet distribution" +
 					"requires nonempty vector of Numbers as argument.");
 		}
 		
 		double prob = 1.0;
-		for (int i = 0; i < mat.colLen(); i++) {
+		for (int i = 0; i < mat.numCols(); i++) {
 			double count_term = (args.size() != 0) ? alpha[0] : alpha[i];
 			double x = mat.elementAt(0, i);
 			prob *= Math.pow(x, count_term - 1);
@@ -141,13 +141,13 @@ public class Dirichlet extends AbstractCondProbDistrib {
 		}
 		
 		MatrixLib mat = (MatrixLib)childValue;
-		if (mat.rowLen() != 1 || mat.colLen() == 0) {
+		if (mat.numRows() != 1 || mat.numCols() == 0) {
 			throw new IllegalArgumentException("Dirichlet distribution" +
 					"requires nonempty vector of Numbers as argument.");
 		}
 		
 		double prob = 0.0;
-		for (int i = 0; i < mat.colLen(); i++) {
+		for (int i = 0; i < mat.numCols(); i++) {
 			double count_term = (args.size() != 0) ? alpha[0] : alpha[i];
 			double x = mat.elementAt(0, i);
 			prob += Math.log(x) * (count_term - 1);
