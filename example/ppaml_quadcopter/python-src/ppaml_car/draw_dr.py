@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 
-from automobile_data import LATITUDE_MIN
-from automobile_data import LATITUDE_MAX
-from automobile_data import LONGITUDE_MIN
-from automobile_data import LONGITUDE_MAX
-from automobile_data import path_for_dataset
-from automobile_data import read_data
-from automobile_data import read_metadata
+"""
+Draw GPS trajectory and dead-reckoning trajectory computed from the controls.
+"""
+
+from ppaml_car.data import LATITUDE_MIN
+from ppaml_car.data import LATITUDE_MAX
+from ppaml_car.data import LONGITUDE_MIN
+from ppaml_car.data import LONGITUDE_MAX
+from ppaml_car.data import path_for_dataset
+from ppaml_car.data import read_data
+from ppaml_car.data import read_metadata
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -183,9 +187,9 @@ def demo(dataset_name, dataset_kind):
     readings = read_data(data_dir)
     car_params, obstacles = read_metadata(data_dir)
 
-    # HACK: We ignore the first 0.5 seconds, because the velocity and
-    # steering data is broken at the beginning of a run.
-    readings = [reading for reading in readings if reading.time > 0.5]
+    # # HACK: We ignore the first 0.5 seconds, because the velocity and
+    # # steering data is broken at the beginning of a run.
+    # readings = [reading for reading in readings if reading.time > 0.5]
 
     # Ground-truth trajectory vs trajectory from dynamics model:
     fig1 = plt.figure()
