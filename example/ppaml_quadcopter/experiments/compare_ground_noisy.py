@@ -10,18 +10,27 @@ from ppaml_car.data import path_for_dataset
 from ppaml_car.data import read_data
 
 
-def traj_from_dataset(dataset_name, dataset_kind):
+def traj_from_readings(readings):
     """
     Return traj as an array with (time, lat, lon) rows.
     """
-    data_dir = path_for_dataset(dataset_name, dataset_kind)
-    readings = read_data(data_dir)
     traj = []
     for reading in readings:
         if reading.gps_latitude:
             traj.append(
                 (reading.time, reading.gps_latitude, reading.gps_longitude))
     return np.array(traj)
+
+
+def controls_from_readings(readings):
+    """
+    Return controls as an array with (velocity, steering) rows.
+    """
+    controls = []
+    for reading in readings:
+        if reading.velocity:
+            controls.append((reading.velocity, reading.steering))
+    return np.array(controls)
 
 
 def plot_traj(ax, label, traj):
@@ -73,8 +82,10 @@ if __name__ == "__main__":
         raise RuntimeError("Usage example: {} 1_straight".format(sys.argv[0]))
 
     dataset_name = sys.argv[1]
-    ground_traj = traj_from_dataset(dataset_name, 'ground')
-    noisy_traj = traj_from_dataset(dataset_name, 'noisy')
+    ground_readings = read_data(path_for_dataset(dataset_name, 'ground'))
+    noisy_readings = read_data(path_for_dataset(dataset_name, 'noisy'))
+    ground_traj = traj_from_readings(ground_readings)
+    noisy_traj = traj_from_readings(noisy_readings)
 
     # Trajectory plots:
     fig1 = plt.figure()
@@ -87,6 +98,18 @@ if __name__ == "__main__":
     fig2 = plt.figure()
     plot_components(fig2, 'ground', ground_traj)
     plot_components(fig2, 'noisy', noisy_traj)
+
+    # Plot the difference in controls:
+    ground_controls = controls_from_readings(ground_readings)
+    noisy_controls = controls_from_readings(noisy_readings)
+    diffs = noisy_controls - ground_controls
+    fig3 = plt.figure()
+    plt.scatter(
+        ground_controls[:, 0],
+        ground_controls[:, 1],
+        label='ground controls')
+    plt.scatter(diffs[:, 0], diffs[:, 1], s=10, c='red', label='noisy diffs')
+    plt.legend()
 
     err = compute_error(ground_traj, noisy_traj)
     print "Error between trajectories:", err
