@@ -157,4 +157,19 @@ public class JamaMatrixLib implements MatrixLib {
   public int hashCode() {
     return Arrays.deepHashCode(values.getArray());
   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.common.numerical.MatrixLib#exp()
+   */
+  @Override
+  public MatrixLib exp() {
+    double[][] v = values.getArrayCopy();
+    for (int i = 0; i < numRows(); i++) {
+      for (int j = 0; j < numCols(); j++)
+        v[i][j] = Math.exp(v[i][j]);
+    }
+    return new JamaMatrixLib(v);
+  }
 }
