@@ -73,7 +73,7 @@ public class BuiltInFunctions {
   public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
   public static final String LT_NAME = "__LESSTHAN";
   public static final String LEQ_NAME = "__LESSTHANOREQUAL";
-  public static final String CONCATE_NAME = "_concat";
+  public static final String SCALAR_STACK_NAME = "__SCALAR_STACK";
 
   // can be called by user
   public static final String SUCC_NAME = "Succ";
@@ -82,7 +82,6 @@ public class BuiltInFunctions {
   public static final String INV_NAME = "inv";
   public static final String DET_NAME = "det";
   public static final String IS_EMPTY_NAME = "IsEmptyString";
-  // public static final String CONCAT_NAME = "Concat"; //Concat replaced by +
   public static final String MIN_NAME = "min";
   public static final String MAX_NAME = "max";
   public static final String ROUND_NAME = "round";
@@ -100,7 +99,7 @@ public class BuiltInFunctions {
   public static final String TOREAL_NAME = "toReal";
   public static final String ABS_NAME = "abs";
   public static final String EXP_NAME = "exp";
-  
+
   /**
    * Constant that always denotes Model.NULL.
    */
@@ -349,6 +348,11 @@ public class BuiltInFunctions {
    */
   public static NonRandomFunction VSTACK;
 
+  /*
+   * Take a list of scalar arguments, and convert them to a Matrix row-vector
+   */
+  public static TemplateFunction SCALAR_STACK;
+
   /**
    * Return an identity matrix.
    */
@@ -394,13 +398,7 @@ public class BuiltInFunctions {
    * Return the exponential value of every element in the matrix.
    */
   public static NonRandomFunction EXP_MAT;
-  
-  /*
-   * Take a list of arguments, and convert them to a row-vector
-   * TODO: Currently only accept double elements as input arguments
-   */
-  public static TemplateFunction CONCATE;
-  
+
   private BuiltInFunctions() {
     // prevent instantiation
   }
@@ -425,14 +423,11 @@ public class BuiltInFunctions {
     }
 
     // find template functions compatible with sig
-    // TODO: to add more template functions
-    for(int i = 0; i < templateFunctions.size(); ++ i) {
-    	if(templateFunctions.get(i).getName().equals(sig.getName())) {
-    		NonRandomFunction f = templateFunctions.get(i).getSpecificFunc(sig.getArgTypes());
-    		if(f != null) return f;
-    	}
-    }
-    
+    TemplateFunction tempfun = templateFunctions.get(sig.getName());
+    NonRandomFunction f = tempfun.getConcreteFunction(sig.getArgTypes());
+    if (f != null)
+      return f;
+
     return null;
   }
 
@@ -485,11 +480,11 @@ public class BuiltInFunctions {
   static Map functions = new HashMap(); // from String to List of Function
 
   private static void addTemplate(TemplateFunction t) {
-	  templateFunctions.add(t);
+    templateFunctions.put(t.getName(), t);
   }
-  
-  static ArrayList<TemplateFunction> templateFunctions = new ArrayList<TemplateFunction>();
-  
+
+  static Map<String, TemplateFunction> templateFunctions = new HashMap<String, TemplateFunction>();
+
   static {
     // Add non-random constants
     NULL = getLiteral("null", BuiltInTypes.NULL, Model.NULL);
@@ -1071,47 +1066,42 @@ public class BuiltInFunctions {
     VSTACK = new NonRandomFunction(VSTACK_NAME, argTypes, retType, vstackInterp);
     addFunction(VSTACK);
 
-    
-  //TODO: to complete CONCATE
-    CONCATE = new TemplateFunction(CONCATE_NAME){
+    // TODO: to complete stacking of scalar
+    SCALAR_STACK = new TemplateFunction(SCALAR_STACK_NAME) {
 
-		@Override
-		public NonRandomFunction getSpecificFunc(Type[] argTypes) {
-			int n = argTypes.length;
-			if(n < 1) return null;
-			
-			for(int i=1;i<n;++i)
-				if(!argTypes[i].equals(argTypes[0])) return null;
-			
-			/*
-			 * TODO: Currently only support convert elements to Real Matrix!!!
-			 */
-			for(int i=0;i<n;++i)
-				if(!argTypes[i].isSubtypeOf(BuiltInTypes.REAL)) return null;
-			
-			FunctionInterp concateInterp = new AbstractFunctionInterp() {
-			      public Object getValue(List args) {
-			    	  int n = args.size();
-			    	  double[][] val = new double[1][n];
-			    	  for(int i=0;i<n;++i)
-			    		  val[0][i] = (Double)args.get(i);
-			    	  return MatrixFactory.fromArray(val);
-			      }
-			    };
-			List<Type> args = new ArrayList<Type>();
-			for(int i=0;i<n;++i)
-				args.add(BuiltInTypes.REAL);
-			 
-			// TODO: convert REAL_ARRAY to REAL_MATRIX
-			NonRandomFunction retFunc = 
-					new NonRandomFunction(CONCATE_NAME, args, BuiltInTypes.REAL_ARRAY, concateInterp);
-			return retFunc;
-		}
-    	
+      @Override
+      public NonRandomFunction getConcreteFunction(Type[] argTypes) {
+        if (argTypes == null || argTypes.length < 1)
+          return null;
+
+        /*
+         * Currently only support convert elements to Real Matrix!!!
+         * TODO: to support other types in the future
+         */
+        for (Type ty : argTypes)
+          if (!ty.isSubtypeOf(BuiltInTypes.REAL))
+            return null;
+
+        FunctionInterp scalarStackInterp = new AbstractFunctionInterp() {
+          public Object getValue(List args) {
+            int n = args.size();
+            double[][] val = new double[n][1];
+            for (int i = 0; i < n; ++i)
+              val[i][0] = (Double) args.get(i);
+            return MatrixFactory.fromArray(val);
+          }
+        };
+        List<Type> args = new ArrayList<Type>();
+        for (int i = 0; i < argTypes.length; ++i)
+          args.add(BuiltInTypes.REAL);
+
+        NonRandomFunction retFunc = new NonRandomFunction(SCALAR_STACK_NAME,
+            args, BuiltInTypes.REAL_MATRIX, scalarStackInterp);
+        return retFunc;
+      }
     };
-    addTemplate(CONCATE);
-    
-    
+    addTemplate(SCALAR_STACK);
+
     FunctionInterp eyeInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         Integer size = (Integer) args.get(0);
@@ -1249,18 +1239,20 @@ public class BuiltInFunctions {
   };
 }
 
-
 /*
  * Author: yiwu
  * Date: 2014-4-22
  */
 abstract class TemplateFunction {
-	private String name;
-	public TemplateFunction(String _name) {
-		name = _name;
-	}
-	public String getName() {
-		return name;
-	}
-	public abstract NonRandomFunction getSpecificFunc(Type[] argTypes);
+  private String name;
+
+  public TemplateFunction(String _name) {
+    name = _name;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public abstract NonRandomFunction getConcreteFunction(Type[] argTypes);
 }
