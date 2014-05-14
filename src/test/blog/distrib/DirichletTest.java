@@ -46,7 +46,7 @@ public class DirichletTest {
 	public void testGetProb() {		
 		double probDistrib = distrib.getProb(new ArrayList<Object>(), vals);
 		double probTrue = Gamma.gamma(NUM_DIMS * ALL_EVI);
-		for (int i = 0; i < vals.colLen(); i++) {
+		for (int i = 0; i < vals.numCols(); i++) {
 			double randVar = vals.elementAt(0, i);
 			probTrue *= Math.pow(randVar, ALL_EVI - 1.0) / Gamma.gamma(ALL_EVI);
 		}
@@ -71,7 +71,7 @@ public class DirichletTest {
 		System.out.println(samples);
 		
 		double sum = 0.0;
-		for (int i = 0; i < samples.colLen(); i++) {
+		for (int i = 0; i < samples.numCols(); i++) {
 			sum += samples.elementAt(0, i);
 		}
 		assertEquals(sum, 1.0, MAX_DIFF_DOUBLE);
