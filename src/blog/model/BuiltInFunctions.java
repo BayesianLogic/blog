@@ -58,7 +58,8 @@ import blog.type.Timestep;
  */
 public class BuiltInFunctions {
   /**
-   * internal names for builtin functions
+   * internal names for builtin functions, these are not supposed to be called
+   * by users
    */
   public static final String PLUS_NAME = "__PLUS";
   public static final String MINUS_NAME = "__MINUS";
@@ -96,6 +97,8 @@ public class BuiltInFunctions {
   public static final String ONES_NAME = "ones";
   public static final String TOINT_NAME = "toInt";
   public static final String TOREAL_NAME = "toReal";
+  public static final String ABS_NAME = "abs";
+  public static final String EXP_NAME = "exp";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -371,6 +374,26 @@ public class BuiltInFunctions {
    * and converts it to a Real
    */
   public static NonRandomFunction TO_REAL;
+
+  /**
+   * Return the absolute value of a Real value.
+   */
+  public static NonRandomFunction ABS;
+
+  /**
+   * Return the exponential value of a Real value.
+   */
+  public static NonRandomFunction EXP;
+
+  /**
+   * Return the exponential value of a Integer value.
+   */
+  public static NonRandomFunction EXP_INT;
+
+  /**
+   * Return the exponential value of every element in the matrix.
+   */
+  public static NonRandomFunction EXP_MAT;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -716,7 +739,7 @@ public class BuiltInFunctions {
       public Object getValue(List args) {
         MatrixLib mat = (MatrixLib) args.get(0);
         int i = (Integer) args.get(1);
-        if (mat.rowLen() > 1) {
+        if (mat.numRows() > 1) {
           return mat.sliceRow(i);
         } else {
           return mat.elementAt(0, i);
@@ -1099,16 +1122,67 @@ public class BuiltInFunctions {
         } else if (obj instanceof MatrixLib) {
           return ((MatrixLib) obj).elementAt(0, 0);
         } else {
-          System.err.println(obj.toString()
-              + " cannot be converted to Real");
+          System.err.println(obj.toString() + " cannot be converted to Real");
           return 0;
         }
       }
     };
+
     argTypes.clear();
     argTypes.add(BuiltInTypes.BUILT_IN);
     retType = BuiltInTypes.REAL;
-    TO_REAL = new NonRandomFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
+    TO_REAL = new NonRandomFunction(TOREAL_NAME, argTypes, retType,
+        toRealInterp);
     addFunction(TO_REAL);
+
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+    FunctionInterp absInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        double val = ((Number) args.get(0)).doubleValue();
+        return Math.abs(val);
+      }
+    };
+    ABS = new NonRandomFunction(ABS_NAME, argTypes, retType, absInterp);
+    addFunction(ABS);
+
+    /**
+     * exponential function for real argument
+     */
+    FunctionInterp expInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        double val = ((Number) args.get(0)).doubleValue();
+        return Math.exp(val);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+    EXP = new NonRandomFunction(EXP_NAME, argTypes, retType, expInterp);
+    addFunction(EXP);
+
+    /**
+     * exponential function for integer argument
+     */
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL;
+    EXP_INT = new NonRandomFunction(EXP_NAME, argTypes, retType, expInterp);
+    addFunction(EXP_INT);
+
+    /**
+     * exponential function for real matrix argument
+     */
+    FunctionInterp expMatInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        return ((MatrixLib) args.get(0)).exp();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+    EXP_MAT = new NonRandomFunction(EXP_NAME, argTypes, retType, expMatInterp);
+    addFunction(EXP_MAT);
   };
 }
