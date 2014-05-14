@@ -424,9 +424,11 @@ public class BuiltInFunctions {
 
     // find template functions compatible with sig
     TemplateFunction tempfun = templateFunctions.get(sig.getName());
-    NonRandomFunction f = tempfun.getConcreteFunction(sig.getArgTypes());
-    if (f != null)
-      return f;
+    if (tempfun != null) {
+      NonRandomFunction f = tempfun.getConcreteFunction(sig.getArgTypes());
+      if (f != null)
+        return f;
+    }
 
     return null;
   }
