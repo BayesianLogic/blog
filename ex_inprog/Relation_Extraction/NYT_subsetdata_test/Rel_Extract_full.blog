@@ -4,8 +4,8 @@
 type Relation;
 //#Relation = 100;
 
-fixed Real alpha = 10;
-fixed Real beta = 100;
+fixed Real alpha = 50;
+fixed Real beta = 1000;
 random Real Sparsity(Relation r) ~ Beta(alpha, beta);
 //random Real Sparsity(Relation r) = 0.1;
 
@@ -27,7 +27,7 @@ random Boolean Holds(Fact f) ~ BooleanDistrib(Sparsity(Rel(f)));
 type Trigger;
 
 /* alpha should be a vector of length #Triggers */
-fixed Real dir_alpha = 0.5;
+fixed Real dir_alpha = 0.1;
 fixed Integer numTrigs = 333;
 random Real[] Theta(Relation r) ~ SymmetricDirichlet(numTrigs, dir_alpha);
 
