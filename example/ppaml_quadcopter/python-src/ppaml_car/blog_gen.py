@@ -16,10 +16,13 @@ import numpy as np
 
 
 def gps_reading_to_state(reading):
+    """
+    Convert GPS reading to [x, y, theta] array.
+    """
     assert reading.gps_latitude
     return np.array([
-        reading.gps_latitude,
         reading.gps_longitude,
+        reading.gps_latitude,
         reading.gps_orientation,
     ])
 
