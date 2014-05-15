@@ -4,7 +4,7 @@
 Plot the car's trajectory as output by BLOG.
 
 Usage:
-    ./plot_blog_traj.py out.json
+    ./plot_blog_traj.py map/avg out.json
 """
 
 
@@ -14,22 +14,51 @@ import numpy as np
 import sys
 
 
+def most_likely_particle(entries):
+    """
+    "MAP" aggregator: return the particle with the largest weight.
+    """
+    best_log_prob = -np.inf
+    best_value = None
+    for log_prob, value in entries:
+        if log_prob > best_log_prob:
+            best_log_prob = log_prob
+            best_value = value
+    return best_value
+
+
+def weighted_average_of_particles(entries):
+    """
+    "Expected-value" aggregator: return weighted average of particles.
+    """
+    average_value = 0.0
+    sum_weights = 0.0
+    for log_prob, value in entries:
+        weight = np.exp(log_prob)
+        sum_weights += weight
+        average_value += weight * np.array(value)
+    average_value /= sum_weights
+    return average_value
+
+
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print >>sys.stderr, "Usage: {} input.json".format(sys.argv[0])
+    if len(sys.argv) != 3:
+        print >>sys.stderr, "Usage: {} map/avg input.json".format(sys.argv[0])
         sys.exit(1)
-    data = json.load(open(sys.argv[1]))
+    if sys.argv[1] == 'map':
+        aggregator_func = most_likely_particle
+    elif sys.argv[1] == 'avg':
+        aggregator_func = weighted_average_of_particles
+    else:
+        raise RuntimeError("unknown method '{}'".format(sys.argv[1]))
+    data = json.load(open(sys.argv[2]))
+
     states = []
     for query_str, entries in data:
-        # query_str is like "state(@123)"
-        timestep = int(query_str[7:-1])
-        # Pick particle with largest weight.
-        best_entry = (-np.inf, None)
-        for log_prob, value in entries:
-            if log_prob > best_entry[0]:
-                best_entry = (log_prob, value)
-        # state is like "[0.0; 0.0; 0.0]"
-        state = json.loads(best_entry[1].replace(';', ','))
+        for i in xrange(len(entries)):
+            # entry is like (log_prob, "[0.0; 0.0; 0.0]")
+            entries[i][1] = json.loads(entries[i][1].replace(';', ','))
+        state = aggregator_func(entries)
         states.append(state)
     states = np.array(states)
 
