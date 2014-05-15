@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.objgen.ObjectSet;
 import blog.type.Timestep;
@@ -57,7 +58,8 @@ import blog.type.Timestep;
  */
 public class BuiltInFunctions {
   /**
-   * internal names for builtin functions
+   * internal names for builtin functions, these are not supposed to be called
+   * by users
    */
   public static final String PLUS_NAME = "__PLUS";
   public static final String MINUS_NAME = "__MINUS";
@@ -88,6 +90,15 @@ public class BuiltInFunctions {
   public static final String COS_NAME = "cos";
   public static final String TAN_NAME = "tan";
   public static final String ATAN2_NAME = "atan2";
+  public static final String COL_SUM_NAME = "sum";
+  public static final String VSTACK_NAME = "vstack";
+  public static final String EYE_NAME = "eye";
+  public static final String ZEROS_NAME = "zeros";
+  public static final String ONES_NAME = "ones";
+  public static final String TOINT_NAME = "toInt";
+  public static final String TOREAL_NAME = "toReal";
+  public static final String ABS_NAME = "abs";
+  public static final String EXP_NAME = "exp";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -320,9 +331,69 @@ public class BuiltInFunctions {
   public static NonRandomFunction TAN;
 
   /**
-   * Take scalars <code>x</code> and <code>y</code> and return <code>atan2(y, x)</code>.
+   * Take scalars <code>x</code> and <code>y</code> and return
+   * <code>atan2(y, x)</code>.
    */
   public static NonRandomFunction ATAN2;
+
+  /**
+   * Take RealMatrix x and return RealMatrix y where elements are the sum of
+   * columns of x.
+   */
+  public static NonRandomFunction COL_SUM;
+
+  /**
+   * Take RealMatrix x and y and return RealMatrix z which is the concatenation
+   * [x; y].
+   */
+  public static NonRandomFunction VSTACK;
+
+  /**
+   * Return an identity matrix.
+   */
+  public static NonRandomFunction EYE;
+
+  /**
+   * Return a matrix of zeros.
+   */
+  public static NonRandomFunction ZEROS;
+
+  /**
+   * Return a matrix of ones.
+   */
+  public static NonRandomFunction ONES;
+
+  /**
+   * The function takes an Integer, an Real or a MatrixLib with single element,
+   * and converts it to an Integer
+   */
+  public static NonRandomFunction TO_INT;
+
+  /**
+   * The function takes a Real or a MatrixLib with single element,
+   * and converts it to a Real
+   */
+  public static NonRandomFunction TO_REAL;
+
+  /**
+   * Return the absolute value of a Real value.
+   */
+  public static NonRandomFunction ABS;
+
+  /**
+   * Return the exponential value of a Real value.
+   */
+  public static NonRandomFunction EXP;
+
+  /**
+   * Return the exponential value of a Integer value.
+   */
+  public static NonRandomFunction EXP_INT;
+
+  /**
+   * Return the exponential value of every element in the matrix.
+   */
+  public static NonRandomFunction EXP_MAT;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -662,19 +733,24 @@ public class BuiltInFunctions {
     argTypes.add(BuiltInTypes.INTEGER);
     retType = BuiltInTypes.REAL_MATRIX;
 
-    // get the i-th row of the matrix
+    // Return the i-th row of the matrix,
+    // or if the matrix has a single row, return the i-th column.
     FunctionInterp subMatInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         MatrixLib mat = (MatrixLib) args.get(0);
         int i = (Integer) args.get(1);
-        return mat.sliceRow(i);
+        if (mat.numRows() > 1) {
+          return mat.sliceRow(i);
+        } else {
+          return mat.elementAt(0, i);
+        }
       }
     };
     SUB_MAT = new NonRandomFunction(SUB_MAT_NAME, argTypes, retType,
         subMatInterp);
     addFunction(SUB_MAT);
 
-    // Array subscription (aka indexing) 
+    // Array subscription (aka indexing)
     FunctionInterp subVecInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         MatrixLib mat = (MatrixLib) args.get(0);
@@ -870,7 +946,7 @@ public class BuiltInFunctions {
         return Math.round(num);
       }
     };
-    
+
     ROUND = new NonRandomFunction(ROUND_NAME, argTypes, retType, roundInterp);
     addFunction(ROUND);
 
@@ -886,18 +962,19 @@ public class BuiltInFunctions {
       }
     };
 
-    TRANSPOSE_REAL_MAT = new NonRandomFunction(
-        TRANSPOSE_NAME, argTypes, retType, transposeInterp);
+    TRANSPOSE_REAL_MAT = new NonRandomFunction(TRANSPOSE_NAME, argTypes,
+        retType, transposeInterp);
     addFunction(TRANSPOSE_REAL_MAT);
 
-    // Transpose function for Integer matrices (uses the same FunctionInterp above)
+    // Transpose function for Integer matrices (uses the same FunctionInterp
+    // above)
     // Does not work yet ("java.util.ArrayList cannot be cast to
     // blog.common.numerical.MatrixLib")
     argTypes.clear();
     argTypes.add(BuiltInTypes.INTEGER_MATRIX);
     retType = BuiltInTypes.INTEGER_MATRIX;
-    TRANSPOSE_INT_MAT = new NonRandomFunction(
-        TRANSPOSE_NAME, argTypes, retType, transposeInterp);
+    TRANSPOSE_INT_MAT = new NonRandomFunction(TRANSPOSE_NAME, argTypes,
+        retType, transposeInterp);
     addFunction(TRANSPOSE_INT_MAT);
 
     // Trigonometric functions on scalars:
@@ -945,5 +1022,167 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL;
     ATAN2 = new NonRandomFunction(ATAN2_NAME, argTypes, retType, atan2Interp);
     addFunction(ATAN2);
+
+    FunctionInterp colSumInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        MatrixLib matrix = (MatrixLib) args.get(0);
+        return matrix.columnSum();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+    COL_SUM = new NonRandomFunction(COL_SUM_NAME, argTypes, retType,
+        colSumInterp);
+    addFunction(COL_SUM);
+
+    FunctionInterp vstackInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        MatrixLib a = (MatrixLib) args.get(0);
+        MatrixLib b = (MatrixLib) args.get(1);
+        return MatrixFactory.vstack(a, b);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+    VSTACK = new NonRandomFunction(VSTACK_NAME, argTypes, retType, vstackInterp);
+    addFunction(VSTACK);
+
+    FunctionInterp eyeInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Integer size = (Integer) args.get(0);
+        return MatrixFactory.eye(size);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    EYE = new NonRandomFunction(EYE_NAME, argTypes, retType, eyeInterp);
+    addFunction(EYE);
+
+    FunctionInterp zerosInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Integer rows = (Integer) args.get(0);
+        Integer cols = (Integer) args.get(1);
+        return MatrixFactory.zeros(rows, cols);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    ZEROS = new NonRandomFunction(ZEROS_NAME, argTypes, retType, zerosInterp);
+    addFunction(ZEROS);
+
+    FunctionInterp onesInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Integer rows = (Integer) args.get(0);
+        Integer cols = (Integer) args.get(1);
+        return MatrixFactory.ones(rows, cols);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    ONES = new NonRandomFunction(ONES_NAME, argTypes, retType, onesInterp);
+    addFunction(ONES);
+
+    FunctionInterp toIntInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Object obj = args.get(0);
+        if (obj instanceof Number) {
+          return ((Number) obj).intValue();
+        } else if (obj instanceof Boolean) {
+          return ((Boolean) obj).booleanValue() ? 1 : 0;
+        } else if (obj instanceof MatrixLib) {
+          return (int) ((MatrixLib) obj).elementAt(0, 0);
+        } else {
+          System.err.println(obj.toString()
+              + " cannot be converted to Integer ");
+          return 0;
+        }
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.BUILT_IN);
+    retType = BuiltInTypes.INTEGER;
+    TO_INT = new NonRandomFunction(TOINT_NAME, argTypes, retType, toIntInterp);
+    addFunction(TO_INT);
+
+    FunctionInterp toRealInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Object obj = args.get(0);
+        if (obj instanceof Number) {
+          return ((Number) obj).doubleValue();
+        } else if (obj instanceof Boolean) {
+          return ((Boolean) obj).booleanValue() ? 1 : 0;
+        } else if (obj instanceof MatrixLib) {
+          return ((MatrixLib) obj).elementAt(0, 0);
+        } else {
+          System.err.println(obj.toString() + " cannot be converted to Real");
+          return 0;
+        }
+      }
+    };
+
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.BUILT_IN);
+    retType = BuiltInTypes.REAL;
+    TO_REAL = new NonRandomFunction(TOREAL_NAME, argTypes, retType,
+        toRealInterp);
+    addFunction(TO_REAL);
+
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+    FunctionInterp absInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        double val = ((Number) args.get(0)).doubleValue();
+        return Math.abs(val);
+      }
+    };
+    ABS = new NonRandomFunction(ABS_NAME, argTypes, retType, absInterp);
+    addFunction(ABS);
+
+    /**
+     * exponential function for real argument
+     */
+    FunctionInterp expInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        double val = ((Number) args.get(0)).doubleValue();
+        return Math.exp(val);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+    EXP = new NonRandomFunction(EXP_NAME, argTypes, retType, expInterp);
+    addFunction(EXP);
+
+    /**
+     * exponential function for integer argument
+     */
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL;
+    EXP_INT = new NonRandomFunction(EXP_NAME, argTypes, retType, expInterp);
+    addFunction(EXP_INT);
+
+    /**
+     * exponential function for real matrix argument
+     */
+    FunctionInterp expMatInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        return ((MatrixLib) args.get(0)).exp();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+    EXP_MAT = new NonRandomFunction(EXP_NAME, argTypes, retType, expMatInterp);
+    addFunction(EXP_MAT);
   };
 }

@@ -7,7 +7,7 @@ import java.util.Set;
 
 import blog.common.UnaryProcedure;
 import blog.common.Util;
-import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.sample.EvalContext;
 import blog.world.DefaultPartialWorld;
@@ -105,7 +105,7 @@ public class MatrixSpec extends ArgSpec {
       spec.compile(callStack);
     }
     double[][] contents = getValues(matrixContents);
-    matrix = new JamaMatrixLib(contents);
+    matrix = MatrixFactory.fromArray(contents);
 
     callStack.remove(this);
     return 0;

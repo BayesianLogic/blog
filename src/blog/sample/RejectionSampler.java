@@ -79,6 +79,10 @@ import blog.world.WorldInProgress;
  * non-guaranteed objects, the depth is one greater than the maximum depth of
  * their generating objects. This bound is ignored if it is negative (so objects
  * of depth 0 are always allowed as arguments).
+ *
+ * <dt>timestepBound
+ * <dd>The sampler will instantiate any Timestep variables from 0 up to
+ * timestepBound.
  * </dl>
  * 
  * These bounding flags may prevent the sampler from instantiating evidence or
@@ -109,6 +113,15 @@ public class RejectionSampler extends Sampler {
 				depthBound = Integer.parseInt(depthBoundStr);
 			} catch (NumberFormatException e) {
 				Util.fatalError("Invalid depthBound: " + depthBoundStr);
+			}
+		}
+
+		String timestepBoundStr = properties.getProperty("timestepBound");
+		if (timestepBoundStr != null) {
+			try {
+				timestepBound = Integer.parseInt(timestepBoundStr);
+			} catch (NumberFormatException e) {
+				Util.fatalError("Invalid timestepBound: " + timestepBoundStr);
 			}
 		}
 	}
@@ -147,7 +160,7 @@ public class RejectionSampler extends Sampler {
 			System.out.println();
 			System.out.println("Sampling world...");
 		}
-		curWorld = new WorldInProgress(model, evidence, intBound, depthBound);
+		curWorld = new WorldInProgress(model, evidence, intBound, depthBound, timestepBound);
 
 		// Find the first variable that is supported but not instantiated.
 		// Instantiate it. Repeat until all evidence and query variables
@@ -250,6 +263,7 @@ public class RejectionSampler extends Sampler {
 
 	private int intBound = -1;
 	private int depthBound = -1;
+	private int timestepBound = 0;
 	private boolean requireComplete = false;
 
 	private WorldInProgress curWorld;
