@@ -386,7 +386,7 @@ public class BuiltInFunctions {
   public static NonRandomFunction ABS_INT;
 
   /**
-   * Return the absolute value of a Real matrix.
+   * Return the absolute value of every element of a Real matrix.
    */
   public static NonRandomFunction ABS_MAT;
 
