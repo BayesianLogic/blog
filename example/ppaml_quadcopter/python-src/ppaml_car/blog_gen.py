@@ -13,6 +13,7 @@ import ppaml_car
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 import numpy as np
+import sys
 
 
 def gps_reading_to_state(reading):
@@ -91,11 +92,14 @@ def generate_model(readings, car_params):
 
 
 if __name__ == "__main__":
-    data_dir = path_for_dataset('1_straight', 'ground')
+    if len(sys.argv) != 3:
+        raise RuntimeError(
+            "Usage example: {} 1_straight ground".format(sys.argv[0]))
+    data_dir = path_for_dataset(sys.argv[1], sys.argv[2])
     readings = read_data(data_dir)
     car_params, obstacles = read_metadata(data_dir)
     # XXX Output only a few, to keep model size small.
-    readings = readings[:100]
+    # readings = readings[:1000]
     model = generate_model(readings, car_params)
     with open('car.blog', 'w') as f:
         f.write(model)
