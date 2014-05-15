@@ -47,9 +47,11 @@ $ ./gen_parser
   4. In the `Arguments` tab, pass in the path to the BLOG model, and any parameters
 
 - Formating source code using Eclipse
-  1. please set the line ending to be linux style `\n`
-  2. use 2 spaces ` ` for indentation
-  3. For more please refer to [development guideline](https://github.com/lileicc/dblog/wiki/Home)
+  1. import the single configuration file: [eclipse config file](https://gist.github.com/lileicc/9593999) (no need to do the following if you import this file), otherwise
+  2. please set the line ending to be linux style `\n`
+  3. use 2 spaces ` ` for indentation
+  4. For more please refer to [development guideline](https://github.com/lileicc/dblog/wiki/Home)
+
 
 ### Compiling Directly
 0. (needed only if you change parser) Generate Lexer and Parser 

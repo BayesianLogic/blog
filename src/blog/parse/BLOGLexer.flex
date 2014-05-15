@@ -130,7 +130,7 @@ Alpha = [A-Za-z]
 
 Digit = [0-9]
 
-Identifier = {Alpha}({Alpha}|{Digit}|_)*
+Identifier = ({Alpha}|_)({Alpha}|{Digit}|_)*
 
 IntegerLiteral = [+-]?{Digit}+
 

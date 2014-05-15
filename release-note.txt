@@ -106,7 +106,7 @@ BLOG 0.3 (14 August 2008)
     represented as instances of class blog.Timestep.  
   * This release includes a prototype particle filtering engine for DBLOG 
     models (developed by Rodrigo de Salvo Braz based on initial code by 
-    Keith Henderson).  It can be invoked with -e blog.ParticleFilter.  If 
+    Keith Henderson).  It can be invoked with -e blog.engine.ParticleFilter.  If 
     the useDecayedMCMC property is set to true with -PuseDecayedMCMC=true, 
     the particle filter will do an iteration of MCMC on each particle at 
     each time step (the number of MCMC iterations can be changed by setting 
