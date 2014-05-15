@@ -384,7 +384,7 @@ public class TupleSetSpec extends ArgSpec {
    * Evaluates the terms <code>terms</code> in the given context and returns a
    * list of their values. Returns null if any of these values are null.
    */
-  private List evaluateTuple(EvalContext context) {
+  private Object evaluateTuple(EvalContext context) {
     List termValues = new ArrayList();
     for (int i = 0; i < terms.length; ++i) {
       Object val = terms[i].evaluate(context);
@@ -393,7 +393,15 @@ public class TupleSetSpec extends ArgSpec {
       }
       termValues.add(val);
     }
-    return termValues;
+
+    // HACK: If there's only one term, return it directly, rather than wrapping
+    // it in a list. This means that a TupleSetSpec with a single term
+    // evaluates to a multiset of values, rather than a multiset of one-tuples.
+    if (terms.length == 1) {
+      return termValues.get(0);
+    } else {
+      return termValues;
+    }
   }
 
   private Boolean isFirstSatisfiedDisjunct(EvalContext context, int disjIndex) {
