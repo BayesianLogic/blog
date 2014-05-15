@@ -381,6 +381,16 @@ public class BuiltInFunctions {
   public static NonRandomFunction ABS;
 
   /**
+   * Return the absolute value of a Integer value.
+   */
+  public static NonRandomFunction ABS_INT;
+
+  /**
+   * Return the absolute value of every element of a Real matrix.
+   */
+  public static NonRandomFunction ABS_MAT;
+
+  /**
    * Return the exponential value of a Real value.
    */
   public static NonRandomFunction EXP;
@@ -1135,17 +1145,43 @@ public class BuiltInFunctions {
         toRealInterp);
     addFunction(TO_REAL);
 
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.REAL);
-    retType = BuiltInTypes.REAL;
+    /**
+     * absolute value for Real
+     */
     FunctionInterp absInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         double val = ((Number) args.get(0)).doubleValue();
         return Math.abs(val);
       }
     };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
     ABS = new NonRandomFunction(ABS_NAME, argTypes, retType, absInterp);
     addFunction(ABS);
+
+    /**
+     * absolute value for Integer
+     */
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.INTEGER;
+    ABS_INT = new NonRandomFunction(ABS_NAME, argTypes, retType, absInterp);
+    addFunction(ABS_INT);
+
+    /**
+     * absolute value for Real matrix
+     */
+    FunctionInterp absMatInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        return ((MatrixLib) args.get(0)).abs();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+    ABS_MAT = new NonRandomFunction(ABS_NAME, argTypes, retType, absMatInterp);
+    addFunction(ABS_MAT);
 
     /**
      * exponential function for real argument
