@@ -209,17 +209,19 @@ public class ParticleFilter extends InferenceEngine {
         List<Query> currentQueries = slicedQueries.get(Timestep
             .at(timestepIndex));
         if (currentQueries != null) {
-          System.out.println("======== Query Results ========");
-          System.out.println("After " + timestepIndex + " timesteps:");
           for (Particle particle : (List<Particle>) particles) {
             particle.answer(currentQueries);
           }
-          for (Query query : currentQueries) {
-            query.printResults(System.out);
+          if (timestepIndex % queryReportInterval == 0) {
+            System.out.println("======== Query Results =========");
+            System.out.println("After timestep " + timestepIndex);
+            for (Query q : currentQueries) {
+              q.printResults(System.out);
+            }
           }
-          System.out.println("======== Done ========");
         }
       }
+
     }
   }
 
@@ -297,7 +299,6 @@ public class ParticleFilter extends InferenceEngine {
 
       if (afterTakesEvidence != null)
         afterTakesEvidence.evaluate(evidence, this);
-
     }
   }
 
