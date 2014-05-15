@@ -1,6 +1,6 @@
 """ Calculate precision and recall on results
 
-	$:~ python3 prec_recall.py <results_file> <true_clusters_file> <threshold_1> <threshold_2> ... <threshold_n>
+	$:~ python3 prec_recall.py <scored_file> <true_clusters_file> <threshold_1> <threshold_2> ... <threshold_n>
 
 <results_file> should be in the format:
 	

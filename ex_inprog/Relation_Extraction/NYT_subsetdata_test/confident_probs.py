@@ -1,6 +1,6 @@
 """ Grab confident probabilities
 
-	$:~ python3 confident_probs.py <results_file> <lower_threshold> <optional_upper_threshold>
+	$:~ python3 confident_probs.py <scored_file> <lower_threshold> <optional_upper_threshold>
 """
 
 import sys
