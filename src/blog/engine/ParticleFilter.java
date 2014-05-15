@@ -205,7 +205,7 @@ public class ParticleFilter extends InferenceEngine {
         }
       }
 
-      if (timestepIndex > 0 && timestepIndex % queryReportInterval == 0) {
+      if (timestepIndex > 0) {
         List<Query> currentQueries = slicedQueries.get(Timestep
             .at(timestepIndex));
         if (currentQueries != null) {
