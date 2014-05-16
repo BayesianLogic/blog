@@ -39,7 +39,7 @@ make test
 
 ```
 # Generate car.blog in the current directory:
-python -m ppaml_car.blog_gen 2_bend ground
+python -m ppaml_car.blog_gen 2_bend noisy
 
 # Run BLOG particle filter and write out.json:
 blog -e blog.engine.ParticleFilter -n 100 -r -k ppaml_car -w out.json car.blog
