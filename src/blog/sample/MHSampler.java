@@ -175,10 +175,6 @@ public class MHSampler extends Sampler {
 			Util.fatalError("Fatal identifier errors in proposed world.", false);
 		}
 
-    // XXX
-    Object pose = curWorld.getValue(curWorld.getBasicVarByName("pose"));
-    String proposalResult;
-
 		// Compute the acceptance probability
 		acceptProbTimer.start();
 		double logProbRatio = computeLogProbRatio(curWorld.getSaved(), curWorld);
@@ -198,7 +194,6 @@ public class MHSampler extends Sampler {
 			// algorithm, but sampling done on top of it. Since this sampling is done
 			// according to the model's distribution, it still converges to it.
 			// I moved this to SamplingEngine to keep the MHSampler's "purity".
-      proposalResult = "accepted";
 			curWorld.save();
 			worldUpdateTimer.stop();
 			if (Util.verbose()) {
@@ -208,20 +203,12 @@ public class MHSampler extends Sampler {
 			++numAcceptedThisTrial;
 			proposer.updateStats(true);
 		} else {
-      proposalResult = "rejected";
 			curWorld.revert(); // clean slate for next proposal
 			if (Util.verbose()) {
 				System.out.println("\trejected");
 			}
 			proposer.updateStats(false);
 		}
-
-    // XXX
-    System.out.println(
-      "proposed pose = " + pose +
-      "  (logAcceptRatio = " + logAcceptRatio +
-      "  acceptRatio = " + Math.exp(logAcceptRatio) +
-      ")  -> " + proposalResult);
 	}
 
 	/**
