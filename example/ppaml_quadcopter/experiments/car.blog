@@ -31,7 +31,7 @@ For now, we completely ignore the obstacles and the laser / intensity data.
 
 fixed RealMatrix car_params = [0.299541; 0.0500507; 0.0; 0.257717];
 fixed RealMatrix initial_state = [-6.1039; -0.0499926; -0.000112593];
-fixed RealMatrix dynamics_noise = 0.0001 * eye(3);
+fixed RealMatrix dynamics_noise = 0.00001 * eye(3);
 
 fixed RealMatrix dynamics(
         RealMatrix car_params, RealMatrix old_state,
