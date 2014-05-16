@@ -42,7 +42,7 @@ make test
 python -m ppaml_car.blog_gen 2_bend ground
 
 # Run BLOG particle filter and write out.json:
-blog -e blog.engine.ParticleFilter -n 100 -k ppaml_car -w out.json car.blog
+blog -e blog.engine.ParticleFilter -n 100 -r -k ppaml_car -w out.json car.blog
 
 # Evaluate results:
 python -m ppaml_car.evaluate 2_bend out.json --plot
