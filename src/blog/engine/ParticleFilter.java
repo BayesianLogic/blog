@@ -221,7 +221,7 @@ public class ParticleFilter extends InferenceEngine {
           }
         }
       }
-
+      uninstantiatePreviousTimeSlice();
     }
   }
 
@@ -232,6 +232,16 @@ public class ParticleFilter extends InferenceEngine {
    */
   protected Particle makeParticle(Set idTypes, int numTimeSlicesInMemory) {
     return new Particle(idTypes, numTimeSlicesInMemory, particleSampler);
+  }
+
+  /**
+   * clean the var assignments in previous timestep
+   */
+  public void uninstantiatePreviousTimeSlice() {
+    // For now we assume numTimeSlicesInMemory = 1.
+    for (Particle p : particles) {
+      p.uninstantiatePreviousTimeslices();
+    }
   }
 
   /** Takes more evidence. */
@@ -252,9 +262,7 @@ public class ParticleFilter extends InferenceEngine {
       if (beforeTakesEvidence != null)
         beforeTakesEvidence.evaluate(evidence, this);
 
-      for (Iterator it = particles.iterator(); it.hasNext();) {
-        Particle p = (Particle) it.next();
-
+      for (Particle p : particles) {
         if (beforeParticleTakesEvidence != null)
           beforeParticleTakesEvidence.evaluate(p, evidence, this);
         p.take(evidence);
@@ -266,8 +274,6 @@ public class ParticleFilter extends InferenceEngine {
         // p.removeAllDerivedVars();
         // }
 
-        // For now we assume numTimeSlicesInMemory = 1.
-        p.uninstantiatePreviousTimeslices();
       }
 
       double logSumWeights = Double.NEGATIVE_INFINITY;
@@ -441,7 +447,7 @@ public class ParticleFilter extends InferenceEngine {
 
   private int numParticles;
   private boolean useDecayedMCMC;
-  public List particles; // of Particles
+  public List<Particle> particles; // of Particles
   private int numMoves;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
   private Sampler particleSampler;
