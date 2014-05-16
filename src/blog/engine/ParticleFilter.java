@@ -209,17 +209,19 @@ public class ParticleFilter extends InferenceEngine {
         List<Query> currentQueries = slicedQueries.get(Timestep
             .at(timestepIndex));
         if (currentQueries != null) {
-          System.out.println("======== Query Results ========");
-          System.out.println("After " + timestepIndex + " timesteps:");
           for (Particle particle : (List<Particle>) particles) {
             particle.answer(currentQueries);
           }
-          for (Query query : currentQueries) {
-            query.printResults(System.out);
+          if (timestepIndex % queryReportInterval == 0) {
+            System.out.println("======== Query Results =========");
+            System.out.println("After timestep " + timestepIndex);
+            for (Query q : currentQueries) {
+              q.printResults(System.out);
+            }
           }
-          System.out.println("======== Done ========");
         }
       }
+      uninstantiatePreviousTimeSlice();
     }
   }
 
@@ -230,6 +232,16 @@ public class ParticleFilter extends InferenceEngine {
    */
   protected Particle makeParticle(Set idTypes, int numTimeSlicesInMemory) {
     return new Particle(idTypes, numTimeSlicesInMemory, particleSampler);
+  }
+
+  /**
+   * clean the var assignments in previous timestep
+   */
+  public void uninstantiatePreviousTimeSlice() {
+    // For now we assume numTimeSlicesInMemory = 1.
+    for (Particle p : particles) {
+      p.uninstantiatePreviousTimeslices();
+    }
   }
 
   /** Takes more evidence. */
@@ -250,9 +262,7 @@ public class ParticleFilter extends InferenceEngine {
       if (beforeTakesEvidence != null)
         beforeTakesEvidence.evaluate(evidence, this);
 
-      for (Iterator it = particles.iterator(); it.hasNext();) {
-        Particle p = (Particle) it.next();
-
+      for (Particle p : particles) {
         if (beforeParticleTakesEvidence != null)
           beforeParticleTakesEvidence.evaluate(p, evidence, this);
         p.take(evidence);
@@ -264,8 +274,6 @@ public class ParticleFilter extends InferenceEngine {
         // p.removeAllDerivedVars();
         // }
 
-        // For now we assume numTimeSlicesInMemory = 1.
-        p.uninstantiatePreviousTimeslices();
       }
 
       double logSumWeights = Double.NEGATIVE_INFINITY;
@@ -297,7 +305,6 @@ public class ParticleFilter extends InferenceEngine {
 
       if (afterTakesEvidence != null)
         afterTakesEvidence.evaluate(evidence, this);
-
     }
   }
 
@@ -440,7 +447,7 @@ public class ParticleFilter extends InferenceEngine {
 
   private int numParticles;
   private boolean useDecayedMCMC;
-  public List particles; // of Particles
+  public List<Particle> particles; // of Particles
   private int numMoves;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
   private Sampler particleSampler;
