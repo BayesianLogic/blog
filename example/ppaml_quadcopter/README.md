@@ -35,22 +35,15 @@ make test
 ```
 
 
-## Generating the BLOG model from the data
+## Running on a dataset
 
 ```
 # Generate car.blog in the current directory:
-python -m ppaml_car.blog_gen
-```
+python -m ppaml_car.blog_gen 2_bend ground
 
+# Run BLOG particle filter and write out.json:
+blog -e blog.engine.ParticleFilter -n 100 -k ppaml_car -w out.json car.blog
 
-## Running the BLOG model
-
-To run with MCMC:
-
-```
-# Run with MCMC:
-blog -s blog.sample.MHSampler -k ppaml_car car.blog
-
-# Run with particle filter:
-blog -e blog.engine.ParticleFilter -k ppaml_car car.blog
+# Evaluate results:
+python -m ppaml_car.evaluate 2_bend out.json --plot
 ```
