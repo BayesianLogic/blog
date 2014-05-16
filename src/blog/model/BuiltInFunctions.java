@@ -1192,23 +1192,5 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL_MATRIX;
     EXP_MAT = new NonRandomFunction(EXP_NAME, argTypes, retType, expMatInterp);
     addFunction(EXP_MAT);
-
-    // XXX (cberzan) this is a function for debugging only.
-    FunctionInterp fryInterp = new AbstractFunctionInterp() {
-      public Object getValue(List args) {
-        Collection set = (Collection) args.get(0);
-        System.out.println("--- fry got set of " + set.size() + " elements:");
-        for (Object obj : set) {
-          System.out.println(obj);
-        }
-        System.out.println("--- end");
-        return 0;
-      }
-    };
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.SET);
-    retType = BuiltInTypes.REAL;
-    NonRandomFunction fry = new NonRandomFunction("fry", argTypes, retType, fryInterp);
-    addFunction(fry);
   };
 }
