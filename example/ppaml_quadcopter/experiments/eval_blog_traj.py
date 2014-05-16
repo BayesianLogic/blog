@@ -18,7 +18,6 @@ import argparse
 import json
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
 
 from ppaml_car.data import path_for_dataset
 from ppaml_car.data import read_data
@@ -28,47 +27,60 @@ from compare_ground_noisy import gps_from_readings
 from compare_ground_noisy import plot_traj
 
 
-def most_likely_particle(entries):
+def read_blog_json_data(path):
+    """
+    Load BLOG JSON data into a convenient format.
+
+    Return (timesteps, samples) where for all i:
+    - timesteps[i] is the i-th integer timestep
+    - samples[i] is an array of (log_prob, x, y, theta) rows at that timestep
+    """
+    data = json.load(open(path))
+    all_timesteps = []
+    all_samples = []
+    for query_str, entries in data:
+        # query_str is like "state(@123)"
+        timestep = int(query_str[7:-1])
+        samples = []
+        for entry in entries:
+            # entry is like (log_prob, "[0.0; 0.0; 0.0]")
+            sample = [entry[0]] + map(float, entry[1][1:-1].split('; '))
+            samples.append(sample)
+        all_timesteps.append(timestep)
+        all_samples.append(samples)
+    all_timesteps = np.array(all_timesteps)
+    all_samples = np.array(all_samples)
+    return all_timesteps, all_samples
+
+
+def traj_from_blog(timestamps, samples, aggregator_func):
+    """
+    Return computed trajectory as an array of (time, lat, lon, theta) rows.
+    """
+    assert len(timestamps) == len(samples)
+    traj = np.empty((len(timestamps), 4))
+    traj[:, 0] = timestamps
+    for i in xrange(len(timestamps)):
+        x, y, theta = aggregator_func(samples[i])
+        traj[i, 1] = y
+        traj[i, 2] = x
+        traj[i, 3] = theta
+    return traj
+
+
+def map_aggregator(samples):
     """
     "MAP" aggregator: return the particle with the largest weight.
     """
-    best_log_prob = -np.inf
-    best_value = None
-    for log_prob, value in entries:
-        if log_prob > best_log_prob:
-            best_log_prob = log_prob
-            best_value = value
-    return best_value
+    best_index = np.argmax(samples[:, 0])
+    return samples[best_index][1:]
 
 
-def weighted_average_of_particles(entries):
+def avg_aggregator(samples):
     """
     "Expected-value" aggregator: return weighted average of particles.
     """
-    average_value = 0.0
-    sum_weights = 0.0
-    for log_prob, value in entries:
-        weight = np.exp(log_prob)
-        sum_weights += weight
-        average_value += weight * np.array(value)
-    average_value /= sum_weights
-    return average_value
-
-
-def traj_from_blog(timestamps, data, aggregator_func):
-    states = []
-    for query_str, entries in data:
-        state = aggregator_func(entries)
-        states.append(state)
-    states = np.array(states)
-
-    # Convert from (x, y, theta) to (time, lat, lon, theta).
-    traj = np.empty((len(states), 4))
-    traj[:, 0] = timestamps
-    traj[:, 1] = states[:, 1]
-    traj[:, 2] = states[:, 0]
-    traj[:, 3] = states[:, 2]
-    return traj
+    return np.average(samples[:, 1:], axis=0, weights=np.exp(samples[:, 0]))
 
 
 if __name__ == "__main__":
@@ -80,12 +92,6 @@ if __name__ == "__main__":
     parser.add_argument('--plot', action='store_true')
     args = parser.parse_args()
 
-    # parser.add_argument('aggregator', choices=['map', 'avg'])
-    # aggregator_func = {
-    #     'map': most_likely_particle,
-    #     'avg': weighted_average_of_particles,
-    # }[args.aggregator]
-
     # Load GPS readings from dataset.
     ground_readings = read_data(path_for_dataset(args.dataset, 'ground'))
     noisy_readings = read_data(path_for_dataset(args.dataset, 'noisy'))
@@ -93,14 +99,10 @@ if __name__ == "__main__":
     noisy_traj = gps_from_readings(noisy_readings)
 
     # Load trajectory from BLOG JSON output.
-    data = json.load(open(sys.argv[2]))
-    for query_str, entries in data:
-        for i in xrange(len(entries)):
-            # entry is like (log_prob, "[0.0; 0.0; 0.0]")
-            entries[i][1] = json.loads(entries[i][1].replace(';', ','))
+    timesteps, samples = read_blog_json_data(args.json_file)
     timestamps = ground_traj[:, 0]
-    map_traj = traj_from_blog(timestamps, data, most_likely_particle)
-    avg_traj = traj_from_blog(timestamps, data, weighted_average_of_particles)
+    map_traj = traj_from_blog(timestamps, samples, map_aggregator)
+    avg_traj = traj_from_blog(timestamps, samples, avg_aggregator)
 
     # Evaluate trajectories.
     # All trajectories are lists of (time, lat, lon, theta).
