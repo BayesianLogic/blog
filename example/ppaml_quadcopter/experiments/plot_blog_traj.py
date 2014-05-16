@@ -42,8 +42,9 @@ def weighted_average_of_particles(entries):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print >>sys.stderr, "Usage: {} map/avg input.json".format(sys.argv[0])
+    if len(sys.argv) != 4:
+        raise RuntimeError(
+            "Usage: {} map/avg out.json traj.txt".format(sys.argv[0]))
         sys.exit(1)
     if sys.argv[1] == 'map':
         aggregator_func = most_likely_particle
@@ -61,6 +62,9 @@ if __name__ == "__main__":
         state = aggregator_func(entries)
         states.append(state)
     states = np.array(states)
+
+    # Save traj to file as rows of (x, y, theta).
+    np.savetxt(sys.argv[3], states)
 
     # State is [x, y, theta].
     # Plot x, y trajectory.
