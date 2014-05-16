@@ -213,7 +213,6 @@ public class ParticleFilter extends InferenceEngine {
           System.out.println("After " + timestepIndex + " timesteps:");
           for (Particle particle : (List<Particle>) particles) {
             particle.answer(currentQueries);
-            particle.uninstantiatePreviousTimeslices();
           }
           for (Query query : currentQueries) {
             query.printResults(System.out);
@@ -266,7 +265,7 @@ public class ParticleFilter extends InferenceEngine {
         // }
 
         // For now we assume numTimeSlicesInMemory = 1.
-        // p.uninstantiatePreviousTimeslices();
+        p.uninstantiatePreviousTimeslices();
       }
 
       double logSumWeights = Double.NEGATIVE_INFINITY;
