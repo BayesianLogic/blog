@@ -1,8 +1,7 @@
 from ppaml_car.data import path_for_dataset
 from ppaml_car.data import read_data
-
-from compare_ground_noisy import controls_from_readings
-from compare_ground_noisy import gps_from_readings
+from ppaml_car.evaluate import controls_from_readings
+from ppaml_car.evaluate import gps_from_readings
 
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
