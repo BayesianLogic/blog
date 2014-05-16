@@ -35,17 +35,21 @@
 
 package blog.distrib;
 
-import blog.*;
+import java.util.Iterator;
+import java.util.List;
+
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.model.Type;
-import Jama.*;
-import java.util.*;
 
 /**
  * The uniform distribution over n-dimensional column vectors coming from a
  * specified n-dimensional "box".
+ * 
+ * @author unknown
+ * @author leili
+ * @date 2014/05/15
  */
 
 public class UniformVector extends AbstractCondProbDistrib {
@@ -94,22 +98,16 @@ public class UniformVector extends AbstractCondProbDistrib {
   }
 
   public double getProb(List args, Object value) {
-    MatrixLib x = checkArgs(args, value);
+    MatrixLib x = convertValue(value);
     return inBox(x) ? densityInBox : 0;
   }
 
   public double getLogProb(List args, Object value) {
-    MatrixLib x = checkArgs(args, value);
+    MatrixLib x = convertValue(value);
     return inBox(x) ? logDensityInBox : Double.NEGATIVE_INFINITY;
   }
 
   public Object sampleVal(List args, Type childType) {
-    if (args.size() != 0) {
-      throw new IllegalArgumentException(
-          "Uniform vector distribution takes 0 arguments, " + " not "
-              + args.size() + ".");
-    }
-
     MatrixLib sample = MatrixFactory.fromArray(new double[dim][1]);
     for (int i = 0; i < dim; ++i) {
       sample.setElement(i, 0, mins[i] + (Util.random() * (maxes[i] - mins[i])));
@@ -117,17 +115,23 @@ public class UniformVector extends AbstractCondProbDistrib {
     return sample;
   }
 
-  private MatrixLib checkArgs(List args, Object value) {
-    if (args.size() != 0) {
-      throw new IllegalArgumentException(
-          "Uniform vector distribution takes 0 arguments, " + " not "
-              + args.size() + ".");
+  private MatrixLib convertValue(Object value) {
+    if (value instanceof List) {
+      double[][] v = new double[((List) value).size()][1];
+      int i = 0;
+      for (Iterator it = ((List) value).iterator(); it.hasNext();) {
+        List a = (List) it.next();
+        v[i][0] = (double) a.get(0);
+        i++;
+      }
+      value = MatrixFactory.fromArray(v);
     }
 
     if (!((value instanceof MatrixLib) && (((MatrixLib) value).numCols() == 1))) {
       throw new IllegalArgumentException(
           "The value passed to the uniform vector distribution's "
-              + "getProb method must be a column vector.");
+              + "getProb() method must be a column vector. But it is a "
+              + value.getClass());
     }
     MatrixLib x = (MatrixLib) value;
 
