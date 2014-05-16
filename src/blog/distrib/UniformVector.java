@@ -121,7 +121,7 @@ public class UniformVector extends AbstractCondProbDistrib {
       int i = 0;
       for (Iterator it = ((List) value).iterator(); it.hasNext();) {
         List a = (List) it.next();
-        v[i][0] = (double) a.get(0);
+        v[i][0] = (Double) a.get(0);
         i++;
       }
       value = MatrixFactory.fromArray(v);
