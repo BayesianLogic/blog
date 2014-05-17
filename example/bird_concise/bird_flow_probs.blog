@@ -1,0 +1,17 @@
+// parameters
+random Real beta1 ~ UniformReal(0, 30);
+random Real beta2 ~ UniformReal(0, 30);
+random Real beta3 ~ UniformReal(0, 30);
+random Real beta4 ~ UniformReal(0, 30);
+random RealMatrix beta = transpose( __SCALAR_STACK(beta1,beta2,beta3,beta4) );
+query beta;
+// features
+random RealMatrix F1(Location src) ~ UniformVector(-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5); // windspeed feature 
+random RealMatrix F2(Location src) ~ UniformVector(-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5); // windspeed feature 
+random RealMatrix F3(Location src, Timestep t) ~ UniformVector(-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5); // windspeed feature 
+random RealMatrix F4(Location src) ~ UniformVector(-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5); // windspeed feature 
+// flow probabilities
+random RealMatrix probs(Location src, Timestep t) = exp(beta * vstack(vstack(vstack(transpose(F1(src)),transpose(F2(src))),transpose(F3(src,t))),transpose(F4(src))) );
+
+query F1(l[1]);
+query F3(l[13],@0);
