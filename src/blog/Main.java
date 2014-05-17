@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
@@ -52,6 +53,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.google.gson.Gson;
+
+import blog.common.Histogram;
 import blog.common.Timer;
 import blog.common.Util;
 import blog.common.cmdline.BooleanOption;
@@ -62,6 +66,7 @@ import blog.common.cmdline.PropertiesOption;
 import blog.common.cmdline.StringListOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.InferenceEngine;
+import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -109,10 +114,6 @@ import blog.semant.Semant;
  * Metropolis-Hastings sampler. Default: blog.GenericProposer (samples each var
  * given its parents)
  * 
- * <dt>-t, <i>num</i>, --num_trials=<i>num</i>
- * <dd>Do <i>num</i> independent runs (trials) of the inference algorithm.
- * Default: 1
- * 
  * <dt>--generate
  * <dd>Rather than answering queries, just sample possible worlds from the prior
  * distribution defined by the model, and print them out. Default: false
@@ -133,17 +134,7 @@ import blog.semant.Semant;
  * <dd>Print model, evidence, and queries for debugging. Default: false
  * 
  * <dt>-w <i>file-prefix</i>, --write=<i>file-prefix</i>
- * <dd>Write sampling results to file specified by this argument. Use with the
- * -i flag.
- * 
- * <dt>-i, --interval
- * <dd>To be used with the -w option, specify the interval at which output is
- * written. Note that if -i and -n are the same, output is written only once, at
- * the last iteration.
- * 
- * <dt>-h <i>file-prefix</i>, --histogram_output=<i>file-prefix</i>
- * <dd>Output the histogram of an ArgSpecQuery to a file. The results are taken
- * after the final sample completes.
+ * <dd>Write query results to file specified by this argument.
  * 
  * <dt>-P <i>key</i>=<i>value</i>
  * <dd>Include the entry <i>key</i>=<i>value</i> in the properties table that is
@@ -203,38 +194,26 @@ public class Main {
     if (generate) {
       generateWorlds();
     } else {
-      // Run inference for the specified number of trials
+      // Run inference.
       InferenceEngine engine = InferenceEngine.constructEngine(model,
           inferenceProps);
-      for (int i = 0; i < numStatSamples; i++) {
-        printTimes(System.out, "-", 80);
-        System.out.println("Trial " + i + ": ");
+      engine.setEvidence(evidence);
+      engine.setQueries(queries);
+      engine.answerQueries();
 
-        engine.setEvidence(evidence);
-        engine.setQueries(queries);
-        engine.answerQueries();
-
-        // Print query results
-        System.out.println("======== Query Results =========");
-        System.out.println("Iteration: " + numSamples);
-        for (Iterator iter = queries.iterator(); iter.hasNext();) {
-          Query q = (Query) iter.next();
-          q.printResults(System.out);
-          // leili: why to zero out???
-          // q.zeroOut();
-        }
-        System.out.println("======== Done ========");
-
-        System.out.println();
+      // Print query results
+      System.out.println("======== Query Results =========");
+      System.out.println("Iteration: " + numSamples);
+      for (Iterator iter = queries.iterator(); iter.hasNext();) {
+        Query q = (Query) iter.next();
+        q.printResults(System.out);
       }
+      System.out.println("======== Done ========");
+      System.out.println();
 
-      if (numStatSamples > 1) {
-        printTimes(System.out, "=", 80);
-        System.out.println("Summary of statistics for all trials:");
-        for (Iterator iter = queries.iterator(); iter.hasNext();) {
-          Query q = (Query) iter.next();
-          q.printVarianceResults(System.out);
-        }
+      // Write query results to file, in JSON format.
+      if (outputPath != null) {
+        writeResultsJson(queries, outputPath);
       }
     }
 
@@ -304,7 +283,7 @@ public class Main {
     specialOptions.put("queryReportInterval", optQueryReportInterval);
 
     IntOption optInterval = new IntOption("i", "interval", 500,
-        "Write results after every <n> samples");
+        "Report progress after every <n> samples");
     specialOptions.put("reportInterval", optInterval);
 
     IntOption optBurnIn = new IntOption("b", "burn_in", 0,
@@ -320,8 +299,6 @@ public class Main {
         "Use Metropolis-Hastings proposer class <s>");
     specialOptions.put("proposerClass", optProposer);
 
-    IntOption optNumTrials = new IntOption("t", "num_trials", 1,
-        "Do <n> independent runs of inference");
     BooleanOption optGenerate = new BooleanOption(null, "generate", false,
         "Sample worlds from prior and print them");
     IntOption optTimestepBound = new IntOption(null, "max_timestep",
@@ -335,9 +312,7 @@ public class Main {
     BooleanOption optDebug = new BooleanOption("g", "debug", false,
         "Print model, evidence, and queries");
     StringOption optWrite = new StringOption("w", "write", null,
-        "Write sampling results to file <s>");
-    StringOption optHist = new StringOption("h", "histogram_output", null,
-        "Write histogram output to file <s>");
+        "Write query results to file <s>");
     PropertiesOption optInferenceProps = new PropertiesOption("P", null, null,
         "Set inference configuration properties");
 
@@ -354,27 +329,12 @@ public class Main {
     }
 
     randomize = optRandomize.getValue();
-    numStatSamples = optNumTrials.getValue();
     generate = optGenerate.getValue();
     packages = optPackages.getValue();
     verbose = optVerbose.getValue();
     print = optPrint.getValue();
     debug = optDebug.getValue();
-
     outputPath = optWrite.getValue();
-    if (outputPath != null) {
-      // Need to determine output interval
-      outputInterval = optInterval.getValue();
-      if (outputInterval == 0) {
-        // default value is num samples / 100
-        outputInterval = Math.max(optNumSamples.getValue() / 100, 1);
-      }
-    } else if (optInterval.wasPresent()) {
-      System.err.println("Warning: ignoring --interval option "
-          + "because no output file specified.");
-    }
-
-    histOut = optHist.getValue();
 
     // Make sure properties that have special-purpose options weren't
     // specified with -P.
@@ -467,31 +427,6 @@ public class Main {
       ps.print(s);
     }
     ps.println();
-  }
-
-  /**
-   * Returns a PrintStream representing the newly created file, with given
-   * pathname s. Guaranteed not to be null.
-   */
-  public static PrintStream filePrintStream(String s) {
-    try {
-      File f = new File(s);
-      if (!f.createNewFile()) {
-        System.err.println("Cannot create file (already exists): "
-            + f.getPath());
-        System.exit(1);
-      }
-      if (!f.canWrite()) {
-        System.err.println("Cannot write to file: " + f.getPath());
-        System.exit(1);
-      }
-      return new PrintStream(new FileOutputStream(f));
-    } catch (Exception e) {
-      System.err.println("Cannot create/open a file for output: " + s);
-      System.err.println(e);
-      System.exit(1);
-      return null; // for some reason, the compiler needs this.
-    }
   }
 
   /**
@@ -642,6 +577,60 @@ public class Main {
   }
 
   /**
+   * Write query results to file, in JSON format.
+   *
+   * For every query, we output the a list of (log_prob, value) pairs.
+   * Example output:
+   * [
+   *     ["Damage(A)", [
+   *         [2.639057329615258, "Mild"],
+   *         [3.526360524616161, "Severe"]
+   *     ]],
+   *     ["Damage(B)", [
+   *         [2.9957322735539904, "Mild"],
+   *         [3.3322045101752034, "Severe"]
+   *     ]]
+   * ]
+  */
+  private static void writeResultsJson(List<Query> queries, String outputPath) {
+    System.out.println("Writing query results to " + outputPath + "...");
+
+    // Assemble results into one hierarchical object.
+    // Assumes queries are ArgSpecQuery or subclasses.
+    ArrayList<Object> allResults = new ArrayList<Object>();
+    for (Query query : queries) {
+      Histogram histogram = query.getHistogram();
+      ArrayList<Object> histogramEntries = new ArrayList<Object>();
+      for (Object entry_obj : histogram.entrySet()) {
+        Histogram.Entry entry = (Histogram.Entry) entry_obj;
+        ArrayList<Object> entryPair = new ArrayList<Object>();
+        entryPair.add(entry.getLogWeight());
+        entryPair.add(entry.getElement().toString());
+        histogramEntries.add(entryPair);
+      }
+
+      ArrayList<Object> results = new ArrayList<Object>();
+      results.add(((ArgSpecQuery) query).getArgSpec().toString());
+      results.add(histogramEntries);
+      allResults.add(results);
+    }
+
+    // Write results to file.
+    Gson gson = new Gson();
+    String json = gson.toJson(allResults);
+    try {
+      PrintWriter writer = new PrintWriter(outputPath, "UTF-8");
+      writer.println(json);
+      writer.close();
+    } catch (Exception e) {
+      System.err.println("Could not write to file: " + outputPath);
+      Util.fatalError(e);
+    }
+
+    System.out.println("Done.");
+  }
+
+  /**
    * 
    * @param modelString
    */
@@ -649,24 +638,8 @@ public class Main {
     stringSetup(model, evidence, queries, modelString);
   }
 
-  public static String outputPath() {
-    return outputPath;
-  }
-
-  public static int outputInterval() {
-    return outputInterval;
-  }
-
   public static int numSamples() {
     return numSamples;
-  }
-
-  public static int numTrials() {
-    return numStatSamples;
-  }
-
-  public static String histOut() {
-    return histOut;
   }
 
   public static List<Query> getQueries() {
@@ -680,7 +653,6 @@ public class Main {
   private static int numSamples;
   private static int queryReportInterval;
   private static int reportInterval;
-  private static int numStatSamples;
   private static Model model;
   private static Evidence evidence;
   private static List<Query> queries;
@@ -691,7 +663,5 @@ public class Main {
   private static boolean debug;
   private static boolean fromString;
   private static String outputPath;
-  private static int outputInterval;
-  private static String histOut;
   private static List setupExtenders = new ArrayList(); // of SetupExtender
 }
