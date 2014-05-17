@@ -6,7 +6,7 @@ Model for the automobile problem (simple version with access to noisy GPS).
 At each time step, we have:
 - controls: velocity, steering (observed in all timesteps)
 - state: x, y, theta (never observed)
-- observations: x, y, theta (observed in some timesteps)
+- observations: x, y (observed in some timesteps)
 
 For now, we completely ignore the obstacles and the laser / intensity data.
 */
