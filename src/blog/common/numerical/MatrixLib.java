@@ -82,6 +82,11 @@ public interface MatrixLib {
   public double det();
 
   /**
+   * Returns the absolute value for every element of this matrix
+   */
+  public MatrixLib abs();
+
+  /**
    * Returns the exponential function applied to every element of this matrix
    */
   public MatrixLib exp();
