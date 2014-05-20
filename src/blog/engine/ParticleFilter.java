@@ -191,12 +191,15 @@ public class ParticleFilter extends InferenceEngine {
     slicedQueries = DBLOGUtil.splitQueriesInTime((List<Query>) queries);
 
     for (Iterator it = evidenceInOrderOfMaxTimestep.iterator(); it.hasNext();) {
+      long takeEvidenceNanos = System.nanoTime();
       Evidence evidenceSlice = (Evidence) it.next();
       take(evidenceSlice);
+      takeEvidenceNanos = System.nanoTime() - takeEvidenceNanos;
 
       // FIXME: This is a very complicated way to obtain the timestep in this
       // evidence slice. Ideally, splitEvidenceByMaxTimestep would return this
       // information, since it already computes it.
+      long getTimestepNanos = System.nanoTime();
       int timestepIndex = -1;
       for (BayesNetVar var : evidenceSlice.getEvidenceVars()) {
         timestepIndex = DBLOGUtil.getTimestepIndex(var);
@@ -204,7 +207,9 @@ public class ParticleFilter extends InferenceEngine {
           break;
         }
       }
+      getTimestepNanos = System.nanoTime() - getTimestepNanos;
 
+      long answerAndReportNanos = System.nanoTime();
       if (timestepIndex >= 0) {
         List<Query> currentQueries = slicedQueries.get(Timestep
             .at(timestepIndex));
@@ -221,7 +226,19 @@ public class ParticleFilter extends InferenceEngine {
           }
         }
       }
+      answerAndReportNanos = System.nanoTime() - answerAndReportNanos;
+
+      long uninstantiateNanos = System.nanoTime();
       uninstantiatePreviousTimeSlice();
+      uninstantiateNanos = System.nanoTime() - uninstantiateNanos;
+
+      System.out.println(
+        "Done with timestepIndex " + timestepIndex +
+        ": takeEvidence: " + takeEvidenceNanos * 1e-9 +
+        "; getTimestep: " + getTimestepNanos * 1e-9 +
+        "; answerAndReport: " + answerAndReportNanos * 1e-9 +
+        "; uninstantiate: " + uninstantiateNanos * 1e-9
+      );
     }
   }
 
