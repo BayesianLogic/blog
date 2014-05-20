@@ -198,6 +198,36 @@ public class BuiltInFunctions {
   public static NonRandomFunction MOD;
 
   /**
+   * The function on timestep <code>x<code>, integer <code>y</code> that returns
+   * x + y.
+   */
+  public static NonRandomFunction TSPLUS;
+
+  /**
+   * The function on timestep <code>x<code>, integer <code>y</code> that returns
+   * x - y.
+   */
+  public static NonRandomFunction TSMINUS;
+
+  /**
+   * The function on timestep <code>x<code>, integer <code>y</code> that returns
+   * x * y.
+   */
+  public static NonRandomFunction TSMULT;
+
+  /**
+   * The function on timestep <code>x<code>, integer <code>y</code> that returns
+   * x / y.
+   */
+  public static NonRandomFunction TSDIV;
+
+  /**
+   * The function on timestep <code>x<code>, integer <code>y</code> that returns
+   * x % y.
+   */
+  public static NonRandomFunction TSMOD;
+
+  /**
    * The function on reals <code>x<code>, <code>y</code> that returns x + y.
    */
   public static NonRandomFunction RPLUS;
@@ -724,6 +754,73 @@ public class BuiltInFunctions {
     };
     PREV = new NonRandomFunction(PREV_NAME, argTypes, retType, prevInterp);
     addFunction(PREV);
+
+    // Add non-random functions from (TimeStep x Integer) to TimeStep
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.TIMESTEP);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.TIMESTEP;
+
+    FunctionInterp tsplusInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Timestep arg1 = (Timestep) args.get(0);
+        Integer arg2 = (Integer) args.get(1);
+        if (arg1.getValue() + arg2.intValue() < 0)
+          return Model.NULL;
+        return Timestep.at(arg1.getValue() + arg2.intValue());
+      }
+    };
+    TSPLUS = new NonRandomFunction(PLUS_NAME, argTypes, retType, tsplusInterp);
+    addFunction(TSPLUS);
+
+    FunctionInterp tsminusInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Timestep arg1 = (Timestep) args.get(0);
+        Integer arg2 = (Integer) args.get(1);
+        if (arg1.getValue() < arg2.intValue())
+          return Model.NULL;
+        return Timestep.at(arg1.getValue() - arg2.intValue());
+      }
+    };
+    TSMINUS = new NonRandomFunction(MINUS_NAME, argTypes, retType,
+        tsminusInterp);
+    addFunction(TSMINUS);
+
+    FunctionInterp tsmultInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Timestep arg1 = (Timestep) args.get(0);
+        Integer arg2 = (Integer) args.get(1);
+        if (arg2.intValue() < 0)
+          return Model.NULL;
+        return Timestep.at(arg1.getValue() * arg2.intValue());
+      }
+    };
+    TSMULT = new NonRandomFunction(MULT_NAME, argTypes, retType, tsmultInterp);
+    addFunction(TSMULT);
+
+    FunctionInterp tsdivInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Timestep arg1 = (Timestep) args.get(0);
+        Integer arg2 = (Integer) args.get(1);
+        if (arg2.intValue() <= 0)
+          return Model.NULL;
+        return Timestep.at(arg1.getValue() / arg2.intValue());
+      }
+    };
+    TSDIV = new NonRandomFunction(DIV_NAME, argTypes, retType, tsdivInterp);
+    addFunction(TSDIV);
+
+    FunctionInterp tsmodInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Timestep arg1 = (Timestep) args.get(0);
+        Integer arg2 = (Integer) args.get(1);
+        if (arg2.intValue() <= 0)
+          return Model.NULL;
+        return Timestep.at(arg1.getValue() % arg2.intValue());
+      }
+    };
+    TSMOD = new NonRandomFunction(MOD_NAME, argTypes, retType, tsmodInterp);
+    addFunction(TSMOD);
 
     // Add non-random functions from (string x string) to string
     argTypes.clear();
