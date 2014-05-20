@@ -84,7 +84,7 @@ public class LWImportanceSamplerTest extends TestCase {
 				"random RainEvent Weather(Timestep);" + "random Boolean RainyRegion();"
 				+
 
-				"RainyRegion ~ Bernoulli[0.5]();" +
+				"RainyRegion ~ Bernoulli(0.5);" +
 
 				"Weather(d)"
 				+ "if (d = @0) then ~ TabularCPD[[0.7, 0.3],[0.3, 0.7]](RainyRegion)"

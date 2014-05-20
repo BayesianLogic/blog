@@ -1,12 +1,9 @@
 package blog.common.numerical;
 
-import blog.common.numerical.JamaMatrixLib;
-import blog.common.numerical.MatrixLib;
-
 
 /**
  * Creates MatrixLib objects.
- *
+ * 
  * All code should use this class to create new MatrixLib objects, instead
  * of importing JamaMatrixLib directly. This allows us to easily change the
  * underlying implementation in the future.
@@ -50,20 +47,19 @@ public class MatrixFactory {
     return fromArray(result);
   }
 
-  static public MatrixLib vstack(MatrixLib a, MatrixLib b)
-  {
-    if (a.colLen() != b.colLen()) {
+  static public MatrixLib vstack(MatrixLib a, MatrixLib b) {
+    if (a.numCols() != b.numCols()) {
       throw new RuntimeException("matrices should have equal number of columns");
     }
-    double[][] result = new double[a.rowLen() + b.rowLen()][a.colLen()];
-    for (int i = 0; i < a.rowLen(); i++) {
-      for (int j = 0; j < a.colLen(); j++) {
+    double[][] result = new double[a.numRows() + b.numRows()][a.numCols()];
+    for (int i = 0; i < a.numRows(); i++) {
+      for (int j = 0; j < a.numCols(); j++) {
         result[i][j] = a.elementAt(i, j);
       }
     }
-    for (int i = 0; i < b.rowLen(); i++) {
-      for (int j = 0; j < b.colLen(); j++) {
-        result[a.rowLen() + i][j] = b.elementAt(i, j);
+    for (int i = 0; i < b.numRows(); i++) {
+      for (int j = 0; j < b.numCols(); j++) {
+        result[a.numRows() + i][j] = b.elementAt(i, j);
       }
     }
     return fromArray(result);
