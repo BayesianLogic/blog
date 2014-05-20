@@ -45,10 +45,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import blog.bn.BayesNetVar;
 import blog.DBLOGUtil;
+import blog.bn.BayesNetVar;
 import blog.common.Util;
-import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
