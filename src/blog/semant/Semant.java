@@ -52,6 +52,7 @@ import blog.absyn.TupleSetExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
+import blog.common.Util;
 import blog.distrib.EqualsCPD;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
@@ -160,7 +161,7 @@ public class Semant {
         // continue loop
       }
     }
-    System.out.println(
+    Util.fatalError(
       "Could not load class '" + classname
       + "'; looked in the following packages: " + packages);
     return null;
@@ -290,9 +291,7 @@ public class Semant {
   }
 
   public void addPackages(List<String> pkgs) {
-    for (String pkg: pkgs) {
-      packages.add(pkg);
-    }
+    packages.addAll(pkgs);
   }
 
   void transDec(Dec e) {
