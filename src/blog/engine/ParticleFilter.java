@@ -261,14 +261,18 @@ public class ParticleFilter extends InferenceEngine {
                                // null because after this method the filter
                                // should be ready to take queries.
 
+
+      long moveResampleNanos = System.nanoTime();
       if (needsToBeResampledBeforeFurtherSampling) {
         move();
         resample();
       }
+      moveResampleNanos = System.nanoTime() - moveResampleNanos;
 
       if (beforeTakesEvidence != null)
         beforeTakesEvidence.evaluate(evidence, this);
 
+      long particleTakeNanos = System.nanoTime();
       for (Particle p : particles) {
         if (beforeParticleTakesEvidence != null)
           beforeParticleTakesEvidence.evaluate(p, evidence, this);
@@ -282,7 +286,9 @@ public class ParticleFilter extends InferenceEngine {
         // }
 
       }
+      particleTakeNanos = System.nanoTime() - particleTakeNanos;
 
+      long particlePruneNanos = System.nanoTime();
       double logSumWeights = Double.NEGATIVE_INFINITY;
       ListIterator particleIt = particles.listIterator();
       while (particleIt.hasNext()) {
@@ -294,6 +300,7 @@ public class ParticleFilter extends InferenceEngine {
               particle.getLatestLogWeight());
         }
       }
+      particlePruneNanos = System.nanoTime() - particlePruneNanos;
 
       if (particles.size() == 0)
         throw new IllegalArgumentException("All particles have zero weight");
@@ -312,6 +319,11 @@ public class ParticleFilter extends InferenceEngine {
 
       if (afterTakesEvidence != null)
         afterTakesEvidence.evaluate(evidence, this);
+
+      System.out.println(
+        "take(): move/resample " + moveResampleNanos * 1e-9 +
+        "  particle.take() " + particleTakeNanos * 1e-9 +
+        "  particle pruning " + particlePruneNanos * 1e-9);
     }
   }
 
