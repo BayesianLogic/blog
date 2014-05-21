@@ -1,5 +1,7 @@
 package ppaml_car;
 
+import java.util.ArrayList;
+
 
 /**
  * Computes ground-truth laser readings given known pose and obstacles.
@@ -8,6 +10,25 @@ package ppaml_car;
  * independently. We plug it into BLOG using the LaserInterp class.
  */
 public class LaserLogic {
+
+  /**
+   * Coordinates of a single obstacle.
+   */
+  public static class Obstacle {
+    public double x;
+    public double y;
+    public double r;
+
+    public Obstacle() {
+      this(0, 0, 0);
+    }
+
+    public Obstacle(double x, double y, double r) {
+      this.x = x;
+      this.y = y;
+      this.r = r;
+    }
+  };
 
   /**
    * Solve a quadratic equation.
@@ -68,15 +89,15 @@ public class LaserLogic {
   public static double[] readingsForObstacles(
           double laserX, double laserY, double laserTheta,
           double[] laserAngles, double laserMaxRange,
-          double[] obstacleXs, double[] obstacleYs, double[] obstacleRs) {
+          ArrayList<Obstacle> obstacles) {
     double[] readingsForAll = new double[laserAngles.length];
     for (int a = 0; a < laserAngles.length; a++) {
       readingsForAll[a] = laserMaxRange;
     }
-    for (int o = 0; o < obstacleXs.length; o++) {
+    for (Obstacle obst : obstacles) {
       double[] readingsForOne = readingsForObstacle(
         laserX, laserY, laserTheta, laserAngles, laserMaxRange,
-        obstacleXs[o], obstacleYs[o], obstacleRs[o]);
+        obst.x, obst.y, obst.r);
       for (int a = 0; a < laserAngles.length; a++) {
         readingsForAll[a] = Math.min(readingsForAll[a], readingsForOne[a]);
       }

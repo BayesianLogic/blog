@@ -23,7 +23,9 @@ public class LaserInterp extends AbstractFunctionInterp {
    * Compute ground-truth laser readings.
    *
    * Input: laserX, laserY, laserTheta, obstacles,
-   *        where obstacles is a set of (x, y, r) lists.
+   *        where obstacles is either:
+   *        - a set of (x, y, r) lists, or
+   *        - a matrix with (x, y, r) rows.
    * Output: double[361] laser readings.
    */
   public Object getValue(List args) {
@@ -34,28 +36,20 @@ public class LaserInterp extends AbstractFunctionInterp {
     double laserX = (double) args.get(0);
     double laserY = (double) args.get(1);
     double laserTheta = (double) args.get(2);
-    Collection obstacles = (Collection) args.get(3);
-    // obstacles is a blog.common.HashMultiset of ArrayLists...
-    double[] obstacleXs = new double[obstacles.size()];
-    double[] obstacleYs = new double[obstacles.size()];
-    double[] obstacleRs = new double[obstacles.size()];
-    int index = 0;
-    for (Object obj : obstacles) {
-      ArrayList coords = (ArrayList) obj;
-      if (coords.size() != 3) {
-        throw new IllegalArgumentException("Expected 3 coords per obstacle");
-      }
-      obstacleXs[index] = (double) coords.get(0);
-      obstacleYs[index] = (double) coords.get(1);
-      obstacleRs[index] = (double) coords.get(2);
-      index++;
+    Object rawObstacles = args.get(3);
+    ArrayList<LaserLogic.Obstacle> obstacles;
+    if (rawObstacles instanceof Collection) {
+      obstacles = parseObstaclesFromSet((Collection) rawObstacles);
+    } else if (rawObstacles instanceof MatrixLib) {
+      obstacles = parseObstaclesFromMatrix((MatrixLib) rawObstacles);
+    } else {
+      throw new IllegalArgumentException("obstacles must be set or matrix");
     }
 
     // Compute laser readings.
     double[] readings = LaserLogic.readingsForObstacles(
       laserX, laserY, laserTheta,
-      laserAngles, laserMaxRange,
-      obstacleXs, obstacleYs, obstacleRs);
+      laserAngles, laserMaxRange, obstacles);
 
     // Convert result to MatrixLib.
     // Additional step required because MatrixLib only takes a double[][].
@@ -66,19 +60,29 @@ public class LaserInterp extends AbstractFunctionInterp {
     return MatrixFactory.fromArray(tmp);
   }
 
-  /**
-   * Convert an Object which is really an ArrayList<Double> to double[].
-   */
-  private static double[] squeezeDoublesFromObject(Object obj) {
-    // Note: If I cast it to ArrayList<Double> directly, I get a stupid
-    // "unchecked cast" warning, because of "type erasure". So I have to
-    // cast it to a generic ArrayList here, and then cast each element.
-    ArrayList list = (ArrayList) obj;
-    double[] result = new double[list.size()];
-    for (int i = 0; i < list.size(); i++) {
-      result[i] = (double) list.get(i);
+  private static ArrayList<LaserLogic.Obstacle> parseObstaclesFromSet(Collection rawObstacles) {
+    // rawObstacles is a blog.common.HashMultiset of ArrayLists.
+    ArrayList<LaserLogic.Obstacle> obstacles = new ArrayList<LaserLogic.Obstacle>();
+    for (Object obj : rawObstacles) {
+      ArrayList coords = (ArrayList) obj;
+      obstacles.add(new LaserLogic.Obstacle(
+        (double) coords.get(0),
+        (double) coords.get(1),
+        (double) coords.get(2)));
     }
-    return result;
+    return obstacles;
+  }
+
+  private static ArrayList<LaserLogic.Obstacle> parseObstaclesFromMatrix(MatrixLib rawObstacles) {
+    // rawObstacles is a blog.common.numerical.MatrixLib with (x, y, r) rows.
+    ArrayList<LaserLogic.Obstacle> obstacles = new ArrayList<LaserLogic.Obstacle>();
+    for (int r = 0; r < rawObstacles.numRows(); r++) {
+      obstacles.add(new LaserLogic.Obstacle(
+        rawObstacles.elementAt(r, 0),
+        rawObstacles.elementAt(r, 1),
+        rawObstacles.elementAt(r, 2)));
+    }
+    return obstacles;
   }
 
   private double laserMaxRange;

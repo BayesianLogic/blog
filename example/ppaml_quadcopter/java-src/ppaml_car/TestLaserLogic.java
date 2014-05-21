@@ -2,6 +2,7 @@ package ppaml_car;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import org.junit.Test;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
@@ -54,15 +55,14 @@ public class TestLaserLogic {
     double[] laserAngles = new double[]{
       0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7};
     double laserMaxRange = 10;
-    double[] obstacleXs = new double[]{7, 8};
-    double[] obstacleYs = new double[]{9, 5};
-    double[] obstacleRs = new double[]{2, 1};
+    ArrayList<LaserLogic.Obstacle> obstacles = new ArrayList<LaserLogic.Obstacle>();
+    obstacles.add(new LaserLogic.Obstacle(7, 9, 2));
+    obstacles.add(new LaserLogic.Obstacle(8, 5, 1));
     double[] referenceReadings = new double[]{
       5.43596135, 10, 5.8777472, 5.99884367, 10, 10, 10, 10, 10};
     double readings[] = LaserLogic.readingsForObstacles(
       laserX, laserY, laserTheta,
-      laserAngles, laserMaxRange,
-      obstacleXs, obstacleYs, obstacleRs);
+      laserAngles, laserMaxRange, obstacles);
     assertEquals(laserAngles.length, referenceReadings.length);
     assertEquals(readings.length, referenceReadings.length);
     for (int i = 0; i < laserAngles.length; i++) {
