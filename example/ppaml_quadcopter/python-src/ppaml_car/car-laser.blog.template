@@ -69,7 +69,7 @@ random RealMatrix gps_observations(Timestep timestep) {
 };
 
 fixed RealMatrix obstacles = {{ model.obstacles |blog_matrix }};
-fixed RealMatrix lasers_sigma = 0.1 * eye(361);
+fixed RealMatrix lasers_sigma = 0.01 * eye(361);
 
 fixed RealMatrix laser_solns(
         Real laser_x, Real laser_y, Real laser_theta, RealMatrix obstacles)

@@ -53,6 +53,17 @@ def controls_from_readings(readings):
     return np.array(controls)
 
 
+def lasers_from_readings(readings):
+    """
+    Return lasers as an array with (time, laser0, ..., laser360) rows.
+    """
+    lasers = []
+    for reading in readings:
+        if reading.laser:
+            lasers.append([reading.time] + reading.laser)
+    return np.array(lasers)
+
+
 def plot_traj(ax, label, traj):
     """
     Plot trajectory as a line in 2D.
