@@ -205,6 +205,8 @@ public class ParticleFilter extends InferenceEngine {
         }
       }
 
+      Util.braindump = (timestepIndex == 50 || timestepIndex == 950);
+
       if (timestepIndex >= 0) {
         List<Query> currentQueries = slicedQueries.get(Timestep
             .at(timestepIndex));

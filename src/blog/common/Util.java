@@ -2006,4 +2006,6 @@ public class Util {
 	private static Random rand;
 	private static boolean verbose = false;
 	private static boolean print = false;
+
+  public static boolean braindump = false;
 }
