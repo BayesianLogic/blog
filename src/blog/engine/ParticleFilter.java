@@ -361,6 +361,7 @@ public class ParticleFilter extends InferenceEngine {
       normalizedWeights[i] = Math.exp(logWeights[i] - logSumWeights);
     }
 
+    long sampleLoopNanos = System.nanoTime();
     for (int i = 0; i < numParticles; i++) {
       int selection = Util.sampleWithProbs(normalizedWeights);
       if (!alreadySampled[selection]) {
@@ -369,6 +370,8 @@ public class ParticleFilter extends InferenceEngine {
       } else
         newParticles.add(((Particle) particles.get(selection)).copy());
     }
+    sampleLoopNanos = System.nanoTime() - sampleLoopNanos;
+    System.out.println("resample loop: " + sampleLoopNanos * 1e-9);
 
     particles = newParticles;
   }
