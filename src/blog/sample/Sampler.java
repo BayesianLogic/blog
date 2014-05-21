@@ -58,7 +58,7 @@ import blog.world.PartialWorld;
  */
 public abstract class Sampler {
   // Samples with log weight <= NEGLIGIBLE_LOG_WEIGHT are ignored.
-  public static final double NEGLIGIBLE_LOG_WEIGHT = -10000;
+  public static final double NEGLIGIBLE_LOG_WEIGHT = -100000;
 
 	/**
 	 * Creates a Sampler object for the given BLOG model.
