@@ -361,17 +361,31 @@ public class ParticleFilter extends InferenceEngine {
       normalizedWeights[i] = Math.exp(logWeights[i] - logSumWeights);
     }
 
-    long sampleLoopNanos = System.nanoTime();
+    long totalSampleNanos = 0;
+    long totalCopyNanos = 0;
+    long totalCopies = 0;
     for (int i = 0; i < numParticles; i++) {
+      long sampleNanos = System.nanoTime();
       int selection = Util.sampleWithProbs(normalizedWeights);
+      sampleNanos = System.nanoTime() - sampleNanos;
+      totalSampleNanos += sampleNanos;
+
       if (!alreadySampled[selection]) {
         newParticles.add(particles.get(selection));
         alreadySampled[selection] = true;
-      } else
+      } else {
+        long copyNanos = System.nanoTime();
         newParticles.add(((Particle) particles.get(selection)).copy());
+        copyNanos = System.nanoTime() - copyNanos;
+        totalCopyNanos += copyNanos;
+        totalCopies++;
+      }
     }
-    sampleLoopNanos = System.nanoTime() - sampleLoopNanos;
-    System.out.println("resample loop: " + sampleLoopNanos * 1e-9);
+    System.out.println(
+      "resample loop: numParticles " + numParticles +
+      "  totalSampleNanos " + totalSampleNanos * 1e-9 +
+      "  totalCopyNanos " + totalCopyNanos * 1e-9 +
+      "  totalCopies " + totalCopies);
 
     particles = newParticles;
   }
