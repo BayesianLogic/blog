@@ -142,8 +142,10 @@ public class ParticleFilter extends InferenceEngine {
 
   /** Answers the queries provided at construction time. */
   public void answerQueries() {
-    System.out.println("Evidence: " + evidence);
-    System.out.println("Query: " + queries);
+    if (Util.verbose()) {
+      System.out.println("Evidence: " + evidence);
+      System.out.println("Query: " + queries);
+    }
     System.out.println("Report every: " + queryReportInterval + " timesteps");
     resetAndTakeInitialEvidence();
     answer(queries);

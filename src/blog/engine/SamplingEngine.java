@@ -147,8 +147,10 @@ public class SamplingEngine extends InferenceEngine {
         boolean printed = false;
         sampler.initialize(evidence, queries);
 
-        System.out.println("Evidence: " + evidence);
-        System.out.println("Query: " + queries);
+        if (Util.verbose()) {
+          System.out.println("Evidence: " + evidence);
+          System.out.println("Query: " + queries);
+        }
         System.out.println("Running for " + numSamples + " samples...");
         System.out.println("Query Reporting interval is " + queryReportInterval);
         if (numBurnIn != 0) {
