@@ -51,7 +51,7 @@ def draw_map(ax, readings, properties, true_obstacles):
                 if np.abs(distance - LASER_MAX) < 1e-6:
                     continue  # no obstacles within laser range
                 intensity = reading.intensity[i]
-                radians = agent_phi + (-0.5 * i + 90) * np.pi / 180
+                radians = agent_phi + (-90 + 0.5 * i) * np.pi / 180
                 obst_x = laser_x + distance * np.cos(radians)
                 obst_y = laser_y + distance * np.sin(radians)
                 obst_c = intensity / INTENSITY_MAX

@@ -37,6 +37,9 @@ class Reading(object):
 
     Note: In the data, GPS latitude and longitude are for the car's rear axle
     center, from which the laser is displaced by (properties.a, properties.b).
+
+    The laser and intensity readings are from -90 deg (right) to +90 deg
+    (left), in increments of 0.5 deg.
     """
     def __init__(self):
         self.time = None
@@ -116,6 +119,10 @@ def read_data(data_dir):
                 print "Warning: found out-of-range intensity readings"
                 shown_out_of_range_intensity_warning = True
             laser_readings.append(reading)
+            # In the data, the laser and intensity readings are clockwise.
+            # Make them counter-clockwise.
+            reading.laser.reverse()
+            reading.intensity.reverse()
     _assert_sorted(gps_readings, key=lambda reading: reading.time)
 
     readings = gps_readings + control_readings + laser_readings
