@@ -144,6 +144,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 
 		if (value == null) {
 			basicVarToValue.remove(var);
+      varToUninstParent.remove(var);
 		} else {
 			// checkIdentifiers(var, value); // allow any identifiers
 			basicVarToValue.put(var, value);
