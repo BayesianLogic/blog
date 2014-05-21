@@ -3,7 +3,7 @@
 // laser_observations is the first laser observation.
 
 fixed RealMatrix state_mu = [-6.09833; -0.0897621; -0.000112593];
-fixed RealMatrix state_sigma = 0.1 * eye(3);
+fixed RealMatrix state_sigma = 0.001 * eye(3);
 
 random RealMatrix state ~ MultivarGaussian(state_mu, state_sigma);
 
@@ -15,7 +15,7 @@ fixed RealMatrix obstacles = [
     [-1.95, -3.8, 0.4],
     [0.15, -5.625, 0.4]
 ];
-fixed RealMatrix lasers_sigma = 0.1 * eye(361);
+fixed RealMatrix lasers_sigma = 0.01 * eye(361);
 
 fixed RealMatrix laser_solns(
         Real laser_x, Real laser_y, Real laser_theta, RealMatrix obstacles)
