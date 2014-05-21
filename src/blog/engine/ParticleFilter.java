@@ -222,8 +222,6 @@ public class ParticleFilter extends InferenceEngine {
         }
       }
       uninstantiatePreviousTimeSlice();
-
-      System.out.println("Done with timestepIndex " + timestepIndex);
     }
   }
 
@@ -257,12 +255,10 @@ public class ParticleFilter extends InferenceEngine {
                                // should be ready to take queries.
 
 
-      long moveResampleNanos = System.nanoTime();
       if (needsToBeResampledBeforeFurtherSampling) {
         move();
         resample();
       }
-      moveResampleNanos = System.nanoTime() - moveResampleNanos;
 
       if (beforeTakesEvidence != null)
         beforeTakesEvidence.evaluate(evidence, this);
@@ -310,9 +306,6 @@ public class ParticleFilter extends InferenceEngine {
 
       if (afterTakesEvidence != null)
         afterTakesEvidence.evaluate(evidence, this);
-
-      System.out.println(
-        "take(): move/resample " + moveResampleNanos * 1e-9);
     }
   }
 
@@ -361,31 +354,15 @@ public class ParticleFilter extends InferenceEngine {
       normalizedWeights[i] = Math.exp(logWeights[i] - logSumWeights);
     }
 
-    long totalSampleNanos = 0;
-    long totalCopyNanos = 0;
-    long totalCopies = 0;
     for (int i = 0; i < numParticles; i++) {
-      long sampleNanos = System.nanoTime();
       int selection = Util.sampleWithProbs(normalizedWeights);
-      sampleNanos = System.nanoTime() - sampleNanos;
-      totalSampleNanos += sampleNanos;
-
       if (!alreadySampled[selection]) {
         newParticles.add(particles.get(selection));
         alreadySampled[selection] = true;
       } else {
-        long copyNanos = System.nanoTime();
         newParticles.add(((Particle) particles.get(selection)).copy());
-        copyNanos = System.nanoTime() - copyNanos;
-        totalCopyNanos += copyNanos;
-        totalCopies++;
       }
     }
-    System.out.println(
-      "resample loop: numParticles " + numParticles +
-      "  totalSampleNanos " + totalSampleNanos * 1e-9 +
-      "  totalCopyNanos " + totalCopyNanos * 1e-9 +
-      "  totalCopies " + totalCopies);
 
     particles = newParticles;
   }
