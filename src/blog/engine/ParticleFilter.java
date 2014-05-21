@@ -386,6 +386,7 @@ public class ParticleFilter extends InferenceEngine {
       "  totalSampleNanos " + totalSampleNanos * 1e-9 +
       "  totalCopyNanos " + totalCopyNanos * 1e-9 +
       "  totalCopies " + totalCopies);
+    System.gc();
 
     particles = newParticles;
   }
