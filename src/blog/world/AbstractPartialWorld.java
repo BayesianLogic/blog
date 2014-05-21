@@ -1037,6 +1037,25 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		newWorld.dirtyVars = (Set) ((LinkedHashSet) dirtyVars).clone();
 		newWorld.listeners = (List) ((ArrayList) listeners).clone();
 		newWorld.idTypes = new HashSet(idTypes);
+
+    if (Util.braindump) {
+      System.out.println("-------------");
+      System.out.println("basicVarToValue: " + basicVarToValue.size());
+      System.out.println("nameToBasicVar: " + nameToBasicVar.size());
+      System.out.println("objToUsesAsValue: " + objToUsesAsValue.size());
+      System.out.println("objToUsesAsArg: " + objToUsesAsArg.size());
+      System.out.println("assertedIdToPOPApp: " + assertedIdToPOPApp.size());
+      System.out.println("popAppToAssertedIds: " + popAppToAssertedIds.size());
+      System.out.println("commIdToPOPApp: " + commIdToPOPApp.size());
+      System.out.println("popAppToCommIds: " + popAppToCommIds.size());
+      System.out.println("cbn: " + ((DefaultCBN) cbn).nodes().size());
+      System.out.println("varToUninstParent: " + varToUninstParent.size());
+      System.out.println("varToLogProb: " + varToLogProb.size());
+      System.out.println("derivedVarToValue: " + derivedVarToValue.size());
+      System.out.println("dirtyVars: " + dirtyVars.size());
+      System.out.println("listeners: " + listeners.size());
+      System.out.println("idTypes: " + idTypes.size());
+    }
 	}
 
 	public String toString() {
