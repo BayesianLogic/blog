@@ -191,10 +191,8 @@ public class ParticleFilter extends InferenceEngine {
     slicedQueries = DBLOGUtil.splitQueriesInTime((List<Query>) queries);
 
     for (Iterator it = evidenceInOrderOfMaxTimestep.iterator(); it.hasNext();) {
-      long takeEvidenceNanos = System.nanoTime();
       Evidence evidenceSlice = (Evidence) it.next();
       take(evidenceSlice);
-      takeEvidenceNanos = System.nanoTime() - takeEvidenceNanos;
 
       // FIXME: This is a very complicated way to obtain the timestep in this
       // evidence slice. Ideally, splitEvidenceByMaxTimestep would return this
@@ -225,10 +223,7 @@ public class ParticleFilter extends InferenceEngine {
       }
       uninstantiatePreviousTimeSlice();
 
-      System.out.println(
-        "Done with timestepIndex " + timestepIndex +
-        ": takeEvidence: " + takeEvidenceNanos * 1e-9
-      );
+      System.out.println("Done with timestepIndex " + timestepIndex);
     }
   }
 
@@ -272,7 +267,6 @@ public class ParticleFilter extends InferenceEngine {
       if (beforeTakesEvidence != null)
         beforeTakesEvidence.evaluate(evidence, this);
 
-      long particleTakeNanos = System.nanoTime();
       for (Particle p : particles) {
         if (beforeParticleTakesEvidence != null)
           beforeParticleTakesEvidence.evaluate(p, evidence, this);
@@ -286,9 +280,7 @@ public class ParticleFilter extends InferenceEngine {
         // }
 
       }
-      particleTakeNanos = System.nanoTime() - particleTakeNanos;
 
-      long particlePruneNanos = System.nanoTime();
       double logSumWeights = Double.NEGATIVE_INFINITY;
       ListIterator particleIt = particles.listIterator();
       while (particleIt.hasNext()) {
@@ -300,7 +292,6 @@ public class ParticleFilter extends InferenceEngine {
               particle.getLatestLogWeight());
         }
       }
-      particlePruneNanos = System.nanoTime() - particlePruneNanos;
 
       if (particles.size() == 0)
         throw new IllegalArgumentException("All particles have zero weight");
@@ -321,9 +312,7 @@ public class ParticleFilter extends InferenceEngine {
         afterTakesEvidence.evaluate(evidence, this);
 
       System.out.println(
-        "take(): move/resample " + moveResampleNanos * 1e-9 +
-        "  particle.take() " + particleTakeNanos * 1e-9 +
-        "  particle pruning " + particlePruneNanos * 1e-9);
+        "take(): move/resample " + moveResampleNanos * 1e-9);
     }
   }
 
