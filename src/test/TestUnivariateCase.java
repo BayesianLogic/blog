@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,16 +22,12 @@ public class TestUnivariateCase {
   private HashMap<Double, Double> probVals;
   private final double MEAN = 0.5;
   private final double VARIANCE = 2.25;
+  private List<Double> constructParams;
+  private List<Double> args;
 
-  /**
-   * Tests the getProb(List args, Obj value) function and
-   * the getLogProb(List args, Obj value) function
-   */
-  @Test
-  public void testGetProb() {
+  public TestUnivariateCase() {
     // We have a normal random variable Z ~ N(0.5, 1.5)
-    // Key is x, Value is pdf of Z at x
-    HashMap<Double, Double> probVals = new HashMap<Double, Double>();
+    probVals = new HashMap<Double, Double>();
     probVals.put(0.0, 0.25158881846199549);
     probVals.put(0.3, 0.26360789392387846);
     probVals.put(0.9, 0.25667124973067595);
@@ -39,46 +35,48 @@ public class TestUnivariateCase {
     probVals.put(3.8, 0.023649728564154305);
     probVals.put(6.0, 0.00032018043441388045);
 
-    // Case 1 -- Mean and Variance are fixed
-    List constructParams = new LinkedList();
+    constructParams = new LinkedList<Double>();
+    args = new LinkedList<Double>();
+  }
+
+  /**
+   * Case 1: Mean fixed, Variance fixed
+   */
+  @Test
+  public void case1() {
     constructParams.add(MEAN);
     constructParams.add(VARIANCE);
-    UnivarGaussian univ = new UnivarGaussian(constructParams);
+    testGaussian(constructParams, args);
+  }
 
-    List args = new LinkedList();
-    for (Map.Entry<Double, Double> entry : probVals.entrySet()) {
-      assertEquals(entry.getValue(), univ.getProb(args, entry.getKey()),
-          ERROR_BOUND);
-      assertEquals(Math.log(entry.getValue()),
-          univ.getLogProb(args, entry.getKey()), ERROR_BOUND);
-    }
-
-    // Case 2 -- Mean is random, Variance is fixed
-    constructParams = new LinkedList();
+  /**
+   * Case 2: Mean random, Variance fixed
+   */
+  @Test
+  public void case2() {
     constructParams.add(VARIANCE);
-    univ = new UnivarGaussian(constructParams);
-
-    args = new LinkedList();
     args.add(MEAN);
-    for (Map.Entry<Double, Double> entry : probVals.entrySet()) {
-      assertEquals(entry.getValue(), univ.getProb(args, entry.getKey()),
-          ERROR_BOUND);
-      assertEquals(Math.log(entry.getValue()),
-          univ.getLogProb(args, entry.getKey()), ERROR_BOUND);
-    }
+    testGaussian(constructParams, args);
+  }
 
-    // Case 3 -- Mean is random, Variance is random
-    constructParams = new LinkedList();
-    univ = new UnivarGaussian(constructParams);
-
-    args = new LinkedList();
+  /**
+   * Case 3: Mean random, Variance random
+   */
+  @Test
+  public void case3() {
     args.add(MEAN);
     args.add(VARIANCE);
-    for (Map.Entry<Double, Double> entry : probVals.entrySet()) {
-      assertEquals(entry.getValue(), univ.getProb(args, entry.getKey()),
+    testGaussian(constructParams, args);
+  }
+
+  public void testGaussian(List<Double> constructParams, List<Double> args) {
+    UnivarGaussian gaussian = new UnivarGaussian(constructParams);
+    Set<Double> points = probVals.keySet();
+    for (Double point : points) {
+      assertEquals(probVals.get(point), gaussian.getProb(args, point),
           ERROR_BOUND);
-      assertEquals(Math.log(entry.getValue()),
-          univ.getLogProb(args, entry.getKey()), ERROR_BOUND);
+      assertEquals(Math.log(probVals.get(point)),
+          gaussian.getLogProb(args, point), ERROR_BOUND);
     }
   }
 
