@@ -174,14 +174,34 @@ if __name__ == "__main__":
     fixed_x, fixed_y, fixed_theta = lasers.car_loc_to_laser_loc(
         fixed_x, fixed_y, fixed_theta, a, b)
 
+    # Location from LW:
+    fixed_x = -6.111071374818211
+    fixed_y = -0.10284180236291353
+    fixed_theta = 0.013397688774164038
+    fixed_x, fixed_y, fixed_theta = lasers.car_loc_to_laser_loc(
+        fixed_x, fixed_y, fixed_theta, a, b)
+
+    print "true  has lik {}".format(log_likelihood(
+        readings, 0.1, true_x, true_y, true_theta))
+    print "fixed has lik {}".format(log_likelihood(
+        readings, 0.1, fixed_x, fixed_y, fixed_theta))
     # plot_liks(fixed_x, fixed_y, fixed_theta, true_x, true_y, true_theta)
     # plt.show()
 
     # 3D data across a grid for x, y, and theta:
+
+    # # All x and y; fixed theta:
+    # xs, ys, thetas = np.mgrid[
+    #     min_x : max_x : 0.1,
+    #     min_y : max_y : 0.1,
+    #     true_theta : true_theta + 1 : 1]
+
+    # All x, y, theta in neighborhood of true values:
     xs, ys, thetas = np.mgrid[
-        true_x - 0.5 : true_x + 0.5 : 0.05,
-        true_y - 0.5 : true_y + 0.5 : 0.05,
-        true_theta - 0.5 : true_theta + 0.5 : 0.01]
+        true_x - 0.2 : true_x + 0.2 : 0.01,
+        true_y - 0.2 : true_y + 0.2 : 0.01,
+        true_theta - 0.05 : true_theta + 0.051 : 0.005]
+
     func = lambda x, y, theta: log_likelihood(readings, 0.1, x, y, theta)
     func = np.vectorize(func)
     vals = func(xs, ys, thetas)
@@ -196,7 +216,7 @@ if __name__ == "__main__":
     # mlab.gcf().scene.background = (0.5, 0.5, 0.5)
     # mlab.show()
 
-    # Plot likelihood for all x, y, given best theta for that x, y.
+    # plot likelihood for all x, y, given best theta for that x, y.
     xs = xs[:, :, 0]
     ys = ys[:, :, 0]
     zs = np.max(vals, axis=2)
@@ -205,7 +225,7 @@ if __name__ == "__main__":
     plt.scatter(
         [true_x], [true_y], s=200, marker='x', color='green', label='ground')
     plt.scatter(
-        [fixed_x], [fixed_y], s=200, marker='x', color='black', label='noisy')
+        [fixed_x], [fixed_y], s=200, marker='x', color='black', label='fixed')
     plt.xlim(-7, 7)
     plt.ylim(-7, 7)
     plt.xlabel('x')

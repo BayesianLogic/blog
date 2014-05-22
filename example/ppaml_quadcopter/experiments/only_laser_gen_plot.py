@@ -106,6 +106,16 @@ if __name__ == "__main__":
     # y = -0.0897621
     # theta = -0.000112593
 
+    # LW MAP, state noise 0.01, laser noise 0.01, 100K samples, trial 1:
+    x = -6.111071374818211
+    y = -0.10284180236291353
+    theta = 0.013397688774164038
+
+    # LW MAP, state noise 0.01, laser noise 0.01, 100K samples, trial 2:
+    x = -6.111312885927913
+    y = -0.11534201599817488
+    theta = 0.01650033592056109
+
     # Compute laser location from vehicle (rear-axle) location:
     a = 0.299541
     b = 0.0500507
