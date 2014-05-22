@@ -160,6 +160,7 @@ if __name__ == "__main__":
     parser.add_argument('dataset')
     parser.add_argument('json_file')
     parser.add_argument('--plot', action='store_true')
+    parser.add_argument('--plot-particles', action='store_true')
     args = parser.parse_args()
 
     # Load GPS readings from dataset.
@@ -195,6 +196,20 @@ if __name__ == "__main__":
                 (map_traj, 'map'),
                 (avg_traj, 'avg')):
             plot_traj(plt.gca(), name, traj)
+
+        if args.plot_particles:
+            # Plot all points visited.
+            all_particles = []
+            for timestep in xrange(len(samples)):
+                for log_prob, x, y, theta in samples[timestep]:
+                    all_particles.append((x, y))
+            all_particles = np.array(all_particles)
+            plt.scatter(
+                all_particles[:, 0],
+                all_particles[:, 1],
+                s=1,
+                label='all particles')
+
         plt.plot([-7, -7, 7, 7, -7], [-7, 7, 7, -7, -7], 'k')
         plt.xlim(-8, 8)
         plt.ylim(-8, 8)
