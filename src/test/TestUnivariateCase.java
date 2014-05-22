@@ -19,12 +19,16 @@ import blog.distrib.UnivarGaussian;
 @RunWith(JUnit4.class)
 public class TestUnivariateCase {
   private final double ERROR_BOUND = 1e-10;
-  private HashMap<Double, Double> probVals = new HashMap<Double, Double>();
+  private HashMap<Double, Double> probVals;
   private final double MEAN = 0.5;
   private final double VARIANCE = 2.25;
 
+  /**
+   * Tests the getProb(List args, Obj value) function and
+   * the getLogProb(List args, Obj value) function
+   */
   @Test
-  public void setUp() {
+  public void testGetProb() {
     // We have a normal random variable Z ~ N(0.5, 1.5)
     // Key is x, Value is pdf of Z at x
     HashMap<Double, Double> probVals = new HashMap<Double, Double>();
@@ -34,14 +38,6 @@ public class TestUnivariateCase {
     probVals.put(2.8, 0.082088348017233054);
     probVals.put(3.8, 0.023649728564154305);
     probVals.put(6.0, 0.00032018043441388045);
-  }
-
-  @Test
-  /**
-   *    Tests the getProb(List args, Obj value) function and 
-   *    the getLogProb(List args, Obj value) function
-   */
-  public void testGetProb() {
 
     // Case 1 -- Mean and Variance are fixed
     List constructParams = new LinkedList();
