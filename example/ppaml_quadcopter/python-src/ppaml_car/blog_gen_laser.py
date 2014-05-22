@@ -50,14 +50,19 @@ def generate_model(readings, car_params, obstacles):
             controls.append(active_controls.copy())
             active_controls[0] = reading.velocity
             active_controls[1] = reading.steering
+            reading_type = "controls"
         elif reading.gps_latitude:
             time.append(reading.time)
             controls.append(active_controls.copy())
+            reading_type = "gps"
         elif reading.laser:
             time.append(reading.time)
             controls.append(active_controls.copy())
+            reading_type = "lasers"
         else:
             assert False
+        print "timestep={} time={} reading_type={}".format(
+            len(time) - 1, time[-1], reading_type)
 
     # GPS observations are (timestep, location) tuples.
     # Laser observations are (timestep, lasers) tuples.
