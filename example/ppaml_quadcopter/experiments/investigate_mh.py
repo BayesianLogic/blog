@@ -157,37 +157,36 @@ if __name__ == "__main__":
     max_y = data.LATITUDE_MAX
     min_theta = -np.pi
     max_theta = np.pi
+    a = 0.299541
+    b = 0.0500507
 
     # Location from ground GPS:
     true_x = -6.1039
     true_y = -0.0499926
     true_theta = -0.000112593
+    true_x, true_y, true_theta = lasers.car_loc_to_laser_loc(
+        true_x, true_y, true_theta, a, b)
 
     # Location from noisy GPS:
     fixed_x = -6.09833
     fixed_y = -0.0897621
     fixed_theta = -0.000112593
-
-    a = 0.299541
-    b = 0.0500507
-    true_x, true_y, true_theta = lasers.car_loc_to_laser_loc(
-        true_x, true_y, true_theta, a, b)
     fixed_x, fixed_y, fixed_theta = lasers.car_loc_to_laser_loc(
         fixed_x, fixed_y, fixed_theta, a, b)
 
-    plot_liks(fixed_x, fixed_y, fixed_theta, true_x, true_y, true_theta)
-    plt.show()
+    # plot_liks(fixed_x, fixed_y, fixed_theta, true_x, true_y, true_theta)
+    # plt.show()
 
-    # # 3D data across a grid for x, y, and theta:
-    # xs, ys, thetas = np.mgrid[
-    #     min_x:max_x + 0.1:0.25,
-    #     min_y:max_y + 0.1:0.25,
-    #     min_theta:max_theta + 0.1:0.1]
-    # func = lambda x, y, theta: log_likelihood(readings, 0.1, x, y, theta)
-    # func = np.vectorize(func)
-    # vals = func(xs, ys, thetas)
-    # thresh = -50000
-    # vals[vals < thresh] = thresh
+    # 3D data across a grid for x, y, and theta:
+    xs, ys, thetas = np.mgrid[
+        true_x - 0.5 : true_x + 0.5 : 0.05,
+        true_y - 0.5 : true_y + 0.5 : 0.05,
+        true_theta - 0.5 : true_theta + 0.5 : 0.01]
+    func = lambda x, y, theta: log_likelihood(readings, 0.1, x, y, theta)
+    func = np.vectorize(func)
+    vals = func(xs, ys, thetas)
+    thresh = -50000
+    vals[vals < thresh] = thresh
 
     # # Mayavi 3D plot:
     # from mayavi import mlab
@@ -197,14 +196,19 @@ if __name__ == "__main__":
     # mlab.gcf().scene.background = (0.5, 0.5, 0.5)
     # mlab.show()
 
-    # # Plot likelihood for all x, y, given best theta for that x, y.
-    # xs = xs[:, :, 0]
-    # ys = ys[:, :, 0]
-    # zs = np.max(vals, axis=2)
-    # plt.pcolormesh(xs, ys, zs)
-    # plt.colorbar()
-    # plt.xlim(-7, 7)
-    # plt.ylim(-7, 7)
-    # plt.xlabel('x')
-    # plt.ylabel('y')
-    # plt.show()
+    # Plot likelihood for all x, y, given best theta for that x, y.
+    xs = xs[:, :, 0]
+    ys = ys[:, :, 0]
+    zs = np.max(vals, axis=2)
+    plt.pcolormesh(xs, ys, zs)
+    plt.colorbar()
+    plt.scatter(
+        [true_x], [true_y], s=200, marker='x', color='green', label='ground')
+    plt.scatter(
+        [fixed_x], [fixed_y], s=200, marker='x', color='black', label='noisy')
+    plt.xlim(-7, 7)
+    plt.ylim(-7, 7)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.legend()
+    plt.show()
