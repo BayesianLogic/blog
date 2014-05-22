@@ -145,7 +145,12 @@ def avg_aggregator(samples):
     """
     "Expected-value" aggregator: return weighted average of particles.
     """
-    return np.average(samples[:, 1:], axis=0, weights=np.exp(samples[:, 0]))
+    # np.average() normalizes the weights (so they don't have to sum to one).
+    # But if all weights are tiny, then np.exp(weights) will be all zeros.
+    # To fix this, we scale all weights s.t. the max weight is 1.
+    log_weights = samples[:, 0]
+    log_weights -= np.max(log_weights)
+    return np.average(samples[:, 1:], axis=0, weights=np.exp(log_weights))
 
 
 if __name__ == "__main__":
