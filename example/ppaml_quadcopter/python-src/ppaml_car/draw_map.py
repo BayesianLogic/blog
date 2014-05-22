@@ -15,6 +15,7 @@ from ppaml_car.data import LONGITUDE_MAX
 from ppaml_car.data import path_for_dataset
 from ppaml_car.data import read_data
 from ppaml_car.data import read_metadata
+from ppaml_car.lasers import car_loc_to_laser_loc
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -40,10 +41,8 @@ def draw_map(ax, readings, properties, true_obstacles):
             agent_x = prev_gps_reading.gps_longitude
             agent_y = prev_gps_reading.gps_latitude
             agent_phi = prev_gps_reading.gps_orientation
-            laser_x = (agent_x + properties.a * np.cos(agent_phi) +
-                properties.b * np.cos(agent_phi + np.pi / 2))
-            laser_y = (agent_y + properties.a * np.sin(agent_phi) +
-                properties.b * np.sin(agent_phi + np.pi / 2))
+            laser_x, laser_y, _ = car_loc_to_laser_loc(
+                agent_x, agent_y, agent_phi, properties.a, properties.b)
             agent_xs.append(agent_x)
             agent_ys.append(agent_y)
             for i in xrange(LASER_COLS):

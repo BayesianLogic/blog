@@ -145,6 +145,18 @@ def default_laser_max_range():
     return 10.0
 
 
+def car_loc_to_laser_loc(car_x, car_y, car_theta, a, b):
+    """
+    Convert car location to laser location.
+
+    The laser is displaced from the rear axle by (a, b).
+    """
+    laser_x = car_x + a * np.cos(car_theta) + b * np.cos(car_theta + np.pi / 2)
+    laser_y = car_y + a * np.sin(car_theta) + b * np.sin(car_theta + np.pi / 2)
+    laser_theta = car_theta
+    return laser_x, laser_y, laser_theta
+
+
 def demo(readings_for_obstacle):
     laser_x = 2.0
     laser_y = 3.0

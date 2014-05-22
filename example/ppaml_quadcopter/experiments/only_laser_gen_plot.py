@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+from ppaml_car.lasers import car_loc_to_laser_loc
 from ppaml_car.lasers import plot_lasers
 
 
@@ -55,100 +56,20 @@ if __name__ == "__main__":
         10.2174
     ]
 
+    # Ground vehicle location:
+    x = -6.1039
+    y = -0.0499926
+    theta = -0.000112593
+
     # Noisy vehicle location:
     x = -6.09833
     y = -0.0897621
     theta = -0.000112593
 
-    #### With state noise 0.1, laser noise 0.1:
-
-    # LW MAP, 50K samples, trial 1:
-    x = -5.8238091038321445
-    y = -0.11369699973092139
-    theta = 0.035321552500139915
-
-    # LW MAP, 50K samples, trial 2:
-    x = -5.800102459994396
-    y = -0.0467000177834562
-    theta = 0.010998987444469739
-
-    # LW MAP, 100 samples, trial 1:
-    x = -5.878251176076303
-    y = 0.0741315847778014
-    theta = -0.011947055666164965
-
-    # LW MAP, 100 samples, trial 2:
-    x = -5.71966379366513
-    y = -0.032176721680824624
-    theta = 0.014355097111472263
-
-    #### With state noise 0.1, laser noise 0.01:
-
-    # LW MAP, 100 samples, trial 1:
-    x = -5.751769983260411
-    y = -0.02987159798461342
-    theta = -0.01202425346889473
-
-    # LW MAP, 100 samples, trial 2:
-    x = -5.783168716285466
-    y = -0.3153956344108246
-    theta = 0.10304419579492093
-
-    # LW MAP, 100 samples, trial 3:
-    x = -5.815794580373197
-    y = -0.2494987309552314
-    theta = 0.0501099421700044
-
-    #### With state noise 0.01, laser noise 0.01:
-
-    # LW MAP, 100 samples, trial 1:
-    x = -5.8846245015801095
-    y = -0.16722716118243236
-    theta = 0.027134077709171568
-
-    # LW MAP, 100 samples, trial 2:
-    x = -5.815502703592968
-    y = 0.00937195741336308
-    theta = 0.015611613129916381
-
-    # LW MAP, 100 samples, trial 3:
-    x = -5.86789583104003
-    y = -0.1461445309194918
-    theta = 0.011998897012082685
-
-    #### With state noise 0.001, laser noise 0.01:
-
-    # LW MAP, 100 samples, trial 1:
-    x = -6.044732380499832
-    y = -0.12785373392798025
-    theta = 0.012891860864377637
-
-    # LW MAP, 100 samples, trial 2:
-    x = -6.033177810337115
-    y = -0.11066400064176488
-    theta = 0.023980042813595236
-
-    # LW MAP, 100 samples, trial 3:
-    x = -6.062575324109853
-    y = -0.12751229158629737
-    theta = -0.001848955938821374
-
-    #### With state noise 0.0001, laser noise 0.01:
-
-    # LW MAP, 100 samples, trial 1:
-    x = -6.070693224740144
-    y = -0.10476831736217068
-    theta = 0.00691237803713017
-
-    # LW MAP, 100 samples, trial 2:
-    x = -6.0701744387165295
-    y = -0.07912470154133736
-    theta = 9.03383924202818E-4
-
-    # LW MAP, 100 samples, trial 3:
-    x = -6.079174230170331
-    y = -0.0989689758665606
-    theta = 0.00335040791890804
+    # Compute laser location from vehicle (rear-axle) location:
+    a = 0.299541
+    b = 0.0500507
+    laser_x, laser_y, laser_theta = car_loc_to_laser_loc(x, y, theta, a, b)
 
     laser_angles = np.arange(-90, 90.5, 0.5) * np.pi / 180
     laser_max_range = 10
@@ -163,7 +84,7 @@ if __name__ == "__main__":
 
     plt.figure(figsize=(8, 8))
     plot_lasers(
-        x, y, theta, laser_angles, laser_max_range,
+        laser_x, laser_y, laser_theta, laser_angles, laser_max_range,
         obstacles, lasers, plt.gca())
     plt.plot([-7, -7, 7, 7, -7], [-7, 7, 7, -7, -7], 'k')
     plt.xlim(-15, 15)
