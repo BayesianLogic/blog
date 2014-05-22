@@ -1109,39 +1109,16 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	public HashMap<BayesNetVar, BayesNetVar> getObservableMap(){
 		return observableToReferenced;
 	}
+	
 	/**
-	 * checks if two partial worlds are equal, minus decision function
-	 * and observation function values
-	 * 
-	 * TODO maybe find a better place to put this; right now it is specific to comparing POMDP states
+	 * Non-guaranteed objects can be compared by their properties.
 	 */
-	public boolean innerStateEquals(AbstractPartialWorld otherWorld, int maxTimestep) {
-		
-		UBT.Stopwatch timer = new UBT.Stopwatch();
-		timer.startTimer();
-		
-		boolean rtn = true;
-		//int maxTimestep = maxTimestep;
-		//System.out.println("Relevant variables:");
-		/*
-		maxTimestep = -1;
-		if (!UniversalBenchmarkTool.rememberHistory){
-			for (Object o : basicVarToValue.keySet()){
-				BasicVar v = (BasicVar) o;
-				maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
-			}
-		}
-		if (maxTimestep2 != maxTimestep){
-			System.err.println("bug");
-			for (Object o : basicVarToValue.keySet()){
-				BasicVar v = (BasicVar) o;
-				maxTimestep = Math.max(maxTimestep, DBLOGUtil.getTimestepIndex(v));
-			}
-			System.exit(1);
-		}
-		*/
-		//rtn = rtn && (otherWorld.basicVarToValue == (Map) ((HashMap) basicVarToValue));
-		for (Object o : basicVarToValue.keySet()){
+	private Map<NonGuaranteedObject, Set<RandFuncAppVar>> ngoProperties;
+	
+	private Map<NonGuaranteedObject, Set<RandFuncAppVar>> getNgoProperties() {
+		if (ngoProperties != null) return ngoProperties;
+		ngoProperties = new HashMap<NonGuaranteedObject, Set<RandFuncAppVar>>();
+		for (Object o : basicVarToValue.keySet()) {
 			BasicVar v = (BasicVar) o;
 			if (v.toString().contains("nonstate_")) continue;
 			if (v instanceof RandFuncAppVar){
@@ -1162,21 +1139,140 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 					} else
 						continue;
 				}
+				
+				Object[] args = funcVar.args();
+				for (Object arg : args) {
+					if (arg instanceof NonGuaranteedObject) {
+						if (!ngoProperties.containsKey((NonGuaranteedObject) arg))
+							ngoProperties.put((NonGuaranteedObject) arg, new HashSet<RandFuncAppVar>());
+						ngoProperties.get((NonGuaranteedObject) arg).add(funcVar);
+					}
+				}
 			}
+		}
+		
+		return ngoProperties;
+	}
+	
+	private boolean compareNgos(AbstractPartialWorld otherWorld) {
+		Map<NonGuaranteedObject, Set<RandFuncAppVar>> otherNgoProperties = otherWorld.getNgoProperties();
+		Map<NonGuaranteedObject, Set<RandFuncAppVar>> myNgoProperties = getNgoProperties();
+		Set<NonGuaranteedObject> availableMatches = new HashSet(otherNgoProperties.keySet());
+		if (availableMatches.size() != myNgoProperties.size()) return false;
+		
+		for (NonGuaranteedObject myNgo : myNgoProperties.keySet()) {
+			NonGuaranteedObject match = null;
+			Set<RandFuncAppVar> myProperties = myNgoProperties.get(myNgo);
+			for (NonGuaranteedObject otherNgo : availableMatches) {
+				
+				Set<RandFuncAppVar> otherProperties = otherNgoProperties.get(otherNgo);
+				if (myProperties.size() != otherProperties.size()) {
+					continue;
+				}
+				boolean isMatch = true;
+				for (RandFuncAppVar v : myProperties) {
+					Object[] args = v.args().clone();
+					args[0] = otherNgo;
+					RandFuncAppVar otherVar = new RandFuncAppVar(v.func(), args);
+					if (!otherProperties.contains(otherVar)) {
+						isMatch = false;
+						break;
+					} else if (!otherVar.getValue(otherWorld).equals(v.getValue(this))) {
+						isMatch = false;
+						break;
+					}
+				}
+				if (isMatch) {
+					match = otherNgo;
+					break;
+				}
+			}
+			
+			if (match != null) {
+				availableMatches.remove(match);
+				/*if (!match.toString().equals(myNgo.toString())) {
+					System.out.println(match + " matches " + myNgo);
+					System.out.println(myProperties);
+					System.out.println(otherNgoProperties.get(match));
+				}*/
+			} else
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * checks if two partial worlds are equal, minus decision function
+	 * and observation function values
+	 * 
+	 * TODO maybe find a better place to put this; right now it is specific to comparing POMDP states
+	 */
+	public boolean innerStateEquals(AbstractPartialWorld otherWorld, int maxTimestep) {
+		UBT.Stopwatch timer = new UBT.Stopwatch();
+		timer.startTimer();
+		
+		boolean rtn = true;
+		for (Object o : basicVarToValue.keySet()){
+			BasicVar v = (BasicVar) o;
+			if (v.toString().contains("nonstate_")) continue;
+			if (v instanceof RandFuncAppVar){
+				RandFuncAppVar funcVar = (RandFuncAppVar) v;
+				if (funcVar.func().getObservableFun() != null)
+					continue;
 
+				if (funcVar.func().getName().equals("value") || 
+						funcVar.func().getName().equals("reward") ||
+						funcVar.func().getName().contains("nonstate_")) {
+					continue;
+				}
+				if ((funcVar.func()) instanceof ObservableRandomFunction){
+					Boolean myObs = (Boolean) getValue(v);
+					if (UBT.currentScheme==UBT.schemes.allVariables ||
+							(UBT.currentScheme==UBT.schemes.nonObservableVariables && myObs.booleanValue())) {
+						//System.out.print("can observe " + v);
+						v = (BasicVar) observableToReferenced.get(v);
+						//System.out.println(" referencing " + v);
+					} else
+						continue;
+				}
+				
+				// if variable contains a non-guaranteed object, skip it for now.
+				// use lifted comparison later.
+				Object[] args = v.args();
+				boolean containsNgo = false;
+				for (Object arg : args) {
+					if (arg instanceof NonGuaranteedObject) {
+						containsNgo = true;
+						break;
+					}
+				}
+				if (containsNgo) continue;
+			}
+			
 			//System.out.println("Compare? " + v);
 			int timestepIndex = DBLOGUtil.getTimestepIndex(v);
 			if (UBT.rememberHistory || timestepIndex == maxTimestep){
 				boolean sameValue = otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(basicVarToValue.get(v));
 				//sameValue |= (otherWorld.basicVarToValue.containsKey(v) && otherWorld.basicVarToValue.get(v).equals(changedVarToValue.get(v)));
-				rtn = rtn && sameValue;
+				if (!sameValue)
+					return false;
 			}
 			/*
 			if (DBLOGUtil.getTimestepIndex(v) == maxTimestep){
 				rtn = rtn && (otherWorld.changedVarToValue.containsKey(v) && otherWorld.changedVarToValue.get(v).equals(changedVarToValue.get(v)));
 			}*/
 		}
+		if (!compareNgos(otherWorld)) {
+			return false;
+		}
+		/*
 		rtn = rtn && otherWorld.skolemConstants.equals(this.skolemConstants);
+		for (SkolemConstant s : skolemConstants) {
+			
+		}*/
+		
+		
+		
 		/*
 		if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.nonObservableVariables){
 			for (BayesNetVar v : this.observableToReferenced.keySet()){
@@ -1216,6 +1312,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		*/
 		for (Object o : basicVarToValue.keySet()){
 			BasicVar v = (BasicVar) o;
+			//System.out.println(v);
 			if (v.toString().contains("nonstate_")) continue;
 			if (v instanceof RandFuncAppVar){
 				RandFuncAppVar funcVar = (RandFuncAppVar) v;
@@ -1231,11 +1328,22 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 					if (UBT.currentScheme==UBT.schemes.allVariables ||
 							(UBT.currentScheme==UBT.schemes.nonObservableVariables && myObs.booleanValue())) {
 						v = (BasicVar) observableToReferenced.get(v);
-				} else
+					} else
 						continue;
 				}
-
+				
+				Object[] args = v.args();
+				boolean containsNgo = false;
+				for (Object arg : args) {
+					if (arg instanceof NonGuaranteedObject) {
+						containsNgo = true;
+						break;
+					}
+				}
+				if (containsNgo) continue;
 			}
+			
+			//System.out.println(v);
 			/*if (DBLOGUtil.getTimestepIndex(v) == maxTimestep) {
 				int a = v.hashCode();
 				rtn = rtn ^ v.hashCode();
@@ -1254,7 +1362,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				rtn = rtn ^ basicVarToValue.get(v).hashCode();
 			}
 		}
-		rtn = rtn ^ this.skolemConstants.hashCode();
+		//rtn = rtn ^ this.skolemConstants.hashCode();
 		/*
 		if (UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.allVariables || UniversalBenchmarkTool.currentScheme==UniversalBenchmarkTool.schemes.nonObservableVariables){
 			for (BayesNetVar v : this.observableToReferenced.keySet()){
