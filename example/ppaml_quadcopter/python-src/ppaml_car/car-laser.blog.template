@@ -75,12 +75,28 @@ fixed RealMatrix laser_solns(
         Real laser_x, Real laser_y, Real laser_theta, RealMatrix obstacles)
     = LaserInterp();
 
+random Real laser_x(Timestep timestep) {
+    = (toReal(state(timestep)[0]) +
+       toReal(car_params[0]) * cos(toReal(state(timestep)[2])) +
+       toReal(car_params[1]) * cos(toReal(state(timestep)[2]) + 0.5 * pi))
+};
+
+random Real laser_y(Timestep timestep) {
+    = (toReal(state(timestep)[1]) +
+       toReal(car_params[0]) * sin(toReal(state(timestep)[2])) +
+       toReal(car_params[1]) * sin(toReal(state(timestep)[2]) + 0.5 * pi))
+};
+
+random Real laser_theta(Timestep timestep) {
+    = toReal(state(timestep)[2])
+};
+
 random RealMatrix laser_observations(Timestep timestep) {
     ~ MultivarGaussian(
         laser_solns(
-            toReal(state(timestep)[0]),
-            toReal(state(timestep)[1]),
-            toReal(state(timestep)[2]),
+            laser_x(timestep),
+            laser_y(timestep),
+            laser_theta(timestep),
             obstacles),
         lasers_sigma)
 };
