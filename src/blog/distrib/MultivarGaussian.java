@@ -75,9 +75,15 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
   /** Sets mean and covariance and ensures that their dimensions match. */
   public MultivarGaussian(List params) {
     if (params.size() == 0) {
-      throw new IllegalArgumentException(
-          "Dimension of MultivarGaussian distribution must be "
-              + "specified as parameter.");
+      // This means that all the parameters are random
+      fixedMean = false;
+      fixedCovariance = false;
+      return;
+      /**
+       * throw new IllegalArgumentException(
+       * "Dimension of MultivarGaussian distribution must be "
+       * + "specified as parameter.");
+       */
     }
 
     Object ob = params.get(0);
@@ -249,13 +255,19 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
                   + "expects only one argument.");
         }
       } else {
-        if (args.size() < 2) {
+        if (args.size() == 2) {
+          setCovariance(args.get(1));
+        } else if (args.size() < 2) {
           throw new IllegalArgumentException(
               "MultivarGaussian CPD created without a fixed "
                   + "covariance matrix; requires covariance matrix "
                   + "as argument.");
+        } else {
+          throw new IllegalArgumentException(
+              "MultivarGaussian CPD created without a fixed "
+                  + "covariance matrix has more than two arguments "
+                  + "provided");
         }
-        setCovariance(args.get(1));
       }
     }
   }
@@ -284,6 +296,9 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
     }
 
     mu = (MatrixLib) mean;
+    if (!fixedMean) {
+      setDimension(mu.numRows());
+    }
 
     if (mu.numRows() != d) {
       throw new IllegalArgumentException("Mean of " + d
