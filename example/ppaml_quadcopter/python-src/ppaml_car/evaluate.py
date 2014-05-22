@@ -119,10 +119,13 @@ def traj_from_blog(timestamps, samples, aggregator_func):
     """
     Return computed trajectory as an array of (time, lat, lon, theta) rows.
     """
-    assert len(timestamps) == len(samples)
-    traj = np.empty((len(timestamps), 4))
-    traj[:, 0] = timestamps
-    for i in xrange(len(timestamps)):
+    traj = np.empty((len(samples), 4))
+    if len(timestamps) == len(samples):
+        traj[:, 0] = timestamps
+    else:
+        print "BLOG traj not the same length as ground traj"
+        traj[:, 0] = -1
+    for i in xrange(len(samples)):
         x, y, theta = aggregator_func(samples[i])
         traj[i, 1] = y
         traj[i, 2] = x
@@ -168,11 +171,15 @@ if __name__ == "__main__":
 
     # Evaluate trajectories.
     # All trajectories are lists of (time, lat, lon, theta).
-    for traj, name in (
-            (noisy_traj, 'noisy'),
-            (map_traj, 'map'),
-            (avg_traj, 'avg')):
-        print "{:5}: {:10.5f}".format(name, compute_error(ground_traj, traj))
+    if len(map_traj) == len(ground_traj):
+        for traj, name in (
+                (noisy_traj, 'noisy'),
+                (map_traj, 'map'),
+                (avg_traj, 'avg')):
+            print "{:5}: {:10.5f}".format(
+                name, compute_error(ground_traj, traj))
+    else:
+        print "Traj not the same length; can't evaluate."
 
     # Optionally plot trajectories.
     if args.plot:
