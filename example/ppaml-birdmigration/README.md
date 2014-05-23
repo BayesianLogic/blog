@@ -15,6 +15,10 @@ or
 ```
 time blog -e blog.engine.LiuWestFilter LocToInteger.blog bird_flow_probs.blog bird_features.blog bird_model.blog bird_obs.blog bird_queries.blog -n 100 -q 1 -w out.json
 ```  
-which will output the particles for queried variables at each timestep, total computation time and dump all the particle information into out.json  
+which will output the particles for queried variables at each timestep, total computation time and dump all the particle information into out.json
+
+** Evaluation **  
+Since we are approaching the challenge in Bayesian way, tasks of **reconstruction** (state estimation), **prediction** and **parameter estimation**are done simultaneously. The observations in bird_obs.blog span only the first 3 years (for dataset 2 and 3) whereas the queries are for 6 years. The parameter estimate at the end of the third year is also queried.  
+
 *Prepared by* Yusuf Bugra Erol  
 *Contact at* yusufbugraerol@berkeley.edu
