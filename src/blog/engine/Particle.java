@@ -108,11 +108,15 @@ public class Particle {
   }
 
   /**
-   * Identifies the largest time step in the current world and uninstantiates
-   * all temporal random variables with a different time step.
+   * remove all the temporal variables in this particle (possible world) that
+   * are prior to the specified timestep
+   * 
+   * @param timestepIndex
    */
-  public void uninstantiatePreviousTimeslices() {
-    DBLOGUtil.uninstantiatePreviousTimeslices(curWorld);
+  public void removePriorTimeSlice(int timestepIndex) {
+    //
+    DBLOGUtil.removeVarsAtDiffTimestep(timestepIndex,
+        curWorld);
   }
 
   public void removeAllDerivedVars() {

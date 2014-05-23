@@ -48,8 +48,7 @@ public class DBLOGUtil {
   public static void uninstantiatePreviousTimeslices(PartialWorld world) {
     int largestTimestepIndex = findLargestTimestepIndex(world);
     if (largestTimestepIndex != -1)
-      uninstantiateAllTemporalsWithAnIndexDifferentFrom(largestTimestepIndex,
-          world);
+      removeVarsAtDiffTimestep(largestTimestepIndex, world);
   }
 
   /**
@@ -122,8 +121,14 @@ public class DBLOGUtil {
     return -1;
   }
 
-  public static void uninstantiateAllTemporalsWithAnIndexDifferentFrom(
-      int largest, PartialWorld world) {
+  /**
+   * remove the temporal variables from the possible world that are
+   * different from the specified timestep
+   * 
+   * @param largest
+   * @param world
+   */
+  public static void removeVarsAtDiffTimestep(int largest, PartialWorld world) {
     LinkedList instantiatedVars = new LinkedList(world.getInstantiatedVars());
     Iterator varIt = instantiatedVars.iterator();
     while (varIt.hasNext()) {
