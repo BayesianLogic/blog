@@ -6,7 +6,7 @@ For inference we are using particle filtering or Liu-West filtering (a variant o
 **How to Run**:  
 -n: specifies number of particles, default 50000  
 -w: specifies which file to write into (.json)
--q: specifies the intervals for which the particles are printed on the terminal during run-time
+-q: specifies the intervals for which the particles are printed on the terminal during run-time  
 -e: specifies the inference engine (either Particle Filter or Liu-West Filter)
 ```
 time blog -e blog.engine.ParticleFilter LocToInteger.blog bird_flow_probs.blog bird_features.blog bird_model.blog bird_obs.blog bird_queries.blog -n 100 -q 1 -w out.json
