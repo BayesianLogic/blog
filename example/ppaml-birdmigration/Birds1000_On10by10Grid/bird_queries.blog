@@ -1,4 +1,3 @@
-query beta(@0);query beta(@1);query beta(@2);query beta(@3);query beta(@4);query beta(@5);query beta(@6);query beta(@7);query beta(@8);query beta(@9);query beta(@10);query beta(@11);query beta(@12);query beta(@13);query beta(@14);query beta(@15);query beta(@16);query beta(@17);query beta(@18);query beta(@19);query beta(@20);query beta(@21);query beta(@22);query beta(@23);query beta(@24);query beta(@25);query beta(@26);query beta(@27);query beta(@28);query beta(@29);query beta(@30);query beta(@31);query beta(@32);query beta(@33);query beta(@34);query beta(@35);query beta(@36);query beta(@37);query beta(@38);query beta(@39);query beta(@40);query beta(@41);query beta(@42);query beta(@43);query beta(@44);query beta(@45);query beta(@46);query beta(@47);query beta(@48);query beta(@49);query beta(@50);query beta(@51);query beta(@52);query beta(@53);query beta(@54);query beta(@55);query beta(@56);query beta(@57);query beta(@58);query beta(@59);
 query birds(l[0],@0);
 query birds(l[1],@0);
 query birds(l[2],@0);
@@ -11999,3 +11998,7 @@ query birds(l[96],@119);
 query birds(l[97],@119);
 query birds(l[98],@119);
 query birds(l[99],@119);
+query beta1;
+query beta2;
+query beta3;
+query beta4;
