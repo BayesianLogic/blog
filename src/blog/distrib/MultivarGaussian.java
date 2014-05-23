@@ -65,25 +65,18 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
    *          d-by-d covariance matrix
    */
   public MultivarGaussian(MatrixLib mean, MatrixLib covariance) {
-    setDimension(mean.numRows());
-    fixedMean = true;
     setMean(mean);
-    fixedCovariance = true;
     setCovariance(covariance);
+    expectCovarianceAsArg = false;
+    expectMeanAsArg = false;
   }
 
   /** Sets mean and covariance and ensures that their dimensions match. */
   public MultivarGaussian(List params) {
     if (params.size() == 0) {
-      // This means that all the parameters are random
-      fixedMean = false;
-      fixedCovariance = false;
+      expectMeanAsArg = true;
+      expectCovarianceAsArg = true;
       return;
-      /**
-       * throw new IllegalArgumentException(
-       * "Dimension of MultivarGaussian distribution must be "
-       * + "specified as parameter.");
-       */
     }
 
     Object ob = params.get(0);
@@ -97,14 +90,17 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
     setDimension(dims);
 
     if (params.size() == 1) {
-      fixedMean = false;
-      fixedCovariance = true;
-      setCovariance(params.get(0));
+      expectMeanAsArg = false;
+      expectCovarianceAsArg = true;
+      initParams(params);
+      expectMeanAsArg = true;
+      expectCovarianceAsArg = false;
     } else if (params.size() == 2) {
-      fixedMean = true;
-      setMean(params.get(0));
-      fixedCovariance = true;
-      setCovariance(params.get(1));
+      expectMeanAsArg = true;
+      expectCovarianceAsArg = true;
+      initParams(params);
+      expectMeanAsArg = false;
+      expectCovarianceAsArg = false;
     } else {
       throw new IllegalArgumentException(
           "MultivarGaussian CPD expects at most 2 parameters, not "
@@ -136,7 +132,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
    *           if this distribution does not have fixed mean and covariance
    */
   public double getProb(MatrixLib x) {
-    if (!fixedMean || !fixedCovariance) {
+    if (expectMeanAsArg || expectCovarianceAsArg) {
       throw new IllegalStateException("Mean and covariance are not fixed.");
     }
     return getProbInternal(x);
@@ -146,7 +142,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
    * Returns the natural log of the probability returned by getProb.
    */
   public double getLogProb(MatrixLib x) {
-    if (!fixedMean || !fixedCovariance) {
+    if (expectMeanAsArg || expectCovarianceAsArg) {
       throw new IllegalStateException("Mean and covariance are not fixed.");
     }
     return getLogProbInternal(x);
@@ -201,7 +197,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
    * Returns the mean of this distribution, or null if the mean is not fixed.
    */
   public MatrixLib getMean() {
-    if (fixedMean) {
+    if (!expectMeanAsArg) {
       return mu;
     }
     return null;
@@ -212,7 +208,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
    * covariance is not fixed.
    */
   public MatrixLib getCovar() {
-    if (fixedCovariance) {
+    if (!expectCovarianceAsArg) {
       return sigma;
     }
     return null;
@@ -235,40 +231,26 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
   }
 
   private void initParams(List args) {
-    if (fixedMean) {
-      if (args.size() > 0) {
+    int argidx = 0;
+    if (expectMeanAsArg) {
+      if ((argidx + 1) > args.size()) {
         throw new IllegalArgumentException(
-            "MultivarGaussian CPD with fixed mean expects no " + "arguments.");
+            "MultivarGaussian CPD created without a fixed mean; requires mean as an argument");
       }
-    } else {
-      if (args.size() < 1) {
+      setMean(args.get(argidx));
+      argidx++;
+    }
+    if (expectCovarianceAsArg) {
+      if ((argidx + 1) > args.size()) {
         throw new IllegalArgumentException(
-            "MultivarGaussian CPD created without a fixed mean; "
-                + "requires mean as an argument.");
+            "MultivarGaussian CPD created without a fixed covariance matrix; requires covariance matrix as argument.");
       }
-      setMean(args.get(0));
-
-      if (fixedCovariance) {
-        if (args.size() > 1) {
-          throw new IllegalArgumentException(
-              "MultivarGaussian CPD with fixed covariance matrix "
-                  + "expects only one argument.");
-        }
-      } else {
-        if (args.size() == 2) {
-          setCovariance(args.get(1));
-        } else if (args.size() < 2) {
-          throw new IllegalArgumentException(
-              "MultivarGaussian CPD created without a fixed "
-                  + "covariance matrix; requires covariance matrix "
-                  + "as argument.");
-        } else {
-          throw new IllegalArgumentException(
-              "MultivarGaussian CPD created without a fixed "
-                  + "covariance matrix has more than two arguments "
-                  + "provided");
-        }
-      }
+      setCovariance(args.get(argidx));
+      argidx++;
+    }
+    if (args.size() > argidx) {
+      throw new IllegalArgumentException(
+          "MultivariateGaussian CPD is provided additional unnecessary random arguments");
     }
   }
 
@@ -296,9 +278,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
     }
 
     mu = (MatrixLib) mean;
-    if (!fixedMean) {
-      setDimension(mu.numRows());
-    }
+    setDimension(mu.numRows());
 
     if (mu.numRows() != d) {
       throw new IllegalArgumentException("Mean of " + d
@@ -335,8 +315,8 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
     sqrtSigma = sigma.choleskyFactor();
   }
 
-  private boolean fixedMean;
-  private boolean fixedCovariance;
+  private boolean expectMeanAsArg;
+  private boolean expectCovarianceAsArg;
 
   private int d;
   private MatrixLib mu;

@@ -17,7 +17,7 @@ import blog.distrib.UnivarGaussian;
  * Unit tests for Univariate Gaussian
  */
 @RunWith(JUnit4.class)
-public class TestUnivariateCase {
+public class TestUnivariateGaussian {
   private final double ERROR_BOUND = 1e-10;
   private HashMap<Double, Double> probVals;
   private final double MEAN = 0.5;
@@ -25,7 +25,7 @@ public class TestUnivariateCase {
   private List<Double> constructParams;
   private List<Double> args;
 
-  public TestUnivariateCase() {
+  public TestUnivariateGaussian() {
     // We have a normal random variable Z ~ N(0.5, 1.5)
     probVals = new HashMap<Double, Double>();
     probVals.put(0.0, 0.25158881846199549);
@@ -39,31 +39,22 @@ public class TestUnivariateCase {
     args = new LinkedList<Double>();
   }
 
-  /**
-   * Case 1: Mean fixed, Variance fixed
-   */
   @Test
-  public void case1() {
+  public void testFixedMeanFixedVariance() {
     constructParams.add(MEAN);
     constructParams.add(VARIANCE);
     testGaussian(constructParams, args);
   }
 
-  /**
-   * Case 2: Mean random, Variance fixed
-   */
   @Test
-  public void case2() {
+  public void testRandomMeanFixedVariance() {
     constructParams.add(VARIANCE);
     args.add(MEAN);
     testGaussian(constructParams, args);
   }
 
-  /**
-   * Case 3: Mean random, Variance random
-   */
   @Test
-  public void case3() {
+  public void testRandomMeanRandomVariance() {
     args.add(MEAN);
     args.add(VARIANCE);
     testGaussian(constructParams, args);
