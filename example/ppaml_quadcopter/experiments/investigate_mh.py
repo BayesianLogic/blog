@@ -181,10 +181,13 @@ if __name__ == "__main__":
     fixed_x, fixed_y, fixed_theta = lasers.car_loc_to_laser_loc(
         fixed_x, fixed_y, fixed_theta, a, b)
 
+    # Noise constant for the lasers.
+    noise_const = 0.01
+
     print "true  has lik {}".format(log_likelihood(
-        readings, 0.1, true_x, true_y, true_theta))
+        readings, noise_const, true_x, true_y, true_theta))
     print "fixed has lik {}".format(log_likelihood(
-        readings, 0.1, fixed_x, fixed_y, fixed_theta))
+        readings, noise_const, fixed_x, fixed_y, fixed_theta))
     # plot_liks(fixed_x, fixed_y, fixed_theta, true_x, true_y, true_theta)
     # plt.show()
 
@@ -202,7 +205,8 @@ if __name__ == "__main__":
         true_y - 0.2 : true_y + 0.2 : 0.01,
         true_theta - 0.05 : true_theta + 0.051 : 0.005]
 
-    func = lambda x, y, theta: log_likelihood(readings, 0.1, x, y, theta)
+    func = lambda x, y, theta: log_likelihood(
+        readings, noise_const, x, y, theta)
     func = np.vectorize(func)
     vals = func(xs, ys, thetas)
     thresh = -50000
