@@ -9,7 +9,7 @@ trainfeatures=dlmread('trainfeatures.txt');
 testfeatures=dlmread('testfeatures.txt');
 features = [trainfeatures; testfeatures];
 
-BirdNum=1;
+BirdNum=1000;
 GridSize=10*10;
 Year=3+3; Day=20;
 T= Year*Day;

@@ -28,7 +28,7 @@ fprintf(fid,'// Noisy Observations defined through Poisson distribution \n');
 % fprintf(fid,'random Integer NoisyObs(Location loc, Timestep t) ~ Poisson(birds(loc,t)); \n');
 
 fprintf(fid,'random Integer NoisyObs(Location loc, Timestep t){\n');
-fprintf(fid,'	if birds(loc,t) == 0 ~ Poisson(0.1);\n');
+fprintf(fid,'	if birds(loc,t) == 0 then ~ Poisson(0.01)\n');
 fprintf(fid,'   else ~ Poisson(birds(loc,t))\n');
 fprintf(fid,'};\n');
 fclose(fid);
