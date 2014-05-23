@@ -254,6 +254,7 @@ public class ParticleFilter extends InferenceEngine {
                                // null because after this method the filter
                                // should be ready to take queries.
 
+
       if (needsToBeResampledBeforeFurtherSampling) {
         move();
         resample();
@@ -330,7 +331,7 @@ public class ParticleFilter extends InferenceEngine {
     answer(Util.list(query));
   }
 
-  private void resample() {
+  protected void resample() {
     double[] logWeights = new double[particles.size()];
     boolean[] alreadySampled = new boolean[particles.size()];
     double logSumWeights = Double.NEGATIVE_INFINITY;
@@ -358,8 +359,9 @@ public class ParticleFilter extends InferenceEngine {
       if (!alreadySampled[selection]) {
         newParticles.add(particles.get(selection));
         alreadySampled[selection] = true;
-      } else
+      } else {
         newParticles.add(((Particle) particles.get(selection)).copy());
+      }
     }
 
     particles = newParticles;
