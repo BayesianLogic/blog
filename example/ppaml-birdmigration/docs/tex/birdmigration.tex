@@ -1,0 +1,100 @@
+\documentclass[11pt]{article}
+\usepackage{times}
+\usepackage{amsthm}
+\usepackage[tight]{subfigure}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{wasysym}
+\usepackage{color} % add more color
+\usepackage{mdwlist}
+\usepackage{xspace}
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+\usepackage{tikz}
+\usetikzlibrary{arrows,backgrounds,positioning,fit}
+\usepackage{fullpage}
+\usepackage{listings}
+\usepackage{natbib}
+
+\usepackage[algo2e,ruled,vlined]{algorithm2e}
+
+\input{dfn.tex}
+
+\newcommand{\figref}[1]{\figurename~\ref{#1}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\parn}{\mathrm{par}}
+\newcommand{\tikzmark}[2]{\tikz[overlay,remember picture,baseline] \node [anchor=base] (#1) {$#2$};}
+
+\title{PPAML CP 2: Continent Scale Bird-Migration Modeling}
+\author{
+Yusuf Bugra Erol
+}
+
+\begin{document}
+\maketitle
+\section{Bird Migration Problem Definition}
+The mathematical representation of the bird migration pattern on a $I \times J$ grid where $\xi_{t,t+1}(i,j)$'s are bird migration features, is as follows.
+\beq
+	y_t &\sim& \mathrm{Poisson}(\mathbf{n}_t) \nn \\
+	\theta_{t,t+1}(i,j) &=&\beta^T\xi_{t,t+1}(i,j) \nn \\
+	\mathbf{n}_{t,t+1}(i,:) &\sim& \mathrm{Multinomial} \left(\mathbf{n}_t(i);  \theta_{t,t+1}(i,1), \dots, \theta_{t,t+1}(i,J) \right), \forall i \in [1, I] \nn \\
+	\mathbf{n}_{t+1}(j) &=& \sum_{i} \mathbf{n}_{t,t+1}(i,j)
+\eeq
+Graphical representation is given in Figure \ref{fig:model}.
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.5\textwidth]{fig/Model.jpg}
+     \caption{Graphical representation of the aggregate model}
+	\label{fig:model}
+\end{figure}
+
+
+\section{Defining the Features}
+
+\section{Model Dynamics}
+\begin{lstlisting}
+// initial value for the birds 
+fixed RealMatrix initial_value = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+// number of birds at location loc and timestep t 
+random Integer birds(Location loc, Timestep t){ 
+    if t%20==@0 then = toInt(initial_value[loc_to_int(loc)]) 
+    else = toInt(sum({ inflow(src, loc, Prev(t)) for Location src })) 
+}; 
+// the vector of outflow from source(src) to all other locations 
+random RealMatrix outflow_vector(Location src,Timestep t) ~ Multinomial(birds(src,t), probs(src,t)) ; 
+// inflow from source(src) to destination(dst) 
+random Integer inflow(Location src, Location dst, Timestep t) = toInt(outflow_vector(src,t)[loc_to_int(dst)]); 
+// Noisy Observations defined through Poisson distribution 
+random Integer NoisyObs(Location loc, Timestep t) ~ Poisson(birds(loc,t)); 
+\end{lstlisting}
+
+\section{Observations}
+
+\section{Queries}
+
+\section{Inference}
+
+\section{How to Run}
+
+\section{Changes in BLOG to handle CP2}
+\begin{itemize}
+\item Multinomial
+\item Linear algebra support
+\item TupleSet
+\item vstack
+\item scalar stack
+\item exp
+\item timestep arithmetic
+\item particle filter uninstantiation, memory problems
+\item liu-west filter to fight degeneracy problems in static parameter estimation via particle filtering.
+\end{itemize}
+
+
+
+\bibliographystyle{plain}
+\bibliography{leiliref}
+
+\end{document}

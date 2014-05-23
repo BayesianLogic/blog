@@ -1,0 +1,165 @@
+\newcommand{\ben}{\begin{enumerate*}}
+\newcommand{\een}{\end{enumerate*}}
+\newcommand{\beq}{\begin{eqnarray}}
+\newcommand{\eeq}{\end{eqnarray}}
+\newcommand{\bit}{\begin{itemize*}}
+\newcommand{\eit}{\end{itemize*}}
+\newcommand{\nn}{\nonumber}
+%%%%defined to align image to top
+\newcommand{\imagetop}[1]{\vtop{\null\hbox{#1}}}
+
+
+% shorthands for naming conventions
+%\newcommand{\question}[1]{{\emph{#1}}}
+% \newcommand{\ksa}{K\_softAND}
+% \newcommand{\myK}{k}
+
+\newcommand{\reminder}[1]{{\color{red} *** #1 *** }}
+\newcommand{\goal}[1]{ {\noindent {$\Rightarrow$} \em {#1} } }
+\newcommand{\hide}[1]{}
+%\newcommand{\comment}[1]{ {\footnotesize {#1} } }
+\newcommand{\updated}[1]{ {\bf \textcolor{red}{***I have made updates here. #1 ***}} }
+%\newcommand{\todo}[1]{\begin{verbatim}#1\end{verbatim}}
+\newcommand{\mkclean}{
+    \renewcommand{\reminder}{\hide}
+    \renewcommand{\updated}{\hide}
+%    \renewcommand{\todo}{\hide}
+}
+
+%{\theoremstyle{changebreak}
+\newtheorem{problem}{Problem} %[chapter]
+\newtheorem{defn}{Definition} %[chapter]
+%}
+\newtheorem{lemma}{Lemma} %[chapter]
+\newtheorem{theorem}{Theorem} %[chapter]
+%\newtheorem{proof}{Proof}
+
+%\newtheorem{algo}{Algorithm}
+\newtheorem{observation}{Observation} %[chapter]
+\newtheorem{conjecture}{Conjecture} %[chapter]
+\newtheorem{approach}{Approach} %[chapter]
+\newtheorem{example}{Example} %[chapter]
+\newtheorem{remark}{Remark} %[chapter]
+
+% macro symbol definitions
+
+%counter
+\newcounter{saveenum}
+
+
+%mocap
+\newcommand{\xseq}{\mathcal{X}}
+\newcommand{\yseq}{\mathcal{Y}}
+\newcommand{\wseq}{\mathcal{W}}
+\newcommand{\qseq}{\mathcal{Q}}
+\newcommand{\zseq}{\mathcal{Z}}
+\newcommand{\durq}{\mathrm{T_Q}}
+\newcommand{\dura}{\ensuremath{\mathrm{T}}}
+\newcommand{\durx}{\mathrm{T}}
+\newcommand{\dims}{\ensuremath{m}} % dimensionality - m = 93 here
+\newcommand{\nseq}{\ensuremath{n}} % number of sequences
+\newcommand{\hidd}{\ensuremath{h}} % hidden dimension (number of hidden variables for each time tick)
+\newcommand{\tgap}{\Delta t}
+\newcommand{\window}{\ensuremath{w}} % the window size for the algorithm in
+\newcommand{\ncomp}{\ensuremath{k}}     % the number of independent components
+
+% math symbols
+%\newcommand{\myvec}[1]{{\mathbf #1}}
+\newcommand{\myvec}[1]{{\vec{#1}}}
+%\newcommand{\myvec}[1]{{\overrightarrow{#1}}}
+\newcommand{\mycvec}[1]{{\vec{#1}}}
+\newcommand{\mymat}[1]{{\mathbf #1}}
+\newcommand{\mycmat}[1]{{\mathbf #1}}
+\newcommand{\celsius}{\ensuremath{^\circ\mathrm{C}}}
+
+% math operator
+\newcommand{\expect}[1]{\mathbb{E}[#1]}
+\newcommand{\expectprob}[2]{\mathbb{E}_{#1}[#2]}
+\newcommand{\dnorm}[2]{\ensuremath{\mathcal{N}(#1, #2)}}
+\newcommand{\expi}[2]{\ensuremath{#1e^{#2i}}}
+\newcommand{\cnorm}[2]{\ensuremath{\mathcal{CN}(#1, #2)}}
+\newcommand{\indep}[1]{\perp}
+\newcommand{\conj}[1]{{\overline{#1}}}
+\newcommand{\diag}{\mathop{\mathrm{diag}}}
+\newcommand{\deu}[2]{\mathrm{D_{eu}}(#1,#2)}
+
+
+% math operator
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+
+% names for algorithms and methods
+\newcommand{\rmse}{RMSE\xspace}
+\newcommand{\dynammo}{DynaMMo\xspace}
+\newcommand{\plif}{PLiF\xspace}
+\newcommand{\clds}{CLDS\xspace}
+\newcommand{\svd}{SVD\xspace}
+\newcommand{\msvd}{MSVD\xspace}
+\newcommand{\cas}{Cut-And-Stitch\xspace}
+\newcommand{\caslds}{CAS-LDS\xspace}
+\newcommand{\cashmm}{CAS-HMM\xspace}
+%\newcommand{\plds}{ParaLiDS\xspace}
+%\newcommand{\phmm}{ParaHiMM\xspace}
+\newcommand{\bolero}{BoLeRO\xspace}
+\newcommand{\lscore}{L-Score\xspace}
+\newcommand{\cfit}{Complex-Fit\xspace}
+\newcommand{\tcast}{ThermoCast\xspace} % thermal prediction model in chapter data center
+\newcommand{\windmine}{{WindMine}\xspace}
+\newcommand{\windmineplain}{{WindMine-plain}\xspace}
+\newcommand{\windminepart}{{WindMine-part}\xspace}
+\newcommand{\dyscale}{{DYSC}\xspace}
+\newcommand{\ses}{{ECSS}\xspace}
+\newcommand{\dmcmcs}{DMCMCS\xspace}
+
+
+% data set name
+\newcommand{\syn}{{\tt synthetic}\xspace}
+\newcommand{\mocap}{{\tt MOCAP}\xspace}
+\newcommand{\chlorine}{{\tt CHLORINE}\xspace}
+\newcommand{\bgp}{{\tt BGP}\xspace}
+\newcommand{\mocappos}{{\tt MOCAPPOS}\xspace}
+\newcommand{\mocapamc}{{\tt MOCAPANG}\xspace}
+\newcommand{\mmouse}{{\tt Three-Circles}\xspace} %a synthetic dataset for moving three circles, (micky mouse)
+%dataset names for windmine
+\newcommand{\temperature}{{\tt Temperature}\xspace}
+\newcommand{\sunspot}{{\tt Sunspot}\xspace}
+\newcommand{\ondemand}{{\tt Ondemand TV}\xspace}
+\newcommand{\musicstore}{{\tt MusicStore}\xspace}
+\newcommand{\auto}{{\tt Automobile}\xspace}
+\newcommand{\web}{{\tt WebClick}\xspace}
+
+
+
+\newcommand{\kk}{k} % count of injected frames
+\newcommand{\kopt}{\kk_{opt}}
+\newcommand{\LL}{\ensuremath{L_*()}}  % elastic L-score
+
+
+% symbol name for the Kalman filter
+% symbol names
+\newcommand{\outmat}{\emph{output matrix} \ensuremath{\mymat{C}}}
+\newcommand{\trans}{\ensuremath{\mymat{A}}}
+\newcommand{\eigd}{\ensuremath{\mymat{\Lambda}}}
+\newcommand{\compen}{\ensuremath{\mymat{V}}}
+\newcommand{\hmix}{\emph{harmonic mixing matrix} \ensuremath{\mymat{C}_h}}
+\newcommand{\hmag}{\emph{harmonic magnitude matrix} \ensuremath{\mymat{C}_m}}
+\newcommand{\fing}{\emph{fingerprints} \ensuremath{\mymat{F}}}
+
+% definition for blog
+\DefineVerbatimEnvironment%
+{blog}{Verbatim}{numbers=none,xleftmargin=5mm,fontshape=n}
+
+%\newcommand{blog}[1]{\verb{#1}}
+
+\DeclareMathOperator{\abs}{abs}
+
+
+% math operators
+\newcommand{\mycdot}{\ensuremath{\cdot}}
+\newcommand{\defeq}{\ensuremath{\triangleq}}
+
+\newcommand{\verbinput}[1]{
+\begin{minipage}[t]{0.94\textwidth}%line numbers are inside margin
+\VerbatimInput[firstline=1]{#1}%filename.ext
+\end{minipage}%
+}
