@@ -54,31 +54,22 @@ public class TestMultivarGaussian {
     args = new LinkedList<MatrixLib>();
   }
 
-  /**
-   * Case 1: Mean fixed, Variance fixed.
-   */
   @Test
-  public void case1() {
+  public void testFixedMeanFixedVariance() {
     constructParams.add(mean);
     constructParams.add(variance);
     testGaussian(constructParams, args);
   }
 
-  /**
-   * Case 2: Mean varies, Variance fixed.
-   */
   @Test
-  public void case2() {
+  public void testRandomMeanFixedVariance() {
     constructParams.add(variance);
     args.add(mean);
     testGaussian(constructParams, args);
   }
 
-  /**
-   * Case 3 -- Mean varies, Variance varies.
-   */
   @Test
-  public void case3() {
+  public void testRandomMeanRandomVariance() {
     args.add(mean);
     args.add(variance);
     testGaussian(constructParams, args);
