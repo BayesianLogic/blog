@@ -136,20 +136,12 @@ def read_blog_json_data(path):
     blog_data = BirdsData()
     max_timestep = max(t for t, s in outflow_vectors.iterkeys())
     max_cell = max(s for t, s in outflow_vectors.iterkeys())
-    if (max_timestep, max_cell) == (599, 15):  # dataset 1
-        blog_data.num_timesteps = 600
-        blog_data.train_timesteps = range(600)
-        blog_data.test_timesteps = []
-        blog_data.num_cells = 16
-        blog_data.all_cells = range(1, 17)
-    elif (max_timestep, max_cell) == (119, 99):  # dataset 2:
-        blog_data.num_timesteps = 120
-        blog_data.train_timesteps = range(60)
-        blog_data.test_timesteps = range(60, 120)
-        blog_data.num_cells = 100
-        blog_data.all_cells = range(1, 101)
-    else:
-        assert False, "unrecognized dataset"
+    blog_data.num_timesteps = max_timestep + 1
+    first_test_timestep = (max_timestep + 1) / 2
+    blog_data.train_timesteps = range(0, first_test_timestep)
+    blog_data.test_timesteps = range(first_test_timestep, max_timestep + 1)
+    blog_data.num_cells = max_cell + 1
+    blog_data.all_cells = range(1, max_cell + 2)
     # avg_birds[t][s] = weighted average of outflow
     avg_birds = []
     for timestep in xrange(max_timestep + 1):
