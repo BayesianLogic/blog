@@ -95,24 +95,34 @@ def read_blog_json_data(path):
 
     Return (timesteps, samples) where for all i:
     - timesteps[i] is the i-th integer timestep
+    - timestamps[i] is the real time at timestep i
     - samples[i] is an array of (log_prob, x, y, theta) rows at that timestep
     """
     data = json.load(open(path))
     all_timesteps = []
+    all_timestamps = []
     all_samples = []
     for query_str, entries in data:
-        # query_str is like "state(@123)"
-        timestep = int(query_str[7:-1])
-        samples = []
-        for entry in entries:
-            # entry is like (log_prob, "[0.0; 0.0; 0.0]")
-            sample = [entry[0]] + map(float, entry[1][1:-1].split('; '))
-            samples.append(sample)
-        all_timesteps.append(timestep)
-        all_samples.append(samples)
+        if query_str.startswith('state'):
+            # query_str is like "state(@123)"
+            timestep = int(query_str[7:-1])
+            samples = []
+            for entry in entries:
+                # entry is like (log_prob, "[0.0; 0.0; 0.0]")
+                sample = [entry[0]] + map(float, entry[1][1:-1].split('; '))
+                samples.append(sample)
+            all_timesteps.append(timestep)
+            all_samples.append(samples)
+        elif query_str.startswith('__SUB_MAT(time'):
+            # query_str is like "__SUB_MAT(time, toInt(@0))"
+            timestamp = float(entries[0][1][1:-1])
+            all_timestamps.append(timestamp)
+        else:
+            assert False
     all_timesteps = np.array(all_timesteps)
+    all_timestamps = np.array(all_timestamps)
     all_samples = np.array(all_samples)
-    return all_timesteps, all_samples
+    return all_timesteps, all_timestamps, all_samples
 
 
 def traj_from_blog(timestamps, samples, aggregator_func):
@@ -170,8 +180,7 @@ if __name__ == "__main__":
     noisy_traj = gps_from_readings(noisy_readings)
 
     # Load trajectory from BLOG JSON output.
-    timesteps, samples = read_blog_json_data(args.json_file)
-    timestamps = ground_traj[:, 0]
+    timesteps, timestamps, samples = read_blog_json_data(args.json_file)
     map_traj = traj_from_blog(timestamps, samples, map_aggregator)
     avg_traj = traj_from_blog(timestamps, samples, avg_aggregator)
 

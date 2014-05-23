@@ -93,6 +93,6 @@ obs observations(@{{ timestep }}) = {{ state |blog_column_vector }};
 /* Query the hidden state: */
 
 {% for timestep in query_timesteps %}
+query time[toInt(@{{ timestep }})];
 query state(@{{ timestep }});
 {%- endfor %}
-
