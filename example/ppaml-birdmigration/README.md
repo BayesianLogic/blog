@@ -5,7 +5,7 @@
 For inference we are using particle filtering or Liu-West filtering (a variant of PF) which is a Sequential Monte Carlo algorithm.  
 **How to Run**:  
 -n: specifies number of particles, default 50000  
--w: specifies which file to write into (.json)
+-w: specifies which file to write into (.json)  
 -q: specifies the intervals for which the particles are printed on the terminal during run-time  
 -e: specifies the inference engine (either Particle Filter or Liu-West Filter)
 ```
