@@ -10,4 +10,7 @@ random RealMatrix outflow_vector(Location src,Timestep t) ~ Multinomial(birds(sr
 // inflow from source(src) to destination(dst) 
 random Integer inflow(Location src, Location dst, Timestep t) = toInt(outflow_vector(src,t)[loc_to_int(dst)]); 
 // Noisy Observations defined through Poisson distribution 
-random Integer NoisyObs(Location loc, Timestep t) ~ Poisson(birds(loc,t)); 
+random Integer NoisyObs(Location loc, Timestep t){
+	if birds(loc,t) == 0 ~ Poisson(0.1);
+   else ~ Poisson(birds(loc,t))
+};

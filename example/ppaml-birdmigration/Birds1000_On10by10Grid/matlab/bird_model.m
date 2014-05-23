@@ -25,6 +25,10 @@ fprintf(fid,'// inflow from source(src) to destination(dst) \n');
 fprintf(fid,'random Integer inflow(Location src, Location dst, Timestep t) = toInt(outflow_vector(src,t)[loc_to_int(dst)]); \n');
 
 fprintf(fid,'// Noisy Observations defined through Poisson distribution \n');
-fprintf(fid,'random Integer NoisyObs(Location loc, Timestep t) ~ Poisson(birds(loc,t)); \n');
+% fprintf(fid,'random Integer NoisyObs(Location loc, Timestep t) ~ Poisson(birds(loc,t)); \n');
 
+fprintf(fid,'random Integer NoisyObs(Location loc, Timestep t){\n');
+fprintf(fid,'	if birds(loc,t) == 0 ~ Poisson(0.1);\n');
+fprintf(fid,'   else ~ Poisson(birds(loc,t))\n');
+fprintf(fid,'};\n');
 fclose(fid);
