@@ -20,6 +20,8 @@ python convert_output.py out.json estimation
 python convert_output.py out.json reconstruction
 python convert_output.py out.json prediction
 
+cd ..
+
 cd ./Birds1M_On10by10Grid/
 ./run_bird.sh
 python convert_output.py out.json estimation
@@ -29,5 +31,5 @@ python convert_output.py out.json prediction
 cd ..
 python birdcast_eval.py cps ground eval_results
 
-
+cd ..
 
