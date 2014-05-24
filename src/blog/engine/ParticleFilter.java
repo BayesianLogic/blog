@@ -207,8 +207,6 @@ public class ParticleFilter extends InferenceEngine {
         }
       }
 
-      System.out.println("after processing timestep " + timestepIndex);
-
       if (timestepIndex >= 0) {
         List<Query> currentQueries = slicedQueries.get(Timestep
             .at(timestepIndex));
@@ -357,17 +355,14 @@ public class ParticleFilter extends InferenceEngine {
       normalizedWeights[i] = Math.exp(logWeights[i] - logSumWeights);
     }
 
-    int survived = 0;
     for (int i = 0; i < numParticles; i++) {
       int selection = Util.sampleWithProbs(normalizedWeights);
       if (!alreadySampled[selection]) {
         newParticles.add(particles.get(selection));
         alreadySampled[selection] = true;
-        survived++;
       } else
         newParticles.add(((Particle) particles.get(selection)).copy());
     }
-    System.out.println(survived + " particles survived");
 
     particles = newParticles;
   }
