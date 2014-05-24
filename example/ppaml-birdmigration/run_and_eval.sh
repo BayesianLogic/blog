@@ -6,6 +6,8 @@ mkdir dataset1
 mkdir dataset2
 mkdir dataset3
 
+cd ..
+
 cd ./Birds1_On4by4Grid/
 #./run_bird.sh
 python convert_output.py out.json estimation
