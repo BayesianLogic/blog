@@ -1,7 +1,13 @@
+To run and evaluate  
+```
+./run_and_eval.sh
+```
+which will output the evaluation results to the folder ```eval_results```. The ground-truth datasets folder ```ground``` should be placed to the same folder as ```run_and_eval.sh```. Same applies to the evaluation script ```birdcast_eval.py``` and the blog model folders ```Birds1_On4by4Grid```, ```Birds1000_On10by10Grid``` and ```Birds1M_On10by10Grid```.
+
 **Folders**:  
 1) Birds1_On4by4Grid: Corresponds to DataSet 1, recommended number of particles: , takes minutes on a 2011 MacBookPro with 2GHz Intel i7 processor and 4GB RAM.  
-2) Birds1_On4by4Grid: Corresponds to DataSet 2, recommended number of particles: , takes minutes on a 2011 MacBookPro with 2GHz Intel i7 processor and 4GB RAM.  
-3) Birds1_On4by4Grid: Corresponds to DataSet 3, recommended number of particles: , takes minutes on a 2011 MacBookPro with 2GHz Intel i7 processor and 4GB RAM.  
+2) Birds1000_On10by10Grid: Corresponds to DataSet 2, recommended number of particles: , takes minutes on a 2011 MacBookPro with 2GHz Intel i7 processor and 4GB RAM.  
+3) Birds1M_On10by10Grid: Corresponds to DataSet 3, recommended number of particles: , takes minutes on a 2011 MacBookPro with 2GHz Intel i7 processor and 4GB RAM.  
 For inference we are using particle filtering or Liu-West filtering (a variant of PF) which is a Sequential Monte Carlo algorithm.  
 **How to Run**:  
 -n: specifies number of particles, default 50000  
