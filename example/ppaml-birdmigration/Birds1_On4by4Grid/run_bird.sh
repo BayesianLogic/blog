@@ -7,4 +7,4 @@ time "$BLOG_HOME"/run.sh -e blog.engine.LiuWestFilter \
   bird_model.blog \
   bird_obs.blog \
   bird_queries.blog \
-  -Prho=0.98 -n 1000 -q 1 -w out.json
+  -Prho=0.98 -n 100 -q 1 -w out.json
