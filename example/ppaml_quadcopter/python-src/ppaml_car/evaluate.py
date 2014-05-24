@@ -16,7 +16,6 @@ Example usage:
 
 import argparse
 import json
-import matplotlib.pyplot as plt
 import numpy as np
 
 from ppaml_car.data import LATITUDE_MIN
@@ -198,6 +197,7 @@ if __name__ == "__main__":
 
     # Optionally plot trajectories.
     if args.plot:
+        import matplotlib.pyplot as plt
         plt.figure(figsize=(8, 8))
         for traj, name in (
                 (ground_traj, 'ground'),
