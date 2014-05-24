@@ -13,9 +13,8 @@ MISC_FILE=compile.sh \
  test-ex.sh \
  ex_test_classes
  
-
-TAGNAME=$(shell git describe --exact-match --abbrev=0)
-ifneq (,$(findstring fatal:,${TAGNAME}))
+TAGNAME=$(shell git describe --exact-match --abbrev=0 2> /dev/null)
+ifneq (${TAGNAME},)
 TARGETNAME=${TAGNAME}
 else
 TARGETNAME=blog
