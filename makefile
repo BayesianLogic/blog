@@ -21,9 +21,6 @@ else
 TARGETNAME=blog
 endif
 
-try:
-	@echo ${TARGETNAME}
-
 compile:
 	./compile.sh
 
