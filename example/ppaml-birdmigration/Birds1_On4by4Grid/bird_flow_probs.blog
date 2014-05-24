@@ -1,8 +1,8 @@
 // parameters
-random Real beta1 ~ UniformReal(4, 12);
-random Real beta2 ~ UniformReal(4, 12);
-random Real beta3 ~ UniformReal(4, 12);
-random Real beta4 ~ UniformReal(4, 12);
+random Real beta1 ~ UniformReal(3, 13);
+random Real beta2 ~ UniformReal(3, 13);
+random Real beta3 ~ UniformReal(3, 13);
+random Real beta4 ~ UniformReal(3, 13);
 random RealMatrix beta(Timestep t) = transpose( __SCALAR_STACK(beta1,beta2,beta3,beta4) );
 // features
 random RealMatrix F1(Location src) ~ UniformVector(-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5,-2.5,2.5); // windspeed feature 

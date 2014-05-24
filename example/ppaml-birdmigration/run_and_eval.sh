@@ -26,5 +26,8 @@ python convert_output.py out.json estimation
 python convert_output.py out.json reconstruction
 python convert_output.py out.json prediction
 
+cd ..
+python birdcast_eval.py cps ground eval_results
+
 
 
