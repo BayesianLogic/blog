@@ -4,7 +4,7 @@ fprintf(fid,'// initial value for the birds \n');
 fprintf(fid,'fixed RealMatrix initial_value = [');
 for i=1:GridSize;
     if(i==1)
-        fprintf(fid,'1000,');
+        fprintf(fid,'1000000,');
     elseif(i<GridSize)
         fprintf(fid,'1,');
     else
