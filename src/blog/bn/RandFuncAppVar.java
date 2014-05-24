@@ -169,8 +169,12 @@ public class RandFuncAppVar extends VarWithDistrib {
 
   @Override
   public String toString() {
+    if (str != null) {
+      return str;
+    }
     if (args.length == 0) {
-      return f.toString();
+      str = f.toString();
+      return str;
     }
 
     StringBuilder buf = new StringBuilder();
@@ -182,8 +186,10 @@ public class RandFuncAppVar extends VarWithDistrib {
       buf.append(args[i]);
     }
     buf.append(")");
-    return buf.toString();
+    str = buf.toString();
+    return str;
   }
 
+  private String str = null;
   private final RandomFunction f;
 }
