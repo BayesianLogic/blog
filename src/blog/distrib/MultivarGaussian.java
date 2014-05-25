@@ -79,16 +79,6 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
       return;
     }
 
-    Object ob = params.get(0);
-    int dims = 0;
-    if (ob instanceof MatrixSpec) {
-      dims = ((MatrixLib) ((MatrixSpec) ob).getValueIfNonRandom()).numRows();
-    } else {
-      dims = ((MatrixLib) ob).numRows();
-    }
-
-    setDimension(dims);
-
     if (params.size() == 1) {
       expectMeanAsArg = false;
       expectCovarianceAsArg = true;
@@ -231,6 +221,16 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
   }
 
   private void initParams(List args) {
+    if (d == 0) {
+      Object ob = args.get(0);
+      int dims = 0;
+      if (ob instanceof MatrixSpec) {
+        dims = ((MatrixLib) ((MatrixSpec) ob).getValueIfNonRandom()).numRows();
+      } else {
+        dims = ((MatrixLib) ob).numRows();
+      }
+      setDimension(dims);
+    }
     int argidx = 0;
     if (expectMeanAsArg) {
       if ((argidx + 1) > args.size()) {
