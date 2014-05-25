@@ -1595,6 +1595,11 @@ public class Util {
 
   /**
    * print the debug information, the debug info can be a list of String
+   * If the verbose tag is set, the message will be printed in one line with a
+   * line break.
+   * 
+   * Note that to improve efficiency, <code>debug(a, " ok", b)</code> is
+   * preferred, instead of <code>debug(a+" ok"+b)</code>
    * 
    * @param msgs
    */
