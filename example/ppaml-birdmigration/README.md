@@ -1,3 +1,5 @@
+# PPAML challenge problem 2: Birds migration
+
 To run and evaluate  
 ```
 ./run_and_eval.sh
