@@ -12,7 +12,7 @@ which will output the evaluation results to the folder ```eval_results```. The g
 3. Birds1M_On10by10Grid: Corresponds to DataSet 3, recommended number of particles: , takes minutes on a 2011 MacBookPro with 2GHz Intel i7 processor and 4GB RAM.  
 For inference we are using particle filtering or Liu-West filtering (a variant of PF) which is a Sequential Monte Carlo algorithm.  
 
-##How to Run:  
+##How to Run Directly from blog:  
 -n: specifies number of particles, default 50000  
 -w: specifies which file to write into (.json)  
 -q: specifies the intervals for which the particles are printed on the terminal during run-time  
