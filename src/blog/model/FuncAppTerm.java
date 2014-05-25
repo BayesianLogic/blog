@@ -324,6 +324,18 @@ public class FuncAppTerm extends Term {
 				argTypes[i] = BuiltInTypes.SET;
 				ImplicitSetSpec setDef = (ImplicitSetSpec) args[i];
 				correct = setDef.checkTypesAndScope(model, scope);
+			} else if (args[i] instanceof TupleSetSpec) {
+				argTypes[i] = BuiltInTypes.SET;
+				TupleSetSpec setDef = (TupleSetSpec) args[i];
+				correct = setDef.checkTypesAndScope(model, scope);
+      } else if (args[i] instanceof ListSpec) {
+        argTypes[i] = BuiltInTypes.REAL_ARRAY;
+        // FIXME: handle arrays of other types?
+        // FIXME: correct = ?
+      } else {
+        throw new RuntimeException(
+          "don't know how to process ArgSpec of type " +
+          args[i].getClass().getName());
 			}
 		}
 

@@ -49,11 +49,6 @@ public class FormulaQuery extends ArgSpecQuery {
 
 	public FormulaQuery(Formula formula) {
 		super(formula);
-
-		if (Main.outputPath() != null) {
-			outputFile = Main.filePrintStream(Main.outputPath() + "-trial" + trialNum
-					+ ".data");
-		}
 	}
 
 	public Formula formula() {
@@ -62,12 +57,6 @@ public class FormulaQuery extends ArgSpecQuery {
 
 	public void printResults(PrintStream s) {
 		s.println("Probability of " + getArgSpec() + " is " + calculateResult());
-	}
-
-	public void logResults(int numSamples) {
-		if (outputFile != null) {
-			outputFile.println("\t" + numSamples + "\t" + calculateResult());
-		}
 	}
 
 	public void updateStats(PartialWorld world, double weight) {
@@ -97,35 +86,11 @@ public class FormulaQuery extends ArgSpecQuery {
 				Collections.singletonList(Boolean.TRUE));
 	}
 
-	public void zeroOut() {
-		double result = calculateResult();
-		runningProbSum += result;
-		runningProbSumSquares += (result * result);
-		trialNum++;
-
-		if ((outputFile != null) && (trialNum != Main.numTrials())) {
-			outputFile = Main.filePrintStream(Main.outputPath() + "-trial" + trialNum
-					+ ".data");
-		}
-
-		trueSum = 0;
-		totalSum = 0;
-		probTrue = -1;
-	}
-
 	private double calculateResult() {
 		if (probTrue != -1) {
 			return probTrue;
 		}
 		return trueSum / totalSum;
-	}
-
-	// CAREFUL: zeroOut() must be called before using this method
-	public void printVarianceResults(PrintStream s) {
-		double mean = runningProbSum / trialNum;
-		s.println("Mean of " + getArgSpec() + " query results is " + mean);
-		s.println("Std dev of " + getArgSpec() + " query results is "
-				+ Math.sqrt(runningProbSumSquares / trialNum - (mean * mean)));
 	}
 
 	public Histogram getHistogram() {
@@ -138,8 +103,4 @@ public class FormulaQuery extends ArgSpecQuery {
 	private double trueSum = 0;
 	private double totalSum = 0;
 	private double probTrue = -1;
-
-	private double runningProbSum = 0;
-	private double runningProbSumSquares = 0;
-	private int trialNum = 0;
 }

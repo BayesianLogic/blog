@@ -37,6 +37,7 @@ package blog.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -90,7 +91,7 @@ public class BuiltInFunctions {
   public static final String COS_NAME = "cos";
   public static final String TAN_NAME = "tan";
   public static final String ATAN2_NAME = "atan2";
-  public static final String COL_SUM_NAME = "sum";
+  public static final String SUM_NAME = "sum";
   public static final String VSTACK_NAME = "vstack";
   public static final String EYE_NAME = "eye";
   public static final String ZEROS_NAME = "zeros";
@@ -373,6 +374,11 @@ public class BuiltInFunctions {
   public static NonRandomFunction COL_SUM;
 
   /**
+   * Take a Set x of Real values, and return the sum of its elements.
+   */
+  public static NonRandomFunction SET_SUM;
+
+  /**
    * Take RealMatrix x and y and return RealMatrix z which is the concatenation
    * [x; y].
    */
@@ -409,6 +415,7 @@ public class BuiltInFunctions {
    * and converts it to a Real
    */
   public static NonRandomFunction TO_REAL;
+
   /**
    * Return the absolute value of a Real value.
    */
@@ -1164,9 +1171,24 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(BuiltInTypes.REAL_MATRIX);
     retType = BuiltInTypes.REAL_MATRIX;
-    COL_SUM = new NonRandomFunction(COL_SUM_NAME, argTypes, retType,
-        colSumInterp);
+    COL_SUM = new NonRandomFunction(SUM_NAME, argTypes, retType, colSumInterp);
     addFunction(COL_SUM);
+
+    FunctionInterp setSumInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Collection set = (Collection) args.get(0);
+        double sum = 0;
+        for (Object obj : set) {
+          sum += ((Number) obj).doubleValue();
+        }
+        return sum;
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.SET);
+    retType = BuiltInTypes.REAL;
+    SET_SUM = new NonRandomFunction(SUM_NAME, argTypes, retType, setSumInterp);
+    addFunction(SET_SUM);
 
     FunctionInterp vstackInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
