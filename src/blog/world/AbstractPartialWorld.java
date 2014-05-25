@@ -215,12 +215,10 @@ public abstract class AbstractPartialWorld implements PartialWorld {
         throw new IllegalArgumentException("No log prob computed for " + var);
       }
       if (logProb == PartialWorld.UNDET) {
-        if (Util.verbose()) {
-          BasicVar uninstParent = var.getFirstUninstParent(this);
-          Util.fatalError("Can't get log prob of variable " + var
-              + " because it depends on " + uninstParent
-              + ", which is not instantiated.");
-        }
+        BasicVar uninstParent = var.getFirstUninstParent(this);
+        Util.fatalError("Can't get log prob of variable " + var
+            + " because it depends on " + uninstParent
+            + ", which is not instantiated.");
       }
       return logProb.doubleValue();
     }
