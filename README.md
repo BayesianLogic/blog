@@ -84,6 +84,16 @@ You only need to do this if you modified `BLOGLexer.flex` or `BLOGParser.cup`
   blog <path_to_model> <params>
 ```
 
+### Package
+```
+  make zip
+```
+
+### clean temporal files
+```
+  make clean
+```
+
 ### Git Tips
 1. make Git ignore line ending
  git config --global core.autocrlf true
