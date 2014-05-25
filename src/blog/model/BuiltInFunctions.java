@@ -85,6 +85,7 @@ public class BuiltInFunctions {
   public static final String MIN_NAME = "min";
   public static final String MAX_NAME = "max";
   public static final String ROUND_NAME = "round";
+  public static final String DIAG_NAME = "diag";
   public static final String TRANSPOSE_NAME = "transpose";
   public static final String SIN_NAME = "sin";
   public static final String COS_NAME = "cos";
@@ -329,6 +330,11 @@ public class BuiltInFunctions {
    * <code>x</code>
    */
   public static NonRandomFunction ROUND;
+
+  /**
+   * Diagonal(RealMatrix) returns RealMatrix
+   */
+  public static NonRandomFunction DIAG_REAL_MAT;
 
   /**
    * transpose(RealMatrix) returns RealMatrix
@@ -1081,6 +1087,29 @@ public class BuiltInFunctions {
 
     ROUND = new NonRandomFunction(ROUND_NAME, argTypes, retType, roundInterp);
     addFunction(ROUND);
+
+    // Diag function for Real matrices
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+
+    FunctionInterp diagInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        MatrixLib matrix = (MatrixLib) args.get(0);
+        if (matrix.numCols() == 1) {
+          MatrixLib diagMatrix = MatrixFactory.eye(matrix.numRows());
+          for (int i = 0; i < matrix.numRows(); i++) {
+            diagMatrix.setElement(i, i, matrix.elementAt(i, 0));
+          }
+          return diagMatrix;
+        } else {
+          throw new IllegalArgumentException("diag expected " + "column vector");
+        }
+      }
+    };
+    DIAG_REAL_MAT = new NonRandomFunction(DIAG_NAME, argTypes, retType,
+        diagInterp);
+    addFunction(DIAG_REAL_MAT);
 
     // Transpose function for Real matrices
     argTypes.clear();
