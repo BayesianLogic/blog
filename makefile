@@ -20,11 +20,15 @@ else
 TARGETNAME=blog
 endif
 
-compile:
-	./compile.sh
+SRC_FILES=$(shell find src -name \*.java -print)
 
-debug:
-	./compile.sh debug
+compile: ${SRC_FILES}
+	mkdir -p bin
+	javac -cp "lib/*" -d bin/ ${SRC_FILES}
+
+debug: ${SRC_FILES}
+	mkdir -p bin
+	javac -g -cp "lib/*" -d bin/ ${SRC_FILES}
 
 tar: zip
 
@@ -47,9 +51,9 @@ zip:
 demo:
 	./run.sh example/poisson-ball.blog
 
-buildparser: 
-	./gen_parser.sh
-	./compile.sh
+parser: src/blog/parse/BLOGLexer.flex src/blog/parse/BLOGParser.cup
+	java -cp lib/JFlex-1.4.3.jar JFlex.Main src/blog/parse/BLOGLexer.flex
+	cd src/blog/parse; java -cp ../../../lib/java_cup.jar java_cup.Main -symbols BLOGTokenConstants -parser BLOGParser BLOGParser.cup
 
 sync:
 	git remote prune origin
