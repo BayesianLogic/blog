@@ -18,6 +18,7 @@
 \usepackage{fullpage}
 \usepackage{listings}
 \usepackage{natbib}
+\usepackage{minted}
 
 \usepackage[algo2e,ruled,vlined]{algorithm2e}
 
@@ -28,9 +29,10 @@
 \newcommand{\parn}{\mathrm{par}}
 \newcommand{\tikzmark}[2]{\tikz[overlay,remember picture,baseline] \node [anchor=base] (#1) {$#2$};}
 
-\title{PPAML CP 2: Continent Scale Bird-Migration Modeling}
+\title{PPAML Challenge Problem 2: Continent Scale Bird-Migration Modeling using BLOG}
 \author{
-Yusuf Bugra Erol
+Yusuf Bugra Erol, Lei Li, Stuart Russell \\
+University of California Berkeley
 }
 
 \begin{document}
@@ -46,14 +48,15 @@ The mathematical representation of the bird migration pattern on a $I \times J$ 
 
 \section{Parameters}
 We use a uniform prior over the parameters $\beta_1,\beta_2,\beta_3,\beta_4$. The concatenation of the parameters form the parameter vector $\mathrm{beta}$.
-\begin{lstlisting}
+\begin{blogcode}
 random Real beta1 ~ UniformReal(3, 13); 
 random Real beta2 ~ UniformReal(3, 13); 
 random Real beta3 ~ UniformReal(3, 13); 
 random Real beta4 ~ UniformReal(3, 13); 
 random RealMatrix beta(Timestep t) 
-	= transpose( __SCALAR_STACK(beta1,beta2,beta3,beta4) ); 
-\end{lstlisting}
+  = transpose( __SCALAR_STACK(beta1,beta2,beta3,beta4) ); 
+\end{blogcode}
+The full statements of features are in \verb|bird_flow_probs.blog|.
 
 \section{Defining the Features}
 Here we are implementing the following equations in BLOG.
@@ -61,16 +64,18 @@ Here we are implementing the following equations in BLOG.
 	&\theta_{t,t+1}(i,j) =\beta^T\xi_{t,t+1}(i,j)& \nn \\
 	&\left(\theta_{t,t+1}(i,1), \dots, \theta_{t,t+1}(i,J) \right), \forall i \in [1, I]& \nn 
 \eeq
-\begin{lstlisting}
-random RealMatrix F1(Location src) ~ UniformVector(-2.5,2.5,-2.5,2.5,...
-random RealMatrix F2(Location src) ~ UniformVector(-2.5,2.5,-2.5,2.5,...
-random RealMatrix F3(Location src, Timestep t) ~ UniformVector(-2.5,2.5,-2.5,2.5,...
-random RealMatrix F4(Location src) ~ UniformVector(-2.5,2.5, ...
+In BLOG, we represent using the following statements.
+\begin{blogcode}
+random RealMatrix F1(Location src) ~ UniformVector(-2.5,2.5,-2.5,2.5,...);
+random RealMatrix F2(Location src) ~ UniformVector(-2.5,2.5,-2.5,2.5,...);
+random RealMatrix F3(Location src, Timestep t) ~ UniformVector(-2.5,2.5,-2.5,2.5,...);
+random RealMatrix F4(Location src) ~ UniformVector(-2.5,2.5, ...);
 // flow probabilities
 random RealMatrix probs(Location src, Timestep t) = 
-	exp(beta(t) * vstack(F1(src),F2(src),F3(src,t),F4(src) );
-\end{lstlisting}
-We define features as 
+  exp(beta(t) * vstack(F1(src),F2(src),F3(src,t),F4(src) );
+\end{blogcode}
+The full feature statements are in \verb|bird_features.blog|
+
 \section{Model Dynamics}
 Here we are implementing the following equations in BLOG.
 \beq
@@ -78,7 +83,7 @@ Here we are implementing the following equations in BLOG.
 	\mathbf{n}_{t+1}(j) &=& \sum_{i} \mathbf{n}_{t,t+1}(i,j)
 \eeq
 The BLOG representation of the network flow is:
-\begin{lstlisting}
+\begin{blogcode}
 random Integer birds(Location loc, Timestep t){ 
 if t%20==@0 then = toInt(initial_value[loc_to_int(loc)]) 
     else = toInt(sum({ inflow(src, loc, Prev(t)) for Location src })) 
@@ -89,77 +94,75 @@ random RealMatrix outflow_vector(Location src,Timestep t) ~
 // inflow from source(src) to destination(dst) 
 random Integer inflow(Location src, Location dst, Timestep t) = 
 			toInt(outflow_vector(src,t)[loc_to_int(dst)]); 
-\end{lstlisting}
+\end{blogcode}
 \begin{itemize}
-\item \textbf{birds(Location loc, Timestep t)}: The number of birds at Location loc and Timestep t. 
+\item \verb|birds(Location loc, Timestep t)|: The number of birds at Location \verb|loc| and Timestep \verb|t|. 
 \begin{itemize}
-	\item For $t\%20 == @0$ (i.e. beginning of each year), it is equal to initial value. 
-	\begin{lstlisting}
+	\item For \verb|t%20 == @0| (i.e. beginning of each year), it is equal to initial value. 
+	\begin{blogcode}
   if t%20==@0 then = toInt(initial_value[loc_to_int(loc)]) 
-	\end{lstlisting}
+	\end{blogcode}
 	\item For all the other time steps, number of birds is the sum of all birds that are flying from all sources (src) into the loc.
-	\begin{lstlisting}
+	\begin{blogcode}
   else = toInt(sum({ inflow(src, loc, Prev(t)) for Location src })) 
-	\end{lstlisting}
+	\end{blogcode}
 \end{itemize}
-\item \textbf{outflow\_vector(Location src,Timestep t) }: The number of birds that flew from source (src) to all other locations, which mathematically corresponds to multinomial sampling. The elements of the vector sum up to $\mathrm{birds(src,t)}$.
-	\begin{lstlisting}
-  ~ Multinomial(birds(src,t), probs(src,t)) ; 
-	\end{lstlisting}
+\item \verb|outflow_vector(Location src,Timestep t)|: The number of birds that flew from source (src) to all other locations, which mathematically corresponds to multinomial sampling. The elements of the vector sum up to \verb|birds(src,t) ~ Multinomial(birds(src,t), probs(src,t))|
 \item 
-\textbf{ inflow(Location src, Location dst, Timestep t)}: The birds that flew from source (src) to destination (dst). 
-	\begin{lstlisting}
-  = toInt(outflow_vector(src,t)[loc_to_int(dst)]);
-	\end{lstlisting}
+\verb|inflow(Location src, Location dst, Timestep t)|: The birds that flew from source (src) to destination (dst), \verb|= toInt(outflow_vector(src,t)[loc_to_int(dst)])|
 \end{itemize}
 \begin{remark}
-We do not support a Range type at the moment, so for indexing vectors/matrices loc which is of type Location, needs to be converted to an integer using the deterministic function loc\_to\_int.
+We do not support a Range type at the moment, so for indexing vectors/matrices loc which is of type Location, needs to be converted to an integer using the deterministic function \verb|loc_to_int|.
 \end{remark}
+The full definition is in \verb|bird_model.blog|.
+
 \section{Observation Model}
 Here we are implementing the following equations in BLOG.
 \beq
 	y_t &\sim& \mathrm{Poisson}(\mathbf{n}_t)
 \eeq
 The observations are defined as \emph{Poisson} random variables. When there is no bird at a location, the corresponding observation should be zero as well. Due to random nature of particle filtering such scenarios may happen and it will lead to the collapse of the particle filter. To avoid particle filtering from collapsing, we add a small noise term to the observations.
-\begin{lstlisting}
+\begin{blogcode}
 random Integer NoisyObs(Location loc, Timestep t){
    if birds(loc,t) == 0 then ~ Poisson(0.01)
    else ~ Poisson(birds(loc,t))
 };
-\end{lstlisting}
+\end{blogcode}
 If $\mathrm{birds(loc,t)}$ is non-zero the observations are Poisson random variables with $\lambda = \mathrm{birds(loc,t)}$, whereas when $\mathrm{birds(src,t)}==0$ then the observations are Poisson$(0.01)$ instead of Poisson$(0)$.
 
 \section{Observations}
 We are observing the birds only for the training period and whereas we observe the features for the whole training and testing period. The observation syntax is:
-\begin{lstlisting}[mathescape]
-  obs NoisyObs($\ell$[2],@9) = 0;
-\end{lstlisting}
+\begin{blogcode}
+  obs NoisyObs(l[2],@9) = 0;
+\end{blogcode}
+The full observations are in \verb|bird_obs.blog|.
 
 \section{Queries}
 We are asking for outflow\_vector at each time step as well as parameter vector $\mathrm{beta}$ at the end of training period. The query syntax is:
-\begin{lstlisting}[mathescape]
-  query outflow_vector($\ell$[6],@0);
-  query outflow_vector($\ell$[11],@54);
-\end{lstlisting}
+\begin{blogcode}
+  query outflow_vector(l[6],@0);
+  query outflow_vector(l[11],@54);
+\end{blogcode}
+The query definitions are in \verb|bird_queries.blog|. 
 
 \section{Inference}
 We are using particle filtering which is a Sequential Monte Carlo (SMC) algorithm \cite{doucet2011tutorial}. The simplest importance density is used (bootstrap filter). However, it is known that under the presence of static parameters, the particle filter degenerates quickly. To avoid such particle degeneracy we utilize the Liu-West filter which is a variant of particle filtering that adds random perturbations to the static parameter particles in such a way that the mean and the variance is preserved  \cite{liu2001combined}.
 
 \section{How to Run}
-The way to run is detailed in README.md. 
+The way to run is detailed in \verb|README.md|. 
 
 \section{Changes in BLOG to handle CP2}
 Short list of things that changed in BLOG engine to express the CP2 and do inference on it.
 \begin{itemize}
-\item Multinomial distribution that can take random expressions as inputs
+\item \verb|Multinomial| distribution that can take random expressions as inputs
 \item Linear algebra support for various matrix-vector operations
-\item TupleSet to handle expressions of the form:
-\begin{lstlisting}
+\item \verb|TupleSet| to handle expressions of the form:
+\begin{blogcode}
   { inflow(src, loc, Prev(t)) for Location src }
-\end{lstlisting}
-\item vstack for concatenating matrices/vectors
-\item scalar stack for concatenating reals to form vectors
-\item exp (exponential) function
+\end{blogcode}
+\item \verb|vstack| for concatenating matrices/vectors
+\item \verb|__SCALAR_STACK| for concatenating reals to a column vector
+\item \verb|exp| (exponential) function
 \item Arithmetic operations on Timestep type
 \item Solved various issues related to particle filter's uninstantiation of old time steps , and some memory problems
 \item Liu-West filter \cite{liu2001combined} to fight degeneracy problems in static parameter estimation via particle filtering.
