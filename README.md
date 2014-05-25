@@ -31,6 +31,7 @@ title: BLOG overview
 ### Files
 - `blog` main execution file to run the engine
 - `dblog` main execution file to run the engine with particle filter (alternative can use blog)
+- `parse.sh` to check the syntax of a blog file (very useful for debugging)
 - `release-note.txt` contains all release information and major changes 
 
 ### Syntax highligher for editors

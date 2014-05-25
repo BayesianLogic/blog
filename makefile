@@ -1,14 +1,13 @@
 BLOG=blog
 
-RUN_FILE=run.sh \
- run.bat \
+RUN_FILE=blog \
+ blog.bat \
+ dblog \
  README.md \
  path_sep.sh
 
-MISC_FILE=compile.sh \
- compile.bat \
+MISC_FILE= compile.bat \
  makefile \
- gen_parser.sh \
  parse.sh \
  test-ex.sh \
  ex_test_classes
@@ -49,7 +48,7 @@ zip:
 	rm -r -f tmp
 
 demo:
-	./run.sh example/poisson-ball.blog
+	./blog example/poisson-ball.blog
 
 parser: src/blog/parse/BLOGLexer.flex src/blog/parse/BLOGParser.cup
 	java -cp lib/JFlex-1.4.3.jar JFlex.Main src/blog/parse/BLOGLexer.flex
