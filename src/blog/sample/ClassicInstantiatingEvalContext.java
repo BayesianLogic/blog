@@ -167,7 +167,6 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
     spawn.afterSamplingListener = afterSamplingListener;
     DependencyModel.Distrib distrib = var.getDistrib(spawn);
     logProb += spawn.getLogProbability();
-    //		respVarsAndContexts.remove(this); //this code in original implementation seems wrong (leili)
     respVarsAndContexts.remove(var);
 
     // Sample new value for var
@@ -220,7 +219,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
     Util.fatalError("Stopping evaluation to avoid infinite loop.", false);
   }
 
-  protected LinkedHashMap<VarWithDistrib, ClassicInstantiatingEvalContext> respVarsAndContexts; // VarWithDistrib to EvalContext    
+  protected LinkedHashMap<VarWithDistrib, ClassicInstantiatingEvalContext> respVarsAndContexts;
 
   protected double logProb = 0;
 }
