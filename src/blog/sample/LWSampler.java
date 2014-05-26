@@ -99,16 +99,10 @@ public class LWSampler extends Sampler {
     latestSampleLogWeight = Double.NEGATIVE_INFINITY;
   }
 
-  /**
-   * set the base partial world
-   */
   public void setBaseWorld(PartialWorld world) {
     baseWorld = world;
   }
 
-  /**
-   * get the base partial world
-   */
   public PartialWorld getBaseWorld() {
     return baseWorld;
   }
@@ -117,12 +111,6 @@ public class LWSampler extends Sampler {
    * Generates the next partial world and computes its weight.
    */
   public void nextSample() {
-    double numerator;
-    double denominator;
-    int first_consistent = 0;
-    int total_consistent = 0;
-    boolean notYetConsistent = true;
-
     if (baseWorld != null)
       curWorld = baseWorld;
     else
