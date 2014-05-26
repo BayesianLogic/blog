@@ -174,8 +174,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
     CondProbDistrib cpd = distrib.getCPD();
     List cpdArgs = distrib.getArgValues();
     Object newValue = cpd.sampleVal(cpdArgs, var.getType());
-    double probForThisValue = cpd.getProb(cpdArgs, newValue);
-    double logProbForThisValue = Math.log(probForThisValue);
+    double logProbForThisValue = cpd.getLogProb(cpdArgs, newValue);
     logProb += logProbForThisValue;
 
     // Assert any identifiers that are used by var
@@ -192,11 +191,13 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
     // Actually set value
     world.setValue(var, newValue);
 
-    if (afterSamplingListener != null)
-      afterSamplingListener.evaluate(var, newValue, probForThisValue);
+    if (afterSamplingListener != null) {
+      afterSamplingListener.evaluate(var, newValue, logProbForThisValue);
+    }
 
-    if (staticAfterSamplingListener != null)
-      staticAfterSamplingListener.evaluate(var, newValue, probForThisValue);
+    if (staticAfterSamplingListener != null) {
+      staticAfterSamplingListener.evaluate(var, newValue, logProbForThisValue);
+    }
 
     /*
      * if (Util.verbose()) { System.out.println("Instantiated: " + var); }
