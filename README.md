@@ -1,6 +1,4 @@
----
-title: BLOG overview
----
+# BLOG overview
 
 **Bayesian Logic** (BLOG) is a first-order probabilistic modeling language. It is designed for making inferences about real-world objects that underlie some observed data: for instance, tracking multiple people in a video sequence, or identifying repeated mentions of people and organizations in a set of text documents. BLOG makes it relatively easy to represent uncertainty about the number of underlying objects and the mapping between objects and observations.
 
