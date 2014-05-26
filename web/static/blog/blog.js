@@ -1,7 +1,7 @@
 $(function() {
   CodeMirror.defineMode("diff", function() {
-    var keywords = wordRegexp(['extern','import','fixed','func','distinct','random','origin','param','type', 'obs', 'query']);
-    var types = wordRegexp(['Integer', 'Real', 'Boolean', 'NaturalNum', 'String', 'List', 'Map', 'TabularCPD','Categorical']);
+    var keywords = wordRegexp(['extern','import','fixed','distinct','random','origin','param','type', 'obs', 'query', 'for', 'forall','exists', 'if', 'then', 'else', 'null']);
+    var types = wordRegexp(['Integer', 'Real', 'Boolean', 'NaturalNum', 'String', 'List', 'Map', 'RealMatrix', 'IntMatrix', 'TabularCPD','Categorical']);
 
     function wordRegexp(words) {
       return new RegExp("^((" + words.join(")|(") + "))\\b");
