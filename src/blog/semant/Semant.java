@@ -52,6 +52,7 @@ import blog.absyn.TupleSetExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
+import blog.common.Util;
 import blog.distrib.EqualsCPD;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
@@ -148,12 +149,21 @@ public class Semant {
    */
   Class getClassWithName(String classname) {
     for (String pkg : packages) {
+      String name;
+      if (pkg.isEmpty()) {
+        name = classname;
+      } else {
+        name = pkg + '.' + classname;
+      }
       try {
-        return Class.forName(pkg + classname);
+        return Class.forName(name);
       } catch (ClassNotFoundException e) {
         // continue loop
       }
     }
+    Util.fatalError(
+      "Could not load class '" + classname
+      + "'; looked in the following packages: " + packages);
     return null;
   }
 
@@ -277,11 +287,11 @@ public class Semant {
   protected void initialize() {
     packages = new ArrayList<String>();
     packages.add("");
-    packages.add("blog.distrib.");
+    packages.add("blog.distrib");
   }
 
-  public void setPackages(List<String> pks) {
-    packages = pks;
+  public void addPackages(List<String> pkgs) {
+    packages.addAll(pkgs);
   }
 
   void transDec(Dec e) {
