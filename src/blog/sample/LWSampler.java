@@ -36,7 +36,6 @@
 package blog.sample;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -85,10 +84,11 @@ public class LWSampler extends Sampler {
     }
   }
 
-  public void initialize(Evidence evidence, List queries) {
+  @Override
+  public void initialize(Evidence evidence, List<Query> queries) {
     super.initialize(evidence, queries);
-    for (Iterator iter = queries.iterator(); iter.hasNext();) {
-      queryVars.addAll(((Query) iter.next()).getVariables());
+    for (Query query : queries) {
+      queryVars.addAll(query.getVariables());
     }
 
     numSamplesThisTrial = 0;
@@ -119,11 +119,11 @@ public class LWSampler extends Sampler {
     latestSampleLogWeight = supportEvidenceAndCalculateLogWeight();
     BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
         afterSamplingListener);
-    //if (Util.verbose()) {
-    //	System.out.println("Generated world:");
-    //	curWorld.print(System.out);
-    //	System.out.println("Log weight: " + latestSampleLogWeight);
-    //}
+    // if (Util.verbose()) {
+    // System.out.println("Generated world:");
+    // curWorld.print(System.out);
+    // System.out.println("Log weight: " + latestSampleLogWeight);
+    // }
 
     ++totalNumSamples;
     ++numSamplesThisTrial;
@@ -131,7 +131,8 @@ public class LWSampler extends Sampler {
       ++totalNumConsistent;
       ++numConsistentThisTrial;
     }
-    logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, latestSampleLogWeight);
+    logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial,
+        latestSampleLogWeight);
   }
 
   protected double supportEvidenceAndCalculateLogWeight() {
@@ -163,11 +164,12 @@ public class LWSampler extends Sampler {
     System.out.println("======== " + samplerType + " LW Trial Stats =========");
 
     if (numSamplesThisTrial > 0) {
-      double logAvgWeight = logSumWeightsThisTrial - java.lang.Math.log(numSamplesThisTrial);
+      double logAvgWeight = logSumWeightsThisTrial
+          - java.lang.Math.log(numSamplesThisTrial);
       System.out.println("Log of average likelihood weight (this trial): "
-        + logAvgWeight);
+          + logAvgWeight);
       System.out.println("Average likelihood weight (this trial): "
-        + java.lang.Math.exp(logAvgWeight));
+          + java.lang.Math.exp(logAvgWeight));
       System.out.println("Fraction of consistent worlds (this trial): "
           + (numConsistentThisTrial / (double) numSamplesThisTrial));
     }
