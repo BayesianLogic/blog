@@ -133,8 +133,11 @@ import blog.semant.Semant;
  * <dt>-g, --debug
  * <dd>Print model, evidence, and queries for debugging. Default: false
  * 
- * <dt>-w <i>file-prefix</i>, --write=<i>file-prefix</i>
- * <dd>Write query results to file specified by this argument.
+ * <dt>-w <i>file</i>, --write=<i>file</i>
+ * <dd>Write query results in JSON format to this file.
+ * 
+ * <dt>-i <i>num</i>, --interval=<i>num</i>
+ * <dd>Report query results to stdout every num queries.
  * 
  * <dt>-P <i>key</i>=<i>value</i>
  * <dd>Include the entry <i>key</i>=<i>value</i> in the properties table that is
