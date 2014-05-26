@@ -24,7 +24,7 @@ patterns:
   match: (\-\>|\<|\>|\=|\=\=|\>\=|\<\=|\!|~|:|\+|\-|\*|\/|\%|\=\>|\&|\||\[|\])
 - name: storage.modifer.blog
   match: \b(obs|query)\b
-- match: \b(fixed|random|origin)\b\s+\b(Integer|Real|Boolean|NaturalNum|Timestep|\w+)((\[\])*)\s+
+- match: \b(fixed|random|origin)\b\s+\b(Integer|Real|Boolean|NaturalNum|Timestep|RealMatrix|IntegerMatrix|\w+)((\[\])*)\s+
   captures:
     '1': {name: storage.modifier.blog}
     '2': {name: storage.type.primitive.blog}
@@ -39,9 +39,9 @@ patterns:
     '1': {name: storage.modifier.blog}
     '2': {name: storage.type.blog}
 - name: storage.type.primitive.blog
-  match: \b(Integer|Real|Boolean|NaturalNum|Timestep)((\[\])*)\b
+  match: \b(Integer|Real|Boolean|NaturalNum|Timestep|RealMatrix|IntegerMatrix)((\[\])*)\b
 - name: keyword.control.blog
-  match: \b(if|then|else|forall|exists)\b
+  match: \b(if|then|else|forall|exists|for)\b
 # distributions
 - name: support.function.blog
   match: \b(TabularCPD|Distribution|Gaussian|UniformChoice|MultivarGaussian|Poisson|Bernoulli|BooleanDistrib|Binomial|Beta|BoundedGenometric|Categorical|Dirichlet|EqualsCPD|Gamma|Geometric|Iota|LinearGaussian|MixtureDistrib|NegativeBinamial|RoundedLogNormal|TabularInterp|UniformVector|UnivarGaussian|Exponential|UniformInt|UniformReal|Multinomial)\b
