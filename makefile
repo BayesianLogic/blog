@@ -13,9 +13,12 @@ MISC_FILE=compile.sh \
  test-ex.sh \
  ex_test_classes
  
-
-TAGNAME=$(shell git describe --exact-match --abbrev=0)
+TAGNAME=$(shell git describe --exact-match --abbrev=0 2> /dev/null)
+ifneq (${TAGNAME},)
 TARGETNAME=${TAGNAME}
+else
+TARGETNAME=blog
+endif
 
 compile:
 	./compile.sh
@@ -27,21 +30,19 @@ tar: zip
 
 zip: 
 	mkdir -p tmp/${TARGETNAME}
-	cp ${RUN_FILE} tmp/${TAGNAME}/
+	cp ${RUN_FILE} tmp/${TARGETNAME}/
 	cp -r lib tmp/${TARGETNAME}/
 	jar cfe ${TARGETNAME}.jar blog.Main -C bin . 
-	mv ${TARGETNAME}.jar tmp/${TAGNAME}/lib/
+	mv ${TARGETNAME}.jar tmp/${TARGETNAME}/lib/
 	cd tmp; zip -r ${TARGETNAME}-bin.zip ${TARGETNAME}
-	rm tmp/${TAGNAME}/lib/${TARGETNAME}.jar
+	rm tmp/${TARGETNAME}/lib/${TARGETNAME}.jar
 	cp -r src tmp/${TARGETNAME}/
-	cp -r example tmp/${TAGNAME}/
-	cp ${MISC_FILE} tmp/${TAGNAME}/
+	cp -r example tmp/${TARGETNAME}/
+	cp ${MISC_FILE} tmp/${TARGETNAME}/
 	cd tmp; zip -r ${TARGETNAME}.zip ${TARGETNAME}
 	mv tmp/${TARGETNAME}.zip ./
 	mv tmp/${TARGETNAME}-bin.zip ./
 	rm -r -f tmp
-
-jar: compile
 
 demo:
 	./run.sh example/poisson-ball.blog

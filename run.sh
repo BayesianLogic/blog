@@ -10,11 +10,7 @@
 # blog from another directory, edit this script so BLOG_HOME is set to
 # your top-level BLOG directory.
 
-if [ -d "lib" ] ; then
-  BLOG_HOME="."
-else
-  BLOG_HOME=".."
-fi
+BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export BLOG_HOME
 
 J_PATH_SEP=`${BLOG_HOME}/path_sep.sh`
@@ -27,4 +23,4 @@ fi
 
 CPATH="${CPATH}${J_PATH_SEP}${BLOG_HOME}/lib/*"
 
-java -cp ${CPATH} -Xmx2048M blog.Main $@
+java -cp ${CPATH} -Xmx4096M blog.Main $@

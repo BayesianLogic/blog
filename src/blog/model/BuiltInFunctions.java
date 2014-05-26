@@ -74,6 +74,7 @@ public class BuiltInFunctions {
   public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
   public static final String LT_NAME = "__LESSTHAN";
   public static final String LEQ_NAME = "__LESSTHANOREQUAL";
+  public static final String SCALAR_STACK_NAME = "__SCALAR_STACK";
 
   // can be called by user
   public static final String SUCC_NAME = "Succ";
@@ -82,10 +83,10 @@ public class BuiltInFunctions {
   public static final String INV_NAME = "inv";
   public static final String DET_NAME = "det";
   public static final String IS_EMPTY_NAME = "IsEmptyString";
-  // public static final String CONCAT_NAME = "Concat"; //Concat replaced by +
   public static final String MIN_NAME = "min";
   public static final String MAX_NAME = "max";
   public static final String ROUND_NAME = "round";
+  public static final String DIAG_NAME = "diag";
   public static final String TRANSPOSE_NAME = "transpose";
   public static final String SIN_NAME = "sin";
   public static final String COS_NAME = "cos";
@@ -199,6 +200,36 @@ public class BuiltInFunctions {
   public static NonRandomFunction MOD;
 
   /**
+   * The function on timestep <code>x<code>, integer <code>y</code> that returns
+   * x + y.
+   */
+  public static NonRandomFunction TSPLUS;
+
+  /**
+   * The function on timestep <code>x<code>, integer <code>y</code> that returns
+   * x - y.
+   */
+  public static NonRandomFunction TSMINUS;
+
+  /**
+   * The function on timestep <code>x<code>, integer <code>y</code> that returns
+   * x * y.
+   */
+  public static NonRandomFunction TSMULT;
+
+  /**
+   * The function on timestep <code>x<code>, integer <code>y</code> that returns
+   * x / y.
+   */
+  public static NonRandomFunction TSDIV;
+
+  /**
+   * The function on timestep <code>x<code>, integer <code>y</code> that returns
+   * x % y.
+   */
+  public static NonRandomFunction TSMOD;
+
+  /**
    * The function on reals <code>x<code>, <code>y</code> that returns x + y.
    */
   public static NonRandomFunction RPLUS;
@@ -302,6 +333,11 @@ public class BuiltInFunctions {
   public static NonRandomFunction ROUND;
 
   /**
+   * Diagonal(RealMatrix) returns RealMatrix
+   */
+  public static NonRandomFunction DIAG_REAL_MAT;
+
+  /**
    * transpose(RealMatrix) returns RealMatrix
    */
   public static NonRandomFunction TRANSPOSE_REAL_MAT;
@@ -354,6 +390,11 @@ public class BuiltInFunctions {
    */
   public static NonRandomFunction VSTACK;
 
+  /*
+   * Take a list of scalar arguments, and convert them to a Matrix row-vector
+   */
+  public static TemplateFunction SCALAR_STACK;
+
   /**
    * Return an identity matrix.
    */
@@ -380,11 +421,20 @@ public class BuiltInFunctions {
    * and converts it to a Real
    */
   public static NonRandomFunction TO_REAL;
-
   /**
    * Return the absolute value of a Real value.
    */
   public static NonRandomFunction ABS;
+
+  /**
+   * Return the absolute value of a Integer value.
+   */
+  public static NonRandomFunction ABS_INT;
+
+  /**
+   * Return the absolute value of every element of a Real matrix.
+   */
+  public static NonRandomFunction ABS_MAT;
 
   /**
    * Return the exponential value of a Real value.
@@ -422,6 +472,14 @@ public class BuiltInFunctions {
           return f;
         }
       }
+    }
+
+    // find template functions compatible with sig
+    TemplateFunction tempfun = templateFunctions.get(sig.getName());
+    if (tempfun != null) {
+      NonRandomFunction f = tempfun.getConcreteFunction(sig.getArgTypes());
+      if (f != null)
+        return f;
     }
 
     return null;
@@ -474,6 +532,12 @@ public class BuiltInFunctions {
   }
 
   static Map functions = new HashMap(); // from String to List of Function
+
+  private static void addTemplate(TemplateFunction t) {
+    templateFunctions.put(t.getName(), t);
+  }
+
+  static Map<String, TemplateFunction> templateFunctions = new HashMap<String, TemplateFunction>();
 
   static {
     // Add non-random constants
@@ -703,6 +767,73 @@ public class BuiltInFunctions {
     PREV = new NonRandomFunction(PREV_NAME, argTypes, retType, prevInterp);
     addFunction(PREV);
 
+    // Add non-random functions from (TimeStep x Integer) to TimeStep
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.TIMESTEP);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.TIMESTEP;
+
+    FunctionInterp tsplusInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Timestep arg1 = (Timestep) args.get(0);
+        Integer arg2 = (Integer) args.get(1);
+        if (arg1.getValue() + arg2.intValue() < 0)
+          return Model.NULL;
+        return Timestep.at(arg1.getValue() + arg2.intValue());
+      }
+    };
+    TSPLUS = new NonRandomFunction(PLUS_NAME, argTypes, retType, tsplusInterp);
+    addFunction(TSPLUS);
+
+    FunctionInterp tsminusInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Timestep arg1 = (Timestep) args.get(0);
+        Integer arg2 = (Integer) args.get(1);
+        if (arg1.getValue() < arg2.intValue())
+          return Model.NULL;
+        return Timestep.at(arg1.getValue() - arg2.intValue());
+      }
+    };
+    TSMINUS = new NonRandomFunction(MINUS_NAME, argTypes, retType,
+        tsminusInterp);
+    addFunction(TSMINUS);
+
+    FunctionInterp tsmultInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Timestep arg1 = (Timestep) args.get(0);
+        Integer arg2 = (Integer) args.get(1);
+        if (arg2.intValue() < 0)
+          return Model.NULL;
+        return Timestep.at(arg1.getValue() * arg2.intValue());
+      }
+    };
+    TSMULT = new NonRandomFunction(MULT_NAME, argTypes, retType, tsmultInterp);
+    addFunction(TSMULT);
+
+    FunctionInterp tsdivInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Timestep arg1 = (Timestep) args.get(0);
+        Integer arg2 = (Integer) args.get(1);
+        if (arg2.intValue() <= 0)
+          return Model.NULL;
+        return Timestep.at(arg1.getValue() / arg2.intValue());
+      }
+    };
+    TSDIV = new NonRandomFunction(DIV_NAME, argTypes, retType, tsdivInterp);
+    addFunction(TSDIV);
+
+    FunctionInterp tsmodInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Timestep arg1 = (Timestep) args.get(0);
+        Integer arg2 = (Integer) args.get(1);
+        if (arg2.intValue() <= 0)
+          return Model.NULL;
+        return Timestep.at(arg1.getValue() % arg2.intValue());
+      }
+    };
+    TSMOD = new NonRandomFunction(MOD_NAME, argTypes, retType, tsmodInterp);
+    addFunction(TSMOD);
+
     // Add non-random functions from (string x string) to string
     argTypes.clear();
     argTypes.add(BuiltInTypes.STRING);
@@ -761,7 +892,14 @@ public class BuiltInFunctions {
       public Object getValue(List args) {
         MatrixLib mat = (MatrixLib) args.get(0);
         int i = (Integer) args.get(1);
-        return mat.elementAt(0, i);
+        if (mat.numRows() == 1) {
+          return mat.elementAt(0, i);
+        } else if (mat.numCols() == 1) {
+          return mat.elementAt(i, 0);
+        } else {
+          throw new IllegalArgumentException(
+              "subVecInterp expected vector, but given 2D matrix");
+        }
       }
     };
 
@@ -956,6 +1094,29 @@ public class BuiltInFunctions {
     ROUND = new NonRandomFunction(ROUND_NAME, argTypes, retType, roundInterp);
     addFunction(ROUND);
 
+    // Diag function for Real matrices
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+
+    FunctionInterp diagInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        MatrixLib matrix = (MatrixLib) args.get(0);
+        if (matrix.numCols() == 1) {
+          MatrixLib diagMatrix = MatrixFactory.eye(matrix.numRows());
+          for (int i = 0; i < matrix.numRows(); i++) {
+            diagMatrix.setElement(i, i, matrix.elementAt(i, 0));
+          }
+          return diagMatrix;
+        } else {
+          throw new IllegalArgumentException("diag expected " + "column vector");
+        }
+      }
+    };
+    DIAG_REAL_MAT = new NonRandomFunction(DIAG_NAME, argTypes, retType,
+        diagInterp);
+    addFunction(DIAG_REAL_MAT);
+
     // Transpose function for Real matrices
     argTypes.clear();
     argTypes.add(BuiltInTypes.REAL_MATRIX);
@@ -1071,6 +1232,42 @@ public class BuiltInFunctions {
     VSTACK = new NonRandomFunction(VSTACK_NAME, argTypes, retType, vstackInterp);
     addFunction(VSTACK);
 
+    // TODO: to complete stacking of scalar
+    SCALAR_STACK = new TemplateFunction(SCALAR_STACK_NAME) {
+
+      @Override
+      public NonRandomFunction getConcreteFunction(Type[] argTypes) {
+        if (argTypes == null || argTypes.length < 1)
+          return null;
+
+        /*
+         * Currently only support convert elements to Real Matrix!!!
+         * TODO: to support other types in the future
+         */
+        for (Type ty : argTypes)
+          if (!ty.isSubtypeOf(BuiltInTypes.REAL))
+            return null;
+
+        FunctionInterp scalarStackInterp = new AbstractFunctionInterp() {
+          public Object getValue(List args) {
+            int n = args.size();
+            double[][] val = new double[n][1];
+            for (int i = 0; i < n; ++i)
+              val[i][0] = (Double) args.get(i);
+            return MatrixFactory.fromArray(val);
+          }
+        };
+        List<Type> args = new ArrayList<Type>();
+        for (int i = 0; i < argTypes.length; ++i)
+          args.add(BuiltInTypes.REAL);
+
+        NonRandomFunction retFunc = new NonRandomFunction(SCALAR_STACK_NAME,
+            args, BuiltInTypes.REAL_MATRIX, scalarStackInterp);
+        return retFunc;
+      }
+    };
+    addTemplate(SCALAR_STACK);
+
     FunctionInterp eyeInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         Integer size = (Integer) args.get(0);
@@ -1156,17 +1353,43 @@ public class BuiltInFunctions {
         toRealInterp);
     addFunction(TO_REAL);
 
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.REAL);
-    retType = BuiltInTypes.REAL;
+    /**
+     * absolute value for Real
+     */
     FunctionInterp absInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         double val = ((Number) args.get(0)).doubleValue();
         return Math.abs(val);
       }
     };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
     ABS = new NonRandomFunction(ABS_NAME, argTypes, retType, absInterp);
     addFunction(ABS);
+
+    /**
+     * absolute value for Integer
+     */
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.INTEGER;
+    ABS_INT = new NonRandomFunction(ABS_NAME, argTypes, retType, absInterp);
+    addFunction(ABS_INT);
+
+    /**
+     * absolute value for Real matrix
+     */
+    FunctionInterp absMatInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        return ((MatrixLib) args.get(0)).abs();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+    ABS_MAT = new NonRandomFunction(ABS_NAME, argTypes, retType, absMatInterp);
+    addFunction(ABS_MAT);
 
     /**
      * exponential function for real argument
@@ -1206,4 +1429,22 @@ public class BuiltInFunctions {
     EXP_MAT = new NonRandomFunction(EXP_NAME, argTypes, retType, expMatInterp);
     addFunction(EXP_MAT);
   };
+}
+
+/*
+ * Author: yiwu
+ * Date: 2014-4-22
+ */
+abstract class TemplateFunction {
+  private String name;
+
+  public TemplateFunction(String _name) {
+    name = _name;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public abstract NonRandomFunction getConcreteFunction(Type[] argTypes);
 }
