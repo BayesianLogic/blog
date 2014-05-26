@@ -1,0 +1,6 @@
+fixed RealMatrix mu = [0.0; 1.0];
+fixed RealMatrix sigma = [1.0, 0.0; 0.0, 1.0];
+
+random RealMatrix x ~ MultivarGaussian(mu, sigma);
+
+query x;
