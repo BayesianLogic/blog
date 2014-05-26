@@ -92,6 +92,11 @@ You only need to do this if you modified `BLOGLexer.flex` or `BLOGParser.cup`
   make clean
 ```
 
+### Web server
+
+All files for web engine are under web. It requires `python-webpy` package. See `web/README.md`. 
+To run the engine, please follow the instructions in `web/README.md`.
+
 ### Git Tips
 1. make Git ignore line ending
  git config --global core.autocrlf true
