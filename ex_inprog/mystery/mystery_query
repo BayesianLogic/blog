@@ -2,5 +2,5 @@ query #{Suspect s : Time_Suspect(s)==t};
 query value(t);
 query reward(Prev(t));
 query exists Timestep pastT ((pastT < t) & (exists Suspect s (Time_Suspect(s) == pastT & isNervous(s, t) & false))) & false;
-query exists Suspect s ((Time_Suspect(s) == t) & isGuilty(s) & false) & false;
+query exists Suspect s ((Time_Suspect(s) == t) & isGuilty(s) & true);
 query end_state(t);

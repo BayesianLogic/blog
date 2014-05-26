@@ -1,6 +1,8 @@
 package blog.engine.pbvi;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import blog.model.Evidence;
@@ -26,10 +28,14 @@ public class FiniteStatePolicyEvaluator {
 	}
 	
 	public Double eval(Belief b, FiniteStatePolicy p, int numTrials) {
+		return eval(b, p, numTrials, 0);
+	}
+	
+	public Double eval(Belief b, FiniteStatePolicy p, int numTrials, int numTrialsToPrint) {
 		Double value = 0D;
 		int totalCount = 0;
 		for (State s : b.getStates()) {
-			Double v = eval(s, p, numTrials);
+			Double v = eval(s, p, numTrials, numTrialsToPrint);
 			if (v == null) return v;
 			value += v * b.getCount(s);
 			totalCount += b.getCount(s);
@@ -47,7 +53,12 @@ public class FiniteStatePolicyEvaluator {
 	}
 	
 	public Double eval(State state, FiniteStatePolicy p, int numTrials) {
+		return eval(state, p, numTrials, 0);
+	}
+	
+	public Double eval(State state, FiniteStatePolicy p, int numTrials, int numTrialsToPrint) {
 		numMissingObs = new HashMap<Evidence, Integer>();
+		int numPathsPrinted = 0;
 		Belief initState = Belief.getSingletonBelief(state, 1, pomdp);
 		double accumulatedValue = 0;
 		
@@ -56,12 +67,14 @@ public class FiniteStatePolicyEvaluator {
 			FiniteStatePolicy curPolicy = p;
 			double curValue = 0D;
 			double discount = 1;
-			
+			List<Evidence> curPath = new ArrayList<Evidence>();
 			while (curPolicy != null) {
 				if (curState.ended()) break;
 				LiftedEvidence nextAction = curPolicy.getAction();
+				curPath.add(nextAction.getEvidence(curState));
 				curState = curState.sampleNextBelief(nextAction);		
 				Evidence nextObs = curState.getLatestEvidence();
+				curPath.add(nextObs);
 				FiniteStatePolicy nextPolicy = curPolicy.getNextPolicy(nextObs);
 				if (nextPolicy == null && !curState.ended()) { 
 					nextPolicy = curPolicy.getApplicableNextPolicy(nextObs, curState);
@@ -73,6 +86,10 @@ public class FiniteStatePolicyEvaluator {
 				
 				curValue += discount * curState.getLatestReward();
 				discount = discount * gamma;
+			}
+			if (numPathsPrinted < numTrialsToPrint) {
+				System.out.println("Value: " + curValue + " Path: " + curPath);
+				numPathsPrinted++;
 			}
 			accumulatedValue += curValue;
 		}

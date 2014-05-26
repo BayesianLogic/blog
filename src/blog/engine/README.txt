@@ -11,7 +11,7 @@ For example
 Running OUPBVI:
 The main method is in blog/engine/pbvi/OUPBVI.java.
 The parameters are 
-model_file query_file num_particles num_steps num_beliefs detailed_timing_prints? use_perseus? 
+model_file -q query_file -n num_particles -t num_steps -b num_beliefs -d(for detailed timing prints) perseus 
 
 For example
-~/workspace/dblog/ex_inprog/monster/monster_standard_noisy_4doors_soundsymbols.mblog  ~/workspace/dblog/ex_inprog/monster/monster_standard_noisy_4doors_query 200 2 8 false false
+~/workspace/dblog/ex_inprog/monster/monster_standard_noisy_4doors_soundsymbols.mblog -q ~/workspace/dblog/ex_inprog/monster/monster_standard_noisy_4doors_query -n 200 -t 2 -b 8 -d 

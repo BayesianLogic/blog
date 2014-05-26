@@ -12,11 +12,18 @@ import java.util.Properties;
 import java.util.Set;
 import blog.DBLOGUtil;
 import blog.Main;
+import blog.engine.experiments.SUU;
 import blog.engine.experiments.query_parser;
 import blog.engine.onlinePF.ObservabilitySignature;
+import blog.engine.onlinePF.Util.FileCommunicator;
+import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.common.Util;
+import blog.common.cmdline.AbstractOption;
+import blog.common.cmdline.BooleanOption;
+import blog.common.cmdline.IntOption;
+import blog.common.cmdline.StringOption;
 
 public class OUPBVI {
 	private OUPOMDPModel pomdp;
@@ -563,47 +570,75 @@ public class OUPBVI {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println("Usage: modelFile queryFile numParticles horizon numBeliefs (seed)");
+		//System.out.println("Usage: modelFile queryFile numParticles horizon numBeliefs (seed)");
+		blog.common.cmdline.Parser.setProgramDesc("OUPBVI");
+		blog.common.cmdline.Parser.setUsageLine("Usage: modelFile -q queryFile -n numParticles " +
+				"-t horizon -b numBeliefs -r seed -d -p policyToEvaluate -perseus");
+		
+		StringOption queryFileOption = new StringOption("q", "query_file", "", "Path of query file <s>");
+		IntOption numParticlesOption = new IntOption("n", "num_particles", 100, "Use n particles");
+		IntOption numBeliefsOption = new IntOption("b", "num_beliefs", 100, "Use b beliefs");
+		IntOption numTimestepsOption = new IntOption("t", "num_timesteps", 5, "Run for t timesteps");
+		IntOption seedOption = new IntOption("r", "random_seed", -1, "Use n particles");
+		BooleanOption debugOption = new BooleanOption("d", "debug", false, "Turn on debugging");
+		BooleanOption perseusOption = new BooleanOption(null, "perseus", false, "Use perseus");
+		StringOption policyFileOption = new StringOption("p", "policy_file", "",
+				"Path of policy file to evaluate");
+		
+		blog.common.cmdline.Parser.parse(args);
+		String modelFile = args[0];
+		String queryFile = queryFileOption.getValue();
+		int numParticles = numParticlesOption.getValue();
+		int numBeliefs = numBeliefsOption.getValue();
+		int horizon = numTimestepsOption.getValue();
+		boolean debugOn = debugOption.getValue();
+		boolean usePerseus = perseusOption.getValue();
+		String policyFile = policyFileOption.getValue();
+		int seed = seedOption.getValue();
+
+		//Echo arguments
+		System.out.println("Query file: " + queryFile);
+		System.out.println("Num particles: " + numParticles);
+		System.out.println("Num timesteps: " + horizon);
+		System.out.println("Num beliefs: " + numBeliefs);
+		System.out.println("Turn timer on? " + debugOn);
+		if (usePerseus)
+			System.out.println("Using Perseus");
+		if (policyFileOption.wasPresent())
+			System.out.println("Evaluate policy: " + policyFile);
+		if (seedOption.wasPresent())
+			System.out.println("Using random seed: " + seed);
+		
+		
 		DBLOGUtil.nsim = 1;
 		List<String> modelFiles = new ArrayList<String>();
-		modelFiles.add(args[0]);
+		modelFiles.add(modelFile);
 		Timer.off = false;
 		Timer.start();
-		if (args.length > 7) {
-			Util.initRandom(Long.parseLong(args[7]));
+		
+		if (seedOption.wasPresent()) {
+			Util.initRandom(seed);
 		} else {
 			Util.initRandom(true);
 		}
 		
-		if (args.length > 5) {
-			 boolean debugOff = Boolean.parseBoolean(args[5]);
-			 Timer.off = debugOff;
-			 //OUPBVI.debugOn = !debugOff;
-			 System.out.println("Turn timer off?" + debugOff);
-		}
+		Timer.off = !debugOn;
+		//OUPBVI.debugOn = !debugOff;
 		
 		OUPBVI oupbvi = makeOUPBVI(modelFiles, 
-				args[1], 
-				Integer.parseInt(args[2]), 
-				Integer.parseInt(args[3]),
-				Integer.parseInt(args[4]));
-		
-		if (args.length > 6) {
-			 if (Boolean.parseBoolean(args[6])) {
-				 oupbvi.setUsePerseus(true);
-			 } else {
-				 oupbvi.setUsePerseus(false);
-			 }
-		}
-		
-		if (args.length > 8)
-			oupbvi.evaluate(args[8]);
+				queryFile,
+				numParticles,
+				horizon,
+				numBeliefs
+				);
+		oupbvi.setUsePerseus(usePerseus);
+		if (policyFileOption.wasPresent())
+			oupbvi.evaluate(policyFile);
 		else
 			oupbvi.run();
 		Belief.printTimingStats();
 		System.out.println("Total elapsed: " + Timer.getElapsedStr());
 		Timer.print();
-		
 	}
 	
 	private void evaluate(FiniteStatePolicy p) {
@@ -615,7 +650,7 @@ public class OUPBVI {
 			b = pomdp.generateInitialBelief(500);
 			System.out.println(b);
 			System.out.println("Iter: " + i);
-			System.out.println("Evaluated: " + evaluator.eval(b, p, 100));
+			System.out.println("Evaluated: " + evaluator.eval(b, p, 100, 10));
 			System.out.println("Unhandled obs: " + evaluator.getMissingObs());
 		}
 		Timer.record("FINAL EVALUATION");
@@ -647,5 +682,27 @@ public class OUPBVI {
 
 	public Properties getProperties() {
 		return properties;
+	}
+}
+
+class Pair<T1, T2> {
+	T1 x;
+	T2 y;
+	
+	public Pair(T1 a, T2 b) {
+		x = a;
+		y = b;
+	}
+	
+	@Override
+	public int hashCode() {
+		return x.hashCode() ^ y.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Pair)) return false;
+		Pair p = (Pair) o;
+		return p.x.equals(x) && p.y.equals(y);
 	}
 }

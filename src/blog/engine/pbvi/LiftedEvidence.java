@@ -18,7 +18,7 @@ public class LiftedEvidence {
 	private static Term emptyTimestep;
 	
 	static {
-		emptyTimestep = BuiltInTypes.TIMESTEP.getCanonicalTerm(BuiltInTypes.TIMESTEP.getGuaranteedObject(0));
+		emptyTimestep = BuiltInTypes.REAL.getCanonicalTerm(Float.NaN);
 	}
 	
 	private Evidence evidence;
@@ -41,6 +41,7 @@ public class LiftedEvidence {
 
 			if (timestep < 0) {
 				System.out.println("Evidence has no timestep? " + evidence);
+				new Exception().printStackTrace();
 				System.exit(0);
 			}
 		}

@@ -11,7 +11,7 @@ import java.util.Map;
  *
  */
 public class Timer {
-	static boolean off = false;
+	public static boolean off = false;
 	
 	static long startTime = 0;
 	static Map<String, Long> startTimes = new HashMap<String, Long>();

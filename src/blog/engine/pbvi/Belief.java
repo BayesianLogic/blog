@@ -56,7 +56,7 @@ public class Belief {
 			State s = new State((AbstractPartialWorld) tp.curWorld, tp.getTimestep());
 			addState(s);
 		}
-		initSymbolProperties();
+		//initSymbolProperties();
 	}
 	
 	private void initSymbolProperties() {
@@ -154,9 +154,9 @@ public class Belief {
 			Timer.record("resample");
 		}
 		
-		List<Evidence> nextEvidenceHistory = new ArrayList<Evidence>(this.evidenceHistory);
-		nextEvidenceHistory.add(o);
-		Belief nextBelief = new Belief(nextPF, pomdp, nextEvidenceHistory);
+		//List<Evidence> nextEvidenceHistory = new ArrayList<Evidence>(this.evidenceHistory);
+		//nextEvidenceHistory.add(o);
+		Belief nextBelief = new Belief(nextPF, pomdp, null);
 		nextBelief.latestReward = reward;
 		nextBelief.latestEvidence = o;
 		

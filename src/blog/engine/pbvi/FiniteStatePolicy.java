@@ -105,7 +105,7 @@ public class FiniteStatePolicy extends PolicyModel {
 			} else {
 				result += contingentPolicy.toDotStringHelper(nextName, included);
 			}
-			result = result + name + " -> " + nextName + " [label=\"" + evidenceString +  " " + getNote(o.getStoredEvidence()) + "\"];\n";
+			result = result + name + " -> " + nextName + " [label=\"" + evidenceString +  " " + getNote(o) + "\"];\n";
 			
 			i++;
 		}
@@ -193,13 +193,17 @@ public class FiniteStatePolicy extends PolicyModel {
 		 }
 		 
 		 for (LiftedEvidence o : policy.successors.keySet()) {
-			 setNextPolicy(o, policy.getNextPolicy(o.getStoredEvidence()));
+			 setNextPolicy(o, policy.getNextPolicy(o));
 			 addObsNote(o, "merged");
 		 }
 		 this.alpha = null;
 		 return true;
 	}
 	
+	private FiniteStatePolicy getNextPolicy(LiftedEvidence o) {
+		return successors.get(o);
+	}
+
 	public void addObsNote(Evidence obs, String note) {
 		notes.put(new LiftedEvidence(obs), note);
 	}
@@ -208,8 +212,8 @@ public class FiniteStatePolicy extends PolicyModel {
 		notes.put(obs, note);
 	}
 	
-	public String getNote(Evidence obs) {
-		String note = notes.get(new LiftedEvidence(obs));
+	public String getNote(LiftedEvidence obs) {
+		String note = notes.get(obs);
 		if (note == null) {
 			return "";
 		}
