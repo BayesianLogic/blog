@@ -172,4 +172,19 @@ public class JamaMatrixLib implements MatrixLib {
     }
     return new JamaMatrixLib(v);
   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.common.numerical.MatrixLib#abs()
+   */
+  @Override
+  public MatrixLib abs() {
+    double[][] v = values.getArrayCopy();
+    for (int i = 0; i < numRows(); i++) {
+      for (int j = 0; j < numCols(); j++)
+        v[i][j] = Math.abs(v[i][j]);
+    }
+    return new JamaMatrixLib(v);
+  }
 }

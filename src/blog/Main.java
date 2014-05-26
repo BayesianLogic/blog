@@ -192,7 +192,6 @@ public class Main {
     Util.setVerbose(verbose);
     Util.setPrint(print);
     Util.initRandom(randomize);
-    // BLOGParser.setPackagesToSearch(packages);
   }
 
   public static void run() {
@@ -621,6 +620,7 @@ public class Main {
     ErrorMsg msg = new ErrorMsg(origin);
     Parse parse = new Parse(reader, msg);
     Semant sem = new Semant(m, e, qs, msg);
+    sem.addPackages(packages);
     if (msg.OK())
       sem.transProg(parse.getResult());
     return msg.OK();
@@ -685,7 +685,7 @@ public class Main {
   private static Evidence evidence;
   private static List<Query> queries;
   private static boolean generate;
-  private static List<String> packages = new LinkedList<String>(); // of String
+  private static List<String> packages = new LinkedList<String>();
   private static boolean verbose;
   private static boolean print;
   private static boolean debug;
