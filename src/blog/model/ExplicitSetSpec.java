@@ -99,17 +99,12 @@ public class ExplicitSetSpec extends ArgSpec {
       Object element = terms.get(i);
       if (element instanceof Term) {
         Term term = (Term) element;
-        Term termInScope = term.getTermInScope(model, scope);
-        if (termInScope == null) {
+        if (term.getTermInScope(model, scope) == null) {
           correct = false;
-        } else {
-          terms.set(i, termInScope);
         }
       } else if (element instanceof ListSpec) {
         ListSpec listSpec = (ListSpec) element;
-        if (listSpec.checkTypesAndScope(model, scope)) {
-          terms.set(i, listSpec);
-        } else {
+        if (!listSpec.checkTypesAndScope(model, scope)) {
           correct = false;
         }
       } else {
