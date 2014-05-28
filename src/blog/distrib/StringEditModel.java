@@ -38,7 +38,6 @@ package blog.distrib;
 import java.util.*;
 import blog.*;
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * Represents a probability model for output strings Y given input strings X. We
@@ -238,7 +237,7 @@ public class StringEditModel extends AbstractCondProbDistrib {
 		return new String(output);
 	}
 
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		return sampleVal((String) args.get(0));
 	}
 

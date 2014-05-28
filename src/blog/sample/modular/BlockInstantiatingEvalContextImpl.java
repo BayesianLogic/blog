@@ -57,7 +57,7 @@ public class BlockInstantiatingEvalContextImpl extends
 		// Sample new value for var
 		CondProbDistrib cpd = distrib.getCPD();
 		List cpdArgs = distrib.getArgValues();
-		Object newValue = cpd.sampleVal(cpdArgs, var.getType());
+		Object newValue = cpd.sampleVal(cpdArgs);
 		double probForThisValue = cpd.getProb(cpdArgs, newValue);
 		double logProbForThisValue = Math.log(probForThisValue);
 		logProb += logProbForThisValue;

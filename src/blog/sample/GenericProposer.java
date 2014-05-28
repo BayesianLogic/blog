@@ -199,8 +199,7 @@ public class GenericProposer extends AbstractProposer {
     logProbBackward += Math.log(distrib.getCPD().getProb(
         distrib.getArgValues(), oldValue));
 
-    Object newValue = distrib.getCPD().sampleVal(distrib.getArgValues(),
-        varToSample.getType());
+    Object newValue = distrib.getCPD().sampleVal(distrib.getArgValues());
     world.setValue(varToSample, newValue);
     logProbForward += Math.log(distrib.getCPD().getProb(distrib.getArgValues(),
         newValue));

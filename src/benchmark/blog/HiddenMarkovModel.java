@@ -118,9 +118,9 @@ public class HiddenMarkovModel {
 			for (int i = 0; i < NUM_SAMPLES; i++) {
 				String stateDrawn;
 				if (t == 0) {
-					stateDrawn = (String) drawInitialState.sampleVal(empty, BuiltInTypes.STRING);	
+					stateDrawn = (String) drawInitialState.sampleVal(empty);	
 				} else {
-					stateDrawn = (String) drawNextState.get(prevStates[i]).sampleVal(empty, BuiltInTypes.STRING);
+					stateDrawn = (String) drawNextState.get(prevStates[i]).sampleVal(empty);
 				}
 				
 				if (particleWeights.containsKey(stateDrawn)) {
@@ -161,7 +161,7 @@ public class HiddenMarkovModel {
 			// Resample particles, and count states represented by each particle
 			currentStates = new String[NUM_SAMPLES];
 			for (int i = 0; i < NUM_SAMPLES; i++) {
-				currentStates[i] = (String) resampleDistrib.sampleVal(empty, BuiltInTypes.STRING);
+				currentStates[i] = (String) resampleDistrib.sampleVal(empty);
 				stateEstimates[t].put(currentStates[i],
 						(stateEstimates[t].containsKey(currentStates[i])) ?	stateEstimates[t].get(currentStates[i]) + 1 : 1);
 			}

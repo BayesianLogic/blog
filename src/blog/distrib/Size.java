@@ -5,7 +5,6 @@ package blog.distrib;
 
 import java.util.List;
 
-import blog.model.Type;
 import blog.objgen.ObjectSet;
 
 /**
@@ -61,7 +60,7 @@ public class Size extends AbstractCondProbDistrib {
    *           if <code>args</code> contains anything other than a single
    *           argument of class ObjectSet.
    */
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     ObjectSet s = processArgs(args);
     if (s.isEmpty()) {
       return new Integer(0);

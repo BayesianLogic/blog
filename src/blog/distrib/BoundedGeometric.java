@@ -37,7 +37,6 @@ package blog.distrib;
 
 import blog.*;
 import blog.common.Util;
-import blog.model.Type;
 
 import java.util.*;
 
@@ -159,7 +158,7 @@ public class BoundedGeometric extends AbstractCondProbDistrib {
 	/**
 	 * Generates a sample from this distribution. Expects no arguments.
 	 */
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		int bound = processArgs(args);
 
 		double u = Util.random();

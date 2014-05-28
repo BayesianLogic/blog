@@ -38,7 +38,6 @@ package blog.distrib;
 import java.util.List;
 
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * A distribution over {0,1}. It takes one parameter, which is the probability
@@ -94,7 +93,7 @@ public class Bernoulli extends AbstractCondProbDistrib {
     return (1 - pi);
   }
 
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     if (args.size() != 0) {
       throw new IllegalArgumentException(
           "Binary Bernoulli distribution takes zero arguments, not "

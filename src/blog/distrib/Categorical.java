@@ -45,7 +45,6 @@ import blog.common.numerical.MatrixLib;
 import blog.model.ArgSpec;
 import blog.model.Model;
 import blog.model.Term;
-import blog.model.Type;
 
 /**
  * Distribution over a finite set of possible values numbered 0, ..., k-1,
@@ -382,7 +381,7 @@ public class Categorical extends AbstractCondProbDistrib {
    *           <code>args</code> is non-empty, or if the probability vector was
    *           not specified and <code>args</code> is empty
    */
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     ensureProbsInited(args);
 
     int index = Util.sampleWithProbs(probs);
@@ -394,8 +393,7 @@ public class Categorical extends AbstractCondProbDistrib {
       for (int i = 0; i < probs.length; ++i) {
         probList.add(new Double(probs[i]));
       }
-      System.err.println("Warning: distribution does not sum to 1 over "
-          + "the guaranteed objects of type " + childType + ": " + probList);
+      System.err.println("Warning: distribution does not sum to 1");
       value = Model.NULL;
     }
     return value;

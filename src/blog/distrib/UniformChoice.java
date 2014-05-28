@@ -39,7 +39,6 @@ import java.util.*;
 import blog.*;
 import blog.common.Util;
 import blog.model.Model;
-import blog.model.Type;
 import blog.objgen.ObjectSet;
 
 /**
@@ -98,7 +97,7 @@ public class UniformChoice extends AbstractCondProbDistrib {
 	 *           if <code>args</code> contains anything other than a single
 	 *           argument of class ObjectSet.
 	 */
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		ObjectSet s = processArgs(args);
 		if (s.isEmpty()) {
 			return Model.NULL;

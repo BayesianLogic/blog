@@ -38,7 +38,6 @@ package blog.distrib;
 import java.util.List;
 
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * A distribution over Boolean values. It is defined by one parameter, which is
@@ -135,7 +134,7 @@ public class BooleanDistrib extends AbstractCondProbDistrib {
     return false;
   }
 
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     ensureParamsInited(args);
     return java.lang.Boolean.valueOf(sampleVal());
   }

@@ -188,8 +188,7 @@ public class RejectionSampler extends Sampler {
 					if (Util.verbose()) {
 						System.out.println("Instantiating: " + var);
 					}
-					iter.setValue(distrib.getCPD().sampleVal(distrib.getArgValues(),
-							var.getType()));
+					iter.setValue(distrib.getCPD().sampleVal(distrib.getArgValues()));
 
 					varInstantiated = true;
 					break; // start again from first uninstantiated var

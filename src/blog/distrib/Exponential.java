@@ -38,7 +38,6 @@ package blog.distrib;
 import java.util.List;
 
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * An Exponential distribution with parameter lambda over non-negative reals.
@@ -92,7 +91,7 @@ public class Exponential extends AbstractCondProbDistrib {
    * time. (Reference: A Guide to Simulation, 2nd Ed. Bratley, Paul, Bennett L.
    * Fox and Linus E. Schrage.)
    */
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     return sampleVal(lambda);
   }
 

@@ -37,7 +37,6 @@ package blog.distrib;
 
 import blog.*;
 import blog.common.Util;
-import blog.model.Type;
 
 import java.util.*;
 
@@ -96,10 +95,10 @@ public class Beta extends AbstractCondProbDistrib {
 	 * equivalent to the distrib.Gamma sampling function. (Reference: A Guide To
 	 * Simulation, 2nd Ed. Bratley, Paul, Bennett L. Fox and Linus E. Schrage.)
 	 */
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		LinkedList l = new LinkedList();
-		double y = ((Double) gammaA.sampleVal(l, childType)).doubleValue();
-		double z = ((Double) gammaB.sampleVal(l, childType)).doubleValue();
+		double y = ((Double) gammaA.sampleVal(l)).doubleValue();
+		double z = ((Double) gammaB.sampleVal(l)).doubleValue();
 		return new Double(y / (y + z));
 	}
 

@@ -39,7 +39,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * A Poisson distribution with mean and variance lambda. This is a distribution
@@ -112,7 +111,7 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
    * at Columbia University, specifically the file: <blockquote>
    * http://www.columbia.edu/~ak2108/ta/summer2003/poisson1.c </blockquote>
    */
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     if (random_lambda) {
       lambda = ((Number) args.get(0)).doubleValue();
     }

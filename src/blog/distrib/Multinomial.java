@@ -42,7 +42,6 @@ import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.model.MatrixSpec;
-import blog.model.Type;
 
 /**
  * Multinomial distribution.
@@ -145,7 +144,7 @@ public class Multinomial extends AbstractCondProbDistrib {
   /**
    * Returns a vector chosen at random according to this distribution.
    */
-  public MatrixLib sampleVal(List args, Type childType) {
+  public MatrixLib sampleVal(List args) {
     initParams(args);
 
     final int numBuckets = pi.length;

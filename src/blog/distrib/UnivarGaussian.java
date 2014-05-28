@@ -37,7 +37,6 @@ package blog.distrib;
 
 import blog.*;
 import blog.common.Util;
-import blog.model.Type;
 
 import java.util.*;
 
@@ -131,7 +130,7 @@ public class UnivarGaussian extends AbstractCondProbDistrib {
 		return (-Math.pow((x - mu), 2) / (2 * sigmaSquared)) - logNormConst;
 	}
 
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		initParams(args);
 		return new Double(sampleVal());
 	}
