@@ -3,7 +3,6 @@ package test;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -19,13 +18,10 @@ import blog.distrib.MultivarGaussian;
  * Unit tests for MultivarGaussian.
  */
 @RunWith(JUnit4.class)
-public class TestMultivarGaussian {
-  private final double ERROR_BOUND = 1e-10;
+public class TestMultivarGaussian extends TestDistribution {
   private MatrixLib mean;
   private MatrixLib variance;
   private HashMap<MatrixLib, Double> probVals;
-  private LinkedList<MatrixLib> constructParams;
-  private LinkedList<MatrixLib> args;
 
   public TestMultivarGaussian() {
     // Create a Gaussian with a mean and covariance matrix
@@ -50,8 +46,6 @@ public class TestMultivarGaussian {
     probVals.put(MatrixFactory.fromArray(new double[][] { { 5.0 }, { 5.0 } }),
         0.0040865387874093571);
 
-    constructParams = new LinkedList<MatrixLib>();
-    args = new LinkedList<MatrixLib>();
   }
 
   @Test
@@ -148,7 +142,7 @@ public class TestMultivarGaussian {
     testGaussian(constructParams, args);
   }
 
-  public void testGaussian(List<MatrixLib> constructParams, List<MatrixLib> args) {
+  public void testGaussian(List<Object> constructParams, List<Object> args) {
     MultivarGaussian mvg = new MultivarGaussian(constructParams);
     Set<MatrixLib> points = probVals.keySet();
     for (MatrixLib point : points) {
