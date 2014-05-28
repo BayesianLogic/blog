@@ -35,13 +35,16 @@
 
 package blog.sample;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Properties;
+import java.util.Set;
 
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
-import blog.common.HashMultiMap;
-import blog.common.MultiMap;
 import blog.common.Util;
+import blog.distrib.CondProbDistrib;
 import blog.model.DependencyModel;
 import blog.model.Model;
 import blog.world.PartialWorld;
@@ -53,7 +56,7 @@ import blog.world.PartialWorldDiff;
  * instantiated RVs), then samples values for previously uninstantiated RVs to
  * make the resulting instantiation self-supporting. It also uninstantiates any
  * RVs that become barren.
- *
+ * 
  * <p>
  * Each variable is sampled from its prior distribution given its parents. The
  * forward proposal probability is just the probability of choosing the selected
@@ -65,7 +68,7 @@ import blog.world.PartialWorldDiff;
  * No other moves can yield the same proposed world because each move changes
  * the value of exactly one instantiated variable (it just instantiates and
  * uninstantiates other variables).
- *
+ * 
  * <p>
  * GenericProposer does not use identifiers in the worlds it constructs.
  */
@@ -195,14 +198,14 @@ public class GenericProposer extends AbstractProposer {
 
     DependencyModel.Distrib distrib = varToSample
         .getDistrib(new DefaultEvalContext(world, true));
+    CondProbDistrib cpd = distrib.getCPD();
+    cpd.setParams(distrib.getArgValues());
     Object oldValue = world.getValue(varToSample);
-    logProbBackward += Math.log(distrib.getCPD().getProb(
-        distrib.getArgValues(), oldValue));
+    logProbBackward += Math.log(cpd.getProb(oldValue));
 
-    Object newValue = distrib.getCPD().sampleVal(distrib.getArgValues());
+    Object newValue = cpd.sampleVal();
     world.setValue(varToSample, newValue);
-    logProbForward += Math.log(distrib.getCPD().getProb(distrib.getArgValues(),
-        newValue));
+    logProbForward += Math.log(cpd.getProb(newValue));
 
     // Make the world self-supporting. The only variables whose active
     // parent sets could have changed are the children of varToSample.

@@ -35,10 +35,9 @@
 
 package blog.distrib;
 
-import blog.*;
-import blog.common.Util;
+import java.util.List;
 
-import java.util.*;
+import blog.common.Util;
 
 /**
  * A mixture of conditional probability distributions. The distributions being
@@ -47,38 +46,41 @@ import java.util.*;
  * taking a list of parameters.
  */
 public class MixtureDistrib extends AbstractCondProbDistrib {
-	/**
-	 * Creates a new MixtureDistrib that combines the given distributions
-	 * according to the given probabilities. The arrays of distributions and
-	 * probabilities must have the same length.
-	 */
-	public MixtureDistrib(CondProbDistrib[] distribs, double[] probs) {
-		this.distribs = (CondProbDistrib[]) distribs.clone();
-		this.mixDistrib = new Categorical(probs);
-	}
+  /**
+   * Creates a new MixtureDistrib that combines the given distributions
+   * according to the given probabilities. The arrays of distributions and
+   * probabilities must have the same length.
+   */
+  public MixtureDistrib(CondProbDistrib[] distribs, double[] probs) {
+    this.distribs = (CondProbDistrib[]) distribs.clone();
+    this.mixDistrib = new Categorical(probs);
+  }
 
-	public double getProb(List args, Object value) {
-		double prob = 0;
-		for (int i = 0; i < distribs.length; ++i) {
-			prob += (mixDistrib.getProb(i) * distribs[i].getProb(args, value));
-		}
-		return prob;
-	}
+  public double getProb(List args, Object value) {
+    double prob = 0;
+    for (int i = 0; i < distribs.length; ++i) {
+      distribs[i].setParams(args);
+      prob += (mixDistrib.getProb(i) * distribs[i].getProb(value));
+    }
+    return prob;
+  }
 
-	public double getLogProb(List args, Object value) {
-		double logProb = Double.NEGATIVE_INFINITY;
-		for (int i = 0; i < distribs.length; ++i) {
-			logProb = Util.logSum(logProb,
-					(mixDistrib.getLogProb(i) + distribs[i].getLogProb(args, value)));
-		}
-		return logProb;
-	}
+  public double getLogProb(List args, Object value) {
+    double logProb = Double.NEGATIVE_INFINITY;
+    for (int i = 0; i < distribs.length; ++i) {
+      distribs[i].setParams(args);
+      logProb = Util.logSum(logProb,
+          (mixDistrib.getLogProb(i) + distribs[i].getLogProb(value)));
+    }
+    return logProb;
+  }
 
-	public Object sampleVal(List args) {
-		int index = mixDistrib.sampleVal();
-		return distribs[index].sampleVal(args);
-	}
+  public Object sampleVal(List args) {
+    int index = mixDistrib.sampleVal_();
+    distribs[index].setParams(args);
+    return distribs[index].sampleVal();
+  }
 
-	private CondProbDistrib[] distribs;
-	private Categorical mixDistrib;
+  private CondProbDistrib[] distribs;
+  private Categorical mixDistrib;
 }

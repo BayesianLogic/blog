@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 
 import blog.bn.BasicVar;
-import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
 import blog.distrib.EqualsCPD;
@@ -78,18 +77,6 @@ public class DependencyModel {
 
     public List getArgValues() {
       return Collections.unmodifiableList(argValues);
-    }
-
-    public Object sampleVal(Type type) {
-      return cpd.sampleVal(argValues);
-    }
-
-    public Object sampleVal(VarWithDistrib var) {
-      return cpd.sampleVal(argValues);
-    }
-
-    public double getProb(Object value) {
-      return cpd.getProb(argValues, value);
     }
 
     public String toString() {

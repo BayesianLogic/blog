@@ -35,8 +35,7 @@
 
 package blog.distrib;
 
-import java.util.*;
-import blog.*;
+import java.util.List;
 
 /**
  * Distribution over positive integers for a random variable X = round(Y), where
@@ -46,88 +45,88 @@ import blog.*;
  * variance of Z.
  */
 public class RoundedLogNormal extends AbstractCondProbDistrib {
-	/**
-	 * Creates a RoundedLogNormal distribution where Y has the given mean and
-	 * log(Y) has the given variance.
-	 */
-	public RoundedLogNormal(double mean, double varianceOfLog) {
-		this.mean = mean;
-		this.varianceOfLog = varianceOfLog;
-		zDistrib = new UnivarGaussian(Math.log(mean), varianceOfLog);
-	}
+  /**
+   * Creates a RoundedLogNormal distribution where Y has the given mean and
+   * log(Y) has the given variance.
+   */
+  public RoundedLogNormal(double mean, double varianceOfLog) {
+    this.mean = mean;
+    this.varianceOfLog = varianceOfLog;
+    zDistrib = new UnivarGaussian(Math.log(mean), varianceOfLog);
+  }
 
-	/**
-	 * Creates a RoundedLogNormal distribution with the given parameters. This
-	 * method expects two parameters of class Number, namely the mean of Y and the
-	 * variance of log(Y).
-	 */
-	public RoundedLogNormal(List params) {
-		if (params.size() != 2) {
-			throw new IllegalArgumentException(
-					"RoundedLogNormal expects two parameters: the mean of Y "
-							+ "and the variance of log(Y).");
-		}
+  /**
+   * Creates a RoundedLogNormal distribution with the given parameters. This
+   * method expects two parameters of class Number, namely the mean of Y and the
+   * variance of log(Y).
+   */
+  public RoundedLogNormal(List params) {
+    if (params.size() != 2) {
+      throw new IllegalArgumentException(
+          "RoundedLogNormal expects two parameters: the mean of Y "
+              + "and the variance of log(Y).");
+    }
 
-		mean = ((Number) params.get(0)).doubleValue();
-		varianceOfLog = ((Number) params.get(1)).doubleValue();
-		zDistrib = new UnivarGaussian(Math.log(mean), varianceOfLog);
-	}
+    mean = ((Number) params.get(0)).doubleValue();
+    varianceOfLog = ((Number) params.get(1)).doubleValue();
+    zDistrib = new UnivarGaussian(Math.log(mean), varianceOfLog);
+  }
 
-	/**
-	 * Returns the probability of the given value under this distribution. Expects
-	 * no arguments.
-	 */
-	public double getProb(List args, Object value) {
-		return Math.exp(getLogProb(args, value));
-	}
+  /**
+   * Returns the probability of the given value under this distribution. Expects
+   * no arguments.
+   */
+  public double getProb(List args, Object value) {
+    return Math.exp(getLogProb(args, value));
+  }
 
-	/**
-	 * Returns the log probability of the given value under this distribution.
-	 * Expects no arguments.
-	 */
-	public double getLogProb(List args, Object value) {
-		if (!args.isEmpty()) {
-			throw new IllegalArgumentException(
-					"RoundedLogNormal expects no arguments.");
-		}
-		return getLogProb(((Integer) value).intValue());
-	}
+  /**
+   * Returns the log probability of the given value under this distribution.
+   * Expects no arguments.
+   */
+  public double getLogProb(List args, Object value) {
+    if (!args.isEmpty()) {
+      throw new IllegalArgumentException(
+          "RoundedLogNormal expects no arguments.");
+    }
+    return getLogProb(((Integer) value).intValue());
+  }
 
-	/**
-	 * Returns the log probability that X=n. Note that X gets the value n if Y is
-	 * between n - 0.5 and n + 0.5, which means Z is between log(n - 0.5) and
-	 * log(n + 0.5). So we should integrate the density of Z between those two
-	 * values. To avoid computing the integral, we approximate this by taking the
-	 * density of Z at log(n) and multiplying it by log(n + 0.5) - log(n - 0.5).
-	 */
-	public double getLogProb(int n) {
-		if (n <= 0) {
-			return Double.NEGATIVE_INFINITY;
-		}
+  /**
+   * Returns the log probability that X=n. Note that X gets the value n if Y is
+   * between n - 0.5 and n + 0.5, which means Z is between log(n - 0.5) and
+   * log(n + 0.5). So we should integrate the density of Z between those two
+   * values. To avoid computing the integral, we approximate this by taking the
+   * density of Z at log(n) and multiplying it by log(n + 0.5) - log(n - 0.5).
+   */
+  public double getLogProb(int n) {
+    if (n <= 0) {
+      return Double.NEGATIVE_INFINITY;
+    }
 
-		double intervalWidth = Math.log(n + 0.5) - Math.log(n - 0.5);
-		return Math.log(intervalWidth) + zDistrib.getLogProb(Math.log(n));
-	}
+    double intervalWidth = Math.log(n + 0.5) - Math.log(n - 0.5);
+    return Math.log(intervalWidth) + zDistrib.getLogProb(Math.log(n));
+  }
 
-	public Object sampleVal(List args) {
-		if (!args.isEmpty()) {
-			throw new IllegalArgumentException(
-					"RoundedLogNormal expects no arguments.");
-		}
+  public Object sampleVal(List args) {
+    if (!args.isEmpty()) {
+      throw new IllegalArgumentException(
+          "RoundedLogNormal expects no arguments.");
+    }
 
-		double z = zDistrib.sampleVal();
-		double y = Math.exp(z);
-		long x = Math.round(y);
-		if ((x < Integer.MIN_VALUE) || (x > Integer.MAX_VALUE)) {
-			throw new RuntimeException(
-					"Value sampled from RoundedLogNormal distribution is "
-							+ "too great in magnitude to be represented as an Integer.");
-		}
-		return new Integer((int) x);
-	}
+    double z = zDistrib.sampleVal_();
+    double y = Math.exp(z);
+    long x = Math.round(y);
+    if ((x < Integer.MIN_VALUE) || (x > Integer.MAX_VALUE)) {
+      throw new RuntimeException(
+          "Value sampled from RoundedLogNormal distribution is "
+              + "too great in magnitude to be represented as an Integer.");
+    }
+    return new Integer((int) x);
+  }
 
-	double mean;
-	double varianceOfLog;
+  double mean;
+  double varianceOfLog;
 
-	UnivarGaussian zDistrib;
+  UnivarGaussian zDistrib;
 }

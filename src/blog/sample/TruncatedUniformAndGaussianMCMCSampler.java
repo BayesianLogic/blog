@@ -1,10 +1,10 @@
 package blog.sample;
 
-import java.util.*;
-
 import blog.bn.VarWithDistrib;
 import blog.common.EZIterator;
-import blog.distrib.*;
+import blog.distrib.CondProbDistrib;
+import blog.distrib.UniformReal;
+import blog.distrib.UnivarGaussian;
 import blog.world.PartialWorld;
 
 /**
@@ -15,49 +15,49 @@ import blog.world.PartialWorld;
  * 
  */
 public class TruncatedUniformAndGaussianMCMCSampler implements
-		VariableImportanceSampler {
+    VariableImportanceSampler {
 
-	public SampleIterator sampler(VarWithDistrib var, PartialWorld world) {
-		blog.distrib.UniformReal uniformRealPrior;
-		UnivarGaussian messageFromChildren;
+  public SampleIterator sampler(VarWithDistrib var, PartialWorld world) {
+    blog.distrib.UniformReal uniformRealPrior;
+    UnivarGaussian messageFromChildren;
 
-		CondProbDistrib prior = var.getDistrib(world).getCPD();
-		boolean priorIsUniformReal = prior instanceof blog.distrib.UniformReal;
-		if (!priorIsUniformReal)
-			return null;
-		uniformRealPrior = (blog.distrib.UniformReal) prior;
+    CondProbDistrib prior = var.getDistrib(world).getCPD();
+    boolean priorIsUniformReal = prior instanceof blog.distrib.UniformReal;
+    if (!priorIsUniformReal)
+      return null;
+    uniformRealPrior = (blog.distrib.UniformReal) prior;
 
-		messageFromChildren = blog.distrib.Util
-				.posteriorOnVarGivenChildrenWithGaussingDistributionWithVarAsMean(var,
-						world);
-		if (messageFromChildren == null)
-			return null;
+    messageFromChildren = blog.distrib.Util
+        .posteriorOnVarGivenChildrenWithGaussingDistributionWithVarAsMean(var,
+            world);
+    if (messageFromChildren == null)
+      return null;
 
-		return new SampleIterator(uniformRealPrior, messageFromChildren);
-	}
+    return new SampleIterator(uniformRealPrior, messageFromChildren);
+  }
 
-	public static class SampleIterator extends EZIterator {
-		public SampleIterator(UniformReal lastUniformRealPrior,
-				UnivarGaussian lastMessageFromChildren) {
-			this.uniformRealPrior = lastUniformRealPrior;
-			this.messageFromChildren = lastMessageFromChildren;
-		}
+  public static class SampleIterator extends EZIterator {
+    public SampleIterator(UniformReal lastUniformRealPrior,
+        UnivarGaussian lastMessageFromChildren) {
+      this.uniformRealPrior = lastUniformRealPrior;
+      this.messageFromChildren = lastMessageFromChildren;
+    }
 
-		public Object calculateNext() {
-			double sample;
-			do {
-				sample = messageFromChildren.sampleVal();
-			} while (sample < uniformRealPrior.getLower()
-					|| sample > uniformRealPrior.getUpper());
+    public Object calculateNext() {
+      double sample;
+      do {
+        sample = messageFromChildren.sampleVal_();
+      } while (sample < uniformRealPrior.getLower()
+          || sample > uniformRealPrior.getUpper());
 
-			// this can be very inefficient if there is a large misalignment between
-			// the truncated uniform
-			// and the gaussian.
+      // this can be very inefficient if there is a large misalignment between
+      // the truncated uniform
+      // and the gaussian.
 
-			return new WeightedValue(sample, 1.0);
-		}
+      return new WeightedValue(sample, 1.0);
+    }
 
-		public blog.distrib.UniformReal uniformRealPrior;
-		public UnivarGaussian messageFromChildren;
-	}
+    public blog.distrib.UniformReal uniformRealPrior;
+    public UnivarGaussian messageFromChildren;
+  }
 }

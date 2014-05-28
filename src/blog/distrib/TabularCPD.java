@@ -115,7 +115,7 @@ public class TabularCPD extends AbstractCondProbDistrib {
           + "specify a distribution");
     }
 
-    return distrib.getProb(new LinkedList(), value);
+    return distrib.getProb(value);
   }
 
   public Object sampleVal(List args) {
@@ -131,7 +131,7 @@ public class TabularCPD extends AbstractCondProbDistrib {
           + "specify a distribution");
     }
 
-    return distrib.sampleVal(new LinkedList());
+    return distrib.sampleVal();
   }
 
   // TODO: Implement this correctly
