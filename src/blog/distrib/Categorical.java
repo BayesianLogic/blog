@@ -356,7 +356,7 @@ public class Categorical extends AbstractCondProbDistrib {
    *           if the probability vector was not specified when this
    *           distribution was constructed
    */
-  public int sampleVal() {
+  public int sampleVal_() {
     if (expectProbsAsArg) {
       throw new IllegalStateException(
           "Categorical distribution was constructed without a "

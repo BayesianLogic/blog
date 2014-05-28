@@ -37,7 +37,6 @@ package blog.sample;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import blog.ObjectIdentifier;
@@ -171,9 +170,9 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 
     // Sample new value for var
     CondProbDistrib cpd = distrib.getCPD();
-    List cpdArgs = distrib.getArgValues();
-    Object newValue = cpd.sampleVal(cpdArgs);
-    double logProbForThisValue = cpd.getLogProb(cpdArgs, newValue);
+    cpd.setParams(distrib.getArgValues());
+    Object newValue = cpd.sampleVal();
+    double logProbForThisValue = cpd.getLogProb(newValue);
     logProb += logProbForThisValue;
 
     // Assert any identifiers that are used by var

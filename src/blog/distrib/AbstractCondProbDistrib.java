@@ -35,18 +35,62 @@
 
 package blog.distrib;
 
-import java.util.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
- * Abstract implementation of the CondProbDistrib interface. It implements the
- * getLogProb method.
+ * Backwards-compatibility layer.
  */
 public abstract class AbstractCondProbDistrib implements CondProbDistrib {
-	public double getLogProb(List args, Object childValue) {
-		return Math.log(getProb(args, childValue));
-	}
 
-	public String toString() {
-		return getClass().getName();
-	}
+  // Old interface:
+
+  abstract double getProb(List args, Object childValue);
+
+  public double getLogProb(List args, Object childValue) {
+    return Math.log(getProb(args, childValue));
+  }
+
+  abstract Object sampleVal(List args);
+
+  // New interface:
+
+  public void setParams(List<Object> params) {
+    if (actualDistrib == null) {
+      // This is the first call. Pass params to the constructor.
+      try {
+        Class[] constrArgTypes = { List.class };
+        Constructor constructor = getClass().getConstructor(constrArgTypes);
+        Object[] constrArgs = { params };
+        actualDistrib = (AbstractCondProbDistrib) constructor
+            .newInstance(constrArgs);
+      } catch (NoSuchMethodException | InvocationTargetException
+          | SecurityException | InstantiationException | IllegalAccessException
+          | IllegalArgumentException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    } else {
+      if (nonFixedParams != null) {
+        System.out.println("Warning: overwriting nonFixedParams");
+      }
+      nonFixedParams = params;
+    }
+  }
+
+  public double getProb(Object value) {
+    return actualDistrib.getProb(nonFixedParams, value);
+  }
+
+  public double getLogProb(Object value) {
+    return actualDistrib.getLogProb(nonFixedParams, value);
+  }
+
+  public Object sampleVal() {
+    return actualDistrib.sampleVal(nonFixedParams);
+  }
+
+  private AbstractCondProbDistrib actualDistrib;
+  private List<Object> nonFixedParams;
 }

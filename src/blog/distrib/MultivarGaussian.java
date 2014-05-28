@@ -176,7 +176,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
   public MatrixLib sampleVal() {
     double[][] mat = new double[d][1];
     for (int i = 0; i < d; i++) {
-      mat[i][0] = UnivarGaussian.STANDARD.sampleVal();
+      mat[i][0] = UnivarGaussian.STANDARD.sampleVal_();
     }
     MatrixLib temp = MatrixFactory.fromArray(mat);
     return mu.plus(sqrtSigma.timesMat(temp));

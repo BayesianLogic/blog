@@ -56,13 +56,13 @@ public class CSI {
     samplesDrawn = numSamples;
 
     for (int i = 0; i < numSamples; i++) {
-      u = drawU.sampleVal();
-      v = drawV.sampleVal();
-      w = drawW.sampleVal();
+      u = drawU.sampleVal_();
+      v = drawV.sampleVal_();
+      w = drawW.sampleVal_();
       if (u) {
-        x = w ? drawXIfArg.sampleVal() : drawXNotArg.sampleVal();
+        x = w ? drawXIfArg.sampleVal_() : drawXNotArg.sampleVal_();
       } else {
-        x = v ? drawXIfArg.sampleVal() : drawXNotArg.sampleVal();
+        x = v ? drawXIfArg.sampleVal_() : drawXNotArg.sampleVal_();
       }
       distribX.put(x, distribX.containsKey(x) ? distribX.get(x) + 1 : 1);
     }
