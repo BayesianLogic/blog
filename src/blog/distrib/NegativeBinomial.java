@@ -37,7 +37,6 @@ package blog.distrib;
 
 import blog.*;
 import blog.common.Util;
-import blog.model.Type;
 
 import java.util.*;
 
@@ -97,12 +96,12 @@ public class NegativeBinomial extends AbstractCondProbDistrib {
 	 * O(GammaDistrib.sampleVal() + Poisson.sampleVal()). (Reference: A Guide To
 	 * Simulation, 2nd Ed. Bratley, Paul, Bennett L. Fox and Linus E. Schrage.)
 	 */
-	public Object sampleVal(List args, Type childType) {
-		Double theta = (Double) gamma.sampleVal(new LinkedList(), childType);
+	public Object sampleVal(List args) {
+		Double theta = (Double) gamma.sampleVal(new LinkedList());
 		LinkedList l = new LinkedList();
 		l.add(theta);
 		Poisson poisson = new Poisson(l);
-		return poisson.sampleVal(new LinkedList(), childType);
+		return poisson.sampleVal(new LinkedList());
 	}
 
 	public String toString() {

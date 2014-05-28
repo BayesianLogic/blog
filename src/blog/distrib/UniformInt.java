@@ -38,7 +38,6 @@ package blog.distrib;
 import java.util.List;
 
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * Uniform distribution over a range of integers. This distribution has two
@@ -100,7 +99,7 @@ public class UniformInt extends AbstractCondProbDistrib {
    * @throws IllegalArgumentException
    *           if <code>args</code> is non-empty
    */
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     if (!args.isEmpty()) {
       throw new IllegalArgumentException(
           "UniformInt CPD does not take any arguments.");

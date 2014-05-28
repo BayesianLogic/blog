@@ -113,26 +113,26 @@ public class Hurricane {
 		List<Object> empty = new ArrayList();
 		
 		for (int i = 0; i < num_samples; i++) {
-			cityFirst = (String) drawFirst.sampleVal(empty, null);
+			cityFirst = (String) drawFirst.sampleVal(empty);
 			if (cityFirst == CITY_A) {
-				prepA = (String) drawPrepFirst.sampleVal(empty, null);
+				prepA = (String) drawPrepFirst.sampleVal(empty);
 				damageA = DAMAGE_HIGH;
 				thisWeight = (prepA == PREP_HIGH) ?
 						drawDamagePrepHigh.getProb(empty, damageA) : drawDamagePrepLow.getProb(empty, damageA);
 				
-				prepB = (String) drawPrepSecondDamageHigh.sampleVal(empty, null);
+				prepB = (String) drawPrepSecondDamageHigh.sampleVal(empty);
 				damageB = (String) ((prepB == PREP_HIGH) ? 
-						drawDamagePrepHigh.sampleVal(empty, null) : drawDamagePrepLow.sampleVal(empty, null));
+						drawDamagePrepHigh.sampleVal(empty) : drawDamagePrepLow.sampleVal(empty));
 			} else {
-				prepB = (String) drawPrepFirst.sampleVal(empty, null);
+				prepB = (String) drawPrepFirst.sampleVal(empty);
 				damageB = DAMAGE_HIGH;
 				thisWeight = (prepB == PREP_HIGH) ?
 						drawDamagePrepHigh.getProb(empty, damageB) : drawDamagePrepLow.getProb(empty, damageB);
 				
 				prepA = (String) ((damageB == DAMAGE_HIGH) ? 
-						drawPrepSecondDamageHigh.sampleVal(empty, null) : drawPrepSecondDamageLow.sampleVal(empty, null));
+						drawPrepSecondDamageHigh.sampleVal(empty) : drawPrepSecondDamageLow.sampleVal(empty));
 				damageA = (String) ((prepA == PREP_HIGH) ? 
-						drawDamagePrepHigh.sampleVal(empty, null) : drawDamagePrepLow.sampleVal(empty, null));
+						drawDamagePrepHigh.sampleVal(empty) : drawDamagePrepLow.sampleVal(empty));
 			}
 			
 			totalWeight += thisWeight;

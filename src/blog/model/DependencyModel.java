@@ -81,11 +81,11 @@ public class DependencyModel {
     }
 
     public Object sampleVal(Type type) {
-      return cpd.sampleVal(argValues, type);
+      return cpd.sampleVal(argValues);
     }
 
     public Object sampleVal(VarWithDistrib var) {
-      return cpd.sampleVal(argValues, var.getType());
+      return cpd.sampleVal(argValues);
     }
 
     public double getProb(Object value) {

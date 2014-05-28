@@ -37,7 +37,6 @@ package blog.distrib;
 
 import blog.*;
 import blog.common.Util;
-import blog.model.Type;
 
 import java.util.*;
 
@@ -75,9 +74,9 @@ public class MixtureDistrib extends AbstractCondProbDistrib {
 		return logProb;
 	}
 
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		int index = mixDistrib.sampleVal();
-		return distribs[index].sampleVal(args, childType);
+		return distribs[index].sampleVal(args);
 	}
 
 	private CondProbDistrib[] distribs;

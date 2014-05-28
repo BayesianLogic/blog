@@ -37,7 +37,6 @@ package blog.distrib;
 
 import blog.*;
 import blog.common.Util;
-import blog.model.Type;
 
 import java.util.*;
 
@@ -101,7 +100,7 @@ public class UniformReal extends AbstractCondProbDistrib {
 	 * @throws IllegalArgumentException
 	 *           if <code>args</code> is non-empty
 	 */
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		if (!args.isEmpty()) {
 			throw new IllegalArgumentException(
 					"UniformReal CPD does not take any arguments.");

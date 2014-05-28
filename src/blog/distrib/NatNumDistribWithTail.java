@@ -38,7 +38,6 @@ package blog.distrib;
 import java.util.List;
 
 import Jama.Matrix;
-import blog.model.Type;
 
 /**
  * A mixture of an explicit distribution over the first k natural numbers
@@ -177,7 +176,7 @@ public class NatNumDistribWithTail extends AbstractCondProbDistrib {
   /**
    * Returns an Integer sampled from this distribution. Expects no arguments.
    */
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     if (!args.isEmpty()) {
       throw new IllegalArgumentException(
           "NatNumDistribWithTail expects no arguments.");

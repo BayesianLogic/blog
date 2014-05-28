@@ -40,7 +40,6 @@ import java.util.List;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.model.MatrixSpec;
-import blog.model.Type;
 
 /**
  * Gaussian (normal) distribution over real vectors of some fixed dimensionality
@@ -160,7 +159,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
    * covariance matrix (internal calls are ok if the private method
    * <code>initParams</code> is called first).
    */
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     initParams(args);
     return sampleVal();
   }

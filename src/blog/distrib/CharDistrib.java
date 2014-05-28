@@ -39,7 +39,6 @@ import java.util.*;
 import Jama.Matrix;
 import blog.*;
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * A mixture between a multinomial distribution over a fixed set of characters
@@ -190,7 +189,7 @@ public class CharDistrib extends AbstractCondProbDistrib {
 	 * Returns a Character object sampled randomly according to this distribution.
 	 * Expects no arguments.
 	 */
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		if (!args.isEmpty()) {
 			throw new IllegalArgumentException("CharDistrib expects no arguments.");
 		}

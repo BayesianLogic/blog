@@ -40,7 +40,6 @@ import java.util.List;
 
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
-import blog.model.Type;
 
 /**
  * Multivariate Gaussian distribution whose mean is an affine function of some
@@ -119,7 +118,7 @@ public class LinearGaussian extends AbstractCondProbDistrib {
 		return 0;
 	}
 
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		MatrixLib v = getParentVector(args);
 		MultivarGaussian distrib = new MultivarGaussian(mu.plus(W.timesMat(v)),
 				Sigma);

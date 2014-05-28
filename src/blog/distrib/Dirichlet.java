@@ -41,7 +41,6 @@ import java.util.List;
 
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
-import blog.model.Type;
 
 /**
  * A Dirichlet distribution with shape parameter vector a, defined by
@@ -160,7 +159,7 @@ public class Dirichlet extends AbstractCondProbDistrib {
 	/**
 	 * Returns a list of doubles sampled from this distribution.
 	 */
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		double sum = 0.0;
 		int vec_size = alpha.length;
 		if (args.size() != 0) {
@@ -172,7 +171,7 @@ public class Dirichlet extends AbstractCondProbDistrib {
 		List<Object> dummy = new ArrayList<Object>();
 		for (int i = 0; i < vec_size; i++) {
 			Gamma component = gammas[i];
-			double sample = (Double) component.sampleVal(dummy, childType);
+			double sample = (Double) component.sampleVal(dummy);
 			sum += sample;
 			samples[0][i] = sample;
 		}

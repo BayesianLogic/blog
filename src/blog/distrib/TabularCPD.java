@@ -50,7 +50,6 @@ import blog.model.FuncAppTerm;
 import blog.model.ListSpec;
 import blog.model.Model;
 import blog.model.SymbolTerm;
-import blog.model.Type;
 
 /**
  * @author rbharath
@@ -119,7 +118,7 @@ public class TabularCPD extends AbstractCondProbDistrib {
     return distrib.getProb(new LinkedList(), value);
   }
 
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     if (args.contains(Model.NULL)) {
       return Model.NULL;
     }
@@ -132,7 +131,7 @@ public class TabularCPD extends AbstractCondProbDistrib {
           + "specify a distribution");
     }
 
-    return distrib.sampleVal(new LinkedList(), childType);
+    return distrib.sampleVal(new LinkedList());
   }
 
   // TODO: Implement this correctly

@@ -90,8 +90,7 @@ public class HurricaneProposer extends GenericProposer {
 						childDistrib.getArgValues(), value));
 			}
 			
-			Object newValue = distrib.getCPD().sampleVal(distrib.getArgValues(),
-					varToSample.getType());
+			Object newValue = distrib.getCPD().sampleVal(distrib.getArgValues());
 			world.setValue(varToSample, newValue);
 			logProbForward += Math.log(distrib.getCPD().getProb(distrib.getArgValues(),
 					newValue));

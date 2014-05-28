@@ -39,7 +39,6 @@ import java.util.*;
 import Jama.Matrix;
 import blog.*;
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * CPD that takes a sequence of probabilities as parameters, and uses those
@@ -107,7 +106,7 @@ public class ChooseFromArgs extends AbstractCondProbDistrib {
 	 *           if the probability vector was not specified at construction and
 	 *           the first argument is not a column vector of probabilities
 	 */
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		int firstPossibleValueIndex = ensureProbsInited(args);
 
 		int i = Util.sampleWithProbs(probs);

@@ -172,7 +172,7 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
     // Sample new value for var
     CondProbDistrib cpd = distrib.getCPD();
     List cpdArgs = distrib.getArgValues();
-    Object newValue = cpd.sampleVal(cpdArgs, var.getType());
+    Object newValue = cpd.sampleVal(cpdArgs);
     double logProbForThisValue = cpd.getLogProb(cpdArgs, newValue);
     logProb += logProbForThisValue;
 

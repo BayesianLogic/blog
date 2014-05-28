@@ -38,7 +38,6 @@ package blog.distrib;
 import java.util.List;
 
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * A Binomial distribution with parameters n (number of trials) and p
@@ -124,7 +123,7 @@ public class Binomial extends AbstractCondProbDistrib {
    * 
    */
   // May need to implement a faster Binomial sampler
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     processArgs(args);
     return sampleVal(n, p);
   }
