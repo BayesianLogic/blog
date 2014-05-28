@@ -37,7 +37,10 @@ package blog.distrib;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
+
+import blog.common.Util;
 
 /**
  * Backwards-compatibility layer.
@@ -56,25 +59,37 @@ public abstract class AbstractCondProbDistrib implements CondProbDistrib {
 
   // New interface:
 
-  public void setParams(List<Object> params) {
+  public void setParams(List<Object> params_) {
+    // Worried about shared-reference issues.
+    List<Object> params = new ArrayList<Object>(params_);
     if (actualDistrib == null) {
-      // This is the first call. Pass params to the constructor.
+      // This is the first call to setParams. Try to pass the params to the
+      // CPD's constructor.
       try {
         Class[] constrArgTypes = { List.class };
         Constructor constructor = getClass().getConstructor(constrArgTypes);
         Object[] constrArgs = { params };
         actualDistrib = (AbstractCondProbDistrib) constructor
             .newInstance(constrArgs);
+        fixedParams = params;
+        nonFixedParams = new ArrayList<Object>();
       } catch (NoSuchMethodException | InvocationTargetException
           | SecurityException | InstantiationException | IllegalAccessException
           | IllegalArgumentException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        // If that didn't work, try constructing it without params, and take
+        // these to be non-fixed params.
+        try {
+          Constructor constructor = getClass().getConstructor();
+          actualDistrib = (AbstractCondProbDistrib) constructor.newInstance();
+          fixedParams = new ArrayList<Object>();
+          nonFixedParams = params;
+        } catch (NoSuchMethodException | InvocationTargetException
+            | SecurityException | InstantiationException
+            | IllegalAccessException | IllegalArgumentException e2) {
+          Util.fatalError(e2);
+        }
       }
     } else {
-      if (nonFixedParams != null) {
-        System.out.println("Warning: overwriting nonFixedParams");
-      }
       nonFixedParams = params;
     }
   }
@@ -92,5 +107,6 @@ public abstract class AbstractCondProbDistrib implements CondProbDistrib {
   }
 
   private AbstractCondProbDistrib actualDistrib;
+  private List<Object> fixedParams;
   private List<Object> nonFixedParams;
 }
