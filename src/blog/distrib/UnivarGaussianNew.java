@@ -5,7 +5,7 @@ import java.util.List;
 import blog.common.Util;
 
 public class UnivarGaussianNew extends distrib.UnivarGaussian implements
-    Distrib {
+    CondProbDistrib {
 
   public UnivarGaussianNew() {
     super(Util.getRNG());

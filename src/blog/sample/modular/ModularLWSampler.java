@@ -125,7 +125,7 @@ public class ModularLWSampler extends LWSampler {
     Util.debug("Instantiating: ", var);
     Type varType = var.getType();
     CondProbDistrib cpd = distrib.getCPD();
-    List args = distrib.getArgValues();
+    cpd.setParams(distrib.getArgValues());
     Region r = curWorld.getSatisfyingRegion(var);
 
     double logWeight = Double.NEGATIVE_INFINITY;
@@ -134,12 +134,12 @@ public class ModularLWSampler extends LWSampler {
     Object value = null;
     if (r.isSingleton()) {
       value = r.getOneValue();
-      logWeight = java.lang.Math.log(cpd.getProb(args, value));
+      logWeight = java.lang.Math.log(cpd.getProb(value));
     } else {
       do {
-        value = cpd.sampleVal(args);
+        value = cpd.sampleVal();
       } while (!r.contains(value));
-      logWeight = java.lang.Math.log(computeCPD(cpd, args, r));
+      logWeight = java.lang.Math.log(computeCPD(cpd, r));
     }
     curWorld.setValue(var, value);
     return logWeight;
@@ -153,7 +153,7 @@ public class ModularLWSampler extends LWSampler {
    * @param rg
    * @return
    */
-  private double computeCPD(CondProbDistrib cpd, List args, Region rg) {
+  private double computeCPD(CondProbDistrib cpd, Region rg) {
     if (rg == Region.FULL_REGION)
       return 1;
     Class cls = cpd.getClass();
@@ -161,8 +161,8 @@ public class ModularLWSampler extends LWSampler {
       Method method = cls.getMethod("cdf", new Class[] { List.class,
           Object.class });
       IntRegion reg = (IntRegion) rg;
-      Object high = method.invoke(cpd, new Object[] { args, reg.getMax() });
-      Object low = method.invoke(cpd, new Object[] { args, reg.getMin() - 1 });
+      Object high = method.invoke(cpd, new Object[] { reg.getMax() });
+      Object low = method.invoke(cpd, new Object[] { reg.getMin() - 1 });
       return ((Number) high).doubleValue() - ((Number) low).doubleValue();
     } catch (Exception ex) {
       Util.debug("no idea how to compute the weight!!!");

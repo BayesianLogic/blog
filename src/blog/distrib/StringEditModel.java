@@ -35,8 +35,12 @@
 
 package blog.distrib;
 
-import java.util.*;
-import blog.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import blog.common.Util;
 
 /**
@@ -76,320 +80,320 @@ import blog.common.Util;
  * strings are converted to lower case before probabilities are computed.
  */
 public class StringEditModel extends AbstractCondProbDistrib {
-	public static final double PROB_INSERT = 0.0025;
-	public static final double PROB_DELETE = 0.0025;
-	public static final double PROB_SUBST = 0.005;
-	public static final double PROB_COPY = 1 - PROB_INSERT - PROB_DELETE
-			- PROB_SUBST;
+  public static final double PROB_INSERT = 0.0025;
+  public static final double PROB_DELETE = 0.0025;
+  public static final double PROB_SUBST = 0.005;
+  public static final double PROB_COPY = 1 - PROB_INSERT - PROB_DELETE
+      - PROB_SUBST;
 
-	public static final double PROB_INSERT_AT_END = 0.0025;
-	public static final double PROB_STOP = 1 - PROB_INSERT_AT_END;
+  public static final double PROB_INSERT_AT_END = 0.0025;
+  public static final double PROB_STOP = 1 - PROB_INSERT_AT_END;
 
-	public static final boolean IGNORE_CASE = true;
+  public static final boolean IGNORE_CASE = true;
 
-	// Parameters describing the distribution over characters that are
-	// written in an insertion or substitution
-	public static final String LETTERS = "abcdefghijklmnopqrstuvwxyz";
-	public static final double LETTER_PROB = 0.8;
-	public static final double SPACE_PROB = 0.1;
-	public static final String DIGITS = "0123456789";
-	public static final double DIGIT_PROB = 0.05;
-	public static final String PUNCT = "`~!@#$%^&*()_-+=[{]}\\|;:'\",<.>/?";
-	public static final double PUNCT_PROB = 0.05;
-	public static final double UNIFORM_WEIGHT = 0.005;
+  // Parameters describing the distribution over characters that are
+  // written in an insertion or substitution
+  public static final String LETTERS = "abcdefghijklmnopqrstuvwxyz";
+  public static final double LETTER_PROB = 0.8;
+  public static final double SPACE_PROB = 0.1;
+  public static final String DIGITS = "0123456789";
+  public static final double DIGIT_PROB = 0.05;
+  public static final String PUNCT = "`~!@#$%^&*()_-+=[{]}\\|;:'\",<.>/?";
+  public static final double PUNCT_PROB = 0.05;
+  public static final double UNIFORM_WEIGHT = 0.005;
 
-	public StringEditModel() {
-		initCharDistrib();
-	}
+  public StringEditModel() {
+    initCharDistrib();
+  }
 
-	/**
-	 * Creates a new StringEditModel. This constructor expects an empty list of
-	 * configuration parameters.
-	 */
-	public StringEditModel(List params) {
-		if (!params.isEmpty()) {
-			throw new IllegalArgumentException(
-					"StringEditModel expects no parameters.");
-		}
-		initCharDistrib();
-	}
+  /**
+   * Creates a new StringEditModel. This constructor expects an empty list of
+   * configuration parameters.
+   */
+  public StringEditModel(List params) {
+    if (!params.isEmpty()) {
+      throw new IllegalArgumentException(
+          "StringEditModel expects no parameters.");
+    }
+    initCharDistrib();
+  }
 
-	/**
-	 * Returns the probability of the output string given the input string. Uses a
-	 * cache if the same (input, output) pair has been processed before.
-	 */
-	public final double getProb(String input, String output) {
-		// Use cached result if available
-		List args = new ArrayList();
-		args.add(input);
-		args.add(output);
-		Double cachedProb = (Double) probCache.get(args);
-		if (cachedProb != null) {
-			return cachedProb.doubleValue();
-		}
+  /**
+   * Returns the probability of the output string given the input string. Uses a
+   * cache if the same (input, output) pair has been processed before.
+   */
+  public final double getProb(String input, String output) {
+    // Use cached result if available
+    List args = new ArrayList();
+    args.add(input);
+    args.add(output);
+    Double cachedProb = (Double) probCache.get(args);
+    if (cachedProb != null) {
+      return cachedProb.doubleValue();
+    }
 
-		double prob = getProbInternal(input, output);
-		probCache.put(args, new Double(prob));
-		return prob;
-	}
+    double prob = getProbInternal(input, output);
+    probCache.put(args, new Double(prob));
+    return prob;
+  }
 
-	/**
-	 * Returns the probability of the given output string conditioned on the given
-	 * input string.
-	 * 
-	 * @param args
-	 *          List with one element, namely the input string
-	 * @param childVal
-	 *          output string
-	 */
-	public double getProb(List args, Object childVal) {
-		return getProb((String) args.get(0), (String) childVal);
-	}
+  /**
+   * Returns the probability of the given output string conditioned on the given
+   * input string.
+   * 
+   * @param args
+   *          List with one element, namely the input string
+   * @param childVal
+   *          output string
+   */
+  public double getProb(List args, Object childVal) {
+    return getProb((String) args.get(0), (String) childVal);
+  }
 
-	/**
-	 * Method that can be overridden by subclasses to compute the probability of
-	 * the output string given the input string.
-	 */
-	protected double getProbInternal(String input, String output) {
-		// p[i][n] = P(at some time, scribe has written i characters and his
-		// finger is before character n of the input)
-		double[][] p = new double[output.length() + 1][input.length() + 1];
+  /**
+   * Method that can be overridden by subclasses to compute the probability of
+   * the output string given the input string.
+   */
+  protected double getProbInternal(String input, String output) {
+    // p[i][n] = P(at some time, scribe has written i characters and his
+    // finger is before character n of the input)
+    double[][] p = new double[output.length() + 1][input.length() + 1];
 
-		p[0][0] = 1; // other entries automatically initialized to 0
-		for (int n = 0; n <= input.length(); n++) {
-			for (int i = 0; i <= output.length(); i++) {
-				// Ways of generating i characters of output (indexed 0
-				// through i-1) using input characters before position n
+    p[0][0] = 1; // other entries automatically initialized to 0
+    for (int n = 0; n <= input.length(); n++) {
+      for (int i = 0; i <= output.length(); i++) {
+        // Ways of generating i characters of output (indexed 0
+        // through i-1) using input characters before position n
 
-				// First way: generate i-1 characters using input before
-				// position n-1, then generate output[i-1] using input[n-1]
-				if ((n > 0) && (i > 0)) {
-					p[i][n] += (p[i - 1][n - 1] * probSubst(input, n - 1, output, i - 1,
-							output.charAt(i - 1)));
-				}
+        // First way: generate i-1 characters using input before
+        // position n-1, then generate output[i-1] using input[n-1]
+        if ((n > 0) && (i > 0)) {
+          p[i][n] += (p[i - 1][n - 1] * probSubst(input, n - 1, output, i - 1,
+              output.charAt(i - 1)));
+        }
 
-				// Second way: generate i characters using input before
-				// position n-1, then do a deletion, skipping input[n-1]
-				if (n > 0) {
-					p[i][n] += (p[i][n - 1] * probDelete(input, n - 1, output, i));
-				}
+        // Second way: generate i characters using input before
+        // position n-1, then do a deletion, skipping input[n-1]
+        if (n > 0) {
+          p[i][n] += (p[i][n - 1] * probDelete(input, n - 1, output, i));
+        }
 
-				// Third way: generate i-1 characters using input before
-				// position n, then generate output[i-1] by insertion
-				if (i > 0) {
-					p[i][n] += (p[i - 1][n] * probInsert(input, n, output, i - 1,
-							output.charAt(i - 1)));
-				}
-				// System.out.println("p[" + i + "][" + n + "] = " + p[i][n]);
-			}
-		}
+        // Third way: generate i-1 characters using input before
+        // position n, then generate output[i-1] by insertion
+        if (i > 0) {
+          p[i][n] += (p[i - 1][n] * probInsert(input, n, output, i - 1,
+              output.charAt(i - 1)));
+        }
+        // System.out.println("p[" + i + "][" + n + "] = " + p[i][n]);
+      }
+    }
 
-		// To generate the given output string, scribe must write it down and
-		// have his finger after the last input character, *and* decide to
-		// stop.
-		return (p[output.length()][input.length()] * probStop(input,
-				input.length(), output, output.length()));
-	}
+    // To generate the given output string, scribe must write it down and
+    // have his finger after the last input character, *and* decide to
+    // stop.
+    return (p[output.length()][input.length()] * probStop(input,
+        input.length(), output, output.length()));
+  }
 
-	/**
-	 * Samples an output string given the string <code>input</code>
-	 */
-	public String sampleVal(String input) {
-		int pos = 0;
-		int length = input.length();
-		StringBuffer output = new StringBuffer(length);
+  /**
+   * Samples an output string given the string <code>input</code>
+   */
+  public String sampleVal(String input) {
+    int pos = 0;
+    int length = input.length();
+    StringBuffer output = new StringBuffer(length);
 
-		// input[pos] is the character to the right of the scribe's finger
-		while (pos <= length) {
+    // input[pos] is the character to the right of the scribe's finger
+    while (pos <= length) {
 
-			char nextChar;
-			double r = Util.random();
+      char nextChar;
+      double r = Util.random();
 
-			// If we're not past the last character in the input yet
-			if (pos < length) {
-				if (r < PROB_INSERT) {
-					nextChar = charDistrib.sampleVal();
-					output.append(nextChar);
-				} else if (r < PROB_INSERT + PROB_DELETE) {
-					pos++;
-				} else if (r < PROB_INSERT + PROB_DELETE + PROB_SUBST) {
-					nextChar = charDistrib.sampleVal();
-					output.append(nextChar);
-					pos++;
-				} else {
-					output.append(input.charAt(pos));
-					pos++;
-				}
-			}
+      // If we're not past the last character in the input yet
+      if (pos < length) {
+        if (r < PROB_INSERT) {
+          nextChar = charDistrib.sampleVal_();
+          output.append(nextChar);
+        } else if (r < PROB_INSERT + PROB_DELETE) {
+          pos++;
+        } else if (r < PROB_INSERT + PROB_DELETE + PROB_SUBST) {
+          nextChar = charDistrib.sampleVal_();
+          output.append(nextChar);
+          pos++;
+        } else {
+          output.append(input.charAt(pos));
+          pos++;
+        }
+      }
 
-			// The case when we're past the last input character and
-			// are just doing insertions
-			else {
-				if (r < PROB_INSERT_AT_END) {
-					nextChar = charDistrib.sampleVal();
-					output.append(nextChar);
-				} else {
-					pos++;
-				}
-			}
-		}
+      // The case when we're past the last input character and
+      // are just doing insertions
+      else {
+        if (r < PROB_INSERT_AT_END) {
+          nextChar = charDistrib.sampleVal_();
+          output.append(nextChar);
+        } else {
+          pos++;
+        }
+      }
+    }
 
-		return new String(output);
-	}
+    return new String(output);
+  }
 
-	public Object sampleVal(List args) {
-		return sampleVal((String) args.get(0));
-	}
+  public Object sampleVal(List args) {
+    return sampleVal((String) args.get(0));
+  }
 
-	protected void initCharDistrib() {
-		int numEnumChars = (LETTERS.length() + 1 // for space
-				+ DIGITS.length() + PUNCT.length());
-		if (!IGNORE_CASE) {
-			numEnumChars += LETTERS.length(); // for uppercase letters
-		}
+  protected void initCharDistrib() {
+    int numEnumChars = (LETTERS.length() + 1 // for space
+        + DIGITS.length() + PUNCT.length());
+    if (!IGNORE_CASE) {
+      numEnumChars += LETTERS.length(); // for uppercase letters
+    }
 
-		char[] enumChars = new char[numEnumChars];
-		double[] pi = new double[numEnumChars];
-		int index = 0;
+    char[] enumChars = new char[numEnumChars];
+    double[] pi = new double[numEnumChars];
+    int index = 0;
 
-		double lowercaseProb = IGNORE_CASE ? LETTER_PROB : (LETTER_PROB / 2);
-		for (int i = 0; i < LETTERS.length(); i++) {
-			enumChars[index] = LETTERS.charAt(i);
-			pi[index] = lowercaseProb / LETTERS.length();
-			index++;
-		}
+    double lowercaseProb = IGNORE_CASE ? LETTER_PROB : (LETTER_PROB / 2);
+    for (int i = 0; i < LETTERS.length(); i++) {
+      enumChars[index] = LETTERS.charAt(i);
+      pi[index] = lowercaseProb / LETTERS.length();
+      index++;
+    }
 
-		if (!IGNORE_CASE) {
-			String uppercase = LETTERS.toUpperCase();
-			for (int i = 0; i < uppercase.length(); i++) {
-				enumChars[index] = uppercase.charAt(i);
-				pi[index] = (LETTER_PROB / 2) / uppercase.length();
-				index++;
-			}
-		}
+    if (!IGNORE_CASE) {
+      String uppercase = LETTERS.toUpperCase();
+      for (int i = 0; i < uppercase.length(); i++) {
+        enumChars[index] = uppercase.charAt(i);
+        pi[index] = (LETTER_PROB / 2) / uppercase.length();
+        index++;
+      }
+    }
 
-		enumChars[index] = ' ';
-		pi[index] = SPACE_PROB;
-		index++;
+    enumChars[index] = ' ';
+    pi[index] = SPACE_PROB;
+    index++;
 
-		for (int i = 0; i < DIGITS.length(); i++) {
-			enumChars[index] = DIGITS.charAt(i);
-			pi[index] = DIGIT_PROB / DIGITS.length();
-			index++;
-		}
+    for (int i = 0; i < DIGITS.length(); i++) {
+      enumChars[index] = DIGITS.charAt(i);
+      pi[index] = DIGIT_PROB / DIGITS.length();
+      index++;
+    }
 
-		for (int i = 0; i < PUNCT.length(); i++) {
-			enumChars[index] = PUNCT.charAt(i);
-			pi[index] = PUNCT_PROB / PUNCT.length();
-			index++;
-		}
+    for (int i = 0; i < PUNCT.length(); i++) {
+      enumChars[index] = PUNCT.charAt(i);
+      pi[index] = PUNCT_PROB / PUNCT.length();
+      index++;
+    }
 
-		charDistrib = new CharDistrib(enumChars, pi, UNIFORM_WEIGHT);
-	}
+    charDistrib = new CharDistrib(enumChars, pi, UNIFORM_WEIGHT);
+  }
 
-	/**
-	 * Returns the probability that the scribe writes character
-	 * <code>outChar</code> and moves his finger to the next position, given that:
-	 * <ul>
-	 * <li>the scribe's finger is before character <code>n</code> in
-	 * <code>input</code>;
-	 * <li>so far, he's written the substring of <code>output</code> up to (not
-	 * including) index <code>i</code>.
-	 * </ul>
-	 * Note that this probability cannot depend on moves the scribe hasn't made
-	 * yet, i.e., the elements of <code>output</code> from position <code>i</code>
-	 * onwards.
-	 */
-	protected double probSubst(String input, int n, String output, int i,
-			char outChar) {
-		if (n == input.length()) {
-			return 0;
-		}
-		char inChar = input.charAt(n);
-		if (IGNORE_CASE) {
-			inChar = Character.toLowerCase(inChar);
-			outChar = Character.toLowerCase(outChar);
-		}
+  /**
+   * Returns the probability that the scribe writes character
+   * <code>outChar</code> and moves his finger to the next position, given that:
+   * <ul>
+   * <li>the scribe's finger is before character <code>n</code> in
+   * <code>input</code>;
+   * <li>so far, he's written the substring of <code>output</code> up to (not
+   * including) index <code>i</code>.
+   * </ul>
+   * Note that this probability cannot depend on moves the scribe hasn't made
+   * yet, i.e., the elements of <code>output</code> from position <code>i</code>
+   * onwards.
+   */
+  protected double probSubst(String input, int n, String output, int i,
+      char outChar) {
+    if (n == input.length()) {
+      return 0;
+    }
+    char inChar = input.charAt(n);
+    if (IGNORE_CASE) {
+      inChar = Character.toLowerCase(inChar);
+      outChar = Character.toLowerCase(outChar);
+    }
 
-		double prob = PROB_SUBST * charDistrib.getProb(outChar);
-		if (inChar == outChar) {
-			// We could have written output by substituting or copying
-			prob += PROB_COPY;
-		}
-		return prob;
-	}
+    double prob = PROB_SUBST * charDistrib.getProb(outChar);
+    if (inChar == outChar) {
+      // We could have written output by substituting or copying
+      prob += PROB_COPY;
+    }
+    return prob;
+  }
 
-	/**
-	 * Returns the probability that the scribe moves his finger to the next
-	 * position without writing anything, given that:
-	 * <ul>
-	 * <li>the scribe's finger is before character <code>n</code> in
-	 * <code>input</code>;
-	 * <li>so far, he's written the substring of <code>output</code> up to (not
-	 * including) index <code>i</code>.
-	 * </ul>
-	 * Note that this probability cannot depend on moves the scribe hasn't made
-	 * yet, i.e., the elements of <code>output</code> from position <code>i</code>
-	 * onwards.
-	 */
-	protected double probDelete(String input, int n, String output, int i) {
-		if (n == input.length()) {
-			return 0;
-		}
-		return PROB_DELETE;
-	}
+  /**
+   * Returns the probability that the scribe moves his finger to the next
+   * position without writing anything, given that:
+   * <ul>
+   * <li>the scribe's finger is before character <code>n</code> in
+   * <code>input</code>;
+   * <li>so far, he's written the substring of <code>output</code> up to (not
+   * including) index <code>i</code>.
+   * </ul>
+   * Note that this probability cannot depend on moves the scribe hasn't made
+   * yet, i.e., the elements of <code>output</code> from position <code>i</code>
+   * onwards.
+   */
+  protected double probDelete(String input, int n, String output, int i) {
+    if (n == input.length()) {
+      return 0;
+    }
+    return PROB_DELETE;
+  }
 
-	/**
-	 * Returns the probability that the scribe writes the character
-	 * <code>outChar</code> without moving his finger, given that:
-	 * <ul>
-	 * <li>the scribe's finger is before character <code>n</code> in
-	 * <code>input</code>;
-	 * <li>so far, he's written the substring of <code>output</code> up to (not
-	 * including) index <code>i</code>.
-	 * </ul>
-	 * Note that this probability cannot depend on moves the scribe hasn't made
-	 * yet, i.e., the elements of <code>output</code> from position <code>i</code>
-	 * onwards.
-	 */
-	protected double probInsert(String input, int n, String output, int i,
-			char outChar) {
-		double prob = (n == input.length()) ? PROB_INSERT_AT_END : PROB_INSERT;
-		if (IGNORE_CASE) {
-			outChar = Character.toLowerCase(outChar);
-		}
-		return (prob * charDistrib.getProb(outChar));
-	}
+  /**
+   * Returns the probability that the scribe writes the character
+   * <code>outChar</code> without moving his finger, given that:
+   * <ul>
+   * <li>the scribe's finger is before character <code>n</code> in
+   * <code>input</code>;
+   * <li>so far, he's written the substring of <code>output</code> up to (not
+   * including) index <code>i</code>.
+   * </ul>
+   * Note that this probability cannot depend on moves the scribe hasn't made
+   * yet, i.e., the elements of <code>output</code> from position <code>i</code>
+   * onwards.
+   */
+  protected double probInsert(String input, int n, String output, int i,
+      char outChar) {
+    double prob = (n == input.length()) ? PROB_INSERT_AT_END : PROB_INSERT;
+    if (IGNORE_CASE) {
+      outChar = Character.toLowerCase(outChar);
+    }
+    return (prob * charDistrib.getProb(outChar));
+  }
 
-	/**
-	 * Returns the probability that the scribe stops writing, given that:
-	 * <ul>
-	 * <li>the scribe's finger is before character <code>n</code> in
-	 * <code>input</code>;
-	 * <li>so far, he's written the substring of <code>output</code> up to (not
-	 * including) index <code>i</code>.
-	 * </ul>
-	 * Note that this probability cannot depend on moves the scribe hasn't made
-	 * yet, i.e., the elements of <code>output</code> from position <code>i</code>
-	 * onwards.
-	 */
-	protected double probStop(String input, int n, String output, int i) {
-		if (n < input.length()) {
-			return 0;
-		}
-		return PROB_STOP;
-	}
+  /**
+   * Returns the probability that the scribe stops writing, given that:
+   * <ul>
+   * <li>the scribe's finger is before character <code>n</code> in
+   * <code>input</code>;
+   * <li>so far, he's written the substring of <code>output</code> up to (not
+   * including) index <code>i</code>.
+   * </ul>
+   * Note that this probability cannot depend on moves the scribe hasn't made
+   * yet, i.e., the elements of <code>output</code> from position <code>i</code>
+   * onwards.
+   */
+  protected double probStop(String input, int n, String output, int i) {
+    if (n < input.length()) {
+      return 0;
+    }
+    return PROB_STOP;
+  }
 
-	protected CharDistrib charDistrib;
+  protected CharDistrib charDistrib;
 
-	private Map probCache = new HashMap(); // from List (of String) to Double
+  private Map probCache = new HashMap(); // from List (of String) to Double
 
-	/**
-	 * Test program.
-	 */
-	public static void main(String[] args) {
-		StringEditModel model = new StringEditModel(Collections.EMPTY_LIST);
-		double prob = model.getProb(args[0], args[1]);
-		System.out.println(prob);
-	}
+  /**
+   * Test program.
+   */
+  public static void main(String[] args) {
+    StringEditModel model = new StringEditModel(Collections.EMPTY_LIST);
+    double prob = model.getProb(args[0], args[1]);
+    System.out.println(prob);
+  }
 }

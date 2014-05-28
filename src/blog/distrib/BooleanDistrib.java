@@ -127,7 +127,7 @@ public class BooleanDistrib extends AbstractCondProbDistrib {
    * only be called if this distribution was initialized with a fixed success
    * probability, or if <code>ensureProbsInited</code> has just been called.
    */
-  public boolean sampleVal() {
+  public boolean sampleVal_() {
     if (Util.random() < pi) {
       return true;
     }
@@ -136,7 +136,7 @@ public class BooleanDistrib extends AbstractCondProbDistrib {
 
   public Object sampleVal(List args) {
     ensureParamsInited(args);
-    return java.lang.Boolean.valueOf(sampleVal());
+    return java.lang.Boolean.valueOf(sampleVal_());
   }
 
   private void ensureParamsInited(List args) {

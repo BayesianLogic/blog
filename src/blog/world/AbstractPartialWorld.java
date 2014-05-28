@@ -66,6 +66,7 @@ import blog.common.IndexedSet;
 import blog.common.MapWithPreimages;
 import blog.common.MultiMap;
 import blog.common.Util;
+import blog.distrib.CondProbDistrib;
 import blog.model.DependencyModel;
 import blog.model.Model;
 import blog.model.NonGuaranteedObject;
@@ -779,8 +780,9 @@ public abstract class AbstractPartialWorld implements PartialWorld {
           try {
             // System.out.println("AbstractPartialWorld: var: " + var +
             // ", basicVarToValue(var): " + basicVarToValue.get(var));
-            double logProb = distrib.getCPD().getLogProb(
-                distrib.getArgValues(), basicVarToValue.get(var));
+            CondProbDistrib cpd = distrib.getCPD();
+            cpd.setParams(distrib.getArgValues());
+            double logProb = cpd.getLogProb(basicVarToValue.get(var));
             /*
              * if (Util.verbose() && (logProb == Double.NEGATIVE_INFINITY)) {
              * System.out.println ("Got zero probability for " + var + " = " +

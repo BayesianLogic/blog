@@ -35,10 +35,9 @@
 
 package blog.distrib;
 
-import blog.*;
-import blog.common.Util;
+import java.util.List;
 
-import java.util.*;
+import blog.common.Util;
 
 /**
  * A geometric distribution over the natural numbers 0, 1, 2,... It has a single
@@ -179,7 +178,7 @@ public class Geometric extends AbstractCondProbDistrib {
           "Geometric distribution expects no arguments.");
     }
 
-    return new Integer(sampleVal());
+    return new Integer(sampleVal_());
   }
 
   /**
@@ -189,7 +188,7 @@ public class Geometric extends AbstractCondProbDistrib {
    * exploits the fact that the geometric distribution can be seen as a
    * discretization of the exponential distribution.
    */
-  public int sampleVal() {
+  public int sampleVal_() {
     double u = Util.random();
     return (int) (Math.log(u) / logOneMinusAlpha);
   }

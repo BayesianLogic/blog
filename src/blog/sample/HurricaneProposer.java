@@ -40,86 +40,88 @@ import java.util.Set;
 
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
+import blog.distrib.CondProbDistrib;
 import blog.model.DependencyModel;
 import blog.model.Model;
 import blog.world.PartialWorld;
-import blog.world.PartialWorldDiff;
 
 /**
  * A proposer specifically written for MCMC inference on hurricane.blog.
  * This model contains an RV whose value changes the distributions of
  * its children, a situation where GenericProposer does not account for
  * the resulting changes in probability and therefore does not satisfy
- * the detailed balance equations. 
+ * the detailed balance equations.
  * 
  * @author awong
  * @date December 17, 2012
  */
 public class HurricaneProposer extends GenericProposer {
-	/**
-	 * Creates a new HurricaneProposer, configured in the same manner
-	 * as GenericProposer.
-	 */
-	public HurricaneProposer(Model model, Properties properties) {
-		super(model, properties);
-	}
-	
-	@Override
-	protected void sampleValue(VarWithDistrib varToSample, PartialWorld world) {
-		// Save child set before graph becomes out of date
-		Set children = world.getCBN().getChildren(varToSample);
-		
-		if (children.size() < 2) {
-			super.sampleValue(varToSample, world);
-		}
-		else {
-			DependencyModel.Distrib distrib = varToSample
-					.getDistrib(new DefaultEvalContext(world, true));
-			Object oldValue = world.getValue(varToSample);
-			logProbBackward += Math.log(distrib.getCPD().getProb(
-					distrib.getArgValues(), oldValue));
-			
-			// Children
-			Iterator nextChild = children.iterator();
-			while (nextChild.hasNext()) {
-				VarWithDistrib child = (VarWithDistrib) nextChild.next();
-				DependencyModel.Distrib childDistrib = child
-						.getDistrib(new DefaultEvalContext(world, true));
-				Object value = world.getValue(child);
-				logProbBackward += Math.log(childDistrib.getCPD().getProb(
-						childDistrib.getArgValues(), value));
-			}
-			
-			Object newValue = distrib.getCPD().sampleVal(distrib.getArgValues());
-			world.setValue(varToSample, newValue);
-			logProbForward += Math.log(distrib.getCPD().getProb(distrib.getArgValues(),
-					newValue));
-			
-			// Children
-			nextChild = children.iterator();
-			while (nextChild.hasNext()) {
-				VarWithDistrib child = (VarWithDistrib) nextChild.next();
-				DependencyModel.Distrib childDistrib = child
-						.getDistrib(new DefaultEvalContext(world, true));
-				Object value = world.getValue(child);
-				logProbForward += Math.log(childDistrib.getCPD().getProb(
-						childDistrib.getArgValues(), value));
-			}
-	
-			// Make the world self-supporting. The only variables whose active
-			// parent sets could have changed are the children of varToSample.
-			ClassicInstantiatingEvalContext instantiator = new ClassicInstantiatingEvalContext(
-					world);
-	
-			for (Iterator childrenIter = children.iterator(); childrenIter.hasNext();) {
-				BayesNetVar child = (BayesNetVar) childrenIter.next();
-				if (!world.isInstantiated(child)) // NOT SURE YET THIS IS THE RIGHT THING
-																					// TO DO! CHECKING WITH BRIAN.
-					continue;
-				child.ensureDetAndSupported(instantiator);
-			}
-	
-			logProbForward += instantiator.getLogProbability();
-		}
-	}
+  /**
+   * Creates a new HurricaneProposer, configured in the same manner
+   * as GenericProposer.
+   */
+  public HurricaneProposer(Model model, Properties properties) {
+    super(model, properties);
+  }
+
+  @Override
+  protected void sampleValue(VarWithDistrib varToSample, PartialWorld world) {
+    // Save child set before graph becomes out of date
+    Set children = world.getCBN().getChildren(varToSample);
+
+    if (children.size() < 2) {
+      super.sampleValue(varToSample, world);
+    } else {
+      DependencyModel.Distrib distrib = varToSample
+          .getDistrib(new DefaultEvalContext(world, true));
+      Object oldValue = world.getValue(varToSample);
+      CondProbDistrib cpd = distrib.getCPD();
+      cpd.setParams(distrib.getArgValues());
+      logProbBackward += Math.log(cpd.getProb(oldValue));
+
+      // Children
+      Iterator nextChild = children.iterator();
+      while (nextChild.hasNext()) {
+        VarWithDistrib child = (VarWithDistrib) nextChild.next();
+        DependencyModel.Distrib childDistrib = child
+            .getDistrib(new DefaultEvalContext(world, true));
+        CondProbDistrib childCpd = childDistrib.getCPD();
+        childCpd.setParams(childDistrib.getArgValues());
+        Object value = world.getValue(child);
+        logProbBackward += Math.log(childCpd.getProb(value));
+      }
+
+      Object newValue = cpd.sampleVal();
+      world.setValue(varToSample, newValue);
+      logProbForward += Math.log(cpd.getProb(newValue));
+
+      // Children
+      nextChild = children.iterator();
+      while (nextChild.hasNext()) {
+        VarWithDistrib child = (VarWithDistrib) nextChild.next();
+        DependencyModel.Distrib childDistrib = child
+            .getDistrib(new DefaultEvalContext(world, true));
+        CondProbDistrib childCpd = childDistrib.getCPD();
+        childCpd.setParams(childDistrib.getArgValues());
+        Object value = world.getValue(child);
+        logProbForward += Math.log(childCpd.getProb(value));
+      }
+
+      // Make the world self-supporting. The only variables whose active
+      // parent sets could have changed are the children of varToSample.
+      ClassicInstantiatingEvalContext instantiator = new ClassicInstantiatingEvalContext(
+          world);
+
+      for (Iterator childrenIter = children.iterator(); childrenIter.hasNext();) {
+        BayesNetVar child = (BayesNetVar) childrenIter.next();
+        if (!world.isInstantiated(child)) // NOT SURE YET THIS IS THE RIGHT
+                                          // THING
+                                          // TO DO! CHECKING WITH BRIAN.
+          continue;
+        child.ensureDetAndSupported(instantiator);
+      }
+
+      logProbForward += instantiator.getLogProbability();
+    }
+  }
 }

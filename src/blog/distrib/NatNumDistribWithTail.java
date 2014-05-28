@@ -162,14 +162,14 @@ public class NatNumDistribWithTail extends AbstractCondProbDistrib {
   /**
    * Returns a sample from this distribution.
    */
-  public int sampleVal() {
-    boolean usePrefix = mixDistrib.sampleVal();
+  public int sampleVal_() {
+    boolean usePrefix = mixDistrib.sampleVal_();
     if (usePrefix) {
       // X < k
-      return prefixDistrib.sampleVal();
+      return prefixDistrib.sampleVal_();
     } else {
       // X >= k
-      return k + geometric.sampleVal();
+      return k + geometric.sampleVal_();
     }
   }
 
@@ -182,7 +182,7 @@ public class NatNumDistribWithTail extends AbstractCondProbDistrib {
           "NatNumDistribWithTail expects no arguments.");
     }
 
-    return new Integer(sampleVal());
+    return new Integer(sampleVal_());
   }
 
   int k;
