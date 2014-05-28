@@ -41,7 +41,6 @@ import java.util.List;
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
-import blog.model.Type;
 
 /**
  * The uniform distribution over n-dimensional column vectors coming from a
@@ -107,7 +106,7 @@ public class UniformVector extends AbstractCondProbDistrib {
     return inBox(x) ? logDensityInBox : Double.NEGATIVE_INFINITY;
   }
 
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     MatrixLib sample = MatrixFactory.fromArray(new double[dim][1]);
     for (int i = 0; i < dim; ++i) {
       sample.setElement(i, 0, mins[i] + (Util.random() * (maxes[i] - mins[i])));

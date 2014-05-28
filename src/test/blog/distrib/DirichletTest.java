@@ -13,7 +13,6 @@ import blog.common.numerical.JamaMatrixLib;
 import blog.common.numerical.MatrixLib;
 import blog.distrib.Dirichlet;
 import blog.distrib.Gamma;
-import blog.model.BuiltInTypes;
 
 /**
  * A test class to verify the Dirichlet distribution 
@@ -67,7 +66,7 @@ public class DirichletTest {
 	@Test
 	public void testSampleVal() {
 		Util.initRandom(true);
-		MatrixLib samples = (MatrixLib) distrib.sampleVal(new ArrayList<Object>(), BuiltInTypes.NULL);
+		MatrixLib samples = (MatrixLib) distrib.sampleVal(new ArrayList<Object>());
 		System.out.println(samples);
 		
 		double sum = 0.0;

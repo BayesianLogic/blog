@@ -47,7 +47,7 @@ public class PoissonTest {
 
 	/**
 	 * Test method for
-	 * {@link blog.distrib.Poisson#sampleVal(java.util.List, blog.Type)}.
+	 * {@link blog.distrib.Poisson#sampleVal(java.util.List)}.
 	 */
 	@Test
 	public void testSampleVal() {

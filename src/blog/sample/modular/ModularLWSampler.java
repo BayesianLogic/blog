@@ -137,7 +137,7 @@ public class ModularLWSampler extends LWSampler {
       logWeight = java.lang.Math.log(cpd.getProb(args, value));
     } else {
       do {
-        value = cpd.sampleVal(args, varType);
+        value = cpd.sampleVal(args);
       } while (!r.contains(value));
       logWeight = java.lang.Math.log(computeCPD(cpd, args, r));
     }

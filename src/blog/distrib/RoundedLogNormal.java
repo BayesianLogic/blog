@@ -37,7 +37,6 @@ package blog.distrib;
 
 import java.util.*;
 import blog.*;
-import blog.model.Type;
 
 /**
  * Distribution over positive integers for a random variable X = round(Y), where
@@ -110,7 +109,7 @@ public class RoundedLogNormal extends AbstractCondProbDistrib {
 		return Math.log(intervalWidth) + zDistrib.getLogProb(Math.log(n));
 	}
 
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		if (!args.isEmpty()) {
 			throw new IllegalArgumentException(
 					"RoundedLogNormal expects no arguments.");

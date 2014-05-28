@@ -38,7 +38,6 @@ package blog.distrib;
 import java.util.List;
 
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * A Gamma distribution with shape parameter k and scale parameter 1/lambda.
@@ -101,7 +100,7 @@ public class Gamma extends AbstractCondProbDistrib {
    * http://cgm.cs.mcgill.ca/~luc/rnbookindex.html) Uses Cheng's rejection
    * algorithm (GB) for k>=1, rejection from Weibull distribution for 0 < k < 1.
    */
-  public Object sampleVal(List args, Type childType) {
+  public Object sampleVal(List args) {
     return sampleVal(k, lambda);
   }
 

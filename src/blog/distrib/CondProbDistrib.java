@@ -37,7 +37,6 @@ package blog.distrib;
 
 import java.util.*;
 
-import blog.model.Type;
 
 /**
  * An interface which all user-defined conditional probability distributions
@@ -63,5 +62,5 @@ public interface CondProbDistrib {
 	 * Samples a value according to this CPD given the <code> args
 	 * </code>. The object returned should be of the specified type.
 	 */
-	Object sampleVal(List args, Type childType);
+	Object sampleVal(List args);
 }

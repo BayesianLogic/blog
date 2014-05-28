@@ -38,7 +38,6 @@ package blog.distrib;
 import java.util.*;
 
 import blog.common.Util;
-import blog.model.Type;
 
 
 /**
@@ -65,7 +64,7 @@ public abstract class DetCondProbDistrib extends AbstractCondProbDistrib {
 		return (eq ? 1 : 0);
 	}
 
-	public Object sampleVal(List args, Type childType) {
+	public Object sampleVal(List args) {
 		return getChildValue(args);
 	}
 }
