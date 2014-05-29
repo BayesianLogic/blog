@@ -37,10 +37,8 @@ package blog.distrib;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import blog.common.Util;
 
 /**
  * Backwards-compatibility layer.
@@ -60,53 +58,45 @@ public abstract class AbstractCondProbDistrib implements CondProbDistrib {
   // New interface:
 
   public void setParams(List<Object> params_) {
-    // Worried about shared-reference issues.
-    List<Object> params = new ArrayList<Object>(params_);
-    if (actualDistrib == null) {
-      // This is the first call to setParams. Try to pass the params to the
-      // CPD's constructor.
-      try {
-        Class[] constrArgTypes = { List.class };
-        Constructor constructor = getClass().getConstructor(constrArgTypes);
-        Object[] constrArgs = { params };
-        actualDistrib = (AbstractCondProbDistrib) constructor
-            .newInstance(constrArgs);
-        fixedParams = params;
-        nonFixedParams = new ArrayList<Object>();
-      } catch (NoSuchMethodException | InvocationTargetException
-          | SecurityException | InstantiationException | IllegalAccessException
-          | IllegalArgumentException e) {
-        // If that didn't work, try constructing it without params, and take
-        // these to be non-fixed params.
-        try {
-          Constructor constructor = getClass().getConstructor();
-          actualDistrib = (AbstractCondProbDistrib) constructor.newInstance();
-          fixedParams = new ArrayList<Object>();
-          nonFixedParams = params;
-        } catch (NoSuchMethodException | InvocationTargetException
-            | SecurityException | InstantiationException
-            | IllegalAccessException | IllegalArgumentException e2) {
-          Util.fatalError(e2);
+    if (params == null) {
+      params = params_;
+    } else {
+      for (int i = 0; i < params.size(); i++) {
+        if (params_.get(i) != null) {
+          params.set(i, params_.get(i));
         }
       }
-    } else {
-      nonFixedParams = params;
     }
   }
 
   public double getProb(Object value) {
-    return actualDistrib.getProb(nonFixedParams, value);
+    return makeActualDistrib().getProb(Collections.emptyList(), value);
   }
 
   public double getLogProb(Object value) {
-    return actualDistrib.getLogProb(nonFixedParams, value);
+    return makeActualDistrib().getLogProb(Collections.emptyList(), value);
   }
 
   public Object sampleVal() {
-    return actualDistrib.sampleVal(nonFixedParams);
+    return makeActualDistrib().sampleVal(Collections.emptyList());
   }
 
-  private AbstractCondProbDistrib actualDistrib;
-  private List<Object> fixedParams;
-  private List<Object> nonFixedParams;
+  private AbstractCondProbDistrib makeActualDistrib() {
+    // Construct the distribution with fixed params. This is inefficient in
+    // general; we do this for backwards compatibility only.
+    AbstractCondProbDistrib result = null;
+    try {
+      Class[] constrArgTypes = { List.class };
+      Constructor constructor = getClass().getConstructor(constrArgTypes);
+      Object[] constrArgs = { params };
+      result = (AbstractCondProbDistrib) constructor.newInstance(constrArgs);
+    } catch (NoSuchMethodException | InvocationTargetException
+        | SecurityException | InstantiationException | IllegalAccessException
+        | IllegalArgumentException e) {
+      System.out.println("CPD init fail");
+    }
+    return result;
+  }
+
+  private List<Object> params;
 }
