@@ -35,7 +35,6 @@
 
 package blog.distrib;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import blog.model.Type;
@@ -103,9 +102,8 @@ public class Beta extends AbstractCondProbDistrib {
    * Simulation, 2nd Ed. Bratley, Paul, Bennett L. Fox and Linus E. Schrage.)
    */
   public Object sampleVal(List args, Type childType) {
-    LinkedList l = new LinkedList();
-    double y = ((Double) gammaA.sampleVal(l, childType)).doubleValue();
-    double z = ((Double) gammaB.sampleVal(l, childType)).doubleValue();
+    double y = ((Double) gammaA.sampleVal()).doubleValue();
+    double z = ((Double) gammaB.sampleVal()).doubleValue();
     return new Double(y / (y + z));
   }
 
