@@ -60,8 +60,7 @@ import blog.sample.EvalContext;
 public class Clause {
 
   /**
-   * Create a new clause where it is not yet known which fields are
-   * parameters and which are arguments.
+   * Create a new clause.
    * 
    * @param cond
    *          the condition under which this clause applies
@@ -103,8 +102,6 @@ public class Clause {
    * Returns this clause's CPD, and the values of this clause's arguments
    * evaluated in the given context. Returns null if the partial world in the
    * given context is not complete enough to evaluate the arguments.
-   * 
-   * TODO update docs
    */
   public DependencyModel.Distrib getDistrib(EvalContext context) {
     context.pushEvaluee(this);
