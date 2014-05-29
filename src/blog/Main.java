@@ -582,16 +582,19 @@ public class Main {
   /**
    * Write query results to file, in JSON format.
    *
-   * For every query, we output the a list of (log_prob, value) pairs.
+   * For every query, we output the a list of (value, log_prob) pairs. The
+   * value is always a string obtained by calling toString() on the
+   * corresponding Java object.
+   *
    * Example output:
    * [
    *     ["Damage(A)", [
-   *         [2.639057329615258, "Mild"],
-   *         [3.526360524616161, "Severe"]
+   *         ["Mild", 2.639057329615258],
+   *         ["Severe, "3.526360524616161]
    *     ]],
    *     ["Damage(B)", [
-   *         [2.9957322735539904, "Mild"],
-   *         [3.3322045101752034, "Severe"]
+   *         ["Mild", 2.9957322735539904],
+   *         ["Severe", 3.3322045101752034]
    *     ]]
    * ]
   */
@@ -607,8 +610,8 @@ public class Main {
       for (Object entry_obj : histogram.entrySet()) {
         Histogram.Entry entry = (Histogram.Entry) entry_obj;
         ArrayList<Object> entryPair = new ArrayList<Object>();
-        entryPair.add(entry.getLogWeight());
         entryPair.add(entry.getElement().toString());
+        entryPair.add(entry.getLogWeight());
         histogramEntries.add(entryPair);
       }
 
