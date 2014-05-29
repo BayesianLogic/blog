@@ -43,12 +43,21 @@ public class TestBeta extends TestDistribution {
     Beta b = new Beta(constructParams);
     assertEquals(Math.log(2.0), b.getLogProb(args, 0), ERROR_BOUND);
     assertEquals(Math.log(1.0), b.getLogProb(args, 0.5), ERROR_BOUND);
-    assertEquals(Math.log(0.8), b.getLogProb(args, 0.8), ERROR_BOUND);
+    assertEquals(Math.log(0.8), b.getLogProb(args, 0.6), ERROR_BOUND);
     assertEquals(Double.NEGATIVE_INFINITY, b.getLogProb(args, 1.0), ERROR_BOUND);
+
+    constructParams.clear();
+    constructParams.add(1.0);
+    constructParams.add(1.0);
+    b = new Beta(constructParams);
+    assertEquals(0, b.getLogProb(args, 0), ERROR_BOUND);
+    assertEquals(0, b.getLogProb(args, 0.5), ERROR_BOUND);
+    assertEquals(0, b.getLogProb(args, 1.0), ERROR_BOUND);
 
     constructParams.clear();
     constructParams.add(2);
     constructParams.add(2);
+    b = new Beta(constructParams);
     assertEquals(Double.NEGATIVE_INFINITY, b.getLogProb(args, 0), ERROR_BOUND);
     assertEquals(Math.log(1.5), b.getLogProb(args, 0.5), ERROR_BOUND);
     assertEquals(Double.NEGATIVE_INFINITY, b.getLogProb(args, 1.0), ERROR_BOUND);
