@@ -1885,7 +1885,7 @@ public class Parfactor {
 			return true;
 		}
 
-		for (Iterator iter = clause.getArgs().iterator(); iter.hasNext();) {
+		for (Iterator iter = clause.getArgsNonFixed().iterator(); iter.hasNext();) {
 			ArgSpec cpdArg = (ArgSpec) iter.next();
 			if (removeNonLiftableVars(clause.getCond(), varsToCheck)) {
 				return true;
