@@ -67,6 +67,10 @@ public class UniformReal implements CondProbDistrib {
   }
 
   public Object sampleVal() {
+    return sampleValue();
+  }
+
+  public double sampleValue() {
     checkHasParams();
     // rely on the fact that Util.random() returns a value in [0, 1)
     double x = lower + (Util.random() * (upper - lower));
