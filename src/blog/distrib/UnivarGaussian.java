@@ -6,17 +6,14 @@ import java.util.List;
 
 import blog.common.Util;
 
-public class UnivarGaussian extends distrib.UnivarGaussian implements
-    CondProbDistrib {
-
-  public static final UnivarGaussian STANDARD = new UnivarGaussian(0, 1);
-
+/**
+ * Univariate Gaussian distribution with a given mean and variance.
+ */
+public class UnivarGaussian implements CondProbDistrib {
   public UnivarGaussian() {
-    super(Util.getRNG());
   }
 
   public UnivarGaussian(double mean, double variance) {
-    super(Util.getRNG());
     setParams(mean, variance);
   }
 
@@ -28,17 +25,76 @@ public class UnivarGaussian extends distrib.UnivarGaussian implements
     setParams((Double) params.get(0), (Double) params.get(1));
   }
 
+  public void setParams(Double mean, Double variance) {
+    if (mean != null) {
+      this.mean = mean;
+      this.hasMean = true;
+    }
+
+    if (variance != null) {
+      if (variance <= 0) {
+        throw new IllegalArgumentException("variance must be positive");
+      }
+      this.variance = variance;
+      this.hasVariance = true;
+      this.sqrtVariance = Math.sqrt(variance);
+      this.normConst = sqrtVariance * ROOT_2PI;
+      this.logNormConst = (0.5 * Math.log(variance)) + LOG_ROOT_2PI;
+    }
+  }
+
+  private void checkHasParams() {
+    if (!hasMean) {
+      throw new IllegalArgumentException("mean not provided");
+    }
+    if (!hasVariance) {
+      throw new IllegalArgumentException("variance not provided");
+    }
+  }
+
   public double getProb(Object value) {
-    return getProb((Double) value);
+    return getProb(((Double) value).doubleValue());
+  }
+
+  public double getProb(double x) {
+    checkHasParams();
+    return (Math.exp(-Math.pow((x - mean), 2) / (2 * variance)) / normConst);
   }
 
   public double getLogProb(Object value) {
-    return super.getLogProb((Double) value);
+    return getLogProb(((Double) value).doubleValue());
+  }
+
+  public double getLogProb(double x) {
+    checkHasParams();
+    return (-(x - mean) * (x - mean) / (2 * variance)) - logNormConst;
   }
 
   public Object sampleVal() {
     return sampleValue();
   }
+
+  public double sampleValue() {
+    checkHasParams();
+    double U = Util.random();
+    double V = Util.random();
+    return (mean + (sqrtVariance * Math.sin(2 * Math.PI * V) * Math
+        .sqrt((-2 * Math.log(U)))));
+  }
+
+  public double getMean() {
+    return mean;
+  }
+
+  public double getVariance() {
+    return variance;
+  }
+
+  public String toString() {
+    return "UnivarGaussian(" + mean + ", " + variance + ")";
+  }
+
+  public static final UnivarGaussian STANDARD = new UnivarGaussian(0, 1);
 
   /**
    * Returns a Gaussian distribution corresponding to the product of this and
@@ -73,4 +129,18 @@ public class UnivarGaussian extends distrib.UnivarGaussian implements
   public UnivarGaussian meanPosterior(double value) {
     return new UnivarGaussian(value, variance);
   }
+
+  // Parameters:
+  private boolean hasMean;
+  private boolean hasVariance;
+  protected double mean;
+  protected double variance;
+
+  // Precomputed stuff:
+  protected double sqrtVariance;
+  private double normConst;
+  private double logNormConst;
+  private static final double ROOT_2PI = Math.sqrt(2 * Math.PI);
+  private static final double LOG_ROOT_2PI = 0.5 * (Math.log(2) + Math
+      .log(Math.PI));
 }
