@@ -38,7 +38,6 @@ package blog.model;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -68,21 +67,13 @@ public class Clause {
    *          the condition under which this clause applies
    * @param cpdCLass
    *          the class of the conditional probability distribution used.
-   * @param cpdArgsAndParams
-   *          A mixed list of arguments and parameters.
+   * @param cpdArgs
+   *          A list of arguments (may be fixed or non-fixed).
    */
-  public Clause(Formula cond, Class cpdClass, List<ArgSpec> cpdArgsAndParams) {
+  public Clause(Formula cond, Class cpdClass, List<ArgSpec> cpdArgs) {
     this.cond = cond;
     this.cpdClass = cpdClass;
-    this.cpdArgsFixed = new ArrayList<ArgSpec>();
-    this.cpdArgsNonFixed = new ArrayList<ArgSpec>();
-    for (ArgSpec spec : cpdArgsAndParams) {
-      if (spec.containsRandomSymbol()) {
-        this.cpdArgsNonFixed.add(spec);
-      } else {
-        this.cpdArgsFixed.add(spec);
-      }
-    }
+    this.cpdArgs = cpdArgs;
   }
 
   public void setCond(Formula cond) {
@@ -104,30 +95,37 @@ public class Clause {
     return cpd;
   }
 
-  public List<ArgSpec> getArgsNonFixed() {
-    return cpdArgsNonFixed;
+  public List<ArgSpec> getArgs() {
+    return cpdArgs;
   }
 
   /**
    * Returns this clause's CPD, and the values of this clause's arguments
    * evaluated in the given context. Returns null if the partial world in the
    * given context is not complete enough to evaluate the arguments.
+   * 
+   * TODO update docs
    */
   public DependencyModel.Distrib getDistrib(EvalContext context) {
     context.pushEvaluee(this);
-    List argValues = new ArrayList();
+    List<Object> argValues = new ArrayList<Object>();
 
-    for (Iterator iter = cpdArgsNonFixed.iterator(); iter.hasNext();) {
-      ArgSpec argSpec = (ArgSpec) iter.next();
-      Object argValue = argSpec.evaluate(context);
-      if (argValue == null) {
-        break; // CPD arg not determined
+    for (ArgSpec spec : cpdArgs) {
+      if (spec.containsRandomSymbol()) {
+        // This is a random argument that needs to be evaluated.
+        Object argValue = spec.evaluate(context);
+        if (argValue == null) {
+          break; // CPD arg not determined
+        }
+        argValues.add(argValue);
+      } else {
+        // This is a fixed argument that was given at CPD construction time.
+        argValues.add(null);
       }
-      argValues.add(argValue);
     }
 
     context.popEvaluee();
-    if (argValues.size() == cpdArgsNonFixed.size()) {
+    if (argValues.size() == cpdArgs.size()) {
       // all CPD args were determined
       return new DependencyModel.Distrib(cpd, argValues);
     }
@@ -142,7 +140,7 @@ public class Clause {
    */
   public BasicVar getEqualParent(EvalContext context) {
     if (cpd instanceof EqualsCPD) {
-      ArgSpec arg = (ArgSpec) cpdArgsNonFixed.get(0);
+      ArgSpec arg = cpdArgs.get(0);
       if (arg instanceof FuncAppTerm) {
         FuncAppTerm t = (FuncAppTerm) arg;
         if (t.getFunction() instanceof RandomFunction) {
@@ -167,12 +165,7 @@ public class Clause {
     if (!cond.checkTypesAndScope(model, scope)) {
       correct = false;
     }
-    for (ArgSpec spec : cpdArgsFixed) {
-      if (!spec.checkTypesAndScope(model, scope)) {
-        correct = false;
-      }
-    }
-    for (ArgSpec spec : cpdArgsNonFixed) {
+    for (ArgSpec spec : cpdArgs) {
       if (!spec.checkTypesAndScope(model, scope)) {
         correct = false;
       }
@@ -180,12 +173,12 @@ public class Clause {
 
     // for EqualsCPD, we can do additional checking
     if (correct && (cpdClass == EqualsCPD.class)) {
-      if (cpdArgsNonFixed.size() != 1) {
+      if (cpdArgs.size() != 1) {
         System.err.println(getLocation()
             + "EqualsCPD takes exactly one argument");
         correct = false;
       } else {
-        ArgSpec arg = (ArgSpec) cpdArgsNonFixed.get(0);
+        ArgSpec arg = cpdArgs.get(0);
         Type argType = null;
         if (arg instanceof Term) {
           argType = ((Term) arg).getType();
@@ -227,8 +220,8 @@ public class Clause {
 
     errors += cond.compile(callStack);
 
-    for (Iterator iter = cpdArgsNonFixed.iterator(); iter.hasNext();) {
-      errors += ((ArgSpec) iter.next()).compile(callStack);
+    for (ArgSpec spec : cpdArgs) {
+      errors += spec.compile(callStack);
     }
 
     if (cpd == null) {
@@ -242,19 +235,21 @@ public class Clause {
   private int initCPD(LinkedHashSet callStack) {
     int errors = 0;
 
-    List paramValues = new ArrayList();
-    for (ArgSpec param : cpdArgsFixed) {
-      int thisParamErrors = param.compile(callStack);
-      errors += thisParamErrors;
-      if (thisParamErrors == 0) {
-        Object val = param.getValueIfNonRandom();
-        if (val == null) {
-          System.err.println("Error initializing CPD at " + getLocation()
-              + ": parameter " + param + " is random.  Random "
-              + "parameters should be passed as arguments.");
-          ++errors;
-        } else {
-          paramValues.add(val);
+    List<Object> constructionArgValues = new ArrayList<Object>();
+    for (ArgSpec spec : cpdArgs) {
+      if (spec.containsRandomSymbol()) {
+        // This is a random argument that is not passed at construction time.
+        constructionArgValues.add(null);
+      } else {
+        // This is a fixed argument that is passed at construction time.
+        int thisParamErrors = spec.compile(callStack);
+        errors += thisParamErrors;
+        if (thisParamErrors == 0) {
+          Object val = spec.getValueIfNonRandom();
+          constructionArgValues.add(val);
+          if (val == null) {
+            throw new IllegalStateException("non-fixed arg in cpdArgsFixed");
+          }
         }
       }
     }
@@ -266,7 +261,7 @@ public class Clause {
     try {
       Class[] constrArgTypes = { List.class };
       Constructor ct = cpdClass.getConstructor(constrArgTypes);
-      Object[] constrArgs = { paramValues };
+      Object[] constrArgs = { constructionArgValues };
       cpd = (CondProbDistrib) ct.newInstance(constrArgs);
     } catch (InvocationTargetException e) {
       e.printStackTrace();
@@ -321,13 +316,13 @@ public class Clause {
     buf.append(cpdClass.getName());
     buf.append("(");
 
-    Iterator argsIter = cpdArgsNonFixed.iterator();
-    if (argsIter.hasNext()) {
-      buf.append(argsIter.next());
-      while (argsIter.hasNext()) {
+    boolean first = true;
+    for (ArgSpec spec : cpdArgs) {
+      if (!first) {
         buf.append(", ");
-        buf.append(argsIter.next());
       }
+      buf.append(spec);
+      first = false;
     }
 
     buf.append(")");
@@ -341,6 +336,5 @@ public class Clause {
   private Formula cond;
   private Class cpdClass;
   private CondProbDistrib cpd;
-  private List<ArgSpec> cpdArgsFixed;
-  private List<ArgSpec> cpdArgsNonFixed;
+  private List<ArgSpec> cpdArgs;
 }
