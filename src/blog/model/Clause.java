@@ -74,13 +74,13 @@ public class Clause {
   public Clause(Formula cond, Class cpdClass, List<ArgSpec> cpdArgsAndParams) {
     this.cond = cond;
     this.cpdClass = cpdClass;
-    this.cpdArgs = new ArrayList<ArgSpec>();
-    this.cpdParams = new ArrayList<ArgSpec>();
+    this.cpdArgsFixed = new ArrayList<ArgSpec>();
+    this.cpdArgsNonFixed = new ArrayList<ArgSpec>();
     for (ArgSpec spec : cpdArgsAndParams) {
       if (spec.containsRandomSymbol()) {
-        this.cpdArgs.add(spec);
+        this.cpdArgsNonFixed.add(spec);
       } else {
-        this.cpdParams.add(spec);
+        this.cpdArgsFixed.add(spec);
       }
     }
   }
@@ -101,18 +101,11 @@ public class Clause {
   }
 
   public CondProbDistrib getCPD() {
-
     return cpd;
-
   }
 
-  /**
-   * @return List of ArgSpec objects
-   */
-  public List getArgs() {
-
-    return cpdArgs;
-
+  public List<ArgSpec> getArgsNonFixed() {
+    return cpdArgsNonFixed;
   }
 
   /**
@@ -124,7 +117,7 @@ public class Clause {
     context.pushEvaluee(this);
     List argValues = new ArrayList();
 
-    for (Iterator iter = cpdArgs.iterator(); iter.hasNext();) {
+    for (Iterator iter = cpdArgsNonFixed.iterator(); iter.hasNext();) {
       ArgSpec argSpec = (ArgSpec) iter.next();
       Object argValue = argSpec.evaluate(context);
       if (argValue == null) {
@@ -134,7 +127,7 @@ public class Clause {
     }
 
     context.popEvaluee();
-    if (argValues.size() == cpdArgs.size()) {
+    if (argValues.size() == cpdArgsNonFixed.size()) {
       // all CPD args were determined
       return new DependencyModel.Distrib(cpd, argValues);
     }
@@ -149,7 +142,7 @@ public class Clause {
    */
   public BasicVar getEqualParent(EvalContext context) {
     if (cpd instanceof EqualsCPD) {
-      ArgSpec arg = (ArgSpec) cpdArgs.get(0);
+      ArgSpec arg = (ArgSpec) cpdArgsNonFixed.get(0);
       if (arg instanceof FuncAppTerm) {
         FuncAppTerm t = (FuncAppTerm) arg;
         if (t.getFunction() instanceof RandomFunction) {
@@ -174,12 +167,12 @@ public class Clause {
     if (!cond.checkTypesAndScope(model, scope)) {
       correct = false;
     }
-    for (ArgSpec spec : cpdParams) {
+    for (ArgSpec spec : cpdArgsFixed) {
       if (!spec.checkTypesAndScope(model, scope)) {
         correct = false;
       }
     }
-    for (ArgSpec spec : cpdArgs) {
+    for (ArgSpec spec : cpdArgsNonFixed) {
       if (!spec.checkTypesAndScope(model, scope)) {
         correct = false;
       }
@@ -187,12 +180,12 @@ public class Clause {
 
     // for EqualsCPD, we can do additional checking
     if (correct && (cpdClass == EqualsCPD.class)) {
-      if (cpdArgs.size() != 1) {
+      if (cpdArgsNonFixed.size() != 1) {
         System.err.println(getLocation()
             + "EqualsCPD takes exactly one argument");
         correct = false;
       } else {
-        ArgSpec arg = (ArgSpec) cpdArgs.get(0);
+        ArgSpec arg = (ArgSpec) cpdArgsNonFixed.get(0);
         Type argType = null;
         if (arg instanceof Term) {
           argType = ((Term) arg).getType();
@@ -215,16 +208,6 @@ public class Clause {
       }
     }
 
-    // Type-check the CPD parameters, making sure they contain no
-    // free variables
-    if (cpdParams != null) {
-      for (ArgSpec param : cpdParams) {
-        // if (!param.checkTypesAndScope(model, Collections.EMPTY_MAP)) {
-        if (!param.checkTypesAndScope(model, scope)) {
-          correct = false;
-        }
-      }
-    }
     return correct;
   }
 
@@ -244,7 +227,7 @@ public class Clause {
 
     errors += cond.compile(callStack);
 
-    for (Iterator iter = cpdArgs.iterator(); iter.hasNext();) {
+    for (Iterator iter = cpdArgsNonFixed.iterator(); iter.hasNext();) {
       errors += ((ArgSpec) iter.next()).compile(callStack);
     }
 
@@ -260,7 +243,7 @@ public class Clause {
     int errors = 0;
 
     List paramValues = new ArrayList();
-    for (ArgSpec param : cpdParams) {
+    for (ArgSpec param : cpdArgsFixed) {
       int thisParamErrors = param.compile(callStack);
       errors += thisParamErrors;
       if (thisParamErrors == 0) {
@@ -338,14 +321,12 @@ public class Clause {
     buf.append(cpdClass.getName());
     buf.append("(");
 
-    if (cpdArgs != null) {
-      Iterator argsIter = cpdArgs.iterator();
-      if (argsIter.hasNext()) {
+    Iterator argsIter = cpdArgsNonFixed.iterator();
+    if (argsIter.hasNext()) {
+      buf.append(argsIter.next());
+      while (argsIter.hasNext()) {
+        buf.append(", ");
         buf.append(argsIter.next());
-        while (argsIter.hasNext()) {
-          buf.append(", ");
-          buf.append(argsIter.next());
-        }
       }
     }
 
@@ -359,7 +340,7 @@ public class Clause {
 
   private Formula cond;
   private Class cpdClass;
-  private List<ArgSpec> cpdParams;
   private CondProbDistrib cpd;
-  private List<ArgSpec> cpdArgs;
+  private List<ArgSpec> cpdArgsFixed;
+  private List<ArgSpec> cpdArgsNonFixed;
 }
