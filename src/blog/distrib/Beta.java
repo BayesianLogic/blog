@@ -38,6 +38,8 @@ package blog.distrib;
 import java.util.LinkedList;
 import java.util.List;
 
+import blog.model.Type;
+
 /**
  * A Beta distribution with shape parameters a and b, defined by f(x) =(x^(a-1)
  * * (1-x)^(b-1)) / B(a,b) where B(a,b) is a normalization constant equal to
@@ -83,8 +85,15 @@ public class Beta extends AbstractCondProbDistrib {
               + " of class Number, not " + value.getClass() + ".");
     } else {
       double x = ((Number) value).doubleValue();
-      return (((a - 1) * Math.log(x)) + ((b - 1) * Math.log(1 - x)) - Math
-          .log(beta(a, b)));
+      double t1 = 0;
+      double t2 = 0;
+      if (a != 1) {
+        t1 = (a - 1) * Math.log(x);
+      }
+      if (b != 1) {
+        t2 = (b - 1) * Math.log(1 - x);
+      }
+      return t1 + t2 - Math.log(beta(a, b));
     }
   }
 
@@ -93,10 +102,10 @@ public class Beta extends AbstractCondProbDistrib {
    * equivalent to the distrib.Gamma sampling function. (Reference: A Guide To
    * Simulation, 2nd Ed. Bratley, Paul, Bennett L. Fox and Linus E. Schrage.)
    */
-  public Object sampleVal(List args) {
+  public Object sampleVal(List args, Type childType) {
     LinkedList l = new LinkedList();
-    double y = ((Double) gammaA.sampleVal(l)).doubleValue();
-    double z = ((Double) gammaB.sampleVal(l)).doubleValue();
+    double y = ((Double) gammaA.sampleVal(l, childType)).doubleValue();
+    double z = ((Double) gammaB.sampleVal(l, childType)).doubleValue();
     return new Double(y / (y + z));
   }
 

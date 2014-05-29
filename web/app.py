@@ -26,7 +26,7 @@ with open(EXAMPLE_BLOG_PATH) as f:
     example_blog_code = f.read()
 
 def run_process(script_name):
-    command = ["../run.sh", "--displaycbn", script_name]
+    command = ["../blog", "--displaycbn", script_name]
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = os.linesep.join(p.communicate())
     return output
