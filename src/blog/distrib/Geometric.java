@@ -38,18 +38,19 @@ package blog.distrib;
 import java.util.List;
 
 import blog.common.Util;
+import blog.model.Type;
 
 /**
  * A geometric distribution over the natural numbers 0, 1, 2,... It has a single
- * parameter alpha, which equals P(X &gt;= n+1 | X &gt;= n). Thus an alpha close
- * to 1 yields a relatively flat distribution, whereas an alpha close to 0
- * yields a distribution that decays quickly. The distribution is defined by:
- * P(X = n) = (1 - alpha) alpha^n. Its mean is alpha / (1-alpha), so to get a
- * distribution with mean m, one should use alpha = m / (1 + m).
+ * parameter alpha, which equals the probability of a success trial. Thus an
+ * alpha close to 0 yields a relatively flat distribution, whereas an alpha
+ * close to 1 yields a distribution that decays quickly. The distribution is
+ * defined by: P(Y = n) = (1 - alpha)^n alpha. Its mean is (1-alpha) / alpha, so
+ * to get a distribution with mean m, one should use alpha = 1 / (1 + m).
  * 
  * <p>
- * Note that alpha cannot be 1, because then the value is infinite with
- * probability 1. However, alpha can be 0; this just means the value is 0 with
+ * Note that alpha cannot be 0, because then the value is infinite with
+ * probability 1. However, alpha can be 1; this just means the value is 0 with
  * probability 1.
  */
 public class Geometric extends AbstractCondProbDistrib {
@@ -58,7 +59,7 @@ public class Geometric extends AbstractCondProbDistrib {
    * Returns a Geometric distribution with the given mean.
    */
   public static Geometric constructWithMean(double mean) {
-    return new Geometric(mean / (1 + mean));
+    return new Geometric(1 / (1 + mean));
   }
 
   /**
@@ -68,11 +69,10 @@ public class Geometric extends AbstractCondProbDistrib {
    *           if <code>alpha</code> is not in the range [0, 1)
    */
   public Geometric(double alpha) {
-    alpha = 1 - alpha;
-    if ((alpha < 0) || (alpha >= 1)) {
+    if ((alpha <= 0) || (alpha > 1)) {
       throw new IllegalArgumentException(
           "Parameter of geometric distribution must be in the "
-              + "interval [0, 1), not " + alpha);
+              + "interval (0, 1], not " + alpha);
     }
 
     this.alpha = alpha;
@@ -99,8 +99,8 @@ public class Geometric extends AbstractCondProbDistrib {
               + params.get(0).getClass());
     }
 
-    alpha = 1 - ((Number) params.get(0)).doubleValue();
-    if ((alpha < 0) || (alpha >= 1)) {
+    alpha = ((Number) params.get(0)).doubleValue();
+    if ((alpha <= 0) || (alpha > 1)) {
       throw new IllegalArgumentException(
           "Illegal alpha parameter for geometric distribution.");
     }
@@ -115,7 +115,7 @@ public class Geometric extends AbstractCondProbDistrib {
     if (n < 0) {
       return 0;
     }
-    return (1 - alpha) * Math.pow(alpha, n);
+    return alpha * Math.pow(1 - alpha, n);
   }
 
   /**
@@ -146,8 +146,8 @@ public class Geometric extends AbstractCondProbDistrib {
       return Double.NEGATIVE_INFINITY;
     }
 
-    // log of (1 - alpha) * (alpha ^ n)
-    return logOneMinusAlpha + (n * logAlpha);
+    // log of alpha * (1 - alpha) ^ n
+    return logAlpha + (n * logOneMinusAlpha);
   }
 
   /**
