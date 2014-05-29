@@ -64,6 +64,11 @@ public class DependencyModel {
   /**
    * Nested class representing a distribution over child values, in the form of
    * a CPD and a list of values for the CPD's arguments.
+   * 
+   * TODO: This class is no longer necessary after the new distribution
+   * interface is implemented. Instead of storing the args in this container, we
+   * can just call setParams() on the distribution. So we only need to pass
+   * around a CondProbDistrib, not a CondProbDistrib + args.
    */
   public static class Distrib {
     public Distrib(CondProbDistrib cpd, List argValues) {

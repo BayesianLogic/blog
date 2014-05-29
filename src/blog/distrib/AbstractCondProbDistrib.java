@@ -39,6 +39,9 @@ package blog.distrib;
 /**
  * Abstract implementation of the CondProbDistrib interface. It implements the
  * getLogProb method.
+ *
+ * TODO: Delete this class after porting all the distributions to the new
+ * CondProbDistrib interface.
  */
 public abstract class AbstractCondProbDistrib implements CondProbDistrib {
   public double getLogProb(Object childValue) {
