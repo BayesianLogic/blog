@@ -99,7 +99,6 @@ public class DependencyModel {
           + " of type " + childType);
     }
     defaultClause = new Clause(TrueFormula.TRUE, EqualsCPD.class,
-        Collections.<ArgSpec> emptyList(),
         Collections.singletonList((ArgSpec) defaultTerm));
   }
 
