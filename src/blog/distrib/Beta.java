@@ -35,11 +35,10 @@
 
 package blog.distrib;
 
-import blog.*;
-import blog.common.Util;
-import blog.model.Type;
+import java.util.LinkedList;
+import java.util.List;
 
-import java.util.*;
+import blog.model.Type;
 
 /**
  * A Beta distribution with shape parameters a and b, defined by f(x) =(x^(a-1)
@@ -47,77 +46,84 @@ import java.util.*;
  * integral from 0 to 1 of x^(a-1) * (1-x)^(b-1) dx
  */
 public class Beta extends AbstractCondProbDistrib {
-	/**
-	 * Returns a new Beta with shape parameters a and b.
-	 */
-	public Beta(List params) {
-		if (!((params.get(0) instanceof Number) && (params.get(1) instanceof Number))) {
-			throw new IllegalArgumentException(
-					"Beta expects two numerical arguments "
-							+ "{a, b} where both are Numbers. Got: " + params);
-		}
-		a = ((Number) params.get(0)).doubleValue();
-		b = ((Number) params.get(1)).doubleValue();
-		gammaA = new Gamma(a, 1);
-		gammaB = new Gamma(b, 1);
-	}
+  /**
+   * Returns a new Beta with shape parameters a and b.
+   */
+  public Beta(List params) {
+    if (!((params.get(0) instanceof Number) && (params.get(1) instanceof Number))) {
+      throw new IllegalArgumentException(
+          "Beta expects two numerical arguments "
+              + "{a, b} where both are Numbers. Got: " + params);
+    }
+    a = ((Number) params.get(0)).doubleValue();
+    b = ((Number) params.get(1)).doubleValue();
+    gammaA = new Gamma(a, 1);
+    gammaB = new Gamma(b, 1);
+  }
 
-	/**
-	 * Returns the probability of value under this distribution.
-	 */
-	public double getProb(List args, Object value) {
-		if (!(value instanceof Number)) {
-			throw new IllegalArgumentException(
-					"Beta CPD defines a distribution over objects"
-							+ " of class Number, not " + value.getClass() + ".");
-		} else {
-			double x = ((Number) value).doubleValue();
-			return ((Math.pow(x, (a - 1)) * Math.pow((1 - x), (b - 1))) / beta(a, b));
-		}
-	}
+  /**
+   * Returns the probability of value under this distribution.
+   */
+  public double getProb(List args, Object value) {
+    if (!(value instanceof Number)) {
+      throw new IllegalArgumentException(
+          "Beta CPD defines a distribution over objects"
+              + " of class Number, not " + value.getClass() + ".");
+    } else {
+      double x = ((Number) value).doubleValue();
+      return ((Math.pow(x, (a - 1)) * Math.pow((1 - x), (b - 1))) / beta(a, b));
+    }
+  }
 
-	/**
-	 * Returns the log of the probability of value under this distribution.
-	 */
-	public double getLogProb(List args, Object value) {
-		if (!(value instanceof Number)) {
-			throw new IllegalArgumentException(
-					"Beta CPD defines a distribution over objects"
-							+ " of class Number, not " + value.getClass() + ".");
-		} else {
-			double x = ((Number) value).doubleValue();
-			return (((a - 1) * Math.log(x)) + ((b - 1) * Math.log(1 - x)) - Math
-					.log(beta(a, b)));
-		}
-	}
+  /**
+   * Returns the log of the probability of value under this distribution.
+   */
+  public double getLogProb(List args, Object value) {
+    if (!(value instanceof Number)) {
+      throw new IllegalArgumentException(
+          "Beta CPD defines a distribution over objects"
+              + " of class Number, not " + value.getClass() + ".");
+    } else {
+      double x = ((Number) value).doubleValue();
+      double t1 = 0;
+      double t2 = 0;
+      if (a != 1) {
+        t1 = (a - 1) * Math.log(x);
+      }
+      if (b != 1) {
+        t2 = (b - 1) * Math.log(1 - x);
+      }
+      return t1 + t2 - Math.log(beta(a, b));
+    }
+  }
 
-	/**
-	 * Returns a double sampled according to this distribution. Takes time
-	 * equivalent to the distrib.Gamma sampling function. (Reference: A Guide To
-	 * Simulation, 2nd Ed. Bratley, Paul, Bennett L. Fox and Linus E. Schrage.)
-	 */
-	public Object sampleVal(List args, Type childType) {
-		LinkedList l = new LinkedList();
-		double y = ((Double) gammaA.sampleVal(l, childType)).doubleValue();
-		double z = ((Double) gammaB.sampleVal(l, childType)).doubleValue();
-		return new Double(y / (y + z));
-	}
+  /**
+   * Returns a double sampled according to this distribution. Takes time
+   * equivalent to the distrib.Gamma sampling function. (Reference: A Guide To
+   * Simulation, 2nd Ed. Bratley, Paul, Bennett L. Fox and Linus E. Schrage.)
+   */
+  public Object sampleVal(List args, Type childType) {
+    LinkedList l = new LinkedList();
+    double y = ((Double) gammaA.sampleVal(l, childType)).doubleValue();
+    double z = ((Double) gammaB.sampleVal(l, childType)).doubleValue();
+    return new Double(y / (y + z));
+  }
 
-	/**
-	 * Returns the Beta function of reals a and b B(a,b) = Gamma(a)Gamma(b) /
-	 * Gamma(a+b) Reference: Numerical Recipes in C
-	 * http://www.library.cornell.edu/nr/cbookcpdf.html
-	 */
-	public static double beta(double a, double b) {
-		return ((Gamma.gamma(a) * Gamma.gamma(b)) / Gamma.gamma(a + b));
-	}
+  /**
+   * Returns the Beta function of reals a and b B(a,b) = Gamma(a)Gamma(b) /
+   * Gamma(a+b) Reference: Numerical Recipes in C
+   * http://www.library.cornell.edu/nr/cbookcpdf.html
+   */
+  public static double beta(double a, double b) {
+    return ((Gamma.gamma(a) * Gamma.gamma(b)) / Gamma.gamma(a + b));
+  }
 
-	public String toString() {
-		return getClass().getName();
-	}
+  public String toString() {
+    return getClass().getName();
+  }
 
-	private double a;
-	private double b;
-	private Gamma gammaA;
-	private Gamma gammaB;
+  private double a;
+  private double b;
+  private Gamma gammaA;
+  private Gamma gammaB;
 }
