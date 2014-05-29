@@ -523,7 +523,8 @@ public class Semant {
   DependencyModel transDependency(Expr e, Type resTy, Object defVal) {
     Object body = transExpr(e);
     List<Clause> cl = new ArrayList<Clause>(1);
-    if (body instanceof Term || body instanceof Formula) {
+    if (body instanceof Term || body instanceof Formula
+        || body instanceof TupleSetExpr) {
       cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
           .singletonList((ArgSpec) body)));
     } else if (body instanceof Clause) {
@@ -975,7 +976,7 @@ public class Semant {
     List<Term> tupleTerms = new ArrayList<Term>();
     List<Type> varTypes = new ArrayList<Type>();
     List<String> varNames = new ArrayList<String>();
-    Formula cond = null;
+    Formula cond = TrueFormula.TRUE;
 
     while (e.setTuple != null) {
       Object tuple = transExpr(e.setTuple.head);
