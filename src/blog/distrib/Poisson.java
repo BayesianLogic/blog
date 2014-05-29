@@ -147,9 +147,10 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
   }
 
   /**
-   * Naive inverse CDF approach for Poisson is not advisable for lambda > 15. 
+   * Naive inverse CDF approach for Poisson is not advisable for lambda > 15.
    * Here we are following MATLAB's implementation, where gamma random variables
-   * are subtracted from lambda until it falls into the range of lambda <= 15. Then,
+   * are subtracted from lambda until it falls into the range of lambda <= 15.
+   * Then,
    * standard naive inverse CDF sampling is applied via sampleSmall.
    * 
    * @param lambda
@@ -253,4 +254,48 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
 
   private double lambda;
   private boolean random_lambda = false;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   */
+  @Override
+  public void setParams(List<Object> params) {
+    // TODO Auto-generated method stub
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  @Override
+  public Object sampleVal() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

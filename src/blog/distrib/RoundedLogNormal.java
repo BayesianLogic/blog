@@ -52,7 +52,8 @@ public class RoundedLogNormal extends AbstractCondProbDistrib {
   public RoundedLogNormal(double mean, double varianceOfLog) {
     this.mean = mean;
     this.varianceOfLog = varianceOfLog;
-    zDistrib = new UnivarGaussian(Math.log(mean), varianceOfLog);
+    zDistrib = new UnivarGaussian();
+    zDistrib.setParams(Math.log(mean), varianceOfLog);
   }
 
   /**
@@ -69,7 +70,8 @@ public class RoundedLogNormal extends AbstractCondProbDistrib {
 
     mean = ((Number) params.get(0)).doubleValue();
     varianceOfLog = ((Number) params.get(1)).doubleValue();
-    zDistrib = new UnivarGaussian(Math.log(mean), varianceOfLog);
+    zDistrib = new UnivarGaussian();
+    zDistrib.setParams(Math.log(mean), varianceOfLog);
   }
 
   /**
@@ -114,7 +116,7 @@ public class RoundedLogNormal extends AbstractCondProbDistrib {
           "RoundedLogNormal expects no arguments.");
     }
 
-    double z = zDistrib.sampleVal_();
+    double z = zDistrib.sampleValue();
     double y = Math.exp(z);
     long x = Math.round(y);
     if ((x < Integer.MIN_VALUE) || (x > Integer.MAX_VALUE)) {
@@ -129,4 +131,48 @@ public class RoundedLogNormal extends AbstractCondProbDistrib {
   double varianceOfLog;
 
   UnivarGaussian zDistrib;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   */
+  @Override
+  public void setParams(List<Object> params) {
+    // TODO Auto-generated method stub
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  @Override
+  public Object sampleVal() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
