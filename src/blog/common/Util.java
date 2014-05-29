@@ -2016,10 +2016,6 @@ public class Util {
         / (currentTotalWeight + weight);
   }
 
-  public static Random getRNG() {
-    return rand;
-  }
-
   private static Random rand;
   private static boolean verbose = false;
   private static boolean print = false;
