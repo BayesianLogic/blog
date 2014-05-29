@@ -35,9 +35,9 @@
 
 package blog.distrib;
 
-import java.util.*;
-import blog.*;
-import blog.common.Util;
+import java.util.List;
+import java.util.Set;
+
 import blog.model.Model;
 
 /**
@@ -51,58 +51,102 @@ import blog.model.Model;
  * The name comes from the iota operator in logic.
  */
 public class Iota extends DetCondProbDistrib {
-	/**
-	 * Creates an Iota CPD.
-	 */
-	public Iota() {
-	}
+  /**
+   * Creates an Iota CPD.
+   */
+  public Iota() {
+  }
 
-	/**
-	 * Creates an Iota CPD. The CPD takes no parameters.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if <code>params</code> is non-empty
-	 */
-	public Iota(List params) {
-		if (!params.isEmpty()) {
-			throw new IllegalArgumentException(
-					"Iota CPD does not take any parameters.");
-		}
-	}
+  /**
+   * Creates an Iota CPD. The CPD takes no parameters.
+   * 
+   * @throws IllegalArgumentException
+   *           if <code>params</code> is non-empty
+   */
+  public Iota(List params) {
+    if (!params.isEmpty()) {
+      throw new IllegalArgumentException(
+          "Iota CPD does not take any parameters.");
+    }
+  }
 
-	/**
-	 * Takes a single argument, namely a set S. If S is empty, returns Model.NULL.
-	 * If S has a single element, returns that element. If S has more than one
-	 * element, throws an IllegalArgumentException.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if <code>args</code> contains anything other than a single
-	 *           argument of class Set.
-	 */
-	public Object getChildValue(List args) {
-		Set s = processArgs(args); // throws exception if size > 1
-		if (s.isEmpty()) {
-			return Model.NULL;
-		}
-		return s.iterator().next();
-	}
+  /**
+   * Takes a single argument, namely a set S. If S is empty, returns Model.NULL.
+   * If S has a single element, returns that element. If S has more than one
+   * element, throws an IllegalArgumentException.
+   * 
+   * @throws IllegalArgumentException
+   *           if <code>args</code> contains anything other than a single
+   *           argument of class Set.
+   */
+  public Object getChildValue(List args) {
+    Set s = processArgs(args); // throws exception if size > 1
+    if (s.isEmpty()) {
+      return Model.NULL;
+    }
+    return s.iterator().next();
+  }
 
-	private Set processArgs(List args) {
-		if (args.size() != 1) {
-			throw new IllegalArgumentException("Iota CPD takes exactly one argument.");
-		}
-		if (!(args.get(0) instanceof Set)) {
-			throw new IllegalArgumentException(
-					"Iota CPD takes an argument of class Set, not one of "
-							+ args.get(0).getClass() + ".");
-		}
+  private Set processArgs(List args) {
+    if (args.size() != 1) {
+      throw new IllegalArgumentException("Iota CPD takes exactly one argument.");
+    }
+    if (!(args.get(0) instanceof Set)) {
+      throw new IllegalArgumentException(
+          "Iota CPD takes an argument of class Set, not one of "
+              + args.get(0).getClass() + ".");
+    }
 
-		Set s = (Set) args.get(0);
-		if (s.size() > 1) {
-			throw new IllegalArgumentException(
-					"Set passed to Iota CPD has more than one element: " + s);
-		}
+    Set s = (Set) args.get(0);
+    if (s.size() > 1) {
+      throw new IllegalArgumentException(
+          "Set passed to Iota CPD has more than one element: " + s);
+    }
 
-		return s;
-	}
+    return s;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   */
+  @Override
+  public void setParams(List<Object> params) {
+    // TODO Auto-generated method stub
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  @Override
+  public Object sampleVal() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

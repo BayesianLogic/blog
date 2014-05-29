@@ -35,7 +35,7 @@
 
 package blog.distrib;
 
-import java.util.*;
+import java.util.List;
 
 import blog.model.Clause;
 
@@ -45,34 +45,78 @@ import blog.model.Clause;
  * application rather than on a CPD.
  */
 public class EqualsCPD extends DetCondProbDistrib {
-	/**
-	 * An instance of EqualsCPD.
-	 */
-	public static final EqualsCPD CPD = new EqualsCPD();
+  /**
+   * An instance of EqualsCPD.
+   */
+  public static final EqualsCPD CPD = new EqualsCPD();
 
-	/**
-	 * Creates a new EqualsCPD.
-	 */
-	public EqualsCPD() {
-	}
+  /**
+   * Creates a new EqualsCPD.
+   */
+  public EqualsCPD() {
+  }
 
-	/**
-	 * Creates a new EqualsCPD. The parameters are ignored.
-	 */
-	public EqualsCPD(List params) {
-	}
+  /**
+   * Creates a new EqualsCPD. The parameters are ignored.
+   */
+  public EqualsCPD(List params) {
+  }
 
-	/**
-	 * Returns the first element of the given argument tuple.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if <code>args</code> is not of size 1
-	 */
-	public Object getChildValue(List args) {
-		if (args.size() != 1) {
-			throw new IllegalArgumentException("Invalid arguments to EqualsCPD: "
-					+ args);
-		}
-		return args.get(0);
-	}
+  /**
+   * Returns the first element of the given argument tuple.
+   * 
+   * @throws IllegalArgumentException
+   *           if <code>args</code> is not of size 1
+   */
+  public Object getChildValue(List args) {
+    if (args.size() != 1) {
+      throw new IllegalArgumentException("Invalid arguments to EqualsCPD: "
+          + args);
+    }
+    return args.get(0);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   */
+  @Override
+  public void setParams(List<Object> params) {
+    // TODO Auto-generated method stub
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  @Override
+  public Object sampleVal() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

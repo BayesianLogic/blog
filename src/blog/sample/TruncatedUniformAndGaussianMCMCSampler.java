@@ -4,6 +4,7 @@ import blog.bn.VarWithDistrib;
 import blog.common.EZIterator;
 import blog.distrib.CondProbDistrib;
 import blog.distrib.UniformReal;
+import blog.distrib.UnivarGaussian;
 import blog.world.PartialWorld;
 
 /**
@@ -26,7 +27,7 @@ public class TruncatedUniformAndGaussianMCMCSampler implements
       return null;
     uniformRealPrior = (blog.distrib.UniformReal) prior;
 
-    messageFromChildren = blog.old_distrib.Util
+    messageFromChildren = blog.distrib.Util
         .posteriorOnVarGivenChildrenWithGaussingDistributionWithVarAsMean(var,
             world);
     if (messageFromChildren == null)
@@ -45,7 +46,7 @@ public class TruncatedUniformAndGaussianMCMCSampler implements
     public Object calculateNext() {
       double sample;
       do {
-        sample = messageFromChildren.sampleVal_();
+        sample = messageFromChildren.sampleValue();
       } while (sample < uniformRealPrior.getLower()
           || sample > uniformRealPrior.getUpper());
 
