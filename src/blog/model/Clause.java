@@ -74,9 +74,15 @@ public class Clause {
   public Clause(Formula cond, Class cpdClass, List<ArgSpec> cpdArgsAndParams) {
     this.cond = cond;
     this.cpdClass = cpdClass;
-    this.cpdParams = null;
-    this.cpdArgs = null;
-    this.cpdArgsAndParams = cpdArgsAndParams;
+    this.cpdArgs = new ArrayList<ArgSpec>();
+    this.cpdParams = new ArrayList<ArgSpec>();
+    for (ArgSpec spec : cpdArgsAndParams) {
+      if (spec.containsRandomSymbol()) {
+        this.cpdArgs.add(spec);
+      } else {
+        this.cpdParams.add(spec);
+      }
+    }
   }
 
   public void setCond(Formula cond) {
@@ -168,46 +174,15 @@ public class Clause {
     if (!cond.checkTypesAndScope(model, scope)) {
       correct = false;
     }
-
-    if (cpdArgsAndParams == null) {
-      for (Iterator iter = cpdArgs.iterator(); iter.hasNext();) {
-        if (!((ArgSpec) iter.next()).checkTypesAndScope(model, scope)) {
-          correct = false;
-        }
-      }
-      for (Iterator iter = cpdParams.iterator(); iter.hasNext();) {
-        if (!((ArgSpec) iter.next()).checkTypesAndScope(model, scope)) {
-          correct = false;
-        }
-      }
-    } else {
-      for (Iterator iter = cpdArgsAndParams.iterator(); iter.hasNext();) {
-        ArgSpec as = (ArgSpec) iter.next();
-        if (as instanceof MapSpec) {
-          MapSpec m = (MapSpec) as;
-          if (!m.checkTypesAndScope(model, scope, childType)) {
-            correct = false;
-          }
-        } else if (!as.checkTypesAndScope(model, scope)) {
-          correct = false;
-        }
+    for (ArgSpec spec : cpdParams) {
+      if (!spec.checkTypesAndScope(model, scope)) {
+        correct = false;
       }
     }
-
-    if (this.cpdArgs == null && this.cpdParams == null) {
-      // random inputs to distribution need to go into args
-      this.cpdArgs = new ArrayList<ArgSpec>();
-      this.cpdParams = new ArrayList<ArgSpec>();
-      for (Iterator<ArgSpec> iter = this.cpdArgsAndParams.iterator(); iter
-          .hasNext();) {
-        ArgSpec spec = iter.next();
-        if (spec.containsRandomSymbol()) {
-          this.cpdArgs.add(spec);
-        } else {
-          this.cpdParams.add(spec);
-        }
+    for (ArgSpec spec : cpdArgs) {
+      if (!spec.checkTypesAndScope(model, scope)) {
+        correct = false;
       }
-      this.cpdArgsAndParams = null;
     }
 
     // for EqualsCPD, we can do additional checking
@@ -387,5 +362,4 @@ public class Clause {
   private List<ArgSpec> cpdParams;
   private CondProbDistrib cpd;
   private List<ArgSpec> cpdArgs;
-  private List<ArgSpec> cpdArgsAndParams;
 }
