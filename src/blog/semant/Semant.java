@@ -161,9 +161,8 @@ public class Semant {
         // continue loop
       }
     }
-    Util.fatalError(
-      "Could not load class '" + classname
-      + "'; looked in the following packages: " + packages);
+    Util.fatalError("Could not load class '" + classname
+        + "'; looked in the following packages: " + packages);
     return null;
   }
 
@@ -524,21 +523,14 @@ public class Semant {
   DependencyModel transDependency(Expr e, Type resTy, Object defVal) {
     Object body = transExpr(e);
     List<Clause> cl = new ArrayList<Clause>(1);
-    if (body instanceof Term || body instanceof Formula) {
+    if (body instanceof Term || body instanceof Formula
+        || body instanceof TupleSetExpr) {
       cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
           .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
     } else if (body instanceof Clause) {
       cl.add((Clause) body);
     } else if (e instanceof IfExpr) {
       cl = (List<Clause>) body;
-    } else if (e instanceof TupleSetExpr) {
-      // FIXME: no idea if I'm doing the right thing here...
-      cl.add(new Clause(
-        TrueFormula.TRUE,
-        EqualsCPD.class,
-        Collections.<ArgSpec> emptyList(),
-        Collections.singletonList((ArgSpec) body)
-      ));
     } else {
       error(e.line, e.col, "invalid body of dependency clause");
     }
