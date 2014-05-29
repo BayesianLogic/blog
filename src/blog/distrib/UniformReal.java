@@ -43,137 +43,87 @@ import blog.common.Util;
  * Uniform distribution over a range of real numbers [lower, upper). The range
  * is open at the upper end for consistency with Random.nextDouble().
  */
-public class UniformReal extends AbstractCondProbDistrib {
-  /**
-   * Interprets the parameters as a pair of real numbers (lower, upper) and
-   * creates a uniform distribution over the range [lower, upper).
-   * 
-   * @throws IllegalArgumentException
-   *           if params does not consist of exactly two Number objects, or if
-   *           lower &gt;= upper
-   */
-  public UniformReal(List params) {
-    try {
-      lower = ((Number) params.get(0)).doubleValue();
-      upper = ((Number) params.get(1)).doubleValue();
-      if ((lower >= upper) || (params.size() > 2)) {
-        throw new IllegalArgumentException();
-      }
-    } catch (RuntimeException e) {
-      throw new IllegalArgumentException(
-          "UniformReal CPD expects two numeric arguments "
-              + "[lower, upper) with lower < upper.  Got: " + params);
+public class UniformReal implements CondProbDistrib {
+  public UniformReal() {
+  }
+
+  public UniformReal(double lower, double upper) {
+    setParams(lower, upper);
+  }
+
+  public void setParams(Double lower, Double upper) {
+    if (lower != null) {
+      this.lower = lower;
+      this.hasLower = true;
+    }
+    if (upper != null) {
+      this.upper = upper;
+      this.hasUpper = true;
+    }
+    if (this.hasLower && this.hasUpper && this.lower >= this.upper) {
+      throw new IllegalArgumentException("lower >= upper");
     }
   }
 
-  /**
-   * Returns 1 / (upper - lower) if the given number is in the range of this
-   * distribution, otherwise returns zero. Takes no arguments.
-   * 
-   * @throws IllegalArgumentException
-   *           if <code>args</code> is non-empty or <code>value</code> is not a
-   *           Number
-   */
-  public double getProb(List args, Object value) {
-    if (!args.isEmpty()) {
-      throw new IllegalArgumentException(
-          "UniformReal CPD does not take any arguments.");
+  public void setParams(List<Object> params) {
+    if (params.size() != 2) {
+      throw new IllegalArgumentException("expected two params: lower and upper");
     }
-    if (!(value instanceof Number)) {
-      throw new IllegalArgumentException(
-          "UniformReal CPD defines distribution over objects of class "
-              + "Number, not " + value.getClass() + " (value is " + value
-              + ").");
-    }
-    double x = ((Number) value).doubleValue();
+    setParams((Double) params.get(0), (Double) params.get(1));
+  }
 
-    if ((x >= lower) && (x < upper)) {
+  private void checkHasParams() {
+    if (!hasLower) {
+      throw new IllegalArgumentException("lower not provided");
+    }
+    if (!hasUpper) {
+      throw new IllegalArgumentException("upper not provided");
+    }
+  }
+
+  public double getProb(Object value) {
+    return getProb(((Double) value).doubleValue());
+  }
+
+  public double getProb(double value) {
+    checkHasParams();
+    if ((value >= lower) && (value < upper)) {
       return 1.0 / (upper - lower);
+    } else {
+      return 0.0;
     }
-    return 0;
   }
 
-  /**
-   * Returns a sample from this distribution.
-   * 
-   * @throws IllegalArgumentException
-   *           if <code>args</code> is non-empty
-   */
-  public Object sampleVal(List args) {
-    if (!args.isEmpty()) {
-      throw new IllegalArgumentException(
-          "UniformReal CPD does not take any arguments.");
-    }
+  public double getLogProb(Object value) {
+    return getLogProb(((Double) value).doubleValue());
+  }
 
+  public double getLogProb(double value) {
+    return Math.log(getProb(value));
+  }
+
+  public Object sampleVal() {
+    checkHasParams();
     // rely on the fact that Util.random() returns a value in [0, 1)
     double x = lower + (Util.random() * (upper - lower));
-    return new Double(x);
+    return x;
   }
-
-  private double lower;
-  private double upper;
 
   public double getLower() {
     return lower;
-  }
-
-  public void setLower(double lower) {
-    this.lower = lower;
   }
 
   public double getUpper() {
     return upper;
   }
 
-  public void setUpper(double upper) {
-    this.upper = upper;
-  }
-
   public String toString() {
     return "U[" + lower + ", " + upper + "]";
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
-   */
-  @Override
-  public void setParams(List<Object> params) {
-    // TODO Auto-generated method stub
+  private boolean hasLower;
+  private boolean hasUpper;
 
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
-   */
-  @Override
-  public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
-   */
-  @Override
-  public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#sampleVal()
-   */
-  @Override
-  public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  private double lower;
+  private double upper;
 }
