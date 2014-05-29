@@ -259,10 +259,9 @@ public class Clause {
     }
 
     try {
-      Class[] constrArgTypes = { List.class };
-      Constructor ct = cpdClass.getConstructor(constrArgTypes);
-      Object[] constrArgs = { constructionArgValues };
-      cpd = (CondProbDistrib) ct.newInstance(constrArgs);
+      Constructor<? extends CondProbDistrib> ct = cpdClass.getConstructor();
+      cpd = (CondProbDistrib) ct.newInstance();
+      cpd.setParams(constructionArgValues);
     } catch (InvocationTargetException e) {
       e.printStackTrace();
       System.err.println("Error initializing CPD at " + getLocation() + ": "
@@ -272,8 +271,7 @@ public class Clause {
     } catch (NoSuchMethodException e) {
       e.printStackTrace();
       System.err.println("Error initializing CPD at " + getLocation() + ": "
-          + cpdClass + " does not have a "
-          + "constructor with a single argument of type " + "List.");
+          + cpdClass + " does not have a constructor with no arguments");
       ++errors;
     } catch (ClassCastException e) {
       e.printStackTrace();
@@ -334,7 +332,7 @@ public class Clause {
   private Object location = DEFAULT_LOCATION;
 
   private Formula cond;
-  private Class cpdClass;
+  private Class<? extends CondProbDistrib> cpdClass;
   private CondProbDistrib cpd;
   private List<ArgSpec> cpdArgs;
 }

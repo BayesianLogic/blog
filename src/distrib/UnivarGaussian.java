@@ -19,7 +19,7 @@ public class UnivarGaussian {
     }
 
     if (variance_ != null) {
-      if (variance <= 0) {
+      if (variance_ <= 0) {
         throw new IllegalArgumentException("variance must be positive");
       }
       variance = variance_;
