@@ -38,7 +38,6 @@ package blog.model;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -103,26 +102,6 @@ public class Clause {
     this.cpdParams = null;
     this.cpdArgs = null;
     this.cpdArgsAndParams = cpdArgsAndParams;
-  }
-
-  /**
-   * Creates a new clause using the given CondProbDistrib object.
-   * 
-   * @param cond
-   *          the condition under which this clause applies
-   * @param cpd
-   *          conditional probability distribution for this clause
-   * @param cpdArgs
-   *          List of ArgSpec objects whose denotations will be passed to the
-   *          CPD each time it is invoked
-   */
-  public Clause(Formula cond, CondProbDistrib cpd, List<ArgSpec> cpdArgs) {
-    this.cond = cond;
-    this.cpdClass = cpd.getClass();
-    this.cpdParams = Collections.emptyList();
-    this.cpd = cpd;
-    this.cpdArgs = cpdArgs;
-    this.cpdArgsAndParams = null;
   }
 
   public void setCond(Formula cond) {
@@ -430,8 +409,8 @@ public class Clause {
 
   private Formula cond;
   private Class cpdClass;
-  private List<ArgSpec> cpdParams; // of ArgSpec;
+  private List<ArgSpec> cpdParams;
   private CondProbDistrib cpd;
-  private List<ArgSpec> cpdArgs; // of ArgSpec
-  private List<ArgSpec> cpdArgsAndParams; // Only used before compilation.
+  private List<ArgSpec> cpdArgs;
+  private List<ArgSpec> cpdArgsAndParams;
 }
