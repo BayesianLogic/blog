@@ -1,13 +1,13 @@
-package blog.old_distrib;
+package blog.distrib;
 
 import java.util.List;
 
 import blog.common.Util;
 
-public class UnivarGaussianNew extends distrib.UnivarGaussian implements
+public class UnivarGaussian extends distrib.UnivarGaussian implements
     CondProbDistrib {
 
-  public UnivarGaussianNew() {
+  public UnivarGaussian() {
     super(Util.getRNG());
   }
 
