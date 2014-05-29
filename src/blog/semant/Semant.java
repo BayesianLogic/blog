@@ -161,9 +161,8 @@ public class Semant {
         // continue loop
       }
     }
-    Util.fatalError(
-      "Could not load class '" + classname
-      + "'; looked in the following packages: " + packages);
+    Util.fatalError("Could not load class '" + classname
+        + "'; looked in the following packages: " + packages);
     return null;
   }
 
@@ -526,7 +525,7 @@ public class Semant {
     List<Clause> cl = new ArrayList<Clause>(1);
     if (body instanceof Term || body instanceof Formula) {
       cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-          .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
+          .singletonList((ArgSpec) body)));
     } else if (body instanceof Clause) {
       cl.add((Clause) body);
     } else if (e instanceof IfExpr) {
@@ -852,7 +851,7 @@ public class Semant {
     } else {
       // should be ArgSpec
       clauses.add(new Clause(test, EqualsCPD.class, Collections
-          .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
+          .singletonList((ArgSpec) value)));
     }
   }
 
@@ -886,7 +885,7 @@ public class Semant {
     } else {
       // should be ArgSpec
       clauses.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-          .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
+          .singletonList((ArgSpec) value)));
     }
   }
 
