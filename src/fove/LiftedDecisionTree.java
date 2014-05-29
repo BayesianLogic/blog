@@ -173,7 +173,7 @@ public class LiftedDecisionTree extends ve.DecisionTree<Term> {
   private static Node createSubtreeForArgs(RandomFunction rf, PartialWorld w,
       ParentRecEvalContext context, Clause clause, List<Object> argValuesSoFar,
       Map<ObjectIdentifier, LogicalVar> skolemMap, FuncAppTerm childAtom) {
-    List args = clause.getArgs();
+    List args = clause.getArgsNonFixed();
     if (argValuesSoFar.size() == args.size()) {
       // done finding argument values
       DependencyModel.Distrib distrib = new DependencyModel.Distrib(
