@@ -61,9 +61,9 @@ public class UnivarGaussian {
   private boolean hasMean;
   private boolean hasVariance;
 
-  private double mean;
-  private double variance;
-  private double sqrtVariance;
+  protected double mean;
+  protected double variance;
+  protected double sqrtVariance;
   private double normConst;
   private double logNormConst;
 

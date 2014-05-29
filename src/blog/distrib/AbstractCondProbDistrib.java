@@ -35,18 +35,17 @@
 
 package blog.distrib;
 
-import java.util.*;
 
 /**
  * Abstract implementation of the CondProbDistrib interface. It implements the
  * getLogProb method.
  */
 public abstract class AbstractCondProbDistrib implements CondProbDistrib {
-	public double getLogProb(List args, Object childValue) {
-		return Math.log(getProb(args, childValue));
-	}
+  public double getLogProb(Object childValue) {
+    return Math.log(getProb(childValue));
+  }
 
-	public String toString() {
-		return getClass().getName();
-	}
+  public String toString() {
+    return getClass().getName();
+  }
 }

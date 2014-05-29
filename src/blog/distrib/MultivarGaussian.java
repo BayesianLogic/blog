@@ -176,7 +176,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
   public MatrixLib sampleVal() {
     double[][] mat = new double[d][1];
     for (int i = 0; i < d; i++) {
-      mat[i][0] = UnivarGaussian.STANDARD.sampleVal_();
+      mat[i][0] = UnivarGaussian.STANDARD.sampleValue();
     }
     MatrixLib temp = MatrixFactory.fromArray(mat);
     return mu.plus(sqrtSigma.timesMat(temp));
@@ -327,4 +327,37 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
   private double logNormConst;
   private MatrixLib sigmaInverse;
   private MatrixLib sqrtSigma;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   */
+  @Override
+  public void setParams(List<Object> params) {
+    // TODO Auto-generated method stub
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

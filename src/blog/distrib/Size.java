@@ -81,4 +81,48 @@ public class Size extends AbstractCondProbDistrib {
 
     return (ObjectSet) args.get(0);
   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   */
+  @Override
+  public void setParams(List<Object> params) {
+    // TODO Auto-generated method stub
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  @Override
+  public Object sampleVal() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

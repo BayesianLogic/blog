@@ -53,116 +53,160 @@ import blog.common.numerical.MatrixLib;
  * In an input file, this CPD takes three parameters: mu, W, Sigma.
  */
 public class LinearGaussian extends AbstractCondProbDistrib {
-	/**
-	 * Takes a parameter list whose first element is a 1xd mean matrix, second
-	 * element is a dxc regression matrix (where c is the sum of the dimensions of
-	 * the parent vectors), and third element is a dxd covariance matrix.
-	 */
-	public LinearGaussian(List params) {
-		if (params.size() != 3) {
-			throw new IllegalArgumentException(
-					"LinearGaussian CPD takes three parameters: mu, W, Sigma.");
-		}
+  /**
+   * Takes a parameter list whose first element is a 1xd mean matrix, second
+   * element is a dxc regression matrix (where c is the sum of the dimensions of
+   * the parent vectors), and third element is a dxd covariance matrix.
+   */
+  public LinearGaussian(List params) {
+    if (params.size() != 3) {
+      throw new IllegalArgumentException(
+          "LinearGaussian CPD takes three parameters: mu, W, Sigma.");
+    }
 
-		for (int i = 0; i < 3; ++i) {
-			if (!(params.get(i) instanceof MatrixLib)) {
-				throw new IllegalArgumentException(
-						"All parameters to LinearGaussian CPD should be " + "matrices.");
-			}
-		}
+    for (int i = 0; i < 3; ++i) {
+      if (!(params.get(i) instanceof MatrixLib)) {
+        throw new IllegalArgumentException(
+            "All parameters to LinearGaussian CPD should be " + "matrices.");
+      }
+    }
 
-		mu = (MatrixLib) params.get(0);
-		if (mu.numCols() != 1) {
-			throw new IllegalArgumentException(
-					"First parameter to LinearGaussian CPD (mean mu) should "
-							+ "be a column vector.");
-		}
-		d = mu.numRows();
+    mu = (MatrixLib) params.get(0);
+    if (mu.numCols() != 1) {
+      throw new IllegalArgumentException(
+          "First parameter to LinearGaussian CPD (mean mu) should "
+              + "be a column vector.");
+    }
+    d = mu.numRows();
 
-		W = (MatrixLib) params.get(1);
-		if (W.numRows() != d) {
-			throw new IllegalArgumentException(
-					"Second parameter to LinearGaussian CPD (weight matrix W) "
-							+ "should have same number of rows as first parameter.");
-		}
-		c = W.numCols();
+    W = (MatrixLib) params.get(1);
+    if (W.numRows() != d) {
+      throw new IllegalArgumentException(
+          "Second parameter to LinearGaussian CPD (weight matrix W) "
+              + "should have same number of rows as first parameter.");
+    }
+    c = W.numCols();
 
-		Sigma = (MatrixLib) params.get(2);
-		if (!((Sigma.numRows() == d) && (Sigma.numCols() == d))) {
-			throw new IllegalArgumentException(
-					"Third parameter to LinearGaussian CPD (covariance matrix "
-							+ "sigma) should be square matrix of same dimension as "
-							+ "first parameter.");
-		}
+    Sigma = (MatrixLib) params.get(2);
+    if (!((Sigma.numRows() == d) && (Sigma.numCols() == d))) {
+      throw new IllegalArgumentException(
+          "Third parameter to LinearGaussian CPD (covariance matrix "
+              + "sigma) should be square matrix of same dimension as "
+              + "first parameter.");
+    }
 
-		// Make sure Sigma is symmetric
-		for (int i = 0; i < Sigma.numRows(); ++i) {
-			for (int j = 0; j < i; ++j) {
-				if (Sigma.elementAt(i, j) != Sigma.elementAt(j, i)) {
-					throw new IllegalArgumentException(
-							"Covariance matrix for LinearGaussian CPD must "
-									+ "be symmetric.");
-				}
-			}
-		}
-	}
+    // Make sure Sigma is symmetric
+    for (int i = 0; i < Sigma.numRows(); ++i) {
+      for (int j = 0; j < i; ++j) {
+        if (Sigma.elementAt(i, j) != Sigma.elementAt(j, i)) {
+          throw new IllegalArgumentException(
+              "Covariance matrix for LinearGaussian CPD must "
+                  + "be symmetric.");
+        }
+      }
+    }
+  }
 
-	public double getProb(List args, Object value) {
-		MatrixLib v = getParentVector(args);
+  public double getProb(List args, Object value) {
+    MatrixLib v = getParentVector(args);
 
-		if (value instanceof MatrixLib) {
-			MultivarGaussian distrib = new MultivarGaussian(mu.plus(W.timesMat(v)),
-					Sigma);
-			return distrib.getProb((MatrixLib) value);
-		}
-		return 0;
-	}
+    if (value instanceof MatrixLib) {
+      MultivarGaussian distrib = new MultivarGaussian(mu.plus(W.timesMat(v)),
+          Sigma);
+      return distrib.getProb((MatrixLib) value);
+    }
+    return 0;
+  }
 
-	public Object sampleVal(List args) {
-		MatrixLib v = getParentVector(args);
-		MultivarGaussian distrib = new MultivarGaussian(mu.plus(W.timesMat(v)),
-				Sigma);
-		return distrib.sampleVal();
-	}
+  public Object sampleVal(List args) {
+    MatrixLib v = getParentVector(args);
+    MultivarGaussian distrib = new MultivarGaussian(mu.plus(W.timesMat(v)),
+        Sigma);
+    return distrib.sampleVal();
+  }
 
-	private MatrixLib getParentVector(List args) {
-		// MatrixLib v = new MatrixLib(c, 1);
-		double[][] vect = new double[c][1];
+  private MatrixLib getParentVector(List args) {
+    // MatrixLib v = new MatrixLib(c, 1);
+    double[][] vect = new double[c][1];
 
-		int curRow = 0;
-		for (Iterator iter = args.iterator(); iter.hasNext();) {
-			Object arg = iter.next();
-			if (!((arg instanceof MatrixLib) && (((MatrixLib) arg).numCols() == 1))) {
-				throw new IllegalArgumentException(
-						"Arguments for LinearGaussian CPD must be " + "column vectors.");
-			}
+    int curRow = 0;
+    for (Iterator iter = args.iterator(); iter.hasNext();) {
+      Object arg = iter.next();
+      if (!((arg instanceof MatrixLib) && (((MatrixLib) arg).numCols() == 1))) {
+        throw new IllegalArgumentException(
+            "Arguments for LinearGaussian CPD must be " + "column vectors.");
+      }
 
-			MatrixLib parent = (MatrixLib) arg;
-			if (curRow + parent.numRows() > c) {
-				throw new IllegalArgumentException(
-						"Error in LinearGaussian CPD: sum of dimensions of "
-								+ "parents exceeds number of columns in W.");
-			}
+      MatrixLib parent = (MatrixLib) arg;
+      if (curRow + parent.numRows() > c) {
+        throw new IllegalArgumentException(
+            "Error in LinearGaussian CPD: sum of dimensions of "
+                + "parents exceeds number of columns in W.");
+      }
 
-			for (int i = curRow; i < curRow + parent.numRows(); i++) {
-				vect[i][0] = parent.elementAt(i - curRow, 0);
-			}
-			curRow += parent.numRows();
-		}
+      for (int i = curRow; i < curRow + parent.numRows(); i++) {
+        vect[i][0] = parent.elementAt(i - curRow, 0);
+      }
+      curRow += parent.numRows();
+    }
 
-		if (curRow < c) {
-			throw new IllegalArgumentException(
-					"Error in LinearGaussian CPD: sum of dimensions of "
-							+ "parents is less than number of columns in W.");
-		}
+    if (curRow < c) {
+      throw new IllegalArgumentException(
+          "Error in LinearGaussian CPD: sum of dimensions of "
+              + "parents is less than number of columns in W.");
+    }
 
-		return MatrixFactory.fromArray(vect);
-	}
+    return MatrixFactory.fromArray(vect);
+  }
 
-	private int d; // dimension of child vector
-	private int c; // sum of dimensions of parent vectors
+  private int d; // dimension of child vector
+  private int c; // sum of dimensions of parent vectors
 
-	private MatrixLib mu;
-	private MatrixLib W;
-	private MatrixLib Sigma;
+  private MatrixLib mu;
+  private MatrixLib W;
+  private MatrixLib Sigma;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   */
+  @Override
+  public void setParams(List<Object> params) {
+    // TODO Auto-generated method stub
+
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  @Override
+  public Object sampleVal() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
