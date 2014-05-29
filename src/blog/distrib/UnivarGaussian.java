@@ -33,7 +33,7 @@ public class UnivarGaussian extends distrib.UnivarGaussian implements
   }
 
   public double getLogProb(Object value) {
-    return getLogProb((Double) value);
+    return super.getLogProb((Double) value);
   }
 
   public Object sampleVal() {
