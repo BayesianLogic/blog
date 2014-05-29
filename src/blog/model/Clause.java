@@ -61,31 +61,6 @@ import blog.sample.EvalContext;
 public class Clause {
 
   /**
-   * Creates a new clause.
-   * 
-   * @param cond
-   *          the condition under which this clause applies
-   * @param cpdClass
-   *          the class of the conditional probability distribution used in this
-   *          clause
-   * @param cpdParams
-   *          List of ArgSpec objects representing CPD parameters. These must be
-   *          non-random and must contain no free variables.
-   * @param cpdArgs
-   *          List of ArgSpec objects whose denotations will be passed to the
-   *          CPD each time it is invoked
-   */
-  public Clause(Formula cond, Class cpdClass, List<ArgSpec> cpdParams,
-      List<ArgSpec> cpdArgs) {
-    this.cond = cond;
-    this.cpdClass = cpdClass;
-    this.cpdParams = cpdParams;
-    this.cpd = null;
-    this.cpdArgs = cpdArgs;
-    this.cpdArgsAndParams = null;
-  }
-
-  /**
    * Create a new clause where it is not yet known which fields are
    * parameters and which are arguments.
    * 

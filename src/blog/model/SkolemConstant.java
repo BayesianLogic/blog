@@ -86,8 +86,7 @@ public class SkolemConstant extends RandomFunction {
     List cpdArgs = new ArrayList();
     cpdArgs.add(newSetSpec);
 
-    Clause clause = new Clause(TrueFormula.TRUE, UniformChoice.class,
-        Collections.<ArgSpec> emptyList(), cpdArgs);
+    Clause clause = new Clause(TrueFormula.TRUE, UniformChoice.class, cpdArgs);
     List clauseList = new ArrayList();
     clauseList.add(clause);
 
