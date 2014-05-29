@@ -253,6 +253,8 @@ public class NonRandomFunction extends Function {
             // nothing
           } else if (param instanceof ListSpec) {
             // nothing
+          } else if (param instanceof ExplicitSetSpec) {
+            // nothing
           } else if (param instanceof Formula) {
             // nothing
           } else {
