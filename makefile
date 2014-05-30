@@ -19,15 +19,18 @@ else
 TARGETNAME=blog
 endif
 
-SRC_FILES=$(shell find src -name \*.java -print)
+JAVA_SRC_FILES=$(shell find src -name \*.java -print)
+SCALA_SRC_FILES=$(shell find src -name \*.scala -print)
 
-compile: ${SRC_FILES}
+compile: ${JAVA_SRC_FILES}
 	mkdir -p bin
-	javac -cp "lib/*" -d bin/ ${SRC_FILES}
+	javac -cp "lib/*" -d bin/ ${JAVA_SRC_FILES}
+	# TODO update
 
-debug: ${SRC_FILES}
+debug: ${JAVA_SRC_FILES}
 	mkdir -p bin
-	javac -g -cp "lib/*" -d bin/ ${SRC_FILES}
+	# TODO compile scala
+	javac -g -cp "/usr/share/scala/lib/scala-compiler.jar:bin/:lib/*" -d bin/ ${JAVA_SRC_FILES}
 
 tar: zip
 
