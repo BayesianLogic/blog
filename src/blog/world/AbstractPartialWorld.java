@@ -1121,7 +1121,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		ngoProperties = new LiftedObjects();
 		for (Object o : basicVarToValue.keySet()) {
 			BasicVar v = (BasicVar) o;
-			if (v.toString().contains("nonstate_")) continue;
+			if (v.toString().contains("nonstate_")) continue; //TODO
 			if (v instanceof RandFuncAppVar){
 				RandFuncAppVar funcVar = (RandFuncAppVar) v;
 				if (funcVar.func().getObservableFun() != null)

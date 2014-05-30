@@ -86,16 +86,6 @@ public class LiftedEvidence {
 		Set<? extends BayesNetVar> evidenceVars = evidence.getEvidenceVars();
 		if (evidenceVars.size() > 0) {
 			for (BayesNetVar var : evidenceVars) {
-					/*
-					Collection<Term> terms = argSpec.getSubExprs();
-					for (Term t : terms) {
-						if (t instanceof SymbolTerm)
-							System.out.println("symbol");
-						if (t instanceof FuncAppTerm)
-							System.out.println("fat");
-						System.out.println("Term var" + t.getVariable().);
-					}*/
- 				
 				timestep = DBLOGUtil.getTimestepIndex(var);
 				if (timestep >= 0) break;
 			}
