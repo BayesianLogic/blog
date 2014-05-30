@@ -79,6 +79,7 @@ import blog.objgen.ObjectSet;
 import blog.sample.ParentRecEvalContext;
 import blog.engine.onlinePF.ObservableRandomFunction;//added by cheng
 import blog.engine.onlinePF.inverseBucket.UBT;
+import blog.engine.pbvi.LiftedObjects;
 /**
  * An implementation of the PartialWorld interface that just requires concrete
  * subclasses to initialize some protected variables.
@@ -1113,11 +1114,11 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	/**
 	 * Non-guaranteed objects can be compared by their properties.
 	 */
-	private Map<NonGuaranteedObject, Set<RandFuncAppVar>> ngoProperties;
+	private LiftedObjects ngoProperties;
 	
-	private Map<NonGuaranteedObject, Set<RandFuncAppVar>> getNgoProperties() {
+	private LiftedObjects getNgoProperties() {
 		if (ngoProperties != null) return ngoProperties;
-		ngoProperties = new HashMap<NonGuaranteedObject, Set<RandFuncAppVar>>();
+		ngoProperties = new LiftedObjects();
 		for (Object o : basicVarToValue.keySet()) {
 			BasicVar v = (BasicVar) o;
 			if (v.toString().contains("nonstate_")) continue;
@@ -1143,9 +1144,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				Object[] args = funcVar.args();
 				for (Object arg : args) {
 					if (arg instanceof NonGuaranteedObject) {
-						if (!ngoProperties.containsKey((NonGuaranteedObject) arg))
-							ngoProperties.put((NonGuaranteedObject) arg, new HashSet<RandFuncAppVar>());
-						ngoProperties.get((NonGuaranteedObject) arg).add(funcVar);
+						ngoProperties.addObject((NonGuaranteedObject) arg);
+						ngoProperties.addProperty(funcVar, this.getValue(funcVar));
 					}
 				}
 			}
@@ -1154,85 +1154,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		return ngoProperties;
 	}
 	
-	private Map<NonGuaranteedObject, NonGuaranteedObject> findNgoSubstitution(
-			AbstractPartialWorld myWorld,
-			AbstractPartialWorld otherWorld,
-			Set<NonGuaranteedObject> myNgos,
-			Set<NonGuaranteedObject> otherNgos,
-			Set<RandFuncAppVar> myProperties,
-			Set<RandFuncAppVar> otherProperties,
-			Map<NonGuaranteedObject, NonGuaranteedObject> partialSolution) {
-		if (myNgos.size() != otherNgos.size()) return null;	
-		if (myNgos.isEmpty()) return partialSolution;
-		NonGuaranteedObject ngo = (NonGuaranteedObject) Util.getFirst(myNgos);
-		myNgos.remove(ngo);
-		for (NonGuaranteedObject otherNgo : otherNgos) {
-			if (!ngo.getType().equals(otherNgo.getType())) continue;
-			//check for conflict using new matching ngo -> otherNgo
-			Set<RandFuncAppVar> newMyProperties = new HashSet<RandFuncAppVar>(myProperties);
-			Set<RandFuncAppVar> newOtherProperties = new HashSet<RandFuncAppVar>();
-			boolean conflict = false;
-			for (RandFuncAppVar v : otherProperties) {
-				Object[] args = v.args().clone();
-				boolean containsUnsubstituted = false;
-				for (int i = 0; i < args.length; i++) {
-					Object a = args[i];
-					if (a instanceof NonGuaranteedObject) continue;
-					if (a.equals(otherNgo)) {
-						args[i] = ngo;
-					} else if (partialSolution.containsKey(a)) {
-						args[i] = partialSolution.get(a);
-					} else {
-						containsUnsubstituted = true;
-						break;
-					}
-				}
-				if (containsUnsubstituted) {
-					newOtherProperties.add(v);
-				} else {
-					RandFuncAppVar substitutedVar = new RandFuncAppVar(v.func(), args);
-					if (myProperties.contains(substitutedVar)) {
-						Object myValue = myWorld.getValue(substitutedVar);
-						Object otherValue = otherWorld.getValue(v);
-						if (!myValue.equals(otherValue)) { //conflict
-							conflict = true;
-							break;
-						} else {
-							newMyProperties.remove(substitutedVar);
-						}
-					} else {
-						conflict = true;
-						break;
-					}
-				}
-			}
-			if (conflict) continue;
-			
-			//new partial solution = partial solution + (ngo, otherNgo)
-			Map<NonGuaranteedObject, NonGuaranteedObject> newPartialSolution = new HashMap<NonGuaranteedObject, NonGuaranteedObject>(partialSolution);
-			newPartialSolution.put(ngo, otherNgo);
-			
-			//solution = recurse with new partial solution, unresolved properties and unmatched ngos
-			otherNgos.remove(otherNgo);
-			Map<NonGuaranteedObject, NonGuaranteedObject> solution =  
-					findNgoSubstitution(
-					myWorld,
-					otherWorld,
-					myNgos,
-					otherNgos,
-					newMyProperties,
-					newOtherProperties,
-					newPartialSolution);
-			if (solution != null)
-				return solution;
-			otherNgos.add(otherNgo);
-		}
-		myNgos.add(ngo);
-		return null;
-	}
-	
 	private boolean compareNgos(AbstractPartialWorld otherWorld) {
-		Map<NonGuaranteedObject, Set<RandFuncAppVar>> otherNgoProperties = otherWorld.getNgoProperties();
+		/*Map<NonGuaranteedObject, Set<RandFuncAppVar>> otherNgoProperties = otherWorld.getNgoProperties();
 		Map<NonGuaranteedObject, Set<RandFuncAppVar>> myNgoProperties = getNgoProperties();
 		Set<RandFuncAppVar> allMyProperties = new HashSet<RandFuncAppVar>();
 		Set<RandFuncAppVar> allOtherProperties = new HashSet<RandFuncAppVar>();
@@ -1241,15 +1164,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		}
 		for (NonGuaranteedObject ngo : otherNgoProperties.keySet()) {
 			allOtherProperties.addAll(otherNgoProperties.get(ngo));
-		}
-		return null != findNgoSubstitution(this,
-				otherWorld,
-				new HashSet(myNgoProperties.keySet()),
-				new HashSet(otherNgoProperties.keySet()),
-				allMyProperties,
-				allOtherProperties,
-				new HashMap()
-				);
+		}*/
+		return null != getNgoProperties().findNgoSubstitution(otherWorld.getNgoProperties());
 		/*Set<NonGuaranteedObject> availableMatches = new HashSet(otherNgoProperties.keySet());
 		if (availableMatches.size() != myNgoProperties.size()) return false;
 		

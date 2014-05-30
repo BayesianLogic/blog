@@ -1,13 +1,25 @@
 package blog.engine.pbvi;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import blog.DBLOGUtil;
 import blog.bn.BayesNetVar;
+import blog.bn.DerivedVar;
+import blog.bn.RandFuncAppVar;
 import blog.common.Util;
+import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
+import blog.model.DecisionEvidenceStatement;
 import blog.model.Evidence;
+import blog.model.FuncAppTerm;
+import blog.model.NonGuaranteedObject;
+import blog.model.RandomFunction;
 import blog.model.Term;
+import blog.model.ValueEvidenceStatement;
+import blog.world.AbstractPartialWorld;
 
 /**
  * This is a wrapper for evidence 
@@ -22,6 +34,12 @@ public class LiftedEvidence {
 	}
 	
 	private Evidence evidence;
+	private LiftedObjects prevliftedObjects;
+	private LiftedObjects liftedObjects;
+/*	
+	public LiftedEvidence(Evidence evidence) {
+		this(evidence, null);
+	}*/
 	
 	/**
 	 * There should be more information passed in to help convert the grounded decisionEvidence into a lifted one.
@@ -30,15 +48,58 @@ public class LiftedEvidence {
 	 * 
 	 * @param evidence
 	 */
-	public LiftedEvidence(Evidence evidence) {
+	public LiftedEvidence(Evidence evidence, Belief b) {
+		liftedObjects = new LiftedObjects();
+		State s = (State) Util.getFirst(b.getStates());
+		AbstractPartialWorld w = s.getWorld();
+		Collection<ValueEvidenceStatement> ves = evidence.getValueEvidence();
+		Collection<DecisionEvidenceStatement> des = evidence.getDecisionEvidence(); //TODO
+		
+		for (ValueEvidenceStatement stmt : ves) {
+			BayesNetVar var = stmt.getObservedVar();
+			if (var instanceof DerivedVar) {
+				ArgSpec argSpec = ((DerivedVar) var).getArgSpec();
+				if (argSpec instanceof FuncAppTerm) {
+					FuncAppTerm t = (FuncAppTerm) argSpec;
+					if (!(t.getFunction() instanceof blog.model.RandomFunction)) continue;
+					ArgSpec[] args = t.getArgs();
+					List<Object> newArgs = new ArrayList<Object>();
+					boolean hasNgo = false;
+					for (ArgSpec arg : args) {
+						Object newArg = arg.evaluate(w);
+						newArgs.add(newArg);
+						if (newArg instanceof NonGuaranteedObject) {
+							hasNgo = true;
+							liftedObjects.addObject((NonGuaranteedObject) newArg);
+						}
+					}
+					if (hasNgo) {
+						RandFuncAppVar newVar = new RandFuncAppVar((RandomFunction) t.getFunction(), newArgs);
+						liftedObjects.addProperty(newVar, w.getValue(newVar));
+					}
+				}
+			}
+		}
+
+		//TODO: make sure getEvidenceVars is correct
 		int timestep = 0;
 		Set<? extends BayesNetVar> evidenceVars = evidence.getEvidenceVars();
 		if (evidenceVars.size() > 0) {
 			for (BayesNetVar var : evidenceVars) {
+					/*
+					Collection<Term> terms = argSpec.getSubExprs();
+					for (Term t : terms) {
+						if (t instanceof SymbolTerm)
+							System.out.println("symbol");
+						if (t instanceof FuncAppTerm)
+							System.out.println("fat");
+						System.out.println("Term var" + t.getVariable().);
+					}*/
+ 				
 				timestep = DBLOGUtil.getTimestepIndex(var);
 				if (timestep >= 0) break;
 			}
-
+			
 			if (timestep < 0) {
 				System.out.println("Evidence has no timestep? " + evidence);
 				new Exception().printStackTrace();
@@ -57,6 +118,12 @@ public class LiftedEvidence {
 	 */
 	public Evidence getEvidence(Belief b) {
 		int timestep = b.getTimestep();
+		Term replace = BuiltInTypes.TIMESTEP.getCanonicalTerm(BuiltInTypes.TIMESTEP.getGuaranteedObject(timestep));
+		Evidence grounded = evidence.replace(emptyTimestep, replace);
+		return grounded;
+	}
+	
+	public Evidence getEvidence(int timestep) {
 		Term replace = BuiltInTypes.TIMESTEP.getCanonicalTerm(BuiltInTypes.TIMESTEP.getGuaranteedObject(timestep));
 		Evidence grounded = evidence.replace(emptyTimestep, replace);
 		return grounded;

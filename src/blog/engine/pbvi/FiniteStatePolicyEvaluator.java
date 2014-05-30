@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.model.Evidence;
+import blog.world.AbstractPartialWorld;
 
 public class FiniteStatePolicyEvaluator {
 	private OUPOMDPModel pomdp;
@@ -34,6 +36,16 @@ public class FiniteStatePolicyEvaluator {
 	public Double eval(Belief b, FiniteStatePolicy p, int numTrials, int numTrialsToPrint) {
 		Double value = 0D;
 		int totalCount = 0;
+		/*List<TimedParticle> particles = b.getParticleFilter().particles;
+		for (TimedParticle particle : particles) {
+			State s = new State((AbstractPartialWorld) particle.curWorld, particle.getTimestep());
+			Double v = eval(s, p, numTrials, numTrialsToPrint);
+			if (v == null) return v;
+			//value += v * b.getCount(s);
+			//totalCount += b.getCount(s);
+			value += v;
+			totalCount += 1;
+		}*/
 		for (State s : b.getStates()) {
 			Double v = eval(s, p, numTrials, numTrialsToPrint);
 			if (v == null) return v;
@@ -75,9 +87,9 @@ public class FiniteStatePolicyEvaluator {
 				curState = curState.sampleNextBelief(nextAction);		
 				Evidence nextObs = curState.getLatestEvidence();
 				curPath.add(nextObs);
-				FiniteStatePolicy nextPolicy = curPolicy.getNextPolicy(nextObs);
+				FiniteStatePolicy nextPolicy = curPolicy.getNextPolicy(new LiftedEvidence(nextObs, curState));
 				if (nextPolicy == null && !curState.ended()) { 
-					nextPolicy = curPolicy.getApplicableNextPolicy(nextObs, curState);
+					nextPolicy = curPolicy.getApplicableNextPolicy(new LiftedEvidence(nextObs, curState), curState);
 					if (nextPolicy != null) {
 						addMissingObs(nextObs);
 					}

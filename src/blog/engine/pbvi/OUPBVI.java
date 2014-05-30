@@ -325,12 +325,12 @@ public class OUPBVI {
 				}
 				LiftedEvidence nextAction = curPolicy.getAction();
 				curBelief = curBelief.sampleNextBelief(nextAction);		
-				Evidence nextObs = curBelief.getLatestEvidence();
+				LiftedEvidence nextObs = new LiftedEvidence(curBelief.getLatestEvidence(), curBelief);
 				FiniteStatePolicy nextPolicy = curPolicy.getNextPolicy(nextObs);
 				if (nextPolicy == null && !curBelief.ended() && !curPolicy.isLeafPolicy()) { 
 					nextPolicy = curPolicy.getApplicableNextPolicy(nextObs, curBelief);
 					if (nextPolicy != null) {
-						curPolicy.setNextPolicy(new LiftedEvidence(nextObs), nextPolicy);
+						curPolicy.setNextPolicy(nextObs, nextPolicy);
 						curPolicy.addObsNote(nextObs, "random applicable");
 					} else {
 						System.out.println("No applicable next policy for " + curBelief);
@@ -496,7 +496,11 @@ public class OUPBVI {
 		
 		System.out.println("bestAction: " + bestAction + " " + bestValue + " depth: " + (horizon - t));
 		
-		FiniteStatePolicy newPolicy = new FiniteStatePolicy(bestAction, bestPolicyMap);
+		Map<LiftedEvidence, FiniteStatePolicy> bestLiftedPolicyMap = new HashMap<LiftedEvidence, FiniteStatePolicy>();
+		for (Evidence e : bestPolicyMap.keySet()) {
+			bestLiftedPolicyMap.put(new LiftedEvidence(e, b), bestPolicyMap.get(e));
+		}
+		FiniteStatePolicy newPolicy = new FiniteStatePolicy(bestAction, bestLiftedPolicyMap);
 		System.out.println("singlebackupforbelief.time " + Timer.getElapsedStr());
 		System.out.println("num dfs visited states " + addedAlphaKeys.size());
 		return newPolicy;		
@@ -650,7 +654,7 @@ public class OUPBVI {
 			b = pomdp.generateInitialBelief(500);
 			System.out.println(b);
 			System.out.println("Iter: " + i);
-			System.out.println("Evaluated: " + evaluator.eval(b, p, 100, 10));
+			System.out.println("Evaluated: " + evaluator.eval(b, p, 100, 1));
 			System.out.println("Unhandled obs: " + evaluator.getMissingObs());
 		}
 		Timer.record("FINAL EVALUATION");

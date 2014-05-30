@@ -27,13 +27,13 @@ public class FiniteStatePolicy extends PolicyModel {
 	private int id;
 	private Set<ArgSpec> requiredTerms;
 	
-	public FiniteStatePolicy(LiftedEvidence action, Map<Evidence, FiniteStatePolicy> successors) {
+	public FiniteStatePolicy(LiftedEvidence action, Map<LiftedEvidence, FiniteStatePolicy> successors) {
 		this.id = count;
 		count++;
 		this.action = action;
 		this.successors = new HashMap<LiftedEvidence, FiniteStatePolicy>();
-		for (Evidence e : successors.keySet()) {
-			setNextPolicy(new LiftedEvidence(e), successors.get(e));
+		for (LiftedEvidence e : successors.keySet()) {
+			setNextPolicy(e, successors.get(e));
 		}
 		this.notes = new HashMap<LiftedEvidence, String>();
 		
@@ -42,9 +42,9 @@ public class FiniteStatePolicy extends PolicyModel {
 		FuncAppTerm f = ((FuncAppTerm) a.getLeftSide());
 		ArgSpec[] args = f.getArgs();
 		requiredTerms.addAll(Arrays.asList(args));
-		for (Evidence e : successors.keySet()) {
+		for (LiftedEvidence e : successors.keySet()) {
 			Set<ArgSpec> futureRequiredTerms = new HashSet<ArgSpec>(successors.get(e).requiredTerms);
-			Set<? extends BayesNetVar> vars = e.getEvidenceVars();
+			Set<? extends BayesNetVar> vars = e.getEvidence(0).getEvidenceVars(); //TODO
 			for (BayesNetVar v : vars) {
 				if (v instanceof BasicVar) {
 					Term t = ((BasicVar) v).getCanonicalTerm();
@@ -135,11 +135,12 @@ public class FiniteStatePolicy extends PolicyModel {
 		return false;
 	}
 
-	public FiniteStatePolicy getNextPolicy(Evidence latestEvidence) {
+	/*public FiniteStatePolicy getNextPolicy(LiftedEvidence latestEvidence) {
 		return successors.get(new LiftedEvidence(latestEvidence));
-	}
+	}*/
 	
-	public FiniteStatePolicy getApplicableNextPolicy(Evidence latestEvidence, Belief nextBelief) {
+	//@TODO
+	public FiniteStatePolicy getApplicableNextPolicy(LiftedEvidence latestEvidence, Belief nextBelief) {
 		for (LiftedEvidence o : successors.keySet()) {
 			if (successors.get(o).isApplicable(nextBelief)) {
 				return successors.get(o);
@@ -200,13 +201,13 @@ public class FiniteStatePolicy extends PolicyModel {
 		 return true;
 	}
 	
-	private FiniteStatePolicy getNextPolicy(LiftedEvidence o) {
+	public FiniteStatePolicy getNextPolicy(LiftedEvidence o) {
 		return successors.get(o);
 	}
-
-	public void addObsNote(Evidence obs, String note) {
+/*
+	public void addObsNote(LiftedEvidence obs, String note) {
 		notes.put(new LiftedEvidence(obs), note);
-	}
+	}*/
 	
 	public void addObsNote(LiftedEvidence obs, String note) {
 		notes.put(obs, note);
