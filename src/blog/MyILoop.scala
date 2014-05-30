@@ -21,7 +21,7 @@ class MyILoop() extends ILoop()
     // (By default, bindings can fail quietly. This outputs a stack trace when
     // a binding fails. Unfortunately, it also outputs a lot of other garbage
     // to stdout, so I commented it out by default.)
-    replProps.debug.enable()
+    // replProps.debug.enable()
 
     // Bind all values that were requested to be bound.
     valuesToBind.foreach{ case (name, boundType, value) =>
@@ -39,11 +39,14 @@ class MyILoop() extends ILoop()
   def run() {
     println("--------- entering scala repl -------")
     val settings = new Settings
+    settings.Yreplsync.value = true
+    // In order to use BLOG classes from the REPL, we need the REPL's
+    // classloader to be a child of the main classloader used by BLOG.
+    // Otherwise we get weird ClassCastExceptions "cannot cast FOO to FOO".
+    settings.embeddedDefaults(this.getClass().getClassLoader())
     // Need to set classpath so that interpreter knows about BLOG types.
     // HACK: Need a more robust way to set interpreter's classpath
     settings.classpath.value = "bin/"
-    println("classpath is " + settings.classpath.value)
-    settings.Yreplsync.value = true
     process(settings)
     println("\n--------- exiting scala repl --------")
   }
