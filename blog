@@ -10,7 +10,7 @@
 #
 # It can accept an additional variable CLASSPATH to setup classpath of 
 # user provided distribution and library functions.
-# e.g. blog CLASSPATH=userdir -k User.blog example.blog
+# e.g. CLASSPATH=userdir blog -k User.blog example.blog
 #
 # Optional flags:
 # -r, --[no]randomize           Use clock time as random seed
