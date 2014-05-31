@@ -36,8 +36,6 @@
 package blog.engine;
 
 import java.lang.reflect.Constructor;
-import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -217,10 +215,6 @@ public class SamplingEngine extends InferenceEngine {
         printGeneratedWorld(sampler, logWeight);
         printed = true;
       }
-
-      System.out.println("classpath from java:");
-      URLClassLoader loader = (URLClassLoader) this.getClass().getClassLoader();
-      System.out.println(Arrays.toString(loader.getURLs()));
 
       MyILoop repl = new MyILoop();
       repl.bind("i", "Int", i);
