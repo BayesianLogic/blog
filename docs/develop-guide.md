@@ -1,3 +1,11 @@
+## General guideline
+- do not push commit directly to master except very tiny cases (e.g. updating the README.md)
+- large files (e.g. data files > 10MB, any output file, generated pdf etc) should not be added to git repo.
+- Make your branch small enough that only contains one single feature change, multiple features should be completed in seperate branch and pull request. 
+- create an issue if you discover some bug, or propose a new feature, please assign labels to features and milestones when you can. 
+- When creating a pull request, please link to an issue if it already exists. 
+- Follow the style guideline. 
+
 ## Git Basics
 
 You may also be interested in some Git basics: 
