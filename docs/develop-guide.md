@@ -5,6 +5,12 @@
 - create an issue if you discover some bug, or propose a new feature, please assign labels to features and milestones when you can. 
 - When creating a pull request, please link to an issue if it already exists. 
 - Follow the style guideline. 
+- code style: use [google java style](http://google-styleguide.googlecode.com/svn/trunk/javaguide.html)
+ * 2 spaces for indent
+ * no long lines
+ * Please use \n for line terminator! 
+- Eclipse config file (please use the version already in git master branch)
+
 
 ## Git Basics
 
