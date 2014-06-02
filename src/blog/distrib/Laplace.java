@@ -35,11 +35,10 @@
 
 package blog.distrib;
 
-import blog.*;
+import java.util.List;
+
 import blog.common.Util;
 import blog.model.Type;
-
-import java.util.*;
 
 /**
  * Laplace distribution over real numbers. This CPD can be initialized
