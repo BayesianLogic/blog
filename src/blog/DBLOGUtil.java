@@ -212,23 +212,47 @@ public class DBLOGUtil {
   };
 
   /**
-   * Returns a list of Evidence objects, equivalent to a given Evidence object,
-   * ordered by maximum timestep present in their statements. (an absence of
-   * timesteps places the statement in the first Evidence object).
+   * Split evidence by the timestep they refer to.
+   * Atemporal evidence is assigned to timestep null.
    */
-  public static List splitEvidenceByMaxTimestep(Evidence evidence) {
-    List result = new LinkedList();
-    HashMultiMap statementsByTimestep = getStatementsByTimestep(evidence);
-    addAtemporalEvidenceToList(result, statementsByTimestep);
-    addTemporalEvidenceToListInTimestepOrder(result, statementsByTimestep);
+  public static Map<Timestep, Evidence> splitEvidenceInTime(Evidence evidence) {
+    // First we accumulate all statements for each timestep.
+    Map<Timestep, List<Object>> table = new HashMap<Timestep, List<Object>>();
+    for (ValueEvidenceStatement statement : evidence.getValueEvidence()) {
+      TreeSet<Timestep> timesteps = new TreeSet(new TimestepTermComparator());
+      getTimestepTermsIn(statement.getLeftSide(), timesteps);
+      getTimestepTermsIn(statement.getOutput(), timesteps);
+      Timestep maxTimestep = timesteps.isEmpty() ? null : timesteps.last();
+      List<Object> statements = table.get(maxTimestep);
+      if (statements == null) {
+        statements = new LinkedList<Object>();
+        table.put(maxTimestep, statements);
+      }
+      statements.add(statement);
+    }
+    for (SymbolEvidenceStatement statement : evidence.getSymbolEvidence()) {
+      TreeSet<Timestep> timesteps = new TreeSet(new TimestepTermComparator());
+      getTimestepTermsIn(statement.getSetSpec(), timesteps);
+      Timestep maxTimestep = timesteps.isEmpty() ? null : timesteps.last();
+      List<Object> statements = table.get(maxTimestep);
+      if (statements == null) {
+        statements = new LinkedList<Object>();
+        table.put(maxTimestep, statements);
+      }
+      statements.add(statement);
+    }
+    // Then we convert each list of statements to an Evidence object.
+    Map<Timestep, Evidence> result = new HashMap<Timestep, Evidence>();
+    for (Map.Entry<Timestep, List<Object>> entry : table.entrySet()) {
+      result
+          .put(entry.getKey(), Evidence.constructAndCompile(entry.getValue()));
+    }
     return result;
   }
 
   /**
-   * take a list of query, convert it into a map from timestep to list of query
-   * 
-   * @param queries
-   * @return
+   * Split queries by the timestep they refer to.
+   * Atemporal queries are assigned to timestep null.
    */
   public static Map<Timestep, List<Query>> splitQueriesInTime(
       List<Query> queries) {
