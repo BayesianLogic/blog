@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,9 +15,7 @@ import java.util.regex.Pattern;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.common.FilteredIterator;
-import blog.common.HashMultiMap;
 import blog.common.UnaryPredicate;
-import blog.common.UnaryProcedure;
 import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
@@ -269,69 +266,14 @@ public class DBLOGUtil {
     return table;
   }
 
-  private static HashMultiMap getStatementsByTimestep(Evidence evidence) {
-    HashMultiMap statementsByTimestep = new HashMultiMap();
-    Iterator it;
-    for (it = evidence.getValueEvidence().iterator(); it.hasNext();) {
-      ValueEvidenceStatement statement = (ValueEvidenceStatement) it.next();
-      TreeSet timesteps = (TreeSet) getTimestepTermsIn(statement.getLeftSide(),
-          new TreeSet(new TimestepTermComparator()));
-      getTimestepTermsIn(statement.getOutput(), timesteps);
-      Object maxTimestep = timesteps.isEmpty() ? null : timesteps.last();
-      statementsByTimestep.add(maxTimestep, statement);
-    }
-    for (it = evidence.getSymbolEvidence().iterator(); it.hasNext();) {
-      SymbolEvidenceStatement statement = (SymbolEvidenceStatement) it.next();
-      TreeSet timesteps = (TreeSet) getTimestepTermsIn(statement.getSetSpec(),
-          new TreeSet(new TimestepTermComparator()));
-      Object maxTimestep = timesteps.isEmpty() ? null : timesteps.last();
-      statementsByTimestep.add(maxTimestep, statement);
-    }
-    return statementsByTimestep;
-  }
-
-  private static void addAtemporalEvidenceToList(List result,
-      HashMultiMap statementsByTimestep) {
-    result.add(Evidence.constructAndCompile((Collection) statementsByTimestep
-        .get(null)));
-    statementsByTimestep.remove(null);
-  }
-
-  private static void addTemporalEvidenceToListInTimestepOrder(
-      final List result, HashMultiMap statementsByTimestep) {
-    applyProcedureToEvidenceInTimestepOrderUpTo(-1, statementsByTimestep,
-        new UnaryProcedure() {
-          public void evaluate(Object evidenceObj) {
-            result.add(evidenceObj);
-          }
-        });
-  }
-
-  private static void applyProcedureToEvidenceInTimestepOrderUpTo(
-      int timestepIndex, HashMultiMap statementsByTimestep,
-      UnaryProcedure procedure) {
-    SortedSet sortedKeys = new TreeSet(new TimestepTermComparator());
-    sortedKeys.addAll(statementsByTimestep.keySet());
-    for (Iterator it = sortedKeys.iterator(); it.hasNext();) {
-      ArgSpec key = (ArgSpec) it.next();
-      if (timestepIndex != -1
-          && getTimestepInTimestepTerm(key).getValue() > timestepIndex)
-        break;
-      Evidence evidence = Evidence
-          .constructAndCompile((Collection) statementsByTimestep.get(key));
-      procedure.evaluate(evidence);
-    }
-  }
-
   public static Evidence getEvidenceUpTo(int timestepIndex, Evidence evidence) {
+    Map<Timestep, Evidence> splitEvidence = splitEvidenceInTime(evidence);
     final Evidence result = new Evidence();
-    HashMultiMap statementsByTimestep = getStatementsByTimestep(evidence);
-    applyProcedureToEvidenceInTimestepOrderUpTo(timestepIndex,
-        statementsByTimestep, new UnaryProcedure() {
-          public void evaluate(Object evidenceObj) {
-            result.addAll((Evidence) evidenceObj);
-          }
-        });
+    for (Map.Entry<Timestep, Evidence> entry : splitEvidence.entrySet()) {
+      if (entry.getKey().intValue() <= timestepIndex) {
+        result.addAll(entry.getValue());
+      }
+    }
     return result;
   }
 }
