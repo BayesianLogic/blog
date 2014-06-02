@@ -45,11 +45,11 @@ import java.util.*;
  */
 public class Laplace extends UnivarLaplace {
 
-	public Laplace(double mean, double diversity) {
-		super(mean, diversity);
-	}
+  public Laplace(double mean, double diversity) {
+    super(mean, diversity);
+  }
 
-	public Laplace(List parameters) {
-		super(parameters);
-	}
+  public Laplace(List parameters) {
+    super(parameters);
+  }
 }
