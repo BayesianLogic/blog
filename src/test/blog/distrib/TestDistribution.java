@@ -1,7 +1,7 @@
 /**
  * 
  */
-package test;
+package test.blog.distrib;
 
 import java.util.LinkedList;
 import java.util.List;
