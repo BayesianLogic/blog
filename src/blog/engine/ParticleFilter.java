@@ -179,16 +179,13 @@ public class ParticleFilter extends InferenceEngine {
     needsToBeResampledBeforeFurtherSampling = false;
   }
 
-  private List evidenceInOrderOfMaxTimestep;
-
-  // map from timestep to List of queries in that timestep
-  private Map<Timestep, List<Query>> slicedQueries;
-
   private void takeEvidenceAndAnswerQuery() {
-    if (evidenceInOrderOfMaxTimestep == null)
-      evidenceInOrderOfMaxTimestep = DBLOGUtil
+    List evidenceInOrderOfMaxTimestep = DBLOGUtil
           .splitEvidenceByMaxTimestep(evidence);
-    slicedQueries = DBLOGUtil.splitQueriesInTime((List<Query>) queries);
+
+    // map from timestep to List of queries in that timestep
+    Map<Timestep, List<Query>> slicedQueries = DBLOGUtil
+          .splitQueriesInTime((List<Query>) queries);
 
     for (Iterator it = evidenceInOrderOfMaxTimestep.iterator(); it.hasNext();) {
       Evidence evidenceSlice = (Evidence) it.next();
