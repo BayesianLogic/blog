@@ -1,11 +1,12 @@
 /**
  * 
  */
-package test;
+package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
 
 import blog.distrib.Poisson;
 

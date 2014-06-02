@@ -1,4 +1,4 @@
-package test;
+package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
 
