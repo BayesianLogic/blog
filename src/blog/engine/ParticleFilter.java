@@ -37,6 +37,7 @@ package blog.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,7 +47,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import blog.DBLOGUtil;
-import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -180,45 +180,49 @@ public class ParticleFilter extends InferenceEngine {
   }
 
   private void takeEvidenceAndAnswerQuery() {
-    List evidenceInOrderOfMaxTimestep = DBLOGUtil
-          .splitEvidenceByMaxTimestep(evidence);
-
-    // map from timestep to List of queries in that timestep
+    // Split evidence and queries according to the timestep it occurs in.
+    Map<Timestep, Evidence> slicedEvidence = DBLOGUtil
+        .splitEvidenceInTime(evidence);
     Map<Timestep, List<Query>> slicedQueries = DBLOGUtil
-          .splitQueriesInTime((List<Query>) queries);
+        .splitQueriesInTime((List<Query>) queries);
 
-    for (Iterator it = evidenceInOrderOfMaxTimestep.iterator(); it.hasNext();) {
-      Evidence evidenceSlice = (Evidence) it.next();
-      take(evidenceSlice);
+    // Process atemporal evidence (if any) before everything else.
+    if (slicedEvidence.containsKey(null)) {
+      take(slicedEvidence.get(null));
+    }
 
-      // FIXME: This is a very complicated way to obtain the timestep in this
-      // evidence slice. Ideally, splitEvidenceByMaxTimestep would return this
-      // information, since it already computes it.
-      int timestepIndex = -1;
-      for (BayesNetVar var : evidenceSlice.getEvidenceVars()) {
-        timestepIndex = DBLOGUtil.getTimestepIndex(var);
-        if (timestepIndex > -1) {
-          break;
-        }
+    // Process temporal evidence and queries in lockstep.
+    List<Timestep> nonNullTimesteps = new ArrayList<Timestep>();
+    nonNullTimesteps.addAll(slicedEvidence.keySet());
+    nonNullTimesteps.addAll(slicedQueries.keySet());
+    nonNullTimesteps.remove(null);
+    Collections.sort(nonNullTimesteps);
+    for (Timestep timestep : nonNullTimesteps) {
+      if (slicedEvidence.containsKey(timestep)) {
+        take(slicedEvidence.get(timestep));
       }
-
-      if (timestepIndex >= 0) {
-        List<Query> currentQueries = slicedQueries.get(Timestep
-            .at(timestepIndex));
-        if (currentQueries != null) {
-          for (Particle particle : (List<Particle>) particles) {
-            particle.answer(currentQueries);
-          }
-          if (timestepIndex % queryReportInterval == 0) {
-            System.out.println("======== Query Results =========");
-            System.out.println("After timestep " + timestepIndex);
-            for (Query q : currentQueries) {
-              q.printResults(System.out);
-            }
+      if (slicedQueries.containsKey(timestep)) {
+        List<Query> currentQueries = slicedQueries.get(timestep);
+        for (Particle particle : particles) {
+          particle.answer(currentQueries);
+        }
+        if (timestep.intValue() % queryReportInterval == 0) {
+          System.out.println("======== Query Results =========");
+          System.out.println("After timestep " + timestep.intValue());
+          for (Query q : currentQueries) {
+            q.printResults(System.out);
           }
         }
       }
-      removePriorTimeSlice(timestepIndex);
+      removePriorTimeSlice(timestep.intValue());
+    }
+
+    // Process atemporal queries (if any) after all the evidence.
+    if (slicedQueries.containsKey(null)) {
+      List<Query> currentQueries = slicedQueries.get(null);
+      for (Particle particle : particles) {
+        particle.answer(currentQueries);
+      }
     }
   }
 
