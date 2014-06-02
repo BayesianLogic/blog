@@ -24,12 +24,12 @@ SCALA_SRC_FILES=$(shell find src -name \*.scala -print)
 
 compile: ${JAVA_SRC_FILES}
 	mkdir -p bin
-	javac -cp "lib/*" -d bin/ ${JAVA_SRC_FILES}
-	# TODO update
+	fsc -d bin/ ${SCALA_SRC_FILES}
+	javac -cp "/usr/share/scala/lib/scala-compiler.jar:bin/:lib/*" -d bin/ ${JAVA_SRC_FILES}
 
 debug: ${JAVA_SRC_FILES}
 	mkdir -p bin
-	# TODO compile scala
+	fsc -d bin/ ${SCALA_SRC_FILES}
 	javac -g -cp "/usr/share/scala/lib/scala-compiler.jar:bin/:lib/*" -d bin/ ${JAVA_SRC_FILES}
 
 tar: zip
