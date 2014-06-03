@@ -4,8 +4,16 @@
   <artifactId>blog</artifactId>
   <version>0.8.0-SNAPSHOT</version>
   <name>BLOG</name>
-  <url>http://bayesianlogic.cs.berkeley.edu</url>
   <description>This package provides an interpretative inference engine for BayesianLogic (BLOG). BLOG is a probabilistic modelling language. It provides description power of both (first-order) logical relations and uncertainties. </description>
+  <scm>
+    <connection>scm:git:https://github.com/lileicc/dblog.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:lileicc/dblog.git</developerConnection>
+    <url>https://github.com/lileicc/dblog</url>
+  </scm>
+  <organization>
+    <name>BLOG Development Group</name>
+    <url>http://bayesianlogic.cs.berkeley.edu</url>
+  </organization> 
   <dependencies>
   	<dependency>
   		<groupId>gov.nist.math</groupId>
@@ -46,4 +54,13 @@
   		</plugin>
   	</plugins>
   </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>3.3</version>
+      </plugin>
+    </plugins>
+  </reporting> 
 </project>
