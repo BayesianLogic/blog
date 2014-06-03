@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,9 +15,7 @@ import java.util.regex.Pattern;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.common.FilteredIterator;
-import blog.common.HashMultiMap;
 import blog.common.UnaryPredicate;
-import blog.common.UnaryProcedure;
 import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
@@ -212,23 +209,57 @@ public class DBLOGUtil {
   };
 
   /**
-   * Returns a list of Evidence objects, equivalent to a given Evidence object,
-   * ordered by maximum timestep present in their statements. (an absence of
-   * timesteps places the statement in the first Evidence object).
+   * Split evidence by the timestep they refer to.
+   * Atemporal evidence is assigned to timestep null.
    */
-  public static List splitEvidenceByMaxTimestep(Evidence evidence) {
-    List result = new LinkedList();
-    HashMultiMap statementsByTimestep = getStatementsByTimestep(evidence);
-    addAtemporalEvidenceToList(result, statementsByTimestep);
-    addTemporalEvidenceToListInTimestepOrder(result, statementsByTimestep);
+  public static Map<Timestep, Evidence> splitEvidenceInTime(Evidence evidence) {
+    // First we accumulate all statements for each timestep.
+    Map<Timestep, List<Object>> table = new HashMap<Timestep, List<Object>>();
+    for (ValueEvidenceStatement statement : evidence.getValueEvidence()) {
+      // FIXME: timesteps actually accumulates ArgSpecs for which
+      // getTimestepInTimestepTerm returns non-null. Quite confusing.
+      TreeSet<ArgSpec> timesteps = new TreeSet(new TimestepTermComparator());
+      getTimestepTermsIn(statement.getLeftSide(), timesteps);
+      getTimestepTermsIn(statement.getOutput(), timesteps);
+      Timestep maxTimestep = null;
+      if (!timesteps.isEmpty()) {
+        maxTimestep = getTimestepInTimestepTerm(timesteps.last());
+      }
+      List<Object> statements = table.get(maxTimestep);
+      if (statements == null) {
+        statements = new LinkedList<Object>();
+        table.put(maxTimestep, statements);
+      }
+      statements.add(statement);
+    }
+    for (SymbolEvidenceStatement statement : evidence.getSymbolEvidence()) {
+      // FIXME: timesteps actually accumulates ArgSpecs for which
+      // getTimestepInTimestepTerm returns non-null. Quite confusing.
+      TreeSet<ArgSpec> timesteps = new TreeSet(new TimestepTermComparator());
+      getTimestepTermsIn(statement.getSetSpec(), timesteps);
+      Timestep maxTimestep = null;
+      if (!timesteps.isEmpty()) {
+        maxTimestep = getTimestepInTimestepTerm(timesteps.last());
+      }
+      List<Object> statements = table.get(maxTimestep);
+      if (statements == null) {
+        statements = new LinkedList<Object>();
+        table.put(maxTimestep, statements);
+      }
+      statements.add(statement);
+    }
+    // Then we convert each list of statements to an Evidence object.
+    Map<Timestep, Evidence> result = new HashMap<Timestep, Evidence>();
+    for (Map.Entry<Timestep, List<Object>> entry : table.entrySet()) {
+      result
+          .put(entry.getKey(), Evidence.constructAndCompile(entry.getValue()));
+    }
     return result;
   }
 
   /**
-   * take a list of query, convert it into a map from timestep to list of query
-   * 
-   * @param queries
-   * @return
+   * Split queries by the timestep they refer to.
+   * Atemporal queries are assigned to timestep null.
    */
   public static Map<Timestep, List<Query>> splitQueriesInTime(
       List<Query> queries) {
@@ -245,69 +276,14 @@ public class DBLOGUtil {
     return table;
   }
 
-  private static HashMultiMap getStatementsByTimestep(Evidence evidence) {
-    HashMultiMap statementsByTimestep = new HashMultiMap();
-    Iterator it;
-    for (it = evidence.getValueEvidence().iterator(); it.hasNext();) {
-      ValueEvidenceStatement statement = (ValueEvidenceStatement) it.next();
-      TreeSet timesteps = (TreeSet) getTimestepTermsIn(statement.getLeftSide(),
-          new TreeSet(new TimestepTermComparator()));
-      getTimestepTermsIn(statement.getOutput(), timesteps);
-      Object maxTimestep = timesteps.isEmpty() ? null : timesteps.last();
-      statementsByTimestep.add(maxTimestep, statement);
-    }
-    for (it = evidence.getSymbolEvidence().iterator(); it.hasNext();) {
-      SymbolEvidenceStatement statement = (SymbolEvidenceStatement) it.next();
-      TreeSet timesteps = (TreeSet) getTimestepTermsIn(statement.getSetSpec(),
-          new TreeSet(new TimestepTermComparator()));
-      Object maxTimestep = timesteps.isEmpty() ? null : timesteps.last();
-      statementsByTimestep.add(maxTimestep, statement);
-    }
-    return statementsByTimestep;
-  }
-
-  private static void addAtemporalEvidenceToList(List result,
-      HashMultiMap statementsByTimestep) {
-    result.add(Evidence.constructAndCompile((Collection) statementsByTimestep
-        .get(null)));
-    statementsByTimestep.remove(null);
-  }
-
-  private static void addTemporalEvidenceToListInTimestepOrder(
-      final List result, HashMultiMap statementsByTimestep) {
-    applyProcedureToEvidenceInTimestepOrderUpTo(-1, statementsByTimestep,
-        new UnaryProcedure() {
-          public void evaluate(Object evidenceObj) {
-            result.add(evidenceObj);
-          }
-        });
-  }
-
-  private static void applyProcedureToEvidenceInTimestepOrderUpTo(
-      int timestepIndex, HashMultiMap statementsByTimestep,
-      UnaryProcedure procedure) {
-    SortedSet sortedKeys = new TreeSet(new TimestepTermComparator());
-    sortedKeys.addAll(statementsByTimestep.keySet());
-    for (Iterator it = sortedKeys.iterator(); it.hasNext();) {
-      ArgSpec key = (ArgSpec) it.next();
-      if (timestepIndex != -1
-          && getTimestepInTimestepTerm(key).getValue() > timestepIndex)
-        break;
-      Evidence evidence = Evidence
-          .constructAndCompile((Collection) statementsByTimestep.get(key));
-      procedure.evaluate(evidence);
-    }
-  }
-
   public static Evidence getEvidenceUpTo(int timestepIndex, Evidence evidence) {
+    Map<Timestep, Evidence> splitEvidence = splitEvidenceInTime(evidence);
     final Evidence result = new Evidence();
-    HashMultiMap statementsByTimestep = getStatementsByTimestep(evidence);
-    applyProcedureToEvidenceInTimestepOrderUpTo(timestepIndex,
-        statementsByTimestep, new UnaryProcedure() {
-          public void evaluate(Object evidenceObj) {
-            result.addAll((Evidence) evidenceObj);
-          }
-        });
+    for (Map.Entry<Timestep, Evidence> entry : splitEvidence.entrySet()) {
+      if (entry.getKey().intValue() <= timestepIndex) {
+        result.addAll(entry.getValue());
+      }
+    }
     return result;
   }
 }

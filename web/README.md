@@ -3,7 +3,7 @@ Setting up Local Server
 1. `$ sudo apt-get install python-webpy`
 2. `$ git clone https://github.com/amatsukawa/dblog.git`
 3. `$ cd dblog`
-4. `$ ./compile.sh`
+4. `$ make compile`
 5. `$ cd web`
 6. `$ ./start-server.sh`
 
