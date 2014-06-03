@@ -80,8 +80,8 @@ public class DependencyModel {
       return cpd;
     }
 
-    public List getArgValues() {
-      return Collections.unmodifiableList(argValues);
+    public Object[] getArgValues() {
+      return argValues.toArray();
     }
 
     public String toString() {

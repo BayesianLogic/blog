@@ -62,10 +62,10 @@ public class TestUnivariateGaussian {
 
   public void testGaussian(List<Object> constructParams, List<Object> args) {
     UnivarGaussian gaussian = new UnivarGaussian();
-    gaussian.setParams(constructParams);
+    gaussian.setParams(constructParams.toArray());
     Set<Double> points = probVals.keySet();
     for (Double point : points) {
-      gaussian.setParams(args);
+      gaussian.setParams(args.toArray());
       assertEquals(probVals.get(point), gaussian.getProb(point), ERROR_BOUND);
       assertEquals(Math.log(probVals.get(point)), gaussian.getLogProb(point),
           ERROR_BOUND);

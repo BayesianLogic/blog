@@ -1,7 +1,5 @@
 package blog.distrib;
 
-import java.util.List;
-
 /**
  * Common interface for all probability distributions.
  * 
@@ -40,9 +38,9 @@ public interface CondProbDistrib {
    * </code>
    * 
    * @param params
-   *          The list of parameters for this distribution.
+   *          The array of parameters for this distribution.
    */
-  public void setParams(List<Object> params);
+  public void setParams(Object[] params);
 
   /**
    * Compute the probability of a given value.

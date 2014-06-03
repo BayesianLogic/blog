@@ -36,6 +36,7 @@
 package fove;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
@@ -437,8 +438,8 @@ public class LiftedDecisionTree extends ve.DecisionTree<Term> {
       Map<ObjectIdentifier, LogicalVar> skolemMap, FuncAppTerm childAtom) {
     if (childAtom == null) {
       Leaf node = new Leaf();
-      Object val = ((DetCondProbDistrib) distrib.getCPD())
-          .getChildValue(distrib.getArgValues());
+      Object val = ((DetCondProbDistrib) distrib.getCPD()).getChildValue(Arrays
+          .asList(distrib.getArgValues()));
       node.setWeight(((Number) val).doubleValue());
       return node;
     }
