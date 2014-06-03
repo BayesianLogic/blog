@@ -132,6 +132,7 @@ public class Util {
 
   /**
    * Return a pseudorandom number sampled from a standard Gaussian.
+   * This method must not be called before initRandom() is called.
    */
   public static double randGaussian() {
     return rand.nextGaussian();
