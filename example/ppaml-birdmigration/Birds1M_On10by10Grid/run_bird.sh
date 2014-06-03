@@ -1,6 +1,6 @@
 
 BLOG_HOME=../../..
-time "$BLOG_HOME"/run.sh -e blog.engine.LiuWestFilter \
+time "$BLOG_HOME"/blog -r -e blog.engine.LiuWestFilter \
   LocToInteger.blog \
   bird_flow_probs.blog \
   bird_features.blog \
