@@ -12,6 +12,23 @@ import blog.model.Model;
 import blog.world.PartialWorld;
 
 
+/**
+ * Liu-West filter.
+ *
+ * Performs artificial evolution for the atemporal parameters of the model. In
+ * a traditional particle filter, some values are sampled for these parameters,
+ * and these values are never revisited. The particles with less likelihood
+ * die, so we end up with a bunch of particles that all have the same values
+ * for the atemporal parameters. Liu-West is supposed to prevent this
+ * degeneracy, by perturbing the atemporal parameters when resampling
+ * particles.
+ *
+ * The central equation is (3.6) in Liu and West, "Combined parameter and state
+ * estimation in simulation-based filtering", in Sequential Monte Carlo methods
+ * in practice, 2001. Note that our parameter "rho" is "a" in their paper. Rho
+ * is between 0 (maximum perturbation) and 1 (no perturbation). Liu and West
+ * recommend a value of 0.97 - 0.99.
+ */
 public class LiuWestFilter extends ParticleFilter {
 
   public LiuWestFilter(Model model, Properties properties) {
@@ -88,11 +105,7 @@ public class LiuWestFilter extends ParticleFilter {
     }
   }
 
-  // FIXME: explain rho is 'a' in paper.
-  // FIXME: debug why it's getting slower with increasing timestep.
-
-  // Amount of perturbation; between 0 and 1.
-  // Recommended value is between 0.95 and 0.99.
+  // Amount of perturbation; see class docs.
   double rho;
 
   private ArrayList<String> funcNamesToPerturb;
