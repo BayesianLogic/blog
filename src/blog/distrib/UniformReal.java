@@ -1,7 +1,5 @@
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
 
 /**
@@ -15,11 +13,11 @@ public class UniformReal implements CondProbDistrib {
     setParams(lower, upper);
   }
 
-  public void setParams(List<Object> params) {
-    if (params.size() != 2) {
+  public void setParams(Object[] params) {
+    if (params.length != 2) {
       throw new IllegalArgumentException("expected two params: lower and upper");
     }
-    setParams((Double) params.get(0), (Double) params.get(1));
+    setParams((Double) params[0], (Double) params[1]);
   }
 
   public void setParams(Double lower, Double upper) {

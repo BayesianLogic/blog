@@ -118,7 +118,7 @@ public class NegativeBinomial extends AbstractCondProbDistrib {
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
   @Override
-  public void setParams(List<Object> params) {
+  public void setParams(Object[] params) {
     // TODO Auto-generated method stub
 
   }
