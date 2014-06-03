@@ -80,369 +80,369 @@ import blog.world.PartialWorld;
  */
 public class Evidence {
 
-	/**
-	 * Creates a new Evidence object with no evidence.
-	 */
-	public Evidence() {
+  /**
+   * Creates a new Evidence object with no evidence.
+   */
+  public Evidence() {
 
-	}
+  }
 
-	/**
-	 * Creates an Evidence object out of a collection of statements.
-	 */
-	public static Evidence constructAndCompile(Collection statements) {
-		Evidence result = new Evidence();
-		Iterator it;
-		for (it = statements.iterator(); it.hasNext();) {
-			Object statement = it.next();
-			if (statement instanceof ValueEvidenceStatement)
-				result.addValueEvidence((ValueEvidenceStatement) statement);
-			else
-				result.addSymbolEvidence((SymbolEvidenceStatement) statement);
-		}
-		result.compile();
-		return result;
-	}
+  /**
+   * Creates an Evidence object out of a collection of statements.
+   */
+  public static Evidence constructAndCompile(Collection statements) {
+    Evidence result = new Evidence();
+    Iterator it;
+    for (it = statements.iterator(); it.hasNext();) {
+      Object statement = it.next();
+      if (statement instanceof ValueEvidenceStatement)
+        result.addValueEvidence((ValueEvidenceStatement) statement);
+      else
+        result.addSymbolEvidence((SymbolEvidenceStatement) statement);
+    }
+    result.compile();
+    return result;
+  }
 
-	public boolean addSymbolEvidence(SymbolEvidenceStatement sevid) {
-		boolean mark = true;
-		symbolEvidence.add(sevid);
-		for (SkolemConstant c : sevid.getSkolemConstants()) {
-			skolemConstants.add(c);
-			if (skolemConstantsByName.put(c.getName(), c) != null)
-				mark = false;
-		}
-		return mark;
-	}
+  public boolean addSymbolEvidence(SymbolEvidenceStatement sevid) {
+    boolean mark = true;
+    symbolEvidence.add(sevid);
+    for (SkolemConstant c : sevid.getSkolemConstants()) {
+      skolemConstants.add(c);
+      if (skolemConstantsByName.put(c.getName(), c) != null)
+        mark = false;
+    }
+    return mark;
+  }
 
-	/**
-	 * Returns an unmodifiable Collection of SymbolEvidenceStatement objects.
-	 */
-	public Collection<SymbolEvidenceStatement> getSymbolEvidence() {
-		return Collections.unmodifiableCollection(symbolEvidence);
-	}
+  /**
+   * Returns an unmodifiable Collection of SymbolEvidenceStatement objects.
+   */
+  public Collection<SymbolEvidenceStatement> getSymbolEvidence() {
+    return Collections.unmodifiableCollection(symbolEvidence);
+  }
 
-	public void addValueEvidence(ValueEvidenceStatement evid) {
-		valueEvidence.add(evid);
-		// TODO: add a 'isCompiled' method to statements so that
-		// when compiled statements are added to empty evidence,
-		// it is considered compiled as well.
-	}
+  public void addValueEvidence(ValueEvidenceStatement evid) {
+    valueEvidence.add(evid);
+    // TODO: add a 'isCompiled' method to statements so that
+    // when compiled statements are added to empty evidence,
+    // it is considered compiled as well.
+  }
 
-	/**
-	 * Returns an unmodifiable Collection of ValueEvidenceStatement objects.
-	 */
-	public Collection getValueEvidence() {
-		return Collections.unmodifiableCollection(valueEvidence);
-	}
+  /**
+   * Returns an unmodifiable Collection of ValueEvidenceStatement objects.
+   */
+  public Collection<ValueEvidenceStatement> getValueEvidence() {
+    return Collections.unmodifiableCollection(valueEvidence);
+  }
 
-	/**
-	 * Adds all symbol and value evidence statements from another evidence object.
-	 */
-	public void addAll(Evidence another) {
-		for (Iterator it = another.getSymbolEvidence().iterator(); it.hasNext();) {
-			addSymbolEvidence((SymbolEvidenceStatement) it.next());
-		}
-		for (Iterator it = another.getValueEvidence().iterator(); it.hasNext();) {
-			addValueEvidence((ValueEvidenceStatement) it.next());
-		}
-		if (compiled || another.compiled)
-			compile();
-	}
+  /**
+   * Adds all symbol and value evidence statements from another evidence object.
+   */
+  public void addAll(Evidence another) {
+    for (Iterator it = another.getSymbolEvidence().iterator(); it.hasNext();) {
+      addSymbolEvidence((SymbolEvidenceStatement) it.next());
+    }
+    for (Iterator it = another.getValueEvidence().iterator(); it.hasNext();) {
+      addValueEvidence((ValueEvidenceStatement) it.next());
+    }
+    if (compiled || another.compiled)
+      compile();
+  }
 
-	/**
-	 * Returns the SkolemConstant object for the given symbol, or null if no such
-	 * Skolem constant has been introduced.
-	 */
-	public SkolemConstant getSkolemConstant(String name) {
-		return skolemConstantsByName.get(name);
-	}
+  /**
+   * Returns the SkolemConstant object for the given symbol, or null if no such
+   * Skolem constant has been introduced.
+   */
+  public SkolemConstant getSkolemConstant(String name) {
+    return skolemConstantsByName.get(name);
+  }
 
-	/**
-	 * Returns an unmodifiable List of the SkolemConstant objects introduced by
-	 * this evidence, in the order they were introduced.
-	 */
-	public List<SkolemConstant> getSkolemConstants() {
-		return Collections.unmodifiableList(skolemConstants);
-	}
+  /**
+   * Returns an unmodifiable List of the SkolemConstant objects introduced by
+   * this evidence, in the order they were introduced.
+   */
+  public List<SkolemConstant> getSkolemConstants() {
+    return Collections.unmodifiableList(skolemConstants);
+  }
 
-	/**
-	 * Returns the set of evidence variables for which the user has observed
-	 * values.
-	 * 
-	 * @return an unmodifiable Set of BayesNetVar objects
-	 */
-	public Set<? extends BayesNetVar> getEvidenceVars() {
-		if (unmodifiableEvidenceVars == null)
-			unmodifiableEvidenceVars = Collections.unmodifiableSet(observedValues
-					.keySet());
-		return unmodifiableEvidenceVars;
-	}
+  /**
+   * Returns the set of evidence variables for which the user has observed
+   * values.
+   * 
+   * @return an unmodifiable Set of BayesNetVar objects
+   */
+  public Set<? extends BayesNetVar> getEvidenceVars() {
+    if (unmodifiableEvidenceVars == null)
+      unmodifiableEvidenceVars = Collections.unmodifiableSet(observedValues
+          .keySet());
+    return unmodifiableEvidenceVars;
+  }
 
-	// place holder for variables in evidence
-	// only used in getEvidenceVars
-	private Set<BayesNetVar> unmodifiableEvidenceVars = null;
+  // place holder for variables in evidence
+  // only used in getEvidenceVars
+  private Set<BayesNetVar> unmodifiableEvidenceVars = null;
 
-	public Set getEvidenceVars(Timestep t) {
-		Set evidenceAtTime = new HashSet();
-		for (Iterator iter = observedValues.keySet().iterator(); iter.hasNext();) {
-			BayesNetVar var = (BayesNetVar) iter.next();
-			if (var instanceof RandFuncAppVar) {
-				RandFuncAppVar rfav = (RandFuncAppVar) var;
-				Timestep t_prime = rfav.timestep();
-				if (t_prime == null) {
-					if (t == null)
-						evidenceAtTime.add(var);
-				} else if (t_prime.equals(t))
-					evidenceAtTime.add(var);
-			}
-		}
-		return Collections.unmodifiableSet(evidenceAtTime);
-	}
+  public Set getEvidenceVars(Timestep t) {
+    Set evidenceAtTime = new HashSet();
+    for (Iterator iter = observedValues.keySet().iterator(); iter.hasNext();) {
+      BayesNetVar var = (BayesNetVar) iter.next();
+      if (var instanceof RandFuncAppVar) {
+        RandFuncAppVar rfav = (RandFuncAppVar) var;
+        Timestep t_prime = rfav.timestep();
+        if (t_prime == null) {
+          if (t == null)
+            evidenceAtTime.add(var);
+        } else if (t_prime.equals(t))
+          evidenceAtTime.add(var);
+      }
+    }
+    return Collections.unmodifiableSet(evidenceAtTime);
+  }
 
-	/**
-	 * Returns the observed value of the given variable.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if no value has been observed for the given variable
-	 */
-	public Object getObservedValue(BayesNetVar var) {
-		if (!observedValues.containsKey(var)) {
-			throw new IllegalArgumentException("No observed value for " + var);
-		}
+  /**
+   * Returns the observed value of the given variable.
+   * 
+   * @throws IllegalArgumentException
+   *           if no value has been observed for the given variable
+   */
+  public Object getObservedValue(BayesNetVar var) {
+    if (!observedValues.containsKey(var)) {
+      throw new IllegalArgumentException("No observed value for " + var);
+    }
 
-		return observedValues.get(var);
-	}
+    return observedValues.get(var);
+  }
 
-	/**
-	 * Returns true if the given partial world is complete enough to determine
-	 * whether this evidence is true or false.
-	 */
-	public boolean isDetermined(PartialWorld w) {
-		for (SymbolEvidenceStatement stmt : symbolEvidence) {
-			if (!stmt.isDetermined(w)) {
-				return false;
-			}
-		}
+  /**
+   * Returns true if the given partial world is complete enough to determine
+   * whether this evidence is true or false.
+   */
+  public boolean isDetermined(PartialWorld w) {
+    for (SymbolEvidenceStatement stmt : symbolEvidence) {
+      if (!stmt.isDetermined(w)) {
+        return false;
+      }
+    }
 
-		for (ValueEvidenceStatement stmt : valueEvidence) {
-			if (!stmt.isDetermined(w)) {
-				return false;
-			}
-		}
-		return true;
-	}
+    for (ValueEvidenceStatement stmt : valueEvidence) {
+      if (!stmt.isDetermined(w)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-	/**
-	 * Returns true if this evidence is true in the given world; otherwise false.
-	 */
-	public boolean isTrue(PartialWorld w) {
-		for (SymbolEvidenceStatement stmt : symbolEvidence) {
-			if (!stmt.isTrue(w)) {
-				return false;
-			}
-		}
+  /**
+   * Returns true if this evidence is true in the given world; otherwise false.
+   */
+  public boolean isTrue(PartialWorld w) {
+    for (SymbolEvidenceStatement stmt : symbolEvidence) {
+      if (!stmt.isTrue(w)) {
+        return false;
+      }
+    }
 
-		for (ValueEvidenceStatement stmt : valueEvidence) {
-			if (!stmt.isTrue(w)) {
-				return false;
-			}
-		}
-		return true;
-	}
+    for (ValueEvidenceStatement stmt : valueEvidence) {
+      if (!stmt.isTrue(w)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
-	/** Indicates whether evidence is empty or not. */
-	public boolean isEmpty() {
-		return getValueEvidence().isEmpty() && getSymbolEvidence().isEmpty();
-	}
+  /** Indicates whether evidence is empty or not. */
+  public boolean isEmpty() {
+    return getValueEvidence().isEmpty() && getSymbolEvidence().isEmpty();
+  }
 
-	/**
-	 * Prints the evidence to the given stream.
-	 */
-	public void print(PrintStream s) {
-		for (Iterator iter = symbolEvidence.iterator(); iter.hasNext();) {
-			SymbolEvidenceStatement stmt = (SymbolEvidenceStatement) iter.next();
-			System.out.println(stmt);
-		}
+  /**
+   * Prints the evidence to the given stream.
+   */
+  public void print(PrintStream s) {
+    for (Iterator iter = symbolEvidence.iterator(); iter.hasNext();) {
+      SymbolEvidenceStatement stmt = (SymbolEvidenceStatement) iter.next();
+      System.out.println(stmt);
+    }
 
-		for (Iterator iter = valueEvidence.iterator(); iter.hasNext();) {
-			ValueEvidenceStatement stmt = (ValueEvidenceStatement) iter.next();
-			System.out.println(stmt);
-		}
-	}
+    for (Iterator iter = valueEvidence.iterator(); iter.hasNext();) {
+      ValueEvidenceStatement stmt = (ValueEvidenceStatement) iter.next();
+      System.out.println(stmt);
+    }
+  }
 
-	private void recordEvidence(BayesNetVar observedVar, Object observedValue,
-			Object source) {
-		if (observedValues.containsKey(observedVar)) {
-			Object existingValue = observedValues.get(observedVar);
-			if (!existingValue.equals(observedValue)) {
-				Util.fatalError("Evidence \"" + source + "\" contradicts "
-						+ "earlier evidence.", false);
-			}
-		} else {
-			observedValues.put(observedVar, observedValue);
-		}
-	}
+  private void recordEvidence(BayesNetVar observedVar, Object observedValue,
+      Object source) {
+    if (observedValues.containsKey(observedVar)) {
+      Object existingValue = observedValues.get(observedVar);
+      if (!existingValue.equals(observedValue)) {
+        Util.fatalError("Evidence \"" + source + "\" contradicts "
+            + "earlier evidence.", false);
+      }
+    } else {
+      observedValues.put(observedVar, observedValue);
+    }
+  }
 
-	public double setEvidenceEnsureSupportedAndReturnLikelihood(
-			PartialWorld curWorld) {
-		setEvidenceAndEnsureSupported(curWorld);
-		return getEvidenceProb(curWorld);
-	}
+  public double setEvidenceEnsureSupportedAndReturnLikelihood(
+      PartialWorld curWorld) {
+    setEvidenceAndEnsureSupported(curWorld);
+    return getEvidenceProb(curWorld);
+  }
 
-	/**
-	 * leili: this method is a bit wired???
-	 * 
-	 * @param curWorld
-	 */
-	public void setEvidenceAndEnsureSupported(PartialWorld curWorld) {
-		BLOGUtil.setBasicVars(this, curWorld);
-		BLOGUtil.ensureDetAndSupported(getEvidenceVars(), curWorld);
-	}
+  /**
+   * leili: this method is a bit wired???
+   * 
+   * @param curWorld
+   */
+  public void setEvidenceAndEnsureSupported(PartialWorld curWorld) {
+    BLOGUtil.setBasicVars(this, curWorld);
+    BLOGUtil.ensureDetAndSupported(getEvidenceVars(), curWorld);
+  }
 
-	public double getEvidenceProb(PartialWorld curWorld) {
-		return Math.exp(getEvidenceLogProb(curWorld));
-	}
+  public double getEvidenceProb(PartialWorld curWorld) {
+    return Math.exp(getEvidenceLogProb(curWorld));
+  }
 
-	public double getEvidenceProb(PartialWorld curWorld, Timestep t) {
-		return Math.exp(getEvidenceLogProb(curWorld, t));
-	}
+  public double getEvidenceProb(PartialWorld curWorld, Timestep t) {
+    return Math.exp(getEvidenceLogProb(curWorld, t));
+  }
 
-	public double getEvidenceLogProb(PartialWorld curWorld) {
-		return getEvidenceLogProb(curWorld, getEvidenceVars());
-	}
+  public double getEvidenceLogProb(PartialWorld curWorld) {
+    return getEvidenceLogProb(curWorld, getEvidenceVars());
+  }
 
-	public double getEvidenceLogProb(PartialWorld curWorld, Timestep t) {
-		return getEvidenceLogProb(curWorld, getEvidenceVars(t));
-	}
+  public double getEvidenceLogProb(PartialWorld curWorld, Timestep t) {
+    return getEvidenceLogProb(curWorld, getEvidenceVars(t));
+  }
 
-	private double getEvidenceLogProb(PartialWorld curWorld, Set evidenceVars) {
-		if (!compiled && !isEmpty())
-			Util.fatalError("Trying to use evidence object that is not compiled yet.");
+  private double getEvidenceLogProb(PartialWorld curWorld, Set evidenceVars) {
+    if (!compiled && !isEmpty())
+      Util.fatalError("Trying to use evidence object that is not compiled yet.");
 
-		double evidenceLogSum = 0;
+    double evidenceLogSum = 0;
 
-		for (Iterator iter = evidenceVars.iterator(); iter.hasNext();) {
-			BayesNetVar var = (BayesNetVar) iter.next();
-			if (getObservedValue(var).equals(var.getValue(curWorld))) {
-				evidenceLogSum += curWorld.getLogProbOfValue(var);
-			} else {
-				// The value of this variable in curWorld is not the
-				// observed value.
-				evidenceLogSum += Double.NEGATIVE_INFINITY;
-				// implies that the actual probability is 0
-			}
-		}
-		return evidenceLogSum;
-	}
+    for (Iterator iter = evidenceVars.iterator(); iter.hasNext();) {
+      BayesNetVar var = (BayesNetVar) iter.next();
+      if (getObservedValue(var).equals(var.getValue(curWorld))) {
+        evidenceLogSum += curWorld.getLogProbOfValue(var);
+      } else {
+        // The value of this variable in curWorld is not the
+        // observed value.
+        evidenceLogSum += Double.NEGATIVE_INFINITY;
+        // implies that the actual probability is 0
+      }
+    }
+    return evidenceLogSum;
+  }
 
-	/**
-	 * Returns true if the evidence satisfies type and scope constraints. If there
-	 * are type or scope errors, prints messages to standard error and returns
-	 * false.
-	 */
-	public boolean checkTypesAndScope(Model model) {
-		boolean correct = true;
+  /**
+   * Returns true if the evidence satisfies type and scope constraints. If there
+   * are type or scope errors, prints messages to standard error and returns
+   * false.
+   */
+  public boolean checkTypesAndScope(Model model) {
+    boolean correct = true;
 
-		for (Iterator iter = symbolEvidence.iterator(); iter.hasNext();) {
-			SymbolEvidenceStatement stmt = (SymbolEvidenceStatement) iter.next();
-			if (!stmt.checkTypesAndScope(model)) {
-				correct = false;
-			}
-		}
+    for (Iterator iter = symbolEvidence.iterator(); iter.hasNext();) {
+      SymbolEvidenceStatement stmt = (SymbolEvidenceStatement) iter.next();
+      if (!stmt.checkTypesAndScope(model)) {
+        correct = false;
+      }
+    }
 
-		for (Iterator iter = valueEvidence.iterator(); iter.hasNext();) {
-			ValueEvidenceStatement stmt = (ValueEvidenceStatement) iter.next();
-			if (!stmt.checkTypesAndScope(model)) {
-				correct = false;
-			}
-		}
+    for (Iterator iter = valueEvidence.iterator(); iter.hasNext();) {
+      ValueEvidenceStatement stmt = (ValueEvidenceStatement) iter.next();
+      if (!stmt.checkTypesAndScope(model)) {
+        correct = false;
+      }
+    }
 
-		return correct;
-	}
+    return correct;
+  }
 
-	/**
-	 * Does compilation steps that can only be done correctly once the model is
-	 * complete. Prints messages to standard error if any errors are encountered.
-	 * Returns the number of errors encountered.
-	 */
-	public int compile() {
-		compiled = true;
+  /**
+   * Does compilation steps that can only be done correctly once the model is
+   * complete. Prints messages to standard error if any errors are encountered.
+   * Returns the number of errors encountered.
+   */
+  public int compile() {
+    compiled = true;
 
-		int errors = 0;
-		LinkedHashSet callStack = new LinkedHashSet();
+    int errors = 0;
+    LinkedHashSet callStack = new LinkedHashSet();
 
-		for (Iterator iter = symbolEvidence.iterator(); iter.hasNext();) {
-			SymbolEvidenceStatement stmt = (SymbolEvidenceStatement) iter.next();
-			int thisStmtErrors = stmt.compile(callStack);
-			if (thisStmtErrors == 0) {
-				recordEvidence(stmt.getObservedVar(), stmt.getObservedValue(), stmt);
-			}
-			errors += thisStmtErrors;
-		}
+    for (Iterator iter = symbolEvidence.iterator(); iter.hasNext();) {
+      SymbolEvidenceStatement stmt = (SymbolEvidenceStatement) iter.next();
+      int thisStmtErrors = stmt.compile(callStack);
+      if (thisStmtErrors == 0) {
+        recordEvidence(stmt.getObservedVar(), stmt.getObservedValue(), stmt);
+      }
+      errors += thisStmtErrors;
+    }
 
-		for (Iterator iter = valueEvidence.iterator(); iter.hasNext();) {
-			ValueEvidenceStatement stmt = (ValueEvidenceStatement) iter.next();
-			int thisStmtErrors = stmt.compile(callStack);
-			if (thisStmtErrors == 0) {
-				recordEvidence(stmt.getObservedVar(), stmt.getObservedValue(), stmt);
-			}
-			errors += thisStmtErrors;
-		}
+    for (Iterator iter = valueEvidence.iterator(); iter.hasNext();) {
+      ValueEvidenceStatement stmt = (ValueEvidenceStatement) iter.next();
+      int thisStmtErrors = stmt.compile(callStack);
+      if (thisStmtErrors == 0) {
+        recordEvidence(stmt.getObservedVar(), stmt.getObservedValue(), stmt);
+      }
+      errors += thisStmtErrors;
+    }
 
-		return errors;
-	}
+    return errors;
+  }
 
-	public Evidence replace(Term t, ArgSpec another) {
-		List newSymbolEvidence = new LinkedList();
-		List newValueEvidence = new LinkedList();
-		boolean replacement = false;
-		for (Iterator it = getSymbolEvidence().iterator(); it.hasNext();) {
-			SymbolEvidenceStatement ses = (SymbolEvidenceStatement) it.next();
-			SymbolEvidenceStatement newSes = ses.replace(t, another);
-			if (newSes != ses)
-				replacement = true;
-			newSymbolEvidence.add(newSes);
-		}
-		for (Iterator it = getValueEvidence().iterator(); it.hasNext();) {
-			ValueEvidenceStatement ves = (ValueEvidenceStatement) it.next();
-			ValueEvidenceStatement newVes = ves.replace(t, another);
-			if (newVes != ves)
-				replacement = true;
-			newValueEvidence.add(newVes);
-		}
-		if (replacement) {
-			Evidence newEvidence = new Evidence();
-			newEvidence.valueEvidence.addAll(newValueEvidence);
-			newEvidence.symbolEvidence.addAll(newSymbolEvidence);
-			if (compiled)
-				newEvidence.compile();
-			return newEvidence;
-		}
-		return this;
-	}
+  public Evidence replace(Term t, ArgSpec another) {
+    List newSymbolEvidence = new LinkedList();
+    List newValueEvidence = new LinkedList();
+    boolean replacement = false;
+    for (Iterator it = getSymbolEvidence().iterator(); it.hasNext();) {
+      SymbolEvidenceStatement ses = (SymbolEvidenceStatement) it.next();
+      SymbolEvidenceStatement newSes = ses.replace(t, another);
+      if (newSes != ses)
+        replacement = true;
+      newSymbolEvidence.add(newSes);
+    }
+    for (Iterator it = getValueEvidence().iterator(); it.hasNext();) {
+      ValueEvidenceStatement ves = (ValueEvidenceStatement) it.next();
+      ValueEvidenceStatement newVes = ves.replace(t, another);
+      if (newVes != ves)
+        replacement = true;
+      newValueEvidence.add(newVes);
+    }
+    if (replacement) {
+      Evidence newEvidence = new Evidence();
+      newEvidence.valueEvidence.addAll(newValueEvidence);
+      newEvidence.symbolEvidence.addAll(newSymbolEvidence);
+      if (compiled)
+        newEvidence.compile();
+      return newEvidence;
+    }
+    return this;
+  }
 
-	public String toString() {
-		List list = new LinkedList();
-		list.addAll(getValueEvidence());
-		list.addAll(getSymbolEvidence());
-		return list.toString();
-	}
+  public String toString() {
+    List list = new LinkedList();
+    list.addAll(getValueEvidence());
+    list.addAll(getSymbolEvidence());
+    return list.toString();
+  }
 
-	// List of SymbolEvidenceStatement
-	private List<SymbolEvidenceStatement> symbolEvidence = new ArrayList<SymbolEvidenceStatement>();
+  // List of SymbolEvidenceStatement
+  private List<SymbolEvidenceStatement> symbolEvidence = new ArrayList<SymbolEvidenceStatement>();
 
-	// List of ValueEvidenceStatement
-	private List<ValueEvidenceStatement> valueEvidence = new ArrayList<ValueEvidenceStatement>();
+  // List of ValueEvidenceStatement
+  private List<ValueEvidenceStatement> valueEvidence = new ArrayList<ValueEvidenceStatement>();
 
-	// map from String to SkolemConstant
-	private Map<String, SkolemConstant> skolemConstantsByName = new HashMap<String, SkolemConstant>();
+  // map from String to SkolemConstant
+  private Map<String, SkolemConstant> skolemConstantsByName = new HashMap<String, SkolemConstant>();
 
-	// List of SkolemConstant objects in the order they were introduced
-	private List<SkolemConstant> skolemConstants = new ArrayList<SkolemConstant>();
+  // List of SkolemConstant objects in the order they were introduced
+  private List<SkolemConstant> skolemConstants = new ArrayList<SkolemConstant>();
 
-	// map from BayesNetVar to Object
-	private Map<BayesNetVar, Object> observedValues = new LinkedHashMap<BayesNetVar, Object>();
+  // map from BayesNetVar to Object
+  private Map<BayesNetVar, Object> observedValues = new LinkedHashMap<BayesNetVar, Object>();
 
-	private boolean compiled = false;
+  private boolean compiled = false;
 }

@@ -131,11 +131,10 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 
 		Object oldValue = basicVarToValue.get(var);
 		if (value == null ? (oldValue == null) : value.equals(oldValue)) {
-			Util.debug("Setting var: " + var + " to " + value);
+      Util.debug("Setting var: ", var, " to ", value);
 			return;
 		}
-		Util.debug("Setting var: " + var + " to " + value + ", replacing "
-				+ oldValue);
+    Util.debug("Setting var: ", var, " to ", value, ", replacing ", oldValue);
 		var.ensureStable();
 
 		if ((var instanceof NumberVar) && (oldValue != null)) {
