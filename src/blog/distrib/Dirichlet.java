@@ -60,8 +60,8 @@ public class Dirichlet extends AbstractCondProbDistrib {
   /**
    * Constructs a Dirichlet distribution with the given parameters.
    * 
-   * @param a
-   *          list of parameters for the distribution
+   * @param params
+   *          a list of parameters for the distribution
    */
   public Dirichlet(List<Double> params) {
     alpha = new Double[params.size()];
@@ -73,10 +73,10 @@ public class Dirichlet extends AbstractCondProbDistrib {
    * Constructs a Dirichlet distribution with the given dimension and
    * parameter value for all dimensions
    * 
-   * @param the
-   *          dimension of the distribution
-   * @param the
-   *          value for all parameters of this distribution
+   * @param dimension
+   *          the dimension of the distribution
+   * @param paramVal
+   *          the value for all parameters of this distribution
    */
   public Dirichlet(int dimension, double paramVal) {
     alpha = new Double[dimension];
@@ -154,7 +154,9 @@ public class Dirichlet extends AbstractCondProbDistrib {
     for (int i = 0; i < mat.numCols(); i++) {
       double count_term = (args.size() != 0) ? alpha[0] : alpha[i];
       double x = mat.elementAt(0, i);
-      prob += Math.log(x) * (count_term - 1);
+      if (count_term != 1) {
+        prob += Math.log(x) * (count_term - 1);
+      }
     }
     prob -= Math.log(normalize(alpha));
 
@@ -191,8 +193,8 @@ public class Dirichlet extends AbstractCondProbDistrib {
    * Computes the normalization constant for a Dirichlet distribution with
    * the given parameters.
    * 
-   * @param a
-   *          list of parameters of a Dirichlet distribution
+   * @param params
+   *          a list of parameters of a Dirichlet distribution
    * @return the normalization constant for such a distribution
    */
   public static final double normalize(Double[] params) {
