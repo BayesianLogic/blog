@@ -18,6 +18,7 @@ public interface CondProbDistrib {
    * 
    * This method can be called more than once. For example:
    * 
+   * <code>
    * CondProbDistrib cpd = new UnivarGaussian();
    * // Now, mu and sigma are not set.
    * cpd.setParams(Util.list(1.0, null));
@@ -26,6 +27,17 @@ public interface CondProbDistrib {
    * // Now, mu is 2.0 and sigma is 4.0.
    * cpd.setParams(Util.list(null, 5.0));
    * // Now, mu is still 2.0 and sigma is 5.0.
+   * </code>
+   * 
+   * For efficiency reasons, this method MAY keep a reference to a param,
+   * rather than making a copy. So it is not safe to modify the params after
+   * passing them to this method. For example:
+   * 
+   * <code>
+   * Set someSet = ...;
+   * CondProbDistrib cpd = new UniformChoice(Util.list(someSet));
+   * someSet.add(...); // unsafe; don't do this
+   * </code>
    * 
    * @param params
    *          The list of parameters for this distribution.
