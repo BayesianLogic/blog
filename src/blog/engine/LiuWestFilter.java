@@ -45,8 +45,15 @@ public class LiuWestFilter extends ParticleFilter {
     }
 
     // Precompute list of static variables.
+    // TODO:
+    // - ignore NonRandomFunctions
+    // - ignore functions that take arguments (e.g. foo(Location loc))
+    // - ignore functions whose return type is not Real
+    // (This will make Liu-West only work for perturbing Real-valued
+    // parameters. We can extend it to perturb vectors etc. later.)
     funcNamesToPerturb = new ArrayList<String>();
     for (Function func : model.getFunctions()) {
+      System.out.println(func + ": " + func.getClass());
       if (!func.isTimeIndexed()) {
         funcNamesToPerturb.add(func.getName());
       }
