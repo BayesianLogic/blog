@@ -216,10 +216,15 @@ public class DBLOGUtil {
     // First we accumulate all statements for each timestep.
     Map<Timestep, List<Object>> table = new HashMap<Timestep, List<Object>>();
     for (ValueEvidenceStatement statement : evidence.getValueEvidence()) {
-      TreeSet<Timestep> timesteps = new TreeSet(new TimestepTermComparator());
+      // FIXME: timesteps actually accumulates ArgSpecs for which
+      // getTimestepInTimestepTerm returns non-null. Quite confusing.
+      TreeSet<ArgSpec> timesteps = new TreeSet(new TimestepTermComparator());
       getTimestepTermsIn(statement.getLeftSide(), timesteps);
       getTimestepTermsIn(statement.getOutput(), timesteps);
-      Timestep maxTimestep = timesteps.isEmpty() ? null : timesteps.last();
+      Timestep maxTimestep = null;
+      if (!timesteps.isEmpty()) {
+        maxTimestep = getTimestepInTimestepTerm(timesteps.last());
+      }
       List<Object> statements = table.get(maxTimestep);
       if (statements == null) {
         statements = new LinkedList<Object>();
@@ -228,9 +233,14 @@ public class DBLOGUtil {
       statements.add(statement);
     }
     for (SymbolEvidenceStatement statement : evidence.getSymbolEvidence()) {
-      TreeSet<Timestep> timesteps = new TreeSet(new TimestepTermComparator());
+      // FIXME: timesteps actually accumulates ArgSpecs for which
+      // getTimestepInTimestepTerm returns non-null. Quite confusing.
+      TreeSet<ArgSpec> timesteps = new TreeSet(new TimestepTermComparator());
       getTimestepTermsIn(statement.getSetSpec(), timesteps);
-      Timestep maxTimestep = timesteps.isEmpty() ? null : timesteps.last();
+      Timestep maxTimestep = null;
+      if (!timesteps.isEmpty()) {
+        maxTimestep = getTimestepInTimestepTerm(timesteps.last());
+      }
       List<Object> statements = table.get(maxTimestep);
       if (statements == null) {
         statements = new LinkedList<Object>();
