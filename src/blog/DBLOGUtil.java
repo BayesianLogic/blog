@@ -9,8 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
@@ -91,7 +89,7 @@ public class DBLOGUtil {
 
     public Object filter(int index, Object varObj) {
       BayesNetVar var = (BayesNetVar) varObj;
-      int timestepIndex = getTimestepIndex(var);
+      int timestepIndex = var.maxTimestep().getValue();
       if (timestepIndex == -1 || alreadyReturned.contains(timestepIndex)) {
         return null;
       }
@@ -109,15 +107,6 @@ public class DBLOGUtil {
     return new TimestepIndicesIterator(world);
   }
 
-  private static Pattern timestepPattern = Pattern.compile("@\\d+");
-
-  public static int getTimestepIndex(BayesNetVar var) {
-    Matcher matcher = timestepPattern.matcher(var.toString());
-    if (matcher.find())
-      return Integer.parseInt(matcher.group().substring(1));
-    return -1;
-  }
-
   /**
    * remove the temporal variables from the possible world that are
    * different from the specified timestep
@@ -130,7 +119,7 @@ public class DBLOGUtil {
     Iterator varIt = instantiatedVars.iterator();
     while (varIt.hasNext()) {
       BasicVar var = (BasicVar) varIt.next();
-      int timestepIndex = getTimestepIndex(var);
+      int timestepIndex = var.maxTimestep().getValue();
       if (timestepIndex != -1 && timestepIndex != largest) {
         world.setValue(var, null);
       }
