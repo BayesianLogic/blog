@@ -1,9 +1,7 @@
 package test.blog;
 
-import static blog.BLOGUtil.parseEvidence_NE;
 import static blog.BLOGUtil.parseQuery_NE;
 
-import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -14,9 +12,7 @@ import blog.engine.InferenceEngine;
 import blog.engine.SamplingEngine;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
-import blog.model.Evidence;
 import blog.model.Model;
-import blog.type.Timestep;
 
 public class MiscTest extends TestCase {
 
@@ -36,25 +32,6 @@ public class MiscTest extends TestCase {
     a = BLOGUtil.parseArgSpec_NE("{Weather(@10), @13}", model);
     timesteps = Util.set(at10, at13);
     assertEquals(timesteps, DBLOGUtil.getTimestepTermsIn(a, Util.set()));
-  }
-
-  public void testSplitEvidenceByMaxTimestep() {
-    Model model = Model.readFromString("random Boolean Weather(Timestep);"
-        + "Weather(t) = true;" + "random Boolean Dummy;" + "Dummy = true;");
-
-    Evidence evidence;
-
-    String evidenceDescription = "obs Weather(@15) = true;"
-        + "obs Weather(@2) = true;" + "obs Dummy = true;"
-        + "obs (Weather(@15)=true & Weather(@1)=false)=true;"
-        + "obs (Weather(@1)=true & Weather(@2)=false)=true;";
-
-    evidence = parseEvidence_NE(evidenceDescription, model);
-
-    Map<Timestep, Evidence> sortedEvidence = DBLOGUtil
-        .splitEvidenceInTime(evidence);
-    System.out.println(sortedEvidence);
-    // TODO: test the above, don't just print it
   }
 
   public void testParsingTupleSetSpec() { // to be removed
