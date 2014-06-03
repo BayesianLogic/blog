@@ -32,7 +32,7 @@ fixed RealMatrix l = [1; 2; 3];
 fixed RealMatrix m = diag(l);
 
 fixed RealMatrix n = [5, 6; 3, 4];
-fixed RealMatrix o = repmat(n, 2, 3);
+fixed RealMatrix o = repmat(n, 3, 2);
 
 query x;
 query y;

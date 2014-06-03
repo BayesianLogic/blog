@@ -1133,26 +1133,9 @@ public class BuiltInFunctions {
     FunctionInterp repMatReal = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         MatrixLib matrix = (MatrixLib) args.get(0);
-        Integer rowMultiple = (Integer) args.get(1);
-        Integer colMultiple = (Integer) args.get(2);
-        int totalCols = matrix.numCols() * colMultiple;
-        int totalRows = matrix.numRows() * rowMultiple;
-        if (totalCols <= 0 || totalRows <= 0) {
-          throw new IllegalArgumentException(
-              "The number of replications should be nonnegative");
-        }
-        double[][] newMatrix = new double[totalRows][totalCols];
-        for (int i = 0; i < rowMultiple; i++) {
-          for (int j = 0; j < colMultiple; j++) {
-            for (int k = 0; k < matrix.numRows(); k++) {
-              for (int l = 0; l < matrix.numCols(); l++) {
-                newMatrix[i * matrix.numRows() + k][j * matrix.numCols() + l] = matrix
-                    .elementAt(k, l);
-              }
-            }
-          }
-        }
-        return MatrixFactory.fromArray(newMatrix);
+        Integer rowTimes = (Integer) args.get(1);
+        Integer colTimes = (Integer) args.get(2);
+        return matrix.repmat(rowTimes, colTimes);
       }
     };
     REPMAT_REAL = new NonRandomFunction(REPMAT_NAME, argTypes, retType,
