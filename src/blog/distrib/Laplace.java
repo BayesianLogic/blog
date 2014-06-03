@@ -53,21 +53,21 @@ public class Laplace extends AbstractCondProbDistrib {
   public static final Laplace STANDARD = new Laplace(0, 1);
 
   /**
-   * Creates a univariate Laplace distribution with the given fixed mean and
-   * variance.
+   * Creates a Laplace distribution with the given fixed mean and
+   * diversity.
    */
-  public Laplace(double mean, double variance) {
+  public Laplace(double mean, double diversity) {
     fixedMean = true;
     setMean(new Double(mean));
 
     fixedDiversity = true;
-    setDiversity(new Double(variance));
+    setDiversity(new Double(diversity));
   }
 
   /**
-   * Creates a univariate Laplace distribution. If two parameters are given,
-   * then the first is the mean and the second is the variance. If only one
-   * parameter is given, it is interpreted as the variance. Parameters not
+   * Creates a Laplace distribution. If two parameters are given,
+   * then the first is the mean and the second is the diversity. If only one
+   * parameter is given, it is interpreted as the diversity. Parameters not
    * specified here must be given as arguments to <code>getProb</code> and
    * <code>sampleVal</code>.
    */
@@ -86,8 +86,7 @@ public class Laplace extends AbstractCondProbDistrib {
       setDiversity(params.get(1));
     } else {
       throw new IllegalArgumentException(
-          "UnivarLaplace CPD expects at most 2 parameters, not "
-              + params.size());
+          "Laplace CPD expects at most 2 parameters, not " + params.size());
     }
   }
 
@@ -95,9 +94,8 @@ public class Laplace extends AbstractCondProbDistrib {
     initParams(args);
     if (!(value instanceof Number))
       throw new IllegalArgumentException(
-          "The value passed to the univariate Laplace distribution's "
-              + "getProb " + "method must be of type Number, not "
-              + value.getClass() + ".");
+          "The value passed to the Laplace distribution's " + "getProb "
+              + "method must be of type Number, not " + value.getClass() + ".");
     return getProb(((Number) value).doubleValue());
   }
 
@@ -105,15 +103,14 @@ public class Laplace extends AbstractCondProbDistrib {
     initParams(args);
     if (!(value instanceof Number))
       throw new IllegalArgumentException(
-          "The value passed to the univariate Laplace distribution's "
-              + "getLogProb " + "method must be of type Number, not "
-              + value.getClass() + ".");
+          "The value passed to the Laplace distribution's " + "getLogProb "
+              + "method must be of type Number, not " + value.getClass() + ".");
     return getLogProb(((Number) value).doubleValue());
   }
 
   /**
-   * Returns the density of this Gaussian distribution at the given value. This
-   * method should only be called if the mean and variance were set in the
+   * Returns the density of this Laplace distribution at the given value. This
+   * method should only be called if the mean and diversity were set in the
    * constructor (internal calls are ok if the private method
    * <code>initParams</code> is called first).
    */
@@ -159,12 +156,12 @@ public class Laplace extends AbstractCondProbDistrib {
     if (fixedMean) {
       if (args.size() > 0) {
         throw new IllegalArgumentException(
-            "UnivarLaplace CPD with fixed mean expects no " + "arguments.");
+            "Laplace CPD with fixed mean expects no " + "arguments.");
       }
     } else {
       if (args.size() < 1) {
         throw new IllegalArgumentException(
-            "UnivarLaplace CPD created without a fixed mean; "
+            "Laplace CPD created without a fixed mean; "
                 + "requires mean as an argument.");
       }
       setMean(args.get(0));
@@ -172,14 +169,13 @@ public class Laplace extends AbstractCondProbDistrib {
       if (fixedDiversity) {
         if (args.size() > 1) {
           throw new IllegalArgumentException(
-              "UnivarLaplace CPD with fixed variance expects "
-                  + "only one argument.");
+              "Laplace CPD with fixed Laplace expects " + "only one argument.");
         }
       } else {
         if (args.size() < 2) {
           throw new IllegalArgumentException(
-              "UnivarLaplace CPD created without a fixed "
-                  + "variance; requires variance as argument.");
+              "Laplace CPD created without a fixed "
+                  + "Laplace; requires diversity as argument.");
         }
         setDiversity(args.get(1));
       }
@@ -189,8 +185,8 @@ public class Laplace extends AbstractCondProbDistrib {
   private void setMean(Object mean) {
     if (!(mean instanceof Number)) {
       throw new IllegalArgumentException(
-          "Mean of UnivarLaplace distribution must be a number, " + "not "
-              + mean + " of " + mean.getClass());
+          "Mean of Laplace distribution must be a number, " + "not " + mean
+              + " of " + mean.getClass());
     }
     mu = ((Number) mean).doubleValue();
   }
@@ -207,22 +203,17 @@ public class Laplace extends AbstractCondProbDistrib {
     return 2 * b * b;
   }
 
-  public double getDeviation() {
-    return Math.sqrt(2) * b;
-  }
-
   private void setDiversity(Object diversity) {
     if (!(diversity instanceof Number)) {
       throw new IllegalArgumentException(
-          "Diversity of UnivarLaplace distribution must be a number, " + "not "
+          "Diversity of Laplace distribution must be a number, " + "not "
               + diversity + " of " + diversity.getClass());
     }
     b = ((Number) diversity).doubleValue();
 
     if (b <= 0) {
       throw new IllegalArgumentException(
-          "Diversity of UnivarLaplace distribution must be positive, " + "not "
-              + b);
+          "Diversity of Laplace distribution must be positive, " + "not " + b);
     }
     normConst = b * 2;
     logNormConst = Math.log(b) + Math.log(2);
@@ -237,7 +228,7 @@ public class Laplace extends AbstractCondProbDistrib {
   }
 
   public String toString() {
-    return "UnivarLaplace(" + mu + ", " + b + ")";
+    return "Laplace(" + mu + ", " + b + ")";
   }
 
   private boolean fixedMean;
