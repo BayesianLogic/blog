@@ -43,7 +43,7 @@ public class DBLOGUtil {
   public static void uninstantiatePreviousTimeslices(PartialWorld world) {
     int largestTimestepIndex = findLargestTimestepIndex(world);
     if (largestTimestepIndex != -1)
-      removeVarsAtDiffTimestep(largestTimestepIndex, world);
+      removeVarsAtDiffTimestep(Timestep.at(largestTimestepIndex), world);
   }
 
   /**
@@ -114,13 +114,14 @@ public class DBLOGUtil {
    * @param largest
    * @param world
    */
-  public static void removeVarsAtDiffTimestep(int largest, PartialWorld world) {
+  public static void removeVarsAtDiffTimestep(Timestep largest,
+      PartialWorld world) {
     LinkedList instantiatedVars = new LinkedList(world.getInstantiatedVars());
     Iterator varIt = instantiatedVars.iterator();
     while (varIt.hasNext()) {
       BasicVar var = (BasicVar) varIt.next();
-      int timestepIndex = var.maxTimestep().getValue();
-      if (timestepIndex != -1 && timestepIndex != largest) {
+      Timestep timestep = var.maxTimestep();
+      if (timestep != null && timestep != largest) {
         world.setValue(var, null);
       }
     }
