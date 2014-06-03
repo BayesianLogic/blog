@@ -59,7 +59,7 @@ public class MixtureDistrib extends AbstractCondProbDistrib {
   public double getProb(List args, Object value) {
     double prob = 0;
     for (int i = 0; i < distribs.length; ++i) {
-      distribs[i].setParams(args);
+      distribs[i].setParams(args.toArray());
       prob += (mixDistrib.getProb(i) * distribs[i].getProb(value));
     }
     return prob;
@@ -68,7 +68,7 @@ public class MixtureDistrib extends AbstractCondProbDistrib {
   public double getLogProb(List args, Object value) {
     double logProb = Double.NEGATIVE_INFINITY;
     for (int i = 0; i < distribs.length; ++i) {
-      distribs[i].setParams(args);
+      distribs[i].setParams(args.toArray());
       logProb = Util.logSum(logProb,
           (mixDistrib.getLogProb(i) + distribs[i].getLogProb(value)));
     }
@@ -77,7 +77,7 @@ public class MixtureDistrib extends AbstractCondProbDistrib {
 
   public Object sampleVal(List args) {
     int index = mixDistrib.sampleVal_();
-    distribs[index].setParams(args);
+    distribs[index].setParams(args.toArray());
     return distribs[index].sampleVal();
   }
 
@@ -90,7 +90,7 @@ public class MixtureDistrib extends AbstractCondProbDistrib {
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
   @Override
-  public void setParams(List<Object> params) {
+  public void setParams(Object[] params) {
     // TODO Auto-generated method stub
 
   }

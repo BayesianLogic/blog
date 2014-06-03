@@ -260,7 +260,7 @@ public class Clause {
     try {
       Constructor<? extends CondProbDistrib> ct = cpdClass.getConstructor();
       cpd = (CondProbDistrib) ct.newInstance();
-      cpd.setParams(constructionArgValues);
+      cpd.setParams(constructionArgValues.toArray());
     } catch (InvocationTargetException e) {
       e.printStackTrace();
       System.err.println("Error initializing CPD at " + getLocation() + ": "

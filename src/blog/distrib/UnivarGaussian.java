@@ -2,7 +2,6 @@ package blog.distrib;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import blog.common.Util;
 
@@ -17,12 +16,12 @@ public class UnivarGaussian implements CondProbDistrib {
     setParams(mean, variance);
   }
 
-  public void setParams(List<Object> params) {
-    if (params.size() != 2) {
+  public void setParams(Object[] params) {
+    if (params.length != 2) {
       throw new IllegalArgumentException(
           "expected two params: mean and variance");
     }
-    setParams((Double) params.get(0), (Double) params.get(1));
+    setParams((Double) params[0], (Double) params[1]);
   }
 
   public void setParams(Double mean, Double variance) {
