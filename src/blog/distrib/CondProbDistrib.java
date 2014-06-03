@@ -6,6 +6,9 @@ package blog.distrib;
  * To implement a new probability distribution, write a class that implements
  * this interface. Provide a constructor that takes no parameters. For full
  * examples, see UnivarGaussian or UniformReal.
+ * 
+ * @author cberzan
+ * @since Jun 3, 2014
  */
 public interface CondProbDistrib {
 
