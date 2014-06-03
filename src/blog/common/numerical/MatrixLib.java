@@ -102,6 +102,19 @@ public interface MatrixLib {
   public MatrixLib transpose();
 
   /**
+   * Copies the matrix by making rowTimes number of duplicate sets of rows, and
+   * making colTimes number of duplicate sets of columns. Similar to the repmat
+   * function in Matlab.
+   * 
+   * @param rowTimes
+   *          number of blocks for vertical dimension of the matrix
+   * @param colTimes
+   *          number of blocks for horizontal dimensions of the matrix
+   * @return
+   */
+  public MatrixLib repmat(int rowTimes, int colTimes);
+
+  /**
    * Returns the inverse of this matrix
    */
   public MatrixLib inverse();

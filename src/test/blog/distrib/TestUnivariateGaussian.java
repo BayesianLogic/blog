@@ -1,9 +1,8 @@
-package test;
+package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -17,13 +16,10 @@ import blog.distrib.UnivarGaussian;
  * Unit tests for Univariate Gaussian
  */
 @RunWith(JUnit4.class)
-public class TestUnivariateGaussian {
-  private final double ERROR_BOUND = 1e-10;
+public class TestUnivariateGaussian extends TestDistribution {
   private HashMap<Double, Double> probVals;
   private final double MEAN = 0.5;
   private final double VARIANCE = 2.25;
-  private List<Object> constructParams;
-  private List<Object> args;
 
   public TestUnivariateGaussian() {
     // We have a normal random variable Z ~ N(0.5, 1.5)
@@ -34,9 +30,6 @@ public class TestUnivariateGaussian {
     probVals.put(2.8, 0.082088348017233054);
     probVals.put(3.8, 0.023649728564154305);
     probVals.put(6.0, 0.00032018043441388045);
-
-    constructParams = new LinkedList<Object>();
-    args = new LinkedList<Object>();
   }
 
   @Test
@@ -61,8 +54,7 @@ public class TestUnivariateGaussian {
   }
 
   public void testGaussian(List<Object> constructParams, List<Object> args) {
-    UnivarGaussian gaussian = new UnivarGaussian();
-    gaussian.setParams(constructParams.toArray());
+    UnivarGaussian gaussian = new UnivarGaussian(constructParams);
     Set<Double> points = probVals.keySet();
     for (Double point : points) {
       gaussian.setParams(args.toArray());
