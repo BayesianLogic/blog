@@ -24,7 +24,6 @@ public class LaplaceTest {
   @Before
   public void createLaplace() {
     distrib = new Laplace(MEAN, DIVERSITY);
-
   }
 
   @Test
@@ -47,7 +46,8 @@ public class LaplaceTest {
     System.out.println("Sample mean: " + sample_mean + ", true mean: "
         + distrib.getMean());
     System.out.println("Sample variance: " + sample_variance
-        + ", true variance: " + distrib.getVariance());
+        + ", true variance: " + distrib.getDiversity() * distrib.getDiversity()
+        * 2);
   }
 
   @Test

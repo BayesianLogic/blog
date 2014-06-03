@@ -50,18 +50,17 @@ import blog.model.Type;
  * mean and the diversity.
  */
 public class Laplace extends AbstractCondProbDistrib {
-  public static final Laplace STANDARD = new Laplace(0, 1);
 
   /**
    * Creates a Laplace distribution with the given fixed mean and
    * diversity.
    */
   public Laplace(double mean, double diversity) {
-    fixedMean = true;
-    setMean(new Double(mean));
+    expectMeanAsArg = false;
+    setMean(mean);
 
-    fixedDiversity = true;
-    setDiversity(new Double(diversity));
+    expectDiversityAsArg = false;
+    setDiversity(diversity);
   }
 
   /**
@@ -73,17 +72,20 @@ public class Laplace extends AbstractCondProbDistrib {
    */
   public Laplace(List params) {
     if (params.size() == 0) {
-      fixedMean = false;
-      fixedDiversity = false;
+      expectMeanAsArg = true;
+      expectDiversityAsArg = true;
     } else if (params.size() == 1) {
-      fixedMean = false;
-      fixedDiversity = true;
-      setDiversity(params.get(0));
+      expectMeanAsArg = false;
+      expectDiversityAsArg = true;
+      initParams(params);
+      expectMeanAsArg = true;
+      expectDiversityAsArg = false;
     } else if (params.size() == 2) {
-      fixedMean = true;
-      setMean(params.get(0));
-      fixedDiversity = true;
-      setDiversity(params.get(1));
+      expectMeanAsArg = true;
+      expectDiversityAsArg = true;
+      initParams(params);
+      expectMeanAsArg = false;
+      expectDiversityAsArg = false;
     } else {
       throw new IllegalArgumentException(
           "Laplace CPD expects at most 2 parameters, not " + params.size());
@@ -115,7 +117,7 @@ public class Laplace extends AbstractCondProbDistrib {
    * <code>initParams</code> is called first).
    */
   public double getProb(double x) {
-    return (Math.exp(-Math.abs(x - mu) / b) / normConst);
+    return (Math.exp(-Math.abs(x - mean) / diversity) / normConst);
   }
 
   /**
@@ -124,7 +126,7 @@ public class Laplace extends AbstractCondProbDistrib {
    * were set in the constructor, or if <code>initParams</code> has been called.
    */
   public double getLogProb(double x) {
-    return (-Math.abs(x - mu) / b) - logNormConst;
+    return (-Math.abs(x - mean) / diversity) - logNormConst;
   }
 
   public Object sampleVal(List args, Type childType) {
@@ -147,16 +149,37 @@ public class Laplace extends AbstractCondProbDistrib {
   public double sampleVal() {
     double U = Util.random() - 0.5;
     if (U > 0)
-      return mu - b * Math.log(1 - 2 * U);
+      return mean - diversity * Math.log(1 - 2 * U);
     else
-      return mu + b * Math.log(1 + 2 * U);
+      return mean + diversity * Math.log(1 + 2 * U);
   }
 
   private void initParams(List args) {
-    if (fixedMean) {
-      if (args.size() > 0) {
-        throw new IllegalArgumentException(
-            "Laplace CPD with fixed mean expects no " + "arguments.");
+    if (args.size() > 2) {
+      throw new IllegalArgumentException(
+          "Laplace CPD expects at most 2 parameters, not " + args.size());
+    }
+    if (!expectMeanAsArg) {
+      if (!expectDiversityAsArg) {
+        if (args.size() > 0) {
+          throw new IllegalArgumentException(
+              "Laplace CPD with fixed mean expects no " + "arguments.");
+        }
+      } else {
+        if (!(args.get(0) instanceof Number)) {
+          throw new IllegalArgumentException(
+              "The divesity parameter of Laplace CPD must be of type Number, not "
+                  + args.get(0).getClass() + ".");
+        } else {
+          double Diversity = (double) args.get(0);
+          if (Diversity <= 0) {
+            throw new IllegalArgumentException(
+                "Laplace CPD expects a positive real number as the diversity parameter, not "
+                    + Diversity + ".");
+          } else {
+            setDiversity(Diversity);
+          }
+        }
       }
     } else {
       if (args.size() < 1) {
@@ -164,9 +187,14 @@ public class Laplace extends AbstractCondProbDistrib {
             "Laplace CPD created without a fixed mean; "
                 + "requires mean as an argument.");
       }
-      setMean(args.get(0));
-
-      if (fixedDiversity) {
+      if (!(args.get(0) instanceof Number)) {
+        throw new IllegalArgumentException(
+            "The mean parameter of Laplace CPD must be of type Number, not "
+                + args.get(0).getClass() + ".");
+      } else {
+        setMean((double) args.get(0));
+      }
+      if (!expectDiversityAsArg) {
         if (args.size() > 1) {
           throw new IllegalArgumentException(
               "Laplace CPD with fixed Laplace expects " + "only one argument.");
@@ -177,65 +205,56 @@ public class Laplace extends AbstractCondProbDistrib {
               "Laplace CPD created without a fixed "
                   + "Laplace; requires diversity as argument.");
         }
-        setDiversity(args.get(1));
+        if (!(args.get(1) instanceof Number)) {
+          throw new IllegalArgumentException(
+              "The divesity parameter of Laplace CPD must be of type Number, not "
+                  + args.get(1).getClass() + ".");
+        } else {
+          double Diversity = (double) args.get(1);
+          if (Diversity <= 0) {
+            throw new IllegalArgumentException(
+                "Laplace CPD expects a positive real number as the diversity parameter, not "
+                    + Diversity + ".");
+          } else {
+            setDiversity(Diversity);
+          }
+        }
       }
     }
   }
 
-  private void setMean(Object mean) {
-    if (!(mean instanceof Number)) {
-      throw new IllegalArgumentException(
-          "Mean of Laplace distribution must be a number, " + "not " + mean
-              + " of " + mean.getClass());
-    }
-    mu = ((Number) mean).doubleValue();
+  private void setMean(double mean) {
+    this.mean = mean;
   }
 
   public double getMean() {
-    return mu;
+    return mean;
   }
 
   public double getDiversity() {
-    return b;
+    return diversity;
   }
 
-  public double getVariance() {
-    return 2 * b * b;
-  }
-
-  private void setDiversity(Object diversity) {
-    if (!(diversity instanceof Number)) {
+  private void setDiversity(double diversity) {
+    if (diversity <= 0) {
       throw new IllegalArgumentException(
-          "Diversity of Laplace distribution must be a number, " + "not "
-              + diversity + " of " + diversity.getClass());
+          "Diversity of Laplace distribution must be positive, " + "not "
+              + diversity);
     }
-    b = ((Number) diversity).doubleValue();
-
-    if (b <= 0) {
-      throw new IllegalArgumentException(
-          "Diversity of Laplace distribution must be positive, " + "not " + b);
-    }
-    normConst = b * 2;
-    logNormConst = Math.log(b) + Math.log(2);
-  }
-
-  /**
-   * Returns a Laplace representing the posterior of the mean of this Laplace
-   * (but ignoring its currently set mean) given a value of its domain.
-   */
-  public Laplace meanPosterior(double value) {
-    return new Laplace(value, b);
+    this.diversity = diversity;
+    normConst = diversity * 2;
+    logNormConst = Math.log(diversity) + Math.log(2);
   }
 
   public String toString() {
-    return "Laplace(" + mu + ", " + b + ")";
+    return "Laplace(" + mean + ", " + diversity + ")";
   }
 
-  private boolean fixedMean;
-  private boolean fixedDiversity;
+  private boolean expectMeanAsArg;
+  private boolean expectDiversityAsArg;
 
-  private double mu;
-  private double b;
+  private double mean;
+  private double diversity;
   private double normConst;
   private double logNormConst;
 }
