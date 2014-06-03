@@ -130,6 +130,13 @@ public class Util {
     return rand.nextInt(n);
   }
 
+  /**
+   * Return a pseudorandom number sampled from a standard Gaussian.
+   */
+  public static double randGaussian() {
+    return rand.nextGaussian();
+  }
+
   /** Returns the sum of an array of doubles. */
   public static double sum(double[] array) {
     double result = 0;

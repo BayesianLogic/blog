@@ -44,7 +44,6 @@ public class LiuWestFilter extends ParticleFilter {
 
     // Perturb static variables.
     // FIXME: Currently assumes they're continuous scalars.
-    Random rng = new Random();
     for (String funcName : funcNamesToPerturb) {
       Particle particle = (Particle) particles.get(0);
       PartialWorld world = particle.getLatestWorld();
@@ -83,7 +82,7 @@ public class LiuWestFilter extends ParticleFilter {
         double newValue = (
           rho * oldValue +
           (1 - rho) * mean +
-          Math.sqrt(1 - rho * rho) * stdev * rng.nextGaussian());
+          Math.sqrt(1 - rho * rho) * stdev * Util.randGaussian());
         world.setValue(world.getBasicVarByName(funcName), newValue);
       }
     }
