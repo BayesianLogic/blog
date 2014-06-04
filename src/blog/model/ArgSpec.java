@@ -325,10 +325,31 @@ public abstract class ArgSpec {
   protected Object location = DEFAULT_LOCATION;
 
   /**
-   * Return the maximum Timestep referred to by this ArgSpec.
-   * The default implementation returns null.
+   * If this is a constant Timestep term, return the Timestep it refers to.
+   * Otherwise, return null. The default implementation returns null.
+   */
+  public Timestep getTimestep() {
+    return null;
+  }
+
+  /**
+   * Return the maximum Timestep term used in this ArgSpec.
+   * Return null if no Timestep terms are used.
    */
   public Timestep maxTimestep() {
-    return null;
+    ArrayList<ArgSpec> timestepTerms = new ArrayList<ArgSpec>();
+    selectTerms(new UnaryPredicate() {
+      public boolean evaluate(Object term) {
+        return ((ArgSpec) term).getTimestep() != null;
+      }
+    }, timestepTerms);
+    Timestep result = null;
+    for (ArgSpec spec : timestepTerms) {
+      Timestep timestep = spec.getTimestep();
+      if (result == null || timestep.compareTo(result) > 0) {
+        result = timestep;
+      }
+    }
+    return result;
   }
 }
