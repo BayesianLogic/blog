@@ -3,7 +3,6 @@ package test.blog.distrib;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -16,10 +15,11 @@ import blog.distrib.UnivarGaussian;
  * Unit tests for Univariate Gaussian
  */
 @RunWith(JUnit4.class)
-public class TestUnivariateGaussian extends TestDistribution {
+public class TestUnivariateGaussian {
   private HashMap<Double, Double> probVals;
   private final double MEAN = 0.5;
   private final double VARIANCE = 2.25;
+  private final double ERROR = 10e-10;
 
   public TestUnivariateGaussian() {
     // We have a normal random variable Z ~ N(0.5, 1.5)
@@ -34,33 +34,79 @@ public class TestUnivariateGaussian extends TestDistribution {
 
   @Test
   public void testFixedMeanFixedVariance() {
-    constructParams.add(MEAN);
-    constructParams.add(VARIANCE);
-    testGaussian(constructParams, args);
+    Double[] params = new Double[2];
+    params[0] = MEAN;
+    params[1] = VARIANCE;
+    UnivarGaussian gaussian = new UnivarGaussian();
+    gaussian.setParams(params);
+    testGaussian(gaussian);
   }
 
   @Test
   public void testRandomMeanFixedVariance() {
-    constructParams.add(VARIANCE);
-    args.add(MEAN);
-    testGaussian(constructParams, args);
+    Double[] params = new Double[2];
+    params[1] = VARIANCE;
+    UnivarGaussian gaussian = new UnivarGaussian();
+    gaussian.setParams(params);
+    gaussian.setParams(MEAN, null);
+    testGaussian(gaussian);
+  }
+
+  @Test
+  public void testFixedMeanRandomVariance() {
+    Double[] params = new Double[2];
+    params[0] = MEAN;
+    UnivarGaussian gaussian = new UnivarGaussian();
+    gaussian.setParams(params);
+    gaussian.setParams(null, VARIANCE);
+    testGaussian(gaussian);
   }
 
   @Test
   public void testRandomMeanRandomVariance() {
-    args.add(MEAN);
-    args.add(VARIANCE);
-    testGaussian(constructParams, args);
+    Double[] params = new Double[2];
+    UnivarGaussian gaussian = new UnivarGaussian();
+    gaussian.setParams(params);
+    gaussian.setParams(MEAN, VARIANCE);
+    testGaussian(gaussian);
   }
 
-  public void testGaussian(List<Object> constructParams, List<Object> args) {
-    UnivarGaussian gaussian = new UnivarGaussian(constructParams);
+  @Test
+  public void testDoubleSet() {
+    UnivarGaussian gaussian = new UnivarGaussian();
+    gaussian.setParams(MEAN, null);
+    gaussian.setParams(null, VARIANCE);
+    testGaussian(gaussian);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testInSufficientArguments1() {
+    UnivarGaussian gaussian = new UnivarGaussian();
+    gaussian.setParams(null, VARIANCE);
+    testGaussian(gaussian);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testInSufficientArguments2() {
+    UnivarGaussian gaussian = new UnivarGaussian();
+    gaussian.setParams(MEAN, null);
+    testGaussian(gaussian);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testIncorrectNumberArguments() {
+    Double[] params = new Double[1];
+    UnivarGaussian gaussian = new UnivarGaussian();
+    gaussian.setParams(params);
+    testGaussian(gaussian);
+  }
+
+  public void testGaussian(UnivarGaussian gaussian) {
     Set<Double> points = probVals.keySet();
     for (Double point : points) {
-      gaussian.setParams(args.toArray());
-      assertEquals(probVals.get(point), gaussian.getProb(point), ERROR_BOUND);
+      assertEquals(probVals.get(point), gaussian.getProb(point), ERROR);
       assertEquals(Math.log(probVals.get(point)), gaussian.getLogProb(point),
-          ERROR_BOUND);
+          ERROR);
     }
   }
 
