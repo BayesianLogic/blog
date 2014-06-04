@@ -1,27 +1,18 @@
 package blog;
 
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.common.FilteredIterator;
-import blog.common.UnaryPredicate;
-import blog.common.Util;
-import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
-import blog.model.ConstantInterp;
 import blog.model.Evidence;
-import blog.model.FuncAppTerm;
 import blog.model.Model;
-import blog.model.NonRandomFunction;
 import blog.model.Query;
 import blog.model.SymbolEvidenceStatement;
 import blog.model.ValueEvidenceStatement;
@@ -106,77 +97,6 @@ public class DBLOGUtil {
     }
   }
 
-  public static boolean isTimestep(ArgSpec t) {
-    return getTimestepInTimestepTerm(t) != null;
-  }
-
-  /**
-   * Returns the single timestep in the given argspec, or <code>null</code> if
-   * there is none in it, or exits if there are more than one.
-   */
-  public static Timestep getSingleTimestepIn(ArgSpec argSpec) {
-    Collection timesteps = getTimestepTermsIn(argSpec, new LinkedList());
-    if (timesteps.size() > 1)
-      Util.fatalError("DBLOGUtil.getTimestep called for argspec with more than one timestep: "
-          + argSpec);
-    if (timesteps.size() == 0)
-      return null;
-    return getTimestepInTimestepTerm((ArgSpec) Util.getFirst(timesteps));
-
-  }
-
-  /**
-   * Returns a Timestep object if this is a constant timestep term, or null
-   * otherwise.
-   */
-  public static Timestep getTimestepInTimestepTerm(ArgSpec timestepTerm) {
-    if (!(timestepTerm instanceof FuncAppTerm))
-      return null;
-    FuncAppTerm funcAppTerm = (FuncAppTerm) timestepTerm;
-    if (!(funcAppTerm.getFunction() instanceof NonRandomFunction))
-      return null;
-    NonRandomFunction nonRandomFunction = (NonRandomFunction) funcAppTerm
-        .getFunction();
-    if (!(nonRandomFunction.getInterpretation() instanceof ConstantInterp))
-      return null;
-    ConstantInterp interp = (ConstantInterp) nonRandomFunction
-        .getInterpretation();
-    Object value = interp.getValue(Util.list());
-    if (!(value instanceof Timestep))
-      return null;
-    return (Timestep) value;
-    // Prime example of why dynamic typing sucks. :-) Rodrigo
-  }
-
-  private static class TimestepSelector implements UnaryPredicate {
-    public boolean evaluate(Object term) {
-      return isTimestep((ArgSpec) term);
-    }
-  };
-
-  private static final TimestepSelector timestepSelector = new TimestepSelector();
-
-  /**
-   * Adds all timesteps in an ArgSpec to a collection and return that
-   * collection.
-   */
-  public static Collection getTimestepTermsIn(ArgSpec argSpec,
-      Collection timesteps) {
-    argSpec.selectTerms(timestepSelector, timesteps);
-    return timesteps;
-  }
-
-  private static class TimestepTermComparator implements Comparator {
-    public int compare(Object o1, Object o2) {
-      return getTimestepInTimestepTerm((ArgSpec) o1).compareTo(
-          getTimestepInTimestepTerm((ArgSpec) o2));
-    }
-
-    public boolean equals(Object obj) {
-      return obj instanceof TimestepTermComparator;
-    }
-  };
-
   /**
    * Split evidence by the timestep they refer to.
    * Atemporal evidence is assigned to timestep null.
@@ -185,15 +105,7 @@ public class DBLOGUtil {
     // First we accumulate all statements for each timestep.
     Map<Timestep, List<Object>> table = new HashMap<Timestep, List<Object>>();
     for (ValueEvidenceStatement statement : evidence.getValueEvidence()) {
-      // FIXME: timesteps actually accumulates ArgSpecs for which
-      // getTimestepInTimestepTerm returns non-null. Quite confusing.
-      TreeSet<ArgSpec> timesteps = new TreeSet(new TimestepTermComparator());
-      getTimestepTermsIn(statement.getLeftSide(), timesteps);
-      getTimestepTermsIn(statement.getOutput(), timesteps);
-      Timestep maxTimestep = null;
-      if (!timesteps.isEmpty()) {
-        maxTimestep = getTimestepInTimestepTerm(timesteps.last());
-      }
+      Timestep maxTimestep = statement.getLeftSide().maxTimestep();
       List<Object> statements = table.get(maxTimestep);
       if (statements == null) {
         statements = new LinkedList<Object>();
@@ -202,14 +114,7 @@ public class DBLOGUtil {
       statements.add(statement);
     }
     for (SymbolEvidenceStatement statement : evidence.getSymbolEvidence()) {
-      // FIXME: timesteps actually accumulates ArgSpecs for which
-      // getTimestepInTimestepTerm returns non-null. Quite confusing.
-      TreeSet<ArgSpec> timesteps = new TreeSet(new TimestepTermComparator());
-      getTimestepTermsIn(statement.getSetSpec(), timesteps);
-      Timestep maxTimestep = null;
-      if (!timesteps.isEmpty()) {
-        maxTimestep = getTimestepInTimestepTerm(timesteps.last());
-      }
+      Timestep maxTimestep = statement.getSetSpec().maxTimestep();
       List<Object> statements = table.get(maxTimestep);
       if (statements == null) {
         statements = new LinkedList<Object>();
@@ -234,7 +139,7 @@ public class DBLOGUtil {
       List<Query> queries) {
     Map<Timestep, List<Query>> table = new HashMap<Timestep, List<Query>>();
     for (Query q : queries) {
-      Timestep t = getSingleTimestepIn(((ArgSpecQuery) q).argSpec());
+      Timestep t = ((ArgSpecQuery) q).argSpec().maxTimestep();
       List<Query> qs = table.get(t);
       if (qs == null) {
         qs = new LinkedList<Query>();
