@@ -11181,9 +11181,9 @@ obs Subject(Sent[2794]) = Southern_Air_Transport;
 obs Object(Sent[2794]) = Miami_based;
 obs Verb(Sent[2794]) = appos___appos__carrier__amod___amod;
 
-obs Subject(Sent[2795]) = Fred_Bergsten;
-obs Object(Sent[2795]) = Institute_for_International_Economics;
-obs Verb(Sent[2795]) = cc___cc__director__prep__of__pobj___pobj;
+obs Subject(Sent[2795]) = source_C__NNP_PERSON_Fred_NNP_PERSON_Bergsten_NNP_PERSON;
+obs Object(Sent[2795]) = dest_Institute_NNP_ORGANIZATION_for_IN_ORGANIZATION_International_NNP_ORGANIZATION_Economics_NNP_ORGANIZATION;
+obs Verb(Sent[2795]) = path_cc___cc__director__prep__of__pobj___pobj_sen_The_semiconductor_agreement_was_the_accidental_trigger_of_a_crisis_that_was_waiting_to_erupt______said_C__Fred_Bergsten___director_of_the_Institute_for_International_Economics_here______lex___director_of_the_pos___NN_IN_DT_lc____said_rc_here___cc___cc__director__prep__of__pobj___pobj;
 
 obs Subject(Sent[2796]) = Smith;
 obs Object(Sent[2796]) = World_Boxing_Association;
