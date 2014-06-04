@@ -454,7 +454,7 @@ public class FuncAppTerm extends Term {
   }
 
   @Override
-  public Timestep maxTimestep() {
+  public Timestep getTimestep() {
     if (!(f instanceof NonRandomFunction))
       return null;
     NonRandomFunction nrf = (NonRandomFunction) f;
