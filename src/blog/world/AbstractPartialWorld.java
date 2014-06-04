@@ -131,11 +131,10 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 
 		Object oldValue = basicVarToValue.get(var);
 		if (value == null ? (oldValue == null) : value.equals(oldValue)) {
-			Util.debug("Setting var: " + var + " to " + value);
+      Util.debug("Setting var: ", var, " to ", value);
 			return;
 		}
-		Util.debug("Setting var: " + var + " to " + value + ", replacing "
-				+ oldValue);
+    Util.debug("Setting var: ", var, " to ", value, ", replacing ", oldValue);
 		var.ensureStable();
 
 		if ((var instanceof NumberVar) && (oldValue != null)) {
@@ -223,12 +222,10 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 				throw new IllegalArgumentException("No log prob computed for " + var);
 			}
 			if (logProb == PartialWorld.UNDET) {
-				if (Util.verbose()) {
 					BasicVar uninstParent = var.getFirstUninstParent(this);
 					Util.fatalError("Can't get log prob of variable " + var
 							+ " because it depends on " + uninstParent
 							+ ", which is not instantiated.");
-				}
 			}
 			return logProb.doubleValue();
 		}

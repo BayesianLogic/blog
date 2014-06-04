@@ -82,6 +82,11 @@ public interface MatrixLib {
   public double det();
 
   /**
+   * Returns the absolute value for every element of this matrix
+   */
+  public MatrixLib abs();
+
+  /**
    * Returns the exponential function applied to every element of this matrix
    */
   public MatrixLib exp();
@@ -95,6 +100,19 @@ public interface MatrixLib {
    * Returns the transpose of this matrix
    */
   public MatrixLib transpose();
+
+  /**
+   * Copies the matrix by making rowTimes number of duplicate sets of rows, and
+   * making colTimes number of duplicate sets of columns. Similar to the repmat
+   * function in Matlab.
+   * 
+   * @param rowTimes
+   *          number of blocks for vertical dimension of the matrix
+   * @param colTimes
+   *          number of blocks for horizontal dimensions of the matrix
+   * @return
+   */
+  public MatrixLib repmat(int rowTimes, int colTimes);
 
   /**
    * Returns the inverse of this matrix

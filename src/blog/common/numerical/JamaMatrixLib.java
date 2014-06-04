@@ -111,6 +111,26 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
+  public MatrixLib repmat(int rowTimes, int colTimes) {
+    if (rowTimes <= 0 || colTimes <= 0) {
+      throw new IllegalArgumentException(
+          "The number of blocks specified for repmat in each dimension must be strictly positive");
+    }
+    double[][] ary = values.getArrayCopy();
+    double[][] newAry = new double[rowTimes * ary.length][colTimes
+        * ary[0].length];
+    for (int i = 0; i < rowTimes; i++) {
+      for (int j = 0; j < colTimes; j++) {
+        for (int k = 0; k < ary.length; k++) {
+          System.arraycopy(ary[k], 0, newAry[i * ary.length + k], j
+              * ary[0].length, ary[0].length);
+        }
+      }
+    }
+    return MatrixFactory.fromArray(newAry);
+  }
+
+  @Override
   public MatrixLib inverse() {
     return new JamaMatrixLib(values.inverse());
   }
@@ -169,6 +189,21 @@ public class JamaMatrixLib implements MatrixLib {
     for (int i = 0; i < numRows(); i++) {
       for (int j = 0; j < numCols(); j++)
         v[i][j] = Math.exp(v[i][j]);
+    }
+    return new JamaMatrixLib(v);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.common.numerical.MatrixLib#abs()
+   */
+  @Override
+  public MatrixLib abs() {
+    double[][] v = values.getArrayCopy();
+    for (int i = 0; i < numRows(); i++) {
+      for (int j = 0; j < numCols(); j++)
+        v[i][j] = Math.abs(v[i][j]);
     }
     return new JamaMatrixLib(v);
   }
