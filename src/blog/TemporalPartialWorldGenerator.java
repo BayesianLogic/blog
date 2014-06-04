@@ -7,6 +7,7 @@ import blog.common.UnaryProcedure;
 import blog.common.Util;
 import blog.model.ArgSpecQuery;
 import blog.model.Model;
+import blog.type.Timestep;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 
@@ -23,99 +24,121 @@ import blog.world.PartialWorld;
  */
 public class TemporalPartialWorldGenerator {
 
-	public TemporalPartialWorldGenerator(Model model, Collection queryTemplates) {
-		this.model = model;
-		currentPartialWorld = new DefaultPartialWorld();
-		queryInstantiator = new TemporalQueriesInstantiator(model, queryTemplates);
-	}
+  public TemporalPartialWorldGenerator(Model model, Collection queryTemplates) {
+    this.model = model;
+    currentPartialWorld = new DefaultPartialWorld();
+    queryInstantiator = new TemporalQueriesInstantiator(model, queryTemplates);
+  }
 
-	/**
-	 * Augments and returns the current world based on the instantiation of the
-	 * query templates for the time step next to the last one used, or 0 if this
-	 * is the first generation.
-	 */
-	public void moveOn() {
-		moveOn(++lastTimeStep);
-	}
+  /**
+   * Augments and returns the current world based on the instantiation of the
+   * query templates for the time step next to the last one used, or 0 if this
+   * is the first generation.
+   */
+  public void moveOn() {
+    moveOn(++lastTimeStep);
+  }
 
-	/**
-	 * Augments and returns the current world based on the instantiation of the
-	 * query templates for the given value of t.
-	 */
-	public void moveOn(int t) {
-		moveOn(queryInstantiator.getQueries(lastTimeStep = t));
-	}
+  /**
+   * Augments and returns the current world based on the instantiation of the
+   * query templates for the given value of t.
+   */
+  public void moveOn(int t) {
+    moveOn(queryInstantiator.getQueries(lastTimeStep = t));
+  }
 
-	/**
-	 * Augments the current world based on the given queries.
-	 */
-	public void moveOn(Collection queries) {
-		for (Iterator it = queries.iterator(); it.hasNext();) {
-			ArgSpecQuery query = (ArgSpecQuery) it.next();
-			BLOGUtil.ensureDetAndSupported(query.getVariable(), currentPartialWorld);
-		}
-		latestQueries = queries;
-		if (afterMove != null)
-			afterMove.evaluate(latestQueries);
-		DBLOGUtil.uninstantiatePreviousTimeslices(currentPartialWorld);
-		BLOGUtil.removeAllDerivedVars(currentPartialWorld);
-	}
+  /**
+   * Augments the current world based on the given queries.
+   */
+  public void moveOn(Collection queries) {
+    for (Iterator it = queries.iterator(); it.hasNext();) {
+      ArgSpecQuery query = (ArgSpecQuery) it.next();
+      BLOGUtil.ensureDetAndSupported(query.getVariable(), currentPartialWorld);
+    }
+    latestQueries = queries;
+    if (afterMove != null)
+      afterMove.evaluate(latestQueries);
+    uninstantiatePreviousTimeslices(currentPartialWorld);
+    BLOGUtil.removeAllDerivedVars(currentPartialWorld);
+  }
 
-	/** Provides the latest instantiated queries. */
-	public Collection getLatestQueries() {
-		return latestQueries;
-	}
+  /** Provides the latest instantiated queries. */
+  public Collection getLatestQueries() {
+    return latestQueries;
+  }
 
-	/** Returns the template that generated a given query in the last advance. */
-	public String getTemplateOf(ArgSpecQuery query) {
-		return (String) queryInstantiator.getTemplateOf(query);
-	}
+  /** Returns the template that generated a given query in the last advance. */
+  public String getTemplateOf(ArgSpecQuery query) {
+    return (String) queryInstantiator.getTemplateOf(query);
+  }
 
-	protected Model model;
+  protected Model model;
 
-	public Model getModel() {
-		return model;
-	}
+  public Model getModel() {
+    return model;
+  }
 
-	/**
-	 * The current world.
-	 */
-	public PartialWorld currentPartialWorld;
-	public int lastTimeStep = -1;
-	private Collection latestQueries;
-	protected TemporalQueriesInstantiator queryInstantiator;
-	//Cheng: changed visibility of queryInstantiator to protected.
+  public static int findLargestTimestepIndex(PartialWorld world) {
+    int largest = -1;
+    Iterator timestepIndexIt = DBLOGUtil.getTimestepIndicesIterator(world);
+    while (timestepIndexIt.hasNext()) {
+      Integer timestepIndex = (Integer) timestepIndexIt.next();
+      if (timestepIndex.intValue() > largest)
+        largest = timestepIndex.intValue();
+    }
+    return largest;
+  }
 
-	/**
-	 * If present, this function is evaluated on the query map (indexed by
-	 * templates) right after it is supported in the current world.
-	 */
-	public UnaryProcedure afterMove = null;
+  /**
+   * Identifies the largest time step in a world and uninstantiates all temporal
+   * random variables with a different time step.
+   */
+  public static void uninstantiatePreviousTimeslices(PartialWorld world) {
+    int largestTimestepIndex = findLargestTimestepIndex(world);
+    if (largestTimestepIndex != -1)
+      DBLOGUtil.removeVarsAtDiffTimestep(Timestep.at(largestTimestepIndex),
+          world);
+  }
 
-	public static void main(String[] args) {
-		Util.initRandom(true);
-		Model model = Model
-				.readFromFile("examples/ParticleFilteringVsLikelihoodWeightingMay2008Experiment.mblog");
-		final TemporalPartialWorldGenerator gen = new TemporalPartialWorldGenerator(
-				model, Util.list("query #{Blip r: Time(r) = t};"));
+  /**
+   * The current world.
+   */
+  public PartialWorld currentPartialWorld;
+  public int lastTimeStep = -1;
+  private Collection latestQueries;
+  protected TemporalQueriesInstantiator queryInstantiator;
+  // Cheng: changed visibility of queryInstantiator to protected.
 
-		final ArgSpecQuery aircraft = (ArgSpecQuery) BLOGUtil.parseQuery_NE(
-				"query #{Aircraft a};", model);
+  /**
+   * If present, this function is evaluated on the query map (indexed by
+   * templates) right after it is supported in the current world.
+   */
+  public UnaryProcedure afterMove = null;
 
-		gen.afterMove = new UnaryProcedure() {
-			public void evaluate(Object queriesObj) {
-				Collection queries = (Collection) queriesObj;
-				ArgSpecQuery query = (ArgSpecQuery) Util.getFirst(queries);
-				query.updateStats(gen.currentPartialWorld);
-				query.printResults(System.out);
+  public static void main(String[] args) {
+    Util.initRandom(true);
+    Model model = Model
+        .readFromFile("examples/ParticleFilteringVsLikelihoodWeightingMay2008Experiment.mblog");
+    final TemporalPartialWorldGenerator gen = new TemporalPartialWorldGenerator(
+        model, Util.list("query #{Blip r: Time(r) = t};"));
 
-				aircraft.updateStats(gen.currentPartialWorld);
-				aircraft.printResults(System.out);
-			}
-		};
+    final ArgSpecQuery aircraft = (ArgSpecQuery) BLOGUtil.parseQuery_NE(
+        "query #{Aircraft a};", model);
 
-		for (int t = 0; t < 10000; t++) {
-			gen.moveOn(t);
-		}
-	}
+    gen.afterMove = new UnaryProcedure() {
+      public void evaluate(Object queriesObj) {
+        Collection queries = (Collection) queriesObj;
+        ArgSpecQuery query = (ArgSpecQuery) Util.getFirst(queries);
+        query.updateStats(gen.currentPartialWorld);
+        query.printResults(System.out);
+
+        aircraft.updateStats(gen.currentPartialWorld);
+        aircraft.printResults(System.out);
+      }
+    };
+
+    for (int t = 0; t < 10000; t++) {
+      gen.moveOn(t);
+    }
+  }
 }
