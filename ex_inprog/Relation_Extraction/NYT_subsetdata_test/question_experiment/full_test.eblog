@@ -1107,6 +1107,7 @@ obs Verb(Sent[275]) = appos___appos__leader__prep__of__pobj___pobj;
 obs Subject(Sent[276]) = Lawrence_Kohlberg;
 obs Object(Sent[276]) = Harvard;
 obs Verb(Sent[276]) = appos___appos__professor__prep__at__pobj___pobj;
+obs Rel(SourceFact(Sent[276])) = R[0]; // For Who is a professor at NYU experiment
 
 obs Subject(Sent[277]) = Joseph_L__Bruno;
 obs Object(Sent[277]) = State_Senate;

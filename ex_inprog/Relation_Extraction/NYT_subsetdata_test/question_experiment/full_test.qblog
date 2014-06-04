@@ -1,0 +1,1 @@
+random Fact F(Entity e) ~ Iota({ Fact f : Rel(f) == R[0] & Arg1(f) == e & Arg2(f) == New_York_University });

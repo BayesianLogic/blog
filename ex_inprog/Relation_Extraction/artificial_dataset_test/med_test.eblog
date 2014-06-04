@@ -4,6 +4,7 @@ obs Subject(Sent[0]) = Obama;
 obs Object(Sent[0]) = USA;
 obs Verb(Sent[0]) = is_the_president_of;
 //obs Rel(SourceFact(Sent[0])) = leadership; // Relation Observation
+obs Rel(SourceFact(Sent[0])) = R[0];
 
 obs Subject(Sent[1]) = Pranab_Mukherjee;
 obs Object(Sent[1]) = India;
