@@ -37,16 +37,6 @@ import blog.world.PartialWorld;
  */
 public class DBLOGUtil {
   /**
-   * Identifies the largest time step in a world and uninstantiates all temporal
-   * random variables with a different time step.
-   */
-  public static void uninstantiatePreviousTimeslices(PartialWorld world) {
-    int largestTimestepIndex = findLargestTimestepIndex(world);
-    if (largestTimestepIndex != -1)
-      removeVarsAtDiffTimestep(Timestep.at(largestTimestepIndex), world);
-  }
-
-  /**
    * Returns a string obtained by replacing all identifiers <code>t</code> in a
    * given string by the string representation of a timestep the index of which
    * is given.
@@ -66,17 +56,6 @@ public class DBLOGUtil {
     ArgSpecQuery query = BLOGUtil.parseQuery_NE("query "
         + queryForLastestTimestepString + ";", model);
     return query;
-  }
-
-  public static int findLargestTimestepIndex(PartialWorld world) {
-    int largest = -1;
-    Iterator timestepIndexIt = getTimestepIndicesIterator(world);
-    while (timestepIndexIt.hasNext()) {
-      Integer timestepIndex = (Integer) timestepIndexIt.next();
-      if (timestepIndex.intValue() > largest)
-        largest = timestepIndex.intValue();
-    }
-    return largest;
   }
 
   /**
