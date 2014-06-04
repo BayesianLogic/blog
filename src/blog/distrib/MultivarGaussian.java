@@ -37,7 +37,7 @@ package blog.distrib;
 
 import java.util.List;
 
-import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.model.MatrixSpec;
 import blog.model.Type;
@@ -146,6 +146,19 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
 		return getLogProbInternal(x);
 	}
 
+	public double getLogProb(List args, Object value) {
+		initParams(args);
+
+		if (!((value instanceof MatrixLib) &&
+              (((MatrixLib) value).rowLen() == d) &&
+              (((MatrixLib) value).colLen() == 1)))
+			throw new IllegalArgumentException("The value passed to the " + d
+					+ "-dimensional " + "multivariate Gaussian distribution's getLogProb "
+					+ "method must be a column vector of length " + d + ", not " + value);
+
+		return getLogProbInternal((MatrixLib) value);
+	}
+
 	/**
 	 * Samples a value from this multivariate Gaussian by generating <i>d </i>
 	 * independent samples from univariate Gaussians with unit variance, one for
@@ -174,7 +187,7 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
 		for (int i = 0; i < d; i++) {
 			mat[i][0] = UnivarGaussian.STANDARD.sampleVal();
 		}
-		MatrixLib temp = new JamaMatrixLib(mat);
+		MatrixLib temp = MatrixFactory.fromArray(mat);
 		return mu.plus(sqrtSigma.timesMat(temp));
 	}
 

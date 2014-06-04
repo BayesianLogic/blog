@@ -1,7 +1,16 @@
 package blog.common.numerical;
 
+import java.util.Arrays;
+
 import Jama.Matrix;
 
+/**
+ * Matrix and linear algebra operations
+ * 
+ * @author awong
+ * @author leili
+ * @date Feb 11, 2014
+ */
 public class JamaMatrixLib implements MatrixLib {
 
   private Matrix values;
@@ -102,11 +111,34 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
+  public MatrixLib columnSum() {
+    double[][] result = new double[1][colLen()];
+    for (int i = 0; i < colLen(); i++) {
+      result[0][i] = 0;
+      for (int j = 0; j < rowLen(); j++) {
+        result[0][i] += elementAt(j, i);
+      }
+    }
+    return new JamaMatrixLib(result);
+  }
+
+  @Override
   public boolean equals(Object obj) {
     // in general you need to check the dimensionality of the matrix as well.
     if (obj instanceof JamaMatrixLib) {
-      return values.minus(((JamaMatrixLib) obj).values).normInf() < ZERO_THRESHOLD;
+      return Arrays.deepEquals(values.getArray(),
+          ((JamaMatrixLib) obj).values.getArray());
     }
     return false;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    return Arrays.deepHashCode(values.getArray());
   }
 }

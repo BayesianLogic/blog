@@ -168,23 +168,20 @@ public abstract class ExampleTest {
       for (Iterator keys = allKeys.iterator(); keys.hasNext();) {
         Object key = keys.next();
         if (!baseline.containsKey(key)) {
-          if ((hist.getWeight(key) / hist.getTotalWeight()) > errBound) {
-            System.out.println("Model: p(" + key + ") = "
-                + (hist.getWeight(key) / hist.getTotalWeight()));
+          if (hist.getProb(key) > errBound) {
+            System.out.println("Model: p(" + key + ") = " + hist.getProb(key));
             System.out.println("Base: p(" + key + ") = 0");
             return false;
           }
-        } else if (hist.getWeight(key) == 0) {
+        } else if (hist.getLogWeight(key) == Double.NEGATIVE_INFINITY) {
           if (baseline.get(key) > errBound) {
             System.out.println("Model: p(" + key + ") = 0");
             System.out.println("Base: p(" + key + ") = " + baseline.get(key));
             return false;
           }
         } else {
-          if (Math.abs((hist.getWeight(key) / hist.getTotalWeight())
-              - baseline.get(key)) > errBound) {
-            System.out.println("Model: p(" + key + ") = "
-                + (hist.getWeight(key) / hist.getTotalWeight()));
+          if (Math.abs(hist.getProb(key) - baseline.get(key)) > errBound) {
+            System.out.println("Model: p(" + key + ") = " + hist.getProb(key));
             System.out.println("Base: p(" + key + ") = " + baseline.get(key));
             return false;
           }

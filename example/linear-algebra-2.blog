@@ -1,0 +1,23 @@
+fixed RealMatrix a = [1, 2, 3; 4, 5, 6; 7, 8, 9; 10, 11, 12];
+fixed RealMatrix b = sum(a);
+
+query a;
+query b;
+
+
+fixed RealMatrix c = vstack(a, b);
+fixed RealMatrix d = [-1, -2, -3; -4, -5, -6];
+fixed RealMatrix e = vstack(a, d);
+
+query c;
+query e;
+
+
+fixed RealMatrix test_identity = eye(3);
+query test_identity;
+
+fixed RealMatrix test_zeros = zeros(3, 4);
+query test_zeros;
+
+fixed RealMatrix test_ones = ones(5, 2);
+query test_ones;

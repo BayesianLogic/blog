@@ -226,6 +226,7 @@ public class Categorical extends AbstractCondProbDistrib {
     } else {
       expectProbsAsArg = true;
     }
+    normalizeProb();
   }
 
   /**
