@@ -193,7 +193,7 @@ public class Categorical extends AbstractCondProbDistrib {
           expectProbsAsArg = false;
         } else if (obj instanceof MatrixLib) {
           MatrixLib mapping = (MatrixLib) obj;
-          int numElements = mapping.colLen();
+          int numElements = mapping.numCols();
 
           probs = new double[numElements];
           values = new Object[numElements];
@@ -413,8 +413,8 @@ public class Categorical extends AbstractCondProbDistrib {
       Object arg = args.get(0);
       if (arg instanceof MatrixLib) {
         MatrixLib m = (MatrixLib) args.get(0);
-        probs = new double[m.colLen()];
-        values = new Object[m.colLen()];
+        probs = new double[m.numCols()];
+        values = new Object[m.numCols()];
         for (int i = 0; i < probs.length; ++i) {
           probs[i] = m.elementAt(0, i);
           values[i] = Integer.valueOf(i);

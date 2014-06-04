@@ -35,8 +35,8 @@
 
 package blog.distrib;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
@@ -46,90 +46,69 @@ import blog.model.Type;
 
 /**
  * Multinomial distribution.
- * 
+ * Multinomial distribution accepts two arguments,
+ * <num of trials>, <weight matrix/list>, either or both can be random.
  * See https://en.wikipedia.org/wiki/Multinomial_distribution
  */
 public class Multinomial extends AbstractCondProbDistrib {
 
-  private void init(int numTrials, double[] pi) {
-    this.numTrials = numTrials;
-    this.pi = (double[]) pi.clone();
-    double sum = 0;
-    for (int i = 0; i < pi.length; i++) {
-      if (pi[i] < 0) {
-        throw new IllegalArgumentException("Probability " + pi[i]
-            + " for element " + i + " is negative.");
-      }
-      sum += pi[i];
-    }
-    if (sum < 1e-9) {
-      throw new IllegalArgumentException("Probabilities sum to approx zero");
-    }
-    for (int i = 0; i < pi.length; i++) {
-      this.pi[i] /= sum;
-    }
-  }
-
   /**
-   * Creates a Multinomial object with probabilities specified by the given
-   * array.
+   * Multinomial distribution accepts two arguments,
+   * <num of trials>, <weight matrix/list>, either or both can be random.
    * 
-   * @throws IllegalArgumentException
-   *           if pi does not define a probability distribution
+   * @param params
    */
-  public Multinomial(int numTrials, double[] pi) {
-    init(numTrials, pi);
+  public Multinomial(List params) {
+    if (params.size() == 2) {
+      expectTrialsAsArg = true;
+      expectWeightAsArg = true;
+      initParams(params);
+      expectTrialsAsArg = false;
+      expectWeightAsArg = false;
+    } else if (params.size() == 1) {
+      Object obj = params.get(0);
+      if (obj instanceof Integer) {
+        expectTrialsAsArg = true;
+        expectWeightAsArg = false;
+        initParams(params);
+        expectTrialsAsArg = false;
+        expectWeightAsArg = true;
+      } else {
+        expectTrialsAsArg = false;
+        expectWeightAsArg = true;
+        initParams(params);
+        expectTrialsAsArg = true;
+        expectWeightAsArg = false;
+      }
+    } else {
+      expectTrialsAsArg = true;
+      expectWeightAsArg = true;
+    }
   }
 
-  public Multinomial(List params) {
-    if (params.size() != 2) {
-      throw new IllegalArgumentException("expected numTrials and pi");
+  MatrixLib ensureValueFormat(Object value) {
+    if (!(value instanceof MatrixLib)) {
+      throw new IllegalArgumentException("expected vector value");
     }
-
-    if (!(params.get(0) instanceof Integer)) {
-      throw new IllegalArgumentException(
-          "expected first arg to be integer numTrials");
+    final int numBuckets = pi.length;
+    MatrixLib valueVector = (MatrixLib) value;
+    if (valueVector.numRows() == 1 && (valueVector.numCols() != 1)) {
+      valueVector = valueVector.transpose();
     }
-    int numTrials = (Integer) params.get(0);
-
-    Object objectPi = params.get(1);
-    if (objectPi instanceof MatrixSpec) {
-      objectPi = ((MatrixSpec) objectPi).getValueIfNonRandom();
+    if (valueVector.numRows() != numBuckets) {
+      throw new IllegalArgumentException("value has wrong dimension");
     }
-    if (!(objectPi instanceof MatrixLib)) {
-      throw new IllegalArgumentException(
-          "expected second arg to be array of reals; got " + objectPi
-              + " instead, which is of type " + objectPi.getClass().getName());
-    }
-    MatrixLib pi = (MatrixLib) objectPi;
-    if (pi.colLen() != 1) {
-      throw new IllegalArgumentException(
-          "expected second arg to be column vector");
-    }
-    double[] nativePi = new double[pi.rowLen()];
-    for (int i = 0; i < pi.rowLen(); i++) {
-      nativePi[i] = pi.elementAt(i, 0);
-    }
-
-    init(numTrials, nativePi);
+    return valueVector;
   }
 
   /**
    * Returns the probability of given vector.
    */
   public double getProb(List args, Object value) {
-    if (!(value instanceof MatrixLib)) {
-      throw new IllegalArgumentException("expected vector value");
-    }
+    initParams(args);
     final int numBuckets = pi.length;
-    MatrixLib valueVector = (MatrixLib) value;
-    if (valueVector.rowLen() != numBuckets || valueVector.colLen() != 1) {
-      throw new IllegalArgumentException("value has wrong dimension");
-    }
-    int sum = 0;
-    for (int i = 0; i < numBuckets; i++) {
-      sum += valueVector.elementAt(i, 0);
-    }
+    MatrixLib valueVector = ensureValueFormat(value);
+    int sum = (int) valueVector.columnSum().elementAt(0, 0);
     if (sum != numTrials) {
       return 0;
     }
@@ -147,22 +126,15 @@ public class Multinomial extends AbstractCondProbDistrib {
    * Returns the log probability of given vector.
    */
   public double getLogProb(List args, Object value) {
-    if (!(value instanceof MatrixLib)) {
-      throw new IllegalArgumentException("expected vector value");
-    }
-    MatrixLib valueVector = (MatrixLib) value;
-    if (valueVector.rowLen() != numTrials) {
-      throw new IllegalArgumentException("value has wrong dimension");
-    }
-    int sum = 0;
-    for (int i = 0; i < numTrials; i++) {
-      sum += valueVector.elementAt(i, 0);
-    }
+    initParams(args);
+    final int numBuckets = pi.length;
+    MatrixLib valueVector = ensureValueFormat(value);
+    int sum = (int) valueVector.columnSum().elementAt(0, 0);
     if (sum != numTrials) {
       return 0;
     }
     double logProb = Util.logFactorial(numTrials);
-    for (int i = 0; i < numTrials; i++) {
+    for (int i = 0; i < numBuckets; i++) {
       logProb += valueVector.elementAt(i, 0) * Math.log(pi[i]);
       logProb -= Util
           .logFactorial((int) Math.round(valueVector.elementAt(i, 0)));
@@ -174,6 +146,8 @@ public class Multinomial extends AbstractCondProbDistrib {
    * Returns a vector chosen at random according to this distribution.
    */
   public MatrixLib sampleVal(List args, Type childType) {
+    initParams(args);
+
     final int numBuckets = pi.length;
     double[] cdf = new double[numBuckets];
     cdf[0] = pi[0];
@@ -186,9 +160,8 @@ public class Multinomial extends AbstractCondProbDistrib {
       result[i] = 0;
     }
 
-    Random rng = new java.util.Random();
     for (int trial = 0; trial < numTrials; trial++) {
-      double val = rng.nextDouble();
+      double val = Util.random();
       int bucket;
       for (bucket = 0; bucket < numBuckets; bucket++) {
         if (val <= cdf[bucket]) {
@@ -206,6 +179,78 @@ public class Multinomial extends AbstractCondProbDistrib {
     return MatrixFactory.fromArray(doubleResult);
   }
 
+  private void initParams(List args) {
+    int argidx = 0;
+    if (expectTrialsAsArg) {
+      Object obj = args.get(argidx);
+      if (!(obj instanceof Number)) {
+        throw new IllegalArgumentException(
+            "expected first arg to be number numTrials");
+      }
+      this.numTrials = ((Number) obj).intValue();
+      if (numTrials < 0) {
+        throw new IllegalArgumentException(
+            "Multinomial expects non-negative integer as the numTrial argument.");
+      }
+      argidx++;
+    }
+    if (expectWeightAsArg) {
+      Object objectPi = args.get(argidx);
+      double[] nativePi;
+      if (objectPi instanceof MatrixSpec) {
+        objectPi = ((MatrixSpec) objectPi).getValueIfNonRandom();
+      }
+      if (objectPi instanceof MatrixLib) {
+        MatrixLib pi = (MatrixLib) objectPi;
+        if (pi.numCols() == 1) {
+          nativePi = new double[pi.numRows()];
+          for (int i = 0; i < pi.numRows(); i++) {
+            nativePi[i] = pi.elementAt(i, 0);
+          }
+        } else if (pi.numRows() == 1) {
+          nativePi = new double[pi.numCols()];
+          for (int i = 0; i < pi.numCols(); i++) {
+            nativePi[i] = pi.elementAt(0, i);
+          }
+        } else {
+          throw new IllegalArgumentException(
+              "expect either a row vector or column vector");
+        }
+      } else if (objectPi instanceof ArrayList) {
+        ArrayList<?> arrayPi = (ArrayList<?>) objectPi;
+        int size = arrayPi.size();
+        nativePi = new double[size];
+        for (int i = 0; i < size; i++)
+          nativePi[i] = (Double) arrayPi.get(i);
+      } else {
+        throw new IllegalArgumentException(
+            "expected second arg to be array of reals; got " + objectPi
+                + " instead, which is of type " + objectPi.getClass().getName());
+      }
+      normalizeWeight(nativePi);
+    }
+  }
+
+  private void normalizeWeight(double[] pi) {
+    this.pi = pi;
+    double sum = 0;
+    for (int i = 0; i < pi.length; i++) {
+      if (pi[i] < 0) {
+        throw new IllegalArgumentException("Probability " + pi[i]
+            + " for element " + i + " is negative.");
+      }
+      sum += pi[i];
+    }
+    if (sum < 1e-9) {
+      throw new IllegalArgumentException("Probabilities sum to approx zero");
+    }
+    for (int i = 0; i < pi.length; i++) {
+      this.pi[i] /= sum;
+    }
+  }
+
   private int numTrials;
   private double[] pi;
+  private boolean expectTrialsAsArg;
+  private boolean expectWeightAsArg;
 }
