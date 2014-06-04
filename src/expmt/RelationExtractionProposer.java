@@ -121,8 +121,8 @@ public class RelationExtractionProposer implements Proposer {
 
   // HashMap of supporting fact -> List of sentences that express it
   protected HashMap<Object, List> supportedFacts;
+
   // HashMap for true facts -> List of sentences that express it
-  // This will eventually replace supportedFacts once I can get the hack to work
   protected HashMap<Object, Set> trueFacts;
   protected HashMap<String, HashMap<Object, List>> trueFactDiff;
   
@@ -194,16 +194,15 @@ public class RelationExtractionProposer implements Proposer {
   /**
    * Initialization:
    * 1) Set all observed variables (Subject, Object, Verb, TriggerID)
-   * 2) Set SourceFact for all labeled sentences 
-   * 3) Bootstrap 
-   *    a) By trigger
-   *    b) By arg pair
-   *    c) Randomly choose everything else
-   * 4) Sample everything else
-   *    a) #Fact variables which are set to 1
+   * 2) Set number variables for facts
+   * 3) Set SourceFact for all labeled sentences 
+   * 4) Connected Components
+   *    a) Find connected Components
+   *    b) Set sourceFacts
+   * 5) Sample everything else
    * 	  b) Sparsity
-   * 	  c) Theta
-   * 	  d) Holds for RELEVANT FACTS
+   *    c) Holds for RELEVANT FACTS
+   * 	  d) Theta
    * 
    */
   public PartialWorldDiff initialize(Evidence evidence, List queries) {
@@ -244,7 +243,7 @@ public class RelationExtractionProposer implements Proposer {
       trueFacts = new HashMap<Object, Set>();
       relevantArgPairs = new HashMap<String, List>();
         
-      // Set number variables of RELEVANT FACTS: DATADRIVEN MCMC
+      // 2) Set number variables of RELEVANT FACTS: DATADRIVEN MCMC
       for (Object sentence: sentType.getGuaranteedObjects()) {
   
         Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
@@ -259,36 +258,14 @@ public class RelationExtractionProposer implements Proposer {
           Object[] factArgs = {rel, arg1, arg2};
           NumberVar nFacts = new NumberVar(factPOP, factArgs);
 
-          // 5a) Instantiate the number variable, by definition of the model
+          // Instantiate the number variable, by definition of the model
           world.setValue(nFacts, 1);
           
         }
-      }
+      } 
       
-      /* NOT DATADRIVEN, THIS MAKES MY COMPUTER RUN OUT OF DATA
-      for (Object rel : relType.getGuaranteedObjects()) {
-        for (Object arg1 : entType.getGuaranteedObjects()) {
-          for (Object arg2 : entType.getGuaranteedObjects()) {
-  
-            // The key
-            //String key = generateKey(rel, arg1, arg2);
-  
-            // Use a NumberVar to grab the fact
-            Object[] factArgs = {rel, arg1, arg2};
-            NumberVar nFacts = new NumberVar(factPOP, factArgs);
-  
-            // 5a) Instantiate the number variable, by definition of the model
-            world.setValue(nFacts, 1);
-  
-            //Object value = world.getSatisfiers(nFacts).iterator().next(); // Should only be one fact that satisfies that number statement
-  
-            //factMap.put(key, value);
-          }
-        }
-      }*/
-
-      
-      // 2) This is for labeled sentences, where a relation of a sentence is observed (along with the arg pair, of course)
+      // 3) This is for labeled sentences, where a relation of a sentence is observed (along with the arg pair, of course)
+      labeledSentences = new HashSet();
       for (Iterator iter = evidence.getEvidenceVars().iterator(); iter.hasNext(); ) {
         
         BayesNetVar evidenceVar = (BayesNetVar) iter.next();
@@ -305,10 +282,13 @@ public class RelationExtractionProposer implements Proposer {
         FuncAppTerm funcOfSentence = (FuncAppTerm) argOfEvidenceVarArgs.getArgs()[0];
         NonRandomFunction nonRandomSentence = (NonRandomFunction) funcOfSentence.getFunction();
         Object sentence = nonRandomSentence.getInterpretation().getValue(Collections.EMPTY_LIST);
+        
+        // Add sentence to labeledSentences set
+        labeledSentences.add(sentence);
                 
         Object rel = evidence.getObservedValue(evidenceVar);
-        Object arg1 = world.getValue(new RandFuncAppVar(subjectFunc, Collections.singletonList(sentence)));
-        Object arg2 = world.getValue(new RandFuncAppVar(objectFunc, Collections.singletonList(sentence)));
+        Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
+        Object arg2 = world.getValue(makeVar(objectFunc, sentence));
   
         // Set the sourceFact value in the world
         Object fact = getFact(rel, arg1, arg2, world);
@@ -319,10 +299,110 @@ public class RelationExtractionProposer implements Proposer {
         
         // Add the sentence to trueFacts hashmap
         addToTrueFacts(fact, sentence);
-        
       }
       
       
+      // 4) Connected Components stuff
+      HashMap<Integer, HashSet> connectedComponents = new HashMap<Integer, HashSet>();
+      HashSet<Object> explored = new HashSet<Object>();
+      // There are no explicit edges in this graph. In order to test whether a sentence belongs 
+      // to a specific component, we can hash a string of it's arg pair or it's trigger to a 
+      // set of arg pairs and trigger that the component currently has.
+      HashMap<Integer, HashSet> connectedComponentEdgeRep = new HashMap<Integer, HashSet>();
+
+      // 4a) Run a DFS to find all connected components
+      for (Object sentence : sentType.getGuaranteedObjects()) {
+        if (explored.contains(sentence)) {
+          continue;
+        }
+        
+        // Create new component
+        HashSet newComponent = new HashSet();
+        newComponent.add(sentence);
+        connectedComponents.put(connectedComponents.size() + 1, newComponent);
+        
+        // Add edge set representation
+        HashSet newEdgeRepComponent = new HashSet();
+        Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
+        Object arg2 = world.getValue(makeVar(objectFunc, sentence));
+        Object trig = world.getValue(makeVar(verbFunc, sentence));
+        newEdgeRepComponent.add(arg1.toString() + " | " + arg2.toString());
+        newEdgeRepComponent.add(trig.toString());
+        connectedComponentEdgeRep.put(connectedComponents.size() + 1, newEdgeRepComponent);
+        
+        // Add to explored set
+        explored.add(sentence);
+        
+        // Iterate through every sentence, adding to the component. O(|S|^2), where |S| = number of sentences
+        boolean changed = true;
+        while (changed) {
+          changed = false;
+          for (Object sent : sentType.getGuaranteedObjects()) {
+            if (explored.contains(sent)) {
+              continue;
+            }
+            // Grab arg pair and trigger
+            Object sArg1 = world.getValue(makeVar(subjectFunc, sent));
+            Object sArg2 = world.getValue(makeVar(objectFunc, sent));
+            Object sTrig = world.getValue(makeVar(verbFunc, sent));
+            if (newEdgeRepComponent.contains(sArg1.toString() + " | " + sArg2.toString()) || newEdgeRepComponent.contains(sTrig.toString())) {
+              newComponent.add(sent); // Add to component
+              newEdgeRepComponent.add(sArg1.toString() + " | " + sArg2.toString()); // Add arg pair string to edge representation set
+              newEdgeRepComponent.add(sTrig.toString()); // Add trigger to edge representation set
+              explored.add(sent); // Add to explored set
+              changed = true;
+            }
+          } 
+        }
+      }
+      
+      // Assign relations and source facts to connected components. 
+      // Each connected component gets one relation, unless there 
+      // is more than 1 observation for a component. Then we select randomly from them.
+      
+      // 4b) Iterate through components and set sourceFacts
+      for (Set component : connectedComponents.values()) {
+                
+        // Search for observed sentence
+        HashSet relations = new HashSet();
+        for (Object sent : component) {
+          if (labeledSentences.contains(sent)) {
+            Object rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc, sent))).getOriginFuncValue(relFunc);
+            relations.add(rel);
+          }
+        }
+        
+        // Figure out what to do depending on size of relations set
+        if (relations.size() == 0) { // Add an unused relation
+          Object componentRelation = relType.getGuaranteedObject(rng.nextInt(relType.getGuaranteedObjects().size()));
+          setSourceFactsForComponent(world, component, componentRelation);
+        } else if (relations.size() == 1) {
+          Object componentRelation = relations.iterator().next();
+          setSourceFactsForComponent(world, component, componentRelation);
+        } else { // More than 1 relation
+          for (Object sent : component) {
+            if (labeledSentences.contains(sent)) { // Don't touched a labeled sentence
+              continue;
+            }
+            
+            // Get arg pair info
+            Object arg1 = world.getValue(makeVar(subjectFunc, sent));
+            Object arg2 = world.getValue(makeVar(objectFunc, sent));
+            
+            // Sample the sentence
+            Object rel = sampleUniformlyFromSet(relations);
+
+            // Set the sourceFact value in the world
+            Object fact = getFact(rel, arg1, arg2, world);
+            world.setValue(makeVar(sourceFactFunc, sent), fact);
+
+            // Set the Holds value in the world
+            world.setValue(makeVar(holdsFunc, fact), true);
+          }
+        }
+      }
+      
+      /*
       // 3a) Bootstrap Observed Sentences by Trigger (also has to instantiate some stuff)
       HashMap<Object, ArrayList> triggerGroups = new HashMap<Object, ArrayList>();
       for (Object sentence : sentType.getGuaranteedObjects()) {
@@ -450,6 +530,7 @@ public class RelationExtractionProposer implements Proposer {
           //System.out.println("3c, Trig: Setting " + sent + " to " + sourceFact);
         }
       }
+      */
       
       /*
       // 3c) For all other observed sentences, choose SourceFact (basically randomly choose a relation
@@ -477,7 +558,7 @@ public class RelationExtractionProposer implements Proposer {
       }
       */
   
-      // Beta 
+      // 5a) Sample Beta(r) for each r 
       Integer[] params = {alpha, beta};
       Beta sparsitySampler = new Beta(Arrays.asList(params));
       for (Object rel : relType.getGuaranteedObjects()) {
@@ -485,7 +566,7 @@ public class RelationExtractionProposer implements Proposer {
         world.setValue(sparsity, sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType));
       }
       
-      // 4d) Sample all holds(f) values OF RELEVANT FACTS if they haven't been instantiated
+      // 5b) Sample all holds(f) values OF RELEVANT FACTS if they haven't been instantiated
       for (Object sentence: sentType.getGuaranteedObjects()) {
   
         Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
@@ -493,9 +574,8 @@ public class RelationExtractionProposer implements Proposer {
         
         for (Object rel : relType.getGuaranteedObjects()) {
           
-          // Get the fact, put it in the factMap, instantiate and sample if need be
+          // Get the fact, instantiate and sample if need be
           Object fact = getFact(rel, arg1, arg2, world);
-          factMap.put(generateKey(rel, arg1, arg2), fact);
           RandFuncAppVar holds = makeVar(holdsFunc, fact);
           Double sparsity = (Double) world.getValue(makeVar(sparsityFunc, rel));
           
@@ -511,50 +591,51 @@ public class RelationExtractionProposer implements Proposer {
         }
       }
       
-      // 4b and c) Sample Sparsity(r) and Theta(r) for each relation r
-      //Integer[] params = {alpha, beta};
-      //Beta sparsitySampler = new Beta(Arrays.asList(params));
+      // 5c) Sample Theta(r) for each relation r
       Dirichlet thetaSampler = new Dirichlet(trigType.getGuaranteedObjects().size(), dir_alpha);
       for (Object rel : relType.getGuaranteedObjects()) {
-  
-        // 4b) Sparsity(r)
-        //RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel));
-        //world.setValue(sparsity, sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType));
-        //sparsitySample(world, rel);
-        
-        // 4c) Theta(r)
-        //RandFuncAppVar theta = new RandFuncAppVar(thetaFunc, Collections.singletonList(rel));
-        //world.setValue(theta, thetaSampler.sampleVal(Collections.EMPTY_LIST, relType)); 
+
         thetaSample(world, rel);
   
       }
       
-      
   
       // Debug
       if (Util.verbose()) {
-        for (Object fact : allFacts(world)) {
-  
-          Object holds = world.getValue(makeVar(holdsFunc, fact));
-          System.out.println("Fact: " + fact + ", Holds: " + holds);
-  
-        }
         System.out.println(world.toString());
       }
       
-    
     } while (this.evidence.getEvidenceLogProb(world) < -1E6);
     // End do-while loop
     
-    
-    
     System.out.println("Number of sentences: " + sentType.getGuaranteedObjects().size());
-    System.out.println("Number of facts: " + factMap.size());
+    System.out.println("Number of facts: " + relevantArgPairs.size()*relType.getGuaranteedObjects().size());
     
     count = 0;
     
     return world;
 
+  }
+  
+  private void setSourceFactsForComponent(PartialWorldDiff world, Set component, Object rel) {
+    
+    for (Object sentence : component) {
+      if (labeledSentences.contains(sentence)) { // Don't touched a labeled sentence
+        continue;
+      }
+      
+      // Get arg pair info
+      Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
+      Object arg2 = world.getValue(makeVar(objectFunc, sentence));
+
+      // Set the sourceFact value in the world
+      Object fact = getFact(rel, arg1, arg2, world);
+      world.setValue(makeVar(sourceFactFunc, sentence), fact);
+
+      // Set the Holds value in the world
+      world.setValue(makeVar(holdsFunc, fact), true);
+    }
+    
   }
 
   /**
@@ -575,7 +656,7 @@ public class RelationExtractionProposer implements Proposer {
     double logAcceptanceRatio;
     
     // Sample until a valid move has been made (where evidence was not changed)
-    //do {
+    do {
       double sample = rng.nextDouble();
       proposedWorld.revert();
       trueFactDiff = constructNewTrueFactDiff();
@@ -591,7 +672,7 @@ public class RelationExtractionProposer implements Proposer {
       } else {
         logAcceptanceRatio = randomThetaSample(proposedWorld);
       }
-    //} while (this.evidence.getEvidenceLogProb(proposedWorld) < - 1E6);
+    } while (this.evidence.getEvidenceLogProb(proposedWorld) < - 1E6);
     
     return logAcceptanceRatio;
   }
@@ -1125,19 +1206,17 @@ public class RelationExtractionProposer implements Proposer {
     // The size of Hr is simply the number of unique combinations of different entities
     int sizeOfHrf = (int) Math.pow(entType.getGuaranteedObjects().size(), 2);
     int numOfTrueFactsInHrf = 0;
-    for (Object fact : allFacts(proposedWorld)) {
-      Object factRel = ((NonGuaranteedObject) fact).getOriginFuncValue(relFunc);
-      if (factRel == rel) {
-        if (((Boolean) proposedWorld.getValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)))).booleanValue()) {
-          numOfTrueFactsInHrf++;
-        }
+    for (List pair : relevantArgPairs.values()) {
+      Object fact = getFact(rel, pair.get(0), pair.get(1), proposedWorld);
+      if (((Boolean) proposedWorld.getValue(new RandFuncAppVar(holdsFunc, Collections.singletonList(fact)))).booleanValue()) {
+        numOfTrueFactsInHrf++;
       }
     }
 
     // Sample from posterior distribution, set the value in the world
     Integer[] params = {alpha + numOfTrueFactsInHrf, beta + sizeOfHrf - numOfTrueFactsInHrf};
     Beta sparsitySampler = new Beta(Arrays.asList(params));
-    RandFuncAppVar sparsity = new RandFuncAppVar(sparsityFunc, Collections.singletonList(rel));
+    RandFuncAppVar sparsity = makeVar(sparsityFunc, rel);
     Object newVal = sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType);
     proposedWorld.setValue(sparsity, newVal);
     
@@ -1169,14 +1248,15 @@ public class RelationExtractionProposer implements Proposer {
     Arrays.fill(params, dir_alpha);
 
     // For each trigger (indexed by i), find how many TriggerID(s) rv's have that value
-      for (Object sentence : sentType.getGuaranteedObjects()) {
-        RandFuncAppVar triggerID = new RandFuncAppVar(triggerIDFunc, Collections.singletonList(sentence));
-        Object sourceFact = proposedWorld.getValue(makeVar(sourceFactFunc, Collections.singletonList(sentence)));
-        Object sentRel = ((NonGuaranteedObject) sourceFact).getOriginFuncValue(relFunc);
-        if (sentRel == rel) {
-          params[(Integer) proposedWorld.getValue(triggerID)]++;
-        }
+    for (Object sentence : sentType.getGuaranteedObjects()) {
+      RandFuncAppVar triggerID = new RandFuncAppVar(triggerIDFunc, Collections.singletonList(sentence));
+      Object sourceFact = proposedWorld.getValue(makeVar(sourceFactFunc, Collections.singletonList(sentence)));
+      Object sentRel = ((NonGuaranteedObject) sourceFact).getOriginFuncValue(relFunc);
+      if (sentRel == rel) {
+        params[(Integer) proposedWorld.getValue(triggerID)]++;
       }
+    }
+    
     // Sample from posterior distribution, set the value in the world
     Dirichlet thetaSampler = new Dirichlet(Arrays.asList(params));
     RandFuncAppVar theta = new RandFuncAppVar(thetaFunc, Collections.singletonList(rel));

@@ -6,6 +6,12 @@
 
 	$:~ python3 clean_triggers.py <results_probs_file> <original_sentence_file> <output_file_name>
 
+	Output looks like this:
+
+	Sent[51], Sent[54]	Score: 0.029118571428571428
+	Stephen_Gillers professor at New_York_University | Merle_Black professor at Emory_University
+	...
+
 """
 
 import sys, json, string
