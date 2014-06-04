@@ -189,7 +189,7 @@ public class Evidence {
       BayesNetVar var = (BayesNetVar) iter.next();
       if (var instanceof RandFuncAppVar) {
         RandFuncAppVar rfav = (RandFuncAppVar) var;
-        Timestep t_prime = rfav.timestep();
+        Timestep t_prime = rfav.maxTimestep();
         if (t_prime == null) {
           if (t == null)
             evidenceAtTime.add(var);

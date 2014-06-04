@@ -1,16 +1,10 @@
 package test.blog;
 
 import static blog.BLOGUtil.parseQuery_NE;
-
-import java.util.Set;
-
 import junit.framework.TestCase;
-import blog.BLOGUtil;
-import blog.DBLOGUtil;
 import blog.common.Util;
 import blog.engine.InferenceEngine;
 import blog.engine.SamplingEngine;
-import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.Model;
 
@@ -18,20 +12,6 @@ public class MiscTest extends TestCase {
 
   public static void main(String[] args) throws Exception {
     junit.textui.TestRunner.run(MiscTest.class);
-  }
-
-  public void testDBLOGUtilGetTimestepTermsIn() {
-    Model model = Model
-        .readFromString("random Boolean Weather(Timestep t) = true;");
-
-    ArgSpec a;
-    ArgSpec at10 = BLOGUtil.parseTerm_NE("@10", model);
-    ArgSpec at13 = BLOGUtil.parseTerm_NE("@13", model);
-    Set timesteps;
-
-    a = BLOGUtil.parseArgSpec_NE("{Weather(@10), @13}", model);
-    timesteps = Util.set(at10, at13);
-    assertEquals(timesteps, DBLOGUtil.getTimestepTermsIn(a, Util.set()));
   }
 
   public void testParsingTupleSetSpec() { // to be removed

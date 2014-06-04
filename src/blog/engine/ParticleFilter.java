@@ -214,7 +214,7 @@ public class ParticleFilter extends InferenceEngine {
           }
         }
       }
-      removePriorTimeSlice(timestep.intValue());
+      removePriorTimeSlice(timestep);
     }
 
     // Process atemporal queries (if any) after all the evidence.
@@ -238,13 +238,13 @@ public class ParticleFilter extends InferenceEngine {
   /**
    * remove all the temporal variables prior to the specified timestep
    * 
-   * @param timestepIndex
-   *          before which the vars to be removed
+   * @param timestep
+   *          Timestep before which the vars should be removed
    */
-  public void removePriorTimeSlice(int timestepIndex) {
+  public void removePriorTimeSlice(Timestep timestep) {
     // For now we assume numTimeSlicesInMemory = 1.
     for (Particle p : particles) {
-      p.removePriorTimeSlice(timestepIndex);
+      p.removePriorTimeSlice(timestep);
     }
   }
 

@@ -45,6 +45,7 @@ import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Query;
 import blog.sample.Sampler;
+import blog.type.Timestep;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 
@@ -111,12 +112,10 @@ public class Particle {
    * remove all the temporal variables in this particle (possible world) that
    * are prior to the specified timestep
    * 
-   * @param timestepIndex
+   * @param timestep
    */
-  public void removePriorTimeSlice(int timestepIndex) {
-    //
-    DBLOGUtil.removeVarsAtDiffTimestep(timestepIndex,
-        curWorld);
+  public void removePriorTimeSlice(Timestep timestep) {
+    DBLOGUtil.removeVarsAtDiffTimestep(timestep, curWorld);
   }
 
   public void removeAllDerivedVars() {
