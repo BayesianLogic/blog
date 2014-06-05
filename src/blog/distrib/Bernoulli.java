@@ -35,8 +35,6 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
 
 /**
@@ -45,111 +43,85 @@ import blog.common.Util;
  */
 public class Bernoulli extends AbstractCondProbDistrib {
 
-  public Bernoulli(List params) {
-    if (params.size() != 1) {
-      throw new IllegalArgumentException(
-          "Binary Bernoulli distribution requires exactly one parameter, "
-              + "not " + params.size() + ".");
-    }
-    Object param_obj = params.get(0);
-    if (!(param_obj instanceof Number)) {
-      throw new IllegalArgumentException(
-          "Parameter to Binary Bernoulli distrib must be of class Number, "
-              + "not " + param_obj.getClass() + ".");
-    }
-
-    pi = ((Number) param_obj).doubleValue();
-    if ((pi < 0) || (pi > 1)) {
-      throw new IllegalArgumentException(
-          "Parameter to Binary Bernoulli must be in interval [0, 1], not " + pi
-              + ".");
-    }
+  public Bernoulli() {
   }
 
-  public double getProb(List args, Object value) {
-    if (args.size() != 0) {
-      throw new IllegalArgumentException(
-          "Binary Bernoulli distribution takes zero arguments, not "
-              + args.size() + ".");
-    }
-    if (!(value instanceof Integer)) {
-      throw new IllegalArgumentException(
-          "Binary Bernoulli distribution is over objects of class Integer, "
-              + "not " + value.getClass() + ".");
-    }
-
-    int int_value = ((Integer) value).intValue();
-
-    if (!((int_value == 0) || (int_value == 1))) {
-      throw new IllegalArgumentException(
-          "Binary Bernoulli distribution is over the set {0,1}; passed value: "
-              + value.getClass() + ".");
-
-    }
-
-    if (int_value == 1) {
-      return pi;
-    }
-    return (1 - pi);
+  public Bernoulli(double p) {
+    setParams(p);
   }
 
-  public Object sampleVal(List args) {
-    if (args.size() != 0) {
-      throw new IllegalArgumentException(
-          "Binary Bernoulli distribution takes zero arguments, not "
-              + args.size() + ".");
-    }
-
-    if (Util.random() < pi) {
-      return new Integer(1);
-    }
-    return new Integer(0);
+  public double getP() {
+    return p;
   }
 
-  private double pi;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
-   */
   @Override
   public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
-
+    if (params.length != 1) {
+      throw new IllegalArgumentException(
+          "expected one parameter: probability of success");
+    }
+    setParams((Double) params[0]);
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
-   */
+  public void setParams(Double p) {
+    if (p != null) {
+      if (p < 0 || p > 1) {
+        throw new IllegalArgumentException(
+            "Parameter to Bernoulli must be in interval [0, 1], not " + p + ".");
+      }
+      this.p = p;
+      this.hasP = true;
+    }
+  }
+
+  private void checkHasParams() {
+    if (!hasP) {
+      throw new IllegalArgumentException("p not provided");
+    }
+  }
+
   @Override
   public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
+    return getProb(((Double) value).doubleValue());
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
-   */
+  public double getProb(double value) {
+    checkHasParams();
+    if (value == 1) {
+      return p;
+    } else if (value == 0) {
+      return 1 - p;
+    } else {
+      throw new IllegalArgumentException(
+          "Bernoulli distribution is over the set {0, 1}; passed value: "
+              + value + ".");
+    }
+  }
+
   @Override
   public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
+    return getLogProb(((Double) value).doubleValue());
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#sampleVal()
-   */
+  public double getLogProb(double value) {
+    return Math.log(getProb(value));
+  }
+
   @Override
   public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
+    checkHasParams();
+    if (Util.random() < p) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
+
+  public String toString() {
+    return "Bernoulli(" + p + ")";
+  }
+
+  private double p;
+  private boolean hasP;
 
 }
