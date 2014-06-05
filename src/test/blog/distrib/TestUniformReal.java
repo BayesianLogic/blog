@@ -19,7 +19,6 @@ public class TestUniformReal implements TestDistributions {
   @Override
   @Test
   public void testProbabilityViaConstructor() {
-    // TODO Auto-generated method stub
     UniformReal unif = new UniformReal(1.0, 3.0);
     testDistribution(unif);
   }
@@ -55,7 +54,6 @@ public class TestUniformReal implements TestDistributions {
   @Override
   @Test
   public void testDoubleSet() {
-    // TODO Auto-generated method stub
     UniformReal unif = new UniformReal();
     unif.setParams(null, 1.0);
     unif.setParams(0.0, null);
