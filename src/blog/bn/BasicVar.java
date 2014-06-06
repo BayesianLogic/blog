@@ -152,16 +152,11 @@ public abstract class BasicVar extends AbstractBayesNetVar implements
   }
 
   public Timestep maxTimestep() {
-    Timestep ret = null;
-    for (int i = 0; i < args.length; ++i) {
-      if (args[i] instanceof Timestep) {
-        Timestep candidate = (Timestep) args[i];
-        if (ret == null || candidate.compareTo(ret) > 0) {
-          ret = candidate;
-        }
-      }
+    Timestep.MaxReduce reducer = new Timestep.MaxReduce();
+    for (Object arg : args) {
+      reducer.evaluate(arg);
     }
-    return ret;
+    return reducer.result;
   }
 
   /**
