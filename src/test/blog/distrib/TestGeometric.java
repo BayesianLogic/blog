@@ -5,13 +5,11 @@ package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import blog.common.Util;
 import blog.distrib.Geometric;
 
 /**
@@ -19,60 +17,110 @@ import blog.distrib.Geometric;
  * src.blog.distrib.Geometric.java
  */
 @RunWith(JUnit4.class)
-public class TestGeometric {
-  private final double ERROR_BOUND = 1e-6;
+public class TestGeometric implements TestDistributions {
+  private final double ERROR = 1e-6;
+
+  public void testDistributionRun(Geometric geom) {
+    geom.getProb(-1);
+    geom.getProb(0);
+    geom.getProb(1);
+    geom.getProb(1000);
+  }
+
+  /** Geometric with alpha = 1. */
+  public void testGeometric1(Geometric geom) {
+    assertEquals(1, geom.getAlpha(), ERROR);
+
+    assertEquals(0, geom.getProb(-1), ERROR);
+    assertEquals(1, geom.getProb(0), ERROR);
+    assertEquals(0, geom.getProb(1), ERROR);
+    assertEquals(0, geom.getProb(20), ERROR);
+
+    assertEquals(Double.NEGATIVE_INFINITY, geom.getLogProb(-1), ERROR);
+    assertEquals(0, geom.getLogProb(0), ERROR);
+    assertEquals(Double.NEGATIVE_INFINITY, geom.getLogProb(1), ERROR);
+    assertEquals(Double.NEGATIVE_INFINITY, geom.getLogProb(20), ERROR);
+  }
+
+  /** Geometric with alpha = 0.2. */
+  public void testGeometric2(Geometric geom) {
+    assertEquals(0.2, geom.getAlpha(), ERROR);
+
+    assertEquals(0, geom.getProb(-1), ERROR);
+    assertEquals(0.2, geom.getProb(0), ERROR);
+    assertEquals(0.16, geom.getProb(1), ERROR);
+    assertEquals(0.128, geom.getProb(2), ERROR);
+    assertEquals(0.021474836480000013, geom.getProb(10), ERROR);
+    assertEquals(2.6584559915698375e-05, geom.getProb(40), ERROR);
+
+    assertEquals(Double.NEGATIVE_INFINITY, geom.getLogProb(-1), ERROR);
+    assertEquals(Math.log(0.2), geom.getLogProb(0), ERROR);
+    assertEquals(Math.log(0.16), geom.getLogProb(1), ERROR);
+    assertEquals(Math.log(0.128), geom.getLogProb(2), ERROR);
+    assertEquals(Math.log(0.021474836480000013), geom.getLogProb(10), ERROR);
+    assertEquals(Math.log(2.6584559915698375e-05), geom.getLogProb(40), ERROR);
+  }
 
   @Test
-  public void testCorrect() {
-    testGeometric(0.1, 0, 0.1);
-    testGeometric(0.1, 1, 0.09);
-    testGeometric(0.1, 2, 0.081);
-    testGeometric(0.6, 10, 6.291456e-5);
-    testGeometric(0.05, 20, 0.017924296);
-    testGeometric(0.1, -1, 0);
+  public void testProbabilityViaConstructor() {
+    Geometric geom = new Geometric(1);
+    testGeometric1(geom);
+    geom = new Geometric(0.2);
+    testGeometric2(geom);
+  }
+
+  @Test
+  public void testProbabilityViaSetParams() {
+    Geometric geom = new Geometric();
+    geom.setParams(Util.array(1.0));
+    testGeometric1(geom);
+    geom.setParams(Util.array(0.2));
+    testGeometric2(geom);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testMissingArguments() {
-    List<Number> params = new LinkedList<Number>();
-    Geometric distribution = new Geometric(params);
+  public void testInsufficientArguments() {
+    Geometric geom = new Geometric();
+    geom.setParams(Util.array(null));
+    testDistributionRun(geom);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNumberNotGivenAsProb() {
-    List<Object> params = new LinkedList<Object>();
-    params.add("foo");
-    Geometric distribution = new Geometric(params);
+  public void testExtraneousArguments() {
+    Geometric geom = new Geometric();
+    geom.setParams(Util.array(1.0, 2.0));
+    testDistributionRun(geom);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testProbabilityNotGiven() {
-    testGeometric(10, 0, 0.5);
+  public void testIncorrectArguments() {
+    Geometric geom = new Geometric();
+    geom.setParams(Util.array(0.0));
+    testDistributionRun(geom);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testMoreThanOneArgument() {
-    List<Number> params = new LinkedList<Number>();
-    params.add(0.5);
-    params.add(0.6);
-    Geometric distribution = new Geometric(params);
+  public void testIncorrectArguments2() {
+    Geometric geom = new Geometric();
+    geom.setParams(Util.array(1.01));
+    testDistributionRun(geom);
   }
 
-  /**
-   * For a Geometric Distribution with prob success = p
-   * Asserts P(#failures until first success = k) = prob
-   * No precondition on p, k, or prob
-   */
-  public void testGeometric(Number p, Integer k, Number prob) {
-    List<Number> params = new LinkedList<Number>();
-    params.add(p);
-    Geometric distribution = new Geometric(params);
-    List<Number> emptyArgs = new LinkedList<Number>();
-    assertEquals(prob.doubleValue(), distribution.getProb(emptyArgs, k),
-        ERROR_BOUND);
-    assertEquals(Math.log(prob.doubleValue()),
-        distribution.getLogProb(emptyArgs, k), ERROR_BOUND);
+  @Test(expected = IllegalArgumentException.class)
+  public void testIncorrectArguments3() {
+    Geometric geom = new Geometric();
+    geom.setParams(Util.array(-1.0));
+    testDistributionRun(geom);
+  }
 
+  @Test
+  public void testDoubleSet() {
+    Geometric geom = new Geometric();
+    geom.setParams(Util.array(1.0));
+    geom.setParams(Util.array(null));
+    testGeometric1(geom);
+    geom.setParams(Util.array(null));
+    testGeometric1(geom);
   }
 
 }

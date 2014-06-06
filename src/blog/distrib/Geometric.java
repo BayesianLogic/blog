@@ -35,10 +35,7 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * A geometric distribution over the natural numbers 0, 1, 2,... It has a single
@@ -62,123 +59,85 @@ public class Geometric extends AbstractCondProbDistrib {
     return new Geometric(1 / (1 + mean));
   }
 
-  /**
-   * Creates a geometric distribution with the given alpha parameter.
-   * 
-   * @throws IllegalArgumentException
-   *           if <code>alpha</code> is not in the range [0, 1)
-   */
-  public Geometric(double alpha) {
-    if ((alpha <= 0) || (alpha > 1)) {
-      throw new IllegalArgumentException(
-          "Parameter of geometric distribution must be in the "
-              + "interval (0, 1], not " + alpha);
-    }
-
-    this.alpha = alpha;
-    computeLogParams();
+  public Geometric() {
   }
 
-  /**
-   * Creates a geometric distribution with the given alpha parameter.
-   * 
-   * @throws IllegalArgumentException
-   *           if alpha < 0 or alpha >= 1.
-   */
-  public Geometric(List params) {
-    if (params.size() != 1) {
-      throw new IllegalArgumentException(
-          "Geometric distribution requires exactly one parameter, "
-              + "the success probability.");
-    }
+  public Geometric(double alpha) {
+    setParams(alpha);
+  }
 
-    if (!(params.get(0) instanceof Number)) {
-      throw new IllegalArgumentException(
-          "The first parameter (alpha) for the geometric "
-              + "distribution must be of " + "class Number, not "
-              + params.get(0).getClass());
-    }
+  public double getAlpha() {
+    return alpha;
+  }
 
-    alpha = ((Number) params.get(0)).doubleValue();
-    if ((alpha <= 0) || (alpha > 1)) {
-      throw new IllegalArgumentException(
-          "Illegal alpha parameter for geometric distribution.");
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 1) {
+      throw new IllegalArgumentException("expected 1 parameter");
     }
+    setParams((Double) params[0]);
+  }
 
-    computeLogParams();
+  public void setParams(Double alpha) {
+    if (alpha != null) {
+      if (alpha <= 0 || alpha > 1) {
+        throw new IllegalArgumentException(
+            "Parameter of geometric distribution must be in the "
+                + "interval (0, 1], not " + alpha);
+      }
+      this.alpha = alpha;
+      this.hasAlpha = true;
+      computeLogParams();
+    }
+  }
+
+  private void checkHasParams() {
+    if (!this.hasAlpha) {
+      throw new IllegalArgumentException("parameter alpha not provided");
+    }
+  }
+
+  @Override
+  public double getProb(Object value) {
+    return getProb(((Integer) value).intValue());
   }
 
   /**
    * Returns the probability of the given integer under this distribution.
    */
-  public double getProb(int n) {
-    if (n < 0) {
+  public double getProb(int k) {
+    checkHasParams();
+    if (k < 0) {
       return 0;
     }
-    return alpha * Math.pow(1 - alpha, n);
+    return alpha * Math.pow(1 - alpha, k);
   }
 
-  /**
-   * Returns the probability of the given value, which should be an Integer.
-   * Expects no arguments.
-   */
-  public double getProb(List args, Object value) {
-    if (!args.isEmpty()) {
-      throw new IllegalArgumentException(
-          "Geometric distribution expects no arguments.");
-    }
-
-    if (!(value instanceof Integer)) {
-      throw new IllegalArgumentException("The value passed to the geometric "
-          + "distribution's getProb method must be " + "of class Integer, not "
-          + args.get(0).getClass() + ".");
-    }
-
-    return getProb(((Integer) value).intValue());
-  }
-
-  /**
-   * Returns the natural log of the probability of the given integer under this
-   * distribution.
-   */
-  public double getLogProb(int n) {
-    if (n < 0) {
-      return Double.NEGATIVE_INFINITY;
-    }
-
-    // log of alpha * (1 - alpha) ^ n
-    return logAlpha + (n * logOneMinusAlpha);
-  }
-
-  /**
-   * Returns the log probability of the given value, which should be an Integer.
-   * Expects no arguments.
-   */
-  public double getLogProb(List args, Object value) {
-    if (!args.isEmpty()) {
-      throw new IllegalArgumentException(
-          "Geometric distribution expects no arguments.");
-    }
-
-    if (!(value instanceof Integer)) {
-      throw new IllegalArgumentException("The value passed to the geometric "
-          + "distribution's getProb method must be " + "of class Integer, not "
-          + args.get(0).getClass() + ".");
-    }
-
+  @Override
+  public double getLogProb(Object value) {
     return getLogProb(((Integer) value).intValue());
   }
 
   /**
-   * Generates a sample from this distribution. Expects no arguments.
+   * Returns the log probability of the given integer under this distribution.
    */
-  public Object sampleVal(List args) {
-    if (!args.isEmpty()) {
-      throw new IllegalArgumentException(
-          "Geometric distribution expects no arguments.");
+  public double getLogProb(int k) {
+    if (k < 0) {
+      return Double.NEGATIVE_INFINITY;
     }
 
-    return new Integer(sampleVal_());
+    // log of alpha * (1 - alpha) ^ k
+    // Special Case: Otherwise, k * log(1-alpha) is NaN in Java
+    if (k == 0 && alpha == 1) {
+      return 0.0;
+    }
+    return logAlpha + (k * logOneMinusAlpha);
+  }
+
+  @Override
+  public Object sampleVal() {
+    checkHasParams();
+    return sampleVal_();
   }
 
   /**
@@ -232,50 +191,7 @@ public class Geometric extends AbstractCondProbDistrib {
    */
 
   private double alpha;
+  private boolean hasAlpha;
   private double logAlpha;
   private double logOneMinusAlpha;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
-   */
-  @Override
-  public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
-   */
-  @Override
-  public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
-   */
-  @Override
-  public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#sampleVal()
-   */
-  @Override
-  public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
-  }
 }
