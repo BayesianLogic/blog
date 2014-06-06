@@ -35,8 +35,6 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
 
 /**
@@ -46,61 +44,92 @@ import blog.common.Util;
  */
 
 public class Gamma extends AbstractCondProbDistrib {
-  /**
-   * Creates a new Gamma distribution with parameters k and lambda.
-   */
-  public Gamma(List params) {
-    if (!((params.get(0) instanceof Number) && (params.get(1) instanceof Number))) {
-      throw new IllegalArgumentException(
-          "Gamma expects two numerical arguments "
-              + "{k, lambda} where both are Numbers. Got: " + params);
-    }
-    k = ((Number) params.get(0)).doubleValue();
-    lambda = ((Number) params.get(1)).doubleValue();
+
+  public Gamma() {
   }
 
-  /**
-   * Creates a new Gamma distribution with parameters k and lambda.
-   */
   public Gamma(double k, double lambda) {
-    this.k = k;
-    this.lambda = lambda;
+    setParams(k, lambda);
+  }
+
+  public double getLambda() {
+    return lambda;
+  }
+
+  public double getK() {
+    return k;
   }
 
   /**
-   * Returns the probability of x under this distribution
+   * Refer to Wikipedia.
+   * 
+   * @params
+   *         params[0] -> k (shape parameter)
+   *         params[1] -> lambda (rate parameter)
    */
-  public double getProb(List args, Object value) {
-    if (!(value instanceof Number)) {
-      throw new IllegalArgumentException(
-          "Gamma CPD defines a distribution over objects"
-              + " of class Number, not " + value.getClass() + ".");
-    } else {
-      double x = ((Number) value).doubleValue();
-      return (lambda * Math.exp(-lambda * x) * Math.pow(lambda * x, k - 1) / gamma(k));
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 2) {
+      throw new IllegalArgumentException("expected 2 parameters");
+    }
+    setParams((Double) params[0], (Double) params[1]);
+  }
+
+  public void setParams(Double k, Double lambda) {
+    if (k != null) {
+      if (k <= 0) {
+        throw new IllegalArgumentException(
+            "parameter k (shape) must be a stricly positive real number");
+      }
+      this.hasK = true;
+      this.k = k;
+    }
+    if (lambda != null) {
+      if (lambda <= 0) {
+        throw new IllegalArgumentException(
+            "parameter lambda (rate) must be a strictly positive real number");
+      }
+      this.hasLambda = true;
+      this.lambda = lambda;
     }
   }
 
-  /**
-   * Returns the log of the probability of x under this distribution.
-   */
-  public double getLogProb(List args, Object value) {
-    if (!(value instanceof Number)) {
-      throw new IllegalArgumentException(
-          "Gamma CPD defines a distribution over objects"
-              + " of class Number, not " + value.getClass() + ".");
-    } else {
-      return Math.log(getProb(args, value));
+  private void checkHasParams() {
+    if (!this.hasK) {
+      throw new IllegalArgumentException("parameter k not provided");
+    }
+    if (!this.hasLambda) {
+      throw new IllegalArgumentException("parameter lambda not provided");
     }
   }
 
-  /**
-   * Returns a double sampled according to this distribution. Uniformly fast for
-   * all k > 0. (Reference: Non-Uniform Random Variate Generation, Devroye
-   * http://cgm.cs.mcgill.ca/~luc/rnbookindex.html) Uses Cheng's rejection
-   * algorithm (GB) for k>=1, rejection from Weibull distribution for 0 < k < 1.
-   */
-  public Object sampleVal(List args) {
+  @Override
+  public double getProb(Object value) {
+    return getProb(((Double) value).doubleValue());
+  }
+
+  public double getProb(double value) {
+    checkHasParams();
+    if (value < 0) {
+      return 0;
+    } else {
+      return (lambda * Math.exp(-lambda * value)
+          * Math.pow(lambda * value, k - 1) / gamma(k));
+    }
+  }
+
+  @Override
+  public double getLogProb(Object value) {
+    return getLogProb(((Double) value).doubleValue());
+  }
+
+  public double getLogProb(double value) {
+    return Math.log(getProb(value));
+  }
+
+  @Override
+  public Object sampleVal() {
+    checkHasParams();
     return sampleVal(k, lambda);
   }
 
@@ -184,49 +213,8 @@ public class Gamma extends AbstractCondProbDistrib {
   }
 
   private double lambda;
+  private boolean hasLambda;
   private double k;
+  private boolean hasK;
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
-   */
-  @Override
-  public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
-   */
-  @Override
-  public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
-   */
-  @Override
-  public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#sampleVal()
-   */
-  @Override
-  public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
-  }
 }
