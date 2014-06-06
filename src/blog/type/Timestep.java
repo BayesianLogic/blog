@@ -37,6 +37,7 @@ package blog.type;
 import java.util.HashMap;
 import java.util.Map;
 
+import blog.common.UnaryProcedure;
 import blog.model.ArgSpec;
 import blog.model.BuiltInFunctions;
 import blog.model.FuncAppTerm;
@@ -149,6 +150,29 @@ public class Timestep extends Number implements Comparable<Timestep> {
       }
     }
     return false;
+  }
+
+  /**
+   * Use this to compute the maximum Timestep from a sequence of objects.
+   * 
+   * Implement extractTimestep() to extract the Timestep from an object.
+   * Call evaluate() on all the objects you are considering.
+   * Then read the max timestep from the result property.
+   * 
+   * @author cberzan
+   * @since Jun 6, 2014
+   */
+  abstract public static class MaxReduce implements UnaryProcedure {
+    public Timestep result = null;
+
+    abstract public Timestep extractTimestep(Object x);
+
+    public void evaluate(Object x) {
+      Timestep cand = extractTimestep(x);
+      if (result == null || (cand != null && cand.compareTo(result) > 0)) {
+        result = cand;
+      }
+    }
   }
 
   private int index;

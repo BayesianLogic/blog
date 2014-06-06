@@ -332,20 +332,9 @@ public abstract class ArgSpec {
     return null;
   }
 
-  /**
-   * Use this to compute the maximum Timestep from a sequence of Timesteps.
-   * 
-   * @author cberzan
-   * @since Jun 6, 2014
-   */
-  public static class MaxTimestepHolder implements UnaryProcedure {
-    public Timestep result = null;
-
-    public void evaluate(Object x) {
-      Timestep cand = ((ArgSpec) x).getTimestep();
-      if (result == null || (cand != null && cand.compareTo(result) > 0)) {
-        result = cand;
-      }
+  private class ArgSpecMaxTimestepReduce extends Timestep.MaxReduce {
+    public Timestep extractTimestep(Object x) {
+      return ((ArgSpec) x).getTimestep();
     }
   }
 
@@ -354,8 +343,8 @@ public abstract class ArgSpec {
    * Return null if no Timestep terms are used.
    */
   public Timestep maxTimestep() {
-    MaxTimestepHolder holder = new MaxTimestepHolder();
-    applyToTerms(holder);
-    return holder.result;
+    ArgSpecMaxTimestepReduce reducer = new ArgSpecMaxTimestepReduce();
+    applyToTerms(reducer);
+    return reducer.result;
   }
 }
