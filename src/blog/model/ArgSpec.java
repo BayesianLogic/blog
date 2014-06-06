@@ -47,6 +47,7 @@ import java.util.Set;
 
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
+import blog.common.MaxReduce;
 import blog.common.UnaryProcedure;
 import blog.sample.DefaultEvalContext;
 import blog.sample.EvalContext;
@@ -309,22 +310,21 @@ public abstract class ArgSpec {
 
   protected Object location = DEFAULT_LOCATION;
 
-  private class ArgSpecMaxTimestepReduce extends Timestep.MaxReduce {
-    public Timestep extractTimestep(Object x) {
+  private class ArgSpecMaxReduceTimestep extends MaxReduce<Timestep> {
+    public void evaluate(Object x) {
       if (!(x instanceof FuncAppTerm))
-        return null;
+        return;
       FuncAppTerm term = (FuncAppTerm) x;
       if (!(term.getFunction() instanceof NonRandomFunction))
-        return null;
+        return;
       FunctionInterp interp = ((NonRandomFunction) term.getFunction())
           .getInterpretation();
       if (!(interp instanceof ConstantInterp))
-        return null;
+        return;
       Object value = ((ConstantInterp) interp)
           .getValue(Collections.emptyList());
-      if (!(value instanceof Timestep))
-        return null;
-      return (Timestep) value;
+      if (value instanceof Timestep)
+        super.evaluate(value);
     }
   }
 
@@ -333,7 +333,7 @@ public abstract class ArgSpec {
    * Return null if no Timestep terms are used.
    */
   public Timestep maxTimestep() {
-    ArgSpecMaxTimestepReduce reducer = new ArgSpecMaxTimestepReduce();
+    ArgSpecMaxReduceTimestep reducer = new ArgSpecMaxReduceTimestep();
     applyToTerms(reducer);
     return reducer.result;
   }
