@@ -95,59 +95,83 @@ public class Exponential extends AbstractCondProbDistrib {
     return sampleVal(lambda);
   }
 
+  public Exponential() {
+  }
+
+  public Exponential(double lambda) {
+    setParams(lambda);
+  }
+
+  public double getLambda() {
+    return lambda;
+  }
+
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 1) {
+      throw new IllegalArgumentException("expected one parameter");
+    }
+    setParams((Double) params[0]);
+  }
+
+  public void setParams(Double lambda) {
+    if (lambda != null) {
+      if (lambda <= 0) {
+        throw new IllegalArgumentException(
+            "parameter lambda for an exponential distribution must be a strictly positive real");
+      }
+      this.hasLambda = true;
+      this.lambda = lambda;
+    }
+  }
+
+  public void checkHasParams() {
+    if (!this.hasLambda) {
+      throw new IllegalArgumentException("parameter lambda not provided");
+    }
+  }
+
+  @Override
+  public double getProb(Object value) {
+    return getProb(((Double) value).doubleValue());
+  }
+
+  public double getProb(double value) {
+    checkHasParams();
+    if (value < 0) {
+      return 0;
+    } else {
+      return (lambda * Math.exp((-lambda) * value));
+    }
+  }
+
+  @Override
+  public double getLogProb(Object value) {
+    return getLogProb(((Double) value).doubleValue());
+  }
+
+  public double getLogProb(double value) {
+    checkHasParams();
+    if (value < 0) {
+      return Double.NEGATIVE_INFINITY;
+    } else {
+      return Math.log(lambda) - lambda * value;
+    }
+  }
+
+  @Override
+  public Object sampleVal() {
+    checkHasParams();
+    return Exponential.sampleVal(lambda);
+  }
+
   /**
-   * generate a value from Exponential distribution with parameter lambda
-   * 
-   * @param lambda
-   * @return
+   * Generate a value from Exponential distribution with parameter lambda.
    */
   public static double sampleVal(double lambda) {
     return -Math.log(Util.random()) / lambda;
   }
 
+  private boolean hasLambda;
   private double lambda;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
-   */
-  @Override
-  public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
-   */
-  @Override
-  public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
-   */
-  @Override
-  public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#sampleVal()
-   */
-  @Override
-  public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
-  }
 }
