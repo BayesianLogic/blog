@@ -167,12 +167,12 @@ public class RelationExtractionMHSampler extends Sampler {
     if (Util.verbose()) {
       System.out.println("Proposing world...");
     }
-    //double logProposalRatio = proposer.proposeNextState(curWorld);
+    // double logProposalRatio = proposer.proposeNextState(curWorld);
     double logAcceptRatio = proposer.proposeNextState(curWorld);
-//    if (Util.verbose()) {
-//      System.out.println();
-//      System.out.println("\tlog proposal ratio: " + logProposalRatio);
-//    }
+    // if (Util.verbose()) {
+    // System.out.println();
+    // System.out.println("\tlog proposal ratio: " + logProposalRatio);
+    // }
 
     if (!validateIdentifiers(curWorld)) {
       Util.fatalError("Fatal identifier errors in proposed world.", false);
@@ -180,14 +180,14 @@ public class RelationExtractionMHSampler extends Sampler {
 
     // Compute the acceptance probability
     acceptProbTimer.start();
-//    double logProbRatio = computeLogProbRatio(curWorld.getSaved(), curWorld);
-//    if (Util.verbose()) {
-//      System.out.println("\tlog probability ratio: " + logProbRatio);
-//    }
-//    double logAcceptRatio = logProbRatio + logProposalRatio;
-//    if (Util.verbose()) {
-//      System.out.println("\tlog acceptance ratio: " + logAcceptRatio);
-//    }
+    // double logProbRatio = computeLogProbRatio(curWorld.getSaved(), curWorld);
+    // if (Util.verbose()) {
+    // System.out.println("\tlog probability ratio: " + logProbRatio);
+    // }
+    // double logAcceptRatio = logProbRatio + logProposalRatio;
+    // if (Util.verbose()) {
+    // System.out.println("\tlog acceptance ratio: " + logAcceptRatio);
+    // }
     acceptProbTimer.stop();
 
     // Accept or reject proposal
@@ -198,7 +198,11 @@ public class RelationExtractionMHSampler extends Sampler {
       // according to the model's distribution, it still converges to it.
       // I moved this to SamplingEngine to keep the MHSampler's "purity".
       curWorld.save();
-      ((RelationExtractionProposer) proposer).applyDiff(); // Hack to keep track of true Facts
+
+      // Hack to keep track of true Facts. This seems to be exactly
+      // updateStats(true)...
+      ((RelationExtractionProposer) proposer).applyDiff();
+
       worldUpdateTimer.stop();
       if (Util.verbose()) {
         System.out.println("\taccepted");

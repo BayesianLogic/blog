@@ -3767,6 +3767,7 @@ obs Verb(Sent[937]) = nsubj__nsubj_president_prep_of_pobj__pobj;
 obs Subject(Sent[938]) = Jon_Shure;
 obs Object(Sent[938]) = New_Jersey_Policy_Perspective;
 obs Verb(Sent[938]) = nsubj__nsubj_president_prep_of_pobj__pobj;
+obs Rel(SourceFact(Sent[938])) = R[0];
 
 obs Subject(Sent[939]) = John_F_Kennedy;
 obs Object(Sent[939]) = United_States;

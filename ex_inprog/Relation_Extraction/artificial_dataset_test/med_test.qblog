@@ -1,6 +1,6 @@
 /* Queries go here */
 
-
+/*
 query Rel(SourceFact(Sent[0]));
 query Rel(SourceFact(Sent[1]));
 query Rel(SourceFact(Sent[2]));
@@ -21,7 +21,10 @@ query Rel(SourceFact(Sent[16]));
 query Rel(SourceFact(Sent[17]));
 query Rel(SourceFact(Sent[18]));
 query Rel(SourceFact(Sent[19]));
+*/
 
 
-random Fact Fr(Entity e) ~ Iota({Fact f : Rel(f) == R[0] & Arg1(f) == e & Arg2(f) == UC_Berkeley });
-query Holds(Fr(Nicholas_Dirks));
+random Fact F(Entity e) ~ Iota({Fact f : Rel(f) == R[0] & Arg1(f) == e & Arg2(f) == Stuart_Russell });
+query Holds(F(Chris));
+query Holds(F(Lei));
+query Holds(F(John));

@@ -219,9 +219,9 @@ public class SamplingEngine extends InferenceEngine {
     sampler.printStats();
   }
 
-  private Sampler sampler;
-  private int numSamples;
-  private int reportInterval;
-  private int queryReportInterval;
-  private int numBurnIn;
+  protected Sampler sampler;
+  protected int numSamples;
+  protected int reportInterval;
+  protected int queryReportInterval;
+  protected int numBurnIn;
 }
