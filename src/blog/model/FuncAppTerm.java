@@ -48,7 +48,6 @@ import java.util.Set;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;
-import blog.common.Util;
 import blog.sample.EvalContext;
 import blog.type.Timestep;
 
@@ -457,11 +456,10 @@ public class FuncAppTerm extends Term {
   public Timestep getTimestep() {
     if (!(f instanceof NonRandomFunction))
       return null;
-    NonRandomFunction nrf = (NonRandomFunction) f;
-    if (!(nrf.getInterpretation() instanceof ConstantInterp))
+    FunctionInterp interp = ((NonRandomFunction) f).getInterpretation();
+    if (!(interp instanceof ConstantInterp))
       return null;
-    ConstantInterp interp = (ConstantInterp) nrf.getInterpretation();
-    Object value = interp.getValue(Util.list());
+    Object value = ((ConstantInterp) interp).getValue(Collections.emptyList());
     if (!(value instanceof Timestep))
       return null;
     return (Timestep) value;
