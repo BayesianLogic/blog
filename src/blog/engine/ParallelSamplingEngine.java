@@ -32,7 +32,15 @@ public class ParallelSamplingEngine extends SamplingEngine implements Runnable {
   @Override
   public void run() {
     // boolean printed = false;
-    sampler.initialize(evidence, queries);
+
+    // A hack to make sure threads initialize one at a time.
+    // The parallel initialization seemed to be problematic,
+    // not sure why. This hack avoids that
+    synchronized (evidence) {
+      sampler.initialize(evidence, queries);
+      System.out.println(Thread.currentThread().getName()
+          + " has completed initialization!");
+    }
 
     /*
      * // Only let Thread-0 print this out
@@ -128,5 +136,4 @@ public class ParallelSamplingEngine extends SamplingEngine implements Runnable {
       sampler.printStats();
     }
   }
-
 }

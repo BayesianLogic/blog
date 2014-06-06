@@ -98,7 +98,7 @@ public class ParallelEngine extends InferenceEngine {
     // Create a number of threads here. Use ParallelSamplingEngine as the
     // runnable
 
-    int maxThreads = 8;
+    int maxThreads = 4;
     Thread[] threads = new Thread[maxThreads];
 
     // Start the threads
