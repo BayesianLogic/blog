@@ -47,7 +47,6 @@ import java.util.Set;
 
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
-import blog.common.UnaryPredicate;
 import blog.common.UnaryProcedure;
 import blog.sample.DefaultEvalContext;
 import blog.sample.EvalContext;
@@ -231,20 +230,6 @@ public abstract class ArgSpec {
    * predicate to a given collection.
    */
   public abstract void applyToTerms(UnaryProcedure procedure);
-
-  /**
-   * Adds all terms in this ArgSpec which satisfy a predicate to a given
-   * collection.
-   */
-  public void selectTerms(final UnaryPredicate predicate,
-      final Collection selected) {
-    applyToTerms(new UnaryProcedure() {
-      public void evaluate(Object x) {
-        if (predicate.evaluate(x))
-          selected.add(x);
-      }
-    });
-  }
 
   /**
    * Returns an ArgSpec resulting from the replacement of all occurrences of a
