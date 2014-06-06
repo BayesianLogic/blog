@@ -74,10 +74,10 @@ public class FunctionSignature {
       return true;
     if (obj == null)
       return false;
-    if (getClass() != obj.getClass())
+    if (!(obj instanceof FunctionSignature))
       return false;
     FunctionSignature other = (FunctionSignature) obj;
-    return Arrays.equals(argTypes, other.argTypes) && name.equals(other.name);
+    return (name == other.name) && Arrays.equals(argTypes, other.argTypes);
   }
 
   public String toString() {
