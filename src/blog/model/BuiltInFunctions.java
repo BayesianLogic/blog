@@ -74,7 +74,6 @@ public class BuiltInFunctions {
   public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
   public static final String LT_NAME = "__LESSTHAN";
   public static final String LEQ_NAME = "__LESSTHANOREQUAL";
-  public static final String SCALAR_STACK_NAME = "__SCALAR_STACK";
 
   // can be called by user
   public static final String SUCC_NAME = "Succ";
@@ -95,6 +94,7 @@ public class BuiltInFunctions {
   public static final String ATAN2_NAME = "atan2";
   public static final String SUM_NAME = "sum";
   public static final String VSTACK_NAME = "vstack";
+  public static final String HSTACK_NAME = "hstack";
   public static final String EYE_NAME = "eye";
   public static final String ZEROS_NAME = "zeros";
   public static final String ONES_NAME = "ones";
@@ -391,15 +391,20 @@ public class BuiltInFunctions {
   public static NonRandomFunction SET_SUM;
 
   /**
-   * Take RealMatrix x and y and return RealMatrix z which is the concatenation
-   * [x; y].
+   * Take RealMatrices [x; y; ...] and return RealMatrix z which is the
+   * vertical concatenation
+   * This function allows scalar arguments, it will convert it into a 1x1
+   * RealMatrix
    */
-  public static NonRandomFunction VSTACK;
+  public static TemplateFunction VSTACK;
 
-  /*
-   * Take a list of scalar arguments, and convert them to a Matrix row-vector
+  /**
+   * Take RealMatrices [x, y, ...] and return RealMatrix z which is the
+   * horizontal concatenation
+   * This function allows scalar arguments, it will convert it into a 1x1
+   * RealMatrix
    */
-  public static TemplateFunction SCALAR_STACK;
+  public static TemplateFunction HSTACK;
 
   /**
    * Return an identity matrix.
@@ -1243,22 +1248,8 @@ public class BuiltInFunctions {
     SET_SUM = new NonRandomFunction(SUM_NAME, argTypes, retType, setSumInterp);
     addFunction(SET_SUM);
 
-    FunctionInterp vstackInterp = new AbstractFunctionInterp() {
-      public Object getValue(List args) {
-        MatrixLib a = (MatrixLib) args.get(0);
-        MatrixLib b = (MatrixLib) args.get(1);
-        return MatrixFactory.vstack(a, b);
-      }
-    };
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.REAL_MATRIX);
-    argTypes.add(BuiltInTypes.REAL_MATRIX);
-    retType = BuiltInTypes.REAL_MATRIX;
-    VSTACK = new NonRandomFunction(VSTACK_NAME, argTypes, retType, vstackInterp);
-    addFunction(VSTACK);
-
-    // TODO: to complete stacking of scalar
-    SCALAR_STACK = new TemplateFunction(SCALAR_STACK_NAME) {
+    // TODO: to complete horizontal stacking of scalar or column-vector
+    HSTACK = new TemplateFunction(HSTACK_NAME) {
 
       @Override
       public NonRandomFunction getConcreteFunction(Type[] argTypes) {
@@ -1269,29 +1260,151 @@ public class BuiltInFunctions {
          * Currently only support convert elements to Real Matrix!!!
          * TODO: to support other types in the future
          */
-        for (Type ty : argTypes)
-          if (!ty.isSubtypeOf(BuiltInTypes.REAL))
-            return null;
-
-        FunctionInterp scalarStackInterp = new AbstractFunctionInterp() {
-          public Object getValue(List args) {
-            int n = args.size();
-            double[][] val = new double[n][1];
-            for (int i = 0; i < n; ++i)
-              val[i][0] = (Double) args.get(i);
-            return MatrixFactory.fromArray(val);
-          }
-        };
         List<Type> args = new ArrayList<Type>();
-        for (int i = 0; i < argTypes.length; ++i)
-          args.add(BuiltInTypes.REAL);
+        boolean flag_real = false, flag_matrix = false;
+        for (Type ty : argTypes) {
+          if (ty.isSubtypeOf(BuiltInTypes.REAL)) {
+            flag_real = true;
+            args.add(BuiltInTypes.REAL);
+            continue;
+          }
+          if (ty.isSubtypeOf(BuiltInTypes.REAL_MATRIX)) {
+            flag_matrix = true;
+            args.add(BuiltInTypes.REAL_MATRIX);
+            continue;
+          }
+          return null;
+        }
 
-        NonRandomFunction retFunc = new NonRandomFunction(SCALAR_STACK_NAME,
-            args, BuiltInTypes.REAL_MATRIX, scalarStackInterp);
+        FunctionInterp HStackInterp = null;
+
+        if (!flag_matrix) { // only scalars
+          HStackInterp = new AbstractFunctionInterp() {
+            public Object getValue(List args) {
+              int m = args.size();
+              double[][] val = new double[1][m];
+              for (int i = 0; i < m; ++i)
+                val[0][i] = (Double) args.get(i);
+              return MatrixFactory.fromArray(val);
+            }
+          };
+        } else if (!flag_real) { // only column vectors
+          HStackInterp = new AbstractFunctionInterp() {
+            public Object getValue(List args) {
+              MatrixLib ret = (MatrixLib) args.get(0);
+              for (int i = 1; i < args.size(); ++i)
+                ret = MatrixFactory.hstack(ret, (MatrixLib) args.get(i));
+              return ret;
+            }
+          };
+        } else { // contains both vectors and scalars
+          HStackInterp = new AbstractFunctionInterp() {
+            public Object getValue(List args) {
+              MatrixLib ret = null;
+              double[][] scalar = new double[1][1];
+              for (int i = 0; i < args.size(); ++i) {
+                MatrixLib cur = null;
+                if (args.get(i) instanceof MatrixLib)
+                  cur = (MatrixLib) args.get(i);
+                else { // a double scalar
+                  scalar[0][0] = (Double) args.get(i);
+                  cur = MatrixFactory.fromArray(scalar);
+                }
+                if (i == 0)
+                  ret = cur;
+                else
+                  ret = MatrixFactory.hstack(ret, cur);
+              }
+              return ret;
+            }
+          };
+        }
+
+        NonRandomFunction retFunc = new NonRandomFunction(HSTACK_NAME, args,
+            BuiltInTypes.REAL_MATRIX, HStackInterp);
         return retFunc;
       }
     };
-    addTemplate(SCALAR_STACK);
+    addTemplate(HSTACK);
+
+    // TODO: to complete horizontal stacking of scalar or column-vector
+    VSTACK = new TemplateFunction(VSTACK_NAME) {
+
+      @Override
+      public NonRandomFunction getConcreteFunction(Type[] argTypes) {
+        if (argTypes == null || argTypes.length < 1)
+          return null;
+
+        /*
+         * Currently only support convert elements to Real Matrix!!!
+         * TODO: to support other types in the future
+         */
+        List<Type> args = new ArrayList<Type>();
+        boolean flag_real = false, flag_matrix = false;
+        for (Type ty : argTypes) {
+          if (ty.isSubtypeOf(BuiltInTypes.REAL)) {
+            flag_real = true;
+            args.add(BuiltInTypes.REAL);
+            continue;
+          }
+          if (ty.isSubtypeOf(BuiltInTypes.REAL_MATRIX)) {
+            flag_matrix = true;
+            args.add(BuiltInTypes.REAL_MATRIX);
+            continue;
+          }
+          return null;
+        }
+
+        FunctionInterp VStackInterp = null;
+
+        if (!flag_matrix) { // only scalars
+          VStackInterp = new AbstractFunctionInterp() {
+            public Object getValue(List args) {
+              int n = args.size();
+              double[][] val = new double[n][1];
+              for (int i = 0; i < n; ++i)
+                val[i][0] = (Double) args.get(i);
+              return MatrixFactory.fromArray(val);
+            }
+          };
+        } else if (!flag_real) { // only column vectors
+          VStackInterp = new AbstractFunctionInterp() {
+            public Object getValue(List args) {
+              MatrixLib ret = (MatrixLib) args.get(0);
+              for (int i = 1; i < args.size(); ++i)
+                ret = MatrixFactory.vstack(ret, (MatrixLib) args.get(i));
+              return ret;
+            }
+          };
+        } else { // contains both vectors and scalars
+          VStackInterp = new AbstractFunctionInterp() {
+            public Object getValue(List args) {
+              MatrixLib ret = null;
+              double[][] scalar = new double[1][1];
+              for (int i = 0; i < args.size(); ++i) {
+                MatrixLib cur = null;
+                if (args.get(i) instanceof MatrixLib)
+                  cur = (MatrixLib) args.get(i);
+                else { // a double scalar
+                  scalar[0][0] = (Double) args.get(i);
+                  cur = MatrixFactory.fromArray(scalar);
+                }
+                if (i == 0)
+                  ret = cur;
+                else
+                  ret = MatrixFactory.vstack(ret, cur);
+              }
+              return ret;
+            }
+          };
+        }
+
+        NonRandomFunction retFunc = new NonRandomFunction(VSTACK_NAME, args,
+            BuiltInTypes.REAL_MATRIX, VStackInterp);
+        return retFunc;
+      }
+    };
+    addTemplate(VSTACK);
 
     FunctionInterp eyeInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
