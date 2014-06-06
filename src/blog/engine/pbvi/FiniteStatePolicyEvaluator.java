@@ -47,8 +47,12 @@ public class FiniteStatePolicyEvaluator {
 			totalCount += 1;
 		}*/
 		for (State s : b.getStates()) {
+			Double predictedValue = p.getAlphaVector().getValue(s);
+			if (numTrialsToPrint > 0 && predictedValue != null)
+				System.out.println("Predicted Value for state to evaluate: " + predictedValue);
 			Double v = eval(s, p, numTrials, numTrialsToPrint);
-			if (v == null) return v;
+			if (numTrialsToPrint > 0)
+				System.out.println("Evaluated Value for state: " + v);
 			value += v * b.getCount(s);
 			totalCount += b.getCount(s);
 		}
@@ -100,7 +104,7 @@ public class FiniteStatePolicyEvaluator {
 				discount = discount * gamma;
 			}
 			if (numPathsPrinted < numTrialsToPrint) {
-				System.out.println("Value: " + curValue + " Path: " + curPath);
+				System.out.println("Value: " + curValue + ", Path: " + curPath);
 				numPathsPrinted++;
 			}
 			accumulatedValue += curValue;

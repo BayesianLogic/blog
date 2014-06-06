@@ -68,12 +68,13 @@ public class OUPBVI {
 		}
 	}
 	
-	private Pair<FiniteStatePolicy, Double> bestPolicyValue(Collection<FiniteStatePolicy> policies, Belief b) {
+	private Pair<FiniteStatePolicy, Double> bestPolicyValue(Collection<FiniteStatePolicy> policies, Belief b, boolean printValues) {
 		double bestValue = Double.NEGATIVE_INFINITY;
 		FiniteStatePolicy bestPolicy = null;
 		for (FiniteStatePolicy p : policies) {
 			if (!p.isApplicable(b)) continue;
 			double value = evalPolicy(b, p);
+			if (printValues) System.out.println("bestPolicyValue: value: " + value + " policy id: " + p.getID());
 			if (value > bestValue) {
 				bestValue = value;
 				bestPolicy = p;
@@ -127,19 +128,18 @@ public class OUPBVI {
 				setAlphaVectors(newPolicies, policies, t);
 				policies = newPolicies;
 
-				System.out.println("run policies " + policies.size() + " " + t);
 				int i = 0;
-				for (FiniteStatePolicy p : policies) {
+				/*for (FiniteStatePolicy p : policies) {
 					System.out.println(p.toDotString("p" + "_t" + t + "_i" + i));
 					i++;
-				}
+				}*/
 				System.out.println("Number of OS: " + ObservabilitySignature.OStoIndex.size());
 				
 				//TODO: can move some of this into backup?
 				System.out.println(Timer.getElapsedStr() + "[DELTA]");
 				double maxDelta = 0;
 				for (Belief b : beliefs) {
-					Pair<FiniteStatePolicy, Double> bestPolicyValueForBelief = bestPolicyValue(policies, b);
+					Pair<FiniteStatePolicy, Double> bestPolicyValueForBelief = bestPolicyValue(policies, b, b.equals(initBelief));
 					Double oldValue = prevBestVals.get(b);
 					if (oldValue == null) {
 						oldValue = Double.NEGATIVE_INFINITY;
@@ -161,7 +161,7 @@ public class OUPBVI {
 				}
 			}
 			pbviIteration++;
-			bestPolicyValue = bestPolicyValue(policies, initBelief);
+			bestPolicyValue = bestPolicyValue(policies, initBelief, true);
 			System.out.println("Best policy for initial belief: " + bestPolicyValue.x.toDotString("p0"));
 			System.out.println("Best value: " + bestPolicyValue.y);
 			System.out.println("Init belief: " + initBelief);
@@ -501,6 +501,7 @@ public class OUPBVI {
 			bestLiftedPolicyMap.put(new LiftedEvidence(e, b), bestPolicyMap.get(e));
 		}
 		FiniteStatePolicy newPolicy = new FiniteStatePolicy(bestAction, bestLiftedPolicyMap);
+		System.out.println("singlebackupforbelief.newPolicy.id " + newPolicy.getID());
 		System.out.println("singlebackupforbelief.time " + Timer.getElapsedStr());
 		System.out.println("num dfs visited states " + addedAlphaKeys.size());
 		return newPolicy;		
@@ -654,6 +655,8 @@ public class OUPBVI {
 			b = pomdp.generateInitialBelief(500);
 			System.out.println(b);
 			System.out.println("Iter: " + i);
+			Double predictedValue = p.getAlphaVector().getValue(b);
+			System.out.println("Predicted: " + predictedValue);
 			System.out.println("Evaluated: " + evaluator.eval(b, p, 100, 1));
 			System.out.println("Unhandled obs: " + evaluator.getMissingObs());
 		}

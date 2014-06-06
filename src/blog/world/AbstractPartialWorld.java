@@ -79,7 +79,7 @@ import blog.objgen.ObjectSet;
 import blog.sample.ParentRecEvalContext;
 import blog.engine.onlinePF.ObservableRandomFunction;//added by cheng
 import blog.engine.onlinePF.inverseBucket.UBT;
-import blog.engine.pbvi.LiftedObjects;
+import blog.engine.pbvi.LiftedProperties;
 /**
  * An implementation of the PartialWorld interface that just requires concrete
  * subclasses to initialize some protected variables.
@@ -1114,11 +1114,11 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 	/**
 	 * Non-guaranteed objects can be compared by their properties.
 	 */
-	private LiftedObjects ngoProperties;
+	private LiftedProperties ngoProperties;
 	
-	private LiftedObjects getNgoProperties() {
+	private LiftedProperties getNgoProperties() {
 		if (ngoProperties != null) return ngoProperties;
-		ngoProperties = new LiftedObjects();
+		ngoProperties = new LiftedProperties();
 		for (Object o : basicVarToValue.keySet()) {
 			BasicVar v = (BasicVar) o;
 			if (v.toString().contains("nonstate_")) continue; //TODO
@@ -1269,11 +1269,11 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 		if (!compareNgos(otherWorld)) {
 			return false;
 		}
-		/*
-		rtn = rtn && otherWorld.skolemConstants.equals(this.skolemConstants);
-		for (SkolemConstant s : skolemConstants) {
-			
-		}*/
+		
+		//rtn = rtn && otherWorld.skolemConstants.equals(this.skolemConstants);
+		//for (SkolemConstant s : skolemConstants) {
+		//	
+		//}
 		
 		
 		

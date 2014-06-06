@@ -135,7 +135,7 @@ public class Evidence {
 	/**
 	 * Returns an unmodifiable Collection of ValueEvidenceStatement objects.
 	 */
-	public Collection getValueEvidence() {
+	public Collection<ValueEvidenceStatement> getValueEvidence() {
 		return Collections.unmodifiableCollection(valueEvidence);
 	}
 
@@ -486,7 +486,7 @@ public class Evidence {
 	}
 	
 	/**returns a unmodifiable list of all decision evidence statements*/
-	public Collection getDecisionEvidence() {
+	public Collection<DecisionEvidenceStatement> getDecisionEvidence() {
 		return Collections.unmodifiableCollection(decisionEvidence);
 	}
 	

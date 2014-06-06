@@ -91,12 +91,14 @@ public class FiniteStatePolicy extends PolicyModel {
 			String evidenceString = "";
 			Collection valueEvidence = o.getStoredEvidence().getValueEvidence();
 			for (Object v : valueEvidence) {
+				if (v.toString().contains("observable_")) continue;
 				evidenceString += v.toString() + "\\n";
 			}
 			Collection symbolEvidence = o.getStoredEvidence().getSymbolEvidence();
 			for (Object s : symbolEvidence) {
 				evidenceString += s.toString() + "\\n";
 			}
+			evidenceString += o.getLifted();
 			
 			FiniteStatePolicy contingentPolicy = successors.get(o);
 			String nextName = name + "_" + i;
