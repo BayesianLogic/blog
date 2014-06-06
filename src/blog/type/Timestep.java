@@ -37,8 +37,6 @@ package blog.type;
 import java.util.HashMap;
 import java.util.Map;
 
-import blog.common.UnaryProcedure;
-
 /**
  * Represents a time step, and is used for DBLOG (Dynamic BLOG) to indicate
  * temporal random variables.
@@ -115,39 +113,6 @@ public class Timestep extends Number implements Comparable<Timestep> {
       generatedTimesteps.put(new Integer(t), ts);
     }
     return ts;
-  }
-
-  /**
-   * Use this to compute the maximum Timestep from a sequence of objects.
-   * 
-   * Override extractTimestep() to extract the Timestep from an object.
-   * Call evaluate() on all the objects you are considering.
-   * Then read the max Timestep from the <code>result</code> property.
-   * (The result is null if no Timesteps were found.)
-   * 
-   * @author cberzan
-   * @since Jun 6, 2014
-   */
-  public static class MaxReduce implements UnaryProcedure {
-    public Timestep result = null;
-
-    /**
-     * Return Timestep that the object refers to, otherwise return null.
-     * The default implementation tries to cast the object to a Timestep.
-     */
-    public Timestep extractTimestep(Object x) {
-      if (x instanceof Timestep) {
-        return (Timestep) x;
-      }
-      return null;
-    }
-
-    public void evaluate(Object x) {
-      Timestep cand = extractTimestep(x);
-      if (result == null || (cand != null && cand.compareTo(result) > 0)) {
-        result = cand;
-      }
-    }
   }
 
   private int index;
