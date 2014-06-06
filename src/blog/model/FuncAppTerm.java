@@ -49,7 +49,6 @@ import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;
 import blog.sample.EvalContext;
-import blog.type.Timestep;
 
 /**
  * Represents a function invocation.
@@ -450,19 +449,6 @@ public class FuncAppTerm extends Term {
     FuncAppTerm canonical = new FuncAppTerm(f, newArgs);
     canonical.setLocation(location);
     return canonical;
-  }
-
-  @Override
-  public Timestep getTimestep() {
-    if (!(f instanceof NonRandomFunction))
-      return null;
-    FunctionInterp interp = ((NonRandomFunction) f).getInterpretation();
-    if (!(interp instanceof ConstantInterp))
-      return null;
-    Object value = ((ConstantInterp) interp).getValue(Collections.emptyList());
-    if (!(value instanceof Timestep))
-      return null;
-    return (Timestep) value;
   }
 
   private String funcName;

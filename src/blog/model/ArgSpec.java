@@ -324,17 +324,22 @@ public abstract class ArgSpec {
 
   protected Object location = DEFAULT_LOCATION;
 
-  /**
-   * If this is a constant Timestep term, return the Timestep it refers to.
-   * Otherwise, return null. The default implementation returns null.
-   */
-  public Timestep getTimestep() {
-    return null;
-  }
-
   private class ArgSpecMaxTimestepReduce extends Timestep.MaxReduce {
     public Timestep extractTimestep(Object x) {
-      return ((ArgSpec) x).getTimestep();
+      if (!(x instanceof FuncAppTerm))
+        return null;
+      FuncAppTerm term = (FuncAppTerm) x;
+      if (!(term.getFunction() instanceof NonRandomFunction))
+        return null;
+      FunctionInterp interp = ((NonRandomFunction) term.getFunction())
+          .getInterpretation();
+      if (!(interp instanceof ConstantInterp))
+        return null;
+      Object value = ((ConstantInterp) interp)
+          .getValue(Collections.emptyList());
+      if (!(value instanceof Timestep))
+        return null;
+      return (Timestep) value;
     }
   }
 
