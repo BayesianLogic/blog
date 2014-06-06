@@ -35,11 +35,9 @@
 
 package blog.engine;
 
-import java.util.Iterator;
 import java.util.Properties;
 
 import blog.model.Model;
-import blog.model.Query;
 import blog.sample.Sampler;
 import blog.world.PartialWorld;
 
@@ -100,7 +98,7 @@ public class ParallelEngine extends InferenceEngine {
     // Create a number of threads here. Use ParallelSamplingEngine as the
     // runnable
 
-    int maxThreads = 2;
+    int maxThreads = 8;
     Thread[] threads = new Thread[maxThreads];
 
     // Start the threads
@@ -121,14 +119,6 @@ public class ParallelEngine extends InferenceEngine {
         e.printStackTrace();
       }
     }
-
-    // Print query results
-    System.out.println("======== Query Results ========");
-    for (Iterator iter = queries.iterator(); iter.hasNext();) {
-      Query q = (Query) iter.next();
-      q.printResults(System.out);
-    }
-    System.out.println("======== Done ========");
 
   }
 

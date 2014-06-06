@@ -421,6 +421,9 @@ public class RelationExtractionProposer implements Proposer {
 
             // Set the Holds value in the world
             world.setValue(makeVar(holdsFunc, fact), true);
+
+            // Add to trueFacts
+            addToTrueFacts(fact, sent);
           }
         }
       }
@@ -689,6 +692,9 @@ public class RelationExtractionProposer implements Proposer {
 
       // Set the Holds value in the world
       world.setValue(makeVar(holdsFunc, fact), true);
+
+      // Add to trueFacts
+      addToTrueFacts(fact, sentence);
     }
 
   }

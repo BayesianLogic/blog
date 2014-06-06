@@ -75,6 +75,7 @@ obs Verb(Sent[16]) = is_a_student_of;
 obs Subject(Sent[17]) = Chris;
 obs Object(Sent[17]) = Lei;
 obs Verb(Sent[17]) = is_a_student_of;
+obs Rel(SourceFact(Sent[17])) = R[0];
 
 obs Subject(Sent[18]) = John;
 obs Object(Sent[18]) = Stuart_Russell;
