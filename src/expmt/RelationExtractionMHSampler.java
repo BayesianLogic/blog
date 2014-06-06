@@ -128,9 +128,11 @@ public class RelationExtractionMHSampler extends Sampler {
       Util.fatalError("Fatal identifier errors in initial world.", false);
     }
 
-    if (!evidence.isTrue(curWorld)) {
-      throw new IllegalStateException(
-          "Error: evidence is not true in initial world.");
+    synchronized (evidence) {
+      if (!evidence.isTrue(curWorld)) {
+        throw new IllegalStateException(
+            "Error: evidence is not true in initial world.");
+      }
     }
   }
 
