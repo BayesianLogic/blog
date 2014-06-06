@@ -35,8 +35,6 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
 
 /**
@@ -52,89 +50,89 @@ import blog.common.Util;
  */
 
 public class Binomial extends AbstractCondProbDistrib {
-  /**
-   * Creates a new Binomial distribution with parameters n and p.
-   */
+
+  public Binomial() {
+  }
+
   public Binomial(int n, double p) {
-    nFixed = true;
-    this.n = n;
-    pFixed = true;
-    this.p = p;
+    setParams(n, p);
   }
 
-  /**
-   * Creates a new Binomial distribution. If two parameters are given, they are
-   * interpreted as n and p. If one parameter is given, it is interpreted as p
-   * and this distribution expects n as an argument. If no parameters are given,
-   * this distribution expects both n and p as arguments.
-   */
-  public Binomial(List params) {
-    if (params.size() == 0) {
-      nFixed = false;
-      pFixed = false;
-    } else if (params.size() == 1) {
-      nFixed = false;
-      pFixed = true;
-      setP(params.get(0));
-    } else if (params.size() == 2) {
-      nFixed = true;
-      setN(params.get(0));
-      pFixed = true;
-      setP(params.get(1));
+  public int getN() {
+    return n;
+  }
+
+  public double getP() {
+    return p;
+  }
+
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 2) {
+      throw new IllegalArgumentException("expected two parameters");
+    }
+    setParams((Integer) params[0], (Double) params[1]);
+  }
+
+  public void setParams(Integer n, Double p) {
+    if (n != null) {
+      if (n < 0) {
+        throw new IllegalArgumentException(
+            "parameter n for a binomial distribution must be a nonnegative intger");
+      }
+      this.n = n;
+      this.hasN = true;
+    }
+    if (p != null) {
+      if (p < 0 || p > 1) {
+        throw new IllegalArgumentException(
+            "parameter p for a binomial distribution must be a probability in the interval [0, 1]");
+      }
+      this.p = p;
+      this.hasP = true;
+    }
+  }
+
+  private void checkHasParams() {
+    if (!this.hasP) {
+      throw new IllegalArgumentException("parameter p not provided");
+    }
+    if (!this.hasN) {
+      throw new IllegalArgumentException("parameter n not provided");
+    }
+  }
+
+  @Override
+  public double getProb(Object value) {
+    return getProb(((Integer) value).intValue());
+  }
+
+  public double getProb(int value) {
+    checkHasParams();
+    int k = value;
+    if (k >= 0 && k <= n) {
+      return ((Util.factorial(n) / (Util.factorial(k) * Util.factorial(n - k)))
+          * Math.pow(p, k) * Math.pow((1 - p), (n - k)));
     } else {
-      throw new IllegalArgumentException(
-          "Binomial CPD expects at most two parameters, n and p.");
+      return 0;
     }
   }
 
-  /**
-   * Returns the probability of integer k under this distribution.
-   */
-  public double getProb(List args, Object value) {
-    processArgs(args);
-    if (!(value instanceof Integer)) {
-      throw new IllegalArgumentException(
-          "Binomial CPD defines a distribution over objects"
-              + " of class Integer, not " + value.getClass() + ".");
-    }
-    int k = ((Integer) value).intValue();
-    return ((Util.factorial(n) / (Util.factorial(k) * Util.factorial(n - k)))
-        * Math.pow(p, k) * Math.pow((1 - p), (n - k)));
+  @Override
+  public double getLogProb(Object value) {
+    return getLogProb(((Integer) value).intValue());
   }
 
-  /**
-   * Returns the log of the probability of integer k under the distribution.
-   */
-  public double getLogProb(List args, Object value) {
-    processArgs(args);
-    if (!(value instanceof Integer)) {
-      throw new IllegalArgumentException(
-          "Binomial CPD defines a distribution over objects"
-              + " of class Integer, not " + value.getClass() + ".");
-    }
-    return Math.log(getProb(args, value));
+  public double getLogProb(int value) {
+    return Math.log(getProb(value));
   }
 
-  /**
-   * Returns an integer sampled according to this distribution. Takes time
-   * proprotional to np + 1. (Reference: Non-Uniform Random Variate Generation,
-   * Devroye http://cgm.cs.mcgill.ca/~luc/rnbookindex.html) Second time-waiting
-   * algorithm.
-   * 
-   */
-  // May need to implement a faster Binomial sampler
-  public Object sampleVal(List args) {
-    processArgs(args);
+  @Override
+  public Object sampleVal() {
+    checkHasParams();
     return sampleVal(n, p);
   }
 
-  /**
-   * generate a random value from Binomial(n, p)
-   * 
-   * @param n
-   * @param p
-   * @return
-   */
   public static int sampleVal(int n, double p) {
     double q = -Math.log(1 - p);
     double sum = 0;
@@ -152,102 +150,8 @@ public class Binomial extends AbstractCondProbDistrib {
     return getClass().getName();
   }
 
-  private void processArgs(List args) {
-    if (!pFixed) {
-      if (args.size() != 2) {
-        throw new IllegalArgumentException(
-            "Binomial distribution created with no parameters "
-                + "expects n and p as arguments.");
-      }
-      setN(args.get(0));
-      setP(args.get(1));
-    } else if (!nFixed) {
-      if (args.size() != 1) {
-        throw new IllegalArgumentException(
-            "Binomial distribution created with no \"n\" parameter "
-                + "expects n as an argument.");
-      }
-      setN(args.get(0));
-    } else if (args.size() != 0) {
-      throw new IllegalArgumentException(
-          "Binomial distribution created with two parameters "
-              + "expects no arguments.");
-    }
-  }
-
-  private void setN(Object obj) {
-    if (!(obj instanceof Integer)) {
-      throw new IllegalArgumentException(
-          "Number of trials (n) in binomial distribution must "
-              + "be an integer, not " + obj.getClass());
-    }
-    n = ((Integer) obj).intValue();
-    if (n < 0) {
-      throw new IllegalArgumentException(
-          "Number of trials (n) in binomial distribution cannot "
-              + "be negative.");
-    }
-  }
-
-  private void setP(Object obj) {
-    if (!(obj instanceof Number)) {
-      throw new IllegalArgumentException(
-          "Success probability (p) in binomial distribution must "
-              + "be a number, not " + obj.getClass());
-    }
-    p = ((Number) obj).doubleValue();
-    if ((p < 0) || (p > 1)) {
-      throw new IllegalArgumentException(
-          "Illegal success probability for binomial disribution: " + p);
-    }
-  }
-
-  private boolean nFixed;
   private int n;
-  private boolean pFixed;
+  private boolean hasN;
   private double p;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
-   */
-  @Override
-  public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
-   */
-  @Override
-  public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
-   */
-  @Override
-  public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#sampleVal()
-   */
-  @Override
-  public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  private boolean hasP;
 }
