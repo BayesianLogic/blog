@@ -15,7 +15,7 @@ public class FunctionSignature {
    * Creates a signature for a zero-ary function with the given name.
    */
   public FunctionSignature(String name) {
-    this.name = name;
+    this.name = name.intern();
     argTypes = NO_ARG_TYPES;
   }
 
@@ -24,7 +24,7 @@ public class FunctionSignature {
    * types.
    */
   public FunctionSignature(String name, Type... types) {
-    this.name = name;
+    this.name = name.intern();
     argTypes = types;
   }
 
@@ -36,7 +36,7 @@ public class FunctionSignature {
    *          a List of Type objects
    */
   public FunctionSignature(String name, List<Type> argTypeList) {
-    this.name = name;
+    this.name = name.intern();
     argTypes = new Type[argTypeList.size()];
     argTypeList.toArray(argTypes);
   }
@@ -49,25 +49,39 @@ public class FunctionSignature {
     return argTypes;
   }
 
-  public boolean equals(Object o) {
-    if (o instanceof FunctionSignature) {
-      FunctionSignature other = (FunctionSignature) o;
-      return ((name.equals(other.getName())) && Arrays.equals(argTypes,
-          other.getArgTypes()));
-    }
-    return false;
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + name.hashCode();
+    result = prime * result + Arrays.hashCode(argTypes);
+    return result;
   }
 
-  public int hashCode() {
-    int code = name.hashCode();
-    for (int i = 0; i < argTypes.length; ++i) {
-      code ^= argTypes[i].hashCode();
-    }
-    return code;
+  /*
+   * the FunctionSignature equals only when both name and types are equal
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    FunctionSignature other = (FunctionSignature) obj;
+    return Arrays.equals(argTypes, other.argTypes) && name.equals(other.name);
   }
 
   public String toString() {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.append(name);
     buf.append('(');
     for (int i = 0; i < argTypes.length; ++i) {
@@ -81,8 +95,8 @@ public class FunctionSignature {
     return buf.toString();
   }
 
-  public String name;
-  public Type[] argTypes;
+  private final String name;
+  private final Type[] argTypes;
 
-  private static Type[] NO_ARG_TYPES = new Type[0];
+  private static final Type[] NO_ARG_TYPES = new Type[0];
 }
