@@ -155,17 +155,27 @@ public class Timestep extends Number implements Comparable<Timestep> {
   /**
    * Use this to compute the maximum Timestep from a sequence of objects.
    * 
-   * Implement extractTimestep() to extract the Timestep from an object.
+   * Override extractTimestep() to extract the Timestep from an object.
    * Call evaluate() on all the objects you are considering.
-   * Then read the max timestep from the result property.
+   * Then read the max Timestep from the <code>result</code> property.
+   * (The result is null if no Timesteps were found.)
    * 
    * @author cberzan
    * @since Jun 6, 2014
    */
-  abstract public static class MaxReduce implements UnaryProcedure {
+  public static class MaxReduce implements UnaryProcedure {
     public Timestep result = null;
 
-    abstract public Timestep extractTimestep(Object x);
+    /**
+     * Return Timestep that the object refers to, otherwise return null.
+     * The default implementation tries to cast the object to a Timestep.
+     */
+    public Timestep extractTimestep(Object x) {
+      if (x instanceof Timestep) {
+        return (Timestep) x;
+      }
+      return null;
+    }
 
     public void evaluate(Object x) {
       Timestep cand = extractTimestep(x);
