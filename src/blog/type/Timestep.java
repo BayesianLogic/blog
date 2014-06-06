@@ -38,10 +38,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import blog.common.UnaryProcedure;
-import blog.model.ArgSpec;
-import blog.model.BuiltInFunctions;
-import blog.model.FuncAppTerm;
-import blog.model.LogicalVar;
 
 /**
  * Represents a time step, and is used for DBLOG (Dynamic BLOG) to indicate
@@ -122,37 +118,6 @@ public class Timestep extends Number implements Comparable<Timestep> {
   }
 
   /**
-   * Returns true if <code>term</code> is exactly the logical variable
-   * <code>timeVar</code>.
-   */
-  public static boolean isGivenTime(LogicalVar timeVar, ArgSpec term) {
-    return (term == timeVar);
-  }
-
-  /**
-   * Returns true if <code>term</code> is an application of the built-in
-   * function <code>BuiltInFunctions.PREV</code> to a term for which
-   * <code>isGivenTime</code> returns true, or has the form <code>t - 1</code>
-   * where <code>isGivenTime(t)</code> returns true.
-   */
-  public static boolean isPrevTime(LogicalVar timeVar, ArgSpec term) {
-    if (term instanceof FuncAppTerm) {
-      FuncAppTerm funcApp = (FuncAppTerm) term;
-      if (funcApp.getFunction() == BuiltInFunctions.PREV) {
-        return isGivenTime(timeVar, funcApp.getArgs()[0]);
-      }
-      if ((funcApp.getFunction() == BuiltInFunctions.MINUS)
-          && isGivenTime(timeVar, funcApp.getArgs()[0])) {
-        Object sub = funcApp.getArgs()[1].getValueIfNonRandom();
-        if ((sub instanceof Number) && (((Number) sub).intValue() == 1)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  /**
    * Use this to compute the maximum Timestep from a sequence of objects.
    * 
    * Override extractTimestep() to extract the Timestep from an object.
@@ -187,8 +152,5 @@ public class Timestep extends Number implements Comparable<Timestep> {
 
   private int index;
   private static int max = 0;
-  private static Map<Integer, Timestep> generatedTimesteps = new HashMap<Integer, Timestep>(); // from
-                                                                                               // Integer
-                                                                                               // to
-  // Timestep
+  private static Map<Integer, Timestep> generatedTimesteps = new HashMap<Integer, Timestep>();
 }
