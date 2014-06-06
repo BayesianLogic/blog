@@ -337,19 +337,16 @@ public abstract class ArgSpec {
    * Return null if no Timestep terms are used.
    */
   public Timestep maxTimestep() {
-    ArrayList<ArgSpec> timestepTerms = new ArrayList<ArgSpec>();
-    selectTerms(new UnaryPredicate() {
-      public boolean evaluate(Object term) {
-        return ((ArgSpec) term).getTimestep() != null;
+    final Timestep result = null;
+    applyToTerms(new UnaryProcedure() {
+      public void evaluate(Object x) {
+        Timestep cand = ((ArgSpec) x).getTimestep();
+        if (result == null || (cand != null && cand.compareTo(result) > 0)) {
+          // Can access object outside scope, but can't assign to it.
+          result = cand;
+        }
       }
-    }, timestepTerms);
-    Timestep result = null;
-    for (ArgSpec spec : timestepTerms) {
-      Timestep timestep = spec.getTimestep();
-      if (result == null || timestep.compareTo(result) > 0) {
-        result = timestep;
-      }
-    }
+    });
     return result;
   }
 }
