@@ -60,14 +60,14 @@ public class DBLOGUtil {
     public Object filter(int index, Object varObj) {
       BayesNetVar var = (BayesNetVar) varObj;
       int timestepIndex = var.maxTimestep().getValue();
-      if (timestepIndex == -1 || alreadyReturned.contains(timestepIndex)) {
+      if (timestepIndex < 0) {
         return null;
       }
       alreadyReturned.add(timestepIndex);
       return timestepIndex;
     }
 
-    private HashSet alreadyReturned = new HashSet();
+    private HashSet<Integer> alreadyReturned = new HashSet<Integer>();
   }
 
   /**
