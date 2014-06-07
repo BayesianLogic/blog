@@ -654,9 +654,7 @@ public class RelationExtractionProposer implements Proposer {
 
       // For parallelism. When using evidence.getEvidenceLogProb(world), must
       // synchronize
-      synchronized (evidence) {
-        feasible = this.evidence.getEvidenceLogProb(world) > -1E6;
-      }
+      feasible = this.evidence.getEvidenceLogProb(world) > -1E6;
 
     } while (!feasible);
     // End do-while loop
@@ -717,30 +715,33 @@ public class RelationExtractionProposer implements Proposer {
     double logAcceptanceRatio;
 
     // Sample until a valid move has been made (where evidence was not changed)
-    do {
-      double sample = rng.nextDouble();
-      proposedWorld.revert();
-      trueFactDiff = constructNewTrueFactDiff();
-      // updateSupportedFacts(proposedWorld); // Used for sourceFactSwitch and
-      // holdsSwitch
-      if (sample < 0.4) {
-        logAcceptanceRatio = blockSourceFactSwitch(proposedWorld);
-      } else if (sample < 0.6) {
-        logAcceptanceRatio = sourceFactSwitch(proposedWorld);
-      } else if (sample < 0.7) {
-        logAcceptanceRatio = holdsSwitch(proposedWorld);
-      } else if (sample < 0.8) {
-        logAcceptanceRatio = randomSparsitySample(proposedWorld);
-      } else {
-        logAcceptanceRatio = randomThetaSample(proposedWorld);
-      }
+    // do {
+    double sample = rng.nextDouble();
+    proposedWorld.revert();
+    trueFactDiff = constructNewTrueFactDiff();
+    // updateSupportedFacts(proposedWorld); // Used for sourceFactSwitch and
+    // holdsSwitch
+    if (sample < 0.4) {
+      logAcceptanceRatio = blockSourceFactSwitch(proposedWorld);
+    } else if (sample < 0.6) {
+      logAcceptanceRatio = sourceFactSwitch(proposedWorld);
+    } else if (sample < 0.7) {
+      logAcceptanceRatio = holdsSwitch(proposedWorld);
+    } else if (sample < 0.8) {
+      logAcceptanceRatio = randomSparsitySample(proposedWorld);
+    } else {
+      logAcceptanceRatio = randomThetaSample(proposedWorld);
+    }
 
-      // For parallelism. When using evidence.getEvidenceLogProb(world), must
-      // synchronize
-      synchronized (evidence) {
-        feasible = this.evidence.getEvidenceLogProb(proposedWorld) > -1E6;
-      }
-    } while (!feasible);
+    // For parallelism. When using evidence.getEvidenceLogProb(world), must
+    // synchronize
+    // synchronized (evidence) {
+    // feasible = this.evidence.getEvidenceLogProb(proposedWorld) > -1E6;
+    // if (!feasible) {
+    // int i = 1 / 0;
+    // }
+    // }
+    // } while (!feasible);
 
     return logAcceptanceRatio;
   }
@@ -761,6 +762,11 @@ public class RelationExtractionProposer implements Proposer {
 
     int sentNum = rng.nextInt(sentType.getGuaranteedObjects().size());
     Object sentence = sentType.getGuaranteedObject(sentNum);
+    // Don't touch a labeled sentence
+    while (labeledSentences.contains(sentence)) {
+      sentNum = rng.nextInt(sentType.getGuaranteedObjects().size());
+      sentence = sentType.getGuaranteedObject(sentNum);
+    }
 
     return sourceFactSwitchForSentence(proposedWorld, sentence);
   }
@@ -980,6 +986,11 @@ public class RelationExtractionProposer implements Proposer {
 
     int sentNum = rng.nextInt(sentType.getGuaranteedObjects().size());
     Object sentence = sentType.getGuaranteedObject(sentNum);
+    // Don't touch a labeled sentence
+    while (labeledSentences.contains(sentence)) {
+      sentNum = rng.nextInt(sentType.getGuaranteedObjects().size());
+      sentence = sentType.getGuaranteedObject(sentNum);
+    }
 
     // Get movedSentences set
     HashSet movedSentences = getAllOtherSentencesWithSameArgPair(sentence,
@@ -991,17 +1002,22 @@ public class RelationExtractionProposer implements Proposer {
 
     // Check to see if all movedSentences has same previousSourceFact
     boolean samePreviousSourceFact = true;
+    boolean oneSentenceIsLabeled = false;
     for (Object movedSentence : movedSentences) {
       Object psf = proposedWorld
           .getValue(makeVar(sourceFactFunc, movedSentence));
       if (!psf.equals(previousSourceFact)) {
         samePreviousSourceFact = false;
       }
+      if (labeledSentences.contains(movedSentence)) {
+        oneSentenceIsLabeled = true;
+      }
     }
 
-    // If not all points to same source fact, just normal source fact switch for
+    // If not all points to same source fact or one sentence is labeled, just
+    // normal source fact switch for
     // sentence s
-    if (!samePreviousSourceFact) {
+    if (!samePreviousSourceFact || oneSentenceIsLabeled) {
       return sourceFactSwitchForSentence(proposedWorld, sentence);
     }
 
@@ -1194,10 +1210,6 @@ public class RelationExtractionProposer implements Proposer {
       factChoice = getFact(rel, arg1, arg2, proposedWorld);
 
     } while (isSupported("old", factChoice));
-    // if (isSupported(factChoice) != NEWisSupported("old", factChoice) ||
-    // isSupported(factChoice) != NEWisSupported("new", factChoice)) {
-    // System.out.println("Here3");
-    // }
 
     // 3) Sample it based on sparsity
     RandFuncAppVar holds = new RandFuncAppVar(holdsFunc,
@@ -1434,7 +1446,11 @@ public class RelationExtractionProposer implements Proposer {
    */
 
   public void updateStats(boolean accepted) {
-    // no stats maintained
+
+    if (accepted) {
+      applyDiff();
+    }
+
   }
 
   public void printStats() {

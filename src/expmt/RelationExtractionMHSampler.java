@@ -128,11 +128,9 @@ public class RelationExtractionMHSampler extends Sampler {
       Util.fatalError("Fatal identifier errors in initial world.", false);
     }
 
-    synchronized (evidence) {
-      if (!evidence.isTrue(curWorld)) {
-        throw new IllegalStateException(
-            "Error: evidence is not true in initial world.");
-      }
+    if (!evidence.isTrue(curWorld)) {
+      throw new IllegalStateException(
+          "Error: evidence is not true in initial world.");
     }
   }
 
@@ -199,11 +197,9 @@ public class RelationExtractionMHSampler extends Sampler {
       // algorithm, but sampling done on top of it. Since this sampling is done
       // according to the model's distribution, it still converges to it.
       // I moved this to SamplingEngine to keep the MHSampler's "purity".
-      curWorld.save();
-
-      // Hack to keep track of true Facts. This seems to be exactly
-      // updateStats(true)...
-      ((RelationExtractionProposer) proposer).applyDiff();
+      synchronized (evidence) {
+        curWorld.save();
+      }
 
       worldUpdateTimer.stop();
       if (Util.verbose()) {
