@@ -171,7 +171,7 @@ public class Laplace extends AbstractCondProbDistrib {
               "The divesity parameter of Laplace CPD must be of type Number, not "
                   + args.get(0).getClass() + ".");
         } else {
-          Double Diversity = (Double) args.get(0);
+          double Diversity = (Double) args.get(0);
           if (Diversity <= 0) {
             throw new IllegalArgumentException(
                 "Laplace CPD expects a positive real number as the diversity parameter, not "
