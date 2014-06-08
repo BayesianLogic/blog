@@ -185,7 +185,7 @@ public class RelationExtractionProposer implements Proposer {
     dir_alpha = (Double) model.getConstantValue("dir_alpha");
 
     // Random Number Generator
-    rng = new Random();
+    // rng = new Random();
 
   }
 
@@ -395,8 +395,8 @@ public class RelationExtractionProposer implements Proposer {
 
         // Figure out what to do depending on size of relations set
         if (relations.size() == 0) { // Add an unused relation
-          Object componentRelation = relType.getGuaranteedObject(rng
-              .nextInt(relType.getGuaranteedObjects().size()));
+          Object componentRelation = relType.getGuaranteedObject(Util
+              .randInt(relType.getGuaranteedObjects().size()));
           setSourceFactsForComponent(world, component, componentRelation);
         } else if (relations.size() == 1) {
           Object componentRelation = relations.iterator().next();
@@ -552,7 +552,7 @@ public class RelationExtractionProposer implements Proposer {
        * // Otherwise, choose a random relation
        * if (rel == null) {
        * rel =
-       * relType.getGuaranteedObject(rng.nextInt(relType.getGuaranteedObjects
+       * relType.getGuaranteedObject(Util.randInt(relType.getGuaranteedObjects
        * ().size()));
        * }
        * 
@@ -588,7 +588,7 @@ public class RelationExtractionProposer implements Proposer {
        * }
        * 
        * // Choose relation randomly from all relations
-       * int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
+       * int relNum = Util.randInt(relType.getGuaranteedObjects().size());
        * Object rel = relType.getGuaranteedObject(relNum);
        * Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
        * Object arg2 = world.getValue(makeVar(objectFunc, sentence));
@@ -627,7 +627,7 @@ public class RelationExtractionProposer implements Proposer {
           Double sparsity = (Double) world.getValue(makeVar(sparsityFunc, rel));
 
           if (!world.isInstantiated(holds)) {
-            if (rng.nextDouble() < sparsity) {
+            if (Util.random() < sparsity) {
               world.setValue(holds, true);
               // Add the fact to the trueFacts
               addToTrueFacts(fact, null);
@@ -716,7 +716,7 @@ public class RelationExtractionProposer implements Proposer {
 
     // Sample until a valid move has been made (where evidence was not changed)
     // do {
-    double sample = rng.nextDouble();
+    double sample = Util.random();
     proposedWorld.revert();
     trueFactDiff = constructNewTrueFactDiff();
     // updateSupportedFacts(proposedWorld); // Used for sourceFactSwitch and
@@ -760,11 +760,11 @@ public class RelationExtractionProposer implements Proposer {
 
     // Choose sentence s randomly from all sentences
 
-    int sentNum = rng.nextInt(sentType.getGuaranteedObjects().size());
+    int sentNum = Util.randInt(sentType.getGuaranteedObjects().size());
     Object sentence = sentType.getGuaranteedObject(sentNum);
     // Don't touch a labeled sentence
     while (labeledSentences.contains(sentence)) {
-      sentNum = rng.nextInt(sentType.getGuaranteedObjects().size());
+      sentNum = Util.randInt(sentType.getGuaranteedObjects().size());
       sentence = sentType.getGuaranteedObject(sentNum);
     }
 
@@ -865,7 +865,7 @@ public class RelationExtractionProposer implements Proposer {
           sparsityFunc, Collections.singletonList(psfRel)));
       RandFuncAppVar holds = new RandFuncAppVar(holdsFunc,
           Collections.singletonList(previousSourceFact));
-      if (rng.nextDouble() < sparsity) {
+      if (Util.random() < sparsity) {
         proposedWorld.setValue(holds, true);
         // Add to diff
         trueFactDiff.get("Add").put(previousSourceFact,
@@ -984,11 +984,11 @@ public class RelationExtractionProposer implements Proposer {
 
     // Choose sentence s randomly from all sentences
 
-    int sentNum = rng.nextInt(sentType.getGuaranteedObjects().size());
+    int sentNum = Util.randInt(sentType.getGuaranteedObjects().size());
     Object sentence = sentType.getGuaranteedObject(sentNum);
     // Don't touch a labeled sentence
     while (labeledSentences.contains(sentence)) {
-      sentNum = rng.nextInt(sentType.getGuaranteedObjects().size());
+      sentNum = Util.randInt(sentType.getGuaranteedObjects().size());
       sentence = sentType.getGuaranteedObject(sentNum);
     }
 
@@ -1085,7 +1085,7 @@ public class RelationExtractionProposer implements Proposer {
       double sparsity = (Double) proposedWorld.getValue(makeVar(sparsityFunc,
           psfRel));
       RandFuncAppVar holds = makeVar(holdsFunc, previousSourceFact);
-      if (rng.nextDouble() < sparsity) {
+      if (Util.random() < sparsity) {
         proposedWorld.setValue(holds, true);
         // Add to diff
         trueFactDiff.get("Add").put(previousSourceFact,
@@ -1199,7 +1199,7 @@ public class RelationExtractionProposer implements Proposer {
 
     do {
       // Get a random relation
-      int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
+      int relNum = Util.randInt(relType.getGuaranteedObjects().size());
       Object rel = relType.getGuaranteedObject(relNum);
       // Get a random relevant arg pair
       List pairs = relevantArgPairs
@@ -1225,7 +1225,7 @@ public class RelationExtractionProposer implements Proposer {
     boolean sample;
 
     // Sampling process
-    if (rng.nextDouble() < sparsityValue) {
+    if (Util.random() < sparsityValue) {
       sample = true;
       // Add to diff
       trueFactDiff.get("Add").put(factChoice,
@@ -1357,7 +1357,7 @@ public class RelationExtractionProposer implements Proposer {
   private double randomSparsitySample(PartialWorldDiff proposedWorld) {
 
     // Choose relation randomly from all relations
-    int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
+    int relNum = Util.randInt(relType.getGuaranteedObjects().size());
     Object rel = relType.getGuaranteedObject(relNum);
 
     return sparsitySample(proposedWorld, rel);
@@ -1401,7 +1401,7 @@ public class RelationExtractionProposer implements Proposer {
   private double randomThetaSample(PartialWorldDiff proposedWorld) {
 
     // Choose relation randomly from all relations
-    int relNum = rng.nextInt(relType.getGuaranteedObjects().size());
+    int relNum = Util.randInt(relType.getGuaranteedObjects().size());
     Object rel = relType.getGuaranteedObject(relNum);
 
     return thetaSample(proposedWorld, rel);

@@ -197,9 +197,9 @@ public class RelationExtractionMHSampler extends Sampler {
       // algorithm, but sampling done on top of it. Since this sampling is done
       // according to the model's distribution, it still converges to it.
       // I moved this to SamplingEngine to keep the MHSampler's "purity".
-      synchronized (evidence) {
-        curWorld.save();
-      }
+      // synchronized (evidence) {
+      curWorld.save();
+      // }
 
       worldUpdateTimer.stop();
       if (Util.verbose()) {
