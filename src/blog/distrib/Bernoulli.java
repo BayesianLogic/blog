@@ -35,92 +35,47 @@
 
 package blog.distrib;
 
-import blog.common.Util;
-
 /**
  * A distribution over {0,1}. It takes one parameter p, which is the probability
  * of <code>true</code>.
  */
 public class Bernoulli extends BooleanDistrib {
 
-  public double getP() {
-    return p;
-  }
-
-  @Override
-  /**
-   * params[0] -> p, probability of <code>true</code>
-   */
-  public void setParams(Object[] params) {
-    if (params.length != 1) {
-      throw new IllegalArgumentException(
-          "expected one parameter: probability of success");
-    }
-    setParams((Double) params[0]);
-  }
-
-  /**
-   * @param p
-   *          probability of <code>true</code>
-   */
-  public void setParams(Double p) {
-    if (p != null) {
-      if (p < 0 || p > 1) {
-        throw new IllegalArgumentException(
-            "Parameter to Bernoulli must be in interval [0, 1], not " + p + ".");
-      }
-      this.p = p;
-      this.logP = Math.log(p);
-      this.log1_P = Math.log(1 - p);
-      this.hasP = true;
-    }
-  }
-
-  private void checkHasParams() {
-    if (!this.hasP) {
-      throw new IllegalArgumentException("p not provided");
-    }
-  }
-
   @Override
   public double getProb(Object value) {
-    return getProb(((Double) value).doubleValue());
+    return super.getProb(getBooleanValue(value));
   }
 
-  public double getProb(double value) {
-    checkHasParams();
-    if (value == 1) {
-      return p;
-    } else if (value == 0) {
-      return 1 - p;
+  public static Boolean getBooleanValue(Object value) {
+    Integer val = (Integer) value;
+    if (val.equals(1)) {
+      return true;
+    } else if (val.equals(0)) {
+      return false;
     } else {
-      throw new IllegalArgumentException(
-          "Bernoulli distribution is over the set {0, 1}; passed value: "
-              + value + ".");
+      return null;
+    }
+  }
+
+  public static Integer getIntegerValue(Object value) {
+    Boolean val = (Boolean) value;
+    if (Boolean.TRUE.equals(val)) {
+      return 1;
+    } else if (Boolean.FALSE.equals(val)) {
+      return 0;
+    } else {
+      return null;
     }
   }
 
   @Override
   public double getLogProb(Object value) {
-    return getLogProb(((Double) value).doubleValue());
-  }
-
-  public double getLogProb(double value) {
-    checkHasParams();
-    if (value == 1) {
-      return logP;
-    }
-    return log1_P;
+    return super.getLogProb(getBooleanValue(value));
   }
 
   @Override
   public Object sampleVal() {
-    checkHasParams();
-    if (Util.random() < p) {
-      return 1;
-    } else {
-      return 0;
-    }
+    return getIntegerValue(super.sampleVal());
   }
 
   public String toString() {
