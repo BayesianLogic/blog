@@ -35,8 +35,8 @@
 
 package blog.model;
 
-import blog.world.PartialWorld;
 import ve.Factor;
+import blog.world.PartialWorld;
 
 /**
  * An implementation of Query that defines default implementations to some
@@ -45,13 +45,13 @@ import ve.Factor;
  * @author Rodrigo, Brian
  */
 public abstract class AbstractQuery implements Query {
-	/**
-	 * Throws an UnsupportedOperationException.
-	 */
-	public void setPosterior(Factor posterior) {
-		throw new UnsupportedOperationException(this.getClass().getName()
-				+ " does not support setPosterior.");
-	}
+  /**
+   * Throws an UnsupportedOperationException.
+   */
+  public void setPosterior(Factor posterior) {
+    throw new UnsupportedOperationException(this.getClass().getName()
+        + " does not support setPosterior.");
+  }
 
 	/**
 	 * Returns an object whose toString method yields a description of the
@@ -65,7 +65,8 @@ public abstract class AbstractQuery implements Query {
 		return "(auto-generated)";
 	}
 
-	public void updateStats(PartialWorld world) {
-		updateStats(world, 1.0);
-	}
+  @Override
+  public void updateStats(PartialWorld world) {
+    updateStats(world, 0);
+  }
 }

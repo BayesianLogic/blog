@@ -38,8 +38,10 @@ package blog.model;
 import java.util.Collections;
 
 import ve.Factor;
+import ve.Factor;
 import blog.bn.BasicVar;
 import blog.common.Histogram;
+import blog.common.Util;
 import blog.world.PartialWorld;
 
 public class FormulaQuery extends ArgSpecQuery {
@@ -52,16 +54,17 @@ public class FormulaQuery extends ArgSpecQuery {
     return (Formula) getArgSpec();
   }
 
-  public void updateStats(PartialWorld world, double weight) {
+  public void updateStats(PartialWorld world, double logweight) {
+    // leili: who wrote this? this is wrong!!! shoud not compare == on double
     if (probTrue != -1) {
       throw new IllegalStateException(
           "Can't update states: posterior already specified.");
     }
 
     if (((Formula) getArgSpec()).isTrue(world)) {
-      trueSum += weight;
+      trueSum = Util.logSum(logweight, trueSum);
     }
-    totalSum += weight;
+    totalSum = Util.logSum(logweight, totalSum);
   }
 
   public void setPosterior(Factor posterior) {
@@ -79,21 +82,18 @@ public class FormulaQuery extends ArgSpecQuery {
         Collections.singletonList(Boolean.TRUE));
   }
 
-  /**
-   * Return the probability that the queried formula is true.
-   */
-  public double getProbTrue() {
+  private double logTrueProb() {
     if (probTrue != -1) {
       return probTrue;
     }
-    return trueSum / totalSum;
+    return Math.exp(trueSum - totalSum);
   }
 
   public Histogram getHistogram() {
     histogram.clear();
-    histogram.increaseWeight(Boolean.TRUE, java.lang.Math.log(trueSum));
-    histogram.increaseWeight(Boolean.FALSE,
-        java.lang.Math.log(totalSum - trueSum));
+    double logt = trueSum - totalSum;
+    histogram.increaseWeight(Boolean.TRUE, logt);
+    histogram.increaseWeight(Boolean.FALSE, Math.log(1 - Math.exp(logt)));
     return histogram;
   }
 
