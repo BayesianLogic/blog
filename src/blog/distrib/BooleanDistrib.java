@@ -35,187 +35,101 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
 
 /**
- * A distribution over Boolean values. It is defined by one parameter, which is
- * the probability of <code>true</code>. This parameter can be specified when
- * the distribution is initialized, in which case the distribution takes no
- * arguments; or the distribution can be initialized with no parameters, in
- * which case it takes the probability as an argument.
+ * A distribution over Boolean values. It is defined by one parameter p, which
+ * is the probability of <code>true</code>.
  */
-public class BooleanDistrib extends AbstractCondProbDistrib {
-  /**
-   * Creates a new Boolean distribution with the probability of
-   * <code>true</code> set to pi.
-   */
-  public BooleanDistrib(double pi) {
-    fixedParam = true;
-    setSuccessProb(pi);
+public class BooleanDistrib implements CondProbDistrib {
+
+  public double getP() {
+    return p;
   }
 
   /**
-   * Creates a new Boolean distribution. If <code>params</code> is empty, then
-   * the distribution takes one CPD argument, which is the probability of
-   * <code>true</code>. Otherwise, <code>params</code> should contain one
-   * element, a Number specifying this probability.
+   * params[0] -> p, probability of <code>true</code>
    */
-  public BooleanDistrib(List params) {
-    if (params.size() == 0) {
-      fixedParam = false;
-    } else if (params.size() == 1) {
-      fixedParam = true;
-      Object paramObj = params.get(0);
-      if (!(paramObj instanceof Number)) {
-        throw new IllegalArgumentException(
-            "Parameter to Bernoulli distrib must be of class " + "Number, not "
-                + paramObj.getClass() + ".");
-      }
-
-      pi = ((Number) paramObj).doubleValue();
-      setSuccessProb(pi);
-    } else {
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 1) {
       throw new IllegalArgumentException(
-          "Bernoulli distribution takes at most one parameter.");
+          "expected one parameter: probability of success");
     }
+    setParams((Double) params[0]);
+  }
+
+  /**
+   * @param p
+   *          probability of <true>
+   */
+  public void setParams(Double p) {
+    if (p != null) {
+      if (p > 1 || p < 0) {
+        throw new IllegalArgumentException(
+            "Parameter to Bernoulli must be in interval [0, 1], not " + p + ".");
+      }
+      this.p = p;
+      this.logP = Math.log(p);
+      this.log1_P = Math.log(1 - p);
+      this.hasP = true;
+    }
+  }
+
+  private void checkHasParams() {
+    if (!this.hasP) {
+      throw new IllegalArgumentException("parameter p not provided");
+    }
+  }
+
+  @Override
+  public double getProb(Object value) {
+    return getProb(((Boolean) value).booleanValue());
   }
 
   /**
    * Returns the probability of the given Boolean value under this distribution.
-   * This method should only be called if this distribution was initialized with
-   * a fixed success probability, or if <code>ensureProbsInited</code> has just
-   * been called.
-   */
+   **/
   public double getProb(boolean value) {
+    checkHasParams();
     if (value) {
-      return pi;
+      return p;
     }
-
-    return (1 - pi);
+    return 1 - p;
   }
 
-  public double getProb(List args, Object value) {
-    ensureParamsInited(args);
-
-    if (!(value instanceof java.lang.Boolean)) {
-      throw new IllegalArgumentException(
-          "Bernoulli distribution is over objects of class Boolean, " + "not "
-              + value.getClass() + ".");
-    }
-
-    return getProb(((java.lang.Boolean) value).booleanValue());
+  @Override
+  public double getLogProb(Object value) {
+    return getLogProb(((Boolean) value).booleanValue());
   }
 
   /**
    * Returns the log probability of the given Boolean value under this
-   * distribution. This method should only be called if this distribution was
-   * initialized with a fixed success probability, or if
-   * <code>ensureProbsInited</code> has just been called.
+   * distribution.
    */
   public double getLogProb(boolean value) {
+    checkHasParams();
     if (value) {
-      return Math.log(pi);
+      return logP;
     }
-
-    return Math.log(1 - pi);
+    return log1_P;
   }
 
-  /**
-   * Returns a boolean value sampled from this distribution. This method should
-   * only be called if this distribution was initialized with a fixed success
-   * probability, or if <code>ensureProbsInited</code> has just been called.
-   */
-  public boolean sampleVal_() {
-    if (Util.random() < pi) {
+  @Override
+  public Object sampleVal() {
+    if (Util.random() < p) {
       return true;
     }
     return false;
   }
 
-  public Object sampleVal(List args) {
-    ensureParamsInited(args);
-    return java.lang.Boolean.valueOf(sampleVal_());
+  public String toString() {
+    return "BooleanDistrib(" + p + ")";
   }
 
-  private void ensureParamsInited(List args) {
-    if (fixedParam) {
-      if (!args.isEmpty()) {
-        throw new IllegalArgumentException(
-            "Bernoulli distribution with fixed success probability "
-                + "expects no arguments.");
-      }
-    } else {
-      if (args.size() != 1) {
-        throw new IllegalArgumentException(
-            "Bernoulli distribution without fixed success "
-                + "probability expects exactly one argument, specifying "
-                + "that probability.");
-      }
-      Object paramObj = args.get(0);
-      if (!(paramObj instanceof Number)) {
-        throw new IllegalArgumentException(
-            "Parameter to Bernoulli distrib must be of class " + "Number, not "
-                + paramObj.getClass() + ".");
-      }
-      setSuccessProb(((Number) paramObj).doubleValue());
-    }
-  }
+  private double p;
+  private double logP; // log p
+  private double log1_P; // log (1 - p)
+  private boolean hasP;
 
-  private void setSuccessProb(double pi) {
-    if ((pi < 0) || (pi > 1)) {
-      throw new IllegalArgumentException(
-          "Parameter to Bernoulli must be in interval [0, 1], not " + pi + ".");
-    }
-
-    this.pi = pi;
-  }
-
-  private boolean fixedParam;
-  private double pi;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
-   */
-  @Override
-  public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
-   */
-  @Override
-  public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
-   */
-  @Override
-  public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#sampleVal()
-   */
-  @Override
-  public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
-  }
 }
