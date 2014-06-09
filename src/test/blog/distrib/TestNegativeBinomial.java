@@ -50,16 +50,16 @@ public class TestNegativeBinomial implements TestDistributions {
     assertEquals(-3.4828413707026655, neg.getLogProb(1), ERROR);
     assertEquals(-2.895054706, neg.getLogProb(2), ERROR);
     assertEquals(-2.2992998712492505, neg.getLogProb(5), ERROR);
-    assertEquals(-2.0878079371555165, neg.getLogProb(10), ERROR);
-    assertEquals(-5.436794873011823, neg.getLogProb(20), ERROR);
+    assertEquals(-2.7809551177154614, neg.getLogProb(10), ERROR);
+    assertEquals(-5.526907027679702, neg.getLogProb(20), ERROR);
 
     assertEquals(0, neg.getProb(-1), ERROR);
     assertEquals(0.010240000000000003, neg.getProb(0), ERROR);
     assertEquals(0.030720000000000004, neg.getProb(1), ERROR);
     assertEquals(0.05529600000000001, neg.getProb(2), ERROR);
     assertEquals(0.10032906240000002, neg.getProb(5), ERROR);
-    assertEquals(0.12395856317644799, neg.getProb(10), ERROR);
-    assertEquals(0.004353414178923752, neg.getProb(20), ERROR);
+    assertEquals(0.06197928158822401, neg.getProb(10), ERROR);
+    assertEquals(0.003978274773412775, neg.getProb(20), ERROR);
 
   }
 
@@ -140,8 +140,8 @@ public class TestNegativeBinomial implements TestDistributions {
     testDistributionRun(nb);
   }
 
-  @Test
-  public void testValidArgument() {
+  @Test(expected = IllegalArgumentException.class)
+  public void testIncorrectArguments7() {
     NegativeBinomial nb = new NegativeBinomial();
     nb.setParams(Util.array(3, 0.0));
     testDistributionRun(nb);

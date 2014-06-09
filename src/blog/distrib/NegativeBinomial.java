@@ -41,7 +41,8 @@ import blog.common.Util;
  * A Negative Binomial distribution with parameters r (number of failures) and
  * p (probability of a success at a given trial). If r is an integer, this is
  * also called the Pascal distribution. The distribution is defined (in discrete
- * terms) as the number of successes before r failures.
+ * terms) as the number of successes before r failures. The distribution follows
+ * the wikipedia definition of the Negative Binomial distribution.
  */
 public class NegativeBinomial extends AbstractCondProbDistrib {
 
@@ -67,9 +68,9 @@ public class NegativeBinomial extends AbstractCondProbDistrib {
 
   /**
    * @param r
-   *          number of failures
+   *          number of failures, r > 0
    * @param p
-   *          success probability
+   *          success probability, 0 < p < 1
    */
   public void setParams(Integer r, Double p) {
     if (r != null) {
@@ -81,16 +82,15 @@ public class NegativeBinomial extends AbstractCondProbDistrib {
       this.r = r;
     }
     if (p != null) {
-      if (p <= 0 || p > 1) {
+      if (p <= 0 || p >= 1) {
         throw new IllegalArgumentException(
-            "parameter p must be a strictly positive probability; must be in the interval (0, 1] not "
-                + p + ".");
+            "parameter p must be in the interval (0, 1) not " + p + ".");
       }
       this.hasP = true;
       this.p = p;
     }
     if (this.hasP && this.hasR) {
-      gamma = new Gamma(r, (p / (1 - p)));
+      gamma = new Gamma(this.r, (this.p / (1 - this.p)));
     }
   }
 
@@ -134,17 +134,9 @@ public class NegativeBinomial extends AbstractCondProbDistrib {
     if (k < 0) {
       return Double.NEGATIVE_INFINITY;
     }
-    System.out.println("k: " + k + " , r: " + r);
-    System.out.println("1: " + k * Math.log(p));
-    System.out.println("2: " + r * Math.log(1 - p));
-    System.out.println("3: " + Math.log(Util.factorial(k + r - 1)));
-    System.out.println("4: " + Math.log(Util.factorial(k)));
-    System.out.println("5: " + Math.log(Util.factorial(r - 1)));
-    System.out.println();
-
     return (k * Math.log(p) + r * Math.log(1 - p)
-        + Math.log(Util.factorial(k + r - 1)) - Math.log(Util.factorial(k)) - Math
-          .log(Util.factorial(r - 1)));
+        + Util.logFactorial(k + r - 1) - Util.logFactorial(k) - Util
+          .logFactorial(r - 1));
   }
 
   @Override
