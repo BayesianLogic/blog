@@ -36,110 +36,112 @@
 package blog.model;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Collections;
 
+import ve.Factor;
 import blog.Main;
 import blog.bn.BasicVar;
 import blog.common.Histogram;
+import blog.common.Util;
 import blog.world.PartialWorld;
-import ve.Factor;
-import ve.Potential;
 
 public class FormulaQuery extends ArgSpecQuery {
 
-	public FormulaQuery(Formula formula) {
-		super(formula);
+  public FormulaQuery(Formula formula) {
+    super(formula);
 
-		if (Main.outputPath() != null) {
-			outputFile = Main.filePrintStream(Main.outputPath() + "-trial" + trialNum
-					+ ".data");
-		}
-	}
+    if (Main.outputPath() != null) {
+      outputFile = Main.filePrintStream(Main.outputPath() + "-trial" + trialNum
+          + ".data");
+    }
+  }
 
-	public Formula formula() {
-		return (Formula) getArgSpec();
-	}
+  public Formula formula() {
+    return (Formula) getArgSpec();
+  }
 
-	public void printResults(PrintStream s) {
-		s.println("Probability of " + getArgSpec() + " is " + calculateResult());
-	}
+  public void printResults(PrintStream s) {
+    s.println("Probability of " + getArgSpec() + " is " + logTrueProb());
+  }
 
-	public void logResults(int numSamples) {
-		if (outputFile != null) {
-			outputFile.println("\t" + numSamples + "\t" + calculateResult());
-		}
-	}
+  public void logResults(int numSamples) {
+    if (outputFile != null) {
+      outputFile.println("\t" + numSamples + "\t" + logTrueProb());
+    }
+  }
 
-	public void updateStats(PartialWorld world, double weight) {
-		if (probTrue != -1) {
-			throw new IllegalStateException(
-					"Can't update states: posterior already specified.");
-		}
+  public void updateStats(PartialWorld world, double logweight) {
+    // leili: who wrote this? this is wrong!!! shoud not compare == on double
+    if (probTrue != -1) {
+      throw new IllegalStateException(
+          "Can't update states: posterior already specified.");
+    }
 
-		if (((Formula) getArgSpec()).isTrue(world)) {
-			trueSum += weight;
-		}
-		totalSum += weight;
-	}
+    if (((Formula) getArgSpec()).isTrue(world)) {
+      trueSum = Util.logSum(logweight, trueSum);
+    }
+    totalSum = Util.logSum(logweight, totalSum);
+  }
 
-	public void setPosterior(Factor posterior) {
-		if (!posterior.getRandomVars().contains((BasicVar) variable)) {
-			throw new IllegalArgumentException("Query variable " + variable
-					+ " not covered by factor on " + posterior.getRandomVars());
-		}
-		if (posterior.getRandomVars().size() > 1) {
-			throw new IllegalArgumentException("Answer to query on " + variable
-					+ " should be factor on " + "that variable alone, not "
-					+ posterior.getRandomVars());
-		}
+  public void setPosterior(Factor posterior) {
+    if (!posterior.getRandomVars().contains((BasicVar) variable)) {
+      throw new IllegalArgumentException("Query variable " + variable
+          + " not covered by factor on " + posterior.getRandomVars());
+    }
+    if (posterior.getRandomVars().size() > 1) {
+      throw new IllegalArgumentException("Answer to query on " + variable
+          + " should be factor on " + "that variable alone, not "
+          + posterior.getRandomVars());
+    }
 
-		probTrue = posterior.getPotential().getValue(
-				Collections.singletonList(Boolean.TRUE));
-	}
+    probTrue = posterior.getPotential().getValue(
+        Collections.singletonList(Boolean.TRUE));
+  }
 
-	public void zeroOut() {
-		double result = calculateResult();
-		runningProbSum += result;
-		runningProbSumSquares += (result * result);
-		trialNum++;
+  public void zeroOut() {
+    double result = logTrueProb();
+    runningProbSum += result;
+    runningProbSumSquares += (result * result);
+    trialNum++;
 
-		if ((outputFile != null) && (trialNum != Main.numTrials())) {
-			outputFile = Main.filePrintStream(Main.outputPath() + "-trial" + trialNum
-					+ ".data");
-		}
+    if ((outputFile != null) && (trialNum != Main.numTrials())) {
+      outputFile = Main.filePrintStream(Main.outputPath() + "-trial" + trialNum
+          + ".data");
+    }
 
-		trueSum = 0;
-		totalSum = 0;
-		probTrue = -1;
-	}
+    trueSum = 0;
+    totalSum = 0;
+    probTrue = -1;
+  }
 
-	private double calculateResult() {
-		if (probTrue != -1) {
-			return probTrue;
-		}
-		return trueSum / totalSum;
-	}
+  private double logTrueProb() {
+    if (probTrue != -1) {
+      return probTrue;
+    }
+    return Math.exp(trueSum - totalSum);
+  }
 
-	// CAREFUL: zeroOut() must be called before using this method
-	public void printVarianceResults(PrintStream s) {
-		double mean = runningProbSum / trialNum;
-		s.println("Mean of " + getArgSpec() + " query results is " + mean);
-		s.println("Std dev of " + getArgSpec() + " query results is "
-				+ Math.sqrt(runningProbSumSquares / trialNum - (mean * mean)));
-	}
+  // CAREFUL: zeroOut() must be called before using this method
+  public void printVarianceResults(PrintStream s) {
+    double mean = runningProbSum / trialNum;
+    s.println("Mean of " + getArgSpec() + " query results is " + mean);
+    s.println("Std dev of " + getArgSpec() + " query results is "
+        + Math.sqrt(runningProbSumSquares / trialNum - (mean * mean)));
+  }
 
-	public Histogram getHistogram() {
-		histogram.clear();
-		histogram.increaseWeight(Boolean.TRUE, java.lang.Math.log(trueSum));
-		histogram.increaseWeight(Boolean.FALSE, java.lang.Math.log(totalSum - trueSum));
-		return histogram;
-	}
+  public Histogram getHistogram() {
+    histogram.clear();
+    double logt = trueSum - totalSum;
+    histogram.increaseWeight(Boolean.TRUE, logt);
+    histogram.increaseWeight(Boolean.FALSE, Math.log(1 - Math.exp(logt)));
+    return histogram;
+  }
 
-	private double trueSum = 0;
-	private double totalSum = 0;
-	private double probTrue = -1;
+  private double trueSum = 0;
+  private double totalSum = 0;
+  private double probTrue = -1;
 
-	private double runningProbSum = 0;
-	private double runningProbSumSquares = 0;
-	private int trialNum = 0;
+  private double runningProbSum = 0;
+  private double runningProbSumSquares = 0;
+  private int trialNum = 0;
 }
