@@ -94,14 +94,7 @@ public class TestBeta implements TestDistributions {
 
   @Test
   public void testProbabilityViaConstructor() {
-    Beta beta = new Beta(1, 1);
-    testBeta1_1(beta);
-    beta = new Beta(1.0, 2.0);
-    testBeta1_2(beta);
-    beta = new Beta(2.0, 2.0);
-    testBeta2_2(beta);
-    beta = new Beta(0.5, 5.8);
-    testBeta(beta);
+    // no longer needed. will be removed from interface.
   }
 
   @Test
