@@ -35,12 +35,9 @@
 
 package blog;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
@@ -53,9 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.google.gson.Gson;
-
-import blog.common.Histogram;
 import blog.common.Timer;
 import blog.common.Util;
 import blog.common.cmdline.BooleanOption;
@@ -66,7 +60,8 @@ import blog.common.cmdline.PropertiesOption;
 import blog.common.cmdline.StringListOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.InferenceEngine;
-import blog.model.ArgSpecQuery;
+import blog.io.JsonWriter;
+import blog.io.TableWriter;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -204,18 +199,16 @@ public class Main {
       engine.answerQueries();
 
       // Print query results
-      System.out.println("======== Query Results =========");
-      System.out.println("Iteration: " + numSamples);
-      for (Iterator iter = queries.iterator(); iter.hasNext();) {
-        Query q = (Query) iter.next();
-        q.printResults(System.out);
-      }
-      System.out.println("======== Done ========");
-      System.out.println();
+      TableWriter tableWriter = new TableWriter(queries);
+      tableWriter.setHeader("Iteration: " + numSamples);
+      tableWriter.writeResults(System.out);
 
       // Write query results to file, in JSON format.
       if (outputPath != null) {
-        writeResultsJson(queries, outputPath);
+        System.out.println("Writing query results to " + outputPath + "...");
+        JsonWriter jsonWriter = new JsonWriter(queries);
+        jsonWriter.writeResults(outputPath);
+        System.out.println("Done.");
       }
     }
 
@@ -303,8 +296,8 @@ public class Main {
 
     BooleanOption optGenerate = new BooleanOption(null, "generate", false,
         "Sample worlds from prior and print them");
-    IntOption optTimestepBound = new IntOption(null, "max_timestep",
-        10, "If model is dynamic, generate up to <n> timesteps");
+    IntOption optTimestepBound = new IntOption(null, "max_timestep", 10,
+        "If model is dynamic, generate up to <n> timesteps");
     StringListOption optPackages = new StringListOption("k", "package",
         "Parser looks for classes in package <s>");
     BooleanOption optVerbose = new BooleanOption("v", "verbose", false,
@@ -577,63 +570,6 @@ public class Main {
     readersAndOrigins.add(new Object[] { reader, origin });
     setup(model, evidence, queries, readersAndOrigins, new LinkedList(),
         false /* verbose */, false);
-  }
-
-  /**
-   * Write query results to file, in JSON format.
-   *
-   * For every query, we output the a list of (value, log_prob) pairs. The
-   * value is always a string obtained by calling toString() on the
-   * corresponding Java object.
-   *
-   * Example output:
-   * [
-   *     ["Damage(A)", [
-   *         ["Mild", 2.639057329615258],
-   *         ["Severe, "3.526360524616161]
-   *     ]],
-   *     ["Damage(B)", [
-   *         ["Mild", 2.9957322735539904],
-   *         ["Severe", 3.3322045101752034]
-   *     ]]
-   * ]
-  */
-  private static void writeResultsJson(List<Query> queries, String outputPath) {
-    System.out.println("Writing query results to " + outputPath + "...");
-
-    // Assemble results into one hierarchical object.
-    // Assumes queries are ArgSpecQuery or subclasses.
-    ArrayList<Object> allResults = new ArrayList<Object>();
-    for (Query query : queries) {
-      Histogram histogram = query.getHistogram();
-      ArrayList<Object> histogramEntries = new ArrayList<Object>();
-      for (Object entry_obj : histogram.entrySet()) {
-        Histogram.Entry entry = (Histogram.Entry) entry_obj;
-        ArrayList<Object> entryPair = new ArrayList<Object>();
-        entryPair.add(entry.getElement().toString());
-        entryPair.add(entry.getLogWeight());
-        histogramEntries.add(entryPair);
-      }
-
-      ArrayList<Object> results = new ArrayList<Object>();
-      results.add(((ArgSpecQuery) query).getArgSpec().toString());
-      results.add(histogramEntries);
-      allResults.add(results);
-    }
-
-    // Write results to file.
-    Gson gson = new Gson();
-    String json = gson.toJson(allResults);
-    try {
-      PrintWriter writer = new PrintWriter(outputPath, "UTF-8");
-      writer.println(json);
-      writer.close();
-    } catch (Exception e) {
-      System.err.println("Could not write to file: " + outputPath);
-      Util.fatalError(e);
-    }
-
-    System.out.println("Done.");
   }
 
   /**
