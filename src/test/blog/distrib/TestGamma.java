@@ -61,10 +61,7 @@ public class TestGamma implements TestDistributions {
 
   @Test
   public void testProbabilityViaConstructor() {
-    Gamma gamma = new Gamma(2.0, 1.0);
-    testGamma1(gamma);
-    gamma = new Gamma(5.0, 0.5);
-    testGamma2(gamma);
+    // to be removed
   }
 
   @Test
