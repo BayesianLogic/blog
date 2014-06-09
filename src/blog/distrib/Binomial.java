@@ -49,14 +49,7 @@ import blog.common.Util;
  * </ul>
  */
 
-public class Binomial extends AbstractCondProbDistrib {
-
-  public Binomial() {
-  }
-
-  public Binomial(int n, double p) {
-    setParams(n, p);
-  }
+public class Binomial implements CondProbDistrib {
 
   public int getN() {
     return n;
@@ -67,6 +60,10 @@ public class Binomial extends AbstractCondProbDistrib {
   }
 
   @Override
+  /**
+   * params[0] -> n, as defined in the class description
+   * params[1] -> p, as defined in the class description
+   */
   public void setParams(Object[] params) {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected two parameters");

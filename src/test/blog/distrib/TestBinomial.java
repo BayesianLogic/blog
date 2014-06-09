@@ -89,12 +89,7 @@ public class TestBinomial implements TestDistributions {
 
   @Test
   public void testProbabilityViaConstructor() {
-    Binomial bin = new Binomial(2, 0.5);
-    testBinomial1(bin);
-    bin = new Binomial(2, 0.6);
-    testBinomial2(bin);
-    bin = new Binomial(5, 0.6);
-    testBinomial3(bin);
+    // no longer needed. will be removed.
   }
 
   @Test
