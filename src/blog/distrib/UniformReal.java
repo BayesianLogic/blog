@@ -6,12 +6,6 @@ import blog.common.Util;
  * Uniform distribution over a range of real numbers [lower, upper).
  */
 public class UniformReal implements CondProbDistrib {
-  public UniformReal() {
-  }
-
-  public UniformReal(double lower, double upper) {
-    setParams(lower, upper);
-  }
 
   public void setParams(Object[] params) {
     if (params.length != 2) {
