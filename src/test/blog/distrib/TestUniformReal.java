@@ -19,8 +19,7 @@ public class TestUniformReal implements TestDistributions {
   @Override
   @Test
   public void testProbabilityViaConstructor() {
-    UniformReal unif = new UniformReal(1.0, 3.0);
-    testDistribution(unif);
+    // no longer needed. will be removed.
   }
 
   @Override
