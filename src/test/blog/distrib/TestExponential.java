@@ -66,10 +66,7 @@ public class TestExponential implements TestDistributions {
 
   @Test
   public void testProbabilityViaConstructor() {
-    Exponential exp = new Exponential(1);
-    testExponential1(exp);
-    exp = new Exponential(5.5);
-    testExponential2(exp);
+    // no longer needed. will be removed
   }
 
   @Test
