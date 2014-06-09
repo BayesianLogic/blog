@@ -35,73 +35,127 @@
 
 package blog.distrib;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import blog.common.Util;
 
 /**
- * A Negative Binomial distribution with parameters k (number of successes) and
- * p (probability of a success at a given trial). If k is an integer, this is
+ * A Negative Binomial distribution with parameters r (number of failures) and
+ * p (probability of a success at a given trial). If r is an integer, this is
  * also called the Pascal distribution. The distribution is defined (in discrete
- * terms) as the number of failures before k successes.
+ * terms) as the number of successes before r failures.
  */
 public class NegativeBinomial extends AbstractCondProbDistrib {
+
+  public int getR() {
+    return r;
+  }
+
+  public double getP() {
+    return p;
+  }
+
+  @Override
   /**
-   * Creates a new instance of the NegativeBinomial with parameters k and p.
+   * params[0] -> r, according to class definition
+   * params[1] -> p, according to class definition
    */
-  public NegativeBinomial(List params) {
-    if (!((params.get(0) instanceof Integer) && (params.get(1) instanceof Number))) {
-      throw new IllegalArgumentException(
-          "NegativeBinomial expects two numerical arguments "
-              + "{k, p} where k is an Integer, p a Double. Got: " + params);
+  public void setParams(Object[] params) {
+    if (params.length != 2) {
+      throw new IllegalArgumentException("expected 2 parameters");
     }
-    k = ((Integer) params.get(0)).intValue();
-    p = ((Number) params.get(1)).doubleValue();
-    gamma = new Gamma(k, (p / (1 - p)));
+    setParams((Integer) params[0], (Double) params[1]);
   }
 
   /**
-   * Returns the probability of n failures under this distribution.
+   * @param r
+   *          number of failures
+   * @param p
+   *          success probability
    */
-  public double getProb(List args, Object value) {
-    if (!(value instanceof Integer)) {
-      throw new IllegalArgumentException(
-          "NegativeBinomial CPD defines a distribution over objects"
-              + " of class Integer, not " + value.getClass() + ".");
+  public void setParams(Integer r, Double p) {
+    if (r != null) {
+      if (r <= 0) {
+        throw new IllegalArgumentException(
+            "parameter r must be a strictly positive integer");
+      }
+      this.hasR = true;
+      this.r = r;
     }
-    int n = ((Integer) value).intValue();
-    // Return C(k+n-1, n)*p^k*(1-p)^n
-    return Math.exp(getLogProb(args, value));
+    if (p != null) {
+      if (p <= 0 || p > 1) {
+        throw new IllegalArgumentException(
+            "parameter p must be a strictly positive probability; must be in the interval (0, 1] not "
+                + p + ".");
+      }
+      this.hasP = true;
+      this.p = p;
+    }
+    if (this.hasP && this.hasR) {
+      gamma = new Gamma(r, (p / (1 - p)));
+    }
+  }
+
+  private void checkHasParams() {
+    if (!this.hasR) {
+      throw new IllegalArgumentException("parameter r not provided");
+    }
+    if (!this.hasP) {
+      throw new IllegalArgumentException("parameter p not provided");
+    }
+  }
+
+  @Override
+  public double getProb(Object value) {
+    return getProb(((Integer) value).intValue());
   }
 
   /**
-   * Returns the log of the probability of n failures in this distribution.
+   * Returns the probability of k successes before r failures
+   * 
+   * @param k
+   *          number of successes
    */
-  public double getLogProb(List args, Object value) {
-    if (!(value instanceof Integer)) {
-      throw new IllegalArgumentException(
-          "NegativeBinomial CPD defines a distribution over objects"
-              + " of class Integer, not " + value.getClass() + ".");
-    }
-    int n = ((Integer) value).intValue();
-    // Return log (C(k+n-1, n)*p^k*(1-p)^n)
-    return (k * Math.log(p) + n * Math.log(1 - p)
-        + Math.log(Util.factorial(n + k - 1)) - Math.log(Util.factorial(k - 1)) - Math
-          .log(Util.factorial(n)));
+  public double getProb(int k) {
+    return Math.exp(getLogProb(k));
   }
 
+  @Override
+  public double getLogProb(Object value) {
+    return getLogProb(((Integer) value).intValue());
+  }
+
+  /**
+   * Returns the log probability of k successes before r failures
+   * 
+   * @param k
+   *          number of successes
+   */
+  public double getLogProb(int k) {
+    checkHasParams();
+    if (k < 0) {
+      return Double.NEGATIVE_INFINITY;
+    }
+    System.out.println("k: " + k + " , r: " + r);
+    System.out.println("1: " + k * Math.log(p));
+    System.out.println("2: " + r * Math.log(1 - p));
+    System.out.println("3: " + Math.log(Util.factorial(k + r - 1)));
+    System.out.println("4: " + Math.log(Util.factorial(k)));
+    System.out.println("5: " + Math.log(Util.factorial(r - 1)));
+    System.out.println();
+
+    return (k * Math.log(p) + r * Math.log(1 - p)
+        + Math.log(Util.factorial(k + r - 1)) - Math.log(Util.factorial(k)) - Math
+          .log(Util.factorial(r - 1)));
+  }
+
+  @Override
   /**
    * Returns a double sampled according to this distribution. Takes time
    * O(GammaDistrib.sampleVal() + Poisson.sampleVal()). (Reference: A Guide To
    * Simulation, 2nd Ed. Bratley, Paul, Bennett L. Fox and Linus E. Schrage.)
    */
-  public Object sampleVal(List args) {
-    Double theta = (Double) gamma.sampleVal(new LinkedList());
-    LinkedList l = new LinkedList();
-    l.add(theta);
-    Poisson poisson = new Poisson(l);
-    return poisson.sampleVal(new LinkedList());
+  public Object sampleVal() {
+    Double theta = (Double) gamma.sampleVal();
+    return Poisson.sampleVal(theta);
   }
 
   public String toString() {
@@ -109,50 +163,8 @@ public class NegativeBinomial extends AbstractCondProbDistrib {
   }
 
   private Gamma gamma;
-  private int k;
+  private int r;
+  private boolean hasR;
   private double p;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
-   */
-  @Override
-  public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
-   */
-  @Override
-  public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
-   */
-  @Override
-  public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#sampleVal()
-   */
-  @Override
-  public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  private boolean hasP;
 }
