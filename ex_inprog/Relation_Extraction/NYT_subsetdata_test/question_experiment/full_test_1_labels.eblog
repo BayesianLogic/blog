@@ -215,7 +215,7 @@ obs Verb(Sent[52]) = appos___appos__professor__prep__at__pobj___pobj;
 obs Subject(Sent[53]) = Peter_Arenella;
 obs Object(Sent[53]) = University_of_California;
 obs Verb(Sent[53]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[53])) = R[0];
+//obs Rel(SourceFact(Sent[53])) = R[0];
 
 obs Subject(Sent[54]) = Merle_Black;
 obs Object(Sent[54]) = Emory_University;
@@ -232,7 +232,7 @@ obs Verb(Sent[56]) = appos___appos__professor__prep__at__pobj___pobj;
 obs Subject(Sent[57]) = Douglas_Muzzio;
 obs Object(Sent[57]) = Baruch_College;
 obs Verb(Sent[57]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[57])) = R[0];
+//obs Rel(SourceFact(Sent[57])) = R[0];
 
 obs Subject(Sent[58]) = David_Rebovich;
 obs Object(Sent[58]) = Rider_University;
@@ -434,7 +434,7 @@ obs Verb(Sent[106]) = appos___appos__spokesman__prep__for__pobj___pobj;
 obs Subject(Sent[107]) = Laurence_H__Tribe;
 obs Object(Sent[107]) = Harvard_Law_School;
 obs Verb(Sent[107]) = appos___appos__professor__nn___nn;
-obs Rel(SourceFact(Sent[107])) = R[0];
+//obs Rel(SourceFact(Sent[107])) = R[0];
 
 obs Subject(Sent[108]) = William_V__Sullivan_Jr_;
 obs Object(Sent[108]) = Witter_Reynolds;
@@ -523,7 +523,7 @@ obs Verb(Sent[128]) = appos___appos__president__prep__of__pobj___pobj;
 obs Subject(Sent[129]) = John_C__Coffee_Jr_;
 obs Object(Sent[129]) = Columbia_University;
 obs Verb(Sent[129]) = appos___appos__professor__nn___nn;
-obs Rel(SourceFact(Sent[129])) = R[0];
+//obs Rel(SourceFact(Sent[129])) = R[0];
 
 obs Subject(Sent[130]) = Jeffrey_Sachs;
 obs Object(Sent[130]) = Harvard;
@@ -548,7 +548,7 @@ obs Verb(Sent[134]) = rcmod___rcmod__teach__prep__at__pobj___pobj;
 obs Subject(Sent[135]) = Elizabeth_Warren;
 obs Object(Sent[135]) = Harvard;
 obs Verb(Sent[135]) = appos___appos__professor__nn___nn;
-obs Rel(SourceFact(Sent[135])) = R[0];
+//obs Rel(SourceFact(Sent[135])) = R[0];
 
 obs Subject(Sent[136]) = Dr__Murai;
 obs Object(Sent[136]) = Keio_University;
@@ -593,7 +593,7 @@ obs Verb(Sent[145]) = appos___appos__expert__prep__at__pobj___pobj;
 obs Subject(Sent[146]) = Alan_M__Dershowitz;
 obs Object(Sent[146]) = Harvard;
 obs Verb(Sent[146]) = appos___appos__professor__nn___nn;
-obs Rel(SourceFact(Sent[146])) = R[0];
+//obs Rel(SourceFact(Sent[146])) = R[0];
 
 obs Subject(Sent[147]) = Viren_Mehta;
 obs Object(Sent[147]) = Mehta___Isaly;
@@ -1102,7 +1102,7 @@ obs Verb(Sent[272]) = appos___appos__director__nn___nn;
 obs Subject(Sent[273]) = Mr__Gibbons;
 obs Object(Sent[273]) = New_England_Conservatory;
 obs Verb(Sent[273]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[273])) = R[0];
+//obs Rel(SourceFact(Sent[273])) = R[0];
 
 obs Subject(Sent[274]) = Marlin_Fitzwater;
 obs Object(Sent[274]) = White_House;
@@ -1115,7 +1115,7 @@ obs Verb(Sent[275]) = appos___appos__leader__prep__of__pobj___pobj;
 obs Subject(Sent[276]) = Lawrence_Kohlberg;
 obs Object(Sent[276]) = Harvard;
 obs Verb(Sent[276]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[276])) = R[0]; // For Who is a professor at NYU experiment
+//obs Rel(SourceFact(Sent[276])) = R[0]; // For Who is a professor at NYU experiment
 
 obs Subject(Sent[277]) = Joseph_L__Bruno;
 obs Object(Sent[277]) = State_Senate;
@@ -1152,7 +1152,7 @@ obs Verb(Sent[284]) = appos___appos__spokesman__nn___nn;
 obs Subject(Sent[285]) = Dr__Roger_Maickel;
 obs Object(Sent[285]) = Purdue_University;
 obs Verb(Sent[285]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[285])) = R[0];
+//obs Rel(SourceFact(Sent[285])) = R[0];
 
 obs Subject(Sent[286]) = Dr__Leon_Rudorfer;
 obs Object(Sent[286]) = Downstate_Medical_Center;
@@ -1165,7 +1165,7 @@ obs Verb(Sent[287]) = appos___appos__professor__prep__at__pobj___pobj;
 obs Subject(Sent[288]) = Dr__Joe_Patterson;
 obs Object(Sent[288]) = Columbia_University;
 obs Verb(Sent[288]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[288])) = R[0];
+//obs Rel(SourceFact(Sent[288])) = R[0];
 
 obs Subject(Sent[289]) = Dick_Armey;
 obs Object(Sent[289]) = House;
@@ -1562,7 +1562,7 @@ obs Verb(Sent[386]) = appos___appos__economist__prep__at__pobj___pobj;
 obs Subject(Sent[387]) = Steve_Vineberg;
 obs Object(Sent[387]) = Holy_Cross_College;
 obs Verb(Sent[387]) = nsubj___nsubj__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[387])) = R[0];
+//obs Rel(SourceFact(Sent[387])) = R[0];
 
 obs Subject(Sent[388]) = Steven_E__Cerier;
 obs Object(Sent[388]) = Manufacturers_Hanover_Trust_Company;
@@ -1839,7 +1839,7 @@ obs Verb(Sent[455]) = appos___appos__manager__prep__of__pobj___pobj;
 obs Subject(Sent[456]) = Hal_R__Varian;
 obs Object(Sent[456]) = University_of_California;
 obs Verb(Sent[456]) = nsubj___nsubj__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[456])) = R[0];
+//obs Rel(SourceFact(Sent[456])) = R[0];
 
 obs Subject(Sent[457]) = G__Grossman;
 obs Object(Sent[457]) = New_York;
@@ -1948,7 +1948,7 @@ obs Verb(Sent[482]) = appos___appos__leader__amod___amod;
 obs Subject(Sent[483]) = Alan_B__Krueger;
 obs Object(Sent[483]) = Princeton_University;
 obs Verb(Sent[483]) = nsubj___nsubj__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[483])) = R[0];
+//obs Rel(SourceFact(Sent[483])) = R[0];
 
 obs Subject(Sent[484]) = Air_Force;
 obs Object(Sent[484]) = Congress;
@@ -6709,7 +6709,7 @@ obs Verb(Sent[1672]) = prep___prep__of__pobj__school__nn___nn;
 obs Subject(Sent[1673]) = William_P__Lyons;
 obs Object(Sent[1673]) = Yale_University;
 obs Verb(Sent[1673]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[1673])) = R[0];
+//obs Rel(SourceFact(Sent[1673])) = R[0];
 
 obs Subject(Sent[1674]) = William_Kristol;
 obs Object(Sent[1674]) = The_Weekly_Standard;
@@ -6742,7 +6742,7 @@ obs Verb(Sent[1680]) = appos___appos__strategist__prep__of__pobj___pobj;
 obs Subject(Sent[1681]) = William_E__Hellerstein;
 obs Object(Sent[1681]) = Brooklyn_Law_School;
 obs Verb(Sent[1681]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[1681])) = R[0];
+//obs Rel(SourceFact(Sent[1681])) = R[0];
 
 obs Subject(Sent[1682]) = William_E__Hellerstein;
 obs Object(Sent[1682]) = Brooklyn;
@@ -6763,7 +6763,7 @@ obs Verb(Sent[1685]) = appos___appos__professor__prep__at__pobj___pobj;
 obs Subject(Sent[1686]) = Vivian_Berger;
 obs Object(Sent[1686]) = Columbia_Law_School;
 obs Verb(Sent[1686]) = appos___appos__professor__prep__of__pobj__law__prep__of__pobj___pobj;
-obs Rel(SourceFact(Sent[1686])) = R[0];
+//obs Rel(SourceFact(Sent[1686])) = R[0];
 
 obs Subject(Sent[1687]) = Vincent_M__Bonventre;
 obs Object(Sent[1687]) = Albany;
@@ -6780,7 +6780,7 @@ obs Verb(Sent[1689]) = dobj___dobj__succeed__prep__as__pobj__director__prep__of_
 obs Subject(Sent[1690]) = Tracey_Meares;
 obs Object(Sent[1690]) = Center_for_Studies_in_Criminal_Justice;
 obs Verb(Sent[1690]) = appos___appos__professor__prep__of__pobj__law__prep__of__pobj___pobj;
-obs Rel(SourceFact(Sent[1690])) = R[0];
+//obs Rel(SourceFact(Sent[1690])) = R[0];
 
 obs Subject(Sent[1691]) = Todd_D__Fernow;
 obs Object(Sent[1691]) = Criminal_Law_Clinic;
@@ -6821,7 +6821,7 @@ obs Verb(Sent[1699]) = appos___appos__professor__prep__at__pobj___pobj;
 obs Subject(Sent[1700]) = Theodore_Sizer;
 obs Object(Sent[1700]) = Brown_University;
 obs Verb(Sent[1700]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[1700])) = R[0];
+//obs Rel(SourceFact(Sent[1700])) = R[0];
 
 obs Subject(Sent[1701]) = Terry_Mikelson;
 obs Object(Sent[1701]) = OSHA;
@@ -6898,7 +6898,7 @@ obs Verb(Sent[1718]) = appos___appos__president__prep__of__pobj___pobj;
 obs Subject(Sent[1719]) = Robert_Weisberg;
 obs Object(Sent[1719]) = Center_for_Criminal_Justice_at_Stanford_University;
 obs Verb(Sent[1719]) = appos___appos__professor__prep__of__pobj__law__prep__of__pobj___pobj;
-obs Rel(SourceFact(Sent[1719])) = R[0];
+//obs Rel(SourceFact(Sent[1719])) = R[0];
 
 obs Subject(Sent[1720]) = Robert_S__Mueller_III;
 obs Object(Sent[1720]) = F_B_I_;
@@ -6943,7 +6943,7 @@ obs Verb(Sent[1729]) = appos___appos__professor__prep__at__pobj__school__poss___
 obs Subject(Sent[1730]) = Robert_Blecker;
 obs Object(Sent[1730]) = New_York;
 obs Verb(Sent[1730]) = appos___appos__professor__prep__at__pobj__school__nn___nn;
-obs Rel(SourceFact(Sent[1730])) = R[0];
+//obs Rel(SourceFact(Sent[1730])) = R[0];
 
 obs Subject(Sent[1731]) = Richard_J__Ferris;
 obs Object(Sent[1731]) = Allegis;
@@ -6964,7 +6964,7 @@ obs Verb(Sent[1734]) = dobj___dobj__nominate__prep__as__pobj__chairman__prep__of
 obs Subject(Sent[1735]) = Richard_A__Daynard;
 obs Object(Sent[1735]) = Northeastern_University;
 obs Verb(Sent[1735]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[1735])) = R[0];
+//obs Rel(SourceFact(Sent[1735])) = R[0];
 
 obs Subject(Sent[1736]) = Riccardo_Muti;
 obs Object(Sent[1736]) = Philadelphia_Orchestra;
@@ -7085,7 +7085,7 @@ obs Verb(Sent[1764]) = appos___appos__strategist__prep__of__pobj___pobj;
 obs Subject(Sent[1765]) = Michael_Lynn;
 obs Object(Sent[1765]) = Cornell;
 obs Verb(Sent[1765]) = appos___appos__professor__prep__at__pobj__school__poss___poss;
-obs Rel(SourceFact(Sent[1765])) = R[0];
+//obs Rel(SourceFact(Sent[1765])) = R[0];
 
 obs Subject(Sent[1766]) = Michael_Benson;
 obs Object(Sent[1766]) = National_Transportation_Safety_Board;
@@ -7106,7 +7106,7 @@ obs Verb(Sent[1769]) = appos___appos__expert__rcmod__teach__prep__at__pobj___pob
 obs Subject(Sent[1770]) = Martin_H__Malin;
 obs Object(Sent[1770]) = Institute_for_Law;
 obs Verb(Sent[1770]) = appos___appos__professor__prep__of__pobj__law__prep__of__pobj___pobj;
-obs Rel(SourceFact(Sent[1770])) = R[0];
+//obs Rel(SourceFact(Sent[1770])) = R[0];
 
 obs Subject(Sent[1771]) = Marshal_Cohen;
 obs Object(Sent[1771]) = NPD_Group;
@@ -7115,7 +7115,7 @@ obs Verb(Sent[1771]) = appos___appos__analyst__prep__of__pobj___pobj;
 obs Subject(Sent[1772]) = Mark_H__Moore;
 obs Object(Sent[1772]) = Harvard_University;
 obs Verb(Sent[1772]) = appos___appos__professor__prep__at__pobj__school__poss___poss;
-obs Rel(SourceFact(Sent[1772])) = R[0];
+//obs Rel(SourceFact(Sent[1772])) = R[0];
 
 obs Subject(Sent[1773]) = Mark_D__Gearan;
 obs Object(Sent[1773]) = White_House;
@@ -7176,7 +7176,7 @@ obs Verb(Sent[1786]) = appos___appos__strategist__prep__of__pobj___pobj;
 obs Subject(Sent[1787]) = John_Stachel;
 obs Object(Sent[1787]) = Boston_University;
 obs Verb(Sent[1787]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[1787])) = R[0];
+//obs Rel(SourceFact(Sent[1787])) = R[0];
 
 obs Subject(Sent[1788]) = John_Podesta;
 obs Object(Sent[1788]) = White_House;
@@ -7249,7 +7249,7 @@ obs Verb(Sent[1804]) = appos___appos__president__prep__of__pobj___pobj;
 obs Subject(Sent[1805]) = I__Nelson_Rose;
 obs Object(Sent[1805]) = Whittier;
 obs Verb(Sent[1805]) = appos___appos__professor__prep__at__pobj__school__nn___nn;
-obs Rel(SourceFact(Sent[1805])) = R[0];
+//obs Rel(SourceFact(Sent[1805])) = R[0];
 
 obs Subject(Sent[1806]) = Harold_M__Ickes;
 obs Object(Sent[1806]) = White_House;
@@ -7306,7 +7306,7 @@ obs Verb(Sent[1818]) = appos___appos__spokesman__prep__for__pobj___pobj;
 obs Subject(Sent[1819]) = Franklin_Zimring;
 obs Object(Sent[1819]) = Earl_Warren_Legal_Institute;
 obs Verb(Sent[1819]) = appos___appos__professor__prep__of__pobj__law__prep__of__pobj___pobj;
-obs Rel(SourceFact(Sent[1819])) = R[0];
+//obs Rel(SourceFact(Sent[1819])) = R[0];
 
 obs Subject(Sent[1820]) = Financial_Corporation_of_America;
 obs Object(Sent[1820]) = Federal_Home_Loan_Bank_Board;
@@ -7371,7 +7371,7 @@ obs Verb(Sent[1834]) = appos___appos__director__nn___nn;
 obs Subject(Sent[1835]) = Douglas_Muzzio;
 obs Object(Sent[1835]) = Baruch_College;
 obs Verb(Sent[1835]) = appos___appos__professor__prep__at__pobj__school__poss___poss;
-obs Rel(SourceFact(Sent[1835])) = R[0];
+//obs Rel(SourceFact(Sent[1835])) = R[0];
 
 obs Subject(Sent[1836]) = Donna_Hoffman;
 obs Object(Sent[1836]) = Vanderbilt_University;
@@ -7388,7 +7388,7 @@ obs Verb(Sent[1838]) = prep___prep__of__pobj__school__nn___nn;
 obs Subject(Sent[1839]) = David_T__Ellwood;
 obs Object(Sent[1839]) = John_F__Kennedy;
 obs Verb(Sent[1839]) = appos___appos__professor__prep__at__pobj__school__nn___nn;
-obs Rel(SourceFact(Sent[1839])) = R[0];
+//obs Rel(SourceFact(Sent[1839])) = R[0];
 
 obs Subject(Sent[1840]) = David_S__Ruder;
 obs Object(Sent[1840]) = Securities_and_Exchange_Commission;
@@ -7873,7 +7873,7 @@ obs Verb(Sent[1959]) = appos___appos__chairman__nn___nn;
 obs Subject(Sent[1960]) = William_J__Perry;
 obs Object(Sent[1960]) = Harvard;
 obs Verb(Sent[1960]) = appos___appos__professor__nn___nn;
-obs Rel(SourceFact(Sent[1960])) = R[0];
+//obs Rel(SourceFact(Sent[1960])) = R[0];
 
 obs Subject(Sent[1961]) = Ward_McCarthy;
 obs Object(Sent[1961]) = McCarthy_Research_Associates;
@@ -7942,7 +7942,7 @@ obs Verb(Sent[1976]) = pobj___pobj__of__prep__title__dobj__misstate__prep__at__p
 obs Subject(Sent[1977]) = Simplice_Armand_Gotta;
 obs Object(Sent[1977]) = National_Association_of_the_Physically_Handicapped_of_Ivory_Coast;
 obs Verb(Sent[1977]) = appos___appos__professor__rcmod__president__prep__of__pobj___pobj;
-obs Rel(SourceFact(Sent[1977])) = R[0];
+//obs Rel(SourceFact(Sent[1977])) = R[0];
 
 obs Subject(Sent[1978]) = Sgt__James_Rhoades;
 obs Object(Sent[1978]) = Police_Department;
@@ -8023,7 +8023,7 @@ obs Verb(Sent[1996]) = nsubj___nsubj__tell__dobj___dobj;
 obs Subject(Sent[1997]) = Raymond_D__Horton;
 obs Object(Sent[1997]) = Citizens_Budget_Commission;
 obs Verb(Sent[1997]) = appos___appos__professor__rcmod__president__prep__of__pobj___pobj;
-obs Rel(SourceFact(Sent[1997])) = R[0];
+//obs Rel(SourceFact(Sent[1997])) = R[0];
 
 obs Subject(Sent[1998]) = Peter_Osnos;
 obs Object(Sent[1998]) = Random_House;
@@ -8908,7 +8908,7 @@ obs Verb(Sent[2217]) = nsubj___nsubj__receive__nsubj___nsubj;
 obs Subject(Sent[2218]) = Shlomo_Avineri;
 obs Object(Sent[2218]) = Hebrew_University;
 obs Verb(Sent[2218]) = appos___appos__professor__nn___nn;
-obs Rel(SourceFact(Sent[2218])) = R[0];
+//obs Rel(SourceFact(Sent[2218])) = R[0];
 
 obs Subject(Sent[2219]) = Sheldon_Steinbach;
 obs Object(Sent[2219]) = American_Council_on_Education;
@@ -9345,7 +9345,7 @@ obs Verb(Sent[2326]) = appos___appos__firm__prep__in__pobj___pobj;
 obs Subject(Sent[2327]) = Noye_Monroe_Johnson;
 obs Object(Sent[2327]) = Dartmouth_College;
 obs Verb(Sent[2327]) = appos___appos__professor__nn___nn;
-obs Rel(SourceFact(Sent[2327])) = R[0];
+//obs Rel(SourceFact(Sent[2327])) = R[0];
 
 obs Subject(Sent[2328]) = Norman_Ornstein;
 obs Object(Sent[2328]) = American_Enterprise_Institute;
@@ -9498,7 +9498,7 @@ obs Verb(Sent[2364]) = prep___prep__as__pobj__director__prep__of__pobj___pobj;
 obs Subject(Sent[2365]) = Mr__Williams;
 obs Object(Sent[2365]) = Cooper_Union;
 obs Verb(Sent[2365]) = appos___appos__professor__nn___nn;
-obs Rel(SourceFact(Sent[2365])) = R[0];
+//obs Rel(SourceFact(Sent[2365])) = R[0];
 
 obs Subject(Sent[2366]) = Mr__Smith;
 obs Object(Sent[2366]) = Gerber;
@@ -10351,7 +10351,7 @@ obs Verb(Sent[2577]) = dep___dep__be__nsubj___nsubj;
 obs Subject(Sent[2578]) = Dr__Sternberg;
 obs Object(Sent[2578]) = I_B_M_;
 obs Verb(Sent[2578]) = appos___appos__professor__nn___nn;
-obs Rel(SourceFact(Sent[2578])) = R[0];
+//obs Rel(SourceFact(Sent[2578])) = R[0];
 
 obs Subject(Sent[2579]) = Dr__Robert_Schoen;
 obs Object(Sent[2579]) = Yale_University_Medical_Center;
@@ -10856,7 +10856,7 @@ obs Verb(Sent[2703]) = appos___appos__chairman__poss___poss;
 obs Subject(Sent[2704]) = William_P__Lyons;
 obs Object(Sent[2704]) = Yale_University;
 obs Verb(Sent[2704]) = appos___appos__professor__nn___nn;
-obs Rel(SourceFact(Sent[2704])) = R[0];
+//obs Rel(SourceFact(Sent[2704])) = R[0];
 
 obs Subject(Sent[2705]) = William_P__Lyons;
 obs Object(Sent[2705]) = Yale_Law_School;
@@ -10881,7 +10881,7 @@ obs Verb(Sent[2709]) = appos___appos__professor__nn___nn;
 obs Subject(Sent[2710]) = William_L__Langer;
 obs Object(Sent[2710]) = Coolidge;
 obs Verb(Sent[2710]) = appos___appos__professor__nn___nn;
-obs Rel(SourceFact(Sent[2710])) = R[0];
+//obs Rel(SourceFact(Sent[2710])) = R[0];
 
 obs Subject(Sent[2711]) = William_Laimbeer;
 obs Object(Sent[2711]) = Nekoosa_Packaging_division;
@@ -11242,7 +11242,7 @@ obs Verb(Sent[2799]) = dep___dep__director__prep__of__pobj___pobj;
 obs Subject(Sent[2800]) = Sidney_Shapiro;
 obs Object(Sent[2800]) = University_of_Kansas_Law_School;
 obs Verb(Sent[2800]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[2800])) = R[0];
+//obs Rel(SourceFact(Sent[2800])) = R[0];
 
 obs Subject(Sent[2801]) = Sidney_Rosenberg;
 obs Object(Sent[2801]) = York;
@@ -11255,7 +11255,7 @@ obs Verb(Sent[2802]) = appos___appos__professor__prep__at__pobj___pobj;
 obs Subject(Sent[2803]) = Sidney;
 obs Object(Sent[2803]) = New_York_University;
 obs Verb(Sent[2803]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[2803])) = R[0];
+//obs Rel(SourceFact(Sent[2803])) = R[0];
 
 obs Subject(Sent[2804]) = Sidney_Mintz;
 obs Object(Sent[2804]) = Johns_Hopkins_University;
@@ -11268,7 +11268,7 @@ obs Verb(Sent[2805]) = appos___appos__professor__prep__at__pobj___pobj;
 obs Subject(Sent[2806]) = Sidney_Gottlieb;
 obs Object(Sent[2806]) = Sacred_Heart_University;
 obs Verb(Sent[2806]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[2806])) = R[0];
+//obs Rel(SourceFact(Sent[2806])) = R[0];
 
 obs Subject(Sent[2807]) = Sidney_Fine;
 obs Object(Sent[2807]) = University_of_Michigan;
@@ -11277,7 +11277,7 @@ obs Verb(Sent[2807]) = appos___appos__professor__prep__at__pobj___pobj;
 obs Subject(Sent[2808]) = Sidney_Callahan;
 obs Object(Sent[2808]) = Mercy_College;
 obs Verb(Sent[2808]) = appos___appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[2808])) = R[0];
+//obs Rel(SourceFact(Sent[2808])) = R[0];
 
 obs Subject(Sent[2809]) = Shirley_S__Cox;
 obs Object(Sent[2809]) = Plaza_Suite;
@@ -11458,7 +11458,7 @@ obs Verb(Sent[2852]) = cc___cc__director__prep__of__pobj___pobj;
 obs Subject(Sent[2853]) = Robert_R__Glauber;
 obs Object(Sent[2853]) = Harvard_Business_School;
 obs Verb(Sent[2853]) = appos___appos__professor__nn___nn;
-obs Rel(SourceFact(Sent[2853])) = R[0];
+//obs Rel(SourceFact(Sent[2853])) = R[0];
 
 obs Subject(Sent[2854]) = Robert_Mosbacher;
 obs Object(Sent[2854]) = Texas;
@@ -12991,7 +12991,7 @@ obs Verb(Sent[3235]) = appos___appos__official__appos__director__prep__of__pobj_
 obs Subject(Sent[3236]) = Dr__Judith_Brown_Greif;
 obs Object(Sent[3236]) = Albert_Einstein_College_of_Medicine;
 obs Verb(Sent[3236]) = appos___appos__expert__appos__professor__prep__at__pobj___pobj;
-obs Rel(SourceFact(Sent[3236])) = R[0];
+//obs Rel(SourceFact(Sent[3236])) = R[0];
 
 obs Subject(Sent[3237]) = Dr__David_M__Brodzinsky;
 obs Object(Sent[3237]) = Rutgers_University;

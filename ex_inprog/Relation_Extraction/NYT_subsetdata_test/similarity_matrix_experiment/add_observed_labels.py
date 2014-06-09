@@ -53,7 +53,7 @@ def main():
 			output_file.write(obs)
 		
 		if sent_num in sent_to_rel and sent_to_rel[sent_num] not in already_written:
-			output_file.write('obs Rel(SourceFact({0})) = '.format(sent_num) + sent_to_rel[sent_num] + ';\n')
+			output_file.write('//obs Rel(SourceFact({0})) = '.format(sent_num) + sent_to_rel[sent_num] + ';\n')
 			already_written.add(sent_to_rel[sent_num])
 		
 		output_file.write('\n')

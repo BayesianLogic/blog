@@ -215,7 +215,7 @@ obs Verb(Sent[52]) = appos___appos__professor__prep__at__pobj___pobj;
 obs Subject(Sent[53]) = Peter_Arenella;
 obs Object(Sent[53]) = University_of_California;
 obs Verb(Sent[53]) = appos___appos__professor__prep__at__pobj___pobj;
-//obs Rel(SourceFact(Sent[53])) = R[0];
+obs Rel(SourceFact(Sent[53])) = R[0];
 
 obs Subject(Sent[54]) = Merle_Black;
 obs Object(Sent[54]) = Emory_University;
@@ -381,7 +381,7 @@ obs Verb(Sent[93]) = appos___appos__chairman__prep__of__pobj___pobj;
 obs Subject(Sent[94]) = Laurence_H__Tribe;
 obs Object(Sent[94]) = Harvard;
 obs Verb(Sent[94]) = appos___appos__professor__nn___nn;
-//obs Rel(SourceFact(Sent[94])) = R[0];
+obs Rel(SourceFact(Sent[94])) = R[0];
 
 obs Subject(Sent[95]) = WASHINGTON;
 obs Object(Sent[95]) = State_Department;
@@ -593,7 +593,7 @@ obs Verb(Sent[145]) = appos___appos__expert__prep__at__pobj___pobj;
 obs Subject(Sent[146]) = Alan_M__Dershowitz;
 obs Object(Sent[146]) = Harvard;
 obs Verb(Sent[146]) = appos___appos__professor__nn___nn;
-//obs Rel(SourceFact(Sent[146])) = R[0];
+obs Rel(SourceFact(Sent[146])) = R[0];
 
 obs Subject(Sent[147]) = Viren_Mehta;
 obs Object(Sent[147]) = Mehta___Isaly;
@@ -1165,7 +1165,7 @@ obs Verb(Sent[287]) = appos___appos__professor__prep__at__pobj___pobj;
 obs Subject(Sent[288]) = Dr__Joe_Patterson;
 obs Object(Sent[288]) = Columbia_University;
 obs Verb(Sent[288]) = appos___appos__professor__prep__at__pobj___pobj;
-//obs Rel(SourceFact(Sent[288])) = R[0];
+obs Rel(SourceFact(Sent[288])) = R[0];
 
 obs Subject(Sent[289]) = Dick_Armey;
 obs Object(Sent[289]) = House;
@@ -6709,7 +6709,7 @@ obs Verb(Sent[1672]) = prep___prep__of__pobj__school__nn___nn;
 obs Subject(Sent[1673]) = William_P__Lyons;
 obs Object(Sent[1673]) = Yale_University;
 obs Verb(Sent[1673]) = appos___appos__professor__prep__at__pobj___pobj;
-//obs Rel(SourceFact(Sent[1673])) = R[0];
+obs Rel(SourceFact(Sent[1673])) = R[0];
 
 obs Subject(Sent[1674]) = William_Kristol;
 obs Object(Sent[1674]) = The_Weekly_Standard;
@@ -7115,7 +7115,7 @@ obs Verb(Sent[1771]) = appos___appos__analyst__prep__of__pobj___pobj;
 obs Subject(Sent[1772]) = Mark_H__Moore;
 obs Object(Sent[1772]) = Harvard_University;
 obs Verb(Sent[1772]) = appos___appos__professor__prep__at__pobj__school__poss___poss;
-//obs Rel(SourceFact(Sent[1772])) = R[0];
+obs Rel(SourceFact(Sent[1772])) = R[0];
 
 obs Subject(Sent[1773]) = Mark_D__Gearan;
 obs Object(Sent[1773]) = White_House;
@@ -7176,7 +7176,7 @@ obs Verb(Sent[1786]) = appos___appos__strategist__prep__of__pobj___pobj;
 obs Subject(Sent[1787]) = John_Stachel;
 obs Object(Sent[1787]) = Boston_University;
 obs Verb(Sent[1787]) = appos___appos__professor__prep__at__pobj___pobj;
-//obs Rel(SourceFact(Sent[1787])) = R[0];
+obs Rel(SourceFact(Sent[1787])) = R[0];
 
 obs Subject(Sent[1788]) = John_Podesta;
 obs Object(Sent[1788]) = White_House;
@@ -8908,7 +8908,7 @@ obs Verb(Sent[2217]) = nsubj___nsubj__receive__nsubj___nsubj;
 obs Subject(Sent[2218]) = Shlomo_Avineri;
 obs Object(Sent[2218]) = Hebrew_University;
 obs Verb(Sent[2218]) = appos___appos__professor__nn___nn;
-//obs Rel(SourceFact(Sent[2218])) = R[0];
+obs Rel(SourceFact(Sent[2218])) = R[0];
 
 obs Subject(Sent[2219]) = Sheldon_Steinbach;
 obs Object(Sent[2219]) = American_Council_on_Education;
@@ -9345,7 +9345,7 @@ obs Verb(Sent[2326]) = appos___appos__firm__prep__in__pobj___pobj;
 obs Subject(Sent[2327]) = Noye_Monroe_Johnson;
 obs Object(Sent[2327]) = Dartmouth_College;
 obs Verb(Sent[2327]) = appos___appos__professor__nn___nn;
-//obs Rel(SourceFact(Sent[2327])) = R[0];
+obs Rel(SourceFact(Sent[2327])) = R[0];
 
 obs Subject(Sent[2328]) = Norman_Ornstein;
 obs Object(Sent[2328]) = American_Enterprise_Institute;
@@ -11255,7 +11255,7 @@ obs Verb(Sent[2802]) = appos___appos__professor__prep__at__pobj___pobj;
 obs Subject(Sent[2803]) = Sidney;
 obs Object(Sent[2803]) = New_York_University;
 obs Verb(Sent[2803]) = appos___appos__professor__prep__at__pobj___pobj;
-//obs Rel(SourceFact(Sent[2803])) = R[0];
+obs Rel(SourceFact(Sent[2803])) = R[0];
 
 obs Subject(Sent[2804]) = Sidney_Mintz;
 obs Object(Sent[2804]) = Johns_Hopkins_University;
