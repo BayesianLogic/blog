@@ -40,14 +40,7 @@ package blog.distrib;
  * * (1-x)^(b-1)) / B(a,b) where B(a,b) is a normalization constant equal to
  * integral from 0 to 1 of x^(a-1) * (1-x)^(b-1) dx
  */
-public class Beta extends AbstractCondProbDistrib {
-
-  public Beta() {
-  }
-
-  public Beta(double a, double b) {
-    setParams(a, b);
-  }
+public class Beta implements CondProbDistrib {
 
   public double getA() {
     return a;
@@ -58,6 +51,10 @@ public class Beta extends AbstractCondProbDistrib {
   }
 
   @Override
+  /**
+   * params[0] -> a, as defined in the class description
+   * params[1] -> b, as defined in the class description
+   */
   public void setParams(Object[] params) {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected two parameters");
@@ -148,7 +145,7 @@ public class Beta extends AbstractCondProbDistrib {
   }
 
   public String toString() {
-    return getClass().getName();
+    return "Beta(" + a + "," + b + ")";
   }
 
   private Gamma gammaA;
