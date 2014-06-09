@@ -61,18 +61,17 @@ public class FormulaQuery extends ArgSpecQuery {
   }
 
   public void printResults(PrintStream s) {
-    s.println("Probability of " + getArgSpec() + " is " + logTrueProb());
+    s.println("Probability of " + getArgSpec() + " is " + trueProb());
   }
 
   public void logResults(int numSamples) {
     if (outputFile != null) {
-      outputFile.println("\t" + numSamples + "\t" + logTrueProb());
+      outputFile.println("\t" + numSamples + "\t" + trueProb());
     }
   }
 
   public void updateStats(PartialWorld world, double logweight) {
-    // leili: who wrote this? this is wrong!!! shoud not compare == on double
-    if (probTrue != -1) {
+    if (probTrue >= 0) {
       throw new IllegalStateException(
           "Can't update states: posterior already specified.");
     }
@@ -99,7 +98,7 @@ public class FormulaQuery extends ArgSpecQuery {
   }
 
   public void zeroOut() {
-    double result = logTrueProb();
+    double result = trueProb();
     runningProbSum += result;
     runningProbSumSquares += (result * result);
     trialNum++;
@@ -114,8 +113,8 @@ public class FormulaQuery extends ArgSpecQuery {
     probTrue = -1;
   }
 
-  private double logTrueProb() {
-    if (probTrue != -1) {
+  private double trueProb() {
+    if (probTrue >= 0) {
       return probTrue;
     }
     return Math.exp(trueSum - totalSum);
@@ -137,11 +136,11 @@ public class FormulaQuery extends ArgSpecQuery {
     return histogram;
   }
 
-  private double trueSum = 0;
-  private double totalSum = 0;
+  private double trueSum = Double.NEGATIVE_INFINITY;
+  private double totalSum = Double.NEGATIVE_INFINITY;
   private double probTrue = -1;
 
-  private double runningProbSum = 0;
-  private double runningProbSumSquares = 0;
+  private double runningProbSum = Double.NEGATIVE_INFINITY;
+  private double runningProbSumSquares = Double.NEGATIVE_INFINITY;
   private int trialNum = 0;
 }
