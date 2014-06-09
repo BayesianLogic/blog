@@ -60,7 +60,8 @@ public class DBLOGUtil {
     public Object filter(int index, Object varObj) {
       BayesNetVar var = (BayesNetVar) varObj;
       int timestepIndex = var.maxTimestep().getValue();
-      if (timestepIndex < 0) {
+      if (timestepIndex < 0 || alreadyReturned.contains(timestepIndex)) {
+        // Don't want to return the same timestep twice.
         return null;
       }
       alreadyReturned.add(timestepIndex);
