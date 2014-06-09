@@ -1,6 +1,7 @@
 package blog.engine.pbvi;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -14,10 +15,13 @@ import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
 import blog.model.DecisionEvidenceStatement;
+import blog.model.DecisionFunction;
 import blog.model.Evidence;
 import blog.model.FuncAppTerm;
+import blog.model.Function;
 import blog.model.NonGuaranteedObject;
 import blog.model.RandomFunction;
+import blog.model.SkolemConstant;
 import blog.model.SymbolEvidenceStatement;
 import blog.model.Term;
 import blog.model.ValueEvidenceStatement;
@@ -38,28 +42,16 @@ public class LiftedEvidence {
 	private Evidence evidence;
 	private LiftedProperties prevLiftedProperties;
 	private LiftedProperties liftedProperties;
-/*	
-	public LiftedEvidence(Evidence evidence) {
-		this(evidence, null);
-	}*/
+
+	public LiftedEvidence(Evidence evidence, Belief b) {
+		this(evidence, null, null);
+	}
 	
 	/**
-	 * There should be more information passed in to help convert the grounded decisionEvidence into a lifted one.
-	 * For example, take the decision evidence statement "apply_assertGrandparent(a, c) = true" and assume a is fixed.
-	 * The properties of c must be specified.
-	 * 
-	 * The belief after the evidence was obtained is necessary because LiftedProperties require
-	 * NonGuaranteedObjects in the BayesNetVars. Evidence contains symbols that need to be translated to
-	 * NonGuaranteedObjects. LiftedProperties can be written to handle symbols and terms instead of objects
-	 * and BayesNetVars. These objects can really be instead replaced with dummy objects.
-	 * A second reason to be resolved is that the history of each NonGuaranteedObject must come from somewhere.
-	 * 
 	 * @param evidence
 	 */
-	public LiftedEvidence(Evidence evidence, Belief b) {
+	public LiftedEvidence(Evidence evidence, Belief b, LiftedProperties liftedHistory) {
 		liftedProperties = new LiftedProperties();
-		State s = (State) Util.getFirst(b.getStates());
-		AbstractPartialWorld w = s.getWorld();
 
 		int timestep = 0;
 		Set<? extends BayesNetVar> evidenceVars = evidence.getEvidenceVars();
@@ -77,26 +69,46 @@ public class LiftedEvidence {
 			}
 		}
 		Term toReplace = BuiltInTypes.TIMESTEP.getCanonicalTerm(BuiltInTypes.TIMESTEP.getGuaranteedObject(timestep));	
-		evidence = evidence.replace(toReplace, emptyTimestep);
+		if (liftedHistory == null)
+			evidence = evidence.replace(toReplace, emptyTimestep);
 		
 		Collection<ValueEvidenceStatement> ves = evidence.getValueEvidence();
 		Collection<DecisionEvidenceStatement> des = evidence.getDecisionEvidence(); //TODO
+		Collection<Object> statements = new ArrayList<Object>(ves);
+		statements.addAll(des);
 		
 		Set<DerivedVar> liftedVars = new HashSet<DerivedVar>();
 		
 		boolean hasLifted = false;
-		/*for (ValueEvidenceStatement stmt : ves) {
-			BayesNetVar var = stmt.getObservedVar();
-			Object value = stmt.getObservedValue();
+		for (Object stmt : statements) {
+			BayesNetVar var = null; 
+			Object value = null; 
+			if (stmt instanceof ValueEvidenceStatement) {
+				var = ((ValueEvidenceStatement) stmt).getObservedVar();
+				value = ((ValueEvidenceStatement) stmt).getObservedValue();
+			} else if (stmt instanceof DecisionEvidenceStatement) {
+				var = ((DecisionEvidenceStatement) stmt).getObservedVar();
+				value = ((DecisionEvidenceStatement) stmt).getObservedValue();
+			} else {
+				System.err.println("LiftedEvidence: " + stmt + " not a ValueEvidenceStatement or DecisionEvidenceStatement");
+				System.exit(1);
+			}
+			
 			if (var instanceof DerivedVar) {
 				ArgSpec argSpec = ((DerivedVar) var).getArgSpec();
 				if (!(argSpec instanceof FuncAppTerm)) {
 					continue;
 				}
 				FuncAppTerm term = (FuncAppTerm) argSpec;
-				if (!(term.getFunction() instanceof blog.model.RandomFunction)) continue;
-				RandomFunction function = (RandomFunction) term.getFunction();
-				
+				RandomFunction function = null;
+				if (term.getFunction() instanceof blog.model.RandomFunction)
+					function = (RandomFunction) term.getFunction();
+				else if (term.getFunction() instanceof blog.model.DecisionFunction) {
+					DecisionFunction f = (DecisionFunction) term.getFunction();
+					function = new RandomFunction(f.getName(), Arrays.asList(f.getArgTypes()), f.getRetType(), null);
+					//System.out.println("Decision " + function);
+				} else
+					continue;
 				// if an observable_ function, skip
 				//if (function.getObservableFun() == null) continue;
 
@@ -104,48 +116,55 @@ public class LiftedEvidence {
 				List<Object> newArgs = new ArrayList<Object>();
 				boolean hasNgo = false;
 				for (ArgSpec arg : args) {
-					Object newArg = arg.evaluate(w);
 					newArgs.add(arg); //using symbol object instead
+					if (!(arg instanceof FuncAppTerm)) continue;
+					FuncAppTerm fat = (FuncAppTerm) arg;
+					if (!(fat.getFunction() instanceof SkolemConstant)) continue;
+					//Object newArg = arg.evaluate(w);
 					//newArgs.add(newArg);
-					if (newArg instanceof NonGuaranteedObject) {
-						hasNgo = true;
-						liftedProperties.addObject(arg); //using symbol object instead
-						//liftedProperties.addObject(newArg);
-					}
+					//System.out.println(newArg);
+					//if (newArg instanceof NonGuaranteedObject) {
+					hasNgo = true;
+					liftedProperties.addObject(arg); //using symbol object instead
+					//liftedProperties.addObject(newArg);
+					//}
 				}
 				if (hasNgo) {
 					// NOTE: the following RandFuncAppVar is not "valid" in the sense that
-					// its arguments contain symbols rather than their corresponding objects
+					// its arguments contain symbols rather than their corresponding objects.
+					// TODO: change  liftedProperties to use Terms instead of Bayes net vars
 					RandFuncAppVar newVar = new RandFuncAppVar(function, newArgs);
+					
 					liftedProperties.addProperty(newVar, value);
 					hasLifted = true;
 					liftedVars.add((DerivedVar) var);
 				}
-
 			}
-		}*/
+		}
 		
 		//if (hasLifted)
 			//System.out.println("Lifted" + liftedProperties);
 		
 
 		for (ValueEvidenceStatement stmt : ves) {
-			if (liftedVars.contains(stmt.getObservedVar())) continue;
+			if (liftedHistory != null && liftedVars.contains(stmt.getObservedVar())) continue;
 			newEvidence.addValueEvidence(stmt);
 		}
 
 		for (DecisionEvidenceStatement stmt : des) {
-			if (liftedVars.contains(stmt.getObservedVar())) continue;
+			if (liftedHistory != null && liftedVars.contains(stmt.getObservedVar())) continue;
 			newEvidence.addDecisionEvidence(stmt);
 		}
 		for (SymbolEvidenceStatement stmt : evidence.getSymbolEvidence()) {
 			if (liftedVars.contains(stmt.getObservedVar())) continue;
 			newEvidence.addSymbolEvidence(stmt);
 		}
+		
+		if (liftedHistory != null)
+			liftedProperties.add(liftedHistory);
 
 		newEvidence.compile();
 		this.evidence = newEvidence;
-		//System.out.println("evidence" + this.evidence);
 	}
 	
 	/**
@@ -158,6 +177,7 @@ public class LiftedEvidence {
 		int timestep = b.getTimestep();
 		Term replace = BuiltInTypes.TIMESTEP.getCanonicalTerm(BuiltInTypes.TIMESTEP.getGuaranteedObject(timestep));
 		Evidence grounded = evidence.replace(emptyTimestep, replace);
+		//liftedProperties.replace(emptyTimestep, replace);
 		return grounded;
 	}
 	
@@ -166,6 +186,8 @@ public class LiftedEvidence {
 		Evidence grounded = evidence.replace(emptyTimestep, replace);
 		return grounded;
 	}
+	
+	
 	
 	@Override
 	public boolean equals(Object other) {
@@ -189,7 +211,7 @@ public class LiftedEvidence {
 		return evidence;
 	}
 
-	public LiftedProperties getLifted() {
+	public LiftedProperties getLiftedProperties() {
 		return liftedProperties;
 	}
 }

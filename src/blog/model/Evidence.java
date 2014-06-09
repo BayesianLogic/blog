@@ -558,5 +558,13 @@ public class Evidence {
 	}
 	
 	private Set<String> stringSet;
+
+	public Evidence replace(Map<Object, Object> subst) {
+		Evidence result = this;
+		for (Object key : subst.keySet()) {
+			result = result.replace((Term) key, (ArgSpec) subst.get(key));
+		}
+		return result;
+	}
 	
 }

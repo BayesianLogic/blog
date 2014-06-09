@@ -20,6 +20,7 @@ import blog.world.AbstractPartialWorld;
 import blog.world.PartialWorld;
 
 public class FiniteStatePolicy extends PolicyModel {
+	public boolean debug = false;
 	private AlphaVector alpha;
 	private LiftedEvidence action;
 	private Map<LiftedEvidence, FiniteStatePolicy> successors;
@@ -98,7 +99,7 @@ public class FiniteStatePolicy extends PolicyModel {
 			for (Object s : symbolEvidence) {
 				evidenceString += s.toString() + "\\n";
 			}
-			evidenceString += o.getLifted();
+			evidenceString += o.getLiftedProperties();
 			
 			FiniteStatePolicy contingentPolicy = successors.get(o);
 			String nextName = name + "_" + i;
@@ -188,6 +189,7 @@ public class FiniteStatePolicy extends PolicyModel {
 	
 	public boolean merge(FiniteStatePolicy policy) {
 		 if (!action.equals(policy.action)) return false;
+		 if (!policy.requiredTerms.equals(this.requiredTerms)) return false;
 		 for (LiftedEvidence o : successors.keySet()) {
 			 if (policy.successors.containsKey(o) &&
 					 !successors.get(o).equals(policy.successors.get(o))) {
@@ -228,5 +230,19 @@ public class FiniteStatePolicy extends PolicyModel {
 	}
 	
 	private static int count = 0;
+
+	public LiftedEvidence getMatchingEvidence(LiftedEvidence liftedEvidence,
+			LiftedProperties policyHistory, Belief b) {
+		for (LiftedEvidence e : successors.keySet()) {
+			LiftedEvidence liftedEvidenceWithHistory = new LiftedEvidence(e.getEvidence(b.getTimestep()), null, policyHistory);
+			if (liftedEvidenceWithHistory.equals(liftedEvidence))
+				return e;
+			else if (debug) {
+				System.out.println(liftedEvidenceWithHistory);
+				System.out.println(liftedEvidence);
+			}
+		}
+		return null;
+	}
 	
 }

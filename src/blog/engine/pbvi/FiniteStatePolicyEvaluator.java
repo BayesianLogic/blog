@@ -84,20 +84,45 @@ public class FiniteStatePolicyEvaluator {
 			double curValue = 0D;
 			double discount = 1;
 			List<Evidence> curPath = new ArrayList<Evidence>();
+			LiftedProperties policyHistory = new LiftedProperties();
+			LiftedProperties history = new LiftedProperties();
 			while (curPolicy != null) {
 				if (curState.ended()) break;
+				//policyHistory.debug = true;
+				Map<Object, Object> subst = policyHistory.findNgoSubstitution(history);
+				//System.out.println(policyHistory + " " + history + " " + subst);
 				LiftedEvidence nextAction = curPolicy.getAction();
-				curPath.add(nextAction.getEvidence(curState));
-				curState = curState.sampleNextBelief(nextAction);		
+				Evidence timeGroundedAction = nextAction.getEvidence(curState);
+				Evidence groundedAction = timeGroundedAction.replace(subst);
+				curPath.add(groundedAction);
+				
+				LiftedEvidence policyLiftedAction = new LiftedEvidence(timeGroundedAction, null, policyHistory);
+				LiftedEvidence liftedAction = new LiftedEvidence(groundedAction, null, history);
+				
+				policyHistory = policyLiftedAction.getLiftedProperties();
+				history = liftedAction.getLiftedProperties();
+				
+				curState = curState.sampleNextBelief(groundedAction);
+				
 				Evidence nextObs = curState.getLatestEvidence();
 				curPath.add(nextObs);
-				FiniteStatePolicy nextPolicy = curPolicy.getNextPolicy(new LiftedEvidence(nextObs, curState));
+				LiftedEvidence liftedEvidence = new LiftedEvidence(nextObs, null, history);
+				LiftedEvidence policyEvidence = curPolicy.getMatchingEvidence(liftedEvidence, policyHistory, curState);
+				FiniteStatePolicy nextPolicy = curPolicy.getNextPolicy(policyEvidence);
+				
 				if (nextPolicy == null && !curState.ended()) { 
 					nextPolicy = curPolicy.getApplicableNextPolicy(new LiftedEvidence(nextObs, curState), curState);
 					if (nextPolicy != null) {
 						addMissingObs(nextObs);
 					}
 				}
+
+				if (nextPolicy != null) {
+					history = liftedEvidence.getLiftedProperties();
+					LiftedEvidence policyLiftedEvidence = new LiftedEvidence(policyEvidence.getEvidence(curState.getTimestep()), null, policyHistory);
+					policyHistory = policyLiftedEvidence.getLiftedProperties();
+				}
+				
 				curPolicy = nextPolicy;
 				
 				curValue += discount * curState.getLatestReward();
@@ -105,6 +130,7 @@ public class FiniteStatePolicyEvaluator {
 			}
 			if (numPathsPrinted < numTrialsToPrint) {
 				System.out.println("Value: " + curValue + ", Path: " + curPath);
+				System.out.println(history + " " + policyHistory);
 				numPathsPrinted++;
 			}
 			accumulatedValue += curValue;

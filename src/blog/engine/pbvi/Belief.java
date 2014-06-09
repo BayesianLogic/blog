@@ -119,12 +119,15 @@ public class Belief {
 	static Map<Integer, Integer> resampleStateCountStats = new HashMap<Integer, Integer>();
 	static Map<Integer, Integer> stateCountStats = new HashMap<Integer, Integer>();
 	public Belief sampleNextBelief(LiftedEvidence action) {
+		return sampleNextBelief(action.getEvidence(this));
+	}
+	public Belief sampleNextBelief(Evidence action) {
 		Timer.start("BELIEF_PROP");
 		PFEngineSampled nextPF = getParticleFilter().copy();
 		
 		Timer.start("takeAction");
 		nextPF.beforeTakingEvidence();
-		nextPF.takeDecision(action.getEvidence(this));
+		nextPF.takeDecision(action);
 		nextPF.answer(pomdp.getQueries(getTimestep() + 1));
 		Timer.record("takeAction");
 		
@@ -137,7 +140,15 @@ public class Belief {
 		nextPF.updateOSforAllParticles();
 		Timer.record("updateOS");
 		
-		int osIndex = nextPF.sampleOS(); //nextPF.particles.get(0).getOS();
+		int osIndex = 0;
+		try {
+			osIndex = nextPF.sampleOS(); //nextPF.particles.get(0).getOS();
+		} catch (IllegalArgumentException e) {
+			System.err.println("ACTION " + action);
+			System.err.println("BELIEF " + this);
+			e.printStackTrace();
+			System.exit(1);
+		}
 		nextPF.retakeObservability2(osIndex);
 		nextPF.retakeObservability(osIndex);	
 		Evidence o = ObservabilitySignature.getOSbyIndex(osIndex).getEvidence();

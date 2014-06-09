@@ -151,11 +151,13 @@ public class RandFuncAppVar extends VarWithDistrib {
 	 * their argument arrays are equal (recall that Arrays.equals calls the
 	 * <code>equals</code> method on each corresponding pair of objects in the two
 	 * arrays).
+	 * 
+	 * TODO: Paul undo string comparison
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof RandFuncAppVar) {
 			RandFuncAppVar other = (RandFuncAppVar) obj;
-			return ((f == other.func()) && Arrays.equals(args, other.args()));
+			return ((f.toString().equals(other.func().toString())) && Arrays.equals(args, other.args()));
 		}
 		return false;
 	}

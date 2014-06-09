@@ -72,7 +72,10 @@ public class OUPBVI {
 		double bestValue = Double.NEGATIVE_INFINITY;
 		FiniteStatePolicy bestPolicy = null;
 		for (FiniteStatePolicy p : policies) {
-			if (!p.isApplicable(b)) continue;
+			if (!p.isApplicable(b)) {
+				if (printValues) System.out.println("bestPolicyValue: skipping inapplicable policy id: " + p.getID());
+				continue;
+			}
 			double value = evalPolicy(b, p);
 			if (printValues) System.out.println("bestPolicyValue: value: " + value + " policy id: " + p.getID());
 			if (value > bestValue) {
@@ -205,7 +208,9 @@ public class OUPBVI {
 		for (FiniteStatePolicy p : policies) {
 			if (!policy.merge(p)) {
 				newPolicies.add(p);
-			} 
+			} else {
+				System.out.println("createMergedPolicySet merged " + p.getID() + " into " + policy.getID());
+			}
 		}
 		newPolicies.add(policy);
 		return newPolicies;
