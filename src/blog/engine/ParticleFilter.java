@@ -251,7 +251,6 @@ public class ParticleFilter extends InferenceEngine {
   /** Takes more evidence. */
   public void take(Evidence evidence) {
     if (particles == null)
-      // Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
       resetAndTakeInitialEvidence();
 
     if (!evidence.isEmpty()) { // must be placed after check on particles ==
@@ -297,11 +296,6 @@ public class ParticleFilter extends InferenceEngine {
 
       dataLogLik += logSumWeights;
 
-      // System.out.println("PF: Num of particles after taking evidence: " +
-      // particles.size());
-      // System.out.println("PF: Log sum of weights after taking evidence: " +
-      // logSumWeights);
-
       needsToBeResampledBeforeFurtherSampling = true;
 
       if (useDecayedMCMC)
@@ -317,15 +311,8 @@ public class ParticleFilter extends InferenceEngine {
    */
   public void answer(Collection queries) {
     if (particles == null)
-      // Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
       resetAndTakeInitialEvidence();
 
-    // System.out.println("PF: Updating queries with PF with " +
-    // particles.size() + " particles.");
-    // for (Iterator it = particles.iterator(); it.hasNext();) {
-    // Particle p = (Particle) it.next();
-    // p.answer(queries);
-    // }
     if (useDecayedMCMC)
       dmhSampler.addQueries(queries);
   }
@@ -349,9 +336,6 @@ public class ParticleFilter extends InferenceEngine {
     if (logSumWeights == Double.NEGATIVE_INFINITY) {
       throw new IllegalArgumentException("All particles have zero weight");
     }
-    // else
-    // System.out.println("PF.resample: log sum of all particle weights is " +
-    // logSumWeights);
 
     for (int i = 0; i < particles.size(); i++) {
       normalizedWeights[i] = Math.exp(logWeights[i] - logSumWeights);
@@ -389,8 +373,7 @@ public class ParticleFilter extends InferenceEngine {
     }
   }
 
-  // ///////////////////////// PARTICLE TAKES EVIDENCE EVENT HANDLING
-  // ///////////////////////////
+  // PARTICLE TAKES EVIDENCE EVENT HANDLING
   /**
    * An interface specifying handlers for before and after a particle takes
    * evidence.
@@ -412,9 +395,7 @@ public class ParticleFilter extends InferenceEngine {
    */
   public ParticleTakesEvidenceHandler afterParticleTakesEvidence;
 
-  // ///////////////////////// FILTER TAKES EVIDENCE EVENT HANDLING
-  // ///////////////////////////
-
+  // FILTER TAKES EVIDENCE EVENT HANDLING
   /**
    * An interface specifying handlers for before and after the particle filter
    * takes evidence.
@@ -435,7 +416,7 @@ public class ParticleFilter extends InferenceEngine {
    */
   public TakesEvidenceHandler afterTakesEvidence;
 
-  // ///////////////////////// END OF EVENT HANDLING ///////////////////////////
+  // END OF EVENT HANDLING
 
   public AfterSamplingListener getAfterSamplingListener() {
     return afterSamplingListener;
@@ -451,7 +432,7 @@ public class ParticleFilter extends InferenceEngine {
 
   private int numParticles;
   private boolean useDecayedMCMC;
-  public List<Particle> particles; // of Particles
+  public List<Particle> particles;
   private int numMoves;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
   private Sampler particleSampler;

@@ -25,6 +25,7 @@ import blog.world.PartialWorld;
  * aspects (DBLOG) (general ones are in {@link BLOGUtil}.
  * 
  * @author Rodrigo
+ * @author cberzan
  */
 public class DBLOGUtil {
   /**
@@ -151,6 +152,9 @@ public class DBLOGUtil {
     return table;
   }
 
+  /**
+   * Return all evidence up to and including the given timestep index.
+   */
   public static Evidence getEvidenceUpTo(int timestepIndex, Evidence evidence) {
     Map<Timestep, Evidence> splitEvidence = splitEvidenceInTime(evidence);
     final Evidence result = new Evidence();
