@@ -37,7 +37,6 @@ package blog.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +44,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 
 import blog.DBLOGUtil;
 import blog.common.Util;
@@ -196,8 +196,10 @@ public class ParticleFilter extends InferenceEngine {
     nonNullTimesteps.addAll(slicedEvidence.keySet());
     nonNullTimesteps.addAll(slicedQueries.keySet());
     nonNullTimesteps.remove(null);
-    Collections.sort(nonNullTimesteps);
-    for (Timestep timestep : nonNullTimesteps) {
+    // We use a TreeSet to remove duplicates and to sort the timesteps.
+    // (We can't construct a TreeSet directly because it doesn't accept nulls.)
+    TreeSet<Timestep> sortedTimesteps = new TreeSet<Timestep>(nonNullTimesteps);
+    for (Timestep timestep : sortedTimesteps) {
       if (slicedEvidence.containsKey(timestep)) {
         take(slicedEvidence.get(timestep));
       }
