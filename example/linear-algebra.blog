@@ -31,6 +31,9 @@ random Real j = toReal(c[0][k]);
 fixed RealMatrix l = [1; 2; 3];
 fixed RealMatrix m = diag(l);
 
+fixed RealMatrix n = [5, 6; 3, 4];
+fixed RealMatrix o = repmat(n, 3, 2);
+
 query x;
 query y;
 query z;
@@ -43,3 +46,4 @@ query h;
 query i;
 query j;
 query m;
+query o;
