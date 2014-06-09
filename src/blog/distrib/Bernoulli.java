@@ -38,23 +38,19 @@ package blog.distrib;
 import blog.common.Util;
 
 /**
- * A distribution over {0,1}. It takes one parameter, which is the probability
+ * A distribution over {0,1}. It takes one parameter p, which is the probability
  * of <code>true</code>.
  */
-public class Bernoulli extends AbstractCondProbDistrib {
-
-  public Bernoulli() {
-  }
-
-  public Bernoulli(double p) {
-    setParams(p);
-  }
+public class Bernoulli extends BooleanDistrib {
 
   public double getP() {
     return p;
   }
 
   @Override
+  /**
+   * params[0] -> p, probability of <code>true</code>
+   */
   public void setParams(Object[] params) {
     if (params.length != 1) {
       throw new IllegalArgumentException(
@@ -63,6 +59,10 @@ public class Bernoulli extends AbstractCondProbDistrib {
     setParams((Double) params[0]);
   }
 
+  /**
+   * @param p
+   *          probability of <code>true</code>
+   */
   public void setParams(Double p) {
     if (p != null) {
       if (p < 0 || p > 1) {
@@ -70,12 +70,14 @@ public class Bernoulli extends AbstractCondProbDistrib {
             "Parameter to Bernoulli must be in interval [0, 1], not " + p + ".");
       }
       this.p = p;
+      this.logP = Math.log(p);
+      this.log1_P = Math.log(1 - p);
       this.hasP = true;
     }
   }
 
   private void checkHasParams() {
-    if (!hasP) {
+    if (!this.hasP) {
       throw new IllegalArgumentException("p not provided");
     }
   }
@@ -104,7 +106,11 @@ public class Bernoulli extends AbstractCondProbDistrib {
   }
 
   public double getLogProb(double value) {
-    return Math.log(getProb(value));
+    checkHasParams();
+    if (value == 1) {
+      return logP;
+    }
+    return log1_P;
   }
 
   @Override
@@ -122,6 +128,7 @@ public class Bernoulli extends AbstractCondProbDistrib {
   }
 
   private double p;
+  private double logP; // log p
+  private double log1_P; // log (1 - p)
   private boolean hasP;
-
 }
