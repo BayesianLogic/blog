@@ -43,14 +43,7 @@ import blog.common.Util;
  * Gamma(k) = integral from 0 to infinity of t^(k-1) * e^(-t) dt
  */
 
-public class Gamma extends AbstractCondProbDistrib {
-
-  public Gamma() {
-  }
-
-  public Gamma(double k, double lambda) {
-    setParams(k, lambda);
-  }
+public class Gamma implements CondProbDistrib {
 
   public double getLambda() {
     return lambda;
@@ -60,14 +53,12 @@ public class Gamma extends AbstractCondProbDistrib {
     return k;
   }
 
-  /**
-   * Refer to Wikipedia.
-   * 
-   * @params
-   *         params[0] -> k (shape parameter)
-   *         params[1] -> lambda (rate parameter)
-   */
   @Override
+  /**
+   * Refer to class description.
+   * params[0] -> k (shape parameter)
+   * params[1] -> lambda (rate parameter)
+   */
   public void setParams(Object[] params) {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected 2 parameters");
