@@ -63,6 +63,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import blog.common.numerical.MatrixFactory;
+import blog.common.numerical.MatrixLib;
+
 /**
  * Provides common utilities to FOMIE programs.
  * Original created by
@@ -995,6 +998,20 @@ public class Util {
    */
   public static Iterator getIntegerRangeIterator(int lower, int upper) {
     return new IntRangeIterator(lower, upper);
+  }
+
+  /**
+   * Returns a row vector from <code>args</code>.
+   * 
+   * @param args
+   *          A variable length set of doubles
+   */
+  public static MatrixLib getMatrix(double... args) {
+    double[][] ary = new double[1][args.length];
+    for (int i = 0; i < args.length; i++) {
+      ary[0][i] = args[i];
+    }
+    return MatrixFactory.fromArray(ary);
   }
 
   /**
