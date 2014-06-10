@@ -40,6 +40,9 @@ import blog.common.Util;
 /**
  * A distribution over Boolean values. It is defined by one parameter p, which
  * is the probability of <code>true</code>.
+ * 
+ * @author cgioia
+ * @since June 9, 2014
  */
 public class BooleanDistrib implements CondProbDistrib {
 
@@ -47,16 +50,51 @@ public class BooleanDistrib implements CondProbDistrib {
     return p;
   }
 
-  /**
-   * params[0] -> p, probability of <code>true</code>
-   */
-  @Override
-  public void setParams(Object[] params) {
-    if (params.length != 1) {
-      throw new IllegalArgumentException(
-          "expected one parameter: probability of success");
+  private void checkHasParams() {
+    if (!this.hasP) {
+      throw new IllegalArgumentException("parameter p not provided");
     }
-    setParams((Double) params[0]);
+  }
+
+  /**
+   * Returns the log probability of the given Boolean value under this
+   * distribution.
+   */
+  public double getLogProb(boolean value) {
+    checkHasParams();
+    if (value) {
+      return logP;
+    }
+    return log1_P;
+  }
+
+  @Override
+  public double getLogProb(Object value) {
+    return getLogProb(((Boolean) value).booleanValue());
+  }
+
+  /**
+   * Returns the probability of the given Boolean value under this distribution.
+   **/
+  public double getProb(boolean value) {
+    checkHasParams();
+    if (value) {
+      return p;
+    }
+    return 1 - p;
+  }
+
+  @Override
+  public double getProb(Object value) {
+    return getProb(((Boolean) value).booleanValue());
+  }
+
+  @Override
+  public Object sampleVal() {
+    if (Util.random() < p) {
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -76,51 +114,16 @@ public class BooleanDistrib implements CondProbDistrib {
     }
   }
 
-  private void checkHasParams() {
-    if (!this.hasP) {
-      throw new IllegalArgumentException("parameter p not provided");
-    }
-  }
-
-  @Override
-  public double getProb(Object value) {
-    return getProb(((Boolean) value).booleanValue());
-  }
-
   /**
-   * Returns the probability of the given Boolean value under this distribution.
-   **/
-  public double getProb(boolean value) {
-    checkHasParams();
-    if (value) {
-      return p;
-    }
-    return 1 - p;
-  }
-
-  @Override
-  public double getLogProb(Object value) {
-    return getLogProb(((Boolean) value).booleanValue());
-  }
-
-  /**
-   * Returns the log probability of the given Boolean value under this
-   * distribution.
+   * params[0] -> p, probability of <code>true</code>
    */
-  public double getLogProb(boolean value) {
-    checkHasParams();
-    if (value) {
-      return logP;
-    }
-    return log1_P;
-  }
-
   @Override
-  public Object sampleVal() {
-    if (Util.random() < p) {
-      return true;
+  public void setParams(Object[] params) {
+    if (params.length != 1) {
+      throw new IllegalArgumentException(
+          "expected one parameter: probability of success");
     }
-    return false;
+    setParams((Double) params[0]);
   }
 
   public String toString() {
@@ -128,8 +131,11 @@ public class BooleanDistrib implements CondProbDistrib {
   }
 
   private double p;
+
   private double logP; // log p
+
   private double log1_P; // log (1 - p)
+
   private boolean hasP;
 
 }

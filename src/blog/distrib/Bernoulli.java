@@ -38,24 +38,15 @@ package blog.distrib;
 /**
  * A distribution over {0,1}. It takes one parameter p, which is the probability
  * of <code>true</code>.
+ * 
+ * The actual implementation relies on BooleanDistrib.
+ * 
+ * @see blog.distrib.BooleanDistrib.
+ * 
+ * @author cgioia
+ * @since June 9, 2014
  */
-public class Bernoulli extends BooleanDistrib {
-
-  @Override
-  public double getProb(Object value) {
-    return super.getProb(getBooleanValue(value));
-  }
-
-  public static Boolean getBooleanValue(Object value) {
-    Integer val = (Integer) value;
-    if (val.equals(1)) {
-      return true;
-    } else if (val.equals(0)) {
-      return false;
-    } else {
-      return null;
-    }
-  }
+public class Bernoulli implements CondProbDistrib {
 
   public static Integer getIntegerValue(Object value) {
     Boolean val = (Boolean) value;
@@ -68,22 +59,39 @@ public class Bernoulli extends BooleanDistrib {
     }
   }
 
+  public Bernoulli() {
+    booldist = new BooleanDistrib();
+  }
+
   @Override
   public double getLogProb(Object value) {
-    return super.getLogProb(getBooleanValue(value));
+    return booldist.getLogProb(value.equals(1));
+  }
+
+  @Override
+  public double getProb(Object value) {
+    return booldist.getProb(value.equals(1));
   }
 
   @Override
   public Object sampleVal() {
-    return getIntegerValue(super.sampleVal());
+    return ((Boolean) booldist.sampleVal()) ? 1 : 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
+   */
+  @Override
+  public void setParams(Object[] params) {
+    booldist.setParams(params);
   }
 
   public String toString() {
-    return "Bernoulli(" + p + ")";
+    return "Bernoulli(" + booldist.getP() + ")";
   }
 
-  private double p;
-  private double logP; // log p
-  private double log1_P; // log (1 - p)
-  private boolean hasP;
+  private BooleanDistrib booldist; // actual holder of underlying boolean
+                                   // distribution
 }
