@@ -53,17 +53,17 @@ public abstract class AbstractQuery implements Query {
         + " does not support setPosterior.");
   }
 
-	/**
-	 * Returns an object whose toString method yields a description of the
-	 * location where this query occurred in an input file.
-	 * 
-	 * <p>
-	 * This default implementation returns a string indicating that this query was
-	 * generated internally, rather than from an input file.
-	 */
-	public Object getLocation() {
-		return "(auto-generated)";
-	}
+  /**
+   * Returns an object whose toString method yields a description of the
+   * location where this query occurred in an input file.
+   * 
+   * <p>
+   * This default implementation returns a string indicating that this query was
+   * generated internally, rather than from an input file.
+   */
+  public Object getLocation() {
+    return "(auto-generated)";
+  }
 
   @Override
   public void updateStats(PartialWorld world) {

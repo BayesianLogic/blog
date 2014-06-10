@@ -38,6 +38,7 @@ package blog.model;
 import java.util.Collections;
 
 import ve.Factor;
+import ve.Factor;
 import blog.bn.BasicVar;
 import blog.common.Histogram;
 import blog.common.Util;
