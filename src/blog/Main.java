@@ -128,8 +128,8 @@ import blog.semant.Semant;
  * <dt>-g, --debug
  * <dd>Print model, evidence, and queries for debugging. Default: false
  * 
- * <dt>-w <i>file</i>, --write=<i>file</i>
- * <dd>Write query results in JSON format to this file.
+ * <dt>-o <i>file</i>, --output=<i>file</i>
+ * <dd>Output query results in JSON format to this file.
  * 
  * <dt>-i <i>num</i>, --interval=<i>num</i>
  * <dd>Report query results to stdout every num queries.
@@ -306,8 +306,8 @@ public class Main {
         "Print the CBN of the sampled world");
     BooleanOption optDebug = new BooleanOption("g", "debug", false,
         "Print model, evidence, and queries");
-    StringOption optWrite = new StringOption("w", "write", null,
-        "Write query results to file <s>");
+    StringOption optOutput = new StringOption("o", "output", null,
+        "Output query results to file <s>");
     PropertiesOption optInferenceProps = new PropertiesOption("P", null, null,
         "Set inference configuration properties");
 
@@ -329,7 +329,7 @@ public class Main {
     verbose = optVerbose.getValue();
     print = optPrint.getValue();
     debug = optDebug.getValue();
-    outputPath = optWrite.getValue();
+    outputPath = optOutput.getValue();
 
     // Make sure properties that have special-purpose options weren't
     // specified with -P.
