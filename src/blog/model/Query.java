@@ -37,6 +37,7 @@ package blog.model;
 
 import java.util.Collection;
 import java.util.Collection;
+import java.util.Collection;
 
 import ve.Factor;
 import blog.bn.BayesNetVar;
