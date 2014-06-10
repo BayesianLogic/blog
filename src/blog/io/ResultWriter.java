@@ -3,6 +3,7 @@ package blog.io;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Collection;
+import java.util.Collections;
 
 import blog.common.Util;
 import blog.model.Query;
@@ -22,6 +23,13 @@ public abstract class ResultWriter {
    */
   public ResultWriter(final Collection<Query> queries) {
     this.queries = queries;
+  }
+
+  /**
+   * Construct a ResultWriter for a single query.
+   */
+  public ResultWriter(final Query query) {
+    this.queries = Collections.singletonList(query);
   }
 
   /**

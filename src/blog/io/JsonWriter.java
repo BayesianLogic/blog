@@ -39,8 +39,12 @@ import com.google.gson.Gson;
  * @since Jun 9, 2014
  */
 public class JsonWriter extends ResultWriter {
-  public JsonWriter(Collection<Query> queries) {
+  public JsonWriter(final Collection<Query> queries) {
     super(queries);
+  }
+
+  public JsonWriter(final Query query) {
+    super(query);
   }
 
   @Override
