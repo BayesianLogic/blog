@@ -38,7 +38,6 @@ package blog.model;
 import java.util.Collections;
 
 import ve.Factor;
-import ve.Factor;
 import blog.bn.BasicVar;
 import blog.common.Histogram;
 import blog.common.Util;
@@ -62,9 +61,9 @@ public class FormulaQuery extends ArgSpecQuery {
     }
 
     if (((Formula) getArgSpec()).isTrue(world)) {
-      trueSum = Util.logSum(logweight, trueSum);
+      logSumTrueWeight = Util.logSum(logweight, logSumTrueWeight);
     }
-    totalSum = Util.logSum(logweight, totalSum);
+    logSumTotalWeight = Util.logSum(logweight, logSumTotalWeight);
   }
 
   public void setPosterior(Factor posterior) {
@@ -86,18 +85,20 @@ public class FormulaQuery extends ArgSpecQuery {
     if (probTrue != -1) {
       return probTrue;
     }
-    return Math.exp(trueSum - totalSum);
+    return Math.exp(logSumTrueWeight - logSumTotalWeight);
   }
 
   public Histogram getHistogram() {
     histogram.clear();
-    double logt = trueSum - totalSum;
+    double logt = logSumTrueWeight - logSumTotalWeight;
     histogram.increaseWeight(Boolean.TRUE, logt);
     histogram.increaseWeight(Boolean.FALSE, Math.log(1 - Math.exp(logt)));
     return histogram;
   }
 
-  private double trueSum = 0;
-  private double totalSum = 0;
+  private double logSumTrueWeight = 0; // logy6 of the sum of weight of possible
+                                       // worlds within which this formula is
+                                       // true.
+  private double logSumTotalWeight = 0;
   private double probTrue = -1;
 }
