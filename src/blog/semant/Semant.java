@@ -72,7 +72,6 @@ import blog.model.Evidence;
 import blog.model.ExistentialFormula;
 import blog.model.ExplicitSetSpec;
 import blog.model.Formula;
-import blog.model.FormulaQuery;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.FunctionSignature;
@@ -1206,16 +1205,10 @@ public class Semant {
    * @param e
    */
   void transQuery(QueryStmt e) {
-    // TODO Auto-generated method stub
     Object as = transExpr(e.query);
     Query q;
-    if (as != null) {
-      if (as instanceof Formula) {
-        q = new FormulaQuery((Formula) as);
-      } else {
-        q = new ArgSpecQuery((ArgSpec) as);
-      }
-
+    if (as != null && as instanceof ArgSpec) {
+      q = new ArgSpecQuery((ArgSpec) as);
       queries.add(q);
     }
 

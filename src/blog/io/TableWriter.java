@@ -12,7 +12,6 @@ import blog.common.Histogram;
 import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
-import blog.model.FormulaQuery;
 import blog.model.Model;
 import blog.model.Query;
 
@@ -56,7 +55,6 @@ public class TableWriter extends ResultWriter {
 
   @Override
   public void writeResults(PrintStream stream) {
-    stream.println("======== Query Results =========");
     if (header != null) {
       stream.println(header);
     }
@@ -78,16 +76,11 @@ public class TableWriter extends ResultWriter {
           double prob = histogram.getProb(entry.getElement());
           stream.println("\t" + prob + "\t" + entry.getElement());
         }
-      } else if (abstractQuery instanceof FormulaQuery) {
-        FormulaQuery query = (FormulaQuery) abstractQuery;
-        stream.println("Probability of " + query.getArgSpec() + " is "
-            + query.getProbTrue());
       } else {
         Util.fatalError("Don't know how to print Query of type "
             + abstractQuery.getClass());
       }
     }
-    stream.println("======== Done ========");
     stream.println();
   }
 
