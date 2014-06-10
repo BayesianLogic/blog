@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
@@ -101,13 +102,17 @@ public class DBLOGUtil {
 
   /**
    * Split evidence by the timestep they refer to.
-   * Atemporal evidence is assigned to timestep null.
+   * Atemporal evidence is assigned to Timestep.ATEMPORAL.
    */
-  public static Map<Timestep, Evidence> splitEvidenceInTime(Evidence evidence) {
+  public static TreeMap<Timestep, Evidence> splitEvidenceInTime(
+      Evidence evidence) {
     // First we accumulate all statements for each timestep.
     Map<Timestep, List<Object>> table = new HashMap<Timestep, List<Object>>();
     for (ValueEvidenceStatement statement : evidence.getValueEvidence()) {
       Timestep maxTimestep = statement.getLeftSide().maxTimestep();
+      if (maxTimestep == null) {
+        maxTimestep = Timestep.ATEMPORAL;
+      }
       List<Object> statements = table.get(maxTimestep);
       if (statements == null) {
         statements = new LinkedList<Object>();
@@ -117,6 +122,9 @@ public class DBLOGUtil {
     }
     for (SymbolEvidenceStatement statement : evidence.getSymbolEvidence()) {
       Timestep maxTimestep = statement.getSetSpec().maxTimestep();
+      if (maxTimestep == null) {
+        maxTimestep = Timestep.ATEMPORAL;
+      }
       List<Object> statements = table.get(maxTimestep);
       if (statements == null) {
         statements = new LinkedList<Object>();
@@ -125,7 +133,7 @@ public class DBLOGUtil {
       statements.add(statement);
     }
     // Then we convert each list of statements to an Evidence object.
-    Map<Timestep, Evidence> result = new HashMap<Timestep, Evidence>();
+    TreeMap<Timestep, Evidence> result = new TreeMap<Timestep, Evidence>();
     for (Map.Entry<Timestep, List<Object>> entry : table.entrySet()) {
       result
           .put(entry.getKey(), Evidence.constructAndCompile(entry.getValue()));
@@ -135,13 +143,16 @@ public class DBLOGUtil {
 
   /**
    * Split queries by the timestep they refer to.
-   * Atemporal queries are assigned to timestep null.
+   * Atemporal queries are assigned to Timestep.ATEMPORAL.
    */
-  public static Map<Timestep, List<Query>> splitQueriesInTime(
+  public static TreeMap<Timestep, List<Query>> splitQueriesInTime(
       List<Query> queries) {
-    Map<Timestep, List<Query>> table = new HashMap<Timestep, List<Query>>();
+    TreeMap<Timestep, List<Query>> table = new TreeMap<Timestep, List<Query>>();
     for (Query q : queries) {
       Timestep t = ((ArgSpecQuery) q).argSpec().maxTimestep();
+      if (t == null) {
+        t = Timestep.ATEMPORAL;
+      }
       List<Query> qs = table.get(t);
       if (qs == null) {
         qs = new LinkedList<Query>();
