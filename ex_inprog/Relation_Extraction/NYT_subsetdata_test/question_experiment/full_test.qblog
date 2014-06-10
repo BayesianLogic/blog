@@ -16,3 +16,19 @@ query Holds(F(Edward_Altman)) == true;				// Edward_Altman professor  New_York_U
 query Holds(F(Burt_Neuborne)) == true;				// Burt_Neuborne professor  New_York_University
 query Holds(F(William_L__Silber)) == true;			// William_L__Silber professor  New_York_University
 query Holds(F(Sidney)) == true;						// Sidney professor at  New_York_University
+
+//query Holds(F(Stephen_Gillers));                        // Stephen_Gillers professor at  New_York_University
+//query Holds(F(Robert_Berne));                           // Robert_Berne president at  New_York_University
+//query Holds(F(Dr__Gary_I__Wadler));                     // Dr__Gary_I__Wadler professor  New_York_University
+//query Holds(F(Herbert_Menzel));                         // Herbert_Menzel professor at  New_York_University
+//query Holds(F(New_York));                                       // New_York professor at  New_York_University
+//query Holds(F(William_Joseph_McKeon));          // William_Joseph_McKeon professor at school  New_York_University
+//query Holds(F(Thomas_G__S__Christensen));       // Thomas_G__S__Christensen expert teach at  New_York_University
+//query Holds(F(Prof__Stephen_Gillers));          // Prof__Stephen_Gillers of school  New_York_University
+//query Holds(F(Dr__Seymour_Birnbach));           // Dr__Seymour_Birnbach professor at school  New_York_University
+//query Holds(F(Michael_Wishnie));                        // Michael_Wishnie of title misstate at  New_York_University
+//query Holds(F(Edward_Altman));                          // Edward_Altman professor  New_York_University
+//query Holds(F(Burt_Neuborne));                          // Burt_Neuborne professor  New_York_University
+//query Holds(F(William_L__Silber));                      // William_L__Silber professor  New_York_University
+//query Holds(F(Sidney));                                         // Sidney professor at  New_York_University
+
