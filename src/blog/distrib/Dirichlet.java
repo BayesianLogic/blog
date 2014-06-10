@@ -35,9 +35,6 @@
 
 package blog.distrib;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
@@ -55,55 +52,6 @@ import blog.common.numerical.MatrixLib;
 public class Dirichlet implements CondProbDistrib {
 
   private final double TOLERANCE = 10e-2;
-  private Double[] alpha;
-
-  /**
-   * Helper for constructor to construct needed gamma functions
-   */
-  private void initGammas() {
-    int numParams = alpha.length;
-    gammas = new Gamma[numParams];
-    for (int i = 0; i < numParams; i++) {
-      gammas[i] = new Gamma(alpha[i], 1);
-    }
-  }
-
-  /**
-   * Helper for sampleVal() to reconstruct gamma functions
-   */
-  private void reconstructGammas(int vec_size) {
-    int numParams = vec_size;
-    gammas = new Gamma[numParams];
-    for (int i = 0; i < numParams; i++) {
-      gammas[i] = new Gamma(alpha[0], 1);
-    }
-  }
-
-  /**
-   * Returns a list of doubles sampled from this distribution.
-   */
-  public Object sampleVal(List args) {
-    double sum = 0.0;
-    int vec_size = alpha.length;
-    if (args.size() != 0) {
-      vec_size = (Integer) args.get(0);
-      reconstructGammas(vec_size);
-    }
-
-    double[][] samples = new double[1][vec_size];
-    List<Object> dummy = new ArrayList<Object>();
-    for (int i = 0; i < vec_size; i++) {
-      Gamma component = gammas[i];
-      double sample = (Double) component.sampleVal(dummy);
-      sum += sample;
-      samples[0][i] = sample;
-    }
-
-    for (int i = 0; i < vec_size; i++) {
-      samples[0][i] /= sum;
-    }
-    return MatrixFactory.fromArray(samples);
-  }
 
   @Override
   /**
@@ -184,7 +132,7 @@ public class Dirichlet implements CondProbDistrib {
     double prob = 1.0;
     for (int i = 0; i < x.numCols(); i++) {
       double val = x.elementAt(0, i);
-      prob *= Math.pow(val, alpha[i] - 1);
+      prob *= Math.pow(val, alphas[i] - 1);
     }
     return (prob / normalizationConstant);
   }
@@ -253,8 +201,29 @@ public class Dirichlet implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
+    checkHasParams();
+    return sampleValue();
+  }
+
+  /**
+   * Samples a dirichlet distribution using the method at the following url:
+   * http://en.wikipedia.org/wiki/Dirichlet_distribution#
+   */
+  public MatrixLib sampleValue() {
+    double sum = 0.0;
+    int vec_size = alphas.length;
+
+    double[][] samples = new double[1][vec_size];
+    for (int i = 0; i < vec_size; i++) {
+      double sample = Gamma.sampleVal(alphas[i], 1);
+      sum += sample;
+      samples[0][i] = sample;
+    }
+
+    for (int i = 0; i < vec_size; i++) {
+      samples[0][i] /= sum;
+    }
+    return MatrixFactory.fromArray(samples);
   }
 
   /**
