@@ -20,13 +20,13 @@ import com.google.gson.Gson;
  * list of (value, log_prob) pairs. The value is always a string obtained by
  * calling toString() on the corresponding Java object.
  * 
- * Example output:
+ * Example output (prettified to show structure):
  * 
  * <code>
  * [
  *     ["Damage(A)", [
  *         ["Mild", 2.639057329615258],
- *         ["Severe, "3.526360524616161]
+ *         ["Severe", 3.526360524616161]
  *     ]],
  *     ["Damage(B)", [
  *         ["Mild", 2.9957322735539904],
