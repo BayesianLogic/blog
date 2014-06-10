@@ -38,7 +38,6 @@ package blog.model;
 import java.util.Collections;
 
 import ve.Factor;
-import ve.Factor;
 import blog.bn.BasicVar;
 import blog.common.Histogram;
 import blog.common.Util;
@@ -82,7 +81,7 @@ public class FormulaQuery extends ArgSpecQuery {
         Collections.singletonList(Boolean.TRUE));
   }
 
-  private double logTrueProb() {
+  public double getProbTrue() {
     if (probTrue != -1) {
       return probTrue;
     }
