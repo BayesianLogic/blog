@@ -41,10 +41,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
 import blog.DBLOGUtil;
 import blog.common.Util;
@@ -181,25 +180,19 @@ public class ParticleFilter extends InferenceEngine {
 
   private void takeEvidenceAndAnswerQuery() {
     // Split evidence and queries according to the timestep it occurs in.
-    Map<Timestep, Evidence> slicedEvidence = DBLOGUtil
+    TreeMap<Timestep, Evidence> slicedEvidence = DBLOGUtil
         .splitEvidenceInTime(evidence);
-    Map<Timestep, List<Query>> slicedQueries = DBLOGUtil
+    TreeMap<Timestep, List<Query>> slicedQueries = DBLOGUtil
         .splitQueriesInTime((List<Query>) queries);
 
     // Process atemporal evidence (if any) before everything else.
-    if (slicedEvidence.containsKey(null)) {
-      take(slicedEvidence.get(null));
+    if (slicedEvidence.containsKey(Timestep.ATEMPORAL)) {
+      take(slicedEvidence.get(Timestep.ATEMPORAL));
     }
 
     // Process temporal evidence and queries in lockstep.
-    List<Timestep> nonNullTimesteps = new ArrayList<Timestep>();
-    nonNullTimesteps.addAll(slicedEvidence.keySet());
-    nonNullTimesteps.addAll(slicedQueries.keySet());
-    nonNullTimesteps.remove(null);
-    // We use a TreeSet to remove duplicates and to sort the timesteps.
-    // (We can't construct a TreeSet directly because it doesn't accept nulls.)
-    TreeSet<Timestep> sortedTimesteps = new TreeSet<Timestep>(nonNullTimesteps);
-    for (Timestep timestep : sortedTimesteps) {
+    Timestep timestep = Timestep.at(0);
+    while (timestep != null) {
       if (slicedEvidence.containsKey(timestep)) {
         take(slicedEvidence.get(timestep));
       }
@@ -217,11 +210,26 @@ public class ParticleFilter extends InferenceEngine {
         }
       }
       removePriorTimeSlice(timestep);
+      Timestep nextInEvidence = slicedEvidence.higherKey(timestep);
+      Timestep nextInQueries = slicedQueries.higherKey(timestep);
+      if (nextInEvidence != null && nextInQueries != null) {
+        if (nextInEvidence.compareTo(nextInQueries) < 0) {
+          timestep = nextInEvidence;
+        } else {
+          timestep = nextInQueries;
+        }
+      } else if (nextInEvidence != null && nextInQueries == null) {
+        timestep = nextInEvidence;
+      } else if (nextInEvidence == null && nextInQueries != null) {
+        timestep = nextInQueries;
+      } else {
+        timestep = null;
+      }
     }
 
     // Process atemporal queries (if any) after all the evidence.
-    if (slicedQueries.containsKey(null)) {
-      List<Query> currentQueries = slicedQueries.get(null);
+    if (slicedQueries.containsKey(Timestep.ATEMPORAL)) {
+      List<Query> currentQueries = slicedQueries.get(Timestep.ATEMPORAL);
       for (Particle particle : particles) {
         particle.answer(currentQueries);
       }

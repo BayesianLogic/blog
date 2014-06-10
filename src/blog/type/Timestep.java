@@ -43,6 +43,11 @@ import java.util.Map;
  */
 public class Timestep extends Number implements Comparable<Timestep> {
 
+  /**
+   * Use this as a key in a map when you mean "no timestep".
+   */
+  static public Timestep ATEMPORAL = new Timestep(-1);
+
   private Timestep(int index) {
     this.index = index;
     if (index > max)
