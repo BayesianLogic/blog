@@ -51,7 +51,11 @@ import blog.common.numerical.MatrixLib;
  */
 public class Dirichlet implements CondProbDistrib {
 
-  private final double TOLERANCE = 10e-2;
+  private final double TOLERANCE = 10e-3;
+
+  public double[] getAlphas() {
+    return alphas;
+  }
 
   @Override
   /**
@@ -79,11 +83,19 @@ public class Dirichlet implements CondProbDistrib {
         throw new IllegalArgumentException(
             "Dirichlet distribution requires nonempty vector of numbers as argument.");
       }
+      if (matrix.numCols() == 1) {
+        throw new IllegalArgumentException(
+            "The alpha vector must contain at least two elements");
+      }
       int cols = matrix.numCols();
-      this.alphas = new Double[cols];
+      this.alphas = new double[cols];
       this.gammas = new Gamma[cols];
       for (int i = 0; i < cols; i++) {
         double elementValue = matrix.elementAt(0, i);
+        if (elementValue <= 0) {
+          throw new IllegalArgumentException(
+              "All elements in the alpha vector need to be strictly positive.");
+        }
         alphas[i] = elementValue;
         gammas[i] = new Gamma(elementValue, 1);
       }
@@ -126,8 +138,7 @@ public class Dirichlet implements CondProbDistrib {
               + x.numCols() + " matrix");
     }
     if (!checkSupport(x)) {
-      throw new IllegalArgumentException(
-          "The elements of the random outcome row vector for a Dirichlet should sum to 1.");
+      return 0.0;
     }
     double prob = 1.0;
     for (int i = 0; i < x.numCols(); i++) {
@@ -180,8 +191,7 @@ public class Dirichlet implements CondProbDistrib {
               + x.numCols() + " matrix");
     }
     if (!checkSupport(x)) {
-      throw new IllegalArgumentException(
-          "The elements of the random outcome row vector for a Dirichlet should sum to 1.");
+      return Double.NEGATIVE_INFINITY;
     }
 
     double prob = 0.0;
@@ -234,7 +244,7 @@ public class Dirichlet implements CondProbDistrib {
    *          a list of parameters of a Dirichlet distribution
    * @return the normalization constant for such a distribution
    */
-  public static final double normalize(Double[] params) {
+  private static final double normalize(double[] params) {
     double denom = 0.0;
     double numer = 1.0;
 
@@ -251,7 +261,7 @@ public class Dirichlet implements CondProbDistrib {
     return getClass().getName();
   }
 
-  private Double[] alphas;
+  private double[] alphas;
   private boolean hasAlpha;
   private Gamma[] gammas;
   private double normalizationConstant;
