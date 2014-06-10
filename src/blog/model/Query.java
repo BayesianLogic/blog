@@ -35,13 +35,12 @@
 
 package blog.model;
 
-import java.util.*;
-import java.io.PrintStream;
+import java.util.Collection;
 
+import ve.Factor;
 import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.world.PartialWorld;
-import ve.Factor;
 
 /**
  * Interface for queries that can be answered by an inference engine. A Query
@@ -60,72 +59,66 @@ import ve.Factor;
  * <code>setPosterior</code>.
  */
 public interface Query {
+  /**
+   * Returns a collection of (basic or derived) random variables such that the
+   * result of this query depends only on the posterior joint distribution for
+   * these variables.
+   * 
+   * @throws IllegalStateException
+   *           if <code>compile</code> has not yet been called
+   */
+  Collection<? extends BayesNetVar> getVariables();
 
-	/**
-	 * Prints the results of this query to the given stream.
-	 */
-	void printResults(PrintStream s);
+  /**
+   * Returns true if this query satisfies type and scope constraints. If there
+   * is a type or scope error, prints a message to standard error and returns
+   * false.
+   */
+  public boolean checkTypesAndScope(Model model);
 
-	/**
-	 * Returns a collection of (basic or derived) random variables such that the
-	 * result of this query depends only on the posterior joint distribution for
-	 * these variables.
-	 * 
-	 * @throws IllegalStateException
-	 *           if <code>compile</code> has not yet been called
-	 */
-	Collection<? extends BayesNetVar> getVariables();
+  /**
+   * Does compilation steps that can only be done correctly once the model is
+   * complete. Prints messages to standard error if any errors are encountered.
+   * Returns the number of errors encountered.
+   */
+  public int compile();
 
-	/**
-	 * Returns true if this query satisfies type and scope constraints. If there
-	 * is a type or scope error, prints a message to standard error and returns
-	 * false.
-	 */
-	public boolean checkTypesAndScope(Model model);
+  /**
+   * Updates the within-run statistics for this query to reflect the given world
+   * sampled with the given weight. The world must be complete enough to define
+   * values for all the variables returned by <code>getVariables</code>.
+   * 
+   * <p>
+   * The effects of calling both <code>updateStats</code> and
+   * <code>setPosterior</code> in the same run are not defined.
+   */
+  void updateStats(PartialWorld world, double weight);
 
-	/**
-	 * Does compilation steps that can only be done correctly once the model is
-	 * complete. Prints messages to standard error if any errors are encountered.
-	 * Returns the number of errors encountered.
-	 */
-	public int compile();
+  /**
+   * Same as {@link #updateStats(PartialWorld, double)} with weight 1.
+   */
+  void updateStats(PartialWorld world);
 
-	/**
-	 * Updates the within-run statistics for this query to reflect the given world
-	 * sampled with the given weight. The world must be complete enough to define
-	 * values for all the variables returned by <code>getVariables</code>.
-	 * 
-	 * <p>
-	 * The effects of calling both <code>updateStats</code> and
-	 * <code>setPosterior</code> in the same run are not defined.
-	 */
-	void updateStats(PartialWorld world, double weight);
+  /**
+   * Sets the posterior distribution for the variables returned by
+   * <code>getVariables</code>. This overwrites any results specified previously
+   * for the current run using this method or <code>updateStats</code>.
+   * 
+   * <p>
+   * The effects of calling both <code>updateStats</code> and
+   * <code>setPosterior</code> in the same run are not defined.
+   * 
+   * @param posterior
+   *          factor whose set of variables is the same as the collection
+   *          returned by getVariables, and whose entries sum to 1
+   */
+  void setPosterior(Factor posterior);
 
-	/**
-	 * Same as {@link #updateStats(PartialWorld, double)} with weight 1.
-	 */
-	void updateStats(PartialWorld world);
-
-	/**
-	 * Sets the posterior distribution for the variables returned by
-	 * <code>getVariables</code>. This overwrites any results specified previously
-	 * for the current run using this method or <code>updateStats</code>.
-	 * 
-	 * <p>
-	 * The effects of calling both <code>updateStats</code> and
-	 * <code>setPosterior</code> in the same run are not defined.
-	 * 
-	 * @param posterior
-	 *          factor whose set of variables is the same as the collection
-	 *          returned by getVariables, and whose entries sum to 1
-	 */
-	void setPosterior(Factor posterior);
-
-	/**
-	 * Returns an object whose toString method yields a description of the
-	 * location where this query occurred in an input file.
-	 */
-	public abstract Object getLocation();
+  /**
+   * Returns an object whose toString method yields a description of the
+   * location where this query occurred in an input file.
+   */
+  public abstract Object getLocation();
 
   /**
    * Return Histogram object representing results of this query.

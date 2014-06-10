@@ -35,72 +35,69 @@
 
 package blog.model;
 
-import java.io.PrintStream;
-import java.util.*;
+import java.util.Collections;
 
-import blog.Main;
+import ve.Factor;
 import blog.bn.BasicVar;
 import blog.common.Histogram;
 import blog.world.PartialWorld;
-import ve.Factor;
-import ve.Potential;
 
 public class FormulaQuery extends ArgSpecQuery {
 
-	public FormulaQuery(Formula formula) {
-		super(formula);
-	}
+  public FormulaQuery(Formula formula) {
+    super(formula);
+  }
 
-	public Formula formula() {
-		return (Formula) getArgSpec();
-	}
+  public Formula formula() {
+    return (Formula) getArgSpec();
+  }
 
-	public void printResults(PrintStream s) {
-		s.println("Probability of " + getArgSpec() + " is " + calculateResult());
-	}
+  public void updateStats(PartialWorld world, double weight) {
+    if (probTrue != -1) {
+      throw new IllegalStateException(
+          "Can't update states: posterior already specified.");
+    }
 
-	public void updateStats(PartialWorld world, double weight) {
-		if (probTrue != -1) {
-			throw new IllegalStateException(
-					"Can't update states: posterior already specified.");
-		}
+    if (((Formula) getArgSpec()).isTrue(world)) {
+      trueSum += weight;
+    }
+    totalSum += weight;
+  }
 
-		if (((Formula) getArgSpec()).isTrue(world)) {
-			trueSum += weight;
-		}
-		totalSum += weight;
-	}
+  public void setPosterior(Factor posterior) {
+    if (!posterior.getRandomVars().contains((BasicVar) variable)) {
+      throw new IllegalArgumentException("Query variable " + variable
+          + " not covered by factor on " + posterior.getRandomVars());
+    }
+    if (posterior.getRandomVars().size() > 1) {
+      throw new IllegalArgumentException("Answer to query on " + variable
+          + " should be factor on " + "that variable alone, not "
+          + posterior.getRandomVars());
+    }
 
-	public void setPosterior(Factor posterior) {
-		if (!posterior.getRandomVars().contains((BasicVar) variable)) {
-			throw new IllegalArgumentException("Query variable " + variable
-					+ " not covered by factor on " + posterior.getRandomVars());
-		}
-		if (posterior.getRandomVars().size() > 1) {
-			throw new IllegalArgumentException("Answer to query on " + variable
-					+ " should be factor on " + "that variable alone, not "
-					+ posterior.getRandomVars());
-		}
+    probTrue = posterior.getPotential().getValue(
+        Collections.singletonList(Boolean.TRUE));
+  }
 
-		probTrue = posterior.getPotential().getValue(
-				Collections.singletonList(Boolean.TRUE));
-	}
+  /**
+   * Return the probability that the queried formula is true.
+   */
+  public double getProbTrue() {
+    if (probTrue != -1) {
+      return probTrue;
+    }
+    return trueSum / totalSum;
+  }
 
-	private double calculateResult() {
-		if (probTrue != -1) {
-			return probTrue;
-		}
-		return trueSum / totalSum;
-	}
+  public Histogram getHistogram() {
+    histogram.clear();
+    histogram.increaseWeight(Boolean.TRUE, java.lang.Math.log(trueSum));
+    histogram.increaseWeight(Boolean.FALSE,
+        java.lang.Math.log(totalSum - trueSum));
+    return histogram;
+  }
 
-	public Histogram getHistogram() {
-		histogram.clear();
-		histogram.increaseWeight(Boolean.TRUE, java.lang.Math.log(trueSum));
-		histogram.increaseWeight(Boolean.FALSE, java.lang.Math.log(totalSum - trueSum));
-		return histogram;
-	}
-
-	private double trueSum = 0;
-	private double totalSum = 0;
-	private double probTrue = -1;
+  private double trueSum = 0;
+  private double totalSum = 0;
+  private double probTrue = -1;
 }
