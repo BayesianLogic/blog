@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import blog.common.Util;
 import blog.distrib.Exponential;
 
 /**
@@ -43,7 +42,6 @@ public class TestExponential implements TestDistributions {
   }
 
   /** Exponential, lambda = 5.5. */
-
   public void testExponential2(Exponential exp) {
     assertEquals(5.5, exp.getLambda(), ERROR);
 
@@ -72,16 +70,16 @@ public class TestExponential implements TestDistributions {
   @Test
   public void testProbabilityViaSetParams() {
     Exponential exp = new Exponential();
-    exp.setParams(Util.array(1.0));
+    exp.setParams(new Object[] { 1.0 });
     testExponential1(exp);
-    exp.setParams(Util.array(5.5));
+    exp.setParams(new Object[] { 5.5 });
     testExponential2(exp);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments() {
     Exponential exp = new Exponential();
-    exp.setParams(Util.array(null));
+    exp.setParams(new Object[] { null });
     testDistributionRun(exp);
   }
 
@@ -96,32 +94,32 @@ public class TestExponential implements TestDistributions {
   @Test(expected = IllegalArgumentException.class)
   public void testExtraneousArguments() {
     Exponential exp = new Exponential();
-    exp.setParams(Util.array(1, 2));
+    exp.setParams(new Object[] { 1, 2 });
     testDistributionRun(exp);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments() {
     Exponential exp = new Exponential();
-    exp.setParams(Util.array(0.0));
+    exp.setParams(new Object[] { 0.0 });
     testDistributionRun(exp);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments2() {
     Exponential exp = new Exponential();
-    exp.setParams(Util.array(-1.0));
+    exp.setParams(new Object[] { -1.0 });
     testDistributionRun(exp);
   }
 
   @Test
   public void testDoubleSet() {
     Exponential exp = new Exponential();
-    exp.setParams(Util.array(1.0));
-    exp.setParams(Util.array(null));
+    exp.setParams(new Object[] { 1.0 });
+    exp.setParams(new Object[] { null });
     testExponential1(exp);
-    exp.setParams(Util.array(2.0));
-    exp.setParams(Util.array(5.5));
+    exp.setParams(new Object[] { 2.0 });
+    exp.setParams(new Object[] { 5.5 });
     testExponential2(exp);
 
   }
