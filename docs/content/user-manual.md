@@ -1,3 +1,6 @@
+title: User's Manual
+date: 2014-06-11 15:11
+
 BLOG can run on all operating systems that support Java. The minimal requirement is Java 1.6 or higher.
 
 This manual assumes you have already downloaded the latest version of BLOG and correctly unzipped or installed it. If you have not, please refer to [this](index.md).
@@ -14,6 +17,11 @@ The BLOG package contains a library of examples.
 One example is about burglary-earthquake network,
 first described in "Artificial Intelligence: A Modern Approach", 2nd ed., p. 494.
 The model file is `example/burglary.blog`, the same as below.
+
+```python
+# test highlighting
+foo = bar
+```
 
 ```blog
 random Boolean Burglary ~ BooleanDistrib(0.001);
