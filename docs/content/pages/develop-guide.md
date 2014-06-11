@@ -1,5 +1,6 @@
 title: Developer's Guide
 date: 2014-06-11 15:11
+sortorder: 30
 
 The BLOG project is hosted on Github. Contributions in the form of GitHub pull requests. 
 
