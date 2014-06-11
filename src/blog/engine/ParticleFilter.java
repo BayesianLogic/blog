@@ -48,6 +48,7 @@ import java.util.TreeSet;
 
 import blog.DBLOGUtil;
 import blog.common.Util;
+import blog.io.TableWriter;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -209,11 +210,9 @@ public class ParticleFilter extends InferenceEngine {
           particle.answer(currentQueries);
         }
         if (timestep.intValue() % queryReportInterval == 0) {
-          System.out.println("======== Query Results =========");
-          System.out.println("After timestep " + timestep.intValue());
-          for (Query q : currentQueries) {
-            q.printResults(System.out);
-          }
+          TableWriter tableWriter = new TableWriter(queries);
+          tableWriter.setHeader("After timestep " + timestep.intValue());
+          tableWriter.writeResults(System.out);
         }
       }
       removePriorTimeSlice(timestep);

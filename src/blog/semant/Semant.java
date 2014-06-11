@@ -524,7 +524,7 @@ public class Semant {
     Object body = transExpr(e);
     List<Clause> cl = new ArrayList<Clause>(1);
     if (body instanceof Term || body instanceof Formula
-        || body instanceof TupleSetExpr) {
+        || body instanceof TupleSetSpec) {
       cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
           .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
     } else if (body instanceof Clause) {
