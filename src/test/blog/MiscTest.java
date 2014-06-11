@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import blog.common.Util;
 import blog.engine.InferenceEngine;
 import blog.engine.SamplingEngine;
+import blog.io.TableWriter;
 import blog.model.ArgSpecQuery;
 import blog.model.Model;
 
@@ -22,7 +23,8 @@ public class MiscTest extends TestCase {
         "query {Weather(t) for Timestep t : t = @0 | t = @1 | t = @2};", model);
     InferenceEngine engine = new SamplingEngine(model);
     engine.solve(query);
-    query.printResults(System.out);
+    TableWriter tableWriter = new TableWriter(query);
+    tableWriter.writeResults(System.out);
     assertEquals(
         0.512,
         query.getProb(Util.multiset(Util.list(true), Util.list(true),

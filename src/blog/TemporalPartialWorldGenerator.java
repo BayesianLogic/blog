@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import blog.common.UnaryProcedure;
 import blog.common.Util;
+import blog.io.TableWriter;
 import blog.model.ArgSpecQuery;
 import blog.model.Model;
 import blog.type.Timestep;
@@ -130,10 +131,12 @@ public class TemporalPartialWorldGenerator {
         Collection queries = (Collection) queriesObj;
         ArgSpecQuery query = (ArgSpecQuery) Util.getFirst(queries);
         query.updateStats(gen.currentPartialWorld);
-        query.printResults(System.out);
+        TableWriter tableWriter = new TableWriter(Util.list(query));
+        tableWriter.writeResults(System.out);
 
         aircraft.updateStats(gen.currentPartialWorld);
-        aircraft.printResults(System.out);
+        tableWriter = new TableWriter(Util.list(aircraft));
+        tableWriter.writeResults(System.out);
       }
     };
 

@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import blog.common.MaxReduce;
 import blog.model.FuncAppTerm;
 import blog.model.Model;
 import blog.model.Type;
@@ -152,16 +153,13 @@ public abstract class BasicVar extends AbstractBayesNetVar implements
   }
 
   public Timestep maxTimestep() {
-    Timestep ret = null;
-    for (int i = 0; i < args.length; ++i) {
-      if (args[i] instanceof Timestep) {
-        Timestep candidate = (Timestep) args[i];
-        if (ret == null || candidate.compareTo(ret) > 0) {
-          ret = candidate;
-        }
+    MaxReduce<Timestep> reducer = new MaxReduce<Timestep>();
+    for (Object arg : args) {
+      if (arg instanceof Timestep) {
+        reducer.evaluate(arg);
       }
     }
-    return ret;
+    return reducer.result;
   }
 
   /**
