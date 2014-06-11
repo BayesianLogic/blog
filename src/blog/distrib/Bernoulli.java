@@ -36,7 +36,8 @@
 package blog.distrib;
 
 /**
- * A distribution over {0,1}. It takes one parameter p, which is the probability
+ * A distribution over {0,1}. It takes one parameter <code>p</code>, which is
+ * the probability
  * of <code>true</code>.
  * 
  * The actual implementation relies on BooleanDistrib.
@@ -44,7 +45,7 @@ package blog.distrib;
  * @see blog.distrib.BooleanDistrib.
  * 
  * @author cgioia
- * @since June 9, 2014
+ * @since June 11, 2014
  */
 public class Bernoulli implements CondProbDistrib {
 
@@ -53,7 +54,7 @@ public class Bernoulli implements CondProbDistrib {
   }
 
   /**
-   * Returns p, the probability of <code>true</code>.
+   * Returns <code>p</code>, the probability of <code>true</code>.
    */
   public double getP() {
     return booldist.getP();
@@ -89,8 +90,11 @@ public class Bernoulli implements CondProbDistrib {
     return ((Boolean) booldist.sampleVal()) ? 1 : 0;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * <ul>
+   * <li><code>params[0]</code>: <code>p</code>, probability of
+   * <code>true</code>.</li>
+   * </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
@@ -104,7 +108,9 @@ public class Bernoulli implements CondProbDistrib {
     return "Bernoulli(" + booldist.getP() + ")";
   }
 
-  private BooleanDistrib booldist; // actual holder of underlying boolean
-                                   // distribution
+  /**
+   * Actual holder of underlying boolean distribution.
+   */
+  private BooleanDistrib booldist;
 
 }
