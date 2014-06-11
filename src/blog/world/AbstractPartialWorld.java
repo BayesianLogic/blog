@@ -143,6 +143,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 
     if (value == null) {
       basicVarToValue.remove(var);
+      varToUninstParent.remove(var);
     } else {
       // checkIdentifiers(var, value); // allow any identifiers
       basicVarToValue.put(var, value);
@@ -215,10 +216,12 @@ public abstract class AbstractPartialWorld implements PartialWorld {
         throw new IllegalArgumentException("No log prob computed for " + var);
       }
       if (logProb == PartialWorld.UNDET) {
-        BasicVar uninstParent = var.getFirstUninstParent(this);
-        Util.fatalError("Can't get log prob of variable " + var
-            + " because it depends on " + uninstParent
-            + ", which is not instantiated.");
+        if (Util.verbose()) {
+          BasicVar uninstParent = var.getFirstUninstParent(this);
+          Util.fatalError("Can't get log prob of variable " + var
+              + " because it depends on " + uninstParent
+              + ", which is not instantiated.");
+        }
       }
       return logProb.doubleValue();
     }

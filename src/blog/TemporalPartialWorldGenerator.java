@@ -8,6 +8,7 @@ import blog.common.Util;
 import blog.io.TableWriter;
 import blog.model.ArgSpecQuery;
 import blog.model.Model;
+import blog.type.Timestep;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 
@@ -58,7 +59,7 @@ public class TemporalPartialWorldGenerator {
     latestQueries = queries;
     if (afterMove != null)
       afterMove.evaluate(latestQueries);
-    DBLOGUtil.uninstantiatePreviousTimeslices(currentPartialWorld);
+    uninstantiatePreviousTimeslices(currentPartialWorld);
     BLOGUtil.removeAllDerivedVars(currentPartialWorld);
   }
 
@@ -76,6 +77,28 @@ public class TemporalPartialWorldGenerator {
 
   public Model getModel() {
     return model;
+  }
+
+  public static int findLargestTimestepIndex(PartialWorld world) {
+    int largest = -1;
+    Iterator timestepIndexIt = DBLOGUtil.getTimestepIndicesIterator(world);
+    while (timestepIndexIt.hasNext()) {
+      Integer timestepIndex = (Integer) timestepIndexIt.next();
+      if (timestepIndex.intValue() > largest)
+        largest = timestepIndex.intValue();
+    }
+    return largest;
+  }
+
+  /**
+   * Identifies the largest time step in a world and uninstantiates all temporal
+   * random variables with a different time step.
+   */
+  public static void uninstantiatePreviousTimeslices(PartialWorld world) {
+    int largestTimestepIndex = findLargestTimestepIndex(world);
+    if (largestTimestepIndex != -1)
+      DBLOGUtil.removeVarsAtDiffTimestep(Timestep.at(largestTimestepIndex),
+          world);
   }
 
   /**

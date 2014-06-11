@@ -34,27 +34,28 @@
  */
 package blog.bn;
 
-import blog.common.Util;
-import blog.model.FuncAppTerm;
-import blog.model.Model;
-import blog.model.Type;
-import blog.type.Timestep;
-import blog.world.PartialWorld;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import blog.common.MaxReduce;
+import blog.model.FuncAppTerm;
+import blog.model.Model;
+import blog.model.Type;
+import blog.type.Timestep;
+import blog.world.PartialWorld;
+
 /**
  * A basic random variable in a BLOG model. A BasicVar is a BayesNetVar whose
  * value is stored explicitly in a PossibleWorld.
- *
+ * 
  * The set of basic variables is defined implicitly by a BLOG model. BasicVar
  * objects are just a convenience for bundling together a function and a tuple
  * of arguments, or a POP and a tuple of generating objects.
  */
 public abstract class BasicVar extends AbstractBayesNetVar implements
-        Comparable, Cloneable {
+    Comparable, Cloneable {
 
   /**
    * Creates a new BasicVar with the given tuple of arguments or generating
@@ -131,12 +132,13 @@ public abstract class BasicVar extends AbstractBayesNetVar implements
    * Returns a term whose value in any possible world is the same as this random
    * variable's value, assuming that objects are bound to logical variables as
    * specified in <code>logicalVarForObj</code>.
-   *
-   * @param logicalVarForObj map from Object to LogicalVar
+   * 
+   * @param logicalVarForObj
+   *          map from Object to LogicalVar
    */
   public FuncAppTerm getCanonicalTerm(Map logicalVarForObj) {
     throw new UnsupportedOperationException(
-            "Can't convert random variable to term: " + this);
+        "Can't convert random variable to term: " + this);
   }
 
   /**
@@ -150,18 +152,14 @@ public abstract class BasicVar extends AbstractBayesNetVar implements
     }
   }
 
-  public Timestep timestep() {
-    Timestep ret = null;
-    for (int i = 0; i < args.length; ++i) {
-      if (args[i] instanceof Timestep) {
-        if (ret != null) {
-          Util.fatalError("Random variable " + this
-                  + " depends on more than one timestep.");
-        }
-        ret = (Timestep) args[i];
+  public Timestep maxTimestep() {
+    MaxReduce<Timestep> reducer = new MaxReduce<Timestep>();
+    for (Object arg : args) {
+      if (arg instanceof Timestep) {
+        reducer.evaluate(arg);
       }
     }
-    return ret;
+    return reducer.result;
   }
 
   /**
