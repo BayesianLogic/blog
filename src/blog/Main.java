@@ -112,7 +112,7 @@ import blog.semant.Semant;
  * <dd>Rather than answering queries, just sample possible worlds from the prior
  * distribution defined by the model, and print them out. Default: false
  * 
- * <dt>-k <i>package</i>, --package <i>package</i>
+ * <dt>--package=<i>package</i>
  * <dd>Look in <i>package</i> (e.g., "blog.distrib") when resolving the names of
  * CondProbDistrib and NonRandomFunction classes in the model file. This option
  * can be included several times with different packages; the packages are
@@ -124,13 +124,13 @@ import blog.semant.Semant;
  * <dd>Print information about the world generated at each iteration. Off by
  * default (for performance reasons, consider leaving this option off).
  * 
- * <dt>-g, --debug
+ * <dt>--debug
  * <dd>Print model, evidence, and queries for debugging. Default: false
  * 
  * <dt>-o <i>file</i>, --output=<i>file</i>
  * <dd>Output query results in JSON format to this file.
  * 
- * <dt>-i <i>num</i>, --interval=<i>num</i>
+ * <dt>--interval=<i>num</i>
  * <dd>Report query results to stdout every num queries.
  * 
  * <dt>-P <i>key</i>=<i>value</i>
@@ -269,7 +269,7 @@ public class Main {
         "query_report_interval", 10000, "Report Query values after <n> samples");
     specialOptions.put("queryReportInterval", optQueryReportInterval);
 
-    IntOption optInterval = new IntOption("i", "interval", 500,
+    IntOption optInterval = new IntOption(null, "interval", 500,
         "Report progress after every <n> samples");
     specialOptions.put("reportInterval", optInterval);
 
@@ -290,21 +290,22 @@ public class Main {
         "Sample worlds from prior and print them");
     IntOption optTimestepBound = new IntOption(null, "max_timestep", 10,
         "If model is dynamic, generate up to <n> timesteps");
-    StringListOption optPackages = new StringListOption("k", "package",
+    StringListOption optPackages = new StringListOption(null, "package",
         "Parser looks for classes in package <s>");
     BooleanOption optVerbose = new BooleanOption("v", "verbose", false,
         "Print info about every world sampled");
-    BooleanOption optPrint = new BooleanOption("d", "displaycbn", false,
+    BooleanOption optPrint = new BooleanOption(null, "displaycbn", false,
         "Print the CBN of the sampled world");
-    BooleanOption optDebug = new BooleanOption("g", "debug", false,
+    BooleanOption optDebug = new BooleanOption(null, "debug", false,
         "Print model, evidence, and queries");
     StringOption optOutput = new StringOption("o", "output", null,
-        "Output query results to file <s>");
+        "Output query results to file");
     PropertiesOption optInferenceProps = new PropertiesOption("P", null, null,
         "Set inference configuration properties");
 
-    IntOption optNumMoves = new IntOption("m", "num_moves", 1,
-        "Use <m> moves per rejuvenation step (PF only)");
+    // IntOption optNumMoves = new IntOption("m", "num_moves", 1,
+    // "Use <m> moves per rejuvenation step (PF only)"); // this should be used
+    // // through -P
 
     filenames = blog.common.cmdline.Parser.parse(args);
     if ((!fromString) & filenames.isEmpty()) {
