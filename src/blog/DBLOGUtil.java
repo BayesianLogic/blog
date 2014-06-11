@@ -25,6 +25,7 @@ import blog.world.PartialWorld;
  * aspects (DBLOG) (general ones are in {@link BLOGUtil}.
  * 
  * @author Rodrigo
+ * @author cberzan
  */
 public class DBLOGUtil {
   /**
@@ -60,14 +61,15 @@ public class DBLOGUtil {
     public Object filter(int index, Object varObj) {
       BayesNetVar var = (BayesNetVar) varObj;
       int timestepIndex = var.maxTimestep().getValue();
-      if (timestepIndex == -1 || alreadyReturned.contains(timestepIndex)) {
+      if (timestepIndex < 0 || alreadyReturned.contains(timestepIndex)) {
+        // Don't want to return the same timestep twice.
         return null;
       }
       alreadyReturned.add(timestepIndex);
       return timestepIndex;
     }
 
-    private HashSet alreadyReturned = new HashSet();
+    private HashSet<Integer> alreadyReturned = new HashSet<Integer>();
   }
 
   /**
@@ -150,6 +152,9 @@ public class DBLOGUtil {
     return table;
   }
 
+  /**
+   * Return all evidence up to and including the given timestep index.
+   */
   public static Evidence getEvidenceUpTo(int timestepIndex, Evidence evidence) {
     Map<Timestep, Evidence> splitEvidence = splitEvidenceInTime(evidence);
     final Evidence result = new Evidence();

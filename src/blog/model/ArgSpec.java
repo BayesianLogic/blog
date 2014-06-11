@@ -47,7 +47,7 @@ import java.util.Set;
 
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
-import blog.common.UnaryPredicate;
+import blog.common.MaxReduce;
 import blog.common.UnaryProcedure;
 import blog.sample.DefaultEvalContext;
 import blog.sample.EvalContext;
@@ -233,20 +233,6 @@ public abstract class ArgSpec {
   public abstract void applyToTerms(UnaryProcedure procedure);
 
   /**
-   * Adds all terms in this ArgSpec which satisfy a predicate to a given
-   * collection.
-   */
-  public void selectTerms(final UnaryPredicate predicate,
-      final Collection selected) {
-    applyToTerms(new UnaryProcedure() {
-      public void evaluate(Object x) {
-        if (predicate.evaluate(x))
-          selected.add(x);
-      }
-    });
-  }
-
-  /**
    * Returns an ArgSpec resulting from the replacement of all occurrences of a
    * term by another, if there is any, or self. A new ArgSpec is compiled if
    * this is compiled.
@@ -324,12 +310,22 @@ public abstract class ArgSpec {
 
   protected Object location = DEFAULT_LOCATION;
 
-  /**
-   * If this is a constant Timestep term, return the Timestep it refers to.
-   * Otherwise, return null. The default implementation returns null.
-   */
-  public Timestep getTimestep() {
-    return null;
+  private class ArgSpecMaxReduceTimestep extends MaxReduce<Timestep> {
+    public void evaluate(Object x) {
+      if (!(x instanceof FuncAppTerm))
+        return;
+      FuncAppTerm term = (FuncAppTerm) x;
+      if (!(term.getFunction() instanceof NonRandomFunction))
+        return;
+      FunctionInterp interp = ((NonRandomFunction) term.getFunction())
+          .getInterpretation();
+      if (!(interp instanceof ConstantInterp))
+        return;
+      Object value = ((ConstantInterp) interp)
+          .getValue(Collections.emptyList());
+      if (value instanceof Timestep)
+        super.evaluate(value);
+    }
   }
 
   /**
@@ -337,19 +333,8 @@ public abstract class ArgSpec {
    * Return null if no Timestep terms are used.
    */
   public Timestep maxTimestep() {
-    ArrayList<ArgSpec> timestepTerms = new ArrayList<ArgSpec>();
-    selectTerms(new UnaryPredicate() {
-      public boolean evaluate(Object term) {
-        return ((ArgSpec) term).getTimestep() != null;
-      }
-    }, timestepTerms);
-    Timestep result = null;
-    for (ArgSpec spec : timestepTerms) {
-      Timestep timestep = spec.getTimestep();
-      if (result == null || timestep.compareTo(result) > 0) {
-        result = timestep;
-      }
-    }
-    return result;
+    ArgSpecMaxReduceTimestep reducer = new ArgSpecMaxReduceTimestep();
+    applyToTerms(reducer);
+    return reducer.result;
   }
 }
