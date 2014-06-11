@@ -112,6 +112,10 @@ public class ArgSpecQuery extends AbstractQuery {
     return errors;
   }
 
+  /**
+   * 
+   */
+  @Override
   public void updateStats(PartialWorld world, double logWeight) {
     Object value = getArgSpec().evaluate(world);
     histogram.increaseWeight(value, logWeight);
