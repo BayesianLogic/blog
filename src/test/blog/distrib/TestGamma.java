@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import blog.common.Util;
 import blog.distrib.Gamma;
 
 /**
@@ -67,64 +66,64 @@ public class TestGamma implements TestDistributions {
   @Test
   public void testProbabilityViaSetParams() {
     Gamma gamma = new Gamma();
-    gamma.setParams(Util.array(2.0, 1.0));
+    gamma.setParams(new Object[] { 2.0, 1.0 });
     testGamma1(gamma);
-    gamma.setParams(Util.array(5.0, 0.5));
+    gamma.setParams(new Object[] { 5.0, 0.5 });
     testGamma2(gamma);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments() {
     Gamma gamma = new Gamma();
-    gamma.setParams(Util.array(null));
+    gamma.setParams(new Object[] { null });
     testDistributionRun(gamma);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments2() {
     Gamma gamma = new Gamma();
-    gamma.setParams(Util.array(1.0, null));
+    gamma.setParams(new Object[] { 1.0, null });
     testDistributionRun(gamma);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments3() {
     Gamma gamma = new Gamma();
-    gamma.setParams(Util.array(null, 2.1));
+    gamma.setParams(new Object[] { null, 2.1 });
     testDistributionRun(gamma);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testExtraneousArguments() {
     Gamma gamma = new Gamma();
-    gamma.setParams(Util.array(1.0, 2.0, 1.2));
+    gamma.setParams(new Object[] { 1.0, 2.0, 1.2 });
     testDistributionRun(gamma);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments() {
     Gamma gamma = new Gamma();
-    gamma.setParams(Util.array(0.0, 1.0));
+    gamma.setParams(new Object[] { 0.0, 1.0 });
     testDistributionRun(gamma);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments2() {
     Gamma gamma = new Gamma();
-    gamma.setParams(Util.array(1.5, -1.0));
+    gamma.setParams(new Object[] { 1.5, -1.0 });
     testDistributionRun(gamma);
   }
 
   @Test
   public void testDoubleSet() {
     Gamma gamma = new Gamma();
-    gamma.setParams(Util.array(2.0, null));
-    gamma.setParams(Util.array(null, 1.0));
+    gamma.setParams(new Object[] { 2.0, null });
+    gamma.setParams(new Object[] { null, 1.0 });
     testGamma1(gamma);
-    gamma.setParams(Util.array(5.0, null));
-    gamma.setParams(Util.array(null, null));
-    gamma.setParams(Util.array(null, 0.6));
-    gamma.setParams(Util.array(null, 0.5));
+    gamma.setParams(new Object[] { 5.0, null });
+    gamma.setParams(new Object[] { null, null });
+    gamma.setParams(new Object[] { null, 0.6 });
+    gamma.setParams(new Object[] { null, 0.5 });
     testGamma2(gamma);
   }
 
