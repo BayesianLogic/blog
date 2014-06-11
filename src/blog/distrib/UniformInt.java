@@ -100,7 +100,7 @@ public class UniformInt implements CondProbDistrib {
       this.hasUpper = true;
     }
     if (this.hasLower && this.hasUpper) {
-      if (lower > upper) {
+      if (this.lower > this.upper) {
         throw new IllegalArgumentException(
             "UniformInt distribution requires that lower <= upper");
       }
