@@ -134,6 +134,7 @@ The following options are provided. For every option, there is a short form and 
 
 
 
+```
 ===========LEI LI stops here================
 -q <n>, --query_report_interval <n>Report Query values after <n> samples
 -i <n>, --interval <n>        Write results after every <n> samples
@@ -157,6 +158,7 @@ It can accept an additional variable CLASSPATH to setup classpath of
 user provided distribution and library functions.
 e.g. blog CLASSPATH=userdir -k User.blog example.blog
 =============LEI LI stops here============================
+```
 
 # Running dynamic models
 For dynamic models (models with `Timestep`), one can use bootstrap particle filter.
