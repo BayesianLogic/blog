@@ -328,15 +328,52 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
   private MatrixLib sigmaInverse;
   private MatrixLib sqrtSigma;
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Mapping for parameter <code>params</code>
+   * <ul>
+   * <li>params[0]: <code>mean</code>, as a MatrixLib that serves as a column
+   * vector</li>
+   * <li>params[1]: <code>covariance</code>, as a MatrixLib</li>
+   * </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
   @Override
   public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
+    if (params.length != 2) {
+      throw new IllegalArgumentException("expected two parameters");
+    }
+    setParams((MatrixLib) params[0], (MatrixLib) params[1]);
+  }
 
+  /**
+   * If the method parameter mean is non-null and is a legal column vector, set
+   * the distribution parameter <code>mean</code> to the method parameter mean.
+   * If the method parameter covariance is non-null and is a valid square,
+   * symmetric matrix, set the distribution parameter <code>covariance</code> to
+   * the method parameter <code>covariance</code>. If both parameters are set,
+   * checks to see if dimension of mean and covariance agree.
+   * 
+   * @throws IllegalArgumentException
+   * 
+   * @param mean
+   *          parameter <code>mean</code>
+   * @param covariance
+   *          parameter <code>covariance</code>
+   */
+  public void setParams(MatrixLib mean, MatrixLib covariance) {
+    if (mean != null) {
+      if (!(mean.numCols() == 1 && mean.numRows() > 0)) {
+        throw new IllegalArgumentException(
+            "The mean given is not a valid column vector. It has dimensions "
+                + mean.numRows() + " by " + mean.numCols() + ".");
+      }
+      this.mean = mean;
+      this.hasMean = true;
+    }
+    if (covariance != null) {
+
+    }
   }
 
   /*
@@ -360,4 +397,9 @@ public class MultivarGaussian extends AbstractCondProbDistrib {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  private MatrixLib mean;
+  private boolean hasMean;
+  private MatrixLib covariance;
+  private boolean hasCovariance;
 }
