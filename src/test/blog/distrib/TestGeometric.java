@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import blog.common.Util;
 import blog.distrib.Geometric;
 
 /**
@@ -72,54 +71,54 @@ public class TestGeometric implements TestDistributions {
   @Test
   public void testProbabilityViaSetParams() {
     Geometric geom = new Geometric();
-    geom.setParams(Util.array(1.0));
+    geom.setParams(new Object[] { 1.0 });
     testGeometric1(geom);
-    geom.setParams(Util.array(0.2));
+    geom.setParams(new Object[] { 0.2 });
     testGeometric2(geom);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments() {
     Geometric geom = new Geometric();
-    geom.setParams(Util.array(null));
+    geom.setParams(new Object[] { null });
     testDistributionRun(geom);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testExtraneousArguments() {
     Geometric geom = new Geometric();
-    geom.setParams(Util.array(1.0, 2.0));
+    geom.setParams(new Object[] { 1.0, 2.0 });
     testDistributionRun(geom);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments() {
     Geometric geom = new Geometric();
-    geom.setParams(Util.array(0.0));
+    geom.setParams(new Object[] { 0.0 });
     testDistributionRun(geom);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments2() {
     Geometric geom = new Geometric();
-    geom.setParams(Util.array(1.01));
+    geom.setParams(new Object[] { 1.01 });
     testDistributionRun(geom);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments3() {
     Geometric geom = new Geometric();
-    geom.setParams(Util.array(-1.0));
+    geom.setParams(new Object[] { -1.0 });
     testDistributionRun(geom);
   }
 
   @Test
   public void testDoubleSet() {
     Geometric geom = new Geometric();
-    geom.setParams(Util.array(1.0));
-    geom.setParams(Util.array(null));
+    geom.setParams(new Object[] { 1.0 });
+    geom.setParams(new Object[] { null });
     testGeometric1(geom);
-    geom.setParams(Util.array(null));
+    geom.setParams(new Object[] { null });
     testGeometric1(geom);
   }
 
