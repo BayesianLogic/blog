@@ -31,13 +31,18 @@ install it on your system. It will be more convenient to run BLOG.
 Open your terminal and locate to your BLOG main directory.
 The BLOG includes a few examples. 
 
-The following command will run the Burglary example. 
+On Linux/Mac, the following command will run the Burglary example. 
 ```
 ./blog example/burglary.blog
 ```
 If you already installed BLOG, you may try without `./`
 ```
 blog example/burglary.blog
+```
+
+On Window, the corresponding command is (You may need to properly set your JAVA_HOME and PATH environment variable for Java.)
+```
+blog.bat example/burglary.blog
 ```
 
 The general command is 
