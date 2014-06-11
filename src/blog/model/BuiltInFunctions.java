@@ -87,6 +87,7 @@ public class BuiltInFunctions {
   public static final String MAX_NAME = "max";
   public static final String ROUND_NAME = "round";
   public static final String DIAG_NAME = "diag";
+  public static final String REPMAT_NAME = "repmat";
   public static final String TRANSPOSE_NAME = "transpose";
   public static final String SIN_NAME = "sin";
   public static final String COS_NAME = "cos";
@@ -336,6 +337,11 @@ public class BuiltInFunctions {
    * Diagonal(RealMatrix) returns RealMatrix
    */
   public static NonRandomFunction DIAG_REAL_MAT;
+
+  /**
+   * Repmat(RealMatrix) returns RealMatrix
+   */
+  public static NonRandomFunction REPMAT_REAL;
 
   /**
    * transpose(RealMatrix) returns RealMatrix
@@ -1116,6 +1122,25 @@ public class BuiltInFunctions {
     DIAG_REAL_MAT = new NonRandomFunction(DIAG_NAME, argTypes, retType,
         diagInterp);
     addFunction(DIAG_REAL_MAT);
+
+    // Repmat function for Real matrices
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    argTypes.add(BuiltInTypes.INTEGER);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+
+    FunctionInterp repMatReal = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        MatrixLib matrix = (MatrixLib) args.get(0);
+        Integer rowTimes = (Integer) args.get(1);
+        Integer colTimes = (Integer) args.get(2);
+        return matrix.repmat(rowTimes, colTimes);
+      }
+    };
+    REPMAT_REAL = new NonRandomFunction(REPMAT_NAME, argTypes, retType,
+        repMatReal);
+    addFunction(REPMAT_REAL);
 
     // Transpose function for Real matrices
     argTypes.clear();
