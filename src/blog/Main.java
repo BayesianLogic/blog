@@ -191,8 +191,10 @@ public class Main {
 
       // Print query results
       TableWriter tableWriter = new TableWriter(queries);
-      tableWriter.setHeader("Iteration: " + numSamples);
+      tableWriter.setHeader("======== Query Results =========\n"
+          + "Iteration: " + numSamples);
       tableWriter.writeResults(System.out);
+      System.out.println("======== Done ========");
 
       // Write query results to file, in JSON format.
       if (outputPath != null) {
