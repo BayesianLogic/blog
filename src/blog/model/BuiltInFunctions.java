@@ -393,12 +393,12 @@ public class BuiltInFunctions {
   /**
    * Special case for VSTACK when arguments are all matrices
    */
-  private static FunctionInterp FUNC_VSTACK_MATRIX;
+  private static FunctionInterp VSTACK_MATRIX_INTERP;
 
   /**
    * Special case for VSTACK when arguments are all scalars
    */
-  private static FunctionInterp FUNC_VSTACK_SCALAR;
+  private static FunctionInterp VSTACK_SCALAR_INTERP;
 
   /**
    * Take RealMatrices [x; y; ...] and return RealMatrix z which is the
@@ -410,12 +410,12 @@ public class BuiltInFunctions {
   /**
    * Special case for HSTACK when arguments are all matrices
    */
-  private static FunctionInterp FUNC_HSTACK_MATRIX;
+  private static FunctionInterp HSTACK_MATRIX_INTERP;
 
   /**
    * Special case for HSTACK when arguments are all scalars
    */
-  private static FunctionInterp FUNC_HSTACK_SCALAR;
+  private static FunctionInterp HSTACK_SCALAR_INTERP;
 
   /**
    * Take RealMatrices [x, y, ...] and return RealMatrix z which is the
@@ -1267,7 +1267,7 @@ public class BuiltInFunctions {
     addFunction(SET_SUM);
 
     // TODO: to complete horizontal stacking of scalar or column-vector
-    FUNC_HSTACK_SCALAR = new AbstractFunctionInterp() {
+    HSTACK_SCALAR_INTERP = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         int m = args.size();
         double[][] val = new double[1][m];
@@ -1276,7 +1276,7 @@ public class BuiltInFunctions {
         return MatrixFactory.fromArray(val);
       }
     };
-    FUNC_HSTACK_MATRIX = new AbstractFunctionInterp() {
+    HSTACK_MATRIX_INTERP = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         MatrixLib ret = (MatrixLib) args.get(0);
         for (int i = 1; i < args.size(); ++i)
@@ -1314,9 +1314,9 @@ public class BuiltInFunctions {
         FunctionInterp HStackInterp = null;
 
         if (!flag_matrix) { // only scalars
-          HStackInterp = FUNC_HSTACK_SCALAR;
+          HStackInterp = HSTACK_SCALAR_INTERP;
         } else if (!flag_real) { // only matrices
-          HStackInterp = FUNC_HSTACK_MATRIX;
+          HStackInterp = HSTACK_MATRIX_INTERP;
         } else {
           // Currently not support mixture of types
           return null;
@@ -1330,7 +1330,7 @@ public class BuiltInFunctions {
     addTemplate(HSTACK);
 
     // TODO: to complete horizontal stacking of scalar or column-vector
-    FUNC_VSTACK_SCALAR = new AbstractFunctionInterp() {
+    VSTACK_SCALAR_INTERP = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         int n = args.size();
         double[][] val = new double[n][1];
@@ -1339,7 +1339,7 @@ public class BuiltInFunctions {
         return MatrixFactory.fromArray(val);
       }
     };
-    FUNC_VSTACK_MATRIX = new AbstractFunctionInterp() {
+    VSTACK_MATRIX_INTERP = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         MatrixLib ret = (MatrixLib) args.get(0);
         for (int i = 1; i < args.size(); ++i)
@@ -1377,9 +1377,9 @@ public class BuiltInFunctions {
         FunctionInterp VStackInterp = null;
 
         if (!flag_matrix) { // only scalars
-          VStackInterp = FUNC_VSTACK_SCALAR;
+          VStackInterp = VSTACK_SCALAR_INTERP;
         } else if (!flag_real) { // only matrices
-          VStackInterp = FUNC_VSTACK_MATRIX;
+          VStackInterp = VSTACK_MATRIX_INTERP;
         } else {
           // Currently we do not support mixture of types
           return null;
