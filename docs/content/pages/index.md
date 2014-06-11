@@ -1,5 +1,8 @@
 title: Home
 date: 2014-06-11 15:11
+url:
+save_as: index.html
+sortorder: 10
 
 **Bayesian Logic** (BLOG) is a probabilistic modeling language. 
 It is designed for representing relations and uncertainties among 

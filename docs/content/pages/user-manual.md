@@ -1,5 +1,6 @@
 title: User's Manual
 date: 2014-06-11 15:11
+sortorder: 20
 
 BLOG can run on all operating systems that support Java. The minimal requirement is Java 1.6 or higher.
 
