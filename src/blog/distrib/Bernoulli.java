@@ -48,31 +48,42 @@ package blog.distrib;
  */
 public class Bernoulli implements CondProbDistrib {
 
-  public static Integer getIntegerValue(Object value) {
-    Boolean val = (Boolean) value;
-    if (Boolean.TRUE.equals(val)) {
-      return 1;
-    } else if (Boolean.FALSE.equals(val)) {
-      return 0;
-    } else {
-      return null;
-    }
-  }
-
   public Bernoulli() {
     booldist = new BooleanDistrib();
   }
 
-  @Override
-  public double getLogProb(Object value) {
-    return booldist.getLogProb(value.equals(1));
+  /**
+   * Returns p, the probability of <code>true</code>.
+   */
+  public double getP() {
+    return booldist.getP();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
   @Override
   public double getProb(Object value) {
     return booldist.getProb(value.equals(1));
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    return booldist.getLogProb(value.equals(1));
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
   @Override
   public Object sampleVal() {
     return ((Boolean) booldist.sampleVal()) ? 1 : 0;
@@ -88,10 +99,12 @@ public class Bernoulli implements CondProbDistrib {
     booldist.setParams(params);
   }
 
+  @Override
   public String toString() {
     return "Bernoulli(" + booldist.getP() + ")";
   }
 
   private BooleanDistrib booldist; // actual holder of underlying boolean
                                    // distribution
+
 }
