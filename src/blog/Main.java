@@ -261,7 +261,7 @@ public class Main {
         "blog.engine.SamplingEngine", "Use inference engine class <s>");
     specialOptions.put("engineClass", optEngine);
 
-    IntOption optNumSamples = new IntOption("n", "num_samples", 50000,
+    IntOption optNumSamples = new IntOption("n", "num_samples", 10000,
         "Run inference engine for <n> samples");
     specialOptions.put("numSamples", optNumSamples);
 
@@ -269,7 +269,7 @@ public class Main {
         "query_report_interval", 10000, "Report Query values after <n> samples");
     specialOptions.put("queryReportInterval", optQueryReportInterval);
 
-    IntOption optInterval = new IntOption(null, "interval", 500,
+    IntOption optInterval = new IntOption(null, "interval", 1000,
         "Report progress after every <n> samples");
     specialOptions.put("reportInterval", optInterval);
 
