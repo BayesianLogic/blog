@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import blog.common.Util;
 import blog.distrib.Beta;
 
 /**
@@ -100,76 +99,76 @@ public class TestBeta implements TestDistributions {
   @Test
   public void testProbabilityViaSetParams() {
     Beta beta = new Beta();
-    beta.setParams(Util.array(1.0, 1.0));
+    beta.setParams(new Object[] { 1.0, 1.0 });
     testBeta1_1(beta);
-    beta.setParams(Util.array(1.0, 2.0));
+    beta.setParams(new Object[] { 1.0, 2.0 });
     testBeta1_2(beta);
-    beta.setParams(Util.array(2.0, 2.0));
+    beta.setParams(new Object[] { 2.0, 2.0 });
     testBeta2_2(beta);
-    beta.setParams(Util.array(0.5, 5.8));
+    beta.setParams(new Object[] { 0.5, 5.8 });
     testBeta(beta);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments() {
     Beta beta = new Beta();
-    beta.setParams(Util.array(null, 1.0));
+    beta.setParams(new Object[] { null, 1.0 });
     testBetaRun(beta);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments2() {
     Beta beta = new Beta();
-    beta.setParams(Util.array(1.0, null));
+    beta.setParams(new Object[] { 1.0, null });
     testBetaRun(beta);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments3() {
     Beta beta = new Beta();
-    beta.setParams(Util.array(2.0));
+    beta.setParams(new Object[] { 2.0 });
     testBetaRun(beta);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void extraneousArguments() {
     Beta beta = new Beta();
-    beta.setParams(Util.array(1.0, 2.0, 3.0));
+    beta.setParams(new Object[] { 1.0, 2.0, 3.0 });
     testBetaRun(beta);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments() {
     Beta beta = new Beta();
-    beta.setParams(Util.array(0.0, 2.0));
+    beta.setParams(new Object[] { 0.0, 2.0 });
     testBetaRun(beta);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments2() {
     Beta beta = new Beta();
-    beta.setParams(Util.array(2.0, 0.0));
+    beta.setParams(new Object[] { 2.0, 0.0 });
     testBetaRun(beta);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments3() {
     Beta beta = new Beta();
-    beta.setParams(Util.array(-1.0, -1.0));
+    beta.setParams(new Object[] { -1.0, -1.0 });
     testBetaRun(beta);
   }
 
   @Test
   public void testDoubleSet() {
     Beta beta = new Beta();
-    beta.setParams(Util.array(1.0, null));
-    beta.setParams(Util.array(null, 1.0));
+    beta.setParams(new Object[] { 1.0, null });
+    beta.setParams(new Object[] { null, 1.0 });
     testBeta1_1(beta);
-    beta.setParams(Util.array(null, 2.0));
+    beta.setParams(new Object[] { null, 2.0 });
     testBeta1_2(beta);
-    beta.setParams(Util.array(null, null));
-    beta.setParams(Util.array(0.5, null));
-    beta.setParams(Util.array(null, 5.8));
+    beta.setParams(new Object[] { null, null });
+    beta.setParams(new Object[] { 0.5, null });
+    beta.setParams(new Object[] { null, 5.8 });
     testBeta(beta);
   }
 
