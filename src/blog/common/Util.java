@@ -1346,30 +1346,6 @@ public class Util {
     return sum(values) / values.size();
   }
 
-  /** Returns an array containing the objects given as arguments. */
-  public static Object[] array(Object o1) {
-    Object[] obj = new Object[1];
-    obj[0] = o1;
-    return obj;
-  }
-
-  /** Returns an array containing the objects given as arguments. */
-  public static Object[] array(Object o1, Object o2) {
-    Object[] obj = new Object[2];
-    obj[0] = o1;
-    obj[1] = o2;
-    return obj;
-  }
-
-  /** Returns an array containing the objects given as arguments. */
-  public static Object[] array(Object o1, Object o2, Object o3) {
-    Object[] obj = new Object[3];
-    obj[0] = o1;
-    obj[1] = o2;
-    obj[2] = o3;
-    return obj;
-  }
-
   /** Returns an empty LinkedList. */
   public static LinkedList list() {
     return new LinkedList();
