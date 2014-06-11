@@ -54,19 +54,6 @@ public abstract class AbstractQuery implements Query {
 	}
 
 	/**
-	 * If a log file has been specified, prints the results so far to that file.
-	 * 
-	 * <p>
-	 * This default implementation does nothing.
-	 * 
-	 * @param numSamples
-	 *          the number of samples taken by the inference engine so far (can be
-	 *          set to zero for non-sampling inference engines)
-	 */
-	public void logResults(int numSamples) {
-	}
-
-	/**
 	 * Returns an object whose toString method yields a description of the
 	 * location where this query occurred in an input file.
 	 * 
