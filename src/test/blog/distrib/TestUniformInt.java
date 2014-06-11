@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import blog.common.Util;
 import blog.distrib.UniformInt;
 
 /**
@@ -66,47 +65,47 @@ public class TestUniformInt implements TestDistributions {
   @Test
   public void testProbabilityViaSetParams() {
     UniformInt unif = new UniformInt();
-    unif.setParams(Util.array(0, 0));
+    unif.setParams(new Object[] { 0, 0 });
     testUniformInt1(unif);
-    unif.setParams(Util.array(5, 9));
+    unif.setParams(new Object[] { 5, 9 });
     testUniformInt2(unif);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments() {
     UniformInt unif = new UniformInt();
-    unif.setParams(Util.array(2));
+    unif.setParams(new Object[] { 2 });
     testDistributionRun(unif);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments2() {
     UniformInt unif = new UniformInt();
-    unif.setParams(Util.array(2, null));
+    unif.setParams(new Object[] { 2, null });
     testDistributionRun(unif);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments3() {
     UniformInt unif = new UniformInt();
-    unif.setParams(Util.array(null, 3));
+    unif.setParams(new Object[] { null, 3 });
     testDistributionRun(unif);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments() {
     UniformInt unif = new UniformInt();
-    unif.setParams(Util.array(4, 3));
+    unif.setParams(new Object[] { 4, 3 });
     testDistributionRun(unif);
   }
 
   @Test
   public void testDoubleSet() {
     UniformInt unif = new UniformInt();
-    unif.setParams(Util.array(null, 9));
-    unif.setParams(Util.array(5, null));
+    unif.setParams(new Object[] { null, 9 });
+    unif.setParams(new Object[] { 5, null });
     testUniformInt2(unif);
-    unif.setParams(Util.array(null, null));
+    unif.setParams(new Object[] { null, null });
     testUniformInt2(unif);
   }
 
