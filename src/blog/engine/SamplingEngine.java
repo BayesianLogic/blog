@@ -40,9 +40,9 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import blog.BLOGUtil;
-import blog.Main;
 import blog.common.Timer;
 import blog.common.Util;
+import blog.io.TableWriter;
 import blog.model.Model;
 import blog.model.Query;
 import blog.sample.Sampler;
@@ -75,7 +75,7 @@ import blog.world.PartialWorld;
  * <dt>reportInterval
  * <dd>Number of samples between progress reports (-1 for no report). A progress
  * report just involves printing how many samples have been done and how long
- * the sampler has been running in this trial. Default is 500.
+ * the sampler has been running. Default is 500.
  * </dl>
  * The property list is also passed to the sampler's constructor.
  */
@@ -169,13 +169,9 @@ public class SamplingEngine extends InferenceEngine {
 
       if (i != 0 && (i) % queryReportInterval == 0) {
         // Print query results
-        System.out.println("======== Query Results ========");
-        System.out.println("Iteration " + i + ":");
-        for (Iterator iter = queries.iterator(); iter.hasNext();) {
-          Query q = (Query) iter.next();
-          q.printResults(System.out);
-        }
-        System.out.println("======== Done ========");
+        TableWriter tableWriter = new TableWriter(queries);
+        tableWriter.setHeader("Iteration " + i + ":");
+        tableWriter.writeResults(System.out);
       }
 
       if (i >= numBurnIn) {
@@ -194,13 +190,6 @@ public class SamplingEngine extends InferenceEngine {
             // to it.
                 sampler.getLatestWorld());
             query.updateStats(sampler.getLatestWorld(), logWeight);
-          }
-        }
-
-        if ((Main.outputPath() != null)
-            && ((i + 1) % Main.outputInterval() == 0)) {
-          for (Iterator iter = queries.iterator(); iter.hasNext();) {
-            ((Query) iter.next()).logResults(i + 1);
           }
         }
       }
