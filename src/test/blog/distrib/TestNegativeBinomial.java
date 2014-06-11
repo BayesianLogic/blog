@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import blog.common.Util;
 import blog.distrib.NegativeBinomial;
 
 /**
@@ -71,90 +70,90 @@ public class TestNegativeBinomial implements TestDistributions {
   @Test
   public void testProbabilityViaSetParams() {
     NegativeBinomial nb = new NegativeBinomial();
-    nb.setParams(Util.array(1, 0.6));
+    nb.setParams(new Object[] { 1, 0.6 });
     testNegativeBinomial1(nb);
-    nb.setParams(Util.array(5, 0.6));
+    nb.setParams(new Object[] { 5, 0.6 });
     testNegativeBinomial2(nb);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments() {
     NegativeBinomial nb = new NegativeBinomial();
-    nb.setParams(Util.array(1));
+    nb.setParams(new Object[] { 1 });
     testDistributionRun(nb);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments2() {
     NegativeBinomial nb = new NegativeBinomial();
-    nb.setParams(Util.array(1, null));
+    nb.setParams(new Object[] { 1, null });
     testDistributionRun(nb);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testExtraneousArguments() {
     NegativeBinomial nb = new NegativeBinomial();
-    nb.setParams(Util.array(1, 0.6, 0.2));
+    nb.setParams(new Object[] { 1, 0.6, 0.2 });
     testDistributionRun(nb);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments() {
     NegativeBinomial nb = new NegativeBinomial();
-    nb.setParams(Util.array(1, -0.1));
+    nb.setParams(new Object[] { 1, -0.1 });
     testDistributionRun(nb);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments2() {
     NegativeBinomial nb = new NegativeBinomial();
-    nb.setParams(Util.array(1, 1.01));
+    nb.setParams(new Object[] { 1, 1.01 });
     testDistributionRun(nb);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments3() {
     NegativeBinomial nb = new NegativeBinomial();
-    nb.setParams(Util.array(0, 0.5));
+    nb.setParams(new Object[] { 0, 0.5 });
     testDistributionRun(nb);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments4() {
     NegativeBinomial nb = new NegativeBinomial();
-    nb.setParams(Util.array(-1, 0.5));
+    nb.setParams(new Object[] { -1, 0.5 });
     testDistributionRun(nb);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments5() {
     NegativeBinomial nb = new NegativeBinomial();
-    nb.setParams(Util.array(1, -0.1));
+    nb.setParams(new Object[] { 1, -0.1 });
     testDistributionRun(nb);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments6() {
     NegativeBinomial nb = new NegativeBinomial();
-    nb.setParams(Util.array(1, 1.0));
+    nb.setParams(new Object[] { 1, 1.0 });
     testDistributionRun(nb);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments7() {
     NegativeBinomial nb = new NegativeBinomial();
-    nb.setParams(Util.array(3, 0.0));
+    nb.setParams(new Object[] { 3, 0.0 });
     testDistributionRun(nb);
   }
 
   @Test
   public void testDoubleSet() {
     NegativeBinomial nb = new NegativeBinomial();
-    nb.setParams(Util.array(1, null));
-    nb.setParams(Util.array(null, 0.6));
+    nb.setParams(new Object[] { 1, null });
+    nb.setParams(new Object[] { null, 0.6 });
     testNegativeBinomial1(nb);
-    nb.setParams(Util.array(5, null));
-    nb.setParams(Util.array(null, null));
+    nb.setParams(new Object[] { 5, null });
+    nb.setParams(new Object[] { null, null });
     testNegativeBinomial2(nb);
   }
 
