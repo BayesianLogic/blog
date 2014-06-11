@@ -258,7 +258,6 @@ public class ParticleFilter extends InferenceEngine {
                                // null because after this method the filter
                                // should be ready to take queries.
 
-
       if (needsToBeResampledBeforeFurtherSampling) {
         move();
         resample();
