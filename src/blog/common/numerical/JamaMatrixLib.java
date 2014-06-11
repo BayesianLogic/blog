@@ -207,4 +207,26 @@ public class JamaMatrixLib implements MatrixLib {
     }
     return new JamaMatrixLib(v);
   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.common.numerical.MatrixLib#isSymmetric()
+   */
+  @Override
+  public boolean isSymmetric() {
+    if (numRows() == numCols()) {
+      int size = numRows();
+      for (int i = 0; i < size; i++) {
+        for (int j = i + 1; j < size; j++) {
+          double ratio = elementAt(i, j) / elementAt(j, i);
+          if (Math.abs(ratio - 1) > 1e-6) {
+            return false;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
 }
