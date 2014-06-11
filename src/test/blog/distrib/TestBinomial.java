@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import blog.common.Util;
 import blog.distrib.Binomial;
 
 /**
@@ -95,73 +94,73 @@ public class TestBinomial implements TestDistributions {
   @Test
   public void testProbabilityViaSetParams() {
     Binomial bin = new Binomial();
-    bin.setParams(Util.array(2, 0.5));
+    bin.setParams(new Object[] { 2, 0.5 });
     testBinomial1(bin);
-    bin.setParams(Util.array(2, 0.6));
+    bin.setParams(new Object[] { 2, 0.6 });
     testBinomial2(bin);
-    bin.setParams(Util.array(5, 0.6));
+    bin.setParams(new Object[] { 5, 0.6 });
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments() {
     Binomial bin = new Binomial();
-    bin.setParams(Util.array(2, null));
+    bin.setParams(new Object[] { 2, null });
     testDistributionRun(bin);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments2() {
     Binomial bin = new Binomial();
-    bin.setParams(Util.array(null, 0.5));
+    bin.setParams(new Object[] { null, 0.5 });
     testDistributionRun(bin);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments3() {
     Binomial bin = new Binomial();
-    bin.setParams(Util.array(null, null));
+    bin.setParams(new Object[] { null, null });
     testDistributionRun(bin);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments4() {
     Binomial bin = new Binomial();
-    bin.setParams(Util.array(2));
+    bin.setParams(new Object[] { 2 });
     testDistributionRun(bin);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments5() {
     Binomial bin = new Binomial();
-    bin.setParams(Util.array(1, 0.5, 3));
+    bin.setParams(new Object[] { 1, 0.5, 3 });
     testDistributionRun(bin);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments() {
     Binomial bin = new Binomial();
-    bin.setParams(Util.array(1, -0.01));
+    bin.setParams(new Object[] { 1, -0.01 });
     testDistributionRun(bin);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments2() {
     Binomial bin = new Binomial();
-    bin.setParams(Util.array(1, 1.01));
+    bin.setParams(new Object[] { 1, 1.01 });
     testDistributionRun(bin);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments3() {
     Binomial bin = new Binomial();
-    bin.setParams(Util.array(-1, 0.25));
+    bin.setParams(new Object[] { -1, 0.25 });
     testDistributionRun(bin);
   }
 
   @Test(expected = ClassCastException.class)
   public void testIncorrectArguments4() {
     Binomial bin = new Binomial();
-    bin.setParams(Util.array(1.5, 0.25));
+    bin.setParams(new Object[] { 1.5, 0.25 });
     testDistributionRun(bin);
   }
 
