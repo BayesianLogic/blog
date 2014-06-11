@@ -42,25 +42,33 @@ import blog.common.Util;
  * parameters: <code>lower</code>, which indicates the lower end of the range
  * and <code>upper</code>, which indicates upper end of the range. The
  * range is inclusive (it includes the upper and lower ends).
+ * 
+ * @since June 11, 2014
  */
 public class UniformInt implements CondProbDistrib {
 
+  /**
+   * Returns the parameter <code>lower</code>.
+   */
   public int getLower() {
     return lower;
   }
 
+  /**
+   * Returns the parameter <code>upper</code>.
+   */
   public int getUpper() {
     return upper;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Mapping for parameter <code>params</code>
+   * <ul>
+   * <li>params[0]: <code>lower</code></li>
+   * <li>params[1]: <code>upper</code></li>
+   * </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
-   */
-  /**
-   * params[0] -> lower, as defined in UniformInt class description
-   * params[1] -> upper, as defined in UniformInt class description
    */
   @Override
   public void setParams(Object[] params) {
@@ -71,8 +79,16 @@ public class UniformInt implements CondProbDistrib {
   }
 
   /**
+   * For a non-null value of method parameter lower, sets the
+   * distribution parameter <code>lower</code> to method parameter lower.
+   * Similarly for <code>upper</code>. Then checks to see if assignment of
+   * parameters is legal. In other words, an assignment of parameters is legal
+   * if <code>lower <= upper</code>.
+   * 
    * @param lower
+   *          parameter <code>lower</code>
    * @param upper
+   *          parameter <code>upper</code>
    */
   public void setParams(Integer lower, Integer upper) {
     if (lower != null) {
@@ -152,8 +168,12 @@ public class UniformInt implements CondProbDistrib {
     return new Integer((int) x);
   }
 
+  /** Parameter <code>lower</code>. */
   private int lower;
+  /** Flag indicating whether <code>lower</code> has been set. */
   private boolean hasLower;
+  /** Parameter <code>upper</code>. */
   private int upper;
+  /** Flag indicating whether <code>upper</code> has been set. */
   private boolean hasUpper;
 }
