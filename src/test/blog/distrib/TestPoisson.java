@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import blog.common.Util;
 import blog.distrib.Poisson;
 
 /**
@@ -62,41 +61,41 @@ public class TestPoisson implements TestDistributions {
   @Test
   public void testProbabilityViaSetParams() {
     Poisson poiss = new Poisson();
-    poiss.setParams(Util.array(1.0));
+    poiss.setParams(new Object[] { 1.0 });
     testPoisson1(poiss);
-    poiss.setParams(Util.array(5.0));
+    poiss.setParams(new Object[] { 5.0 });
     testPoisson2(poiss);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments() {
     Poisson poiss = new Poisson();
-    poiss.setParams(Util.array(null));
+    poiss.setParams(new Object[] { null });
     testDistributionRun(poiss);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testExtraneousArguments() {
     Poisson poiss = new Poisson();
-    poiss.setParams(Util.array(1.0, 5.1));
+    poiss.setParams(new Object[] { 1.0, 5.1 });
     testDistributionRun(poiss);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments() {
     Poisson poiss = new Poisson();
-    poiss.setParams(Util.array(-0.5));
+    poiss.setParams(new Object[] { -0.5 });
     testDistributionRun(poiss);
   }
 
   @Test
   public void testDoubleSet() {
     Poisson poiss = new Poisson();
-    poiss.setParams(Util.array(null));
-    poiss.setParams(Util.array(1.0));
+    poiss.setParams(new Object[] { null });
+    poiss.setParams(new Object[] { 1.0 });
     testPoisson1(poiss);
-    poiss.setParams(Util.array(5.0));
-    poiss.setParams(Util.array(null));
+    poiss.setParams(new Object[] { 5.0 });
+    poiss.setParams(new Object[] { null });
     testPoisson2(poiss);
   }
 
