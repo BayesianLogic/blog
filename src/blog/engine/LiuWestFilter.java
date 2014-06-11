@@ -1,20 +1,18 @@
 package blog.engine;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 
-import blog.bn.BasicVar;
 import blog.common.Util;
+import blog.model.BuiltInTypes;
 import blog.model.Function;
 import blog.model.Model;
+import blog.model.NonRandomFunction;
 import blog.world.PartialWorld;
-
 
 /**
  * Liu-West filter.
- *
+ * 
  * Performs artificial evolution for the atemporal parameters of the model. In
  * a traditional particle filter, some values are sampled for these parameters,
  * and these values are never revisited. The particles with less likelihood
@@ -22,12 +20,16 @@ import blog.world.PartialWorld;
  * for the atemporal parameters. Liu-West is supposed to prevent this
  * degeneracy, by perturbing the atemporal parameters when resampling
  * particles.
- *
+ * 
  * The central equation is (3.6) in Liu and West, "Combined parameter and state
  * estimation in simulation-based filtering", in Sequential Monte Carlo methods
  * in practice, 2001. Note that our parameter "rho" is "a" in their paper. Rho
  * is between 0 (maximum perturbation) and 1 (no perturbation). Liu and West
  * recommend a value of 0.97 - 0.99.
+ * 
+ * This filter currently perturbs ONLY static variables of type Real. In
+ * particular, it does NOT perturb variables of other types, or random functions
+ * that take arguments. (Such functionality might be added later.)
  */
 public class LiuWestFilter extends ParticleFilter {
 
@@ -44,19 +46,29 @@ public class LiuWestFilter extends ParticleFilter {
       Util.fatalErrorWithoutStack("Invalid rho parameter: " + rhoStr);
     }
 
-    // Precompute list of static variables.
-    // TODO:
-    // - ignore NonRandomFunctions
-    // - ignore functions that take arguments (e.g. foo(Location loc))
-    // - ignore functions whose return type is not Real
+    // Precompute list of variables to perturb.
     // (This will make Liu-West only work for perturbing Real-valued
     // parameters. We can extend it to perturb vectors etc. later.)
     funcNamesToPerturb = new ArrayList<String>();
     for (Function func : model.getFunctions()) {
-      System.out.println(func + ": " + func.getClass());
-      if (!func.isTimeIndexed()) {
-        funcNamesToPerturb.add(func.getName());
+      if (func instanceof NonRandomFunction) {
+        // We only perturb functions that are random.
+        continue;
       }
+      if (func.isTimeIndexed()) {
+        // We only perturb functions that are static.
+        continue;
+      }
+      if (func.getRetType() != BuiltInTypes.REAL) {
+        // We only perturb functions that return a Real.
+        continue;
+      }
+      if (func.getArgTypes().length > 0) {
+        // We only perturb functions that take no arguments.
+        continue;
+      }
+      // Function satisfies all the requirements to be perturbed.
+      funcNamesToPerturb.add(func.getName());
     }
     System.out.println("funcNamesToPerturb: " + funcNamesToPerturb);
   }
@@ -81,7 +93,8 @@ public class LiuWestFilter extends ParticleFilter {
       for (int i = 0; i < particles.size(); i++) {
         particle = (Particle) particles.get(i);
         world = particle.getLatestWorld();
-        Double value = (Double) world.getValue(world.getBasicVarByName(funcName));
+        Double value = (Double) world.getValue(world
+            .getBasicVarByName(funcName));
         values[i] = value;
       }
 
@@ -97,16 +110,17 @@ public class LiuWestFilter extends ParticleFilter {
       }
       stdev = Math.sqrt(stdev / particles.size());
 
-      System.out.println(funcName + " has mean " + mean + " and stdev " + stdev);
+      System.out
+          .println(funcName + " has mean " + mean + " and stdev " + stdev);
 
       for (int i = 0; i < particles.size(); i++) {
         particle = (Particle) particles.get(i);
         world = particle.getLatestWorld();
-        Double oldValue = (Double) world.getValue(world.getBasicVarByName(funcName));
-        double newValue = (
-          rho * oldValue +
-          (1 - rho) * mean +
-          Math.sqrt(1 - rho * rho) * stdev * Util.randGaussian());
+        Double oldValue = (Double) world.getValue(world
+            .getBasicVarByName(funcName));
+        double newValue = (rho * oldValue + (1 - rho) * mean + Math.sqrt(1
+            - rho * rho)
+            * stdev * Util.randGaussian());
         world.setValue(world.getBasicVarByName(funcName), newValue);
       }
     }
