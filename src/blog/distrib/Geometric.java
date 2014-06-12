@@ -39,37 +39,33 @@ import blog.common.Util;
 
 /**
  * A geometric distribution over the natural numbers 0, 1, 2,... It has a single
- * parameter alpha, which equals the probability of a success trial. Thus an
- * alpha close to 0 yields a relatively flat distribution, whereas an alpha
- * close to 1 yields a distribution that decays quickly. The distribution is
- * defined by: P(Y = n) = (1 - alpha)^n alpha. Its mean is (1-alpha) / alpha, so
+ * parameter <code>alpha</code>, which equals the probability of a success
+ * trial. Thus an <code>alpha</code> close to 0 yields a relatively flat
+ * distribution, whereas an <code>alpha</code> close to 1 yields a distribution
+ * that decays quickly. The distribution is defined by: P(Y = n) = (1 - alpha)^n
+ * alpha. Its mean is (1-alpha) / alpha, so
  * to get a distribution with mean m, one should use alpha = 1 / (1 + m).
  * 
  * <p>
- * Note that alpha cannot be 0, because then the value is infinite with
- * probability 1. However, alpha can be 1; this just means the value is 0 with
- * probability 1.
+ * Note that <code>alpha</code> cannot be 0, because then the value is infinite
+ * with probability 1. However, alpha can be 1; this just means the value is 0
+ * with probability 1.
  */
-public class Geometric extends AbstractCondProbDistrib {
+public class Geometric implements CondProbDistrib {
 
-  /**
-   * Returns a Geometric distribution with the given mean.
-   */
-  public static Geometric constructWithMean(double mean) {
-    return new Geometric(1 / (1 + mean));
-  }
-
-  public Geometric() {
-  }
-
-  public Geometric(double alpha) {
-    setParams(alpha);
-  }
-
+  /** Returns the parameter <code>alpha</code>. */
   public double getAlpha() {
     return alpha;
   }
 
+  /**
+   * mapping for <code>params</code>:
+   * <ul>
+   * <li>params[0]: <code>alpha</code></li>
+   * </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
+   */
   @Override
   public void setParams(Object[] params) {
     if (params.length != 1) {
@@ -78,6 +74,10 @@ public class Geometric extends AbstractCondProbDistrib {
     setParams((Double) params[0]);
   }
 
+  /**
+   * If method parameter alpha is non-null and 0 < alpha <= 1, then set
+   * distribution parameter <code>alpha</code> to method parameter alpha.
+   */
   public void setParams(Double alpha) {
     if (alpha != null) {
       if (alpha <= 0 || alpha > 1) {
@@ -97,6 +97,11 @@ public class Geometric extends AbstractCondProbDistrib {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
   @Override
   public double getProb(Object value) {
     return getProb(((Integer) value).intValue());
@@ -113,6 +118,11 @@ public class Geometric extends AbstractCondProbDistrib {
     return alpha * Math.pow(1 - alpha, k);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.AbstractCondProbDistrib#getLogProb(java.lang.Object)
+   */
   @Override
   public double getLogProb(Object value) {
     return getLogProb(((Integer) value).intValue());
@@ -134,6 +144,11 @@ public class Geometric extends AbstractCondProbDistrib {
     return logAlpha + (k * logOneMinusAlpha);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
   @Override
   public Object sampleVal() {
     checkHasParams();
@@ -152,6 +167,7 @@ public class Geometric extends AbstractCondProbDistrib {
     return (int) (Math.log(u) / logOneMinusAlpha);
   }
 
+  @Override
   public String toString() {
     return getClass().getName();
   }
