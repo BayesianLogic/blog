@@ -42,13 +42,15 @@ import blog.objgen.ObjectSet;
 /**
  * CPD that takes <code>S</code>, a set of objects (an instance of the
  * ObjectSet interface), and defines a uniform distribution over this set.
+ * 
+ * @since June 12, 2014
  */
 public class UniformChoice implements CondProbDistrib {
 
   /**
    * mapping for <code>params</code>
    * <ul>
-   * <li>params[0]: <code>UniformSet</code></li>
+   * <li>params[0]: <code>S</code></li>
    * </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
@@ -63,9 +65,8 @@ public class UniformChoice implements CondProbDistrib {
 
   /**
    * If the method parameter <code>set</code> is non-null, sets the distribution
-   * parameter <code>UniformSet</code> to <code>set</code>
+   * parameter <code>S</code> to <code>set</code>
    * 
-   * @param set
    */
   public void setParams(ObjectSet set) {
     if (set != null) {
@@ -120,6 +121,11 @@ public class UniformChoice implements CondProbDistrib {
     }
     int n = Util.randInt(s.size());
     return s.sample(n);
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getName();
   }
 
   private ObjectSet s;
