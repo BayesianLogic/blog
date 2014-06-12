@@ -25,10 +25,10 @@ public class TestDirichlet implements TestDistributions {
    *          IllegalArgumentExceptions
    */
   public void testDistributionRun(Dirichlet d) {
-    if (d.getAlphas() == null) {
+    if (d.getAlpha() == null) {
       shouldThrowExceptions(d, null);
     } else {
-      int numAlphas = d.getAlphas().length;
+      int numAlphas = d.getAlpha().length;
       double[] x = new double[numAlphas];
       x[0] = 1.0;
       shouldThrowExceptions(d, MatrixFactory.createVector(x));
@@ -68,7 +68,7 @@ public class TestDirichlet implements TestDistributions {
 
   /** Dirichlet, alpha = [1, 1]. */
   public void testDirichlet1(Dirichlet d) {
-    double[] alphas = d.getAlphas();
+    double[] alphas = d.getAlpha();
     assertEquals(2, alphas.length, ERROR);
     assertEquals(1.0, alphas[0], ERROR);
     assertEquals(1.0, alphas[1], ERROR);
@@ -90,7 +90,7 @@ public class TestDirichlet implements TestDistributions {
 
   /** Dirichlet, alpha = [2, 1, 1]. */
   public void testDirichlet2(Dirichlet d) {
-    double[] alphas = d.getAlphas();
+    double[] alphas = d.getAlpha();
     assertEquals(3, alphas.length, ERROR);
     assertEquals(2.0, alphas[0], ERROR);
     assertEquals(1.0, alphas[1], ERROR);
@@ -113,7 +113,7 @@ public class TestDirichlet implements TestDistributions {
 
   /** Dirichlet, alpha = [2, 2, 2]. */
   public void testDirichlet3(Dirichlet d) {
-    double[] alphas = d.getAlphas();
+    double[] alphas = d.getAlpha();
     assertEquals(3, alphas.length, ERROR);
     assertEquals(2.0, alphas[0], ERROR);
     assertEquals(2.0, alphas[1], ERROR);
@@ -141,7 +141,7 @@ public class TestDirichlet implements TestDistributions {
 
   /** Dirichlet, alpha = [3, 3, 4]. */
   public void testDirichlet4(Dirichlet d) {
-    double[] alphas = d.getAlphas();
+    double[] alphas = d.getAlpha();
     assertEquals(3, alphas.length, ERROR);
     assertEquals(2.0, alphas[0], ERROR);
     assertEquals(2.0, alphas[1], ERROR);
