@@ -8,9 +8,6 @@ random Real NoisyObs(Timestep t) ~ Gaussian(state(t),1);
 
 query theta;
 
-/* random Real rounded_theta = 0.01 * round(theta * 100); */
-/* query rounded_theta; */
-
 // Data was generated with true theta = 0.7.
 
 obs NoisyObs(@0) = -0.131446;
