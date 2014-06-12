@@ -29,6 +29,10 @@ Get the latest version of BLOG from the
 Running BLOG doesnot require install. However, you may use the following script to 
 install it on your system. It will be more convenient to run BLOG.
 
+Alternatively, you may directly compile from source code by. 
+
+    make compile
+
 <!-- *** Placeholder for installation *** -->
 
 # Running BLOG
