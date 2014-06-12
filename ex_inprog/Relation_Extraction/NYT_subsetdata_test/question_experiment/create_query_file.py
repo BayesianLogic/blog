@@ -8,7 +8,7 @@
 
 	Call it like this:
 
-	$:~ python3 create_query_file.py <Object> <.eblog file> <output_qblog_file>
+	$:~ python3 create_query_file.py <.eblog file> <output_qblog_file> <Object 1> <Object 2> ... <Object N>
 """
 
 import sys
@@ -17,16 +17,19 @@ def main():
 
 	args = sys.argv[1:]
 
-	Object = args[0]
-	eblog_file = args[1]
-	qblog_file = args[2]
+	eblog_file = args[0]
+	qblog_file = args[1]
+
+	objects = args[2:]
 
 	eblog_file = open(eblog_file, 'r')
 	qblog_file = open(qblog_file, 'w')
 
-	qblog_file.write("random Fact F(Entity e) ~ Iota({{ Fact f : Rel(f) == R[0] & Arg1(f) == e & Arg2(f) == {0} }});\n\n".format(Object))
+	qblog_file.write("random Fact F(Entity e1, Entity e2) ~ Iota({{ Fact f : Rel(f) == R[0] & Arg1(f) == e1 & Arg2(f) == e2 }});\n\n")
 
 	used_entities = set()
+
+	objects = {x:0 for x in objects} # keep track of how many times each object will be queried, so not all queries are NYU
 
 	for line in eblog_file:
 		if 'Subject' not in line:
@@ -37,10 +40,14 @@ def main():
 		arg2 = next_line.strip().split(' = ')[-1][:-1]
 		next_line = eblog_file.readline()
 		trigger = next_line.strip().split(' = ')[-1][:-1]
+		next_line = eblog_file.readline()
+		if 'Rel' in next_line: # Don't query a tagged sentence
+			continue
 
-		if arg2 == Object and arg1 not in used_entities:
-			qblog_file.write('query Holds(F({0}));\t// {1} {2} {3}\n'.format(arg1, arg1, get_clean_trig(trigger), arg2))
+		if arg2 in objects and arg1 not in used_entities and objects[arg2] < 6:
+			qblog_file.write('query Holds(F({0}, {1}));\t// {2} {3} {4}\n'.format(arg1, arg2, arg1, get_clean_trig(trigger), arg2))
 			used_entities.add(arg1)
+			objects[arg2] += 1
 
 	# End for loop
 

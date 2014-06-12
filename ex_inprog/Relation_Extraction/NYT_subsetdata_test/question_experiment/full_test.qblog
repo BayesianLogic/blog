@@ -1,34 +1,38 @@
-/* R[0] has been tagged on this sentence: Lawrence_Kohlberg professor at Harvard. It should be the 'Professor At' relation. */
+random Fact F(Entity e1, Entity e2) ~ Iota({{ Fact f : Rel(f) == R[0] & Arg1(f) == e1 & Arg2(f) == e2 }});
 
-random Fact F(Entity e) ~ Iota({ Fact f : Rel(f) == R[0] & Arg1(f) == e & Arg2(f) == New_York_University });
-
-query Holds(F(Stephen_Gillers)) == true;			// Stephen_Gillers professor at  New_York_University
-query Holds(F(Robert_Berne)) == true;				// Robert_Berne president at  New_York_University
-query Holds(F(Dr__Gary_I__Wadler)) == true;			// Dr__Gary_I__Wadler professor  New_York_University
-query Holds(F(Herbert_Menzel)) == true;				// Herbert_Menzel professor at  New_York_University
-query Holds(F(New_York)) == true;					// New_York professor at  New_York_University
-query Holds(F(William_Joseph_McKeon)) == true;		// William_Joseph_McKeon professor at school  New_York_University
-query Holds(F(Thomas_G__S__Christensen)) == true;	// Thomas_G__S__Christensen expert teach at  New_York_University
-query Holds(F(Prof__Stephen_Gillers)) == true;		// Prof__Stephen_Gillers of school  New_York_University
-query Holds(F(Dr__Seymour_Birnbach)) == true;		// Dr__Seymour_Birnbach professor at school  New_York_University
-query Holds(F(Michael_Wishnie)) == true;			// Michael_Wishnie of title misstate at  New_York_University
-query Holds(F(Edward_Altman)) == true;				// Edward_Altman professor  New_York_University
-query Holds(F(Burt_Neuborne)) == true;				// Burt_Neuborne professor  New_York_University
-query Holds(F(William_L__Silber)) == true;			// William_L__Silber professor  New_York_University
-query Holds(F(Sidney)) == true;						// Sidney professor at  New_York_University
-
-//query Holds(F(Stephen_Gillers));                        // Stephen_Gillers professor at  New_York_University
-//query Holds(F(Robert_Berne));                           // Robert_Berne president at  New_York_University
-//query Holds(F(Dr__Gary_I__Wadler));                     // Dr__Gary_I__Wadler professor  New_York_University
-//query Holds(F(Herbert_Menzel));                         // Herbert_Menzel professor at  New_York_University
-//query Holds(F(New_York));                                       // New_York professor at  New_York_University
-//query Holds(F(William_Joseph_McKeon));          // William_Joseph_McKeon professor at school  New_York_University
-//query Holds(F(Thomas_G__S__Christensen));       // Thomas_G__S__Christensen expert teach at  New_York_University
-//query Holds(F(Prof__Stephen_Gillers));          // Prof__Stephen_Gillers of school  New_York_University
-//query Holds(F(Dr__Seymour_Birnbach));           // Dr__Seymour_Birnbach professor at school  New_York_University
-//query Holds(F(Michael_Wishnie));                        // Michael_Wishnie of title misstate at  New_York_University
-//query Holds(F(Edward_Altman));                          // Edward_Altman professor  New_York_University
-//query Holds(F(Burt_Neuborne));                          // Burt_Neuborne professor  New_York_University
-//query Holds(F(William_L__Silber));                      // William_L__Silber professor  New_York_University
-//query Holds(F(Sidney));                                         // Sidney professor at  New_York_University
-
+query Holds(F(William_J__Casey, Central_Intelligence));				// William_J__Casey director of  Central_Intelligence		| False
+query Holds(F(Stephen_Gillers, New_York_University));				// Stephen_Gillers professor at  New_York_University		| True
+query Holds(F(John_C__Coffee_Jr_, Columbia_University));			// John_C__Coffee_Jr_ professor at  Columbia_University		| True
+query Holds(F(Robert_Blendon, Harvard));							// Robert_Blendon expert at  Harvard 						| False
+query Holds(F(Robert_Berne, New_York_University));					// Robert_Berne president at  New_York_University 			| False
+query Holds(F(Los_Angeles, University_of_California));				// Los_Angeles teach at  University_of_California			| True
+query Holds(F(Jeffrey_Sachs, Harvard));								// Jeffrey_Sachs professor  Harvard 						| True
+query Holds(F(Dr__Gary_I__Wadler, New_York_University));			// Dr__Gary_I__Wadler professor  New_York_University		| True
+query Holds(F(Bob_Blendon, Harvard));								// Bob_Blendon expert at  Harvard 							| False
+query Holds(F(Robert_M__Gates, Central_Intelligence));				// Robert_M__Gates director of  Central_Intelligence 		| False
+query Holds(F(William_E__Colby, Central_Intelligence));				// William_E__Colby director of  Central_Intelligence		| False
+query Holds(F(Herbert_Menzel, New_York_University));				// Herbert_Menzel professor at  New_York_University			| True
+query Holds(F(Richard_Freeman, Harvard));							// Richard_Freeman economist  Harvard 						| False
+query Holds(F(New_York, New_York_University));						// New_York professor at  New_York_University 				| True
+query Holds(F(Priscilla_S__Hunt, Princeton));						// Priscilla_S__Hunt live in  Princeton 					| False
+query Holds(F(Orville_Schell, University_of_California));			// Orville_Schell dean at  University_of_California 	 	| False
+query Holds(F(Michael_Beckerman, University_of_California));		// Michael_Beckerman teach at  University_of_California 	| True
+query Holds(F(John_Van_Antwerp_Fine, Princeton));					// John_Van_Antwerp_Fine die at home in  Princeton 			| False
+query Holds(F(James_Shapiro, Columbia_University));					// James_Shapiro teach at  Columbia_University 				| True
+query Holds(F(Benjamin_M__Friedman, Harvard_University));			// Benjamin_M__Friedman professor at  Harvard_University 	| True
+query Holds(F(William_H__Webster, Central_Intelligence));			// William_H__Webster as director of  Central_Intelligence 	| False 
+query Holds(F(Reagan, Central_Intelligence));						// Reagan director of  Central_Intelligence					| False
+query Holds(F(Marshall_Goldman, Harvard));							// Marshall_Goldman director of center  Harvard 			| False
+query Holds(F(Mark_A__R__Kleiman, Harvard_University));				// Mark_A__R__Kleiman specialist at  Harvard_University 	| False
+query Holds(F(William_Joseph_McKeon, New_York_University));			// William_Joseph_McKeon professor at school New_York_University | True
+query Holds(F(Walter_Gilbert, Harvard_University));					// Walter_Gilbert professor at  Harvard_University 			| True
+query Holds(F(Steven_Cohen, Columbia_University));					// Steven_Cohen expert teach at  Columbia_University 		| True
+query Holds(F(Robert_B__Reich, Harvard));							// Robert_B__Reich professor at school  Harvard 			| True
+query Holds(F(Ricardo_Hausmann, Harvard_University));				// Ricardo_Hausmann economist teach at  Harvard_University 	| True
+query Holds(F(John_Coffee, Columbia_University));					// John_Coffee professor at school  Columbia_University 	| True
+query Holds(F(Eli_Ginzberg, Columbia_University));					// Eli_Ginzberg economist teach at  Columbia_University 	| True
+query Holds(F(Dr__James_F__Gilliam, Princeton));					// Dr__James_F__Gilliam professor at school  Princeton 		| True
+query Holds(F(Tom_K__Lieser, University_of_California));			// Tom_K__Lieser forecaster at  University_of_California 	| False
+query Holds(F(Prof__Otis_Graham_Jr_, University_of_California));	// Prof__Otis_Graham_Jr_ chairman of program at University_of_California	| False
+query Holds(F(Howard_Stein, Columbia_University));					// Howard_Stein chairman of program at  Columbia_University | False
+query Holds(F(Cornell, Princeton));									// Cornell beat in  Princeton 								| False

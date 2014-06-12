@@ -1,0 +1,14 @@
+Probability of (Holds(F(Stephen_Gillers)) = true) is 1.0
+Probability of (Holds(F(Robert_Berne)) = true) is 1.0
+Probability of (Holds(F(Dr__Gary_I__Wadler)) = true) is 1.0
+Probability of (Holds(F(Herbert_Menzel)) = true) is 1.0
+Probability of (Holds(F(New_York)) = true) is 1.0
+Probability of (Holds(F(William_Joseph_McKeon)) = true) is 1.0
+Probability of (Holds(F(Thomas_G__S__Christensen)) = true) is 1.0
+Probability of (Holds(F(Prof__Stephen_Gillers)) = true) is 0.0
+Probability of (Holds(F(Dr__Seymour_Birnbach)) = true) is 1.0
+Probability of (Holds(F(Michael_Wishnie)) = true) is 1.0
+Probability of (Holds(F(Edward_Altman)) = true) is 1.0
+Probability of (Holds(F(Burt_Neuborne)) = true) is 1.0
+Probability of (Holds(F(William_L__Silber)) = true) is 1.0
+Probability of (Holds(F(Sidney)) = true) is 1.0

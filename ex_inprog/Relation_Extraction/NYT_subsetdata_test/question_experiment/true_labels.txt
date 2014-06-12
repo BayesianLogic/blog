@@ -1,0 +1,14 @@
+query Holds(F(Stephen_Gillers)) == true;			// Stephen_Gillers professor at  New_York_University				| True
+query Holds(F(Robert_Berne)) == true;				// Robert_Berne president at  New_York_University					| False
+query Holds(F(Dr__Gary_I__Wadler)) == true;			// Dr__Gary_I__Wadler professor  New_York_University				| True
+query Holds(F(Herbert_Menzel)) == true;				// Herbert_Menzel professor at  New_York_University					| True
+query Holds(F(New_York)) == true;					// New_York professor at  New_York_University						| True
+query Holds(F(William_Joseph_McKeon)) == true;		// William_Joseph_McKeon professor at school  New_York_University 	| True
+query Holds(F(Thomas_G__S__Christensen)) == true;	// Thomas_G__S__Christensen expert teach at  New_York_University	| True
+query Holds(F(Prof__Stephen_Gillers)) == true;		// Prof__Stephen_Gillers of school  New_York_University				| False
+query Holds(F(Dr__Seymour_Birnbach)) == true;		// Dr__Seymour_Birnbach professor at school  New_York_University	| True
+query Holds(F(Michael_Wishnie)) == true;			// Michael_Wishnie of title misstate at  New_York_University		| False
+query Holds(F(Edward_Altman)) == true;				// Edward_Altman professor  New_York_University						| True
+query Holds(F(Burt_Neuborne)) == true;				// Burt_Neuborne professor  New_York_University						| True
+query Holds(F(William_L__Silber)) == true;			// William_L__Silber professor  New_York_University					| True
+query Holds(F(Sidney)) == true;						// Sidney professor at  New_York_University							| True

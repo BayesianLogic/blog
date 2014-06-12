@@ -24,7 +24,15 @@ query Rel(SourceFact(Sent[19]));
 */
 
 
-random Fact F(Entity e) ~ Iota({Fact f : Rel(f) == R[0] & Arg1(f) == e & Arg2(f) == Stuart_Russell });
-query Holds(F(Chris));
-query Holds(F(Lei));
-query Holds(F(John));
+random Fact F(Entity e1, Entity e2) ~ Iota({Fact f : Rel(f) == R[0] & Arg1(f) == e1 & Arg2(f) == e2 });
+
+// should be true
+query Holds(F(Jitendra_Malik, Computer_Vision)) == true;
+query Holds(F(Jitendra_Malik, Machine_Learning)) == true;
+query Holds(F(Stuart_Russell, Artificial_Intelligence)) == true;
+query Holds(F(Mike_Jordan, Statistical_Learning_Theory)) == true;
+
+// should be false
+query Holds(F(Nicholas_Dirks, UC_Berkeley)) == true;
+query Holds(F(Palpatine, the_Jedi_Senate)) == true;
+query Holds(F(Lei, Stuart_Russell)) == true;
