@@ -39,12 +39,8 @@ import blog.common.Util;
 
 /**
  * Laplace distribution over real numbers. This CPD can be initialized
- * with zero, one, or two parameters. If two parameters are given, then the
- * first is the mean and the second is the diversity. If only one parameter is
- * given, it is interpreted as the diversity, and the <code>getProb</code> and
- * <code>sampleVal</code> methods will expect one argument specifying the mean.
- * If no parameters are given, then those methods will expect two arguments, the
- * mean and the diversity.
+ * with exactly two parameters. If two parameters are given, then the
+ * first is the mean and the second is the diversity.
  * 
  * @author leili
  * @author datang
@@ -66,13 +62,14 @@ public class Laplace implements CondProbDistrib {
   }
 
   /**
-   * set the parameters for Laplace distribution
+   * Set the parameters for Laplace distribution. This method is intended for
+   * programmer use. For engine use, please see setParams(Object[] params)
    * 
    * @param mean
-   *          the mean of the Laplace. If null, previous value is used. The mean
+   *          the mean of the Laplace. The mean
    *          should be set at least once.
    * @param diversity
-   *          the diversity of Laplace. If null, previous value is used. The
+   *          the diversity of Laplace. The
    *          diversity should be set at least once.
    *          The diversity must be a positive real number.
    */
@@ -101,7 +98,6 @@ public class Laplace implements CondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    checkHasParams();
     return getProb(((Double) value).doubleValue());
   }
 
@@ -115,6 +111,7 @@ public class Laplace implements CondProbDistrib {
    * @return
    */
   public double getProb(double value) {
+    checkHasParams();
     return (Math.exp(-Math.abs(value - mean) / diversity) / normConst);
   }
 
@@ -125,7 +122,6 @@ public class Laplace implements CondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    checkHasParams();
     return getLogProb(((Double) value).doubleValue());
   }
 
@@ -136,6 +132,7 @@ public class Laplace implements CondProbDistrib {
    * @return
    */
   public double getLogProb(double value) {
+    checkHasParams();
     return (-Math.abs(value - mean) / diversity) - logNormConst;
   }
 
