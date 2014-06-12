@@ -38,27 +38,36 @@ package blog.distrib;
 import blog.common.Util;
 
 /**
- * A Gamma distribution with shape parameter k and scale parameter 1/lambda.
+ * A Gamma distribution with shape parameter <code>k</code> and scale parameter
+ * 1/<code>lambda</code>.
  * Defined as f(x) = (lambda*e^(-lambda*x)*(lambda*x)^(k - 1)) / Gamma(k) where
  * Gamma(k) = integral from 0 to infinity of t^(k-1) * e^(-t) dt
+ * 
+ * @since June 12, 2014
  */
 
 public class Gamma implements CondProbDistrib {
 
+  /** Returns the scale parameter <code>lamdba</code>. */
   public double getLambda() {
     return lambda;
   }
 
+  /** Returns the shape parameter <code>k</code>. */
   public double getK() {
     return k;
   }
 
-  @Override
   /**
-   * Refer to class description.
-   * params[0] -> k (shape parameter)
-   * params[1] -> lambda (rate parameter)
+   * mapping for <code>params</code>:
+   * <ul>
+   * <li>params[0]: <code>k</code> (shape parameter)</li>
+   * <li>params[1]: <code>lambda</code> (rate parameter)</li>
+   * </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
+  @Override
   public void setParams(Object[] params) {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected 2 parameters");
@@ -66,6 +75,12 @@ public class Gamma implements CondProbDistrib {
     setParams((Double) params[0], (Double) params[1]);
   }
 
+  /**
+   * If the method parameter k is non-null and strictly positive, set the
+   * distribution parameter <code>k</code> to the method parameter k. If the
+   * method parameter lambda is non-null and strictly positive, set the
+   * distribution parameter <code>lambda</code> to the method parameter lambda.
+   */
   public void setParams(Double k, Double lambda) {
     if (k != null) {
       if (k <= 0) {
@@ -94,11 +109,17 @@ public class Gamma implements CondProbDistrib {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
   @Override
   public double getProb(Object value) {
     return getProb(((Double) value).doubleValue());
   }
 
+  /** Returns the probability of <code>value</code>. */
   public double getProb(double value) {
     checkHasParams();
     if (value < 0) {
@@ -109,15 +130,26 @@ public class Gamma implements CondProbDistrib {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
   @Override
   public double getLogProb(Object value) {
     return getLogProb(((Double) value).doubleValue());
   }
 
+  /** Returns the log probability of <code>value</code>. */
   public double getLogProb(double value) {
     return Math.log(getProb(value));
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
   @Override
   public Object sampleVal() {
     checkHasParams();
@@ -131,7 +163,6 @@ public class Gamma implements CondProbDistrib {
    * 
    * @param alpha
    * @param beta
-   * @return
    */
   public static double sampleVal(double alpha, double beta) {
     boolean accept = false;
@@ -173,7 +204,7 @@ public class Gamma implements CondProbDistrib {
     }
   }
 
-  /*
+  /**
    * Returns an approximation of the Gamma function of x r(x) = integral from 0
    * to infinity of (t^(x-1) * e^(-t) dt) with |error| < 2e-10. Laczos
    * Approximation Reference: Numerical Recipes in C
@@ -183,7 +214,7 @@ public class Gamma implements CondProbDistrib {
     return Math.exp(lgamma(x));
   }
 
-  /*
+  /**
    * Returns an approximation of the log of the Gamma function of x. Laczos
    * Approximation Reference: Numerical Recipes in C
    * http://www.library.cornell.edu/nr/cbookcpdf.html
@@ -201,6 +232,11 @@ public class Gamma implements CondProbDistrib {
       ser += (cof[j] / y);
     }
     return (-tmp + Math.log(2.5066282746310005 * ser / x));
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getName();
   }
 
   private double lambda;
