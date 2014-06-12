@@ -35,13 +35,13 @@ zip: html
 	mkdir -p tmp/${TARGETNAME}
 	cp ${RUN_FILE} tmp/${TARGETNAME}/
 	cp -r lib tmp/${TARGETNAME}/
-	mv docs/output tmp/${TARGETNAME}/docs 
+	mv docs/output tmp/${TARGETNAME}/docs 		
+	cp -r example tmp/${TARGETNAME}/
 	jar cfe ${TARGETNAME}.jar blog.Main -C bin . 
 	mv ${TARGETNAME}.jar tmp/${TARGETNAME}/lib/
 	cd tmp; zip -r ${TARGETNAME}-bin.zip ${TARGETNAME}
 	rm tmp/${TARGETNAME}/lib/${TARGETNAME}.jar
 	cp -r src tmp/${TARGETNAME}/
-	cp -r example tmp/${TARGETNAME}/
 	cp ${MISC_FILE} tmp/${TARGETNAME}/
 	cd tmp; zip -r ${TARGETNAME}.zip ${TARGETNAME}
 	mv tmp/${TARGETNAME}.zip ./
