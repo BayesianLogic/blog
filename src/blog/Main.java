@@ -40,7 +40,6 @@ import java.io.FileReader;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -142,13 +141,6 @@ import blog.semant.Semant;
  * The -P option cannot be used to specify values for properties for which there
  * exist special-purpose options, such as --engine or --num_samples.
  * 
- * <dt>-x, --extend <i>setup-extender</i>[,<i>key</i>=<i>value</i>,...]
- * <dd>Extend the problem setup (model, evidence and queries) using an object of
- * class <i>setup-extender</i>. This class must implement the SetupExtender
- * interface. The class name can optionally be followed by a series of
- * <i>key</i>=<i>value</i> pairs (each preceded by a comma) that will be passed
- * to the setup extender's constructor in a properties table.
- * 
  * </dl>
  */
 public class Main {
@@ -156,9 +148,8 @@ public class Main {
   public static void main(String[] args) {
     fromString = false;
     init(args);
-    List readersAndOrigins = makeReaders(filenames);
-    setup(model, evidence, queries, readersAndOrigins, setupExtenders,
-        Util.verbose(), true);
+    List<Object[]> readersAndOrigins = makeReaders(filenames);
+    setup(model, evidence, queries, readersAndOrigins, Util.verbose(), true);
     run();
   }
 
@@ -200,8 +191,10 @@ public class Main {
 
       // Print query results
       TableWriter tableWriter = new TableWriter(queries);
-      tableWriter.setHeader("Iteration: " + numSamples);
+      tableWriter.setHeader("======== Query Results =========\n"
+          + "Iteration: " + numSamples);
       tableWriter.writeResults(System.out);
+      System.out.println("======== Done ========");
 
       // Write query results to file, in JSON format.
       if (outputPath != null) {
@@ -215,10 +208,9 @@ public class Main {
     Timer.printAllTimers();
   }
 
-  public static List makeReaders(Collection filenames) {
-    List readersAndOrigins = new LinkedList();
-    for (Iterator iter = filenames.iterator(); iter.hasNext();) {
-      String filename = (String) iter.next();
+  public static List<Object[]> makeReaders(Collection<String> filenames) {
+    List<Object[]> readersAndOrigins = new LinkedList<Object[]>();
+    for (String filename : filenames) {
       try {
         readersAndOrigins
             .add(new Object[] { new FileReader(filename), filename });
@@ -231,7 +223,7 @@ public class Main {
   }
 
   private static boolean semanticsCorrect(Model model, Evidence evidence,
-      List queries) {
+      List<Query> queries) {
     boolean correct = true;
 
     if (!model.checkCompleteness()) {
@@ -255,7 +247,7 @@ public class Main {
   }
 
   private static void parseOptions(String[] args) {
-    Map specialOptions = new HashMap(); // from String to Option
+    Map<String, Option> specialOptions = new HashMap<String, Option>();
 
     blog.common.cmdline.Parser
         .setProgramDesc("Bayesian Logic (BLOG) inference engine");
@@ -311,9 +303,6 @@ public class Main {
     PropertiesOption optInferenceProps = new PropertiesOption("P", null, null,
         "Set inference configuration properties");
 
-    StringListOption optSetupExtenders = new StringListOption("x", "extend",
-        "Extend setup with object of class <s>");
-
     IntOption optNumMoves = new IntOption("m", "num_moves", 1,
         "Use <m> moves per rejuvenation step (PF only)");
 
@@ -334,7 +323,8 @@ public class Main {
     // Make sure properties that have special-purpose options weren't
     // specified with -P.
     inferenceProps = optInferenceProps.getValue();
-    for (Iterator iter = inferenceProps.keySet().iterator(); iter.hasNext();) {
+    for (Iterator<Object> iter = inferenceProps.keySet().iterator(); iter
+        .hasNext();) {
       String property = (String) iter.next();
       Option specialOpt = (Option) specialOptions.get(property);
       if (specialOpt != null) {
@@ -351,66 +341,13 @@ public class Main {
     numSamples = optNumSamples.getValue();
     inferenceProps.setProperty("queryReportInterval",
         String.valueOf(optQueryReportInterval.getValue()));
-    queryReportInterval = optQueryReportInterval.getValue();
     inferenceProps.setProperty("reportInterval",
         String.valueOf(optInterval.getValue()));
-    reportInterval = optQueryReportInterval.getValue();
     inferenceProps.setProperty("burnIn", String.valueOf(optBurnIn.getValue()));
     inferenceProps.setProperty("samplerClass", optSampler.getValue());
     inferenceProps.setProperty("proposerClass", optProposer.getValue());
     inferenceProps.setProperty("timestepBound",
         String.valueOf(optTimestepBound.getValue()));
-
-    for (Iterator iter = optSetupExtenders.getValue().iterator(); iter
-        .hasNext();) {
-      addSetupExtender((String) iter.next());
-    }
-  }
-
-  private static void addSetupExtender(String extenderSpec) {
-    int curCommaIndex = extenderSpec.indexOf(',');
-    String classname = (curCommaIndex == -1) ? extenderSpec : extenderSpec
-        .substring(0, curCommaIndex);
-
-    Properties params = new Properties();
-    while (curCommaIndex != -1) {
-      int nextCommaIndex = extenderSpec.indexOf(',', curCommaIndex + 1);
-      String paramSpec = (nextCommaIndex == -1) ? extenderSpec
-          .substring(curCommaIndex + 1) : extenderSpec.substring(
-          curCommaIndex + 1, nextCommaIndex);
-
-      int equalsIndex = paramSpec.indexOf('=');
-      if (equalsIndex == -1) {
-        Util.fatalError("Setup extender parameter \"" + paramSpec
-            + "\" is not of the form key=value.", false);
-      }
-      params.setProperty(paramSpec.substring(0, equalsIndex),
-          paramSpec.substring(equalsIndex + 1));
-
-      curCommaIndex = nextCommaIndex;
-    }
-
-    SetupExtender extender = null;
-    try {
-      Class extenderClass = Class.forName(classname);
-      Class[] constrArgTypes = { Properties.class };
-      Constructor ct = extenderClass.getConstructor(constrArgTypes);
-      Object[] constrArgs = { params };
-      extender = (SetupExtender) ct.newInstance(constrArgs);
-    } catch (ClassNotFoundException e) {
-      Util.fatalError("Setup extender class not found: " + classname, false);
-    } catch (NoSuchMethodException e) {
-      Util.fatalError("Setup extender class " + classname
-          + " does not have a constructor with a single "
-          + "argument of type java.util.Properties.", false);
-    } catch (ClassCastException e) {
-      Util.fatalError("Setup extender class " + classname + " does not "
-          + "implement the SetupExtender interface.", false);
-    } catch (Exception e) {
-      Util.fatalError(e, true);
-    }
-
-    setupExtenders.add(extender);
   }
 
   /**
@@ -431,9 +368,8 @@ public class Main {
    * messages.
    */
   public static void simpleSetupFromFiles(Model model, Evidence evidence,
-      List queries, Collection filenames) {
-    setupFromFiles(model, evidence, queries, filenames, Util.list(), false,
-        true);
+      List<Query> queries, Collection<String> filenames) {
+    setupFromFiles(model, evidence, queries, filenames, false, true);
   }
 
   /**
@@ -449,23 +385,28 @@ public class Main {
    *          whether to print a message indicating "Parsing from..."
    */
   public static void setupFromFiles(Model model, Evidence evidence,
-      List queries, Collection filenames, Collection setupExtenders,
-      boolean verbose, boolean parseFromMessage) {
-    List readersAndOrigins = makeReaders(filenames);
-    setup(model, evidence, queries, readersAndOrigins, setupExtenders, verbose,
+      List<Query> queries, Collection<String> filenames, boolean verbose,
+      boolean parseFromMessage) {
+    List<Object[]> readersAndOrigins = makeReaders(filenames);
+    setup(model, evidence, queries, readersAndOrigins, verbose,
         parseFromMessage);
   }
 
   /**
    * Reads and prepares model, evidence and queries for inference.
    * 
+   * @param model
+   *          A blog Model
+   * 
+   * @param evidence
+   *          All evidence
+   * @param queries
+   *          A list of Query
+   * 
    * @param readersAndOrigins
    *          A list of Object[] of size two, containing a
    *          {@link java.io.Reader} with text to be parsed and origin name
    *          (such as file name).
-   * 
-   * @param setupExtenders
-   *          A collection of {@link SetupExtender}(s) to be run.
    * 
    * @param verbose
    *          Whether the procedure is verbose.
@@ -473,12 +414,11 @@ public class Main {
    * @param parseFromMessage
    *          Whether to print a message indicating "Parsing from..."
    */
-  public static void setup(Model model, Evidence evidence, List queries,
-      Collection readersAndOrigins, Collection setupExtenders, boolean verbose,
+  public static void setup(Model model, Evidence evidence, List<Query> queries,
+      Collection<Object[]> readersAndOrigins, boolean verbose,
       boolean parseFromMessage) {
     // Parse input readers
-    for (Iterator iter = readersAndOrigins.iterator(); iter.hasNext();) {
-      Object[] readerAndOrigin = (Object[]) iter.next();
+    for (Object[] readerAndOrigin : readersAndOrigins) {
       Reader reader = (Reader) readerAndOrigin[0];
       String origin = (String) readerAndOrigin[1];
       try {
@@ -491,19 +431,6 @@ public class Main {
       } catch (Exception e) {
         ok = false;
         System.err.println("Error parsing file: " + origin);
-        Util.fatalError(e);
-      }
-    }
-
-    // Run setup extenders
-    for (Iterator iter = setupExtenders.iterator(); iter.hasNext();) {
-      SetupExtender extender = (SetupExtender) iter.next();
-      try {
-        extender.extendSetup(model, evidence, queries);
-      } catch (Exception e) {
-        ok = false;
-        System.err.println("Error running setup extender: "
-            + extender.getClass().getName());
         Util.fatalError(e);
       }
     }
@@ -521,8 +448,8 @@ public class Main {
 
       // Print queries for debugging
       System.out.println("\nQueries:");
-      for (Iterator iter = queries.iterator(); iter.hasNext();) {
-        System.out.println(iter.next());
+      for (Query q : queries) {
+        System.out.println(q);
       }
     }
 
@@ -536,8 +463,8 @@ public class Main {
     // Do compilation pass
     int errors = model.compile();
     errors += evidence.compile();
-    for (Iterator iter = queries.iterator(); iter.hasNext();) {
-      errors += ((Query) iter.next()).compile();
+    for (Query q : queries) {
+      errors += q.compile();
     }
     if (errors > 0) {
       System.err.println("Encountered " + errors
@@ -562,14 +489,14 @@ public class Main {
    * {@link #setup(Model, Evidence, List, Collection, Collection, boolean, boolean)}
    * receiving a single string, no setup extenders, and not verbose.
    */
-  public static void stringSetup(Model model, Evidence evidence, List queries,
-      String modelString) {
+  public static void stringSetup(Model model, Evidence evidence,
+      List<Query> queries, String modelString) {
     Reader reader = new StringReader(modelString);
     String origin = Util.abbreviation(modelString);
-    List readersAndOrigins = new LinkedList();
+    List<Object[]> readersAndOrigins = new LinkedList<Object[]>();
     readersAndOrigins.add(new Object[] { reader, origin });
-    setup(model, evidence, queries, readersAndOrigins, new LinkedList(),
-        false /* verbose */, false);
+    setup(model, evidence, queries, readersAndOrigins, false /* verbose */,
+        false);
   }
 
   /**
@@ -593,8 +520,6 @@ public class Main {
   private static Properties inferenceProps;
   private static boolean randomize = false;
   private static int numSamples;
-  private static int queryReportInterval;
-  private static int reportInterval;
   private static Model model;
   private static Evidence evidence;
   private static List<Query> queries;
@@ -605,5 +530,4 @@ public class Main {
   private static boolean debug;
   private static boolean fromString;
   private static String outputPath;
-  private static List setupExtenders = new ArrayList(); // of SetupExtender
 }
