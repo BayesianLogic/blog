@@ -31,10 +31,11 @@ debug: ${SRC_FILES}
 
 tar: zip
 
-zip: 
+zip: html 
 	mkdir -p tmp/${TARGETNAME}
 	cp ${RUN_FILE} tmp/${TARGETNAME}/
 	cp -r lib tmp/${TARGETNAME}/
+	mv docs/output tmp/${TARGETNAME}/docs 
 	jar cfe ${TARGETNAME}.jar blog.Main -C bin . 
 	mv ${TARGETNAME}.jar tmp/${TARGETNAME}/lib/
 	cd tmp; zip -r ${TARGETNAME}-bin.zip ${TARGETNAME}
@@ -46,6 +47,9 @@ zip:
 	mv tmp/${TARGETNAME}.zip ./
 	mv tmp/${TARGETNAME}-bin.zip ./
 	rm -r -f tmp
+
+html:
+	cd docs; make html
 
 demo:
 	./blog example/poisson-ball.blog
