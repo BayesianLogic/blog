@@ -146,12 +146,11 @@ The following options are provided. For every option, there is a short form and 
 - Setting extra options for inference engine. 
   `-P key=value`
   Include the entry key=value in the properties table that is passed to the inference engine. This feature can be used to set configuration parameters for various inference engines (and the components they use, such as samplers). See the individual inference classes for documentation. Note: The -P option cannot be used to specify values for properties for which there exist special-purpose options, such as --engine or --num_samples. 
-
-It can accept an additional variable CLASSPATH to setup classpath of 
-user provided distribution and library functions.
-e.g. blog CLASSPATH=userdir -k User.blog example.blog
-
-
+- Setting extra classpath
+  It can accept an additional variable CLASSPATH to setup classpath of user provided distribution and library functions. For example, 
+```
+CLASSPATH=userdir blog example/burglary.blog
+```
 # Running dynamic models 
 For dynamic models (models with `Timestep`), one can use bootstrap particle filter. 
 Bootstrap particle filter is an approximate algorithm for making inference about dynamic probabilistic model with general distributions. The following command runs a particle filter for a hidden Markov model.
@@ -217,3 +216,14 @@ To specify the number of particles, use `-n`. By default, BLOG uses 50,000 parti
 ```
 ./blog -e blog.engine.ParticleFilter -n 100000 example/hmm.dblog
 ```
+
+## Tuning Liu-West fitler
+If your BLOG model contains static variables (random functions defined on types other than `Timestep`). You may consider using the Liu-West filter. The current implementation of Liu-West filter only work on scalar continuous static variables. To switch to Liu-West filter, use the option `-e LiuWestFilter`
+
+BLOG requires a parameter `rho` for the degree of pertubation. Defaut is 0.95. It can be set using `-P rho=[number]`. The number should be in (0, 1]. 1.0 means no pertubation, i.e. plain particle filtering. 
+
+The following command runs Liu-West filter on a simple auto-regressive model. 
+```
+./blog -e LiuWestFilter -P rho=0.98 example/ar1.dblog
+```
+Please refer to `example/ar1.dblog` for the full model. 
