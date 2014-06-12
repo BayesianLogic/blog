@@ -30,23 +30,23 @@ random Boolean Burglary ~ BooleanDistrib(0.001);
 random Boolean Earthquake ~ BooleanDistrib(0.002);
 
 random Boolean Alarm {
-	if Burglary then
-		if Earthquake then
-		  ~ BooleanDistrib(0.95)
-		else
-		  ~ BooleanDistrib(0.94)
-	else
-		if Earthquake then
-		  ~ BooleanDistrib(0.29)
-		else
-		  ~ BooleanDistrib(0.001)
+  if Burglary then
+    if Earthquake then
+      ~ BooleanDistrib(0.95)
+    else
+      ~ BooleanDistrib(0.94)
+  else
+    if Earthquake then
+      ~ BooleanDistrib(0.29)
+    else
+      ~ BooleanDistrib(0.001)  
 };
 
-random Boolean JohnCalls
-	if Alarm then
-	  ~ BooleanDistrib(0.9)
-	else
-	  ~ BooleanDistrib(0.05);
+random Boolean JohnCalls 
+  if Alarm then 
+    ~ BooleanDistrib(0.9)
+  else 
+    ~ BooleanDistrib(0.05);
 
 random Boolean MaryCalls
   if Alarm then
@@ -101,15 +101,16 @@ The `[options]` are optional. The orders of these options do not matter. If no o
 
 The following options are provided. For every option, there is a short form and a long form. Either is acceptable.
 
-- Setting random seed. By default, BLOG engine always use the same random seed for easy debugging.
+- Setting random seed. 
   `-r` or `--randomize`
-  For example
+  Initialize the random seed based on the clock time. If this flag is not given, the program uses a fixed random seed so its behavior is reproducible. Default: false
+  For example:
 ```
 ./blog -r example/burglary.blog
 ```
 - Use Inference engine.
-  `-e [string]` or `--engine [string]`
-  By default, BLOG uses sampling engine. For dynamic models, two additional engines are provided:
+  `-e classname` or `--engine=classname`
+  Use classname as the inference engine. Default: blog.engine.SamplingEngine. For dynamic models, two additional engines are provided:
   - Bootstrap Particle filter (applicable to general dynamic models)
     `-e blog.engine.ParticleFilter`
   - Liu-west Filter (Liu & West 2001), only applicable to Real static parameters.
@@ -118,50 +119,54 @@ The following options are provided. For every option, there is a short form and 
 ```
 ./blog -e blog.engine.ParticleFilter example/hmm.dblog
 ```
-- Controlling the accuracy by specify number of samples. By default, it is 50,000.
-  '-n [integer]' or `--num_samples [integer]`
+- Run the sampling engine for a given number of samples. 
+  '-n [number]' or `--num_samples [number]`
+  It is used to control the accuracy of the inference. Default, 10,000. 
   For example, to run the burglary model with 1 million samples.
 ```
 ./blog -n 1000000 example/burglary.blog
 ```
-- Use a different sampling algorithm.
+- Choose a sampling algorithm.
   `-s [string]` or `--sampler [string]`
   BLOG provides three sampling algorithms
   - rejection sampling, `-s blog.sample.RejectionSampler`
-  - likelihood-weighting (default), '-s blog.sample.LWSampler'
+  - (default) likelihood-weighting, '-s blog.sample.LWSampler'
   - Metropolis-Hasting algorithm (Milch et al 2006), `-s blog.sample.MHSampler`
--
-
-
-
+- Skip the first few number of samples
+  `-b num` or `--burn_in=num`
+  Treat first num samples as burn-in period (don't use them to compute query results). Default: 0. 
+- Use a customized proposal for the Metropolis-Hastings sampler.
+  `-p classname` or `--proposer=classname`
+  It should be used together with `-e blog.sample.MHSampler`. Default: `blog.GenericProposer` (samples each var given its parents). The proposer should be implemented in Java and extends `blog.sample.AbstractProposer`.
+- Output
+  `-o file` or `--output=file`
+  Output query results in JSON format to this file. 
+- Print detailed information during inference.
+  `-v` or `--verbose`
+  Print information about the world generated at each iteration. Off by default (for performance reasons, consider leaving this option off). 
+- Monitor the progress of inference.
+  `--interval=num`
+  Report query results to stdout every num queries. Default: 1000
+- Generate possible worlds. 
+  `--generate`
+  Rather than answering queries, just sample possible worlds from the prior distribution defined by the model, and print them out. Default: false. 
+  Note this option cannot be used on dynamic models and any models with Functions on Integers. 
+- Setting classpath for resolving the names of Distributions. 
+  `--package=package`
+  Look in package (e.g., "blog.distrib") when resolving the names of CondProbDistrib and NonRandomFunction classes in the model file. This option can be included several times with different packages; the packages are searched in the order given. The last places searched are the top-level package ("") and finally the default package blog.distrib. Note that you still need to set the Java classpath so that it includes all these packages. 
+- Print debugging information.
+  `--debug`
+  Print model, evidence, and queries for debugging. Default: false 
+- Setting extra options for inference engine. 
+  `-P key=value`
+  Include the entry key=value in the properties table that is passed to the inference engine. This feature can be used to set configuration parameters for various inference engines (and the components they use, such as samplers). See the individual inference classes for documentation. Note: The -P option cannot be used to specify values for properties for which there exist special-purpose options, such as --engine or --num_samples. 
+- Setting extra classpath
+  It can accept an additional variable CLASSPATH to setup classpath of user provided distribution and library functions. For example, 
 ```
-===========LEI LI stops here================
--q <n>, --query_report_interval <n>Report Query values after <n> samples
--i <n>, --interval <n>        Write results after every <n> samples
--b <n>, --burn_in <n>         Treat first <n> samples as burn-in
-         Use sampler class <s>
--p <s>, --proposer <s>        Use Metropolis-Hastings proposer class <s>
---[no]generate                Sample worlds from prior and print them
---max_timestep <n>            If model is dynamic, generate up to <n> timesteps
--k <s>, --package <s>         Parser looks for classes in package <s>
--v, --[no]verbose             Print info about every world sampled
--d, --[no]displaycbn          Print the CBN of the sampled world
--g, --[no]debug               Print model, evidence, and queries
--w <s>, --write <s>           Write sampling results to file <s>
--h <s>, --histogram_output <s>Write histogram output to file <s>
--P<key>=<value>               Set inference configuration properties
--x <s>, --extend <s>          Extend setup with object of class <s>
--m <n>, --num_moves <n>       Use <m> moves per rejuvenation step (PF only)
-
-
-It can accept an additional variable CLASSPATH to setup classpath of
-user provided distribution and library functions.
-e.g. blog CLASSPATH=userdir -k User.blog example.blog
-=============LEI LI stops here============================
+CLASSPATH=userdir blog example/burglary.blog
 ```
-
-# Running dynamic models
-For dynamic models (models with `Timestep`), one can use bootstrap particle filter.
+# Running dynamic models 
+For dynamic models (models with `Timestep`), one can use bootstrap particle filter. 
 Bootstrap particle filter is an approximate algorithm for making inference about dynamic probabilistic model with general distributions. The following command runs a particle filter for a hidden Markov model.
 ```
 ./blog -e blog.engine.ParticleFilter example/hmm.dblog
@@ -225,3 +230,14 @@ To specify the number of particles, use `-n`. By default, BLOG uses 50,000 parti
 ```
 ./blog -e blog.engine.ParticleFilter -n 100000 example/hmm.dblog
 ```
+
+## Tuning Liu-West fitler
+If your BLOG model contains static variables (random functions defined on types other than `Timestep`). You may consider using the Liu-West filter. The current implementation of Liu-West filter only work on scalar continuous static variables. To switch to Liu-West filter, use the option `-e LiuWestFilter`
+
+BLOG requires a parameter `rho` for the degree of pertubation. Defaut is 0.95. It can be set using `-P rho=[number]`. The number should be in (0, 1]. 1.0 means no pertubation, i.e. plain particle filtering. 
+
+The following command runs Liu-West filter on a simple auto-regressive model. 
+```
+./blog -e LiuWestFilter -P rho=0.98 example/ar1.dblog
+```
+Please refer to `example/ar1.dblog` for the full model. 
