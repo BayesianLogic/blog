@@ -6,7 +6,7 @@ AUTHOR = u''
 SITENAME = u'BLOG Programming Language'
 SITEURL = ''
 
-TIMEZONE = 'Europe/Paris'
+TIMEZONE = 'America/Los_Angeles'
 
 DEFAULT_LANG = u'en'
 
@@ -35,5 +35,3 @@ RELATIVE_URLS = True
 
 THEME = "theme"
 DIRECT_TEMPLATES = ()
-
-
