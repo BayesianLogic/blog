@@ -104,7 +104,7 @@ dl {margin: 0 0 1.5em 0;}
 dt {font-weight: bold;}
 dd {margin-left: 1.5em;}
 
-pre{background-color:  rgb(238, 238, 238); padding: 10px; overflow: auto;}
+pre{background-color:  rgb(238, 238, 238); padding: 10px 2px 10px 10px; overflow: auto;}
 
 /* Quotes */
 blockquote {
