@@ -38,27 +38,37 @@ package blog.distrib;
 import blog.common.Util;
 
 /**
- * A Negative Binomial distribution with parameters r (number of failures) and
- * p (probability of a success at a given trial). If r is an integer, this is
- * also called the Pascal distribution. The distribution is defined (in discrete
- * terms) as the number of successes before r failures. The distribution follows
- * the wikipedia definition of the Negative Binomial distribution.
+ * A Negative Binomial distribution with parameters <code>r</code> (number of
+ * failures) and <code>p</code> (probability of a success at a given trial). If
+ * <code>r</code> is an integer, this is also called the Pascal distribution.
+ * The distribution is defined (in discrete terms) as the number of successes
+ * before <code>r</code> failures. The distribution follows the wikipedia
+ * definition of the Negative Binomial distribution.
+ * 
+ * @since June 12, 2014
  */
-public class NegativeBinomial extends AbstractCondProbDistrib {
+public class NegativeBinomial implements CondProbDistrib {
 
+  /** Return the parameter <code>r</code>. */
   public int getR() {
     return r;
   }
 
+  /** Return the parameter <code>p</code>. */
   public double getP() {
     return p;
   }
 
-  @Override
   /**
-   * params[0] -> r, according to class definition
-   * params[1] -> p, according to class definition
+   * mapping for <code>params</code>:
+   * <ul>
+   * <li>params[0]: <code>r</code></li>
+   * <li>params[1]: <code>p</code></li>
+   * </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
+  @Override
   public void setParams(Object[] params) {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected 2 parameters");
@@ -67,6 +77,11 @@ public class NegativeBinomial extends AbstractCondProbDistrib {
   }
 
   /**
+   * If the method parameter r is non-null and strictly positive, set the
+   * distribution parameter <code>r</code> to method parameter r. If the method
+   * parameter p is non-null and 0 < p < 1, set the distribution parameter
+   * <code>p</code> to the method parameter p.
+   * 
    * @param r
    *          number of failures, r > 0
    * @param p
@@ -103,6 +118,11 @@ public class NegativeBinomial extends AbstractCondProbDistrib {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
   @Override
   public double getProb(Object value) {
     return getProb(((Integer) value).intValue());
@@ -118,6 +138,11 @@ public class NegativeBinomial extends AbstractCondProbDistrib {
     return Math.exp(getLogProb(k));
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.AbstractCondProbDistrib#getLogProb(java.lang.Object)
+   */
   @Override
   public double getLogProb(Object value) {
     return getLogProb(((Integer) value).intValue());
@@ -139,17 +164,20 @@ public class NegativeBinomial extends AbstractCondProbDistrib {
           .logFactorial(r - 1));
   }
 
-  @Override
   /**
    * Returns a double sampled according to this distribution. Takes time
    * O(GammaDistrib.sampleVal() + Poisson.sampleVal()). (Reference: A Guide To
    * Simulation, 2nd Ed. Bratley, Paul, Bennett L. Fox and Linus E. Schrage.)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
    */
+  @Override
   public Object sampleVal() {
     Double theta = (Double) gamma.sampleVal();
     return Poisson.sampleVal(theta);
   }
 
+  @Override
   public String toString() {
     return getClass().getName();
   }
