@@ -1,0 +1,4 @@
+distinct City A B;
+distinct City A,,B;
+distinct City A[2], B[][];
+distinct City A[2], B[];

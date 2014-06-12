@@ -1,0 +1,2 @@
+query exists x (Birthday(x));
+query exists Person x (Real x);
