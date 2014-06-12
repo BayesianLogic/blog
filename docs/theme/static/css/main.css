@@ -38,7 +38,8 @@ h6 {font-size: 1em}		/* 14px */
 h1, h2, h3, h4, h5, h6 {
 	font-weight: 400;
 	line-height: 1.1;
-	margin-bottom: .8em;
+	margin-top: 1em;
+	margin-bottom: .6em;
     font-family: 'Yanone Kaffeesatz', arial, serif;
 }
 
@@ -103,7 +104,7 @@ dl {margin: 0 0 1.5em 0;}
 dt {font-weight: bold;}
 dd {margin-left: 1.5em;}
 
-pre{background-color:  rgb(238, 238, 238); padding: 10px; margin: 10px; overflow: auto;}
+pre{background-color:  rgb(238, 238, 238); padding: 10px; overflow: auto;}
 
 /* Quotes */
 blockquote {
@@ -129,7 +130,7 @@ table {margin: .5em auto 1.5em auto; width: 98%;}
 	thead td {}
 
 	/* Tbody */
-	tbody td {padding: .5em .4em;}
+	tbody td {}
 	tbody th {}
 	
 	tbody .alt td {}
