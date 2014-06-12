@@ -19,53 +19,48 @@ One example is about burglary-earthquake network,
 first described in "Artificial Intelligence: A Modern Approach", 2nd ed., p. 494.
 The model file is `example/burglary.blog`, the same as below.
 
-```python
-# test highlighting
-foo = bar
-```
+    #!blog
+    random Boolean Burglary ~ BooleanDistrib(0.001);
 
-```blog
-random Boolean Burglary ~ BooleanDistrib(0.001);
+    random Boolean Earthquake ~ BooleanDistrib(0.002);
 
-random Boolean Earthquake ~ BooleanDistrib(0.002);
+    random Boolean Alarm {
+      if Burglary then
+        if Earthquake then
+          ~ BooleanDistrib(0.95)
+        else
+          ~ BooleanDistrib(0.94)
+      else
+        if Earthquake then
+          ~ BooleanDistrib(0.29)
+        else
+          ~ BooleanDistrib(0.001)  
+    };
 
-random Boolean Alarm {
-  if Burglary then
-    if Earthquake then
-      ~ BooleanDistrib(0.95)
-    else
-      ~ BooleanDistrib(0.94)
-  else
-    if Earthquake then
-      ~ BooleanDistrib(0.29)
-    else
-      ~ BooleanDistrib(0.001)  
-};
+    random Boolean JohnCalls 
+      if Alarm then 
+        ~ BooleanDistrib(0.9)
+      else 
+        ~ BooleanDistrib(0.05);
 
-random Boolean JohnCalls 
-  if Alarm then 
-    ~ BooleanDistrib(0.9)
-  else 
-    ~ BooleanDistrib(0.05);
+    random Boolean MaryCalls
+      if Alarm then
+        ~ BooleanDistrib(0.7)
+      else
+        ~ BooleanDistrib(0.01);
 
-random Boolean MaryCalls
-  if Alarm then
-    ~ BooleanDistrib(0.7)
-  else
-    ~ BooleanDistrib(0.01);
+    /* Evidence for the burglary model saying that both
+     * John and Mary called.  Given this evidence, the posterior probability
+     * of Burglary is 0.284 (see p. 505 of "AI: A Modern Approach", 2nd ed.).
+     */
+    obs JohnCalls = true;
+    obs MaryCalls = true;
 
-/* Evidence for the burglary model saying that both
- * John and Mary called.  Given this evidence, the posterior probability
- * of Burglary is 0.284 (see p. 505 of "AI: A Modern Approach", 2nd ed.).
- */
-obs JohnCalls = true;
-obs MaryCalls = true;
+    /* Query for the burglary model asking whether Burglary
+     * is true.
+     */
+    query Burglary;
 
-/* Query for the burglary model asking whether Burglary
- * is true.
- */
-query Burglary;
-```
 
 There is one query described in the model. It is asking whether there is burglary.
 By running the model, we expect to obtain the probability of burglary event.
