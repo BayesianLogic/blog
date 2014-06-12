@@ -39,29 +39,39 @@ import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
 /**
- * A Dirichlet distribution with shape parameter vector alpha, defined by
+ * A Dirichlet distribution with shape parameter vector <code>alpha</code>,
+ * defined by:
  * f(x1, x2, ... xn) = 1/Z * (x1^(alpha_1-1) * x2^(alpha_2-1) * ... *
- * xn^(alpha_n-1),
- * where \sum(xi) = 1 and Z = \prod(Gamma(alpha_i)) / Gamma(\sum(alpha_i)).
+ * xn^(alpha_n-1), where \sum(xi) = 1 and Z = \prod(Gamma(alpha_i)) /
+ * Gamma(\sum(alpha_i)).
  * 
  * Note that this is a generalization of the Beta distribution: while
  * the Beta generates a parameter for the Bernoulli process (Bernoulli
  * and Binomial distributions), the Dirichlet generates parameters for
  * the Categorical process (Categorical and Multinomial distributions).
+ * 
+ * @since June 12, 2014
  */
 public class Dirichlet implements CondProbDistrib {
 
   private final double TOLERANCE = 10e-3;
 
-  public double[] getAlphas() {
-    return alphas;
+  /** Return the shape parameter vector <code>alpha</code>. */
+  public double[] getAlpha() {
+    return alpha;
   }
 
-  @Override
   /**
-   * params[0] -> MatrixLib, which is a row-vector representing the parameter 
-   *              vector alpha, as defined in the class description
+   * Mapping for <code>params</code>:
+   * 
+   * <ul>
+   * <li>params[0]: <code>alpha</code> in the form of a MatrixLib instance which
+   * takes on the shape of a row vector.</li>
+   * </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
+  @Override
   public void setParams(Object[] params) {
     if (params.length != 1) {
       throw new IllegalArgumentException("expected one parameter");
@@ -70,12 +80,11 @@ public class Dirichlet implements CondProbDistrib {
   }
 
   /**
-   * If matrix is non-null, sets the alpha vector parameter of the Dirichlet to
-   * matrix.
+   * If matrix is non-null, row-vector of strictly positive reals, sets the
+   * distribution parameter <code>alpha</code> to matrix.
    * 
    * @param matrix
-   *          A row vector representing the parameter vector alpha, as
-   *          defined in the class description
+   *          A row vector representing the parameter vector <code>alpha</code>.
    */
   public void setParams(MatrixLib matrix) {
     if (matrix != null) {
@@ -88,7 +97,7 @@ public class Dirichlet implements CondProbDistrib {
             "The alpha vector must contain at least two elements");
       }
       int cols = matrix.numCols();
-      this.alphas = new double[cols];
+      this.alpha = new double[cols];
       this.gammas = new Gamma[cols];
       for (int i = 0; i < cols; i++) {
         double elementValue = matrix.elementAt(0, i);
@@ -96,10 +105,10 @@ public class Dirichlet implements CondProbDistrib {
           throw new IllegalArgumentException(
               "All elements in the alpha vector need to be strictly positive.");
         }
-        alphas[i] = elementValue;
+        alpha[i] = elementValue;
         gammas[i] = new Gamma(elementValue, 1);
       }
-      this.normalizationConstant = Dirichlet.normalize(alphas);
+      this.normalizationConstant = Dirichlet.normalize(alpha);
       this.hasAlpha = true;
     }
   }
@@ -121,7 +130,8 @@ public class Dirichlet implements CondProbDistrib {
   }
 
   /**
-   * Returns the pdf of row vector x in a Dirichlet distribution.
+   * Returns the pdf of row vector x (of correct dimensions) in a Dirichlet
+   * distribution.
    * 
    * @param x
    *          row vector
@@ -131,10 +141,10 @@ public class Dirichlet implements CondProbDistrib {
     if (x == null) {
       throw new IllegalArgumentException("The random outcome vector is null");
     }
-    if (x.numRows() != 1 || x.numCols() != this.alphas.length) {
+    if (x.numRows() != 1 || x.numCols() != this.alpha.length) {
       throw new IllegalArgumentException(
           "Incorrect dimensions given for row vector of Dirichlet. should be a 1 by "
-              + alphas.length + " matrix, but is a " + x.numRows() + " by "
+              + alpha.length + " matrix, but is a " + x.numRows() + " by "
               + x.numCols() + " matrix");
     }
     if (!checkSupport(x)) {
@@ -143,7 +153,7 @@ public class Dirichlet implements CondProbDistrib {
     double prob = 1.0;
     for (int i = 0; i < x.numCols(); i++) {
       double val = x.elementAt(0, i);
-      prob *= Math.pow(val, alphas[i] - 1);
+      prob *= Math.pow(val, alpha[i] - 1);
     }
     return (prob / normalizationConstant);
   }
@@ -174,7 +184,7 @@ public class Dirichlet implements CondProbDistrib {
   }
 
   /**
-   * Returns the pdf of row vector x in a Dirichlet distribution.
+   * Returns the log pdf of row vector x in a Dirichlet distribution.
    * 
    * @param x
    *          row vector
@@ -184,10 +194,10 @@ public class Dirichlet implements CondProbDistrib {
     if (x == null) {
       throw new IllegalArgumentException("The random outcome vector is null");
     }
-    if (x.numRows() != 1 || x.numCols() != this.alphas.length) {
+    if (x.numRows() != 1 || x.numCols() != this.alpha.length) {
       throw new IllegalArgumentException(
           "Incorrect dimensions given for row vector of Dirichlet. should be a 1 by "
-              + alphas.length + " matrix, but is a " + x.numRows() + " by "
+              + alpha.length + " matrix, but is a " + x.numRows() + " by "
               + x.numCols() + " matrix");
     }
     if (!checkSupport(x)) {
@@ -197,8 +207,8 @@ public class Dirichlet implements CondProbDistrib {
     double prob = 0.0;
     for (int i = 0; i < x.numCols(); i++) {
       double value = x.elementAt(0, i);
-      if (alphas[i] != 1) {
-        prob += Math.log(value) * (alphas[i] - 1);
+      if (alpha[i] != 1) {
+        prob += Math.log(value) * (alpha[i] - 1);
       }
     }
     return (prob - Math.log(normalizationConstant));
@@ -221,11 +231,11 @@ public class Dirichlet implements CondProbDistrib {
    */
   public MatrixLib sampleValue() {
     double sum = 0.0;
-    int vec_size = alphas.length;
+    int vec_size = alpha.length;
 
     double[][] samples = new double[1][vec_size];
     for (int i = 0; i < vec_size; i++) {
-      double sample = Gamma.sampleVal(alphas[i], 1);
+      double sample = Gamma.sampleVal(alpha[i], 1);
       sum += sample;
       samples[0][i] = sample;
     }
@@ -257,11 +267,12 @@ public class Dirichlet implements CondProbDistrib {
     return numer / denom;
   }
 
+  @Override
   public String toString() {
     return getClass().getName();
   }
 
-  private double[] alphas;
+  private double[] alpha;
   private boolean hasAlpha;
   private Gamma[] gammas;
   private double normalizationConstant;
