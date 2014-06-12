@@ -1194,6 +1194,13 @@ public class RelationExtractionProposer implements Proposer {
     // }
     // }
 
+    // If the set of unsupported facts is empty, do nothing. We can check this
+    // by checking the size of the trueFacts map
+    if (trueFacts.size() == relevantArgPairs.size()
+        * relType.getGuaranteedObjects().size()) {
+      return 0.0;
+    }
+
     // 2) Randomly choose a Holds(f) from unsupported set of facts
     Object factChoice;
 
