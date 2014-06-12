@@ -38,32 +38,39 @@ package blog.distrib;
 import blog.common.Util;
 
 /**
- * A Binomial distribution with parameters n (number of trials) and p
- * (probability of success for a given trial). The probability of k successes
- * P(k)= C(n,k) * p^k * (1-p)^(n-k). A Binomial distribution can be created in
- * the following ways:
- * <ul>
- * <li>With two parameters, n and p, in which case it expects no arguments;
- * <li>With one parameter, p, in which case it expects n as an argument;
- * <li>With no parameters, in which case it expects two arguments, n and p.
- * </ul>
+ * A Binomial distribution with parameters <code>n</code> (number of trials) and
+ * <code>p</code> (probability of success for a given trial). The probability of
+ * k successes
+ * P(k)= C(n,k) * p^k * (1-p)^(n-k).
+ * 
+ * @since June 12, 2014
  */
 
 public class Binomial implements CondProbDistrib {
 
+  /** Returns the distribution parameter <code>n</code> (number of trials). */
   public int getN() {
     return n;
   }
 
+  /**
+   * Returns the distribution parameter <code>p</code> (probability of success
+   * for a given trial).
+   */
   public double getP() {
     return p;
   }
 
-  @Override
   /**
-   * params[0] -> n, as defined in the class description
-   * params[1] -> p, as defined in the class description
+   * mapping for <code>params</code>:
+   * <ul>
+   * <li>params[0]: <code>n</code></li>
+   * <li>params[1]: <code>p</code></li>
+   * </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
+  @Override
   public void setParams(Object[] params) {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected two parameters");
@@ -71,6 +78,17 @@ public class Binomial implements CondProbDistrib {
     setParams((Integer) params[0], (Double) params[1]);
   }
 
+  /**
+   * If the method parameter n is non-null and legal, set the distribution
+   * parameter <code>n</code> to the method parameter. Similarly for p.
+   * 
+   * @param n
+   *          <code>n</code> (number of trials); to be legal, must be a
+   *          nonnegative integer
+   * @param p
+   *          <code>p</code> (probability of success); to be legal, must be a
+   *          probability (0 <= p <= 1)
+   */
   public void setParams(Integer n, Double p) {
     if (n != null) {
       if (n < 0) {
@@ -99,11 +117,17 @@ public class Binomial implements CondProbDistrib {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
   @Override
   public double getProb(Object value) {
     return getProb(((Integer) value).intValue());
   }
 
+  /** Returns the probability of <code>value</code> successes. */
   public double getProb(int value) {
     checkHasParams();
     int k = value;
@@ -115,21 +139,36 @@ public class Binomial implements CondProbDistrib {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
   @Override
   public double getLogProb(Object value) {
     return getLogProb(((Integer) value).intValue());
   }
 
+  /** Returns the log probability of <code>value</code> successes. */
   public double getLogProb(int value) {
     return Math.log(getProb(value));
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
   @Override
   public Object sampleVal() {
     checkHasParams();
     return sampleVal(n, p);
   }
 
+  /**
+   * Samples a binomial distribution with parameter <code>n</code> (number of
+   * trials) and <code>p</code> (probability of success for each trial).
+   */
   public static int sampleVal(int n, double p) {
     double q = -Math.log(1 - p);
     double sum = 0;
@@ -143,6 +182,7 @@ public class Binomial implements CondProbDistrib {
     return x - 1;
   }
 
+  @Override
   public String toString() {
     return getClass().getName();
   }
