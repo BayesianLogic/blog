@@ -35,10 +35,7 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * Laplace distribution over real numbers. This CPD can be initialized
@@ -48,90 +45,98 @@ import blog.model.Type;
  * <code>sampleVal</code> methods will expect one argument specifying the mean.
  * If no parameters are given, then those methods will expect two arguments, the
  * mean and the diversity.
+ * 
+ * @author leili
+ * @author datang
+ * @since 2014/06/11
  */
-public class Laplace extends AbstractCondProbDistrib {
+public class Laplace implements CondProbDistrib {
 
-  /**
-   * Creates a Laplace distribution with the given fixed mean and
-   * diversity.
+  /*
+   * Laplace accepts an array of exactly two parameters (could be null)
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
-  public Laplace(double mean, double diversity) {
-    expectMeanAsArg = false;
-    setMean(mean);
-
-    expectDiversityAsArg = false;
-    setDiversity(diversity);
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 2)
+      throw new IllegalArgumentException(
+          "Laplace distribution expect two parameters: mean and diversity");
+    setParams((Double) params[0], (Double) params[1]);
   }
 
   /**
-   * Creates a Laplace distribution. If two parameters are given,
-   * then the first is the mean and the second is the diversity. If only one
-   * parameter is given, it is interpreted as the diversity. Parameters not
-   * specified here must be given as arguments to <code>getProb</code> and
-   * <code>sampleVal</code>.
+   * set the parameters for Laplace distribution
+   * 
+   * @param mean
+   *          the mean of the Laplace. If null, previous value is used. The mean
+   *          should be set at least once.
+   * @param diversity
+   *          the diversity of Laplace. If null, previous value is used. The
+   *          diversity should be set at least once.
+   *          The diversity must be a positive real number.
    */
-  public Laplace(List params) {
-    if (params.size() == 0) {
-      expectMeanAsArg = true;
-      expectDiversityAsArg = true;
-    } else if (params.size() == 1) {
-      expectMeanAsArg = false;
-      expectDiversityAsArg = true;
-      initParams(params);
-      expectMeanAsArg = true;
-      expectDiversityAsArg = false;
-    } else if (params.size() == 2) {
-      expectMeanAsArg = true;
-      expectDiversityAsArg = true;
-      initParams(params);
-      expectMeanAsArg = false;
-      expectDiversityAsArg = false;
-    } else {
-      throw new IllegalArgumentException(
-          "Laplace CPD expects at most 2 parameters, not " + params.size());
+  public void setParams(Double mean, Double diversity) {
+    if (mean != null) {
+      hasMean = true;
+      this.mean = mean;
+    }
+    if (diversity != null) {
+      if (diversity <= 0) {
+        throw new IllegalArgumentException(
+            "Diversity of Laplace distribution must be positive, not "
+                + diversity);
+      }
+      hasDiversity = true;
+      this.diversity = diversity;
+      normConst = diversity * 2;
+      logNormConst = Math.log(diversity) + Math.log(2);
     }
   }
 
-  public double getProb(List args, Object value) {
-    initParams(args);
-    if (!(value instanceof Number))
-      throw new IllegalArgumentException(
-          "The value passed to the Laplace distribution's " + "getProb "
-              + "method must be of type Number, not " + value.getClass() + ".");
-    return getProb(((Number) value).doubleValue());
-  }
-
-  public double getLogProb(List args, Object value) {
-    initParams(args);
-    if (!(value instanceof Number))
-      throw new IllegalArgumentException(
-          "The value passed to the Laplace distribution's " + "getLogProb "
-              + "method must be of type Number, not " + value.getClass() + ".");
-    return getLogProb(((Number) value).doubleValue());
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    checkHasParams();
+    return getProb(((Double) value).doubleValue());
   }
 
   /**
-   * Returns the density of this Laplace distribution at the given value. This
-   * method should only be called if the mean and diversity were set in the
-   * constructor (internal calls are ok if the private method
-   * <code>initParams</code> is called first).
+   * calculate the probability of a given value
+   * The parameter must be set before calling this method.
+   * Note this method is intended for human use. Please use getProb(Object) for
+   * the engine use.
+   * 
+   * @param value
+   * @return
    */
-  public double getProb(double x) {
-    return (Math.exp(-Math.abs(x - mean) / diversity) / normConst);
+  public double getProb(double value) {
+    return (Math.exp(-Math.abs(value - mean) / diversity) / normConst);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    checkHasParams();
+    return getLogProb(((Double) value).doubleValue());
   }
 
   /**
-   * Returns the natural log of the density of this Laplace distribution at the
-   * given value. This method should only be called if the mean and diversity
-   * were set in the constructor, or if <code>initParams</code> has been called.
+   * calculate the log probability of the given value
+   * 
+   * @param value
+   * @return
    */
-  public double getLogProb(double x) {
-    return (-Math.abs(x - mean) / diversity) - logNormConst;
-  }
-
-  public Object sampleVal(List args, Type childType) {
-    initParams(args);
-    return new Double(sampleVal());
+  public double getLogProb(double value) {
+    return (-Math.abs(value - mean) / diversity) - logNormConst;
   }
 
   /**
@@ -145,8 +150,12 @@ public class Laplace extends AbstractCondProbDistrib {
    * Exponential distributions. See
    * http://en.wikipedia.org/wiki/Laplace_distribution
    * #Generating_random_variables_according_to_the_Laplace_distribution
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
    */
-  public double sampleVal() {
+  @Override
+  public Object sampleVal() {
+    checkHasParams();
     double U = Util.random() - 0.5;
     if (U > 0)
       return mean - diversity * Math.log(1 - 2 * U);
@@ -154,107 +163,30 @@ public class Laplace extends AbstractCondProbDistrib {
       return mean + diversity * Math.log(1 + 2 * U);
   }
 
-  private void initParams(List args) {
-    if (args.size() > 2) {
-      throw new IllegalArgumentException(
-          "Laplace CPD expects at most 2 parameters, not " + args.size());
-    }
-    if (!expectMeanAsArg) {
-      if (!expectDiversityAsArg) {
-        if (args.size() > 0) {
-          throw new IllegalArgumentException(
-              "Laplace CPD with fixed mean expects no " + "arguments.");
-        }
-      } else {
-        if (!(args.get(0) instanceof Number)) {
-          throw new IllegalArgumentException(
-              "The divesity parameter of Laplace CPD must be of type Number, not "
-                  + args.get(0).getClass() + ".");
-        } else {
-          double Diversity = (Double) args.get(0);
-          if (Diversity <= 0) {
-            throw new IllegalArgumentException(
-                "Laplace CPD expects a positive real number as the diversity parameter, not "
-                    + Diversity + ".");
-          } else {
-            setDiversity(Diversity);
-          }
-        }
-      }
-    } else {
-      if (args.size() < 1) {
-        throw new IllegalArgumentException(
-            "Laplace CPD created without a fixed mean; "
-                + "requires mean as an argument.");
-      }
-      if (!(args.get(0) instanceof Number)) {
-        throw new IllegalArgumentException(
-            "The mean parameter of Laplace CPD must be of type Number, not "
-                + args.get(0).getClass() + ".");
-      } else {
-        setMean((Double) args.get(0));
-      }
-      if (!expectDiversityAsArg) {
-        if (args.size() > 1) {
-          throw new IllegalArgumentException(
-              "Laplace CPD with fixed Laplace expects " + "only one argument.");
-        }
-      } else {
-        if (args.size() < 2) {
-          throw new IllegalArgumentException(
-              "Laplace CPD created without a fixed "
-                  + "Laplace; requires diversity as argument.");
-        }
-        if (!(args.get(1) instanceof Number)) {
-          throw new IllegalArgumentException(
-              "The divesity parameter of Laplace CPD must be of type Number, not "
-                  + args.get(1).getClass() + ".");
-        } else {
-          double Diversity = (Double) args.get(1);
-          if (Diversity <= 0) {
-            throw new IllegalArgumentException(
-                "Laplace CPD expects a positive real number as the diversity parameter, not "
-                    + Diversity + ".");
-          } else {
-            setDiversity(Diversity);
-          }
-        }
-      }
-    }
-  }
-
-  private void setMean(double mean) {
-    this.mean = mean;
-  }
-
-  public double getMean() {
-    return mean;
-  }
-
-  public double getDiversity() {
-    return diversity;
-  }
-
-  private void setDiversity(double diversity) {
-    if (diversity <= 0) {
-      throw new IllegalArgumentException(
-          "Diversity of Laplace distribution must be positive, " + "not "
-              + diversity);
-    }
-    this.diversity = diversity;
-    normConst = diversity * 2;
-    logNormConst = Math.log(diversity) + Math.log(2);
-  }
-
+  /**
+   * get the string representation of Laplace.
+   */
   public String toString() {
     return "Laplace(" + mean + ", " + diversity + ")";
   }
 
-  private boolean expectMeanAsArg;
-  private boolean expectDiversityAsArg;
+  /**
+   * check whether both parameters are set.
+   */
+  private void checkHasParams() {
+    if (!hasMean)
+      throw new IllegalArgumentException("mean of Laplace not provided");
+    if (!hasDiversity)
+      throw new IllegalArgumentException("diversity of Laplace not provided");
+  }
 
+  // parameters
+  private boolean hasMean = false;
+  private boolean hasDiversity = false;
   private double mean;
   private double diversity;
+
+  // precomputed
   private double normConst;
   private double logNormConst;
 }
