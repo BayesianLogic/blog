@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# Script for running the BLOG inference engine using particle filter.
+# see the script below
+#   blog
+
+BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export BLOG_HOME
+
+${BLOG_HOME}/blog -e blog.engine.ParticleFilter $@

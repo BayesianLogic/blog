@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2005, Regents of the University of California
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -12,11 +12,11 @@
  * * Redistributions in binary form must reproduce the above copyright
  *   notice, this list of conditions and the following disclaimer in
  *   the documentation and/or other materials provided with the
- *   distribution.  
+ *   distribution.
  *
  * * Neither the name of the University of California, Berkeley nor
  *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior 
+ *   products derived from this software without specific prior
  *   written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -53,7 +53,7 @@ import blog.world.PartialWorldDiff;
  * instantiated RVs), then samples values for previously uninstantiated RVs to
  * make the resulting instantiation self-supporting. It also uninstantiates any
  * RVs that become barren.
- * 
+ *
  * <p>
  * Each variable is sampled from its prior distribution given its parents. The
  * forward proposal probability is just the probability of choosing the selected
@@ -65,159 +65,159 @@ import blog.world.PartialWorldDiff;
  * No other moves can yield the same proposed world because each move changes
  * the value of exactly one instantiated variable (it just instantiates and
  * uninstantiates other variables).
- * 
+ *
  * <p>
  * GenericProposer does not use identifiers in the worlds it constructs.
  */
 public class GenericProposer extends AbstractProposer {
 
-	/**
-	 * Creates a new GenericProposer that proposes possible worlds for the given
-	 * model. The properties table, specifying configuration parameters, is passed
-	 * to the LWSampler that is used to generate the initial world.
-	 */
-	public GenericProposer(Model model, Properties properties) {
-		super(model, properties);
-	}
+  /**
+   * Creates a new GenericProposer that proposes possible worlds for the given
+   * model. The properties table, specifying configuration parameters, is passed
+   * to the LWSampler that is used to generate the initial world.
+   */
+  public GenericProposer(Model model, Properties properties) {
+    super(model, properties);
+  }
 
-	protected class PickVarToSampleResult {
-		public VarWithDistrib varToSample;
-		public int numberOfChoices;
+  protected class PickVarToSampleResult {
+    public VarWithDistrib varToSample;
+    public int numberOfChoices;
 
-		public PickVarToSampleResult(VarWithDistrib varToSample, int numberOfChoices) {
-			this.varToSample = varToSample;
-			this.numberOfChoices = numberOfChoices;
-		}
-	}
+    public PickVarToSampleResult(VarWithDistrib varToSample, int numberOfChoices) {
+      this.varToSample = varToSample;
+      this.numberOfChoices = numberOfChoices;
+    }
+  }
 
-	protected PickVarToSampleResult pickVarToSample(PartialWorld world) {
-		Set eligibleVars = new HashSet(world.getInstantiatedVars());
-		eligibleVars.removeAll(evidenceVars);
+  protected PickVarToSampleResult pickVarToSample(PartialWorld world) {
+    Set eligibleVars = new HashSet(world.getInstantiatedVars());
+    eligibleVars.removeAll(evidenceVars);
 
-		// Uniformly sample a random variable from the support network.
-		VarWithDistrib varToSample = (VarWithDistrib) Util
-				.uniformSample(eligibleVars);
+    // Uniformly sample a random variable from the support network.
+    VarWithDistrib varToSample = (VarWithDistrib) Util
+        .uniformSample(eligibleVars);
 
-		return new PickVarToSampleResult(varToSample, eligibleVars.size());
-	}
+    return new PickVarToSampleResult(varToSample, eligibleVars.size());
+  }
 
-	/**
-	 * Proposes a next state for the Markov chain given the current state. The
-	 * proposedWorld argument is a PartialWorldDiff that the proposer can modify
-	 * to create the proposal; the saved version of this PartialWorldDiff is the
-	 * state before the proposal. Returns the log proposal ratio: log (q(x | x') /
-	 * q(x' | x))
-	 */
-	public double proposeNextState(PartialWorldDiff world) {
-		if (evidence == null) {
-			throw new IllegalStateException(
-					"initialize() has not been called on proposer.");
-		}
+  /**
+   * Proposes a next state for the Markov chain given the current state. The
+   * proposedWorld argument is a PartialWorldDiff that the proposer can modify
+   * to create the proposal; the saved version of this PartialWorldDiff is the
+   * state before the proposal. Returns the log proposal ratio: log (q(x | x') /
+   * q(x' | x))
+   */
+  public double proposeNextState(PartialWorldDiff world) {
+    if (evidence == null) {
+      throw new IllegalStateException(
+          "initialize() has not been called on proposer.");
+    }
 
-		logProbForward = 0;
-		logProbBackward = 0;
+    logProbForward = 0;
+    logProbBackward = 0;
 
-		PickVarToSampleResult result = pickVarToSample(world);
+    PickVarToSampleResult result = pickVarToSample(world);
 
-		if (result.varToSample == null)
-			return 1.0;
+    if (result.varToSample == null)
+      return 1.0;
 
-		if (Util.verbose())
-			System.out.println("  sampling " + result.varToSample);
+    if (Util.verbose())
+      System.out.println("  sampling " + result.varToSample);
 
-		// Multiply in the probability of this uniform sample.
-		logProbForward += (-Math.log(result.numberOfChoices));
+    // Multiply in the probability of this uniform sample.
+    logProbForward += (-Math.log(result.numberOfChoices));
 
-        if (Util.verbose()) {
-		    System.out.println("GenericProposer: world right before sampling" 
-                    + " new value for " + result.varToSample + ".\n");
-		    System.out.println(world);
+    if (Util.verbose()) {
+      System.out.println("GenericProposer: world right before sampling"
+          + " new value for " + result.varToSample + ".\n");
+      System.out.println(world);
+    }
+
+    // Sample value for variable and update forward and backward probs
+    sampleValue(result.varToSample, world);
+
+    if (Util.verbose()) {
+      System.out.println("GenericProposer: world right before getting"
+          + " newly barren vars.\n");
+      System.out.println(world);
+    }
+
+    // Remove barren variables
+    LinkedList newlyBarren = new LinkedList(world.getNewlyBarrenVars());
+    while (!newlyBarren.isEmpty()) {
+      BayesNetVar var = (BayesNetVar) newlyBarren.removeFirst();
+      if (!evidenceVars.contains(var) && !queryVars.contains(var)) {
+
+        // Remember its parents.
+        Set parentSet = world.getCBN().getParents(var);
+
+        if (var instanceof VarWithDistrib) {
+          // Multiply in the probability of sampling this
+          // variable again. Since the parent value may have
+          // changed, must use the old world.
+          logProbBackward += world.getSaved().getLogProbOfValue(var);
+
+          // Uninstantiate
+          world.setValue((VarWithDistrib) var, null);
         }
 
-		// Sample value for variable and update forward and backward probs
-		sampleValue(result.varToSample, world);
+        // Check to see if its parents are now barren.
+        for (Iterator parentIter = parentSet.iterator(); parentIter.hasNext();) {
 
-        if (Util.verbose()) {
-            System.out.println("GenericProposer: world right before getting" 
-                    + " newly barren vars.\n");
-            System.out.println(world);
+          // If parent is barren, add to the end of this
+          // linked list. Note that if a parent has two
+          // barren children, it will only be added to the
+          // end of the list once, when the last child is
+          // considered.
+          BayesNetVar parent = (BayesNetVar) parentIter.next();
+          if (world.getCBN().getChildren(parent).isEmpty())
+            newlyBarren.addLast(parent);
         }
+      }
+    }
 
-		// Remove barren variables
-		LinkedList newlyBarren = new LinkedList(world.getNewlyBarrenVars());
-		while (!newlyBarren.isEmpty()) {
-			BayesNetVar var = (BayesNetVar) newlyBarren.removeFirst();
-			if (!evidenceVars.contains(var) && !queryVars.contains(var)) {
+    // Uniform sampling from new world.
+    logProbBackward += (-Math.log(world.getInstantiatedVars().size()
+        - numBasicEvidenceVars));
+    return (logProbBackward - logProbForward);
+  }
 
-				// Remember its parents.
-				Set parentSet = world.getCBN().getParents(var);
+  // Samples a new value for the given variable (which must be
+  // supported in <code>world</code>) and sets this new value as the
+  // value of the variable in <code>world</code>. Then ensures that
+  // <code>world</code> is self-supporting by calling
+  // ensureDetAndSupported on each of the variable's children. Also
+  // updates the logProbForward and logProbBackward variables.
+  protected void sampleValue(VarWithDistrib varToSample, PartialWorld world) {
+    // Save child set before graph becomes out of date
+    Set children = world.getCBN().getChildren(varToSample);
 
-				if (var instanceof VarWithDistrib) {
-					// Multiply in the probability of sampling this
-					// variable again. Since the parent value may have
-					// changed, must use the old world.
-					logProbBackward += world.getSaved().getLogProbOfValue(var);
+    DependencyModel.Distrib distrib = varToSample
+        .getDistrib(new DefaultEvalContext(world, true));
+    Object oldValue = world.getValue(varToSample);
+    logProbBackward += Math.log(distrib.getCPD().getProb(
+        distrib.getArgValues(), oldValue));
 
-					// Uninstantiate
-					world.setValue((VarWithDistrib) var, null);
-				}
+    Object newValue = distrib.getCPD().sampleVal(distrib.getArgValues(),
+        varToSample.getType());
+    world.setValue(varToSample, newValue);
+    logProbForward += Math.log(distrib.getCPD().getProb(distrib.getArgValues(),
+        newValue));
 
-				// Check to see if its parents are now barren.
-				for (Iterator parentIter = parentSet.iterator(); parentIter.hasNext();) {
+    // Make the world self-supporting. The only variables whose active
+    // parent sets could have changed are the children of varToSample.
+    ClassicInstantiatingEvalContext instantiator = new ClassicInstantiatingEvalContext(
+        world);
 
-					// If parent is barren, add to the end of this
-					// linked list. Note that if a parent has two
-					// barren children, it will only be added to the
-					// end of the list once, when the last child is
-					// considered.
-					BayesNetVar parent = (BayesNetVar) parentIter.next();
-					if (world.getCBN().getChildren(parent).isEmpty())
-						newlyBarren.addLast(parent);
-				}
-			}
-		}
+    for (Iterator childrenIter = children.iterator(); childrenIter.hasNext();) {
+      BayesNetVar child = (BayesNetVar) childrenIter.next();
+      if (!world.isInstantiated(child)) // NOT SURE YET THIS IS THE RIGHT THING
+                                        // TO DO! CHECKING WITH BRIAN.
+        continue;
+      child.ensureDetAndSupported(instantiator);
+    }
 
-		// Uniform sampling from new world.
-		logProbBackward += (-Math.log(world.getInstantiatedVars().size()
-				- numBasicEvidenceVars));
-		return (logProbBackward - logProbForward);
-	}
-
-	// Samples a new value for the given variable (which must be
-	// supported in <code>world</code>) and sets this new value as the
-	// value of the variable in <code>world</code>. Then ensures that
-	// <code>world</code> is self-supporting by calling
-	// ensureDetAndSupported on each of the variable's children. Also
-	// updates the logProbForward and logProbBackward variables.
-	protected void sampleValue(VarWithDistrib varToSample, PartialWorld world) {
-		// Save child set before graph becomes out of date
-		Set children = world.getCBN().getChildren(varToSample);
-
-		DependencyModel.Distrib distrib = varToSample
-				.getDistrib(new DefaultEvalContext(world, true));
-		Object oldValue = world.getValue(varToSample);
-		logProbBackward += Math.log(distrib.getCPD().getProb(
-				distrib.getArgValues(), oldValue));
-
-		Object newValue = distrib.getCPD().sampleVal(distrib.getArgValues(),
-				varToSample.getType());
-		world.setValue(varToSample, newValue);
-		logProbForward += Math.log(distrib.getCPD().getProb(distrib.getArgValues(),
-				newValue));
-
-		// Make the world self-supporting. The only variables whose active
-		// parent sets could have changed are the children of varToSample.
-		ClassicInstantiatingEvalContext instantiator = new ClassicInstantiatingEvalContext(
-				world);
-
-		for (Iterator childrenIter = children.iterator(); childrenIter.hasNext();) {
-			BayesNetVar child = (BayesNetVar) childrenIter.next();
-			if (!world.isInstantiated(child)) // NOT SURE YET THIS IS THE RIGHT THING
-																				// TO DO! CHECKING WITH BRIAN.
-				continue;
-			child.ensureDetAndSupported(instantiator);
-		}
-
-		logProbForward += instantiator.getLogProbability();
-	}
+    logProbForward += instantiator.getLogProbability();
+  }
 }

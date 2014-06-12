@@ -37,7 +37,9 @@
  * use JFlex
  * @author leili
  * @author bramsundar
- * @date 2012-07
+ * @author tejas
+ * @author Lea
+ * @date 2014-06
  */
 
 package blog.parse;
@@ -51,41 +53,32 @@ action code {:
            return blog.symbol.Symbol.Symbol(s);
   }
 
-    LocationInFile getCurLocation() {
-        return new LocationInFile
-            (((ScannerWithLocInfo)parser.getScanner()).getCurFilename(),
-             ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum());
-    }
+  LocationInFile getCurLocation() {
+    return new LocationInFile
+      (((ScannerWithLocInfo)parser.getScanner()).getCurFilename(),
+      ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum());
+  }
 
-    int currLineno() {
-  return ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum();
-    }
+  int currLineno() {
+    return ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum();
+  }
 
+  int currColno() {
+    return ((ScannerWithLocInfo)parser.getScanner()).getCurColNum();
+  }
 
-    int currColno() {
-  return ((ScannerWithLocInfo)parser.getScanner()).getCurColNum();
-    }
-
-/* //TO-DO
-    void semantic_error( String message ){
-         System.err.println("\n" + curr_filename( ) + ":" + curr_lineno( )
-                            + " Semantic error: " + message);
-   parser.omerrs++;
-    }
-*/
   void error(String msg) {
     parser.errorMsg.error(currLineno(), currColno(), msg);
   }
 
-    void warning( String message ){
-         System.err.println("\n" + curr_filename( ) + ":" + currLineno( )
+  void warning( String message ){
+    System.err.println("\n" + curr_filename( ) + ":" + currLineno( )
                             + " Warning: " + message);
-    }
+  }
 
-    String curr_filename() {
+  String curr_filename() {
     return ((ScannerWithLocInfo)parser.getScanner()).getCurFilename();
-    }
-
+  }
 :}
 
 
@@ -135,8 +128,7 @@ terminal java.lang.Boolean BOOLEAN_LITERAL;
 terminal java.lang.Character CHAR_LITERAL;
 terminal java.lang.String STRING_LITERAL;
 terminal java.lang.String ID;
-terminal PARFACTOR, FACTOR; // Not Yet Implemented
-terminal ERROR, ELSEIF; // Not Yet Implemented
+//terminal PARFACTOR, FACTOR; // Not Yet Implemented
 terminal AT; // time operator
 terminal PLUS, MINUS, MULT, DIV, MOD, POWER; //arithmetic operator
 terminal LT, GT, LEQ, GEQ; // relational_expression
@@ -146,6 +138,7 @@ terminal DISTRIB;
 terminal NOT, AND, OR, DOUBLERIGHTARROW; // logical operator
 terminal COMMA, SEMI, COLON, DOT, NUMSIGN, RIGHTARROW; //seperators
 terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET; // paired seperators
+terminal ERROR; // used by lexer
 
 nonterminal program;
 nonterminal StmtList opt_statement_lst, statement_lst;
