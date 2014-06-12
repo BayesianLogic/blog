@@ -36,25 +36,35 @@
 package blog.distrib;
 
 /**
- * A Beta distribution with shape parameters a and b, defined by f(x) =(x^(a-1)
+ * A Beta distribution with shape parameters <code>a</code> and <code>b</code>,
+ * defined by f(x) =(x^(a-1)
  * * (1-x)^(b-1)) / B(a,b) where B(a,b) is a normalization constant equal to
  * integral from 0 to 1 of x^(a-1) * (1-x)^(b-1) dx
+ * 
+ * @since June 12, 2014
  */
 public class Beta implements CondProbDistrib {
 
+  /** Returns the shape parameter <code>a</code>. */
   public double getA() {
     return a;
   }
 
+  /** Returns the shape parameter <code>b</code>. */
   public double getB() {
     return b;
   }
 
-  @Override
   /**
-   * params[0] -> a, as defined in the class description
-   * params[1] -> b, as defined in the class description
+   * mapping for <code>params</code>:
+   * <ul>
+   * <li>params[0]: <code>a</code></li>
+   * <li>params[1]: <code>b</code></li>
+   * </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
+  @Override
   public void setParams(Object[] params) {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected two parameters");
@@ -62,6 +72,11 @@ public class Beta implements CondProbDistrib {
     setParams((Double) params[0], (Double) params[1]);
   }
 
+  /**
+   * If argument a is non-null and strictly positive, then set the shape
+   * parameter <code>a</code> to the method parameter a. Similarly for
+   * <code>b</code>.
+   */
   public void setParams(Double a, Double b) {
     if (a != null) {
       if (a <= 0) {
@@ -92,11 +107,19 @@ public class Beta implements CondProbDistrib {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
   @Override
   public double getProb(Object value) {
     return getProb(((Double) value).doubleValue());
   }
 
+  /**
+   * Returns the probability of outcome x.
+   */
   public double getProb(double x) {
     checkHasParams();
     if (x >= 0 && x <= 1) {
@@ -106,11 +129,19 @@ public class Beta implements CondProbDistrib {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
   @Override
   public double getLogProb(Object value) {
     return getLogProb(((Double) value).doubleValue());
   }
 
+  /**
+   * Returns the log probability of outcome x.
+   */
   public double getLogProb(double x) {
     checkHasParams();
     if (x >= 0 && x <= 1) {
@@ -128,6 +159,11 @@ public class Beta implements CondProbDistrib {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
   @Override
   public Object sampleVal() {
     double y = ((Double) gammaA.sampleVal()).doubleValue();
@@ -144,11 +180,14 @@ public class Beta implements CondProbDistrib {
     return ((Gamma.gamma(a) * Gamma.gamma(b)) / Gamma.gamma(a + b));
   }
 
+  @Override
   public String toString() {
     return "Beta(" + a + "," + b + ")";
   }
 
+  /** Gamma(a, 1). Used for sampling. */
   private Gamma gammaA;
+  /** Gamma(b, 1). Used for sampling. */
   private Gamma gammaB;
 
   private double a;
