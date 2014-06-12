@@ -35,8 +35,6 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
 
 /**
@@ -47,17 +45,14 @@ import blog.common.Util;
  * This is a slightly modified version of Poisson.java in the common directory,
  * tailored to implement the CondProbDistrib interface.
  * 
- * @since June 9, 2014
+ * @since June 12, 2014
  */
 public class Poisson implements CondProbDistrib {
 
-  public double computeLogProb(int n) {
-    if (lambda == 0) {
-      return n == 0 ? 0 : Double.NEGATIVE_INFINITY;
-    }
-    return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
-  }
-
+  /**
+   * Computes the log probability of <code>n</code> for a Poisson with parameter
+   * <code>lambda</code>.
+   */
   public static double computeLogProb(double lambda, int n) {
     if (lambda == 0) {
       return n == 0 ? 0 : Double.NEGATIVE_INFINITY;
@@ -124,24 +119,6 @@ public class Poisson implements CondProbDistrib {
     return r;
   }
 
-  /**
-   * compute the cumulative density
-   * 
-   * @author leili
-   * @param args
-   * @param value
-   * @return
-   */
-  public double cdf(List args, Object value) {
-    int n = ((Number) value).intValue();
-    double w = 0;
-    for (int i = 0; i <= n; i++) {
-      w += Math.exp(computeLogProb(i));
-    }
-    return w;
-    // TODO cache of computed cdf
-  }
-
   private double[] cdf_table = null;
 
   private static double[] ensureSize(int n, double[] table) {
@@ -200,14 +177,20 @@ public class Poisson implements CondProbDistrib {
     return w;
   }
 
+  /** Return the parameter <code>lambda</code>. */
   public double getLambda() {
     return lambda;
   }
 
-  @Override
   /**
-   * params[0] -> lambda, as defined in the class description
+   * mapping for <code>params</code>:
+   * <ul>
+   * <li>params[0]: <code>lambda</code></li>
+   * </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
+  @Override
   public void setParams(Object[] params) {
     if (params.length != 1) {
       throw new IllegalArgumentException("expected one parameter");
@@ -215,11 +198,15 @@ public class Poisson implements CondProbDistrib {
     setParams((Double) params[0]);
   }
 
+  /**
+   * If the method parameter lambda is non-null and non-negative, set the
+   * distribution parameter <code>lambda</code> to the method parameter lambda.
+   */
   public void setParams(Double lambda) {
     if (lambda != null) {
-      if (lambda <= 0) {
+      if (lambda < 0) {
         throw new IllegalArgumentException(
-            "parameter lambda must be a strictly positive real");
+            "parameter lambda must be a nonnegative real");
       }
       this.lambda = lambda;
       this.hasLambda = true;
@@ -232,6 +219,11 @@ public class Poisson implements CondProbDistrib {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
   @Override
   public double getProb(Object value) {
     return getProb(((Integer) value).intValue());
@@ -247,6 +239,11 @@ public class Poisson implements CondProbDistrib {
     return Math.exp(getLogProb(k));
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
   @Override
   public double getLogProb(Object value) {
     return getLogProb(((Integer) value).intValue());
@@ -266,12 +263,18 @@ public class Poisson implements CondProbDistrib {
     return (-lambda + (k * Math.log(lambda)) - Util.logFactorial(k));
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
   @Override
   public Object sampleVal() {
     checkHasParams();
     return sampleInt();
   }
 
+  @Override
   public String toString() {
     return getClass().getName();
   }
