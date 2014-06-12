@@ -1,0 +1,7 @@
+fixed Boolean Advises(Professor, Student s) 
+    = Real x;
+
+fixed Boolean Advises(Professor p,, Student s) 
+    = 1;
+
+
