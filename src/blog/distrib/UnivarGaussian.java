@@ -6,16 +6,26 @@ import java.util.Iterator;
 import blog.common.Util;
 
 /**
- * Univariate Gaussian distribution with a given mean and variance.
+ * Univariate Gaussian distribution with a given <code>mean</code> and
+ * <code>variance</code>.
+ * 
+ * @since June 12, 2014
  */
 public class UnivarGaussian implements CondProbDistrib {
-  public UnivarGaussian() {
-  }
 
-  public UnivarGaussian(double mean, double variance) {
+  private UnivarGaussian(double mean, double variance) {
     setParams(mean, variance);
   }
 
+  /**
+   * mapping for <code>params</code>:
+   * <ul>
+   * <li>params[0]: <code>mean</code></li>
+   * <li>params[1]: <code>variance</code></li>
+   * </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
+   */
   public void setParams(Object[] params) {
     if (params.length != 2) {
       throw new IllegalArgumentException(
@@ -24,6 +34,11 @@ public class UnivarGaussian implements CondProbDistrib {
     setParams((Double) params[0], (Double) params[1]);
   }
 
+  /**
+   * If the method parameter mean is non-null, sets the distribution parameter
+   * <code>mean</code> to the method parameter mean. Similarly for variance
+   * assuming variance is strictly positive.
+   */
   public void setParams(Double mean, Double variance) {
     if (mean != null) {
       this.mean = mean;
@@ -51,29 +66,42 @@ public class UnivarGaussian implements CondProbDistrib {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
   public double getProb(Object value) {
     return getProb(((Double) value).doubleValue());
   }
 
+  /** Returns the probability of <code>x</code>. */
   public double getProb(double x) {
     checkHasParams();
     return (Math.exp(-Math.pow((x - mean), 2) / (2 * variance)) / normConst);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
   public double getLogProb(Object value) {
     return getLogProb(((Double) value).doubleValue());
   }
 
+  /** Returns the log probability of <code>x</code>. */
   public double getLogProb(double x) {
     checkHasParams();
     return (-(x - mean) * (x - mean) / (2 * variance)) - logNormConst;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
   public Object sampleVal() {
-    return sampleValue();
-  }
-
-  public double sampleValue() {
     checkHasParams();
     double U = Util.random();
     double V = Util.random();
@@ -81,18 +109,22 @@ public class UnivarGaussian implements CondProbDistrib {
         .sqrt((-2 * Math.log(U)))));
   }
 
+  /** Return the parameter <code>mean</code>. */
   public double getMean() {
     return mean;
   }
 
+  /** Return the parameter <code>variance</code>. */
   public double getVariance() {
     return variance;
   }
 
+  @Override
   public String toString() {
     return "UnivarGaussian(" + mean + ", " + variance + ")";
   }
 
+  /** The Standard Gaussian (mean = 0, variance = 1). */
   public static final UnivarGaussian STANDARD = new UnivarGaussian(0, 1);
 
   /**
