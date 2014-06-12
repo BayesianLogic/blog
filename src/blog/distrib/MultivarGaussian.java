@@ -39,29 +39,20 @@ import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
 /**
- * Gaussian (normal) distribution over real vectors of some fixed dimensionality
- * <i>d</i>. This CPD can be initialized with one, two, or three parameters. If
- * three parameters are given, then they are the dimension, mean, and covariance
- * matrix. If two parameters are given, they are interpreted as the dimension
- * and covariance matrix; in this case the mean must be passed as an argument to
- * the <code>getProb</code> and <code>sampleVal</code> methods. If only one
- * parameter is given, it is the dimension, and the mean and covariance matrix
- * must both be given as arguments.
+ * Multivariate Gaussian (normal) distribution over real vectors of some fixed
+ * dimensionality <i>d</i> with parameters <code>mean</code> and
+ * <code>covariance</code>.
  * 
- * @since June 11, 2014
+ * @since June 12, 2014
  */
 public class MultivarGaussian implements CondProbDistrib {
 
-  /**
-   * Returns the mean of this distribution.
-   */
+  /** Returns the parameter <code>mean</code>. */
   public MatrixLib getMean() {
     return mean;
   }
 
-  /**
-   * Return the covariance matrix of this distribution.
-   */
+  /** Returns the parameter <code>covariance</code>. */
   public MatrixLib getCovariance() {
     return covariance;
   }
@@ -91,8 +82,6 @@ public class MultivarGaussian implements CondProbDistrib {
    * symmetric matrix, set the distribution parameter <code>covariance</code> to
    * the method parameter <code>covariance</code>. If both parameters are set,
    * checks to see if dimensions of the mean and covariance agree.
-   * 
-   * @throws IllegalArgumentException
    * 
    * @param mean
    *          parameter <code>mean</code>
