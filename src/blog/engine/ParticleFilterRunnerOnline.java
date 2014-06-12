@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 import blog.DBLOGUtil;
@@ -224,11 +225,10 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
     Model model = new Model();
     Evidence evidence = new Evidence();
     ArrayList<Query> queries = new ArrayList<Query>();
-    ArrayList<Object> readersAndOrigins = new ArrayList<Object>();
+    List<Object[]> readersAndOrigins = new ArrayList<Object[]>();
     readersAndOrigins.add(new Object[] { new FileReader(modelFile), "blank" });
 
-    Main.setup(model, evidence, queries, readersAndOrigins, new ArrayList(),
-        verbose, false);
+    Main.setup(model, evidence, queries, readersAndOrigins, verbose, false);
     new ParticleFilterRunnerOnline(model, linkStrings, queryStrings, properties)
         .run();
 
