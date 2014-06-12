@@ -7,7 +7,7 @@ import java.util.Set;
 
 import blog.common.UnaryProcedure;
 import blog.common.Util;
-import blog.common.numerical.JamaMatrixLib;
+import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.sample.EvalContext;
 import blog.world.DefaultPartialWorld;
@@ -63,7 +63,7 @@ public class MatrixSpec extends ArgSpec {
     for (int i = 0; i < num_rows; i++) {
       List<ArgSpec> rowList = ((ListSpec) values.get(i)).elements;
       if (rowList.size() != num_cols) {
-        Util.fatalError("Matrix is not square!");
+        Util.fatalError("Matrix rows have unequal length.");
       }
 
       for (int j = 0; j < num_cols; j++) {
@@ -105,7 +105,7 @@ public class MatrixSpec extends ArgSpec {
       spec.compile(callStack);
     }
     double[][] contents = getValues(matrixContents);
-    matrix = new JamaMatrixLib(contents);
+    matrix = MatrixFactory.fromArray(contents);
 
     callStack.remove(this);
     return 0;

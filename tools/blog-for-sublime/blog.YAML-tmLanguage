@@ -1,0 +1,63 @@
+# [PackageDev] target_format: plist, ext: tmLanguage
+---
+name: BLOG
+scopeName: source.blog
+fileTypes: [blog,dblog]
+uuid: 99d32618-4b9c-4a4c-b44b-fb8851e307be
+
+patterns:
+- name: comment.line.double-slash.blog
+  match: \s*((//).*$\n?)
+- name: comment.block.blog
+  begin: (/\*)
+  beginCaptures:
+    '1': {name: punctuation.definition.comment.begin.blog}
+  end: \*/\s*
+  endCaptures:
+    '0': {name: punctuation.definition.comment.blog}
+##operators
+- match: (\#)(\w+)\b
+  captures:
+    '1': {name: keyword.operator.blog}
+    '2': {name: storage.type.blog}  
+- name: keyword.operator.blog
+  match: (\-\>|\<|\>|\=|\=\=|\>\=|\<\=|\!|~|:|\+|\-|\*|\/|\%|\=\>|\&|\||\[|\])
+- name: storage.modifer.blog
+  match: \b(obs|query)\b
+- match: \b(fixed|random|origin)\b\s+\b(Integer|Real|Boolean|NaturalNum|Timestep|RealMatrix|IntegerMatrix|\w+)((\[\])*)\s+
+  captures:
+    '1': {name: storage.modifier.blog}
+    '2': {name: storage.type.primitive.blog}
+#distinct symbol declaration
+- match: \b(distinct)\s+(\w+)\b
+  captures:
+    '1': {name: storage.modifier.blog}
+    '2': {name: storage.type.blog} 
+# matching type declaration
+- match: \b(type)\s+(\w+)(\s*\,\s*(\w+))*\s*
+  captures:
+    '1': {name: storage.modifier.blog}
+    '2': {name: storage.type.blog}
+- name: storage.type.primitive.blog
+  match: \b(Integer|Real|Boolean|NaturalNum|Timestep|RealMatrix|IntegerMatrix)((\[\])*)\b
+- name: keyword.control.blog
+  match: \b(if|then|else|forall|exists|for)\b
+# distributions
+- name: support.function.blog
+  match: \b(TabularCPD|Distribution|Gaussian|UniformChoice|MultivarGaussian|Poisson|Bernoulli|BooleanDistrib|Binomial|Beta|BoundedGenometric|Categorical|Dirichlet|EqualsCPD|Gamma|Geometric|Iota|LinearGaussian|MixtureDistrib|NegativeBinamial|RoundedLogNormal|TabularInterp|UniformVector|UnivarGaussian|Exponential|UniformInt|UniformReal|Multinomial)\b
+# numbers
+- name: constant.numeric.blog
+  match: \b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)([LlFfUuDd]|UL|ul)?\b
+- name: constant.other.blog
+  match: \@[0-9]+
+# true, false and null
+- name: constant.language.blog
+  match: \b(true|false|null)\b
+- name: punctuation.terminator.blog
+  match: ;
+# function name
+- name: function.blog
+  match: \b(\w+)\(
+  captures:
+    '1': {name: entity.name.function.blog}
+...
