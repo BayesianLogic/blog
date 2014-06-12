@@ -30,6 +30,9 @@ import blog.world.PartialWorld;
  * This filter currently perturbs ONLY static variables of type Real. In
  * particular, it does NOT perturb variables of other types, or random functions
  * that take arguments. (Such functionality might be added later.)
+ * 
+ * @author cberzan
+ * @since Jun 11, 2014
  */
 public class LiuWestFilter extends ParticleFilter {
 
@@ -37,8 +40,8 @@ public class LiuWestFilter extends ParticleFilter {
     super(model, properties);
 
     // Param that determines amount of perturbation.
-    // If rho not provided, assume 1 (performs no perturbation).
-    String rhoStr = properties.getProperty("rho", "1");
+    // If rho not provided, we use a default value of 0.97.
+    String rhoStr = properties.getProperty("rho", "0.97");
     try {
       rho = Double.parseDouble(rhoStr);
       System.out.println("perturbation amount: " + rho);
