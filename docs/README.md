@@ -1,8 +1,16 @@
-## BLOG documentation
+# BLOG documentation
 
 We write our documentation in Markdown, and use
 [Pelican](http://docs.getpelican.com/) to convert it to HTML.
-This static HTML content can then be hosted anywhere.
+This static HTML content can then be hosted anywhere. 
+To install Pelican, 
+```
+$ pip install pelican
+```
+or 
+```
+$ easy_install pelican
+```
 
 The documentation consists of a set of pages located in `content/pages`.
 When you type `make html`, Pelican will generate HTML in the `output` dir.
