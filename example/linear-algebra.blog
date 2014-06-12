@@ -21,12 +21,18 @@ random RealMatrix v = c * e;
 random RealMatrix s = inv(c);
 random Real t = det(c);
 
-random Real h = a[0][0];
+random Real h = toReal(a[0]);
 
 random RealMatrix i = c[0];
 
 random Integer k ~ Categorical({0 -> 0.3, 1 -> 0.7});
-random Real j = c[0][k];
+random Real j = toReal(c[0][k]);
+
+fixed RealMatrix l = [1; 2; 3];
+fixed RealMatrix m = diag(l);
+
+fixed RealMatrix n = [5, 6; 3, 4];
+fixed RealMatrix o = repmat(n, 3, 2);
 
 query x;
 query y;
@@ -39,3 +45,5 @@ query t;
 query h;
 query i;
 query j;
+query m;
+query o;

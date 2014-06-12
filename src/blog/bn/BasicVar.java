@@ -32,18 +32,19 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package blog.bn;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-import blog.common.Util;
+import blog.common.MaxReduce;
 import blog.model.FuncAppTerm;
 import blog.model.Model;
 import blog.model.Type;
 import blog.type.Timestep;
 import blog.world.PartialWorld;
-
 
 /**
  * A basic random variable in a BLOG model. A BasicVar is a BayesNetVar whose
@@ -54,137 +55,156 @@ import blog.world.PartialWorld;
  * of arguments, or a POP and a tuple of generating objects.
  */
 public abstract class BasicVar extends AbstractBayesNetVar implements
-		Comparable, Cloneable {
-	/**
-	 * Creates a new BasicVar with the given tuple of arguments or generating
-	 * objects.
-	 */
-	protected BasicVar(Object[] args) {
-		this.args = args;
-	}
+    Comparable, Cloneable {
 
-	/**
-	 * Creates a new BasicVar with the given tuple of arguments or generating
-	 * objects. If <code>stable</code> is true, then the caller guarantees that
-	 * the given <code>args</code> array will not be modified externally.
-	 */
-	protected BasicVar(Object[] args, boolean stable) {
-		this.args = args;
-		this.stable = stable;
-	}
+  /**
+   * Creates a new BasicVar with the given tuple of arguments or generating
+   * objects.
+   */
+  protected BasicVar(Object[] args) {
+    this.args = args;
+  }
 
-	/**
-	 * Creates a new BasicVar with the given tuple of arguments or generating
-	 * objects.
-	 */
-	protected BasicVar(List argList) {
-		args = new Object[argList.size()];
-		argList.toArray(args);
-		stable = true;
-	}
+  /**
+   * Creates a new BasicVar with the given tuple of arguments or generating
+   * objects. If <code>stable</code> is true, then the caller guarantees that
+   * the given <code>args</code> array will not be modified externally.
+   */
+  protected BasicVar(Object[] args, boolean stable) {
+    this.args = args;
+    this.stable = stable;
+  }
 
-	/**
-	 * Returns the tuple of arguments if this is a function application variable,
-	 * or the tuple of generating objects if this is a number variable. The
-	 * returned array should not be modified.
-	 */
-	public final Object[] args() {
-		return args;
-	}
+  /**
+   * Creates a new BasicVar with the given tuple of arguments or generating
+   * objects.
+   */
+  protected BasicVar(List argList) {
+    args = new Object[argList.size()];
+    argList.toArray(args);
+    stable = true;
+  }
 
-	/**
-	 * Returns the type of object that can be a value for this variable.
-	 */
-	public abstract Type getType();
+  /**
+   * Returns the tuple of arguments if this is a function application variable,
+   * or the tuple of generating objects if this is a number variable. The
+   * returned array should not be modified.
+   */
+  public final Object[] args() {
+    return args;
+  }
 
-	/**
-	 * Returns an index to be used for comparing this variable to others.
-	 * Variables for which this method returns the same index value will be
-	 * compared based on their arguments.
-	 */
-	public abstract int getOrderingIndex();
+  /**
+   * Returns the type of object that can be a value for this variable.
+   */
+  public abstract Type getType();
 
-	/**
-	 * A basic random variable is determined if and only if it is instantiated.
-	 */
-	public boolean isDetermined(PartialWorld w) {
-		return (w.getValue(this) != null);
-	}
+  /**
+   * Returns an index to be used for comparing this variable to others.
+   * Variables for which this method returns the same index value will be
+   * compared based on their arguments.
+   */
+  public abstract int getOrderingIndex();
 
-	/**
-	 * Returns the value of this basic variable in the given world.
-	 */
-	public Object getValue(PartialWorld w) {
-		return w.getValue(this);
-	}
+  /**
+   * A basic random variable is determined if and only if it is instantiated.
+   */
+  public boolean isDetermined(PartialWorld w) {
+    return (w.getValue(this) != null);
+  }
 
-	/**
-	 * Returns a term whose value in any possible world is the same as this random
-	 * variable's value.
-	 */
-	public FuncAppTerm getCanonicalTerm() {
-		return getCanonicalTerm(Collections.EMPTY_MAP);
-	}
+  /**
+   * Returns the value of this basic variable in the given world.
+   */
+  public Object getValue(PartialWorld w) {
+    return w.getValue(this);
+  }
 
-	/**
-	 * Returns a term whose value in any possible world is the same as this random
-	 * variable's value, assuming that objects are bound to logical variables as
-	 * specified in <code>logicalVarForObj</code>.
-	 * 
-	 * @param logicalVarForObj
-	 *          map from Object to LogicalVar
-	 */
-	public FuncAppTerm getCanonicalTerm(Map logicalVarForObj) {
-		throw new UnsupportedOperationException(
-				"Can't convert random variable to term: " + this);
-	}
+  /**
+   * Returns a term whose value in any possible world is the same as this random
+   * variable's value.
+   */
+  public FuncAppTerm getCanonicalTerm() {
+    return getCanonicalTerm(Collections.EMPTY_MAP);
+  }
 
-	/**
-	 * Ensures that this BasicVar's arguments are stored in an array that will not
-	 * be modified externally.
-	 */
-	public void ensureStable() {
-		if (!stable) {
-			args = (Object[]) args.clone();
-			stable = true;
-		}
-	}
+  /**
+   * Returns a term whose value in any possible world is the same as this random
+   * variable's value, assuming that objects are bound to logical variables as
+   * specified in <code>logicalVarForObj</code>.
+   * 
+   * @param logicalVarForObj
+   *          map from Object to LogicalVar
+   */
+  public FuncAppTerm getCanonicalTerm(Map logicalVarForObj) {
+    throw new UnsupportedOperationException(
+        "Can't convert random variable to term: " + this);
+  }
 
-	public Timestep timestep() {
-		Timestep ret = null;
-		for (int i = 0; i < args.length; ++i) {
-			if (args[i] instanceof Timestep) {
-				if (ret != null) {
-					Util.fatalError("Random variable " + this
-							+ " depends on more than one timestep.");
-				}
-				ret = (Timestep) args[i];
-			}
-		}
-		return ret;
-	}
+  /**
+   * Ensures that this BasicVar's arguments are stored in an array that will not
+   * be modified externally.
+   */
+  public void ensureStable() {
+    if (!stable) {
+      args = (Object[]) args.clone();
+      stable = true;
+    }
+  }
 
-	/**
-	 * Compares this BasicVar to another one. The ordering is intended to be used
-	 * for printing basic variables. First, basic variables are compared based on
-	 * the order in which their dependency models were created; this corresponds
-	 * to the order of definition in the model file. For basic variables with the
-	 * same dependency model, we use a lexicographic ordering based on the
-	 * arguments.
-	 */
-	public int compareTo(Object o) {
-		BasicVar other = (BasicVar) o;
-		int indexDiff = getOrderingIndex() - other.getOrderingIndex();
-		if (indexDiff != 0) {
-			return indexDiff;
-		}
+  public Timestep maxTimestep() {
+    MaxReduce<Timestep> reducer = new MaxReduce<Timestep>();
+    for (Object arg : args) {
+      if (arg instanceof Timestep) {
+        reducer.evaluate(arg);
+      }
+    }
+    return reducer.result;
+  }
 
-		return Model.compareArgTuples(args, other.args());
-	}
+  /**
+   * Compares this BasicVar to another one. The ordering is intended to be used
+   * for printing basic variables. First, basic variables are compared based on
+   * the order in which their dependency models were created; this corresponds
+   * to the order of definition in the model file. For basic variables with the
+   * same dependency model, we use a lexicographic ordering based on the
+   * arguments.
+   */
+  public int compareTo(Object o) {
+    BasicVar other = (BasicVar) o;
+    int indexDiff = getOrderingIndex() - other.getOrderingIndex();
+    if (indexDiff != 0) {
+      return indexDiff;
+    }
 
-	public abstract Object clone();
+    return Model.compareArgTuples(args, other.args());
+  }
 
-	protected Object[] args; // of Object
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 71 * hash + Arrays.deepHashCode(this.args);
+    return hash;
+  }
 
-	private boolean stable = false;
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final BasicVar other = (BasicVar) obj;
+    if (!Arrays.deepEquals(this.args, other.args)) {
+      return false;
+    }
+    return true;
+  }
+
+  public abstract Object clone();
+
+  protected Object[] args; // of Object
+
+  private boolean stable = false;
 }

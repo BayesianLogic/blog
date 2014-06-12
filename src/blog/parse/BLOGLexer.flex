@@ -130,7 +130,7 @@ Alpha = [A-Za-z]
 
 Digit = [0-9]
 
-Identifier = {Alpha}({Alpha}|{Digit}|_)*
+Identifier = ({Alpha}|_)({Alpha}|{Digit}|_)*
 
 IntegerLiteral = [+-]?{Digit}+
 
@@ -175,12 +175,9 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Oo][Rr][Ii][Gg][Ii][Nn] { return symbol(BLOGTokenConstants.ORIGIN); }
 [Gg][Uu][Aa][Rr][Aa][Nn][Tt][Ee][Ee][Dd] { return symbol(BLOGTokenConstants.DISTINCT); }
 [Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt] { return symbol(BLOGTokenConstants.DISTINCT); }
-[Ff][Aa][Cc][Tt][Oo][Rr] { return symbol(BLOGTokenConstants.FACTOR); }
-[Pp][Aa][Rr][Ff][Aa][Cc][Tt][Oo][Rr] { return symbol(BLOGTokenConstants.PARFACTOR); }
 [Tt][Hh][Ee][Nn]     { return symbol(BLOGTokenConstants.THEN); }
 [Ee][Ll][Ss][Ee]  	{ return symbol(BLOGTokenConstants.ELSE); }
 [Ff][Oo][Rr]         { return symbol(BLOGTokenConstants.FOR); }
-[Ee][Ll][Ss][Ee][Ii][Ff]  { return symbol(BLOGTokenConstants.ELSEIF); }
 [Ii][Ff]  		{ return symbol(BLOGTokenConstants.IF); }
 [Qq][Uu][Ee][Rr][Yy]	{ return symbol(BLOGTokenConstants.QUERY);}
 [Oo][Bb][Ss]         { return symbol(BLOGTokenConstants.OBS);}

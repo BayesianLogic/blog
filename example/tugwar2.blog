@@ -1,0 +1,70 @@
+/**
+ * Tug of war
+ * 
+ * The strength of each person is drawn from a normal distribution. 
+ * A person is lazy 10% of the time. The pulling power of a person 
+ * is half her strength if she is being lazy and otherwise is her 
+ * full strength. The pulling power of a team is the sum of the 
+ * pulling power of the individuals on the team. The team with the 
+ * greater pulling power wins.
+ * 
+ * @author Lei Li
+ * @date 2013/03/30
+ */
+
+type Person;
+distinct Person James, David, Christopher, 
+  George, Ronald, John, Richard, Daniel, 
+  Kenneth, Anthony, Robert, Charles, Paul, 
+  Steven, Kevin, Michael, Joseph, Mark, Edward, 
+  Jason, William, Thomas, Donald, Brian, Jeff;
+distinct Person Mary, Jennifer, Lisa, Sandra, Michelle,
+  Patricia, Maria, Nancy, Donna, Laura, Linda, Susan,
+  Karen, Carol, Sarah, Barbara, Margaret, Betty, Ruth,
+  Kimberly, Elizabeth, Dorothy, Helen, Sharon, Deborah;
+fixed Real mu = 10;
+fixed Real sigma = 2;
+random Real strength(Person p) ~ Gaussian(mu, sigma);
+
+fixed Person player(Integer i, Integer k) // k-th player in i-th match 
+  = TabularInterp(2, 
+    1, 1, James,
+    1, 2, David,
+    1, 3, George,
+    1, 4, Ronald,
+    1, 5, John,
+    1, 6, Richard,
+
+    2, 1, Charles,
+    2, 2, David,
+    2, 3, Jeff,
+    2, 4, Ronald,
+    2, 5, Kevin,
+    2, 6, Anthony,
+
+    3, 1, Kevin,
+    3, 2, Robert,
+    3, 3, Jeff,
+    3, 4, Paul,
+    3, 5, Charles,
+    3, 6, Anthony
+  );
+
+random Boolean lazy(Person p, Integer i) 
+  ~ BooleanDistrib(0.1);
+
+random Real pulling_power(Person p, Integer i) 
+	if lazy(p, i) then = strength(p) / 2
+	else = strength(p);
+
+random Boolean team1win(Integer i)
+	if (pulling_power(player(i, 1), i) + pulling_power(player(i, 2), i)
+	  + pulling_power(player(i, 3), i) > pulling_power(player(i, 4), i)
+	  + pulling_power(player(i, 5), i) + pulling_power(player(i, 6), i)) 
+	then = true
+	else = false;
+
+obs team1win(1) = true;
+
+query team1win(2);
+query team1win(3);

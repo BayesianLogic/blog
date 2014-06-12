@@ -137,10 +137,10 @@ public class DecayedProposer extends GenericProposer {
 
 		for (Iterator it = world.getInstantiatedVars().iterator(); it.hasNext();) {
 			VarWithDistrib var = (VarWithDistrib) it.next();
-			if (var.timestep() == null)
+			if (var.maxTimestep() == null)
 				metaVars.add(var);
 			else {
-				int varTimestep = var.timestep().getValue();
+				int varTimestep = var.maxTimestep().getValue();
 
 				int indexInArray = numberOfSlices - 1 - (maxTime - varTimestep);
 
@@ -188,8 +188,8 @@ public class DecayedProposer extends GenericProposer {
 		int maxTime = -1;
 		for (Iterator it = world.getInstantiatedVars().iterator(); it.hasNext();) {
 			VarWithDistrib var = (VarWithDistrib) it.next();
-			if (var.timestep() != null) {
-				int varTimestep = var.timestep().getValue();
+			if (var.maxTimestep() != null) {
+				int varTimestep = var.maxTimestep().getValue();
 				if (varTimestep > maxTime)
 					maxTime = varTimestep;
 			}

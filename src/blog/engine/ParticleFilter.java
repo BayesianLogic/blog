@@ -41,17 +41,21 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 
 import blog.DBLOGUtil;
 import blog.common.Util;
+import blog.io.TableWriter;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
 import blog.sample.AfterSamplingListener;
 import blog.sample.DMHSampler;
 import blog.sample.Sampler;
+import blog.type.Timestep;
 
 /**
  * A Particle Filter. It works by keeping a set of {@link Particles}, each
@@ -76,313 +80,366 @@ import blog.sample.Sampler;
  */
 public class ParticleFilter extends InferenceEngine {
 
-	/**
-	 * Creates a new particle filter for the given BLOG model, with configuration
-	 * parameters specified by the given properties table.
-	 */
-	public ParticleFilter(Model model, Properties properties) {
-		super(model);
+  /**
+   * Creates a new particle filter for the given BLOG model, with configuration
+   * parameters specified by the given properties table.
+   */
+  public ParticleFilter(Model model, Properties properties) {
+    super(model);
 
-		String numParticlesStr = properties.getProperty("numParticles");
-		String numSamplesStr = properties.getProperty("numSamples");
-		if (numParticlesStr != null && numSamplesStr != null
-				&& !numParticlesStr.equals(numSamplesStr))
-			Util.fatalError("ParticleFilter received both numParticles and numSamples properties with distinct values.");
-		if (numParticlesStr == null)
-			numParticlesStr = numSamplesStr;
-		if (numParticlesStr == null)
-			numParticlesStr = "1000";
-		try {
-			numParticles = Integer.parseInt(numParticlesStr);
-		} catch (NumberFormatException e) {
-			Util.fatalErrorWithoutStack("Invalid number of particles: "
-					+ numParticlesStr); // do not dump stack.
-		}
+    String numParticlesStr = properties.getProperty("numParticles");
+    String numSamplesStr = properties.getProperty("numSamples");
+    if (numParticlesStr != null && numSamplesStr != null
+        && !numParticlesStr.equals(numSamplesStr))
+      Util.fatalError("ParticleFilter received both numParticles and numSamples properties with distinct values.");
+    if (numParticlesStr == null)
+      numParticlesStr = numSamplesStr;
+    if (numParticlesStr == null)
+      numParticlesStr = "1000";
+    try {
+      numParticles = Integer.parseInt(numParticlesStr);
+    } catch (NumberFormatException e) {
+      Util.fatalErrorWithoutStack("Invalid number of particles: "
+          + numParticlesStr); // do not dump stack.
+    }
 
-		String useDecayedMCMCStr = properties
-				.getProperty("useDecayedMCMC", "false");
-		useDecayedMCMC = Boolean.parseBoolean(useDecayedMCMCStr);
-		// if (useDecayedMCMC) numParticles = 1;
+    String useDecayedMCMCStr = properties
+        .getProperty("useDecayedMCMC", "false");
+    useDecayedMCMC = Boolean.parseBoolean(useDecayedMCMCStr);
+    // if (useDecayedMCMC) numParticles = 1;
 
-		String numMovesStr = properties.getProperty("numMoves", "1");
-		try {
-			numMoves = Integer.parseInt(numMovesStr);
-		} catch (NumberFormatException e) {
-			Util.fatalErrorWithoutStack("Invalid number of moves: " + numMovesStr);
-		}
+    String numMovesStr = properties.getProperty("numMoves", "1");
+    try {
+      numMoves = Integer.parseInt(numMovesStr);
+    } catch (NumberFormatException e) {
+      Util.fatalErrorWithoutStack("Invalid number of moves: " + numMovesStr);
+    }
 
-		String idTypesString = properties.getProperty("idTypes", "none");
-		idTypes = model.getListedTypes(idTypesString);
-		if (idTypes == null) {
-			Util.fatalErrorWithoutStack("Fatal error: invalid idTypes list.");
-		}
+    String idTypesString = properties.getProperty("idTypes", "none");
+    idTypes = model.getListedTypes(idTypesString);
+    if (idTypes == null) {
+      Util.fatalErrorWithoutStack("Fatal error: invalid idTypes list.");
+    }
 
-		String samplerClassName = properties.getProperty("samplerClass",
-				"blog.sample.LWSampler");
-		System.out.println("Constructing sampler of class " + samplerClassName);
-		particleSampler = Sampler.make(samplerClassName, model, properties);
+    String samplerClassName = properties.getProperty("samplerClass",
+        "blog.sample.LWSampler");
+    System.out.println("Constructing sampler of class " + samplerClassName);
+    particleSampler = Sampler.make(samplerClassName, model, properties);
 
-		if (useDecayedMCMC)
-			dmhSampler = new DMHSampler(model, properties);
-	}
+    String queryReportIntervalStr = properties.getProperty(
+        "queryReportInterval", "10");
+    try {
+      queryReportInterval = Integer.parseInt(queryReportIntervalStr);
+    } catch (NumberFormatException e) {
+      Util.fatalError("Invalid reporting interval: " + queryReportIntervalStr,
+          false);
+    }
 
-	/** Answers the queries provided at construction time. */
-	public void answerQueries() {
-		System.out.println("Evidence: " + evidence);
-		System.out.println("Query: " + queries);
-		resetAndTakeInitialEvidence();
-		answer(queries);
-	}
+    if (useDecayedMCMC)
+      dmhSampler = new DMHSampler(model, properties);
 
-	/**
-	 * Prepares particle filter for a new sequence of evidence and queries by
-	 * generating a new set of particles from scratch, which are consistent with
-	 * evidence set by {@link #setEvidence(Evidence)} (if it has not been invoked,
-	 * empty evidence is assumed), ensuring behavior consistent with other
-	 * {@link InferenceEngine}s.
-	 */
-	public void resetAndTakeInitialEvidence() {
-		reset();
-		takeInitialEvidence();
-	}
+    dataLogLik = 0;
+  }
 
-	private void reset() {
-		System.out.println("Using " + numParticles + " particles...");
-		int numTimeSlicesInMemory = useDecayedMCMC ? dmhSampler.getMaxRecall() : 1;
-		if (evidence == null)
-			evidence = new Evidence();
-		if (queries == null)
-			queries = new LinkedList();
-		if (useDecayedMCMC)
-			dmhSampler.initialize(evidence, queries);
-		particles = new ArrayList();
-		for (int i = 0; i < numParticles; i++) {
-			Particle newParticle = makeParticle(idTypes, numTimeSlicesInMemory);
-			particles.add(newParticle);
-		}
-		needsToBeResampledBeforeFurtherSampling = false;
-	}
+  /** Answers the queries provided at construction time. */
+  public void answerQueries() {
+    System.out.println("Evidence: " + evidence);
+    System.out.println("Query: " + queries);
+    System.out.println("Report every: " + queryReportInterval + " timesteps");
+    resetAndTakeInitialEvidence();
+    answer(queries);
+    System.out.println("Log likelihood of data: " + dataLogLik);
+  }
 
-	private List evidenceInOrderOfMaxTimestep;
+  /**
+   * Prepares particle filter for a new sequence of evidence and queries by
+   * generating a new set of particles from scratch, which are consistent with
+   * evidence set by {@link #setEvidence(Evidence)} (if it has not been invoked,
+   * empty evidence is assumed), ensuring behavior consistent with other
+   * {@link InferenceEngine}s.
+   */
+  public void resetAndTakeInitialEvidence() {
+    reset();
+    takeEvidenceAndAnswerQuery();
+  }
 
-	private void takeInitialEvidence() {
-		if (evidenceInOrderOfMaxTimestep == null)
-			evidenceInOrderOfMaxTimestep = DBLOGUtil
-					.splitEvidenceByMaxTimestep(evidence);
+  private void reset() {
+    System.out.println("Using " + numParticles + " particles...");
+    int numTimeSlicesInMemory = useDecayedMCMC ? dmhSampler.getMaxRecall() : 1;
+    if (evidence == null)
+      evidence = new Evidence();
+    if (queries == null)
+      queries = new LinkedList();
+    if (useDecayedMCMC)
+      dmhSampler.initialize(evidence, queries);
+    particles = new ArrayList();
+    for (int i = 0; i < numParticles; i++) {
+      Particle newParticle = makeParticle(idTypes, numTimeSlicesInMemory);
+      particles.add(newParticle);
+    }
+    needsToBeResampledBeforeFurtherSampling = false;
+  }
 
-		for (Iterator it = evidenceInOrderOfMaxTimestep.iterator(); it.hasNext();) {
-			Evidence evidenceSlice = (Evidence) it.next();
-			take(evidenceSlice);
-		}
-	}
+  private void takeEvidenceAndAnswerQuery() {
+    // Split evidence and queries according to the timestep it occurs in.
+    Map<Timestep, Evidence> slicedEvidence = DBLOGUtil
+        .splitEvidenceInTime(evidence);
+    Map<Timestep, List<Query>> slicedQueries = DBLOGUtil
+        .splitQueriesInTime((List<Query>) queries);
 
-	/**
-	 * A method making a particle (by default, {@link Particle}). Useful for
-	 * extensions using specialized particles (don't forget to specialize
-	 * {@link Particle#copy()} for it to return an object of its own class).
-	 */
-	protected Particle makeParticle(Set idTypes, int numTimeSlicesInMemory) {
-		return new Particle(idTypes, numTimeSlicesInMemory, particleSampler);
-	}
+    // Process atemporal evidence (if any) before everything else.
+    if (slicedEvidence.containsKey(null)) {
+      take(slicedEvidence.get(null));
+    }
 
-	/** Takes more evidence. */
-	public void take(Evidence evidence) {
-		if (particles == null)
-			// Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
-			resetAndTakeInitialEvidence();
+    // Process temporal evidence and queries in lockstep.
+    List<Timestep> nonNullTimesteps = new ArrayList<Timestep>();
+    nonNullTimesteps.addAll(slicedEvidence.keySet());
+    nonNullTimesteps.addAll(slicedQueries.keySet());
+    nonNullTimesteps.remove(null);
+    // We use a TreeSet to remove duplicates and to sort the timesteps.
+    // (We can't construct a TreeSet directly because it doesn't accept nulls.)
+    TreeSet<Timestep> sortedTimesteps = new TreeSet<Timestep>(nonNullTimesteps);
+    for (Timestep timestep : sortedTimesteps) {
+      if (slicedEvidence.containsKey(timestep)) {
+        take(slicedEvidence.get(timestep));
+      }
+      if (slicedQueries.containsKey(timestep)) {
+        List<Query> currentQueries = slicedQueries.get(timestep);
+        for (Particle particle : particles) {
+          particle.answer(currentQueries);
+        }
+        if (timestep.intValue() % queryReportInterval == 0) {
+          TableWriter tableWriter = new TableWriter(queries);
+          tableWriter.setHeader("After timestep " + timestep.intValue());
+          tableWriter.writeResults(System.out);
+        }
+      }
+      removePriorTimeSlice(timestep);
+    }
 
-		if (!evidence.isEmpty()) { // must be placed after check on particles ==
-																// null because after this method the filter
-																// should be ready to take queries.
+    // Process atemporal queries (if any) after all the evidence.
+    if (slicedQueries.containsKey(null)) {
+      List<Query> currentQueries = slicedQueries.get(null);
+      for (Particle particle : particles) {
+        particle.answer(currentQueries);
+      }
+    }
+  }
 
-			if (needsToBeResampledBeforeFurtherSampling) {
-				move();
-				resample();
-			}
+  /**
+   * A method making a particle (by default, {@link Particle}). Useful for
+   * extensions using specialized particles (don't forget to specialize
+   * {@link Particle#copy()} for it to return an object of its own class).
+   */
+  protected Particle makeParticle(Set idTypes, int numTimeSlicesInMemory) {
+    return new Particle(idTypes, numTimeSlicesInMemory, particleSampler);
+  }
 
-			if (beforeTakesEvidence != null)
-				beforeTakesEvidence.evaluate(evidence, this);
+  /**
+   * remove all the temporal variables prior to the specified timestep
+   * 
+   * @param timestep
+   *          Timestep before which the vars should be removed
+   */
+  public void removePriorTimeSlice(Timestep timestep) {
+    // For now we assume numTimeSlicesInMemory = 1.
+    for (Particle p : particles) {
+      p.removePriorTimeSlice(timestep);
+    }
+  }
 
-			for (Iterator it = particles.iterator(); it.hasNext();) {
-				Particle p = (Particle) it.next();
+  /** Takes more evidence. */
+  public void take(Evidence evidence) {
+    if (particles == null)
+      resetAndTakeInitialEvidence();
 
-				if (beforeParticleTakesEvidence != null)
-					beforeParticleTakesEvidence.evaluate(p, evidence, this);
-				p.take(evidence);
-				if (afterParticleTakesEvidence != null)
-					afterParticleTakesEvidence.evaluate(p, evidence, this);
+    if (!evidence.isEmpty()) { // must be placed after check on particles ==
+                               // null because after this method the filter
+                               // should be ready to take queries.
 
-//				if (!useDecayedMCMC) {
-//					p.uninstantiatePreviousTimeslices();
-//					p.removeAllDerivedVars();
-//				}
-			}
+      if (needsToBeResampledBeforeFurtherSampling) {
+        move();
+        resample();
+      }
 
-			double sum = 0;
-			ListIterator particleIt = particles.listIterator();
-			while (particleIt.hasNext()) {
-				Particle particle = (Particle) particleIt.next();
-				if (particle.getLatestWeight() == 0.0) {
-					particleIt.remove();
-				} else
-					sum += particle.getLatestWeight();
-			}
+      if (beforeTakesEvidence != null)
+        beforeTakesEvidence.evaluate(evidence, this);
 
-			if (particles.size() == 0)
-				throw new IllegalArgumentException("All particles have zero weight");
+      for (Particle p : particles) {
+        if (beforeParticleTakesEvidence != null)
+          beforeParticleTakesEvidence.evaluate(p, evidence, this);
+        p.take(evidence);
+        if (afterParticleTakesEvidence != null)
+          afterParticleTakesEvidence.evaluate(p, evidence, this);
 
-			// System.out.println("PF: Num of particles after taking evidence: " +
-			// particles.size());
-			// System.out.println("PF: Sum of weights after taking evidence: " + sum);
+        // if (!useDecayedMCMC) {
+        // p.uninstantiatePreviousTimeslices();
+        // p.removeAllDerivedVars();
+        // }
 
-			needsToBeResampledBeforeFurtherSampling = true;
+      }
 
-			if (useDecayedMCMC)
-				dmhSampler.add(evidence);
+      double logSumWeights = Double.NEGATIVE_INFINITY;
+      ListIterator particleIt = particles.listIterator();
+      while (particleIt.hasNext()) {
+        Particle particle = (Particle) particleIt.next();
+        if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
+          particleIt.remove();
+        } else {
+          logSumWeights = Util.logSum(logSumWeights,
+              particle.getLatestLogWeight());
+        }
+      }
 
-			if (afterTakesEvidence != null)
-				afterTakesEvidence.evaluate(evidence, this);
+      if (particles.size() == 0)
+        throw new IllegalArgumentException("All particles have zero weight");
 
-		}
-	}
+      dataLogLik += logSumWeights;
 
-	/**
-	 * Answer queries according to current distribution represented by filter.
-	 */
-	public void answer(Collection queries) {
-		if (particles == null)
-			// Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
-			resetAndTakeInitialEvidence();
+      needsToBeResampledBeforeFurtherSampling = true;
 
-		// System.out.println("PF: Updating queries with PF with " +
-		// particles.size() + " particles.");
-		for (Iterator it = particles.iterator(); it.hasNext();) {
-			Particle p = (Particle) it.next();
-			p.answer(queries);
-		}
-		if (useDecayedMCMC)
-			dmhSampler.addQueries(queries);
-	}
+      if (useDecayedMCMC)
+        dmhSampler.add(evidence);
 
-	public void answer(Query query) {
-		answer(Util.list(query));
-	}
+      if (afterTakesEvidence != null)
+        afterTakesEvidence.evaluate(evidence, this);
+    }
+  }
 
-	private void resample() {
-		double[] weights = new double[particles.size()];
-		boolean[] alreadySampled = new boolean[particles.size()];
-		double sum = 0.0;
-		List newParticles = new ArrayList();
+  /**
+   * Answer queries according to current distribution represented by filter.
+   */
+  public void answer(Collection queries) {
+    if (particles == null)
+      resetAndTakeInitialEvidence();
 
-		for (int i = 0; i < particles.size(); i++) {
-			weights[i] = ((Particle) particles.get(i)).getLatestWeight();
-			sum += weights[i];
-		}
+    if (useDecayedMCMC)
+      dmhSampler.addQueries(queries);
+  }
 
-		if (sum == 0.0) {
-			throw new IllegalArgumentException("All particles have zero weight");
-		}
-		// else
-		// System.out.println("PF.resample: sum of all particle weights is " + sum);
+  public void answer(Query query) {
+    answer(Util.list(query));
+  }
 
-		for (int i = 0; i < numParticles; i++) {
-			int selection = Util.sampleWithWeights(weights, sum);
-			if (!alreadySampled[selection]) {
-				newParticles.add(particles.get(selection));
-				alreadySampled[selection] = true;
-			} else
-				newParticles.add(((Particle) particles.get(selection)).copy());
-		}
+  protected void resample() {
+    double[] logWeights = new double[particles.size()];
+    boolean[] alreadySampled = new boolean[particles.size()];
+    double logSumWeights = Double.NEGATIVE_INFINITY;
+    double[] normalizedWeights = new double[particles.size()];
+    List newParticles = new ArrayList();
 
-		particles = newParticles;
-	}
+    for (int i = 0; i < particles.size(); i++) {
+      logWeights[i] = ((Particle) particles.get(i)).getLatestLogWeight();
+      logSumWeights = Util.logSum(logSumWeights, logWeights[i]);
+    }
 
-	private void printWeights() {
-		for (int i = 0; i < particles.size(); i++) {
-			System.out.println(i + ":"
-					+ ((Particle) particles.get(i)).getLatestWeight());
-		}
-		System.out.println();
-	}
+    if (logSumWeights == Double.NEGATIVE_INFINITY) {
+      throw new IllegalArgumentException("All particles have zero weight");
+    }
 
-	private void move() {
-		if (!useDecayedMCMC)
-			return;
+    for (int i = 0; i < particles.size(); i++) {
+      normalizedWeights[i] = Math.exp(logWeights[i] - logSumWeights);
+    }
 
-		for (int i = 0; i < numMoves; i++) {
-			for (Iterator iter = particles.iterator(); iter.hasNext();) {
-				Particle p = (Particle) iter.next();
-				p.setWorld(dmhSampler.nextSample(p.getLatestWorld()));
-			}
-		}
-	}
+    for (int i = 0; i < numParticles; i++) {
+      int selection = Util.sampleWithProbs(normalizedWeights);
+      if (!alreadySampled[selection]) {
+        newParticles.add(particles.get(selection));
+        alreadySampled[selection] = true;
+      } else {
+        newParticles.add(((Particle) particles.get(selection)).copy());
+      }
+    }
 
-	// ///////////////////////// PARTICLE TAKES EVIDENCE EVENT HANDLING
-	// ///////////////////////////
-	/**
-	 * An interface specifying handlers for before and after a particle takes
-	 * evidence.
-	 */
-	public static interface ParticleTakesEvidenceHandler {
-		public void evaluate(Particle particle, Evidence evidence,
-				ParticleFilter particleFilter);
-	}
+    particles = newParticles;
+  }
 
-	/**
-	 * The {@link ParticleTakesEvidenceHandler} invoked right before a particle
-	 * takes evidence.
-	 */
-	public ParticleTakesEvidenceHandler beforeParticleTakesEvidence;
+  private void printLogWeights() {
+    for (int i = 0; i < particles.size(); i++) {
+      System.out.println(i + ":"
+          + ((Particle) particles.get(i)).getLatestLogWeight());
+    }
+    System.out.println();
+  }
 
-	/**
-	 * The {@link ParticleTakesEvidenceHandler} invoked right after a particle
-	 * takes evidence.
-	 */
-	public ParticleTakesEvidenceHandler afterParticleTakesEvidence;
+  private void move() {
+    if (!useDecayedMCMC)
+      return;
 
-	// ///////////////////////// FILTER TAKES EVIDENCE EVENT HANDLING
-	// ///////////////////////////
+    for (int i = 0; i < numMoves; i++) {
+      for (Iterator iter = particles.iterator(); iter.hasNext();) {
+        Particle p = (Particle) iter.next();
+        p.setWorld(dmhSampler.nextSample(p.getLatestWorld()));
+      }
+    }
+  }
 
-	/**
-	 * An interface specifying handlers for before and after the particle filter
-	 * takes evidence.
-	 */
-	public static interface TakesEvidenceHandler {
-		public void evaluate(Evidence evidence, ParticleFilter particleFilter);
-	}
+  // PARTICLE TAKES EVIDENCE EVENT HANDLING
+  /**
+   * An interface specifying handlers for before and after a particle takes
+   * evidence.
+   */
+  public static interface ParticleTakesEvidenceHandler {
+    public void evaluate(Particle particle, Evidence evidence,
+        ParticleFilter particleFilter);
+  }
 
-	/**
-	 * The {@link TakesEvidenceHandler} invoked right before a particle takes
-	 * evidence.
-	 */
-	public TakesEvidenceHandler beforeTakesEvidence;
+  /**
+   * The {@link ParticleTakesEvidenceHandler} invoked right before a particle
+   * takes evidence.
+   */
+  public ParticleTakesEvidenceHandler beforeParticleTakesEvidence;
 
-	/**
-	 * The {@link TakesEvidenceHandler} invoked right after a particle takes
-	 * evidence.
-	 */
-	public TakesEvidenceHandler afterTakesEvidence;
+  /**
+   * The {@link ParticleTakesEvidenceHandler} invoked right after a particle
+   * takes evidence.
+   */
+  public ParticleTakesEvidenceHandler afterParticleTakesEvidence;
 
-	// ///////////////////////// END OF EVENT HANDLING ///////////////////////////
+  // FILTER TAKES EVIDENCE EVENT HANDLING
+  /**
+   * An interface specifying handlers for before and after the particle filter
+   * takes evidence.
+   */
+  public static interface TakesEvidenceHandler {
+    public void evaluate(Evidence evidence, ParticleFilter particleFilter);
+  }
 
-	public AfterSamplingListener getAfterSamplingListener() {
-		return afterSamplingListener;
-	}
+  /**
+   * The {@link TakesEvidenceHandler} invoked right before a particle takes
+   * evidence.
+   */
+  public TakesEvidenceHandler beforeTakesEvidence;
 
-	public void setAfterSamplingListener(
-			AfterSamplingListener afterSamplingListener) {
-		this.afterSamplingListener = afterSamplingListener;
-		particleSampler.afterSamplingListener = afterSamplingListener;
-	}
+  /**
+   * The {@link TakesEvidenceHandler} invoked right after a particle takes
+   * evidence.
+   */
+  public TakesEvidenceHandler afterTakesEvidence;
 
-	private Set idTypes; // of Type
+  // END OF EVENT HANDLING
 
-	private int numParticles;
-	private boolean useDecayedMCMC;
-	public List particles; // of Particles
-	private int numMoves;
-	private boolean needsToBeResampledBeforeFurtherSampling = false;
-	private Sampler particleSampler;
-	private AfterSamplingListener afterSamplingListener;
-	private DMHSampler dmhSampler;
+  public AfterSamplingListener getAfterSamplingListener() {
+    return afterSamplingListener;
+  }
+
+  public void setAfterSamplingListener(
+      AfterSamplingListener afterSamplingListener) {
+    this.afterSamplingListener = afterSamplingListener;
+    particleSampler.afterSamplingListener = afterSamplingListener;
+  }
+
+  private Set idTypes; // of Type
+
+  private int numParticles;
+  private boolean useDecayedMCMC;
+  public List<Particle> particles;
+  private int numMoves;
+  private boolean needsToBeResampledBeforeFurtherSampling = false;
+  private Sampler particleSampler;
+  private AfterSamplingListener afterSamplingListener;
+  private DMHSampler dmhSampler;
+  private int queryReportInterval;
+  private double dataLogLik; // log likelihood of the data
 }
