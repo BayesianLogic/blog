@@ -21,6 +21,21 @@ endif
 
 SRC_FILES=$(shell find src -name \*.java -print)
 
+help:
+	@echo 'Makefile for BLOG                                                      '
+	@echo '                                                                       '
+	@echo 'Usage:                                                                 '
+	@echo '   make compile                     compile BLOG system                '
+	@echo '   make clean                       remove the generated files         '
+	@echo '   make debug                       compile the code with debug flag   '
+	@echo '   make zip                         create release zip files           '
+	@echo '   make html                        create documentation and webpages  '
+	@echo '   make demo                        run the BLOG demo                  '
+	@echo '   make parser                      regenerate the parser              '
+	@echo '   make sync                        clean repo and sync with remote    '
+	@echo '                                                                       '
+
+
 compile: ${SRC_FILES}
 	mkdir -p bin
 	javac -cp "lib/*" -d bin/ ${SRC_FILES}

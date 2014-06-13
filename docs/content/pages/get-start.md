@@ -5,7 +5,7 @@ sortorder: 15
 
 # Downloading and Installing
 Get the latest version of BLOG from the 
-[download page](http://bayesianlogic.cs.berkeley.edu/download). 
+[download page]({filename}download.md). 
 
 ## Prerequsite
 - Java 1.6+
