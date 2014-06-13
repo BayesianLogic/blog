@@ -36,7 +36,7 @@ fixed RealMatrix dynamics_noise = 0.00001 * eye(3);
 fixed RealMatrix dynamics(
         RealMatrix car_params, RealMatrix old_state,
         Real velocity, Real steering, Real delta_t)
-    = DynamicsInterp();
+    = ppaml_car.DynamicsInterp();
 
 random RealMatrix state(Timestep timestep) {
     if timestep == @0 then ~ MultivarGaussian(initial_state, dynamics_noise)
