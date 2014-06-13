@@ -78,6 +78,13 @@ public class UniformVector implements CondProbDistrib {
   }
 
   /**
+   * Returns the dimensionality of the box.
+   */
+  public int getDimension() {
+    return dim;
+  }
+
+  /**
    * mapping for <code>params</code>:
    * 
    * <ul>
@@ -88,45 +95,56 @@ public class UniformVector implements CondProbDistrib {
    */
   @Override
   public void setParams(Object[] params) {
-    if (params.length != 1) {
-      throw new IllegalArgumentException("expected one parameter");
+    if (this.hasDimension) {
+      if (params.length != dim) {
+        throw new IllegalArgumentException("expected " + dim
+            + " arguments to setParams for UniformVector distribution. Got "
+            + params.length + " dimensions");
+      }
+    } else {
+      this.numFilled = 0;
+      this.dim = params.length;
+      this.hasDimension = true;
+      this.mins = new double[dim];
+      this.maxes = new double[dim];
+      this.dimensionSet = new boolean[dim];
+      setParams((MatrixLib[]) params);
     }
-    setParams((MatrixLib) params[0]);
   }
 
   /**
-   * 
-   * @param box
-   *          An <code>N</code> by 2 dimensional MatrixLib. Each row represents
-   *          a dimension, where the first column represents the lower bound of
-   *          that dimension and the second column represents the upper bound of
-   *          that dimension. This parameter is valid if for all dimensions, the
-   *          lower bound is strictly less than the upper bound.
+   * @param vectors
+   *          An array of (1 by 2 row vectors) MatrixLib vectors
    */
-  public void setParams(MatrixLib box) {
-    if (box != null) {
-      if (box.numCols() != 2 || box.numRows() == 0) {
+  public void setParams(MatrixLib[] vectors) {
+    for (int i = 0; i < vectors.length; i++) {
+      MatrixLib rowVector = vectors[i];
+      if (rowVector == null) {
+        continue;
+      }
+      if (rowVector.numCols() != 2 || rowVector.numRows() != 1) {
+        this.hasBox = false;
         throw new IllegalArgumentException(
-            "Incorrect dimensions given for UniformVector. Expecting an N by 2 MatrixLib where N >= 1");
+            "expecting a row vector of dimension 1 by 2; instead got a matrix of dimension "
+                + rowVector.numRows() + " by " + rowVector.numCols());
       }
-      volume = 1.0;
-      mins = new double[box.numRows()];
-      maxes = new double[box.numRows()];
-      for (int i = 0; i < box.numRows(); i++) {
-        mins[i] = box.elementAt(i, 0);
-        maxes[i] = box.elementAt(i, 1);
-        if (mins[i] >= maxes[i]) {
-          this.hasBox = false;
-          throw new IllegalArgumentException(
-              "All dimensions must have a min that is lower than the corresponding max. For dimension "
-                  + (i + 1) + " min = " + mins[i] + " and max = " + maxes[i]);
-        }
-        volume *= (maxes[i] - mins[i]);
+      if (this.dimensionSet[i]) {
+        this.volume /= (this.maxes[i] - this.mins[i]);
+        this.mins[i] = rowVector.elementAt(0, 0);
+        this.maxes[i] = rowVector.elementAt(0, 1);
+        this.volume *= (this.maxes[i] - this.mins[i]);
+      } else {
+        this.mins[i] = rowVector.elementAt(0, 0);
+        this.maxes[i] = rowVector.elementAt(0, 1);
+        this.volume *= (this.maxes[i] - this.mins[i]);
+        this.numFilled += 1;
+        this.dimensionSet[i] = true;
       }
-      this.dim = mins.length;
+    }
+    if (this.numFilled == this.dim) {
+      this.hasBox = true;
       this.densityInBox = 1.0 / volume;
       this.logDensityInBox = -Math.log(volume);
-      this.hasBox = true;
     }
   }
 
@@ -151,6 +169,7 @@ public class UniformVector implements CondProbDistrib {
    * Return the probability of <code>value</code>.
    * 
    * @param value
+   *          a <code>dim</code> by 1 MatrixLib column vector
    * @return
    */
   public double getProb(MatrixLib value) {
@@ -177,6 +196,7 @@ public class UniformVector implements CondProbDistrib {
    * Return the log probability of <code>value</code>.
    * 
    * @param value
+   *          a <code>dim</code> by 1 MatrixLib column vector
    * @return
    */
   public double getLogProb(MatrixLib value) {
@@ -210,11 +230,14 @@ public class UniformVector implements CondProbDistrib {
   }
 
   private int dim;
+  private int numFilled;
+  private boolean hasDimension;
+  private boolean[] dimensionSet;
   private double[] mins;
   private double[] maxes;
   private boolean hasBox;
 
-  private double volume;
+  private double volume = 1.0;
   private double densityInBox;
   private double logDensityInBox;
 
