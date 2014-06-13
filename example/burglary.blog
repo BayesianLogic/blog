@@ -1,7 +1,5 @@
 /* The class burglary-earthquake network, as presented in "Artificial 
- * Intelligence: A Modern Approach", 2nd ed., p. 494.  All the CPDs are 
- * tabular.  We take advantage of the option of leaving out the last 
- * element of each row in the parameters to TabularCPD.  
+ * Intelligence: A Modern Approach", 2nd ed., p. 494.  
  */
 
 random Boolean Burglary ~ BooleanDistrib(0.001);
