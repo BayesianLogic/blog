@@ -35,117 +35,26 @@
 
 package blog.distrib;
 
-import java.util.Iterator;
-import java.util.List;
-
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
 /**
  * The uniform distribution over n-dimensional column vectors coming from a
- * specified n-dimensional "box".
+ * specified n-dimensional "box". <code>box</code> is an n by 2 MatrixLib
+ * instance where each row represents the dimension, and the first column of
+ * each row represents the lower bound of that dimension and the second column
+ * of that row represents the corresponding upper bound of that dimension.
  * 
- * @author unknown
  * @author leili
- * @date 2014/05/15
+ * @date May 15, 2014
+ * @since June 14, 2014
  */
 
-public class UniformVector extends AbstractCondProbDistrib {
-
-  /**
-   * The constructor takes an even number of parameters. For all i,
-   * 0<=i<=(n-1)/2, the (2i)-th parameter is treated as the lower bound of the
-   * generated vectors' i-th component, and every (2i+1)-th argument as the i-th
-   * component upper bound. All parameters must be of type Number.
-   * 
-   * @throws IllegalArgumentException
-   */
-  public UniformVector(List params) {
-    if ((params.size() % 2) != 0) {
-      throw new IllegalArgumentException(
-          "Uniform vector distribution require an even number "
-              + "of parameters, not " + params.size() + ".");
-    }
-    for (int i = 0; i < params.size(); ++i) {
-      if (!(params.get(i) instanceof Number)) {
-        throw new IllegalArgumentException("Parameter " + i
-            + " to the uniform vector "
-            + "distribution must be of class Number, not "
-            + params.get(i).getClass() + ".");
-      }
-    }
-
-    dim = params.size() / 2;
-    mins = new double[dim];
-    maxes = new double[dim];
-    volume = 1;
-
-    int paramIndex = 0;
-    for (int i = 0; i < dim; ++i) {
-      mins[i] = ((Number) params.get(paramIndex++)).doubleValue();
-      maxes[i] = ((Number) params.get(paramIndex++)).doubleValue();
-      if (maxes[i] <= mins[i]) {
-        throw new IllegalArgumentException("Specified maximum value "
-            + maxes[i] + " must be greater than specified minimum " + mins[i]);
-      }
-      volume *= (maxes[i] - mins[i]);
-    }
-
-    densityInBox = 1 / volume;
-    logDensityInBox = -Math.log(volume);
-  }
-
-  public double getProb(List args, Object value) {
-    MatrixLib x = convertValue(value);
-    return inBox(x) ? densityInBox : 0;
-  }
-
-  public double getLogProb(List args, Object value) {
-    MatrixLib x = convertValue(value);
-    return inBox(x) ? logDensityInBox : Double.NEGATIVE_INFINITY;
-  }
-
-  public Object sampleVal(List args) {
-    MatrixLib sample = MatrixFactory.fromArray(new double[dim][1]);
-    for (int i = 0; i < dim; ++i) {
-      sample.setElement(i, 0, mins[i] + (Util.random() * (maxes[i] - mins[i])));
-    }
-    return sample;
-  }
-
-  private MatrixLib convertValue(Object value) {
-    if (value instanceof List) {
-      double[][] v = new double[((List) value).size()][1];
-      int i = 0;
-      for (Iterator it = ((List) value).iterator(); it.hasNext();) {
-        List a = (List) it.next();
-        v[i][0] = (Double) a.get(0);
-        i++;
-      }
-      value = MatrixFactory.fromArray(v);
-    }
-
-    if (!((value instanceof MatrixLib) && (((MatrixLib) value).numCols() == 1))) {
-      throw new IllegalArgumentException(
-          "The value passed to the uniform vector distribution's "
-              + "getProb() method must be a column vector. But it is a "
-              + value.getClass());
-    }
-    MatrixLib x = (MatrixLib) value;
-
-    if (x.numRows() != dim) {
-      throw new IllegalArgumentException(
-          "The vector passed to the uniform vector distribution's "
-              + "getProb method must be " + dim + "-dimensional, not "
-              + x.numRows() + "-dimensional");
-    }
-
-    return x;
-  }
+public class UniformVector implements CondProbDistrib {
 
   private boolean inBox(MatrixLib x) {
-    for (int i = 0; i < dim; ++i) {
+    for (int i = 0; i < dim; i++) {
       double val = x.elementAt(i, 0);
       if ((val < mins[i]) || (val > maxes[i])) {
         return false;
@@ -154,23 +63,78 @@ public class UniformVector extends AbstractCondProbDistrib {
     return true;
   }
 
-  private int dim;
-  private double[] mins;
-  private double[] maxes;
+  /**
+   * Returns the lower bounds for each dimension.
+   */
+  public double[] getLower() {
+    return mins;
+  }
 
-  private double volume;
-  private double densityInBox;
-  private double logDensityInBox;
+  /**
+   * Returns the upper bounds for each dimension.
+   */
+  public double[] getUpper() {
+    return maxes;
+  }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * mapping for <code>params</code>:
+   * 
+   * <ul>
+   * <li>params[0]: box, an N by 2 MatrixLib instance</li>
+   * </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
   @Override
   public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
+    if (params.length != 1) {
+      throw new IllegalArgumentException("expected one parameter");
+    }
+    setParams((MatrixLib) params[0]);
+  }
 
+  /**
+   * 
+   * @param box
+   *          An <code>N</code> by 2 dimensional MatrixLib. Each row represents
+   *          a dimension, where the first column represents the lower bound of
+   *          that dimension and the second column represents the upper bound of
+   *          that dimension. This parameter is valid if for all dimensions, the
+   *          lower bound is strictly less than the upper bound.
+   */
+  public void setParams(MatrixLib box) {
+    if (box != null) {
+      if (box.numCols() != 2 || box.numRows() == 0) {
+        throw new IllegalArgumentException(
+            "Incorrect dimensions given for UniformVector. Expecting an N by 2 MatrixLib where N >= 1");
+      }
+      volume = 1.0;
+      mins = new double[box.numRows()];
+      maxes = new double[box.numRows()];
+      for (int i = 0; i < box.numRows(); i++) {
+        mins[i] = box.elementAt(i, 0);
+        maxes[i] = box.elementAt(i, 1);
+        if (mins[i] >= maxes[i]) {
+          this.hasBox = false;
+          throw new IllegalArgumentException(
+              "All dimensions must have a min that is lower than the corresponding max. For dimension "
+                  + (i + 1) + " min = " + mins[i] + " and max = " + maxes[i]);
+        }
+        volume *= (maxes[i] - mins[i]);
+      }
+      this.dim = mins.length;
+      this.densityInBox = 1.0 / volume;
+      this.logDensityInBox = -Math.log(volume);
+      this.hasBox = true;
+    }
+  }
+
+  private void checkHasParams() {
+    if (!this.hasBox) {
+      throw new IllegalArgumentException(
+          "UniformVector not properly initialized");
+    }
   }
 
   /*
@@ -180,8 +144,23 @@ public class UniformVector extends AbstractCondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
+    return getProb((MatrixLib) value);
+  }
+
+  /**
+   * Return the probability of <code>value</code>.
+   * 
+   * @param value
+   * @return
+   */
+  public double getProb(MatrixLib value) {
+    checkHasParams();
+    if (value.numRows() != dim || value.numCols() != 1) {
+      throw new IllegalArgumentException("The outcome matrix should be " + dim
+          + " by 1. Instead got a " + value.numRows() + " by "
+          + value.numCols() + " matrix.");
+    }
+    return inBox(value) ? this.densityInBox : 0;
   }
 
   /*
@@ -191,8 +170,23 @@ public class UniformVector extends AbstractCondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
+    return getLogProb((MatrixLib) value);
+  }
+
+  /**
+   * Return the log probability of <code>value</code>.
+   * 
+   * @param value
+   * @return
+   */
+  public double getLogProb(MatrixLib value) {
+    checkHasParams();
+    if (value.numRows() != dim || value.numCols() != 1) {
+      throw new IllegalArgumentException("The outcome matrix should be " + dim
+          + " by 1. Instead got a " + value.numRows() + " by "
+          + value.numCols() + " matrix.");
+    }
+    return inBox(value) ? this.logDensityInBox : Double.NEGATIVE_INFINITY;
   }
 
   /*
@@ -202,7 +196,26 @@ public class UniformVector extends AbstractCondProbDistrib {
    */
   @Override
   public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
+    checkHasParams();
+    MatrixLib sample = MatrixFactory.fromArray(new double[dim][1]);
+    for (int i = 0; i < dim; ++i) {
+      sample.setElement(i, 0, mins[i] + (Util.random() * (maxes[i] - mins[i])));
+    }
+    return sample;
   }
+
+  @Override
+  public String toString() {
+    return getClass().getName();
+  }
+
+  private int dim;
+  private double[] mins;
+  private double[] maxes;
+  private boolean hasBox;
+
+  private double volume;
+  private double densityInBox;
+  private double logDensityInBox;
+
 }
