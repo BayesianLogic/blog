@@ -1,0 +1,17 @@
+type Obstacle;
+
+#Obstacle ~ Poisson(5);
+
+random Real obstX(Obstacle o) ~ UniformReal(-7, 7);
+random Real obstY(Obstacle o) ~ UniformReal(-7, 7);
+fixed Real obstR = 1.0;
+
+fixed Real[] laserReadings(
+        Real laserX, Real laserY, Real laserTheta, Set obstacles)
+    = LaserInterp();
+
+random Set obstacles = {obstX(o), obstY(o), obstR for Obstacle o};
+
+random Real[] readings = laserReadings(2.0, 3.0, 0.3, obstacles);
+
+query readings;

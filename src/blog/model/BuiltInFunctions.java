@@ -450,6 +450,7 @@ public class BuiltInFunctions {
    * and converts it to a Real
    */
   public static NonRandomFunction TO_REAL;
+
   /**
    * Return the absolute value of a Real value.
    */

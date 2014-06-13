@@ -1,0 +1,139 @@
+{# This is the jinja2 template for generating our model. #}
+
+/*
+Model for the automobile problem (version with GPS and lasers).
+
+At each time step, we have:
+- controls: velocity, steering (observed in all timesteps)
+- state: x, y, theta (never observed)
+- gps observations: x, y (observed in some timesteps)
+- laser observations: lasers[361] (observed in some timesteps)
+- obstacle coords: set of (x, y, r) (observed and fixed in all timesteps)
+
+For now, we assume the obstacles are observed, and we completely ignore the
+intensity data.
+*/
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+/*
+ * Dynamics model.
+ * We assume H = 0 so the velocity is measured at the center of the back axle.
+ * We assume delta_t is the fixed step size.
+ * The dynamics equations are taken from guivant_2000.
+ * See DynamicsLogic.java for the implementation.
+ *
+ * xdot <- vc * cos(phi) - vc/L * (a * sin(phi) + b * cos(phi)) * tan(alpha)
+ * ydot <- vc * sin(phi) - vc/L * (a * cos(phi) - b * sin(phi)) * tan(alpha)
+ * thetadot <- vc/L * tan(alpha)
+ * x <- x + delta_t * xdot
+ * y <- y + delta_t * ydot
+ * theta <- theta + delta_t * thetadot
+ */
+
+fixed RealMatrix car_params = {{ model.car_params |blog_column_vector }};
+fixed RealMatrix initial_state = {{ model.initial_state |blog_column_vector }};
+fixed RealMatrix dynamics_noise = 0.00001 * eye(3);
+
+fixed RealMatrix dynamics(
+        RealMatrix car_params, RealMatrix old_state,
+        Real velocity, Real steering, Real delta_t)
+    = DynamicsInterp();
+
+random RealMatrix state(Timestep timestep) {
+    if timestep == @0 then ~ MultivarGaussian(initial_state, dynamics_noise)
+    else ~ MultivarGaussian(
+        dynamics(
+            car_params, state(Prev(timestep)),
+            toReal(controls[toInt(timestep)][0]),
+            toReal(controls[toInt(timestep)][1]),
+            toReal(time[toInt(timestep)] - time[toInt(Prev(timestep))])),
+        dynamics_noise)
+};
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+/*
+ * Observation model.
+ * We observe the x and y (but not theta), with noise.
+ * We also observe the laser readings.
+ */
+
+fixed RealMatrix gps_observation_matrix = [[1, 0, 0], [0, 1, 0]];
+fixed RealMatrix gps_observation_noise = 0.0025 * eye(2);
+
+random RealMatrix gps_observations(Timestep timestep) {
+    ~ MultivarGaussian(gps_observation_matrix * state(timestep), gps_observation_noise)
+};
+
+fixed RealMatrix obstacles = {{ model.obstacles |blog_matrix }};
+fixed RealMatrix lasers_sigma = 0.01 * eye(361);
+
+fixed RealMatrix laser_solns(
+        Real laser_x, Real laser_y, Real laser_theta, RealMatrix obstacles)
+    = LaserInterp();
+
+random Real laser_x(Timestep timestep) {
+    = (toReal(state(timestep)[0]) +
+       toReal(car_params[0]) * cos(toReal(state(timestep)[2])) +
+       toReal(car_params[1]) * cos(toReal(state(timestep)[2]) + 0.5 * pi))
+};
+
+random Real laser_y(Timestep timestep) {
+    = (toReal(state(timestep)[1]) +
+       toReal(car_params[0]) * sin(toReal(state(timestep)[2])) +
+       toReal(car_params[1]) * sin(toReal(state(timestep)[2]) + 0.5 * pi))
+};
+
+random Real laser_theta(Timestep timestep) {
+    = toReal(state(timestep)[2])
+};
+
+random RealMatrix laser_observations(Timestep timestep) {
+    ~ MultivarGaussian(
+        laser_solns(
+            laser_x(timestep),
+            laser_y(timestep),
+            laser_theta(timestep),
+            obstacles),
+        lasers_sigma)
+};
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+/* Time: */
+
+fixed RealMatrix time = {{ time |blog_column_vector }};
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+/* Controls: */
+
+fixed RealMatrix controls = {{ controls |blog_matrix }};
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+/* Observations: */
+
+{% for timestep, location in gps_observations %}
+obs gps_observations(@{{ timestep }}) = {{ location |blog_column_vector }};
+{%- endfor %}
+
+{% for timestep, lasers in laser_observations %}
+obs laser_observations(@{{ timestep }}) = {{ lasers |blog_column_vector }};
+{%- endfor %}
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+/* Query the hidden state: */
+
+{% for timestep in query_timesteps %}
+query state(@{{ timestep }});
+{%- endfor %}
+

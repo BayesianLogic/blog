@@ -1,0 +1,38 @@
+1_straight:
+noisy:   28.31587
+map  :   19.99682
+avg  :    9.69647
+
+2_bend:
+noisy:   29.02420
+map  :   20.81549
+avg  :   11.93171
+
+3_curvy:
+noisy:   28.76026
+map  :   20.24888
+avg  :   12.17106
+
+4_circle:
+noisy:  103.69381
+map  :   72.29560
+avg  :   47.05348
+
+5_eight:
+noisy:  115.89643
+map  :   81.86621
+avg  :   63.44243
+
+6_loop:
+noisy:   59.34851
+map  :   41.77655
+avg  :   23.28003
+
+7_random:
+Exception in thread "main" java.lang.IllegalArgumentException: All particles have zero weight
+	at blog.engine.ParticleFilter.take(ParticleFilter.java:292)
+	at blog.engine.ParticleFilter.takeEvidenceAndAnswerQuery(ParticleFilter.java:195)
+	at blog.engine.ParticleFilter.resetAndTakeInitialEvidence(ParticleFilter.java:162)
+	at blog.engine.ParticleFilter.answerQueries(ParticleFilter.java:148)
+	at blog.Main.run(Main.java:201)
+	at blog.Main.main(Main.java:164)

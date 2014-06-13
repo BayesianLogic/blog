@@ -1,0 +1,98 @@
+{# This is the jinja2 template for generating our model. #}
+
+/*
+Model for the automobile problem (simple version with access to noisy GPS).
+
+At each time step, we have:
+- controls: velocity, steering (observed in all timesteps)
+- state: x, y, theta (never observed)
+- observations: x, y (observed in some timesteps)
+
+For now, we completely ignore the obstacles and the laser / intensity data.
+*/
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+/*
+ * Dynamics model.
+ * We assume H = 0 so the velocity is measured at the center of the back axle.
+ * We assume delta_t is the fixed step size.
+ * The dynamics equations are taken from guivant_2000.
+ * See DynamicsLogic.java for the implementation.
+ *
+ * xdot <- vc * cos(phi) - vc/L * (a * sin(phi) + b * cos(phi)) * tan(alpha)
+ * ydot <- vc * sin(phi) - vc/L * (a * cos(phi) - b * sin(phi)) * tan(alpha)
+ * thetadot <- vc/L * tan(alpha)
+ * x <- x + delta_t * xdot
+ * y <- y + delta_t * ydot
+ * theta <- theta + delta_t * thetadot
+ */
+
+fixed RealMatrix car_params = {{ model.car_params |blog_column_vector }};
+fixed RealMatrix initial_state = {{ model.initial_state |blog_column_vector }};
+fixed RealMatrix dynamics_noise = 0.00001 * eye(3);
+
+fixed RealMatrix dynamics(
+        RealMatrix car_params, RealMatrix old_state,
+        Real velocity, Real steering, Real delta_t)
+    = ppaml_car.DynamicsInterp();
+
+random RealMatrix state(Timestep timestep) {
+    if timestep == @0 then ~ MultivarGaussian(initial_state, dynamics_noise)
+    else ~ MultivarGaussian(
+        dynamics(
+            car_params, state(Prev(timestep)),
+            toReal(controls[toInt(timestep)][0]),
+            toReal(controls[toInt(timestep)][1]),
+            toReal(time[toInt(timestep)] - time[toInt(Prev(timestep))])),
+        dynamics_noise)
+};
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+/*
+ * Observation model.
+ * We observe the x and y (but not theta), with noise.
+ */
+
+fixed RealMatrix observation_matrix = [[1, 0, 0], [0, 1, 0]];
+fixed RealMatrix observation_noise = 0.0025 * eye(2);
+
+random RealMatrix observations(Timestep timestep) {
+    ~ MultivarGaussian(observation_matrix * state(timestep), observation_noise)
+};
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+/* Time: */
+
+fixed RealMatrix time = {{ time |blog_column_vector }};
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+/* Controls: */
+
+fixed RealMatrix controls = {{ controls |blog_matrix }};
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+/* Observations: */
+
+{% for timestep, state in observations %}
+obs observations(@{{ timestep }}) = {{ state |blog_column_vector }};
+{%- endfor %}
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+/* Query the hidden state: */
+
+{% for timestep in query_timesteps %}
+query time[toInt(@{{ timestep }})];
+query state(@{{ timestep }});
+{%- endfor %}

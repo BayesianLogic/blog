@@ -1,0 +1,54 @@
+{# jinja2 template #}
+
+/*
+ * Model for dead reckoning only. Initial state and controls; no observations.
+ *
+ * Note that every sample in this model has likelihood 1, by definition,
+ * because there are no observations. The idea is to run with a single sample,
+ * then plot the trajectory and check if it looks reasonable.
+ */
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Dynamics:
+
+fixed RealMatrix car_params = {{ model.car_params |blog_column_vector }};
+fixed RealMatrix initial_state = {{ model.initial_state |blog_column_vector }};
+fixed RealMatrix dynamics_noise = 0.00000001 * eye(3);
+
+fixed RealMatrix dynamics(
+        RealMatrix car_params, RealMatrix old_state,
+        Real velocity, Real steering, Real delta_t)
+    = DynamicsInterp();
+
+random RealMatrix state(Timestep timestep) {
+    if timestep == @0 then ~ MultivarGaussian(initial_state, dynamics_noise)
+    else ~ MultivarGaussian(
+        dynamics(
+            car_params, state(Prev(timestep)),
+            toReal(controls[toInt(timestep)][0]),
+            toReal(controls[toInt(timestep)][1]),
+            toReal(time[toInt(timestep)] - time[toInt(Prev(timestep))])),
+        dynamics_noise)
+};
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Time:
+
+fixed RealMatrix time = {{ time |blog_column_vector }};
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Controls:
+
+fixed RealMatrix controls = {{ controls |blog_matrix }};
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Query the true state:
+
+{% for timestep in query_timesteps %}
+query state(@{{ timestep }});
+{%- endfor %}
+

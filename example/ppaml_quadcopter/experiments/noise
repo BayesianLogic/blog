@@ -1,0 +1,96 @@
+## Controls:
+
+In [1]: run estimate_gps_noise.py 1_straight
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+velocity var = 2.4952301424e-05
+steering var = 9.95189718928e-05
+
+In [2]: run estimate_gps_noise.py 2_bend
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+velocity var = 2.48390943071e-05
+steering var = 0.000100483032803
+
+In [3]: run estimate_gps_noise.py 3_curvy
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+velocity var = 2.45594485368e-05
+steering var = 0.000100215506536
+
+In [6]: run estimate_gps_noise.py 4_circle
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+velocity var = 2.45235567565e-05
+steering var = 0.000100575892357
+
+In [8]: run estimate_gps_noise.py 5_eight
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+velocity var = 2.55656245635e-05
+steering var = 0.000100179527754
+
+In [9]: run estimate_gps_noise.py 6_loop
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+velocity var = 2.5207579572e-05
+steering var = 0.000100270208398
+
+In [10]: run estimate_gps_noise.py 7_random
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+velocity var = 2.50201786159e-05
+steering var = 0.000100405917371
+
+
+
+## GPS:
+ 
+In [20]: run estimate_gps_noise.py 1_straight
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+x var = 0.00236541325678
+y var = 0.00239071300607
+theta var = 0.0
+
+In [21]: run estimate_gps_noise.py 2_bend
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+x var = 0.00241410419814
+y var = 0.00225208802042
+theta var = 0.0
+
+In [22]: run estimate_gps_noise.py 3_curvy
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+x var = 0.0025422389938
+y var = 0.00273111178354
+theta var = 0.0
+
+In [23]: run estimate_gps_noise.py 4_circle
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+x var = 0.00239931904072
+y var = 0.00256013571799
+theta var = 0.0
+
+In [24]: run estimate_gps_noise.py 5_eight
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+x var = 0.00267934098085
+y var = 0.00240001619196
+theta var = 0.0
+
+In [25]: run estimate_gps_noise.py 6_loop
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+x var = 0.00237225817207
+y var = 0.00252188361912
+theta var = 0.0
+
+In [26]: run estimate_gps_noise.py 7_random
+Warning: found out-of-range laser readings
+Warning: found out-of-range intensity readings
+x var = 0.00240278443671
+y var = 0.00240973072701
+theta var = 0.0
