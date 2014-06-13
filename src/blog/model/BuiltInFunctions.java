@@ -1266,7 +1266,6 @@ public class BuiltInFunctions {
     SET_SUM = new NonRandomFunction(SUM_NAME, argTypes, retType, setSumInterp);
     addFunction(SET_SUM);
 
-    // TODO: to complete horizontal stacking of scalar or column-vector
     HSTACK_SCALAR_INTERP = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         int m = args.size();
@@ -1296,15 +1295,15 @@ public class BuiltInFunctions {
          * TODO: to support other types in the future
          */
         List<Type> args = new ArrayList<Type>();
-        boolean flag_real = false, flag_matrix = false;
+        boolean all_real = true, all_matrix = true;
         for (Type ty : argTypes) {
           if (ty.isSubtypeOf(BuiltInTypes.REAL)) {
-            flag_real = true;
+            all_matrix = false; // has a real number, so not all are matrices
             args.add(BuiltInTypes.REAL);
             continue;
           }
           if (ty.isSubtypeOf(BuiltInTypes.REAL_MATRIX)) {
-            flag_matrix = true;
+            all_real = false; // has a matrix, so not all are real numbers
             args.add(BuiltInTypes.REAL_MATRIX);
             continue;
           }
@@ -1313,9 +1312,9 @@ public class BuiltInFunctions {
 
         FunctionInterp HStackInterp = null;
 
-        if (!flag_matrix) { // only scalars
+        if (all_real) { // only scalars
           HStackInterp = HSTACK_SCALAR_INTERP;
-        } else if (!flag_real) { // only matrices
+        } else if (all_matrix) { // only matrices
           HStackInterp = HSTACK_MATRIX_INTERP;
         } else {
           // Currently not support mixture of types
@@ -1329,7 +1328,6 @@ public class BuiltInFunctions {
     };
     addTemplate(HSTACK);
 
-    // TODO: to complete horizontal stacking of scalar or column-vector
     VSTACK_SCALAR_INTERP = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         int n = args.size();
@@ -1359,15 +1357,15 @@ public class BuiltInFunctions {
          * TODO: to support other types in the future
          */
         List<Type> args = new ArrayList<Type>();
-        boolean flag_real = false, flag_matrix = false;
+        boolean all_real = true, all_matrix = true;
         for (Type ty : argTypes) {
           if (ty.isSubtypeOf(BuiltInTypes.REAL)) {
-            flag_real = true;
+            all_matrix = false;// has a real number, so not all are matrices
             args.add(BuiltInTypes.REAL);
             continue;
           }
           if (ty.isSubtypeOf(BuiltInTypes.REAL_MATRIX)) {
-            flag_matrix = true;
+            all_real = false; // has a matrix, so not all are real numbers
             args.add(BuiltInTypes.REAL_MATRIX);
             continue;
           }
@@ -1376,9 +1374,9 @@ public class BuiltInFunctions {
 
         FunctionInterp VStackInterp = null;
 
-        if (!flag_matrix) { // only scalars
+        if (all_real) { // only scalars
           VStackInterp = VSTACK_SCALAR_INTERP;
-        } else if (!flag_real) { // only matrices
+        } else if (all_matrix) { // only matrices
           VStackInterp = VSTACK_MATRIX_INTERP;
         } else {
           // Currently we do not support mixture of types
