@@ -1,4 +1,5 @@
 title: Developer's Guide
+status: hidden
 date: 2014-06-11 15:11
 sortorder: 30
 
