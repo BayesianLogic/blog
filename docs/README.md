@@ -20,3 +20,15 @@ When you type `make html`, Pelican will generate HTML in the `output` dir.
 When writing documentation, you don't want to type `make html` all the time.
 Instead, learn how to use Pelican's [development
 server](http://docs.getpelican.com/en/3.3.0/getting_started.html#make).
+
+# Pages
+All BLOG documents are under `docs/content/pages/`. Including
+- index.md   
+  main entry point of website.
+- document.md
+  main container for all user documents.
+- user-manual.md
+- get-start.md
+- download.md
+- release-note.md
+  Please update right with every release.
