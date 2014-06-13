@@ -14,7 +14,7 @@ video. BLOG makes it easy and concise to represent:
 # Using BLOG
 
 - Requirements: Java 1.6 or above (1.7 or above preferred)
-- [User manual](docs/manual.md)
+- [User manual]({filename}docs/content/pages/user-manual.md)
 
 
 # Compiling
