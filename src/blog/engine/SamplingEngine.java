@@ -42,6 +42,7 @@ import java.util.Properties;
 import blog.BLOGUtil;
 import blog.common.Timer;
 import blog.common.Util;
+import blog.io.TableWriter;
 import blog.model.Model;
 import blog.model.Query;
 import blog.sample.Sampler;
@@ -168,13 +169,9 @@ public class SamplingEngine extends InferenceEngine {
 
       if (i != 0 && (i) % queryReportInterval == 0) {
         // Print query results
-        System.out.println("======== Query Results ========");
-        System.out.println("Iteration " + i + ":");
-        for (Iterator iter = queries.iterator(); iter.hasNext();) {
-          Query q = (Query) iter.next();
-          q.printResults(System.out);
-        }
-        System.out.println("======== Done ========");
+        TableWriter tableWriter = new TableWriter(queries);
+        tableWriter.setHeader("Iteration " + i + ":");
+        tableWriter.writeResults(System.out);
       }
 
       if (i >= numBurnIn) {

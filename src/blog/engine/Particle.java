@@ -45,6 +45,7 @@ import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Query;
 import blog.sample.Sampler;
+import blog.type.Timestep;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
 
@@ -108,11 +109,13 @@ public class Particle {
   }
 
   /**
-   * Identifies the largest time step in the current world and uninstantiates
-   * all temporal random variables with a different time step.
+   * remove all the temporal variables in this particle (possible world) that
+   * are prior to the specified timestep
+   * 
+   * @param timestep
    */
-  public void uninstantiatePreviousTimeslices() {
-    DBLOGUtil.uninstantiatePreviousTimeslices(curWorld);
+  public void removePriorTimeSlice(Timestep timestep) {
+    DBLOGUtil.removeVarsAtDiffTimestep(timestep, curWorld);
   }
 
   public void removeAllDerivedVars() {

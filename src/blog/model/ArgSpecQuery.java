@@ -35,20 +35,12 @@
 
 package blog.model;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
 
 import ve.Factor;
 import ve.Potential;
-import blog.Main;
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.common.Histogram;
@@ -79,22 +71,6 @@ public class ArgSpecQuery extends AbstractQuery {
 
   public ArgSpec argSpec() {
     return getArgSpec();
-  }
-
-  public void printResults(PrintStream s) {
-    s.println("Distribution of values for " + getArgSpec());
-    List entries = new ArrayList(histogram.entrySet());
-
-    if (getArgSpec().isNumeric())
-      Collections.sort(entries, NUMERIC_COMPARATOR);
-    else
-      Collections.sort(entries, WEIGHT_COMPARATOR);
-
-    for (Iterator iter = entries.iterator(); iter.hasNext();) {
-      Histogram.Entry entry = (Histogram.Entry) iter.next();
-      double prob = histogram.getProb(entry.getElement());
-      s.println("\t" + prob + "\t" + entry.getElement());
-    }
   }
 
   public Collection<? extends BayesNetVar> getVariables() {
@@ -136,6 +112,10 @@ public class ArgSpecQuery extends AbstractQuery {
     return errors;
   }
 
+  /**
+   * 
+   */
+  @Override
   public void updateStats(PartialWorld world, double logWeight) {
     Object value = getArgSpec().evaluate(world);
     histogram.increaseWeight(value, logWeight);
@@ -215,37 +195,6 @@ public class ArgSpecQuery extends AbstractQuery {
     return argSpec;
   }
 
-  private static Comparator WEIGHT_COMPARATOR = new Comparator() {
-    public int compare(Object o1, Object o2) {
-      double diff = (((Histogram.Entry) o1).getLogWeight() - ((Histogram.Entry) o2)
-          .getLogWeight());
-      if (diff < 0) {
-        return 1;
-      } else if (diff > 0) {
-        return -1;
-      }
-      return 0;
-    }
-  };
-  private static final Comparator NUMERIC_COMPARATOR = new Comparator() {
-    public int compare(Object o1, Object o2) {
-      Object e1 = ((Histogram.Entry) o1).getElement();
-      Object e2 = ((Histogram.Entry) o2).getElement();
-      if (e1 == Model.NULL) {
-        return -1;
-      } else if (e2 == Model.NULL) {
-        return 1;
-      }
-      double n1 = ((Number) e1).doubleValue();
-      double n2 = ((Number) e2).doubleValue();
-      if (n1 < n2) {
-        return -1;
-      } else if (n1 > n2) {
-        return 1;
-      }
-      return 0;
-    }
-  };
   protected ArgSpec argSpec;
   protected BayesNetVar variable;
   protected Histogram histogram = new Histogram();

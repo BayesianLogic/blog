@@ -171,7 +171,7 @@ public class Laplace extends AbstractCondProbDistrib {
               "The divesity parameter of Laplace CPD must be of type Number, not "
                   + args.get(0).getClass() + ".");
         } else {
-          double Diversity = (double) args.get(0);
+          double Diversity = (Double) args.get(0);
           if (Diversity <= 0) {
             throw new IllegalArgumentException(
                 "Laplace CPD expects a positive real number as the diversity parameter, not "
@@ -192,7 +192,7 @@ public class Laplace extends AbstractCondProbDistrib {
             "The mean parameter of Laplace CPD must be of type Number, not "
                 + args.get(0).getClass() + ".");
       } else {
-        setMean((double) args.get(0));
+        setMean((Double) args.get(0));
       }
       if (!expectDiversityAsArg) {
         if (args.size() > 1) {
@@ -210,7 +210,7 @@ public class Laplace extends AbstractCondProbDistrib {
               "The divesity parameter of Laplace CPD must be of type Number, not "
                   + args.get(1).getClass() + ".");
         } else {
-          double Diversity = (double) args.get(1);
+          double Diversity = (Double) args.get(1);
           if (Diversity <= 0) {
             throw new IllegalArgumentException(
                 "Laplace CPD expects a positive real number as the diversity parameter, not "

@@ -44,10 +44,11 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 
 import blog.DBLOGUtil;
-import blog.bn.BayesNetVar;
 import blog.common.Util;
+import blog.io.TableWriter;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
@@ -181,49 +182,50 @@ public class ParticleFilter extends InferenceEngine {
     needsToBeResampledBeforeFurtherSampling = false;
   }
 
-  private List evidenceInOrderOfMaxTimestep;
-
-  // map from timestep to List of queries in that timestep
-  private Map<Timestep, List<Query>> slicedQueries;
-
   private void takeEvidenceAndAnswerQuery() {
-    if (evidenceInOrderOfMaxTimestep == null)
-      evidenceInOrderOfMaxTimestep = DBLOGUtil
-          .splitEvidenceByMaxTimestep(evidence);
-    slicedQueries = DBLOGUtil.splitQueriesInTime((List<Query>) queries);
+    // Split evidence and queries according to the timestep it occurs in.
+    Map<Timestep, Evidence> slicedEvidence = DBLOGUtil
+        .splitEvidenceInTime(evidence);
+    Map<Timestep, List<Query>> slicedQueries = DBLOGUtil
+        .splitQueriesInTime((List<Query>) queries);
 
-    for (Iterator it = evidenceInOrderOfMaxTimestep.iterator(); it.hasNext();) {
-      Evidence evidenceSlice = (Evidence) it.next();
-      take(evidenceSlice);
+    // Process atemporal evidence (if any) before everything else.
+    if (slicedEvidence.containsKey(null)) {
+      take(slicedEvidence.get(null));
+    }
 
-      // FIXME: This is a very complicated way to obtain the timestep in this
-      // evidence slice. Ideally, splitEvidenceByMaxTimestep would return this
-      // information, since it already computes it.
-      int timestepIndex = -1;
-      for (BayesNetVar var : evidenceSlice.getEvidenceVars()) {
-        timestepIndex = DBLOGUtil.getTimestepIndex(var);
-        if (timestepIndex > -1) {
-          break;
+    // Process temporal evidence and queries in lockstep.
+    List<Timestep> nonNullTimesteps = new ArrayList<Timestep>();
+    nonNullTimesteps.addAll(slicedEvidence.keySet());
+    nonNullTimesteps.addAll(slicedQueries.keySet());
+    nonNullTimesteps.remove(null);
+    // We use a TreeSet to remove duplicates and to sort the timesteps.
+    // (We can't construct a TreeSet directly because it doesn't accept nulls.)
+    TreeSet<Timestep> sortedTimesteps = new TreeSet<Timestep>(nonNullTimesteps);
+    for (Timestep timestep : sortedTimesteps) {
+      if (slicedEvidence.containsKey(timestep)) {
+        take(slicedEvidence.get(timestep));
+      }
+      if (slicedQueries.containsKey(timestep)) {
+        List<Query> currentQueries = slicedQueries.get(timestep);
+        for (Particle particle : particles) {
+          particle.answer(currentQueries);
+        }
+        if (timestep.intValue() % queryReportInterval == 0) {
+          TableWriter tableWriter = new TableWriter(queries);
+          tableWriter.setHeader("After timestep " + timestep.intValue());
+          tableWriter.writeResults(System.out);
         }
       }
+      removePriorTimeSlice(timestep);
+    }
 
-      if (timestepIndex >= 0) {
-        List<Query> currentQueries = slicedQueries.get(Timestep
-            .at(timestepIndex));
-        if (currentQueries != null) {
-          for (Particle particle : (List<Particle>) particles) {
-            particle.answer(currentQueries);
-          }
-          if (timestepIndex % queryReportInterval == 0) {
-            System.out.println("======== Query Results =========");
-            System.out.println("After timestep " + timestepIndex);
-            for (Query q : currentQueries) {
-              q.printResults(System.out);
-            }
-          }
-        }
+    // Process atemporal queries (if any) after all the evidence.
+    if (slicedQueries.containsKey(null)) {
+      List<Query> currentQueries = slicedQueries.get(null);
+      for (Particle particle : particles) {
+        particle.answer(currentQueries);
       }
-      uninstantiatePreviousTimeSlice();
     }
   }
 
@@ -237,19 +239,21 @@ public class ParticleFilter extends InferenceEngine {
   }
 
   /**
-   * clean the var assignments in previous timestep
+   * remove all the temporal variables prior to the specified timestep
+   * 
+   * @param timestep
+   *          Timestep before which the vars should be removed
    */
-  public void uninstantiatePreviousTimeSlice() {
+  public void removePriorTimeSlice(Timestep timestep) {
     // For now we assume numTimeSlicesInMemory = 1.
     for (Particle p : particles) {
-      p.uninstantiatePreviousTimeslices();
+      p.removePriorTimeSlice(timestep);
     }
   }
 
   /** Takes more evidence. */
   public void take(Evidence evidence) {
     if (particles == null)
-      // Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
       resetAndTakeInitialEvidence();
 
     if (!evidence.isEmpty()) { // must be placed after check on particles ==
@@ -295,11 +299,6 @@ public class ParticleFilter extends InferenceEngine {
 
       dataLogLik += logSumWeights;
 
-      // System.out.println("PF: Num of particles after taking evidence: " +
-      // particles.size());
-      // System.out.println("PF: Log sum of weights after taking evidence: " +
-      // logSumWeights);
-
       needsToBeResampledBeforeFurtherSampling = true;
 
       if (useDecayedMCMC)
@@ -315,15 +314,8 @@ public class ParticleFilter extends InferenceEngine {
    */
   public void answer(Collection queries) {
     if (particles == null)
-      // Util.fatalError("ParticleFilter.take(Evidence) called before initialization of particles.");
       resetAndTakeInitialEvidence();
 
-    // System.out.println("PF: Updating queries with PF with " +
-    // particles.size() + " particles.");
-    // for (Iterator it = particles.iterator(); it.hasNext();) {
-    // Particle p = (Particle) it.next();
-    // p.answer(queries);
-    // }
     if (useDecayedMCMC)
       dmhSampler.addQueries(queries);
   }
@@ -347,9 +339,6 @@ public class ParticleFilter extends InferenceEngine {
     if (logSumWeights == Double.NEGATIVE_INFINITY) {
       throw new IllegalArgumentException("All particles have zero weight");
     }
-    // else
-    // System.out.println("PF.resample: log sum of all particle weights is " +
-    // logSumWeights);
 
     for (int i = 0; i < particles.size(); i++) {
       normalizedWeights[i] = Math.exp(logWeights[i] - logSumWeights);
@@ -360,8 +349,9 @@ public class ParticleFilter extends InferenceEngine {
       if (!alreadySampled[selection]) {
         newParticles.add(particles.get(selection));
         alreadySampled[selection] = true;
-      } else
+      } else {
         newParticles.add(((Particle) particles.get(selection)).copy());
+      }
     }
 
     particles = newParticles;
@@ -387,8 +377,7 @@ public class ParticleFilter extends InferenceEngine {
     }
   }
 
-  // ///////////////////////// PARTICLE TAKES EVIDENCE EVENT HANDLING
-  // ///////////////////////////
+  // PARTICLE TAKES EVIDENCE EVENT HANDLING
   /**
    * An interface specifying handlers for before and after a particle takes
    * evidence.
@@ -410,9 +399,7 @@ public class ParticleFilter extends InferenceEngine {
    */
   public ParticleTakesEvidenceHandler afterParticleTakesEvidence;
 
-  // ///////////////////////// FILTER TAKES EVIDENCE EVENT HANDLING
-  // ///////////////////////////
-
+  // FILTER TAKES EVIDENCE EVENT HANDLING
   /**
    * An interface specifying handlers for before and after the particle filter
    * takes evidence.
@@ -433,7 +420,7 @@ public class ParticleFilter extends InferenceEngine {
    */
   public TakesEvidenceHandler afterTakesEvidence;
 
-  // ///////////////////////// END OF EVENT HANDLING ///////////////////////////
+  // END OF EVENT HANDLING
 
   public AfterSamplingListener getAfterSamplingListener() {
     return afterSamplingListener;
@@ -449,7 +436,7 @@ public class ParticleFilter extends InferenceEngine {
 
   private int numParticles;
   private boolean useDecayedMCMC;
-  public List<Particle> particles; // of Particles
+  public List<Particle> particles;
   private int numMoves;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
   private Sampler particleSampler;
