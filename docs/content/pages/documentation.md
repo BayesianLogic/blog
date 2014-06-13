@@ -9,10 +9,13 @@ sortorder: 11
 # [User's Manual]({filename}user-manual.md)
   A manual for BLOG system, including setting and tuning all options. 
 
-# [BLOG Language Reference](xxxxx)
+# [Trying BLOG from browser](http://patmos.banatao.berkeley.edu:8080/)
+  Without installing BLOG system, you may try small BLOG models on our server.
+
+# [BLOG Language Reference](http://www.eecs.berkeley.edu/Pubs/TechRpts/2013/EECS-2013-51.pdf) 
   A reference for BLOG language, including its syntax and semantics. 
 
-# [Probabilistic Modelling Using BLOG](xxx) 
+# [Probabilistic Modelling Using BLOG](xxx) (Coming soon)
   A tutorial text for modelling using BLOG. It includes introduction to BLOG language, and how to use it to solve real application problems. 
 
 # [Developer's Guide]({filename}develop-guide.md)

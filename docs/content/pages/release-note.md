@@ -3,14 +3,20 @@ status: hidden
 date: 2014-06-11 15:11
 sortorder: 50
 
-BLOG 0.8
+BLOG 0.8 (June 13, 2014)
 -------------------
-* make target for compiling with debug support (make debug)
+* Implemented a correct version of PF with sliding window, uninstantiating the previous timestep. The memory issue with PF is solved. PF used to consume memory linear to time step, now it is increasing slightly only due to accumulation of query result.
+* Added LiuWestFilter. It works better than plain bootstrap PF on dynamic models with static parameters.
+* Added Tupleset.
+* Output into Json format. 
+    - Refactored original printing into `TableWriter`.
+* make target for compiling with debug support (`make debug`)
 * make SamplingEngine work with log weights
     - modify Histogram to use log weights consistently
     - remove unused class LogHistogram
     - LWSampler supports the calcuation of weight in log domain
     - particle filter operate in log domain 
+* Added documentation using Markdown and Pelican (`make html`)
 * adding syntax highlight support for sublime 
 * Add Multinomial distribution, which accept both fixed and random arguments
 * Categorical now accept three forms of arguments:
@@ -19,19 +25,36 @@ BLOG 0.8
     3. a weight array
 * MultivarGaussian now natively calculate getLogProb()
 * Added builtin type `RealMatrix`
+* Adding the following distributions to library
+    - Laplace
+    - BooleanDistrib
+    - Multinomial
 * Adding builtin functions
     - linear algebra operators: +, -, *, inv, det, transpose, 
     - sum a matrix column-wise
-    - vstack to create a matrix from rows
-    - __SCALAR_STACK to create a column matrix from scalar variables
+    - vstack to create a matrix from row vectors or a sclar variables
+    - hstack to create a matrix from column vectors or scalar variables
+    - repmat to repeat a matrix
+    - diag to create a diagonal matrix from a vector
     - array/matrix indexing (subscript index can be random as well)
     - sin, cos, tan, atan2 functions 
     - builtin constant pi
     - eye, zeros, ones builtins
-* use factory pattern instead of importing JamaMatrixLib everywhere
+    - toInt
+    - operator on Timestep(mod, plus, minus)
+    - sum on tupleset
+    - abs, exp
+* use Factory to create `JamaMatrixLib` instead of importing JamaMatrixLib everywhere
+* Performance tune up
+    - the uninstantiation no longer looks up max timestep (saving 5% - 10% of time in bird model)
+    - `Util.debug` now uses lazy evaluation kind of approach, so when the debug tag is not set, it will skip   all string concatenation. (saving 5% or more)
+    - `FunAppVar.hashCode` used to take 4% of cpu time. the implementation is optimized. now hashCode takes very little time. This is important since every HashMap calls hashCode.
+    - `FunAppVar.toString` is optimized using caching. Now repeated calls will be very fast. 
+    - `FormulaQuery` is removed
+* Bugfix
+    - lexer bug on recognizing id starting with `_`
 
-
-BLOG 0.7 (27 December 2013)
+BLOG 0.7 (December 27, 2013)
 -------------------
 * Added a special distribution Size, to calculate the size of a Set.
 * Poisson now supports a random variable as its argument.
@@ -60,7 +83,7 @@ BLOG 0.7 (27 December 2013)
     - web server python script can now successfully parse results in scientific 
       format (e.g. 1E-5)
 
-BLOG 0.6 (5 April 2013)
+BLOG 0.6 (April 5, 2013)
 -------------------
 * Changes to built-in functions
     - Syntax changes: Concat replaced with +
@@ -77,7 +100,7 @@ BLOG 0.6 (5 April 2013)
     - UniformVector distribution now consistent with current matrix implementation
     - Dirichlet distribution now accepts arguments of form {dims, unnormalized weight}
 
-BLOG 0.5 (23 December 2012)
+BLOG 0.5 (December 23, 2012)
 -------------------
 * Support of array (instead of using RkVector)
 * Support arithmetic operators 
@@ -88,7 +111,7 @@ BLOG 0.5 (23 December 2012)
 * Added sveral new models, including black-jack-one, kalman filter, LDA, AR2 
 * Several new distributions, Dirichlet, MultivarGaussian
 
-BLOG 0.4 (3 September 2012)
+BLOG 0.4 (September 3, 2012)
 -------------------
 * Support of Map data structure;
 * Categorical Distribution and TabularCPD using Maps;
@@ -103,7 +126,7 @@ BLOG 0.4 (3 September 2012)
   towards parsing efficiency and modularity.
 
 
-BLOG 0.3 (14 August 2008)
+BLOG 0.3 (August 14, 2008)
 -------------------
 * Added a module for exact inference using variable elimination (VE).  
   This inference engine can be invoked by running the runblog script 
@@ -147,7 +170,7 @@ BLOG 0.3 (14 August 2008)
 * Several bug fixes and internal improvements.
 
 
-BLOG 0.2 (14 December 2007)
+BLOG 0.2 (December 14, 2007)
 -------------------
 * The functions formerly called "generating functions" are now called
   "origin functions".  The keyword "origin" is now preferred for
@@ -200,14 +223,14 @@ BLOG 0.2 (14 December 2007)
   thus can be removed if necessary.
 * Lots of bug fixes.
 
-BLOG 0.1.6 (16 March 2007)
+BLOG 0.1.6 (March 16, 2007)
 ---------------------
 * Fixed a bug in common/BipartiteMatcher.java that sometimes caused
   it to return incomplete or non-optimal matches.  Thanks go to the
   users who reported this bug.
 
 
-BLOG 0.1.5 (13 January 2006)
+BLOG 0.1.5 (January 13, 2006)
 ---------------------
 * Changed the parser so it no longer checks for type and scope
   errors, but leaves this to a separate phase of checking in the main
@@ -219,7 +242,7 @@ BLOG 0.1.5 (13 January 2006)
 * Fixed bug in common/AbstractTupleIterator.java that prevented tuple
   set specifications from working properly.
 
-BLOG 0.1.4 (21 December 2005)
+BLOG 0.1.4 (December 21, 2005)
 ---------------------
 * Restored parser's ability to read number statements in the old syntax, 
   as well as the new syntax introduced in version 0.1.3.  
@@ -234,7 +257,7 @@ BLOG 0.1.4 (21 December 2005)
 * Corrected error in blog/SymbolEvidenceStatement.java that prevented it 
   from compiling under Java 1.4.
 
-Changes in BLOG 0.1.3 (6 November 2005)
+BLOG 0.1.3 (November 6, 2005)
 ---------------------
 * Changed the syntax for number statements in an effort to make them
   clearer.  For example, the number statement for radar blips
@@ -262,7 +285,7 @@ Changes in BLOG 0.1.3 (6 November 2005)
 * The command line options that direct query results to files work now.
 * Recursive number statements no longer cause stack overflow errors.
 
-BLOG 0.1.2 (27 September 2005)
+BLOG 0.1.2 (September 27, 2005)
 ---------------------
 * Fixed numerical inaccuracy in the getProb method in
   blog/distrib/Poisson.java.  It now avoids overflow by calling
@@ -271,7 +294,7 @@ BLOG 0.1.2 (27 September 2005)
   sampling with the UrnBallsSplitMerge proposal distribution to yield
   extremely bad results.
 
-BLOG 0.1.1  (21 September 2005)
+BLOG 0.1.1  (September 21, 2005)
 ---------------------
 * Added three new examples: 
   - a university example often used for explaining probabilistic 
@@ -308,6 +331,6 @@ BLOG 0.1.1  (21 September 2005)
 * Built-in functions now handle null arguments properly.
 * Makefiles no longer require GNU make.
 
-BLOG 0.1 (10 September 2005)
+BLOG 0.1 (September 10, 2005)
 --------
 Initial release
