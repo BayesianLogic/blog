@@ -22,10 +22,10 @@ if __name__ == "__main__":
     print "["
     for i, (query_str, entries) in enumerate(data):
         print "    [{}, [".format(json.dumps(query_str))
-        for j, (log_prob, value) in enumerate(entries):
+        for j, (value, log_prob) in enumerate(entries):
             print "        [{}, {}]{}".format(
-                json.dumps(log_prob),
                 json.dumps(value),
+                json.dumps(log_prob),
                 "" if j == len(entries) - 1 else ",")
         print "    ]]{}".format("" if i == len(data) - 1 else ",")
     print "]"
