@@ -107,14 +107,14 @@ def read_blog_json_data(path):
             timestep = int(query_str[7:-1])
             samples = []
             for entry in entries:
-                # entry is like (log_prob, "[0.0; 0.0; 0.0]")
-                sample = [entry[0]] + map(float, entry[1][1:-1].split('; '))
+                # entry is like ("[0.0; 0.0; 0.0]", log_prob)
+                sample = [entry[1]] + map(float, entry[0][1:-1].split('; '))
                 samples.append(sample)
             all_timesteps.append(timestep)
             all_samples.append(samples)
         elif query_str.startswith('__SUB_MAT(time'):
             # query_str is like "__SUB_MAT(time, toInt(@0))"
-            timestamp = float(entries[0][1][1:-1])
+            timestamp = float(entries[0][0][1:-1])
             all_timestamps.append(timestamp)
         else:
             assert False
