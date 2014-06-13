@@ -62,7 +62,7 @@ public class UniformInt implements CondProbDistrib {
   }
 
   /**
-   * Mapping for parameter <code>params</code>
+   * Mapping for the parameter <code>params</code>
    * <ul>
    * <li>params[0]: <code>lower</code></li>
    * <li>params[1]: <code>upper</code></li>
@@ -104,6 +104,8 @@ public class UniformInt implements CondProbDistrib {
         throw new IllegalArgumentException(
             "UniformInt distribution requires that lower <= upper");
       }
+      this.prob = 1.0 / (this.upper - this.lower + 1);
+      this.logProb = Math.log(this.prob);
     }
   }
 
@@ -132,10 +134,7 @@ public class UniformInt implements CondProbDistrib {
    */
   public double getProb(int value) {
     checkHasParams();
-    if (value >= lower && value <= upper) {
-      return 1.0 / (upper - lower + 1);
-    }
-    return 0;
+    return (value >= lower) && (value <= upper) ? prob : 0;
   }
 
   /*
@@ -153,7 +152,9 @@ public class UniformInt implements CondProbDistrib {
    * <code>value</code>.
    */
   public double getLogProb(int value) {
-    return Math.log(getProb(value));
+    checkHasParams();
+    return (value >= lower) && (value <= upper) ? logProb
+        : Double.NEGATIVE_INFINITY;
   }
 
   /*
@@ -164,8 +165,7 @@ public class UniformInt implements CondProbDistrib {
   @Override
   public Object sampleVal() {
     checkHasParams();
-    double x = lower + Math.floor(Util.random() * (upper - lower + 1));
-    return new Integer((int) x);
+    return lower + Util.randInt(upper - lower + 1);
   }
 
   /** Parameter <code>lower</code>. */
@@ -176,4 +176,14 @@ public class UniformInt implements CondProbDistrib {
   private int upper;
   /** Flag indicating whether <code>upper</code> has been set. */
   private boolean hasUpper;
+  /**
+   * The probability of an outcome between <code>lower</code> and
+   * <code>upper</code> inclusive.
+   */
+  private double prob;
+  /**
+   * The log probability of an outcome between <code>lower</code> and
+   * <code>upper</code> inclusive.
+   */
+  private double logProb;
 }
