@@ -1,21 +1,7 @@
-title: BLOG Overview
+title: Get-started
+status: hidden
 date: 2014-06-11 15:11
 sortorder: 15
-
-**Bayesian Logic** (BLOG) is a probabilistic modeling language. 
-It is designed for representing relations and uncertainties among 
-real world objects. For instance, tracking multiple targets in a 
-video. BLOG makes it easy and concise to represet 
-- uncertainty about the existence (and the number) of underlying objects
-- uncertain relations among objects
-- dependencies among relations and functions 
-- observed evidence
-
-BLOG also provides a query language to ask questions about what the world
-could possibly be after making observations.  
-
-BLOG also refers to the default inference system for models specified 
-in BLOG language. 
 
 # Downloading and Installing
 Get the latest version of BLOG from the 

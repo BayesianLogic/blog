@@ -1,10 +1,11 @@
 title: User's Manual
 date: 2014-06-11 15:11
+status: hidden
 sortorder: 20
 
 BLOG can run on all operating systems that support Java. The minimal requirement is Java 1.6 or higher.
 
-This manual assumes you have already downloaded the latest version of BLOG and correctly unzipped or installed it. If you have not, please refer to [this]({filename}overview.md).
+This manual assumes you have already downloaded the latest version of BLOG and correctly unzipped or installed it. If you have not, please refer to [this]({filename}get-start.md).
 
 To run BLOG, use the `blog` command on Linux / Mac, or `blog.bat` on Windows.
 If your model is dynamic (i.e. uses `Timestep`), then use `dblog` on Linux /
@@ -97,71 +98,83 @@ The `[options]` are optional. The orders of these options do not matter. If no o
 
 The following options are provided. For every option, there is a short form and a long form. Either is acceptable.
 
-- Setting random seed. 
-  `-r` or `--randomize`
-  Initialize the random seed based on the clock time. If this flag is not given, the program uses a fixed random seed so its behavior is reproducible. Default: false
+- Setting random seed.   
+  `-r` or `--randomize`  
+  Initialize the random seed based on the clock time. If this flag is not given, the program uses a fixed random seed so its behavior is reproducible. Default: false.  
   For example:
 ```
 ./blog -r example/burglary.blog
 ```
 
-- Use Inference engine.
-  `-e classname` or `--engine=classname`
+- Use Inference engine.   
+  `-e classname` or `--engine=classname`  
   Use classname as the inference engine. Default: blog.engine.SamplingEngine. For dynamic models, two additional engines are provided:
-  - Bootstrap Particle filter (applicable to general dynamic models)
-    `-e blog.engine.ParticleFilter`
-  - Liu-west Filter (Liu & West 2001), only applicable to Real static parameters.
-    `-e blog.engine.LiuWestFilter`
+  - Bootstrap Particle filter (applicable to general dynamic models)  
+    `-e blog.engine.ParticleFilter`  
+  - Liu-west Filter (Liu & West 2001), only applicable to Real static parameters.  
+    `-e blog.engine.LiuWestFilter`  
   For example, the following command uses particle filter to run a Hidden Markov Model.
 ```
 ./blog -e blog.engine.ParticleFilter example/hmm.dblog
 ```
 
-- Run the sampling engine for a given number of samples. 
-  '-n [number]' or `--num_samples [number]`
-  It is used to control the accuracy of the inference. Default, 10,000. 
+- Run the sampling engine for a given number of samples.   
+  '-n [number]' or `--num_samples [number]`  
+  It is used to control the accuracy of the inference. Default, 10,000.   
   For example, to run the burglary model with 1 million samples.
 ```
 ./blog -n 1000000 example/burglary.blog
 ```
 
-- Choose a sampling algorithm.
-  `-s [string]` or `--sampler [string]`
+- Choose a sampling algorithm.  
+  `-s [string]` or `--sampler [string]`  
   BLOG provides three sampling algorithms
-    * rejection sampling, `-s blog.sample.RejectionSampler`
-    * (default) likelihood-weighting, '-s blog.sample.LWSampler'
-    * Metropolis-Hasting algorithm (Milch et al 2006), `-s blog.sample.MHSampler`
-- Skip the first few number of samples
-  `-b num` or `--burn_in=num`
-  Treat first num samples as burn-in period (don't use them to compute query results). Default: 0. 
-- Use a customized proposal for the Metropolis-Hastings sampler.
-  `-p classname` or `--proposer=classname`
-  It should be used together with `-e blog.sample.MHSampler`. Default: `blog.GenericProposer` (samples each var given its parents). The proposer should be implemented in Java and extends `blog.sample.AbstractProposer`.
-- Output
-  `-o file` or `--output=file`
-  Output query results in JSON format to this file. 
-- Print detailed information during inference.
-  `-v` or `--verbose`
-  Print information about the world generated at each iteration. Off by default (for performance reasons, consider leaving this option off). 
-- Monitor the progress of inference.
-  `--interval=num`
-  Report query results to stdout every num queries. Default: 1000
-- Generate possible worlds. 
-  `--generate`
-  Rather than answering queries, just sample possible worlds from the prior distribution defined by the model, and print them out. Default: false. 
-  Note this option cannot be used on dynamic models and any models with Functions on Integers. 
-- Setting classpath for resolving the names of Distributions. 
-  `--package=package`
-  Look in package (e.g., "blog.distrib") when resolving the names of CondProbDistrib and NonRandomFunction classes in the model file. This option can be included several times with different packages; the packages are searched in the order given. The last places searched are the top-level package ("") and finally the default package blog.distrib. Note that you still need to set the Java classpath so that it includes all these packages. 
-- Print debugging information.
-  `--debug`
-  Print model, evidence, and queries for debugging. Default: false 
-- Setting extra options for inference engine. 
-  `-P key=value`
-  Include the entry key=value in the properties table that is passed to the inference engine. This feature can be used to set configuration parameters for various inference engines (and the components they use, such as samplers). See the individual inference classes for documentation. Note: The -P option cannot be used to specify values for properties for which there exist special-purpose options, such as --engine or --num_samples. 
-- Setting extra classpath
-  It can accept an additional variable CLASSPATH to setup classpath of user provided distribution and library functions. For example, 
+    * rejection sampling
+      `-s blog.sample.RejectionSampler`
+    * (default) likelihood-weighting  
+      '-s blog.sample.LWSampler'
+    * Metropolis-Hasting algorithm (Milch et al 2006)  
+      `-s blog.sample.MHSampler`
 
+- Skip the first few number of samples  
+  `-b num` or `--burn_in=num`  
+  Treat first num samples as burn-in period (don't use them to compute query results). Default: 0. 
+
+- Use a customized proposal for the Metropolis-Hastings sampler.  
+  `-p classname` or `--proposer=classname`  
+  It should be used together with `-e blog.sample.MHSampler`. Default: `blog.GenericProposer` (samples each var given its parents). The proposer should be implemented in Java and extends `blog.sample.AbstractProposer`.
+
+- Output  
+  `-o file` or `--output=file`  
+  Output query results in JSON format to this file. 
+
+- Print detailed information during inference.  
+  `-v` or `--verbose`  
+  Print information about the world generated at each iteration. Off by default (for performance reasons, consider leaving this option off). 
+
+- Monitor the progress of inference.  
+  `--interval=num`  
+  Report query results to stdout every num queries. Default: 1000.  
+
+- Generate possible worlds.   
+  `--generate`  
+  Rather than answering queries, just sample possible worlds from the prior distribution defined by the model, and print them out. Default: false.   
+  Note this option cannot be used on dynamic models and any models with Functions on Integers. 
+
+- Setting classpath for resolving the names of Distributions.   
+  `--package=package`  
+  Look in package (e.g., "blog.distrib") when resolving the names of CondProbDistrib and NonRandomFunction classes in the model file. This option can be included several times with different packages; the packages are searched in the order given. The last places searched are the top-level package ("") and finally the default package blog.distrib. Note that you still need to set the Java classpath so that it includes all these packages. 
+
+- Print debugging information.  
+  `--debug`  
+  Print model, evidence, and queries for debugging. Default: false.
+
+- Setting extra options for inference engine.   
+  `-P key=value`  
+  Include the entry key=value in the properties table that is passed to the inference engine. This feature can be used to set configuration parameters for various inference engines (and the components they use, such as samplers). See the individual inference classes for documentation. Note: The -P option cannot be used to specify values for properties for which there exist special-purpose options, such as --engine or --num_samples. 
+
+- Setting extra classpath  
+  It can accept an additional variable CLASSPATH to setup classpath of user provided distribution and library functions. For example, 
 ```
 CLASSPATH=userdir blog example/burglary.blog
 ```
@@ -189,19 +202,27 @@ The hidden Markov model describes the generative process of genetic sequences.
                      G -> 0.1,
                      T -> 0.4})
         else ~ TabularCPD(
-          {A -> ~ Categorical({A -> 0.1, C -> 0.3, G -> 0.3, T -> 0.3}),
-           C -> ~ Categorical({A -> 0.3, C -> 0.1, G -> 0.3, T -> 0.3}),
-           G -> ~ Categorical({A -> 0.3, C -> 0.3, G -> 0.1, T -> 0.3}),
-           T -> ~ Categorical({A -> 0.3, C -> 0.3, G -> 0.3, T -> 0.1})},
+          {A -> ~ Categorical({A -> 0.1, C -> 0.3,
+                               G -> 0.3, T -> 0.3}),
+           C -> ~ Categorical({A -> 0.3, C -> 0.1, 
+                               G -> 0.3, T -> 0.3}),
+           G -> ~ Categorical({A -> 0.3, C -> 0.3, 
+                               G -> 0.1, T -> 0.3}),
+           T -> ~ Categorical({A -> 0.3, C -> 0.3, 
+                               G -> 0.3, T -> 0.1})},
           S(Prev(t)))
     };
 
     random Output O(Timestep t)
        ~ TabularCPD(
-         {A -> ~ Categorical({ResultA -> 0.85, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.05}),
-          C -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.85, ResultG -> 0.05, ResultT -> 0.05}),
-          G -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.85, ResultT -> 0.05}),
-          T -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.85})},
+         {A -> ~ Categorical({ResultA -> 0.85, ResultC -> 0.05, 
+                              ResultG -> 0.05, ResultT -> 0.05}),
+          C -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.85, 
+                              ResultG -> 0.05, ResultT -> 0.05}),
+          G -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, 
+                              ResultG -> 0.85, ResultT -> 0.05}),
+          T -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, 
+                              ResultG -> 0.05, ResultT -> 0.85})},
          S(t));
 
     /* Evidence for the Hidden Markov Model.

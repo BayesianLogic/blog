@@ -1,29 +1,33 @@
-Release notes
-BLOG 0.8 (ongoing)
+title: Release Note
+status: hidden
+date: 2014-06-11 15:11
+sortorder: 50
+
+BLOG 0.8
 -------------------
 * make target for compiling with debug support (make debug)
 * make SamplingEngine work with log weights
-  - modify Histogram to use log weights consistently
-  - remove unused class LogHistogram
-  - LWSampler supports the calcuation of weight in log domain
-  - particle filter operate in log domain 
+    - modify Histogram to use log weights consistently
+    - remove unused class LogHistogram
+    - LWSampler supports the calcuation of weight in log domain
+    - particle filter operate in log domain 
 * adding syntax highlight support for sublime 
 * Add Multinomial distribution, which accept both fixed and random arguments
 * Categorical now accept three forms of arguments:
-  1. a Map from distinct or fixed symbol to real constants
-  2. a Map from distinct or fixed symbol to real random variable
-  3. a weight array
+    1. a Map from distinct or fixed symbol to real constants
+    2. a Map from distinct or fixed symbol to real random variable
+    3. a weight array
 * MultivarGaussian now natively calculate getLogProb()
 * Added builtin type `RealMatrix`
 * Adding builtin functions
-  - linear algebra operators: +, -, *, inv, det, transpose, 
-  - sum a matrix column-wise
-  - vstack to create a matrix from rows
-  - __SCALAR_STACK to create a column matrix from scalar variables
-  - array/matrix indexing (subscript index can be random as well)
-  - sin, cos, tan, atan2 functions 
-  - builtin constant pi
-  - eye, zeros, ones builtins
+    - linear algebra operators: +, -, *, inv, det, transpose, 
+    - sum a matrix column-wise
+    - vstack to create a matrix from rows
+    - __SCALAR_STACK to create a column matrix from scalar variables
+    - array/matrix indexing (subscript index can be random as well)
+    - sin, cos, tan, atan2 functions 
+    - builtin constant pi
+    - eye, zeros, ones builtins
 * use factory pattern instead of importing JamaMatrixLib everywhere
 
 
@@ -32,58 +36,57 @@ BLOG 0.7 (27 December 2013)
 * Added a special distribution Size, to calculate the size of a Set.
 * Poisson now supports a random variable as its argument.
 * Renaming distribution: 
-  - Bernoulli => BooleanDistrib
-  - BinaryBernoulliDistrib => Bernoulli
+    - Bernoulli => BooleanDistrib
+    - BinaryBernoulliDistrib => Bernoulli
 * update support of blog.vim and lexer.py to support syntax updates
 * new model: 
-  - Birthday collision
-  - Tug-of-war
+    - Birthday collision
+    - Tug-of-war
 * more robust error handling in syntax
 * Syntax highlight style file for emacs (created by Wei Wang)
 * Abstract syntax tree is now printed in a nicer format (pprinter)
 * maintenance fix for webui
-  - web server can now automatically start as a deamon
-  - added an option (--test) for start-server.sh for testrun of the server
-  - removed duplicated web/run.sh and use the one in parent directory instead
+    - web server can now automatically start as a deamon
+    - added an option (--test) for start-server.sh for testrun of the server
+    - removed duplicated web/run.sh and use the one in parent directory instead
 * automatic regression test
 * Bug-fix
-  - add testing equality of matrix by checking elements 
-    (previous caused problem on copied possible world)
-  - fix the key removal in linkedHashMap in InstantiationEvalContext 
-    (previously remove the value rather than key)
-  - fix the incorrect parsing of sub_array expression within LBRACE and RBRACE 
-    (due to a reduce-reduce conflict with array type)
-  - web server python script can now successfully parse results in scientific 
-    format (e.g. 1E-5)
+    - add testing equality of matrix by checking elements 
+      (previous caused problem on copied possible world)
+    - fix the key removal in linkedHashMap in InstantiationEvalContext 
+      (previously remove the value rather than key)
+    - fix the incorrect parsing of sub_array expression within LBRACE and RBRACE 
+      (due to a reduce-reduce conflict with array type)
+    - web server python script can now successfully parse results in scientific 
+      format (e.g. 1E-5)
 
 BLOG 0.6 (5 April 2013)
 -------------------
 * Changes to built-in functions
-  - Syntax changes: Concat replaced with +
-  - New operations: ^ (power), => (implies), <= (leq), >= (geq), min of set, max of set, round
+    - Syntax changes: Concat replaced with +
+    - New operations: ^ (power), => (implies), <= (leq), >= (geq), min of set, max of set, round
 * Support for queries on tuple sets, 
-  - queries of form {f(x) for x: cond(x)} (last supported in v0.3)
+    - queries of form {f(x) for x: cond(x)} (last supported in v0.3)
 * New models:
-  - background subtraction: for known, unknown numbers of components
-  - computer vision: and-or trees, projection, scene viewer
-  - Gaussian mixture model
-  - stochastic volatility
+    - background subtraction: for known, unknown numbers of components
+    - computer vision: and-or trees, projection, scene viewer
+    - Gaussian mixture model
+    - stochastic volatility
 * Miscellaneous bug fixes and improvements, e.g.:
-  - < now may be used in implicit sets, as may > in conditions of form x > a && x < b (where a < b) 
-  - UniformVector distribution now consistent with current matrix implementation
-  - Dirichlet distribution now accepts arguments of form {dims, unnormalized weight}
+    - `<` now may be used in implicit sets, as may `>` in conditions of form x > a && x < b (where a < b) 
+    - UniformVector distribution now consistent with current matrix implementation
+    - Dirichlet distribution now accepts arguments of form {dims, unnormalized weight}
 
 BLOG 0.5 (23 December 2012)
 -------------------
-Support of new features: 
 * Support of array (instead of using RkVector)
-* arithmetic operators 
-* matrix operations supported, +, -, *, and reference to array element 
-* reference to distinct objects the same as reference to array element 
-* correct MHSampler (old one in blog 0.3 produces incorrect answers with indirect evidence) 
-* fixed Particle filtering 
-* added sveral new models, including black-jack-one, kalman filter, LDA, AR2 
-* several new distributions, Dirichlet, MultivarGaussian
+* Support arithmetic operators 
+* Matrix operations supported, +, -, *, and reference to array element 
+* Reference to distinct objects the same as reference to array element 
+* Correct MHSampler (old one in blog 0.3 produces incorrect answers with indirect evidence) 
+* Fixed Particle filtering 
+* Added sveral new models, including black-jack-one, kalman filter, LDA, AR2 
+* Several new distributions, Dirichlet, MultivarGaussian
 
 BLOG 0.4 (3 September 2012)
 -------------------
@@ -94,8 +97,8 @@ BLOG 0.4 (3 September 2012)
 * Support of Array, Matrix (Real Array)
 * Support of arithmetic operators, and linear algebra operators.
 * Without causing confusion, 
-  - "nonrandom" is changed to "fixed", 
-  - "guaranteed" is changed to "distinct";
+    - "nonrandom" is changed to "fixed", 
+    - "guaranteed" is changed to "distinct";
 * Complete redesign of parser and semantic translator, 
   towards parsing efficiency and modularity.
 
