@@ -192,7 +192,7 @@ public class Main {
       // Print query results
       TableWriter tableWriter = new TableWriter(queries);
       tableWriter.setHeader("======== Query Results =========\n"
-          + "Iteration: " + numSamples);
+          + "Number of samples: " + numSamples);
       tableWriter.writeResults(System.out);
       System.out.println("======== Done ========");
 
