@@ -143,8 +143,10 @@ public class ParticleFilter extends InferenceEngine {
 
   /** Answers the queries provided at construction time. */
   public void answerQueries() {
-    System.out.println("Evidence: " + evidence);
-    System.out.println("Query: " + queries);
+    if (Util.verbose()) {
+      System.out.println("Evidence: " + evidence);
+      System.out.println("Query: " + queries);
+    }
     System.out.println("Report every: " + queryReportInterval + " timesteps");
     resetAndTakeInitialEvidence();
     answer(queries);
@@ -200,6 +202,7 @@ public class ParticleFilter extends InferenceEngine {
     // We use a TreeSet to remove duplicates and to sort the timesteps.
     // (We can't construct a TreeSet directly because it doesn't accept nulls.)
     TreeSet<Timestep> sortedTimesteps = new TreeSet<Timestep>(nonNullTimesteps);
+    int querySlicesProcessed = 0;
     for (Timestep timestep : sortedTimesteps) {
       if (slicedEvidence.containsKey(timestep)) {
         take(slicedEvidence.get(timestep));
@@ -209,8 +212,9 @@ public class ParticleFilter extends InferenceEngine {
         for (Particle particle : particles) {
           particle.answer(currentQueries);
         }
-        if (timestep.intValue() % queryReportInterval == 0) {
-          TableWriter tableWriter = new TableWriter(queries);
+        querySlicesProcessed++;
+        if (querySlicesProcessed % queryReportInterval == 0) {
+          TableWriter tableWriter = new TableWriter(currentQueries);
           tableWriter.setHeader("After timestep " + timestep.intValue());
           tableWriter.writeResults(System.out);
         }
