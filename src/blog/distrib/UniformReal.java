@@ -39,8 +39,12 @@ public class UniformReal implements CondProbDistrib {
       this.upper = upper;
       this.hasUpper = true;
     }
-    if (this.hasLower && this.hasUpper && this.lower >= this.upper) {
-      throw new IllegalArgumentException("lower >= upper");
+    if (this.hasLower && this.hasUpper) {
+      if (this.lower >= this.upper) {
+        throw new IllegalArgumentException("lower >= upper");
+      }
+      this.density = 1 / (this.upper - this.lower);
+      this.logDensity = Math.log(this.density);
     }
   }
 
@@ -67,11 +71,7 @@ public class UniformReal implements CondProbDistrib {
    */
   public double getProb(double value) {
     checkHasParams();
-    if ((value >= lower) && (value < upper)) {
-      return 1.0 / (upper - lower);
-    } else {
-      return 0.0;
-    }
+    return (value >= lower) && (value < upper) ? this.density : 0;
   }
 
   /*
@@ -87,7 +87,9 @@ public class UniformReal implements CondProbDistrib {
    * Returns the log probability of <code>value</code>.
    */
   public double getLogProb(double value) {
-    return Math.log(getProb(value));
+    checkHasParams();
+    return (value >= lower) && (value < upper) ? this.logDensity
+        : Double.NEGATIVE_INFINITY;
   }
 
   /*
@@ -98,8 +100,7 @@ public class UniformReal implements CondProbDistrib {
   public Object sampleVal() {
     checkHasParams();
     // rely on the fact that Util.random() returns a value in [0, 1)
-    double x = lower + (Util.random() * (upper - lower));
-    return x;
+    return (lower + (Util.random() * (upper - lower)));
   }
 
   /**
@@ -126,4 +127,6 @@ public class UniformReal implements CondProbDistrib {
 
   private double lower;
   private double upper;
+  private double density;
+  private double logDensity;
 }

@@ -16,13 +16,11 @@ public class TestUniformReal implements TestDistributions {
   private final double ERROR = 1e-10;
   private final double EPSILON = 1e-2;
 
-  @Override
   @Test
   public void testProbabilityViaConstructor() {
     // no longer needed. will be removed.
   }
 
-  @Override
   @Test
   public void testProbabilityViaSetParams() {
     UniformReal unif = new UniformReal();
@@ -33,7 +31,6 @@ public class TestUniformReal implements TestDistributions {
     testDistribution(unif);
   }
 
-  @Override
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments() {
     UniformReal unif = new UniformReal();
@@ -41,7 +38,6 @@ public class TestUniformReal implements TestDistributions {
     testDistribution(unif);
   }
 
-  @Override
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments() {
     UniformReal unif = new UniformReal();
@@ -50,7 +46,6 @@ public class TestUniformReal implements TestDistributions {
     testDistribution(unif);
   }
 
-  @Override
   @Test
   public void testDoubleSet() {
     UniformReal unif = new UniformReal();
