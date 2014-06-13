@@ -14,7 +14,7 @@ video. BLOG makes it easy and concise to represent:
 # Using BLOG
 
 - Requirements: Java 1.6 or above (1.7 or above preferred)
-- [User manual]({filename}docs/content/pages/user-manual.md)
+- [User manual](docs/content/pages/user-manual.md)
 
 
 # Compiling
@@ -30,15 +30,14 @@ video. BLOG makes it easy and concise to represent:
 
 # Developer
 
-## Please read first: [Developer's guide](docs/develop-guide.md)
+## Please read first: [Developer's guide](docs/content/pages/develop-guide.md)
 
 
 ## Files
-
 - `blog` main execution file to run the engine
 - `dblog` main execution file to run the engine with particle filter (alternative can use blog)
 - `parse.sh` to check the syntax of a blog file (very useful for debugging)
-- `release-note.txt` contains all release information and major changes
+- `docs/content/pages/release-note.md` contains all release information and major changes
 
 
 ## Syntax highligher for editors
