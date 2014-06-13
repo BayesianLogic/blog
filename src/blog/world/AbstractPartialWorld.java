@@ -144,9 +144,12 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 
     if (value == null) {
       basicVarToValue.remove(var);
+      varToUninstParent.remove(var);
+      nameToBasicVar.remove(var.toString());
     } else {
       // checkIdentifiers(var, value); // allow any identifiers
       basicVarToValue.put(var, value);
+      nameToBasicVar.put(var.toString(), var);
     }
 
     dirtyVars.add(var);
@@ -155,6 +158,10 @@ public abstract class AbstractPartialWorld implements PartialWorld {
     for (Iterator iter = listeners.iterator(); iter.hasNext();) {
       ((WorldListener) iter.next()).varChanged(var, oldValue, value);
     }
+  }
+
+  public BasicVar getBasicVarByName(String name) {
+    return nameToBasicVar.get(name);
   }
 
   public void truncateList(RandomFunction f, Object[] initialArgs, int len) {
@@ -216,10 +223,12 @@ public abstract class AbstractPartialWorld implements PartialWorld {
         throw new IllegalArgumentException("No log prob computed for " + var);
       }
       if (logProb == PartialWorld.UNDET) {
-        BasicVar uninstParent = var.getFirstUninstParent(this);
-        Util.fatalError("Can't get log prob of variable " + var
-            + " because it depends on " + uninstParent
-            + ", which is not instantiated.");
+        if (Util.verbose()) {
+          BasicVar uninstParent = var.getFirstUninstParent(this);
+          Util.fatalError("Can't get log prob of variable " + var
+              + " because it depends on " + uninstParent
+              + ", which is not instantiated.");
+        }
       }
       return logProb.doubleValue();
     }
@@ -427,6 +436,10 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 
   public Map basicVarToValueMap() {
     return basicVarToValue;
+  }
+
+  public Map<String, BasicVar> nameToBasicVarMap() {
+    return nameToBasicVar;
   }
 
   public MultiMap objToUsesAsValueMap() {
@@ -780,9 +793,8 @@ public abstract class AbstractPartialWorld implements PartialWorld {
           try {
             // System.out.println("AbstractPartialWorld: var: " + var +
             // ", basicVarToValue(var): " + basicVarToValue.get(var));
-            CondProbDistrib cpd = distrib.getCPD();
-            cpd.setParams(distrib.getArgValues());
-            double logProb = cpd.getLogProb(basicVarToValue.get(var));
+            double logProb = distrib.getCPD().getLogProb(
+                distrib.getArgValues(), basicVarToValue.get(var));
             /*
              * if (Util.verbose() && (logProb == Double.NEGATIVE_INFINITY)) {
              * System.out.println ("Got zero probability for " + var + " = " +
@@ -1008,6 +1020,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
    */
   public void cloneFields(AbstractPartialWorld newWorld) {
     newWorld.basicVarToValue = (Map) ((HashMap) basicVarToValue).clone();
+    newWorld.nameToBasicVar = (Map) ((HashMap) nameToBasicVar).clone();
     newWorld.objToUsesAsValue = (MultiMap) ((HashMultiMap) objToUsesAsValue)
         .clone();
     newWorld.objToUsesAsArg = (MultiMap) ((HashMultiMap) objToUsesAsArg)
@@ -1036,6 +1049,11 @@ public abstract class AbstractPartialWorld implements PartialWorld {
    * Map from instantiated basic variables to their values.
    */
   protected Map basicVarToValue;
+
+  /**
+   * Map from name to BasicVar.
+   */
+  protected Map<String, BasicVar> nameToBasicVar;
 
   /**
    * Map from objects to the instantiated BasicVars that have them as values.

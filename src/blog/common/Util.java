@@ -130,6 +130,14 @@ public class Util {
     return rand.nextInt(n);
   }
 
+  /**
+   * Return a pseudorandom number sampled from a standard Gaussian.
+   * This method must not be called before initRandom() is called.
+   */
+  public static double randGaussian() {
+    return rand.nextGaussian();
+  }
+
   /** Returns the sum of an array of doubles. */
   public static double sum(double[] array) {
     double result = 0;
@@ -514,7 +522,6 @@ public class Util {
     }
 
     throw new Error(topLevelMessage);
-    // System.exit(1);
   }
 
   /**
@@ -544,9 +551,7 @@ public class Util {
     if (trace) {
       Thread.currentThread().dumpStack();
     }
-    // modified by leili
-    // throw new Error(msg);
-    // System.exit(1);
+    throw new Error(msg);
   }
 
   /**
@@ -1344,30 +1349,6 @@ public class Util {
 
   public static double average(Collection values) {
     return sum(values) / values.size();
-  }
-
-  /** Returns an array containing the objects given as arguments. */
-  public static Object[] array(Object o1) {
-    Object[] obj = new Object[1];
-    obj[0] = o1;
-    return obj;
-  }
-
-  /** Returns an array containing the objects given as arguments. */
-  public static Object[] array(Object o1, Object o2) {
-    Object[] obj = new Object[2];
-    obj[0] = o1;
-    obj[1] = o2;
-    return obj;
-  }
-
-  /** Returns an array containing the objects given as arguments. */
-  public static Object[] array(Object o1, Object o2, Object o3) {
-    Object[] obj = new Object[3];
-    obj[0] = o1;
-    obj[1] = o2;
-    obj[2] = o3;
-    return obj;
   }
 
   /** Returns an empty LinkedList. */
