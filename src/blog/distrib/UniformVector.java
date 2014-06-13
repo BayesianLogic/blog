@@ -41,10 +41,7 @@ import blog.common.numerical.MatrixLib;
 
 /**
  * The uniform distribution over n-dimensional column vectors coming from a
- * specified n-dimensional "box". <code>box</code> is an n by 2 MatrixLib
- * instance where each row represents the dimension, and the first column of
- * each row represents the lower bound of that dimension and the second column
- * of that row represents the corresponding upper bound of that dimension.
+ * specified n-dimensional "box".
  * 
  * @author leili
  * @date May 15, 2014
@@ -85,11 +82,8 @@ public class UniformVector implements CondProbDistrib {
   }
 
   /**
-   * mapping for <code>params</code>:
-   * 
-   * <ul>
-   * <li>params[0]: box, an N by 2 MatrixLib instance</li>
-   * </ul>
+   * @param params
+   *          An array of MatrixLib instances in the form of 1 by 2 row vectors
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
@@ -108,13 +102,18 @@ public class UniformVector implements CondProbDistrib {
       this.mins = new double[dim];
       this.maxes = new double[dim];
       this.dimensionSet = new boolean[dim];
-      setParams((MatrixLib[]) params);
     }
+    MatrixLib[] m = new MatrixLib[dim];
+    for (int i = 0; i < dim; i++) {
+      m[i] = (MatrixLib) params[i];
+    }
+    setParams(m);
   }
 
   /**
    * @param vectors
-   *          An array of (1 by 2 row vectors) MatrixLib vectors
+   *          An array of MatrixLib instances of length <code>dim</code> in the
+   *          form of 1 by 2 row vectors.
    */
   public void setParams(MatrixLib[] vectors) {
     for (int i = 0; i < vectors.length; i++) {
