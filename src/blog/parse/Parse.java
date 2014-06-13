@@ -10,6 +10,8 @@ import blog.absyn.PrettyPrinter;
 import blog.msg.ErrorMsg;
 
 /**
+ * Parser for BLOG program. Use enableDebug() for debugging the parser itself.
+ * 
  * @author leili
  * @since Apr 18, 2012
  * 
@@ -25,11 +27,10 @@ public class Parse {
     BLOGParser parser;
     try {
       parser = new BLOGParser(new BLOGLexer(inp, errorMsg), errorMsg);
-      /* open input files, etc. here */
-
-      parser. /* debug_ */parse();
-      // modified by leili, only for debug purpose
-      // parser.debug_parse();
+      if (DEBUG_TAG)
+        parser.debug_parse();
+      else
+        parser.parse();
       absyn = parser.parseResult;
     } catch (Throwable e) {
       e.printStackTrace();
@@ -73,7 +74,19 @@ public class Parse {
     return absyn;
   }
 
+  public static void enableDebug() {
+    DEBUG_TAG = true;
+  }
+
+  private static boolean DEBUG_TAG = false;
+
   public static void main(String[] args) {
+    if (args.length < 1) {
+      System.out.println("  Usage: java blog.parse.Parse <filename> [--debug]");
+      return;
+    }
+    if (args.length > 1 && args[1].equals("--debug"))
+      enableDebug();
     Parse parse = parseFile(args[0]);
     new PrettyPrinter(System.out).printSyntax(parse.getResult());
   }
