@@ -34,9 +34,7 @@ public class TestUnivariateGaussian {
 
   @Test
   public void testFixedMeanFixedVariance() {
-    Double[] params = new Double[2];
-    params[0] = MEAN;
-    params[1] = VARIANCE;
+    Double[] params = { MEAN, VARIANCE };
     UnivarGaussian gaussian = new UnivarGaussian();
     gaussian.setParams(params);
     testGaussian(gaussian);
@@ -44,8 +42,7 @@ public class TestUnivariateGaussian {
 
   @Test
   public void testRandomMeanFixedVariance() {
-    Double[] params = new Double[2];
-    params[1] = VARIANCE;
+    Double[] params = { null, VARIANCE };
     UnivarGaussian gaussian = new UnivarGaussian();
     gaussian.setParams(params);
     gaussian.setParams(MEAN, null);
@@ -54,8 +51,7 @@ public class TestUnivariateGaussian {
 
   @Test
   public void testFixedMeanRandomVariance() {
-    Double[] params = new Double[2];
-    params[0] = MEAN;
+    Double[] params = { MEAN, null };
     UnivarGaussian gaussian = new UnivarGaussian();
     gaussian.setParams(params);
     gaussian.setParams(null, VARIANCE);
@@ -64,7 +60,7 @@ public class TestUnivariateGaussian {
 
   @Test
   public void testRandomMeanRandomVariance() {
-    Double[] params = new Double[2];
+    Double[] params = { null, null };
     UnivarGaussian gaussian = new UnivarGaussian();
     gaussian.setParams(params);
     gaussian.setParams(MEAN, VARIANCE);

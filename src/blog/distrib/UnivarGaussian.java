@@ -1,24 +1,27 @@
 package blog.distrib;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import blog.common.Util;
 
 /**
  * Univariate Gaussian distribution with a given <code>mean</code> and
  * <code>variance</code>.
  * 
+ * @author cgioia
  * @since June 12, 2014
  */
 public class UnivarGaussian implements CondProbDistrib {
 
+  /** Public constructor intended for use by BLOG Engine. */
+  public UnivarGaussian() {
+  }
+
+  /** This constructor is not intended for public use. */
   private UnivarGaussian(double mean, double variance) {
     setParams(mean, variance);
   }
 
   /**
-   * mapping for <code>params</code>:
+   * mapping for <code>params</code> (Parameters for Gaussian distribution):
    * <ul>
    * <li>params[0]: <code>mean</code></li>
    * <li>params[1]: <code>variance</code></li>
@@ -102,6 +105,11 @@ public class UnivarGaussian implements CondProbDistrib {
    * @see blog.distrib.CondProbDistrib#sampleVal()
    */
   public Object sampleVal() {
+    return sampleValue();
+  }
+
+  /** Samples a value from the univariate gaussian. Intended for human use. */
+  public double sampleValue() {
     checkHasParams();
     double U = Util.random();
     double V = Util.random();
@@ -126,32 +134,6 @@ public class UnivarGaussian implements CondProbDistrib {
 
   /** The Standard Gaussian (mean = 0, variance = 1). */
   public static final UnivarGaussian STANDARD = new UnivarGaussian(0, 1);
-
-  /**
-   * Returns a Gaussian distribution corresponding to the product of this and
-   * another Gaussian distribution.
-   */
-  public UnivarGaussian product(UnivarGaussian another) {
-    double sumOfSigmaSquares = variance + another.variance;
-    return new UnivarGaussian((mean * another.variance + another.mean
-        * variance)
-        / sumOfSigmaSquares, (variance * another.variance) / sumOfSigmaSquares);
-  }
-
-  /**
-   * Returns the product of a set of UnivarGaussians, returning
-   * <code>null</code> if set is empty.
-   */
-  public static UnivarGaussian product(Collection<UnivarGaussian> gaussians) {
-    if (gaussians.size() == 0)
-      return null;
-    Iterator<UnivarGaussian> gaussiansIt = gaussians.iterator();
-    UnivarGaussian result = gaussiansIt.next();
-    while (gaussiansIt.hasNext()) {
-      result = result.product(gaussiansIt.next());
-    }
-    return result;
-  }
 
   /**
    * Returns a Gaussian representing the posterior of the mean of this Gaussian
