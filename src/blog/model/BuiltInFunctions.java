@@ -82,7 +82,6 @@ public class BuiltInFunctions {
   public static final String INV_NAME = "inv";
   public static final String DET_NAME = "det";
   public static final String IS_EMPTY_NAME = "IsEmptyString";
-  // public static final String CONCAT_NAME = "Concat"; //Concat replaced by +
   public static final String MIN_NAME = "min";
   public static final String MAX_NAME = "max";
   public static final String ROUND_NAME = "round";
