@@ -1,4 +1,4 @@
-package test.blog;
+package expmt;
 
 import java.util.Collection;
 import java.util.Iterator;
