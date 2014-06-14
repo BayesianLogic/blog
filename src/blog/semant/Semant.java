@@ -463,7 +463,13 @@ public class Semant {
           ConstantInterp constant = new ConstantInterp(args);
           ((NonRandomFunction) fun).setInterpretation(constant);
         } else {
+          Util.fatalError("do not support other expression in body of fixed function");
           // TODO: Implement more general fixed functions
+          Object funcBody = transExpr(e.body);
+          ArgSpec funcValue = (ArgSpec) funcBody;
+          ((NonRandomFunction) fun)
+              .setInterpretation(((NonRandomFunction) ((FuncAppTerm) funcValue)
+                  .getFunction()).getInterpretation());
         }
       } else {
         // note will do type checking later
