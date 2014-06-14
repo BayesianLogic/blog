@@ -12,7 +12,7 @@ sortorder: 11
 # [Trying BLOG from browser](http://patmos.banatao.berkeley.edu:8080/)
   Without installing BLOG system, you may try small BLOG models on our server.
 
-# [BLOG Language Reference](http://www.eecs.berkeley.edu/Pubs/TechRpts/2013/EECS-2013-51.pdf) 
+# [BLOG Language Reference](blog-lang-0.8.pdf) 
   A reference for BLOG language, including its syntax and semantics. 
 
 # [Probabilistic Modelling Using BLOG](xxx) (Coming soon)
