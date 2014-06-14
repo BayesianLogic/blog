@@ -52,7 +52,7 @@ release-compile:
 
 tar: zip
 
-zip: html 
+zip: 
 	mkdir -p tmp/${TARGETNAME}
 	cp ${RUN_FILE} tmp/${TARGETNAME}/
 	cp -r lib tmp/${TARGETNAME}/
