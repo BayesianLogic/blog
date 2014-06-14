@@ -8,8 +8,8 @@ class BlogLexer(RegexLexer):
   operators = ['\\-\\>','=','~',':', '\\+', '\\-', '\\*', '/', '\\[', ']', 
          '\\{', '}', '!', '\\<', '\\>', '\\<=', '\\>=', '==', '!=', 
          '&', '\\|', '=\\>', '#', '\\^', '%', '@']
-  wordops = ['Prev', 'IsEmptyString', 'Succ', 'Pred',
-             'Prev', 'inv', 'det', 'min', 'max', 
+  wordops = ['isEmptyString', 'succ', 'pred',
+             'prev', 'inv', 'det', 'min', 'max', 
              'round', 'transpose', 'sin', 'cos', 'tan',
              'atan2', 'sum', 'vstack', 'eye', 'zeros', 
              'ones', 'toInt', 'toReal', 'diag', 'repmat', 
