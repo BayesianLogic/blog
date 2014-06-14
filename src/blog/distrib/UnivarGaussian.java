@@ -11,21 +11,26 @@ import blog.common.Util;
  */
 public class UnivarGaussian implements CondProbDistrib {
 
-  /** Public constructor intended for use by BLOG Engine. */
+  /**
+   * Public constructor intended for use by BLOG Engine.
+   */
   public UnivarGaussian() {
   }
 
-  /** This constructor is not intended for public use. */
+  /**
+   * This constructor is not intended for public use.
+   */
   private UnivarGaussian(double mean, double variance) {
     setParams(mean, variance);
   }
 
   /**
-   * mapping for <code>params</code> (Parameters for Gaussian distribution):
-   * <ul>
-   * <li>params[0]: <code>mean</code></li>
-   * <li>params[1]: <code>variance</code></li>
-   * </ul>
+   * set Parameters for Gaussian distribution
+   * 
+   * @param params
+   *          An array of two double
+   *          params[0]: mean
+   *          params[1]: variance
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
@@ -62,10 +67,10 @@ public class UnivarGaussian implements CondProbDistrib {
 
   private void checkHasParams() {
     if (!hasMean) {
-      throw new IllegalArgumentException("mean not provided");
+      throw new IllegalArgumentException("mean of Gaussian not provided");
     }
     if (!hasVariance) {
-      throw new IllegalArgumentException("variance not provided");
+      throw new IllegalArgumentException("variance of Gaussian not provided");
     }
   }
 
@@ -78,7 +83,9 @@ public class UnivarGaussian implements CondProbDistrib {
     return getProb(((Double) value).doubleValue());
   }
 
-  /** Returns the probability of <code>x</code>. */
+  /**
+   * Returns the probability of <code>x</code>.
+   */
   public double getProb(double x) {
     checkHasParams();
     return (Math.exp(-Math.pow((x - mean), 2) / (2 * variance)) / normConst);
@@ -108,23 +115,16 @@ public class UnivarGaussian implements CondProbDistrib {
     return sampleValue();
   }
 
-  /** Samples a value from the univariate gaussian. Intended for human use. */
+  /**
+   * Samples a value from the Univariate gaussian.
+   * Intended for human use.
+   */
   public double sampleValue() {
     checkHasParams();
     double U = Util.random();
     double V = Util.random();
     return (mean + (sqrtVariance * Math.sin(2 * Math.PI * V) * Math
         .sqrt((-2 * Math.log(U)))));
-  }
-
-  /** Return the parameter <code>mean</code>. */
-  public double getMean() {
-    return mean;
-  }
-
-  /** Return the parameter <code>variance</code>. */
-  public double getVariance() {
-    return variance;
   }
 
   @Override
@@ -134,14 +134,6 @@ public class UnivarGaussian implements CondProbDistrib {
 
   /** The Standard Gaussian (mean = 0, variance = 1). */
   public static final UnivarGaussian STANDARD = new UnivarGaussian(0, 1);
-
-  /**
-   * Returns a Gaussian representing the posterior of the mean of this Gaussian
-   * (but ignoring its currently set mean) given a value of its domain.
-   */
-  public UnivarGaussian meanPosterior(double value) {
-    return new UnivarGaussian(value, variance);
-  }
 
   // Parameters:
   private boolean hasMean;
