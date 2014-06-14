@@ -210,7 +210,7 @@ The hidden Markov model describes the generative process of genetic sequences.
                                G -> 0.1, T -> 0.3}),
            T -> ~ Categorical({A -> 0.3, C -> 0.3, 
                                G -> 0.3, T -> 0.1})},
-          S(Prev(t)))
+          S(prev(t)))
     };
 
     random Output O(Timestep t)
