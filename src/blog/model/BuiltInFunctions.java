@@ -76,12 +76,12 @@ public class BuiltInFunctions {
   public static final String LEQ_NAME = "__LESSTHANOREQUAL";
 
   // can be called by user
-  public static final String SUCC_NAME = "Succ";
-  public static final String PRED_NAME = "Pred";
-  public static final String PREV_NAME = "Prev";
+  public static final String SUCC_NAME = "succ";
+  public static final String PRED_NAME = "pred";
+  public static final String PREV_NAME = "prev";
   public static final String INV_NAME = "inv";
   public static final String DET_NAME = "det";
-  public static final String IS_EMPTY_NAME = "IsEmptyString";
+  public static final String IS_EMPTY_NAME = "isEmptyString";
   public static final String MIN_NAME = "min";
   public static final String MAX_NAME = "max";
   public static final String ROUND_NAME = "round";
