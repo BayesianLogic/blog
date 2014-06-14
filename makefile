@@ -28,7 +28,7 @@ help:
 	@echo '   make compile                     compile BLOG system                '
 	@echo '   make clean                       remove the generated files         '
 	@echo '   make debug                       compile the code with debug flag   '
-	@echo '   make zip                         create release zip files           '
+	@echo '   make release                     create release zip files           '
 	@echo '   make html                        create documentation and webpages  '
 	@echo '   make demo                        run the BLOG demo                  '
 	@echo '   make parser                      regenerate the parser              '
@@ -43,6 +43,12 @@ compile: ${SRC_FILES}
 debug: ${SRC_FILES}
 	mkdir -p bin
 	javac -g -cp "lib/*" -d bin/ ${SRC_FILES}
+
+release: release-compile html zip
+
+release-compile:
+	mkdir -p bin
+	javac -source 1.5 -target 1.5 -cp "lib/*" -d bin/ ${SRC_FILES}
 
 tar: zip
 
