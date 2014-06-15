@@ -41,6 +41,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -129,7 +130,8 @@ public class NonRandomFunction extends Function {
    * Sets the interpretation of this function to be an instance of the given
    * class, constructed with the given parameters.
    */
-  public void setInterpretation(Class interpClass, List interpParams) {
+  public void setInterpretation(Class<? extends FunctionInterp> interpClass,
+      List interpParams) {
     this.interpClass = interpClass;
     this.interpParams = interpParams;
     this.interp = null;
@@ -142,6 +144,14 @@ public class NonRandomFunction extends Function {
   public void setConstantInterp(Object value) {
     List params = Collections.singletonList(value);
     setInterpretation(new ConstantInterp(params));
+  }
+
+  /**
+   * set the body of this nonRandomFunction
+   * The body must be an expression, (aka ArgSpec)
+   */
+  public void setBody(ArgSpec body) {
+    this.body = body;
   }
 
   /**
@@ -166,6 +176,7 @@ public class NonRandomFunction extends Function {
   }
 
   public Object getValue(Object[] args) {
+
     for (int i = 0; i < args.length; ++i) {
       // Don't need to check for invalid objects because non-random
       // function interpretations return Model.NULL on non-guaranteed
@@ -180,14 +191,6 @@ public class NonRandomFunction extends Function {
     }
 
     return interp.getValue(Arrays.asList(args));
-  }
-
-  public Object getValueSingleArg(Object arg) {
-    if (arg == Model.NULL) {
-      return Model.NULL;
-    }
-
-    return interp.getValue(Collections.singletonList(arg));
   }
 
   /**
@@ -214,15 +217,37 @@ public class NonRandomFunction extends Function {
         getArgTypes()[argIndex], value);
   }
 
+  /**
+   * evaluate this function on specified args in context
+   */
   public Object getValueInContext(Object[] args, EvalContext context,
       boolean stable) {
-    return getValue(args);
+    if (body != null) {
+      context.assignTuple(getArgVars(), args);
+      Object v = body.evaluate(context);
+      context.unassignTuple(getArgVars());
+      return v;
+    } else {
+      return getValue(args);
+    }
   }
 
   public boolean checkTypesAndScope(Model model) {
+    if (body != null) {
+      // this function has declared body
+      // need to check the scope of the body.
+      Map<String, LogicalVar> scope = new HashMap<String, LogicalVar>();
+      for (int i = 0; argVars != null && i < argVars.length; ++i) {
+        scope.put(argVars[i].getName(), argVars[i]);
+      }
+      return body.checkTypesAndScope(model, scope);
+    }
+
     if (interpClass == null) {
       return true; // no errors
     }
+
+    // assume using interpretation in Java
 
     boolean correct = true;
     Map scope = Collections.EMPTY_MAP;
@@ -238,7 +263,7 @@ public class NonRandomFunction extends Function {
       }
 
       // For ConstantInterp, we can do additional checking
-      if (interpClass == ConstantInterp.class) {
+      if (ConstantInterp.class.isAssignableFrom(interpClass)) {
         if (interpParams.size() != 1) {
           System.err.println("ConstantInterp takes exactly one parameter.");
           correct = false;
@@ -265,9 +290,9 @@ public class NonRandomFunction extends Function {
           }
 
           Type expected = getRetType();
-          if ((expected.isSubtypeOf(BuiltInTypes.REAL_ARRAY) ||
-                expected.isSubtypeOf(BuiltInTypes.REAL_MATRIX))
-                  && (param instanceof ListSpec)) {
+          if ((expected.isSubtypeOf(BuiltInTypes.REAL_ARRAY) || expected
+              .isSubtypeOf(BuiltInTypes.REAL_MATRIX))
+              && (param instanceof ListSpec)) {
             interpParams = Collections.singletonList(((ListSpec) param)
                 .transferToMatrix());
           } else if ((paramType != null) && (expected != null)
@@ -295,6 +320,18 @@ public class NonRandomFunction extends Function {
    *          invocation. Ordered by invocation order. Used to detect cycles.
    */
   public int compile(LinkedHashSet callStack) {
+    if (body != null) {
+      // this function has body expression
+      if (callStack.contains(this)) {
+        return 0; // recursion ok
+      }
+
+      callStack.add(this);
+      int errors = body.compile(callStack);
+      callStack.remove(this);
+      return errors;
+    }
+
     if (interp != null) {
       return 0; // already compiled
     }
@@ -424,21 +461,11 @@ public class NonRandomFunction extends Function {
         && Util.equalsOrBothNull(interp, oNRF.interp);
   }
 
-  // removed by leili 2012/12/17
-  // replaced by hashCode in Function
-  // public int hashCode() {
-  // int code = interpClass.hashCode();
-  // if (interpParams != null)
-  // for (Iterator it = interpParams.iterator(); it.hasNext();)
-  // code ^= it.next().hashCode();
-  // if (interp != null)
-  // code ^= interp.hashCode();
-  // return code;
-  // }
-
-  private Class interpClass;
+  private Class<? extends FunctionInterp> interpClass;
 
   private List interpParams; // of ArgSpec
 
   private FunctionInterp interp;
+
+  private ArgSpec body;
 }
