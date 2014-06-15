@@ -26,7 +26,7 @@ fixed Real[][] variance = [10000, 0, 0;
 // the prior posts uniform distribution over a box of 3D space.
 random Real[] Mean(Component c, Timestep t) {
     if (t == @1) then ~ UniformVector(0, 255, 0, 255, 0, 255)
-    else ~ MultivarGaussian(Mean(c, Prev(t)), variance)
+    else ~ MultivarGaussian(Mean(c, prev(t)), variance)
 };
 
 random Real[] Weight ~ Dirichlet(0.33, 0.33, 0.33);
