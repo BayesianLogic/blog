@@ -5,7 +5,6 @@ package blog.semant;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -466,8 +465,13 @@ public class Semant {
         } else {
           // general expression as function body
           Object funcBody = transExpr(e.body);
-          ArgSpec funcValue = (ArgSpec) funcBody;
-          ((NonRandomFunction) fun).setBody(funcValue);
+          if (funcBody instanceof ArgSpec) {
+            ArgSpec funcValue = (ArgSpec) funcBody;
+            ((NonRandomFunction) fun).setBody(funcValue);
+          } else {
+            error(e.body.line, e.body.col,
+                "expression not supported in body of fixed function");
+          }
         }
       } else {
         // note will do type checking later
@@ -1279,8 +1283,7 @@ public class Semant {
         error(0, 0, "type checking failed for evidence");
       }
 
-      for (Iterator iter = queries.iterator(); iter.hasNext();) {
-        Query q = (Query) iter.next();
+      for (Query q : queries) {
         if (!q.checkTypesAndScope(model)) {
           error(0, 0, "type checking failed for query");
         }
