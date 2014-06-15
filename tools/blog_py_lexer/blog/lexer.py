@@ -8,11 +8,12 @@ class BlogLexer(RegexLexer):
   operators = ['\\-\\>','=','~',':', '\\+', '\\-', '\\*', '/', '\\[', ']', 
          '\\{', '}', '!', '\\<', '\\>', '\\<=', '\\>=', '==', '!=', 
          '&', '\\|', '=\\>', '#', '\\^', '%', '@']
-  wordops = ['Prev', 'IsEmptyString', 'Succ', 'Pred',
-             'Prev', 'inv', 'det', 'min', 'max', 
+  wordops = ['isEmptyString', 'succ', 'pred',
+             'prev', 'inv', 'det', 'min', 'max', 
              'round', 'transpose', 'sin', 'cos', 'tan',
              'atan2', 'sum', 'vstack', 'eye', 'zeros', 
-             'ones', 'toInt', 'toReal']
+             'ones', 'toInt', 'toReal', 'diag', 'repmat', 
+             'hstack', 'vstack', 'pi']
   deliminators = [',', ';', '\\(', '\\)']
   keywords = ['extern','import','fixed','distinct','random','origin',
         'param','type', 'forall', 'exists', 'obs', 'query', 
