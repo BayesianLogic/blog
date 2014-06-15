@@ -197,6 +197,20 @@ public abstract class Function {
       boolean stable);
 
   /**
+   * Sets the variables that will stand for the function arguments in this
+   * function's dependency model.
+   * 
+   * @param vars
+   *          List of String objects representing the variables
+   */
+  public void setArgVars(List<String> vars) {
+    argVars = new LogicalVar[vars.size()];
+    for (int i = 0; i < argVars.length; ++i) {
+      argVars[i] = new LogicalVar(vars.get(i), getArgTypes()[i]);
+    }
+  }
+
+  /**
    * Returns the value of this function on arguments that are not in its domain.
    * This is Boolean.FALSE for Boolean functions, and Model.NULL for other
    * functions.
@@ -253,6 +267,16 @@ public abstract class Function {
   }
 
   /**
+   * Returns the logical variables that stand for the function arguments
+   */
+  public LogicalVar[] getArgVars() {
+    if (argVars == null) {
+      throw new IllegalStateException("Argument variables not set for " + this);
+    }
+    return argVars;
+  }
+
+  /**
    * Returns an index indicating when this function was declared (or otherwise
    * created).
    */
@@ -275,4 +299,5 @@ public abstract class Function {
   private Type retType;
 
   private int creationIndex = Model.nextCreationIndex();
+  protected LogicalVar[] argVars = null; // Variable for the arguments
 }
