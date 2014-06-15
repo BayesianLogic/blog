@@ -741,8 +741,8 @@ public class BuiltInFunctions {
 
     FunctionInterp rminusInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        Double arg1 = (Double) args.get(0);
-        Double arg2 = (Double) args.get(1);
+        Number arg1 = (Number) args.get(0);
+        Number arg2 = (Number) args.get(1);
         return new Double(arg1.doubleValue() - arg2.doubleValue());
       }
     };
@@ -1116,7 +1116,7 @@ public class BuiltInFunctions {
     FunctionInterp roundInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         Double num = (Double) args.get(0);
-        return Math.round(num);
+        return new Integer((int) Math.round(num));
       }
     };
 
