@@ -149,6 +149,7 @@ public class NonRandomFunction extends Function {
   /**
    * set the body of this nonRandomFunction
    * The body must be an expression, (aka ArgSpec)
+   * if body is not null, all subsequent process will ignore interp class
    */
   public void setBody(ArgSpec body) {
     this.body = body;
