@@ -237,7 +237,7 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     :}
   | statement:e SEMI {: RESULT = new StmtList(e, null); :}
   | statement:e statement_lst:slst
-    {: error(e.line, e.col, "Possible cause: forgotten semicolon"); 
+    {: error(e.line, e.col, "Possible cause: forgotten semicolon before"); 
        if (e==null) RESULT = slst;
        else RESULT = new StmtList(e, slst);
     :}
