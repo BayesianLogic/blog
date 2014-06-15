@@ -35,11 +35,11 @@
 
 package blog.model;
 
-import java.io.PrintStream;
 import java.util.Collection;
 
 import ve.Factor;
 import blog.bn.BayesNetVar;
+import blog.common.Histogram;
 import blog.world.PartialWorld;
 
 /**
@@ -59,21 +59,6 @@ import blog.world.PartialWorld;
  * <code>setPosterior</code>.
  */
 public interface Query {
-
-  /**
-   * Prints the results of this query to the given stream.
-   */
-  void printResults(PrintStream s);
-
-  /**
-   * If a log file has been specified, prints the results so far to that file.
-   * 
-   * @param numSamples
-   *          the number of samples taken by the inference engine so far (can be
-   *          set to zero for non-sampling inference engines)
-   */
-  void logResults(int numSamples);
-
   /**
    * Returns a collection of (basic or derived) random variables such that the
    * result of this query depends only on the posterior joint distribution for
@@ -106,16 +91,11 @@ public interface Query {
    * <p>
    * The effects of calling both <code>updateStats</code> and
    * <code>setPosterior</code> in the same run are not defined.
-   * 
-   * @param world
-   *          A possible world, within which this query is evaluated
-   * @param logweight
-   *          log of the weight for this possible world
    */
-  void updateStats(PartialWorld world, double logweight);
+  void updateStats(PartialWorld world, double weight);
 
   /**
-   * Same as {@link #updateStats(PartialWorld, double)} with logweight =0.
+   * Same as {@link #updateStats(PartialWorld, double)} with weight 1.
    */
   void updateStats(PartialWorld world);
 
@@ -135,19 +115,13 @@ public interface Query {
   void setPosterior(Factor posterior);
 
   /**
-   * Ends the current run, records across-run statistics for it, and clears the
-   * within-run statistics.
-   */
-  void zeroOut();
-
-  /**
-   * Prints across-run statistics.
-   */
-  void printVarianceResults(PrintStream s);
-
-  /**
    * Returns an object whose toString method yields a description of the
    * location where this query occurred in an input file.
    */
   public abstract Object getLocation();
+
+  /**
+   * Return Histogram object representing results of this query.
+   */
+  public Histogram getHistogram();
 }
