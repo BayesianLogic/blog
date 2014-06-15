@@ -1040,7 +1040,7 @@ public class Semant {
     return null;
   }
 
-  Object transExpr(OpExpr e) {
+  ArgSpec transExpr(OpExpr e) {
     Object left = null, right = null;
     Term term;
     if (e.left != null) {
