@@ -94,17 +94,12 @@ import java_cup.runtime.Symbol;
   }
   
   blog.msg.ErrorMsg errorMsg; //for error
-  
-  public BLOGLexer(java.io.Reader r, blog.msg.ErrorMsg e) {
-    this(r);
-    errorMsg=e;
-  }
-
   private ComplexSymbolFactory symbolFactory; //for generating symbol
 
-  public BLOGLexer(java.io.Reader r, ComplexSymbolFactory sf){
+  public BLOGLexer(java.io.Reader r, ComplexSymbolFactory sf, blog.msg.ErrorMsg e){
     this(r);
     symbolFactory = sf;
+    errorMsg=e;
   }
 
 %}

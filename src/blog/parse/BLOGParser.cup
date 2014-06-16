@@ -93,9 +93,9 @@ parser code {:
   public Absyn getParseResult() {
     return parseResult;
   }
-
-  public BLOGParser(Scanner s, blog.msg.ErrorMsg msg) {
-    this(s);
+  
+  public BLOGParser(java_cup.runtime.Scanner s, java_cup.runtime.SymbolFactory sf, blog.msg.ErrorMsg msg) {
+    this(s, sf);
     errorMsg = msg;
   }
 
