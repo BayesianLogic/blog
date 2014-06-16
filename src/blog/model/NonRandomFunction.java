@@ -171,25 +171,19 @@ public class NonRandomFunction extends Function {
     return interpClass;
   }
 
-  public Object getValue() {
+  public Object getConstantValue() {
     return interp.getValue(Collections.EMPTY_LIST);
   }
 
-  public Object getValue(Object[] args) {
-
+  private Object getValueInInterpretation(Object[] args) {
     for (int i = 0; i < args.length; ++i) {
-      // Don't need to check for invalid objects because non-random
-      // function interpretations return Model.NULL on non-guaranteed
-      // objects anyway.
       if (args[i] == Model.NULL) {
         return Model.NULL;
       }
-
       if (args[i] instanceof GenericObject) {
         return null; // can't determine value on generic object
       }
     }
-
     return interp.getValue(Arrays.asList(args));
   }
 
@@ -228,7 +222,7 @@ public class NonRandomFunction extends Function {
       context.unassignTuple(getArgVars());
       return v;
     } else {
-      return getValue(args);
+      return getValueInInterpretation(args);
     }
   }
 
