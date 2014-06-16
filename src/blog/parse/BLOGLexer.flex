@@ -38,7 +38,9 @@
  * @author leili
  */ 
 package blog.parse;
-import java_cup.runtime.*;
+import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.ComplexSymbolFactory.Location;
+import java_cup.runtime.Symbol;
 
 %%
 
@@ -87,8 +89,8 @@ import java_cup.runtime.*;
   }
 
   private Symbol symbol(int type, Object value) {
-    return new BLOGSymbol(type, getCurLineNum(), getCurColNum(), yychar, yychar+yylength(), value);
-
+    //return new BLOGSymbol(type, getCurLineNum(), getCurColNum(), yychar, yychar+yylength(), value);
+    return symbolFactory.newSymbol("token", type, new Location(yyline+1, yycolumn +1), new Location(yyline+1,yycolumn+yylength()), value);
   }
   
   blog.msg.ErrorMsg errorMsg; //for error
@@ -96,6 +98,13 @@ import java_cup.runtime.*;
   public BLOGLexer(java.io.Reader r, blog.msg.ErrorMsg e) {
     this(r);
     errorMsg=e;
+  }
+
+  private ComplexSymbolFactory symbolFactory; //for generating symbol
+
+  public BLOGLexer(java.io.Reader r, ComplexSymbolFactory sf){
+    this(r);
+    symbolFactory = sf;
   }
 
 %}

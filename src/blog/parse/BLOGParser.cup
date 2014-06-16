@@ -59,7 +59,8 @@ action code {:
   }
 
   int currLineno() {
-    return ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum();
+    ScannerWithLocInfo scanner =  ((ScannerWithLocInfo)parser.getScanner());
+    return scanner.getCurLineNum();
   }
 
   int currColno() {
@@ -237,7 +238,7 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     :}
   | statement:e SEMI {: RESULT = new StmtList(e, null); :}
   | statement:e statement_lst:slst
-    {: error(e.line, e.col, "Possible cause: forgotten semicolon"); 
+    {: error(slstxleft.getLine(), slstxleft.getColumn(), "Possible cause: forgotten semicolon"); 
        if (e==null) RESULT = slst;
        else RESULT = new StmtList(e, slst);
     :}
@@ -429,6 +430,8 @@ rand_func_decl ::=
     RANDOM type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
     dependency_statement_body:body 
     {: RESULT = new RandomFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type, body); :}
+    | RANDOM type:ret_type ID:fname error dependency_statement_body:body
+    {: error(fnamexright.getLine(), fnamexright.getColumn(), "malformed type variable list"); :}
    ;
 
 /**
@@ -777,13 +780,13 @@ semi_colon_separated_expression_list ::=
   | expression_list:e SEMI SEMI semi_colon_separated_expression_list:elst
     {: error("extra semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), elst); :}
   | expression_list:e SEMI expression_list:e2
-    {: RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2left, e2), null)); :}
+    {: RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2xleft.getLine(), e2), null)); :}
   | expression_list:e SEMI  SEMI expression_list:e2
-    {: error("extra semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2left, e2), null)); :}
+    {: error("extra semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2xleft.getLine(), e2), null)); :}
   | expression_list:e semi_colon_separated_expression_list:elst
     {: error("missing semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), elst); :}
   | expression_list:e expression_list:e2
-    {: error("missing semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2left, e2), null)); :}
+    {: error("missing semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2xleft.getLine(), e2), null)); :}
   ;
 
 map_construct_expression ::= LBRACE expression_pair_list:e RBRACE
