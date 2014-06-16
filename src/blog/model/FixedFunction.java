@@ -64,23 +64,23 @@ import blog.sample.EvalContext;
  * @date 2014/2/11
  * @date 2014/6/16
  */
-public class NonRandomFunction extends Function {
+public class FixedFunction extends Function {
 
-  public static NonRandomFunction createConstant(String name, Type ret_type,
+  public static FixedFunction createConstant(String name, Type ret_type,
       Object value) {
     List params = Collections.singletonList(value);
-    return new NonRandomFunction(name, Collections.EMPTY_LIST, ret_type,
+    return new FixedFunction(name, Collections.EMPTY_LIST, ret_type,
         new ConstantInterp(params));
   }
 
   /**
    * Creates a fixed constant with the given name and type.
    */
-  public NonRandomFunction(String fname, Type ret_type) {
+  public FixedFunction(String fname, Type ret_type) {
     super(fname, Collections.EMPTY_LIST, ret_type);
   }
 
-  public NonRandomFunction(String fname, List arg_types, Type ret_type) {
+  public FixedFunction(String fname, List arg_types, Type ret_type) {
     super(fname, arg_types, ret_type);
   }
 
@@ -103,14 +103,14 @@ public class NonRandomFunction extends Function {
    *          interpretation's constructor. These must be non-random and must
    *          contain no free variables.
    */
-  public NonRandomFunction(String fname, List arg_types, Type ret_type,
+  public FixedFunction(String fname, List arg_types, Type ret_type,
       Class interpClass, List interpParams) {
     super(fname, arg_types, ret_type);
     this.interpClass = interpClass;
     this.interpParams = interpParams;
   }
 
-  public NonRandomFunction(String fname, List arg_types, Type ret_type,
+  public FixedFunction(String fname, List arg_types, Type ret_type,
       FunctionInterp interp) {
     super(fname, arg_types, ret_type);
     this.interpClass = interp.getClass();
@@ -447,9 +447,9 @@ public class NonRandomFunction extends Function {
    * same interpretation class, parameters and function interpretation.
    */
   public boolean equals(Object o) {
-    if (!(o instanceof NonRandomFunction))
+    if (!(o instanceof FixedFunction))
       return false;
-    NonRandomFunction oNRF = (NonRandomFunction) o;
+    FixedFunction oNRF = (FixedFunction) o;
     return Util.equalsOrBothNull(interpClass, oNRF.interpClass)
         && Util.equalsOrBothNull(interpParams, oNRF.interpParams)
         && Util.equalsOrBothNull(interp, oNRF.interp);
