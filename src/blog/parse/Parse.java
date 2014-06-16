@@ -3,9 +3,9 @@
  */
 package blog.parse;
 
-import java_cup.runtime.*;
 import java.io.InputStream;
 
+import java_cup.runtime.ComplexSymbolFactory;
 import blog.absyn.Absyn;
 import blog.absyn.PrettyPrinter;
 import blog.msg.ErrorMsg;
@@ -28,7 +28,8 @@ public class Parse {
     BLOGParser parser;
     ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
     try {
-      parser = new BLOGParser(new BLOGLexer(inp, symbolFactory), symbolFactory);
+      parser = new BLOGParser(new BLOGLexer(inp, symbolFactory, errorMsg),
+          symbolFactory, errorMsg);
       if (DEBUG_TAG)
         parser.debug_parse();
       else
