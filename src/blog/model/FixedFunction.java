@@ -121,6 +121,9 @@ public class FixedFunction extends Function {
    * Sets the interpretation of this function.
    */
   public void setInterpretation(FunctionInterp interp) {
+    if (this.body != null) {
+      Util.fatalError("setting interpretation for body, but body is not null");
+    }
     this.interpClass = interp.getClass();
     this.interp = interp;
   }
@@ -131,6 +134,9 @@ public class FixedFunction extends Function {
    */
   public void setInterpretation(Class<? extends FunctionInterp> interpClass,
       List interpParams) {
+    if (this.body != null) {
+      Util.fatalError("setting interpretation for body, but body is not null");
+    }
     this.interpClass = interpClass;
     this.interpParams = interpParams;
     this.interp = null;
@@ -151,6 +157,10 @@ public class FixedFunction extends Function {
    * if body is not null, all subsequent process will ignore interp class
    */
   public void setBody(ArgSpec body) {
+    if (this.interp != null) {
+      Util.fatalError("Fixed function settting body, "
+          + "but its interpretation is already set");
+    }
     this.body = body;
   }
 
