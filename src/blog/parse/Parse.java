@@ -3,6 +3,7 @@
  */
 package blog.parse;
 
+import java_cup.runtime.*;
 import java.io.InputStream;
 
 import blog.absyn.Absyn;
@@ -25,8 +26,9 @@ public class Parse {
   public Parse(java.io.Reader inp, ErrorMsg errorMsg) {
     this.errorMsg = errorMsg;
     BLOGParser parser;
+    ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
     try {
-      parser = new BLOGParser(new BLOGLexer(inp, errorMsg), errorMsg);
+      parser = new BLOGParser(new BLOGLexer(inp, symbolFactory), symbolFactory);
       if (DEBUG_TAG)
         parser.debug_parse();
       else
