@@ -1,0 +1,11 @@
+/* Observation file */
+
+obs Subject(Sent[0]) = Obama;
+obs Object(Sent[0]) = USA;
+obs Verb(Sent[0]) = is_the_president_of;
+
+obs Subject(Sent[1]) = Obama;
+obs Object(Sent[1]) = USA;
+obs Verb(Sent[1]) = is_the_chancellor_of;
+
+

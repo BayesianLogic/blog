@@ -54,6 +54,7 @@ import blog.bn.RandFuncAppVar;
 import blog.common.Util;
 import blog.common.numerical.JamaMatrixLib;
 import blog.distrib.Beta;
+import blog.distrib.Binomial;
 import blog.distrib.Dirichlet;
 import blog.model.Evidence;
 import blog.model.FuncAppTerm;
@@ -127,6 +128,12 @@ public class RelationExtractionProposer implements Proposer {
   // HashSet of relevant arg pairs; used for holdsSwitch: Convention: Arg1 Arg2
   protected HashMap<String, List> relevantArgPairs;
 
+  // HashMap of relation to number of true irrelevant facts for that relation
+  protected HashMap<Object, Integer> irrelevantTrueFactNums;
+
+  // HashMap of diffs to apply
+  protected HashMap<Object, Object> diff;
+
   // Debug
   private int count;
 
@@ -184,9 +191,6 @@ public class RelationExtractionProposer implements Proposer {
     beta = (Integer) model.getConstantValue("beta");
     dir_alpha = (Double) model.getConstantValue("dir_alpha");
 
-    // Random Number Generator
-    // rng = new Random();
-
   }
 
   /**
@@ -194,13 +198,11 @@ public class RelationExtractionProposer implements Proposer {
    * 1) Set all observed variables (Subject, Object, Verb, TriggerID)
    * 2) Set number variables for facts
    * 3) Set SourceFact for all labeled sentences
-   * 4) Connected Components
-   * a) Find connected Components
-   * b) Set sourceFacts
-   * 5) Sample everything else
-   * b) Sparsity
-   * c) Holds for RELEVANT FACTS
-   * d) Theta
+   * 4a) Find Connected Components
+   * 4b) Set sourceFacts for Connected Components
+   * 5b) Sample Sparsity
+   * 5c) Sample Holds(f) for RELEVANT FACTS
+   * 5d) Sample Theta
    * 
    */
   public PartialWorldDiff initialize(Evidence evidence, List queries) {
@@ -211,7 +213,7 @@ public class RelationExtractionProposer implements Proposer {
 
     PartialWorldDiff world;
 
-    // Sample until a world with nonzero probability world has been sampled.
+    // Sample until a world with nonzero probability has been sampled.
     do {
 
       PartialWorld underlying = new DefaultPartialWorld(getTypes());
@@ -227,7 +229,7 @@ public class RelationExtractionProposer implements Proposer {
         RandFuncAppVar var = (RandFuncAppVar) evidenceVar;
         RandomFunction varFunc = var.func();
 
-        if (varFunc == verbFunc) {
+        if (varFunc.equals(verbFunc)) {
           Object sentence = var.args()[0]; // Get the sentence s
           int triggerIndex = trigType.getGuaranteedObjIndex(evidence
               .getObservedValue(var)); // Assumes triggers are Distinct
@@ -262,7 +264,6 @@ public class RelationExtractionProposer implements Proposer {
 
           // Instantiate the number variable, by definition of the model
           world.setValue(nFacts, 1);
-
         }
       }
 
@@ -274,8 +275,8 @@ public class RelationExtractionProposer implements Proposer {
 
         BayesNetVar evidenceVar = (BayesNetVar) iter.next();
 
-        // This assumes the observation looks like this: obs
-        // Rel(SourceFact(Sent[1])) = R[3];
+        // This assumes the observation looks like this:
+        // obs Rel(SourceFact(Sent[1])) = R[3];
         // This will make that evidence var a DerivedVar
         if (!(evidenceVar instanceof DerivedVar)) {
           continue;
@@ -315,11 +316,11 @@ public class RelationExtractionProposer implements Proposer {
       // 4) Connected Components stuff
       HashMap<Integer, HashSet> connectedComponents = new HashMap<Integer, HashSet>();
       HashSet<Object> explored = new HashSet<Object>();
+
       // There are no explicit edges in this graph. In order to test whether a
-      // sentence belongs
-      // to a specific component, we can hash a string of it's arg pair or it's
-      // trigger to a
-      // set of arg pairs and trigger that the component currently has.
+      // sentence belongs to a specific component, we can hash a string of it's
+      // arg pair or it's trigger to a set of arg pairs and trigger that the
+      // component currently has.
       HashMap<Integer, HashSet> connectedComponentEdgeRep = new HashMap<Integer, HashSet>();
 
       // 4a) Run a DFS to find all connected components
@@ -428,181 +429,6 @@ public class RelationExtractionProposer implements Proposer {
         }
       }
 
-      /*
-       * // 3a) Bootstrap Observed Sentences by Trigger (also has to instantiate
-       * some stuff)
-       * HashMap<Object, ArrayList> triggerGroups = new HashMap<Object,
-       * ArrayList>();
-       * for (Object sentence : sentType.getGuaranteedObjects()) {
-       * 
-       * Object trigger = world.getValue(makeVar(verbFunc, sentence));
-       * if (triggerGroups.containsKey(trigger)) {
-       * triggerGroups.get(trigger).add(sentence);
-       * } else {
-       * ArrayList list = new ArrayList();
-       * list.add(sentence);
-       * triggerGroups.put(trigger, list);
-       * }
-       * }
-       * 
-       * 
-       * // See if there is a label in a group, assign if so
-       * for (ArrayList group : triggerGroups.values()) {
-       * Object rel = null;
-       * for (Object sent : group) {
-       * if (world.isInstantiated(makeVar(sourceFactFunc, sent))) { // Only
-       * labeled sentences have this
-       * rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc,
-       * sent))).getOriginFuncValue(relFunc);
-       * }
-       * }
-       * 
-       * // One of the sentences was observed, cluster everything in that
-       * relation
-       * if (rel != null) {
-       * for (Object sent : group) {
-       * if (world.isInstantiated(makeVar(sourceFactFunc, sent))) {
-       * continue;
-       * }
-       * Object arg1 = world.getValue(makeVar(subjectFunc, sent));
-       * Object arg2 = world.getValue(makeVar(objectFunc, sent));
-       * Object sourceFact = getFact(rel, arg1, arg2, world);
-       * world.setValue(makeVar(sourceFactFunc, sent), sourceFact);
-       * world.setValue(makeVar(holdsFunc, sourceFact), true);
-       * 
-       * // Add the sentence to trueFacts hashmap
-       * addToTrueFacts(sourceFact, sent);
-       * 
-       * //System.out.println("3a, Trig: Setting " + sent + " to " +
-       * sourceFact);
-       * }
-       * }
-       * }
-       * 
-       * 
-       * 
-       * // 3b) Bootstrap Observed Sentences by ArgPair
-       * HashMap<Object, ArrayList> argPairGroups = new HashMap<Object,
-       * ArrayList>();
-       * for (Object sentence : sentType.getGuaranteedObjects()) {
-       * Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
-       * Object arg2 = world.getValue(makeVar(objectFunc, sentence));
-       * String argPair = arg1.toString() + arg2.toString();
-       * 
-       * if (argPairGroups.containsKey(argPair)) {
-       * argPairGroups.get(argPair).add(sentence);
-       * } else {
-       * ArrayList list = new ArrayList();
-       * list.add(sentence);
-       * argPairGroups.put(argPair, list);
-       * }
-       * }
-       * 
-       * 
-       * // See if there is a label in a group, assign if so
-       * for (ArrayList group : argPairGroups.values()) {
-       * Object rel = null;
-       * for (Object sent : group) {
-       * if (world.isInstantiated(makeVar(sourceFactFunc, sent))) {
-       * rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc,
-       * sent))).getOriginFuncValue(relFunc);
-       * }
-       * }
-       * 
-       * // One of the sentences was observed, cluster everything in that
-       * relation
-       * if (rel != null) {
-       * for (Object sent : group) {
-       * if (world.isInstantiated(makeVar(sourceFactFunc, sent))) {
-       * continue;
-       * }
-       * Object arg1 = world.getValue(makeVar(subjectFunc, sent));
-       * Object arg2 = world.getValue(makeVar(objectFunc, sent));
-       * Object sourceFact = getFact(rel, arg1, arg2, world);
-       * world.setValue(makeVar(sourceFactFunc, sent), sourceFact);
-       * world.setValue(makeVar(holdsFunc, sourceFact), true);
-       * 
-       * // Add the sentence to trueFacts hashmap
-       * addToTrueFacts(sourceFact, sent);
-       * 
-       * //System.out.println("3b, ArgPair: Setting " + sent + " to " +
-       * sourceFact);
-       * }
-       * }
-       * }
-       * 
-       * 
-       * // 3c) For all other trigger groups, either bootstrap via triggers one
-       * more time, or throw them into some random relation
-       * // See if there is a label in a group, assign if so
-       * for (ArrayList group : triggerGroups.values()) {
-       * Object rel = null;
-       * 
-       * for (Object sent : group) {
-       * if (world.isInstantiated(makeVar(sourceFactFunc, sent))) { // Only
-       * labeled sentences have this
-       * rel = ((NonGuaranteedObject) world.getValue(makeVar(sourceFactFunc,
-       * sent))).getOriginFuncValue(relFunc);
-       * }
-       * }
-       * 
-       * 
-       * // If one of the sentences was observed, cluster everything in that
-       * relation
-       * // Otherwise, choose a random relation
-       * if (rel == null) {
-       * rel =
-       * relType.getGuaranteedObject(Util.randInt(relType.getGuaranteedObjects
-       * ().size()));
-       * }
-       * 
-       * for (Object sent : group) {
-       * if (world.isInstantiated(makeVar(sourceFactFunc, sent))) {
-       * continue;
-       * }
-       * Object arg1 = world.getValue(makeVar(subjectFunc, sent));
-       * Object arg2 = world.getValue(makeVar(objectFunc, sent));
-       * Object sourceFact = getFact(rel, arg1, arg2, world);
-       * world.setValue(makeVar(sourceFactFunc, sent), sourceFact);
-       * world.setValue(makeVar(holdsFunc, sourceFact), true);
-       * 
-       * // Add the sentence to trueFacts hashmap
-       * addToTrueFacts(sourceFact, sent);
-       * 
-       * //System.out.println("3c, Trig: Setting " + sent + " to " +
-       * sourceFact);
-       * }
-       * }
-       */
-
-      /*
-       * // 3c) For all other observed sentences, choose SourceFact (basically
-       * randomly choose a relation
-       * // to go with the argument pair)
-       * for (Object sentence : sentType.getGuaranteedObjects()) {
-       * 
-       * // Some of these may have been set from observing a relation or
-       * bootstrapping
-       * if (world.isInstantiated(makeVar(sourceFactFunc, sentence))) {
-       * continue;
-       * }
-       * 
-       * // Choose relation randomly from all relations
-       * int relNum = Util.randInt(relType.getGuaranteedObjects().size());
-       * Object rel = relType.getGuaranteedObject(relNum);
-       * Object arg1 = world.getValue(makeVar(subjectFunc, sentence));
-       * Object arg2 = world.getValue(makeVar(objectFunc, sentence));
-       * 
-       * // Set the sourceFact value in the world
-       * Object fact = getFact(rel, arg1, arg2, world);
-       * world.setValue(makeVar(sourceFactFunc, sentence), fact);
-       * 
-       * // Set the Holds value in the world
-       * world.setValue(makeVar(holdsFunc, fact), true);
-       * 
-       * }
-       */
-
       // 5a) Sample Beta(r) for each r
       Integer[] params = { alpha, beta };
       Beta sparsitySampler = new Beta(Arrays.asList(params));
@@ -638,13 +464,17 @@ public class RelationExtractionProposer implements Proposer {
         }
       }
 
+      // Initialize hashmap for irrelevant facts
+      irrelevantTrueFactNums = new HashMap<Object, Integer>();
+      for (Object rel : relType.getGuaranteedObjects()) {
+        irrelevantTrueFactNums.put(rel, 0);
+      }
+
       // 5c) Sample Theta(r) for each relation r
       Dirichlet thetaSampler = new Dirichlet(trigType.getGuaranteedObjects()
           .size(), dir_alpha);
       for (Object rel : relType.getGuaranteedObjects()) {
-
         thetaSample(world, rel);
-
       }
 
       // Debug
@@ -652,8 +482,6 @@ public class RelationExtractionProposer implements Proposer {
         System.out.println(world.toString());
       }
 
-      // For parallelism. When using evidence.getEvidenceLogProb(world), must
-      // synchronize
       feasible = this.evidence.getEvidenceLogProb(world) > -1E6;
 
     } while (!feasible);
@@ -665,7 +493,6 @@ public class RelationExtractionProposer implements Proposer {
         * relType.getGuaranteedObjects().size());
 
     count = 0;
-    feasible = false; // Reset feasible variable
 
     return world;
 
@@ -704,44 +531,32 @@ public class RelationExtractionProposer implements Proposer {
    * before the proposal. Returns the log proposal ratio: log (q(x | x') / q(x'
    * | x))
    * 
-   * The details of the proposal has been arranged nicely in a PDF file.
-   * Please look to that file for details.
+   * This makes use of the RelationExtractionMHSampler class. The only
+   * difference is that I return the log acceptance ratio, not the log proposal
+   * ratio.
+   * 
    */
   public double proposeNextState(PartialWorldDiff proposedWorld) {
     count++;
-    // if (count % 10000 == 0) {
-    // int t = 2;
-    // }
     double logAcceptanceRatio;
 
-    // Sample until a valid move has been made (where evidence was not changed)
-    // do {
     double sample = Util.random();
     proposedWorld.revert();
     trueFactDiff = constructNewTrueFactDiff();
-    // updateSupportedFacts(proposedWorld); // Used for sourceFactSwitch and
-    // holdsSwitch
-    if (sample < 0.4) {
+    diff = new HashMap<Object, Object>();
+    if (sample < 0.3) {
+      logAcceptanceRatio = sourceFactSwitch(proposedWorld);
+    } else if (sample < 0.5) {
       logAcceptanceRatio = blockSourceFactSwitch(proposedWorld);
     } else if (sample < 0.6) {
-      logAcceptanceRatio = sourceFactSwitch(proposedWorld);
+      logAcceptanceRatio = holdsSwitchR(proposedWorld);
     } else if (sample < 0.7) {
-      logAcceptanceRatio = holdsSwitch(proposedWorld);
-    } else if (sample < 0.8) {
+      logAcceptanceRatio = irrelevantFactsSample(proposedWorld);
+    } else if (sample < 0.85) {
       logAcceptanceRatio = randomSparsitySample(proposedWorld);
     } else {
       logAcceptanceRatio = randomThetaSample(proposedWorld);
     }
-
-    // For parallelism. When using evidence.getEvidenceLogProb(world), must
-    // synchronize
-    // synchronized (evidence) {
-    // feasible = this.evidence.getEvidenceLogProb(proposedWorld) > -1E6;
-    // if (!feasible) {
-    // int i = 1 / 0;
-    // }
-    // }
-    // } while (!feasible);
 
     return logAcceptanceRatio;
   }
@@ -759,9 +574,9 @@ public class RelationExtractionProposer implements Proposer {
   private double sourceFactSwitch(PartialWorldDiff proposedWorld) {
 
     // Choose sentence s randomly from all sentences
-
     int sentNum = Util.randInt(sentType.getGuaranteedObjects().size());
     Object sentence = sentType.getGuaranteedObject(sentNum);
+
     // Don't touch a labeled sentence
     while (labeledSentences.contains(sentence)) {
       sentNum = Util.randInt(sentType.getGuaranteedObjects().size());
@@ -831,33 +646,7 @@ public class RelationExtractionProposer implements Proposer {
           new ArrayList(Collections.singletonList(sentence)));
     }
 
-    // if (isSupported(previousSourceFact) != NEWisSupported("old",
-    // previousSourceFact) || (isSupported(newSourceFact) !=
-    // NEWisSupported("old", newSourceFact))) {
-    // System.out.println("Here");
-    // }
-
-    // //Update supported facts hashmap accordingly
-    // //Remove from previous source fact list
-    // supportedFacts.get(previousSourceFact).remove(sentence);
-    //
-    //
-    // // Remove previous source fact from supported facts hashmap if it is
-    // expressed by 0 sentences
-    // if (supportedFacts.get(previousSourceFact).size() == 0) {
-    // supportedFacts.remove(previousSourceFact);
-    // }
-    //
-    // // Add sentence to new source fact list
-    // if (isSupported(newSourceFact)) {
-    // supportedFacts.get(newSourceFact).add(sentence);
-    // } else {
-    // ArrayList sentences = new ArrayList();
-    // sentences.add(sentence);
-    // supportedFacts.put(newSourceFact, sentences);
-    // }
-
-    // Sample previous source fact if unsupporting
+    // Sample previous source fact if unsupported
     if (!isSupported("new", previousSourceFact)) {
       Object psfRel = ((NonGuaranteedObject) previousSourceFact)
           .getOriginFuncValue(relFunc);
@@ -878,18 +667,10 @@ public class RelationExtractionProposer implements Proposer {
       }
     }
 
-    // if (isSupported(previousSourceFact) != NEWisSupported("new",
-    // previousSourceFact) || (isSupported(newSourceFact) !=
-    // NEWisSupported("new", newSourceFact))) {
-    // System.out.println("Here2");
-    // }
-
     // Calculate and return log proposal ratio
     int oldRelNum = relType.getGuaranteedObjIndex(oldRel);
 
-    // This is defined for going from state x (savedWorld) state y
-    // (proposedWorld with the changes)
-    // psf denotes Previous Source Fact
+    // This is for q(y|x)
     double PSFySparsityValue = (Double) proposedWorld
         .getValue(new RandFuncAppVar(sparsityFunc, Collections
             .singletonList(oldRel)));
@@ -899,72 +680,42 @@ public class RelationExtractionProposer implements Proposer {
     double logProbOfPSFy = Math.log((PSFyHoldsValue) ? PSFySparsityValue
         : (1 - PSFySparsityValue));
 
-    // This is defined for going from state y to state x
-    // Note that psf_x = nsf_y, and similarly psf_y = nsf_x
+    // This is for q(x|y)
     PartialWorld oldWorld = proposedWorld.getSaved();
-    double PSFxSparsityValue = (Double) oldWorld.getValue(new RandFuncAppVar(
+    double NSFxSparsityValue = (Double) oldWorld.getValue(new RandFuncAppVar(
         sparsityFunc, Collections.singletonList(newRel)));
-    boolean PSFxHoldsValue = (Boolean) oldWorld.getValue(new RandFuncAppVar(
+    boolean NSFxHoldsValue = (Boolean) oldWorld.getValue(new RandFuncAppVar(
         holdsFunc, Collections.singletonList(newSourceFact)));
-    double logProbOfPSFx = Math.log((PSFxHoldsValue) ? PSFxSparsityValue
-        : (1 - PSFxSparsityValue));
+    double logProbOfNSFx = Math.log((NSFxHoldsValue) ? NSFxSparsityValue
+        : (1 - NSFxSparsityValue));
 
-    // PURELY FOR DEBUGGING PURPOSES
-    // Calculate the log state ratio and print it
-    // The two values, h(nsf_y) and h(nsf_x) are both true, since in their
-    // respective moves
-    // they were selected and forced to be true in order to express the
-    // sentence. Therefore,
-    // P(h(nsf_i)) is simply equal to the sparsity value of the corresponding
-    // relation. Note
-    // how this is different from P(h(psf_i)) in that we can assume that it
-    // holds true.
+    // Used for P(y)/P(x)
     double logProbOfNSFy = Math.log((Double) proposedWorld
         .getValue(new RandFuncAppVar(sparsityFunc, Collections
             .singletonList(newRel))));
-    double logProbOfNSFx = Math.log((Double) oldWorld
+    double logProbOfPSFx = Math.log((Double) oldWorld
         .getValue(new RandFuncAppVar(sparsityFunc, Collections
             .singletonList(oldRel))));
-    // int numTrueFactsInOldState = 0;
-    // int numTrueFactsInNewState = 0;
-    // for (Object fact : allFacts(proposedWorld)) {
-    // if ((Boolean) oldWorld.getValue(new RandFuncAppVar(holdsFunc,
-    // Collections.singletonList(fact)))) {
-    // numTrueFactsInOldState++;
-    // }
-    // if ((Boolean) proposedWorld.getValue(new RandFuncAppVar(holdsFunc,
-    // Collections.singletonList(fact)))) {
-    // numTrueFactsInNewState++;
-    // }
-    // }
-
     double logTrueFactRatio = sentType.getGuaranteedObjects().size()
         * Math.log((float) numTrueFacts("old") / numTrueFacts("new"));
+
+    // P(y)/P(x)
     double logStateRatio = logProbOfPSFy + logProbOfNSFy
-        + Math.log(M[newRelNum]) - logProbOfPSFx - logProbOfNSFx
+        + Math.log(M[newRelNum]) - logProbOfNSFx - logProbOfPSFx
         - Math.log(M[oldRelNum]) + logTrueFactRatio;
 
-    // now print it..
-    // if (count % 100 == 0) {
-    // System.out.println("Source Fact Iteration #: " + count);
-    // System.out.println("Correct logStateRatio: " + logStateRatio);
-    // System.out.println("Correct logTrueFactRatio: " + logTrueFactRatio);
-    // int sdjfkl = 5+2; // lol this is here so I can put a breakpoint after the
-    // system print
-    // }
-
+    // q(x|y)/q(y|x)
     boolean PSFxIsSupported = isSupported("old", newSourceFact);
     boolean PSFyIsSupported = isSupported("new", previousSourceFact);
     double logProposalRatio = Math.log(M[oldRelNum])
-        + ((!PSFxIsSupported) ? logProbOfPSFx : 0) - Math.log(M[newRelNum])
+        + ((!PSFxIsSupported) ? logProbOfNSFx : 0) - Math.log(M[newRelNum])
         - ((!PSFyIsSupported) ? logProbOfPSFy : 0);
 
+    // Acceptance Ratio
     double logAcceptanceRatio = logStateRatio + logProposalRatio;
     double acceptanceRatio = Math.exp(logAcceptanceRatio);
 
     return logAcceptanceRatio; // RelationExtractionMHSampler hack
-
-    // return logProposalRatio;
 
   }
 
@@ -978,14 +729,14 @@ public class RelationExtractionProposer implements Proposer {
    * 3a) Choose a relation r (sampling from M)
    * 3b) Set new fact to be sourceFact for all sentences in MovedSentences
    * 3c) Sample PSF
-   * 4) Else, do sourceFactSwitch on s
+   * 4) Else, do nothing
    */
   private double blockSourceFactSwitch(PartialWorldDiff proposedWorld) {
 
     // Choose sentence s randomly from all sentences
-
     int sentNum = Util.randInt(sentType.getGuaranteedObjects().size());
     Object sentence = sentType.getGuaranteedObject(sentNum);
+
     // Don't touch a labeled sentence
     while (labeledSentences.contains(sentence)) {
       sentNum = Util.randInt(sentType.getGuaranteedObjects().size());
@@ -1014,20 +765,20 @@ public class RelationExtractionProposer implements Proposer {
       }
     }
 
-    // If not all points to same source fact or one sentence is labeled, just
-    // normal source fact switch for
-    // sentence s
+    // If not all points to same source fact or one sentence is labeled, do
+    // nothing
     if (!samePreviousSourceFact || oneSentenceIsLabeled) {
-      return sourceFactSwitchForSentence(proposedWorld, sentence);
+      return 0;
     }
 
-    /*
+    /**
      * Block SourceFactSwitch Starts Here!
      */
 
     // Get previous source fact relation
     Object oldRel = ((NonGuaranteedObject) previousSourceFact)
         .getOriginFuncValue(relFunc);
+    int oldRelNum = relType.getGuaranteedObjIndex(oldRel);
 
     // Get triggerID's of all sentences
     int[] triggerIDs = new int[movedSentences.size()];
@@ -1070,16 +821,20 @@ public class RelationExtractionProposer implements Proposer {
     Object newSourceFact = getFact(newRel, arg1, arg2, proposedWorld);
     proposedWorld.setValue(makeVar(holdsFunc, newSourceFact), true);
 
-    // Set new sourceFact for every movedSentence
-    // Add to diff
-    trueFactDiff.get("Add").put(newSourceFact, new ArrayList());
-    for (Object sent : movedSentences) {
-      proposedWorld.setValue(makeVar(sourceFactFunc, sent), newSourceFact);
-      trueFactDiff.get("Add").get(newSourceFact).add(sent);
+    // Set new sourceFact for every movedSentence and add to diff
+    if (!previousSourceFact.equals(newSourceFact)) {
+      trueFactDiff.get("Add").put(newSourceFact, new ArrayList());
+      trueFactDiff.get("Delete").put(previousSourceFact, new ArrayList());
+      for (Object sent : movedSentences) {
+        proposedWorld.setValue(makeVar(sourceFactFunc, sent), newSourceFact);
+        trueFactDiff.get("Add").get(newSourceFact).add(sent);
+        trueFactDiff.get("Delete").get(previousSourceFact).add(sent);
+      }
     }
 
     // Sample previous source fact IF IT IS NOT THE SAME AS NEW SOURCE FACT
-    if (!previousSourceFact.equals(newSourceFact)) {
+    // Same as "unsupported"
+    if (!isSupported("new", previousSourceFact)) {
       Object psfRel = ((NonGuaranteedObject) previousSourceFact)
           .getOriginFuncValue(relFunc);
       double sparsity = (Double) proposedWorld.getValue(makeVar(sparsityFunc,
@@ -1101,48 +856,20 @@ public class RelationExtractionProposer implements Proposer {
     // Calculate and return log acceptance ratio
     PartialWorld oldWorld = proposedWorld.getSaved();
 
-    // The two values, h(nsf_y) and h(nsf_x) are both true, since in their
-    // respective moves
-    // they were selected and forced to be true in order to express the
-    // sentence. Therefore,
-    // P(h(nsf_i)) is simply equal to the sparsity value of the corresponding
-    // relation.
     double logProbOfNSFy = Math.log((Double) proposedWorld.getValue(makeVar(
         sparsityFunc, newRel)));
-    double logProbOfNSFx = Math.log((Double) oldWorld.getValue(makeVar(
+    double logProbOfPSFx = Math.log((Double) oldWorld.getValue(makeVar(
         sparsityFunc, oldRel)));
-    // int numTrueFactsInOldState = 0;
-    // int numTrueFactsInNewState = 0;
-    // for (Object fact : allFacts(proposedWorld)) {
-    // if ((Boolean) oldWorld.getValue(new RandFuncAppVar(holdsFunc,
-    // Collections.singletonList(fact)))) {
-    // numTrueFactsInOldState++;
-    // }
-    // if ((Boolean) proposedWorld.getValue(new RandFuncAppVar(holdsFunc,
-    // Collections.singletonList(fact)))) {
-    // numTrueFactsInNewState++;
-    // }
-    // }
 
     double logTrueFactRatio = sentType.getGuaranteedObjects().size()
         * Math.log((float) numTrueFacts("old") / numTrueFacts("new"));
 
-    // now print it..
-    // if (count % 100 == 0) {
-    // System.out.println("Source Fact Iteration #: " + count);
-    // System.out.println("Correct logStateRatio: " + logStateRatio);
-    // System.out.println("Correct logTrueFactRatio: " + logTrueFactRatio);
-    // int sdjfkl = 5+2; // lol this is here so I can put a breakpoint after the
-    // system print
-    // }
-
-    double logAcceptanceRatio = logProbOfNSFy - logProbOfNSFx
+    // Acceptance Ratio
+    double logAcceptanceRatio = logProbOfNSFy - logProbOfPSFx
         + logTrueFactRatio;
     double acceptanceRatio = Math.exp(logAcceptanceRatio);
 
     return logAcceptanceRatio; // RelationExtractionMHSampler hack
-
-    // return logProposalRatio;
 
   }
 
@@ -1172,51 +899,46 @@ public class RelationExtractionProposer implements Proposer {
   /**
    * Method for performing Holds(f) switch
    * 
-   * 1) Calculate number of true facts
-   * 2) Choose a random Holds(f) that is unsupported
-   * 3) Sample it based on sparsity(Rel(f))
-   * 4) Calculate number of true facts in new state and return log proposal
-   * ratio
+   * 1) Choose a random Holds(f) that is unsupported
+   * 2) Sample it based on sparsity(Rel(f))
+   * 
    */
-  private double holdsSwitch(PartialWorldDiff proposedWorld) {
+  private double holdsSwitchR(PartialWorldDiff proposedWorld) {
 
-    // 1) Run through all facts, find the number of true facts in current state
-    // and get set of unsupported facts
-    // int numTrueFactsInOldState = 0;
-    // Set unsupportedFacts = new HashSet();
-    // for (Object fact : allFacts(proposedWorld)) {
-    // if ((Boolean) proposedWorld.getValue(new RandFuncAppVar(holdsFunc,
-    // Collections.singletonList(fact)))) {
-    // numTrueFactsInOldState++;
-    // }
-    // if (!isSupported(fact)) {
-    // unsupportedFacts.add(fact);
-    // }
-    // }
+    // Randomly choose a Holds(f) from unsupported set of facts
+    Object factChoice;
 
     // If the set of unsupported facts is empty, do nothing. We can check this
     // by checking the size of the trueFacts map
     if (trueFacts.size() == relevantArgPairs.size()
         * relType.getGuaranteedObjects().size()) {
-      return 0.0;
+      Set unsupportedFacts = new HashSet();
+      for (Object f : trueFacts.keySet()) {
+        if (trueFacts.get(f).size() == 0) {
+          unsupportedFacts.add(f);
+        }
+      }
+      if (unsupportedFacts.size() == 0) {
+        return 0.0;
+      } else {
+        factChoice = sampleUniformlyFromSet(unsupportedFacts);
+      }
+    } else {
+
+      do {
+        // Get a random relation
+        int relNum = Util.randInt(relType.getGuaranteedObjects().size());
+        Object rel = relType.getGuaranteedObject(relNum);
+        // Get a random relevant arg pair
+        List pairs = relevantArgPairs
+            .get((String) sampleUniformlyFromSet(relevantArgPairs.keySet()));
+        Object arg1 = pairs.get(0);
+        Object arg2 = pairs.get(1);
+
+        factChoice = getFact(rel, arg1, arg2, proposedWorld);
+
+      } while (isSupported("old", factChoice));
     }
-
-    // 2) Randomly choose a Holds(f) from unsupported set of facts
-    Object factChoice;
-
-    do {
-      // Get a random relation
-      int relNum = Util.randInt(relType.getGuaranteedObjects().size());
-      Object rel = relType.getGuaranteedObject(relNum);
-      // Get a random relevant arg pair
-      List pairs = relevantArgPairs
-          .get((String) sampleUniformlyFromSet(relevantArgPairs.keySet()));
-      Object arg1 = pairs.get(0);
-      Object arg2 = pairs.get(1);
-
-      factChoice = getFact(rel, arg1, arg2, proposedWorld);
-
-    } while (isSupported("old", factChoice));
 
     // 3) Sample it based on sparsity
     RandFuncAppVar holds = new RandFuncAppVar(holdsFunc,
@@ -1227,7 +949,6 @@ public class RelationExtractionProposer implements Proposer {
         Collections.singletonList(factChoiceRel));
     double sparsityValue = (Double) proposedWorld.getValue(sparsity);
 
-    // Used for calculating number of true facts in new state
     boolean current = ((Boolean) proposedWorld.getValue(holds)).booleanValue();
     boolean sample;
 
@@ -1244,44 +965,23 @@ public class RelationExtractionProposer implements Proposer {
     }
     proposedWorld.setValue(holds, sample); // Set the new value in the world
 
-    // // 4) See if number of true facts changed
-    // // Could also just run through all facts in proposed world, but this is
-    // faster
-    // int numTrueFactsInNewState = numTrueFactsInOldState;
-    // if (!(current == sample)) {
-    // if (current == true && sample == false) {
-    // numTrueFactsInNewState--;
-    // } else if (current == false && sample == true) {
-    // numTrueFactsInNewState++;
-    // }
-    // }
-
-    // Return log proposal ratio. More details in Tex file
     double logProbOfOldState = (current) ? Math.log(sparsityValue) : Math
         .log((1 - sparsityValue));
     double logProbOfNewState = (sample) ? Math.log(sparsityValue) : Math
         .log((1 - sparsityValue));
 
-    // PURELY FOR DEBUGGING PURPOSES
-    // Calculate the log state ratio and print it
-    double logStateRatio = logProbOfNewState - logProbOfOldState
-        + sentType.getGuaranteedObjects().size()
+    double logTrueFactRatio = sentType.getGuaranteedObjects().size()
         * Math.log((float) numTrueFacts("old") / numTrueFacts("new"));
-    // Print it here, maybe every 50 or 100 times, requires a counter instance
-    // variable in this class
-    // if (count % 100 == 0) {
-    // System.out.println("holdsSwitch Iteration #: " + count);
-    // System.out.println("Correct logStateRatio: " + logStateRatio);
-    // int jklsf = 43;
-    // }
+
+    double logStateRatio = logProbOfNewState - logProbOfOldState
+        + logTrueFactRatio;
 
     double logProposalRatio = logProbOfOldState - logProbOfNewState;
 
     double logAcceptanceRatio = logStateRatio + logProposalRatio;
     double acceptanceRatio = Math.exp(logAcceptanceRatio);
-    return logAcceptanceRatio; // RelationExtractionMHSampler hack
 
-    // return logProposalRatio;
+    return logAcceptanceRatio; // RelationExtractionMHSampler hack
 
   }
 
@@ -1300,30 +1000,26 @@ public class RelationExtractionProposer implements Proposer {
 
   }
 
-  // private boolean isSupported(Object fact) {
-  // return supportedFacts.containsKey(fact);
-  // }
-
   // Private method for checking whether a fact is expressed by any sentences
   private boolean isSupported(String state, Object fact) {
 
     boolean s;
 
-    if (state == "old") {
+    if (state.equals("old")) {
       // The trueFacts HashMap must have a list size of > 0
       if (trueFacts.containsKey(fact)) {
         s = trueFacts.get(fact).size() > 0;
       } else {
         s = false;
       }
-    } else if (state == "new") {
+    } else if (state.equals("new")) {
       if (trueFacts.containsKey(fact)) {
         s = trueFacts.get(fact).size() > 0;
         // Check if it will be deleted or added
         if (trueFactDiff.get("Delete").containsKey(fact)) {
           // If we have fact : [null], means it will be deleted
-          if (trueFactDiff.get("Delete").get(fact) == new ArrayList(
-              Collections.singleton(null))) {
+          if (trueFactDiff.get("Delete").get(fact)
+              .equals(new ArrayList(Collections.singleton(null)))) {
             s = false;
             // If all sentences get deleted, it is unsupported
           } else if (trueFacts.get(fact).size()
@@ -1332,16 +1028,16 @@ public class RelationExtractionProposer implements Proposer {
           }
           // If we are adding sentences, it MUST be supported
         } else if (trueFactDiff.get("Add").containsKey(fact)
-            && trueFactDiff.get("Add").get(fact) != new ArrayList(
-                Collections.singleton(null))) {
+            && !trueFactDiff.get("Add").get(fact)
+                .equals(new ArrayList(Collections.singleton(null)))) {
           s = true;
         }
       } else { // Not originally true. Check trueFactDiff to see if it'll be
                // added
         s = false;
         if (trueFactDiff.get("Add").containsKey(fact)
-            && trueFactDiff.get("Add").get(fact) != new ArrayList(
-                Collections.singleton(null))) {
+            && !trueFactDiff.get("Add").get(fact)
+                .equals(new ArrayList(Collections.singleton(null)))) {
           s = true;
         }
       }
@@ -1355,9 +1051,7 @@ public class RelationExtractionProposer implements Proposer {
   }
 
   /**
-   * Method for performing sparsity sampling (this is Gibbs)
-   * 
-   * Hr := {Holds(f) : Rel(f) = r), refer for the Tex file for more details
+   * Method for performing sparsity sampling (this is a Gibbs move)
    * 
    * Sample from posterior Beta distribution
    */
@@ -1372,9 +1066,8 @@ public class RelationExtractionProposer implements Proposer {
 
   private double sparsitySample(PartialWorldDiff proposedWorld, Object rel) {
 
-    // The size of Hr is simply the number of unique combinations of different
-    // entities
-    int sizeOfHrf = (int) Math.pow(entType.getGuaranteedObjects().size(), 2);
+    // Calculate numbers that relate to H_rf
+    int sizeOfHrf = relevantArgPairs.size();
     int numOfTrueFactsInHrf = 0;
     for (List pair : relevantArgPairs.values()) {
       Object fact = getFact(rel, pair.get(0), pair.get(1), proposedWorld);
@@ -1385,23 +1078,22 @@ public class RelationExtractionProposer implements Proposer {
     }
 
     // Sample from posterior distribution, set the value in the world
-    Integer[] params = { alpha + numOfTrueFactsInHrf,
-        beta + sizeOfHrf - numOfTrueFactsInHrf };
+    Integer[] params = {
+        alpha + numOfTrueFactsInHrf + irrelevantTrueFactNums.get(rel),
+        beta + sizeOfHrf - numOfTrueFactsInHrf
+            + (int) Math.pow(entType.getGuaranteedObjects().size(), 2)
+            - relevantArgPairs.size() - irrelevantTrueFactNums.get(rel) };
     Beta sparsitySampler = new Beta(Arrays.asList(params));
     RandFuncAppVar sparsity = makeVar(sparsityFunc, rel);
     Object newVal = sparsitySampler.sampleVal(Collections.EMPTY_LIST, relType);
     proposedWorld.setValue(sparsity, newVal);
 
-    // return Double.POSITIVE_INFINITY; // Gibbs, may have to figure this out
-    // later with MHSampler.java
     return 0; // Gibbs, for RelationExtractionMHSampler hack
 
   }
 
   /**
-   * Method for performing theta sampling (this is Gibbs)
-   * 
-   * Refer to the Tex file for more details
+   * Method for performing theta sampling (this is a Gibbs move)
    * 
    * Sample from posterior Dirichlet Distribution
    */
@@ -1429,7 +1121,7 @@ public class RelationExtractionProposer implements Proposer {
           Collections.singletonList(sentence)));
       Object sentRel = ((NonGuaranteedObject) sourceFact)
           .getOriginFuncValue(relFunc);
-      if (sentRel == rel) {
+      if (sentRel.equals(rel)) {
         params[(Integer) proposedWorld.getValue(triggerID)]++;
       }
     }
@@ -1441,16 +1133,42 @@ public class RelationExtractionProposer implements Proposer {
     Object newVal = thetaSampler.sampleVal(Collections.EMPTY_LIST, relType);
     proposedWorld.setValue(theta, newVal);
 
-    // return Double.POSITIVE_INFINITY; // Gibbs, may have to figure this out
-    // later with MHSampler.java
     return 0; // Gibbs, for RelationExtractionMHSampler hack
 
   }
 
   /**
-   * These methods will not be used, but must be implemented to satisfy the
-   * Proposer interface...
+   * Method for sampling irrelevant facts for a random relation while not
+   * representing these facts explicitly
    */
+  private double irrelevantFactsSample(PartialWorldDiff proposedWorld) {
+
+    // Choose relation randomly from all relations
+    int relNum = Util.randInt(relType.getGuaranteedObjects().size());
+    Object rel = relType.getGuaranteedObject(relNum);
+
+    // Number of irrelevant arg pairs
+    int n = (int) (Math.pow(entType.getGuaranteedObjects().size(), 2) - relevantArgPairs
+        .size());
+    double p = (Double) proposedWorld.getValue(makeVar(sparsityFunc, rel));
+
+    Binomial b = new Binomial(n, p);
+    int new_sample = (Integer) b.sampleVal(Collections.EMPTY_LIST, relType);
+    int old_sample = irrelevantTrueFactNums.get(rel);
+
+    // log acceptance ratio
+    double logTrueFactRatio = sentType.getGuaranteedObjects().size()
+        * Math.log((float) numTrueFacts("old")
+            / (numTrueFacts("old") - old_sample + new_sample));
+    double logAcceptanceRatio = logTrueFactRatio;
+
+    List diffDummy = new ArrayList();
+    diffDummy.add(rel);
+    diffDummy.add(new_sample);
+    diff.put("IRF", diffDummy);
+
+    return logAcceptanceRatio;
+  }
 
   public void updateStats(boolean accepted) {
 
@@ -1477,12 +1195,6 @@ public class RelationExtractionProposer implements Proposer {
     return 0;
   }
 
-  // A method to create the key specific to the factMap (HashMap)
-  private String generateKey(Object rel, Object arg1, Object arg2) {
-    return "Rel: " + rel.toString() + ", Arg1: " + arg1.toString() + ", Arg2: "
-        + arg2.toString();
-  }
-
   private Object getFact(Object rel, Object arg1, Object arg2,
       PartialWorldDiff world) {
 
@@ -1497,73 +1209,6 @@ public class RelationExtractionProposer implements Proposer {
                                                                   // statement
 
     return value;
-  }
-
-  private Collection allFacts(PartialWorldDiff world) {
-
-    /*
-     * List allRels = relType.getGuaranteedObjects();
-     * List allEntities = entType.getGuaranteedObjects();
-     * 
-     * 
-     * int numFacts = allRels.size() * allEntities.size() * allEntities.size();
-     * Object[] allFacts = new Object[numFacts];
-     * 
-     * int index = 0;
-     * for (Object rel : allRels) {
-     * for (Object arg1 : allEntities) {
-     * for (Object arg2 : allEntities) {
-     * allFacts[index] = getFact(rel, arg1, arg2, world);
-     * index++;
-     * }
-     * }
-     * }
-     */
-    Collection allFacts = factMap.values();
-
-    return allFacts;
-
-  }
-
-  // For debugging
-  private ArrayList allTrueFacts(PartialWorldDiff world) {
-    Collection facts = allFacts(world);
-
-    ArrayList trueFacts = new ArrayList();
-
-    for (Object fact : facts) {
-      if ((Boolean) world.getValue(makeVar(holdsFunc,
-          Collections.singletonList(fact)))) {
-        trueFacts.add(fact);
-      }
-    }
-
-    return trueFacts;
-
-  }
-
-  // Update the supportedFacts hashmap given the world
-  // Need to do this just in case last sample wasn't accepted
-  private void updateSupportedFacts(PartialWorldDiff world) {
-
-    supportedFacts = new HashMap<Object, List>();
-
-    for (Object sentence : sentType.getGuaranteedObjects()) {
-
-      Object fact = world.getValue(makeVar(sourceFactFunc,
-          Collections.singletonList(sentence)));
-
-      // Update hashmap of supporting facts accordingly
-      if (supportedFacts.containsKey(fact)) {
-        supportedFacts.get(fact).add(sentence);
-      } else {
-        ArrayList sentences = new ArrayList();
-        sentences.add(sentence);
-        supportedFacts.put(fact, sentences);
-      }
-
-    }
-
   }
 
   private void addToTrueFacts(Object fact, Object sentence) {
@@ -1600,11 +1245,11 @@ public class RelationExtractionProposer implements Proposer {
     int num;
 
     // Trivial, just return the size of the trueFact HashMap
-    if (state == "old") {
+    if (state.equals("old")) {
       num = trueFacts.size();
 
       // Trickier, find the number including what happens in the diff
-    } else if (state == "new") {
+    } else if (state.equals("new")) {
 
       num = trueFacts.size();
       // If a fact in the diff isn't in the trueFacts HashMap, add 1
@@ -1627,11 +1272,18 @@ public class RelationExtractionProposer implements Proposer {
       // Throw an exception, but I'm too lazy to say that this throws exceptions
       num = 1 / 0;
     }
+
+    // Add all true irrelevant facts here
+    for (Object rel : relType.getGuaranteedObjects()) {
+      num += irrelevantTrueFactNums.get(rel);
+    }
+
     return num;
   }
 
   protected void applyDiff() {
 
+    // True Facts
     // Delete first
     for (Object fact : trueFactDiff.get("Delete").keySet()) {
       List value = trueFactDiff.get("Delete").get(fact);
@@ -1647,6 +1299,14 @@ public class RelationExtractionProposer implements Proposer {
         addToTrueFacts(fact, sent);
       }
     }
+
+    // Irrelevant facts
+    if (diff.containsKey("IRF")) {
+      Object rel = ((List) diff.get("IRF")).get(0);
+      Integer s = (Integer) ((List) diff.get("IRF")).get(1);
+      irrelevantTrueFactNums.put(rel, s);
+    }
+
   }
 
   private HashMap constructNewTrueFactDiff() {
@@ -1676,6 +1336,78 @@ public class RelationExtractionProposer implements Proposer {
     idTypes.add(trigType);
     idTypes.add(sentType);
     return idTypes;
+  }
+
+  /**
+   * THESE METHODS WERE USED FOR DEBUGGING PURPOSES ONLY
+   */
+
+  // For debugging purposes
+  private List allRelevantFacts(PartialWorldDiff world) {
+
+    List allRels = relType.getGuaranteedObjects();
+    List allEntities = entType.getGuaranteedObjects();
+
+    int numFacts = allRels.size() * allEntities.size() * allEntities.size();
+    List allFacts = new ArrayList();
+
+    int index = 0;
+    for (Object rel : allRels) {
+      for (List pair : relevantArgPairs.values()) {
+        Object arg1 = pair.get(0);
+        Object arg2 = pair.get(1);
+        allFacts.add(getFact(rel, arg1, arg2, world));
+        index++;
+      }
+    }
+
+    return allFacts;
+
+  }
+
+  // For debugging purposes
+  private ArrayList allTrueRelevantFacts(PartialWorldDiff world) {
+    Collection facts = allRelevantFacts(world);
+
+    ArrayList trueFacts = new ArrayList();
+
+    for (Object fact : facts) {
+      if ((Boolean) world.getValue(makeVar(holdsFunc,
+          Collections.singletonList(fact)))) {
+        trueFacts.add(fact);
+      }
+    }
+
+    return trueFacts;
+
+  }
+
+  // For debugging purposes
+  private boolean realIsSupported(PartialWorld world, Object fact) {
+    return updateSupportedFacts(world).containsKey(fact);
+  }
+
+  // For debugging purposes
+  private HashMap updateSupportedFacts(PartialWorld world) {
+
+    HashMap<Object, List> sf = new HashMap<Object, List>();
+
+    for (Object sentence : sentType.getGuaranteedObjects()) {
+
+      Object fact = world.getValue(makeVar(sourceFactFunc,
+          Collections.singletonList(sentence)));
+
+      if (sf.containsKey(fact)) {
+        sf.get(fact).add(sentence);
+      } else {
+        ArrayList sentences = new ArrayList();
+        sentences.add(sentence);
+        sf.put(fact, sentences);
+      }
+
+    }
+    return sf;
+
   }
 
 }

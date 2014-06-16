@@ -1,0 +1,36 @@
+// William_J__Casey director of  Central_Intelligence						| False
+// Stephen_Gillers professor at  New_York_University						| True
+// John_C__Coffee_Jr_ professor at  Columbia_University						| True
+// Robert_Blendon expert at  Harvard 										| False
+// Robert_Berne president at  New_York_University 							| False
+// Los_Angeles teach at  University_of_California							| True
+// Jeffrey_Sachs professor  Harvard 										| True
+// Dr__Gary_I__Wadler professor  New_York_University						| True
+// Bob_Blendon expert at  Harvard 											| False
+// Robert_M__Gates director of  Central_Intelligence 						| False
+// William_E__Colby director of  Central_Intelligence						| False
+// Herbert_Menzel professor at  New_York_University							| True
+// Richard_Freeman economist  Harvard 										| False
+// New_York professor at  New_York_University 								| True
+// Priscilla_S__Hunt live in  Princeton 									| False
+// Orville_Schell dean at  University_of_California 	 					| False
+// Michael_Beckerman teach at  University_of_California 					| True
+// John_Van_Antwerp_Fine die at home in  Princeton 							| False
+// James_Shapiro teach at  Columbia_University 								| True
+// Benjamin_M__Friedman professor at  Harvard_University 					| True
+// William_H__Webster as director of  Central_Intelligence 					| False 
+// Reagan director of  Central_Intelligence									| False
+// Marshall_Goldman director of center  Harvard 							| False
+// Mark_A__R__Kleiman specialist at  Harvard_University 					| False
+// William_Joseph_McKeon professor at school New_York_University 			| True
+// Walter_Gilbert professor at  Harvard_University 							| True
+// Steven_Cohen expert teach at  Columbia_University 						| True
+// Robert_B__Reich professor at school  Harvard 							| True
+// Ricardo_Hausmann economist teach at  Harvard_University 					| True
+// John_Coffee professor at school  Columbia_University 					| True
+// Eli_Ginzberg economist teach at  Columbia_University 					| True
+// Dr__James_F__Gilliam professor at school  Princeton 						| True
+// Tom_K__Lieser forecaster at  University_of_California 					| False
+// Prof__Otis_Graham_Jr_ chairman of program at University_of_California	| False
+// Howard_Stein chairman of program at  Columbia_University 				| False
+// Cornell beat in  Princeton 												| False

@@ -1,0 +1,3 @@
+/* Queries go here */
+
+query Rel(SourceFact(Sent[0])) == Rel(SourceFact(Sent[1]));
