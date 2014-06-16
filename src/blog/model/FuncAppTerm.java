@@ -270,6 +270,18 @@ public class FuncAppTerm extends Term {
 		}
 		return false;
 	}
+	
+	public boolean equalsDebug(Object o) {
+		if (o instanceof FuncAppTerm) {
+			FuncAppTerm other = (FuncAppTerm) o;
+			System.out.println(f.equals(other.getFunction()));
+			System.out.println(Arrays.equals(args,
+					other.getArgs()));
+			System.out.println(args);
+			System.out.println(other.getArgs());
+		}
+		return false;
+	}
 
 	public int hashCode() {
 		int code = funcName.hashCode();

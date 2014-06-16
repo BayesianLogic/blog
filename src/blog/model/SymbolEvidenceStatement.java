@@ -37,10 +37,12 @@ package blog.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import blog.bn.BasicVar;
@@ -66,8 +68,9 @@ public class SymbolEvidenceStatement {
 	 */
 	public SymbolEvidenceStatement(ImplicitSetSpec setSpec, List<String> symbols) {
 		this.setSpec = setSpec;
-
+		Collections.sort(symbols);
 		List predecessors = new ArrayList();
+		
 		for (Iterator iter = symbols.iterator(); iter.hasNext();) {
 			String name = (String) iter.next();
 			SkolemConstant s = new SkolemConstant(name, setSpec, predecessors);
@@ -76,6 +79,8 @@ public class SymbolEvidenceStatement {
 		}
 	}
 
+	
+	
 	/**
 	 * Returns the implicit set specification that defines the set of objects
 	 * labeled by the symbols.

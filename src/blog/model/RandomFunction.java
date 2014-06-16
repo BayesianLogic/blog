@@ -244,4 +244,14 @@ public class RandomFunction extends Function {
 	public void setObservableFun (RandomFunction f){
 		observableFun = f;
 	}
+	
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof RandomFunction)) return false;
+		RandomFunction other = (RandomFunction) o;
+		return this.getName().equals(other.getName()) && 
+				Arrays.equals(other.getArgTypes(), getArgTypes()) &&
+				other.getRetType().equals(getRetType());
+	}
 }

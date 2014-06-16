@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import blog.engine.onlinePF.inverseBucket.TimedParticle;
 import blog.model.Evidence;
+import blog.model.SkolemConstant;
 import blog.world.AbstractPartialWorld;
 
 public class FiniteStatePolicyEvaluator {
@@ -85,7 +87,16 @@ public class FiniteStatePolicyEvaluator {
 			double discount = 1;
 			List<Evidence> curPath = new ArrayList<Evidence>();
 			LiftedProperties policyHistory = new LiftedProperties();
+			Set<Object> existing = curPolicy.getAction().getLiftedProperties().getObjects();
+			for (Object e : existing)
+				policyHistory.addObject(e);
 			LiftedProperties history = new LiftedProperties();
+			for (SkolemConstant sk : state.getWorld().getSkolemConstants())
+				history.addObject(sk.rv().getCanonicalTerm());
+			if (numPathsPrinted < numTrialsToPrint) {
+				System.out.println(policyHistory);
+				System.out.println(history);
+			}
 			while (curPolicy != null) {
 				if (curState.ended()) break;
 				//policyHistory.debug = true;
@@ -95,35 +106,45 @@ public class FiniteStatePolicyEvaluator {
 				Evidence timeGroundedAction = nextAction.getEvidence(curState);
 				Evidence groundedAction = timeGroundedAction.replace(subst);
 				curPath.add(groundedAction);
-				
+
 				LiftedEvidence policyLiftedAction = new LiftedEvidence(timeGroundedAction, null, policyHistory);
 				LiftedEvidence liftedAction = new LiftedEvidence(groundedAction, null, history);
-				
+
 				policyHistory = policyLiftedAction.getLiftedProperties();
 				history = liftedAction.getLiftedProperties();
-				
-				curState = curState.sampleNextBelief(groundedAction);
-				
-				Evidence nextObs = curState.getLatestEvidence();
-				curPath.add(nextObs);
-				LiftedEvidence liftedEvidence = new LiftedEvidence(nextObs, null, history);
-				LiftedEvidence policyEvidence = curPolicy.getMatchingEvidence(liftedEvidence, policyHistory, curState);
-				FiniteStatePolicy nextPolicy = curPolicy.getNextPolicy(policyEvidence);
-				
-				if (nextPolicy == null && !curState.ended()) { 
-					nextPolicy = curPolicy.getApplicableNextPolicy(new LiftedEvidence(nextObs, curState), curState);
-					if (nextPolicy != null) {
-						addMissingObs(nextObs);
-					}
-				}
 
-				if (nextPolicy != null) {
-					history = liftedEvidence.getLiftedProperties();
-					LiftedEvidence policyLiftedEvidence = new LiftedEvidence(policyEvidence.getEvidence(curState.getTimestep()), null, policyHistory);
-					policyHistory = policyLiftedEvidence.getLiftedProperties();
+				curState = curState.sampleNextBelief(groundedAction);
+
+				Evidence nextObs = curState.getLatestEvidence();
+				if (!curPolicy.isLeafPolicy()) {
+					curPath.add(nextObs);
+					LiftedEvidence liftedEvidence = new LiftedEvidence(nextObs, null, history);
+					LiftedEvidence policyEvidence = curPolicy.getMatchingEvidence(liftedEvidence, policyHistory, curState);
+					FiniteStatePolicy nextPolicy = curPolicy.getNextPolicy(policyEvidence);
+
+					if (nextPolicy == null && !curState.ended()) { 
+						nextPolicy = curPolicy.getApplicableNextPolicy(new LiftedEvidence(nextObs, curState), curState);
+						if (nextPolicy != null) {
+							addMissingObs(nextObs);
+						}
+						System.out.println("finding next policy since no match");
+						//System.out.println(policyEvidence);
+						//System.out.println(liftedEvidence);
+						curPolicy.debug = true;
+						LiftedEvidence x = curPolicy.getMatchingEvidence(liftedEvidence, policyHistory, curState);
+						System.out.println(x + " *** " + liftedEvidence);
+					}
+					//TODO
+					if (nextPolicy != null && policyEvidence != null) {
+						history = liftedEvidence.getLiftedProperties();
+						LiftedEvidence policyLiftedEvidence = new LiftedEvidence(policyEvidence.getEvidence(curState.getTimestep()), null, policyHistory);
+						policyHistory = policyLiftedEvidence.getLiftedProperties();
+					}
+
+					curPolicy = nextPolicy;
+				} else {
+					curPolicy = null;
 				}
-				
-				curPolicy = nextPolicy;
 				
 				curValue += discount * curState.getLatestReward();
 				discount = discount * gamma;

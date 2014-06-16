@@ -84,14 +84,15 @@ public class SkolemConstant extends RandomFunction {
 
 		Clause clause = new Clause(TrueFormula.TRUE,
 				new blog.distrib.UniformChoice(), cpdArgs);
-		List clauseList = new ArrayList();
+		clauseList = new ArrayList();
 		clauseList.add(clause);
 
 		setArgVars(Collections.EMPTY_LIST); // no arguments
 		setDepModel(new DependencyModel(clauseList, setSpec.getType(), Model.NULL));
+		//System.out.println(name + " " + clauseList);
 	}
 	
-	
+	public List clauseList;
 	private String name;
 	
 	public String getName() { return name; }

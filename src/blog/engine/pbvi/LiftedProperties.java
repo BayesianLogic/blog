@@ -1,6 +1,7 @@
 package blog.engine.pbvi;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
+import blog.model.FuncAppTerm;
 
 public class LiftedProperties {
 	public boolean debug = false;
@@ -25,6 +27,10 @@ public class LiftedProperties {
 	public void addObject(Object obj) {
 		ngos.add(obj);
 		objToProperties.put(obj, new HashSet<RandFuncAppVar>());
+	}
+	
+	public Set<Object> getObjects() {
+		return Collections.unmodifiableSet(ngos);
 	}
 	
 	public void addProperty(RandFuncAppVar var, Object value) {
@@ -80,7 +86,7 @@ public class LiftedProperties {
 		if (myNgos.size() != otherNgos.size()) return null;	
 		if (myNgos.isEmpty()) return partialSolution;
 		Object ngo = (Object) Util.getFirst(myNgos);
-		myNgos.remove(ngo);
+		
 		for (Object otherNgo : otherNgos) {
 			//if (!ngo.getType().equals(otherNgo.getType())) continue;
 			//check for conflict using new matching ngo -> otherNgo
@@ -107,7 +113,7 @@ public class LiftedProperties {
 				} else {
 					RandFuncAppVar substitutedVar = new RandFuncAppVar(v.func(), args);
 					if (debug) {
-						System.out.println("findNgoSubstition" + substitutedVar);
+						System.out.println("findNgoSubstition substitutedVar" + substitutedVar + " ngo" + ngo + " otherNgo" + otherNgo);
 					}
 					if (otherProperties.containsKey(substitutedVar)) {
 						Object otherValue = otherProperties.get(substitutedVar);
@@ -136,9 +142,11 @@ public class LiftedProperties {
 			//solution = recurse with new partial solution, unresolved properties and unmatched ngos
 			Set<Object> newOtherNgos = new HashSet<Object>(otherNgos);
 			newOtherNgos.remove(otherNgo);
+			Set<Object> myNewNgos = new HashSet<Object>(myNgos);
+			myNewNgos.remove(ngo);
 			Map<Object, Object> solution =  
 					findNgoSubstitution(
-					myNgos,
+					myNewNgos,
 					newOtherNgos,
 					newMyProperties,
 					newOtherProperties,
@@ -146,13 +154,23 @@ public class LiftedProperties {
 			if (solution != null)
 				return solution;
 		}
-		myNgos.add(ngo);
 		return null;
 	}
 	
 	@Override
 	public String toString() {
-		return ngos + " " + properties.toString();
+		String s = "";
+		for (Object ngo1 : ngos) {
+			for (Object ngo2 : ngos) {
+				if (ngo1.hashCode() == ngo2.hashCode() && !ngo1.equals(ngo2)) {
+					FuncAppTerm ngo1Term = (FuncAppTerm) ngo1;
+					FuncAppTerm ngo2Term = (FuncAppTerm) ngo2;
+					ngo1Term.equalsDebug(ngo2Term);
+				}
+					
+			}
+		}
+		return s + ngos + " " + properties.toString();
 	}
 	
 	@Override

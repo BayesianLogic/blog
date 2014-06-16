@@ -15,7 +15,7 @@ generating Timestep Time_Suspect(Suspect);
 random Boolean isGuilty(Suspect s) ~ Bernoulli(0.3);
 
 random Boolean isNervous(Suspect s, Timestep t) {
-  if (isGuilty(s)) then ~ Bernoulli(0.8)
+  if (isGuilty(s)) then ~ Bernoulli(0.95)
   else ~ Bernoulli(0.01)
 };
 

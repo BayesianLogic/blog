@@ -68,12 +68,12 @@ public class ObservabilitySignature {
 				BayesNetVar referenced = o2r.get(bnv);
 				int bnvTimestep = DBLOGUtil.getTimestepIndex(bnv);
 				if (!observedValues.containsKey(referenced) &&  bnvTimestep <= maxTimestep ){//&& bnvTimestep > myTimestep){
-					observedValues.put(maskVar(referenced, world.genObjToVar), world.getValue(referenced));
-					observables.add(maskVar(bnv,world.genObjToVar));
+					observedValues.put(maskVar(referenced, world), world.getValue(referenced));
+					observables.add(maskVar(bnv,world));
 				}
 			}
 			else {
-				unobservables.add(maskVar(bnv,world.genObjToVar));
+				unobservables.add(maskVar(bnv,world));
 			}
 		}
 		//world.getChangedObservableMap().clear();
@@ -83,8 +83,9 @@ public class ObservabilitySignature {
 		this.indexValid = true;
 	}
 	
-	public BayesNetVar maskVar(BayesNetVar var, Map m){
+	public BayesNetVar maskVar(BayesNetVar var, AbstractPartialWorld w){
 		BayesNetVar rtn = null;
+		Map<Object, Object> m = w.genObjToVar;
 		if (var instanceof RandFuncAppVar){
 			boolean needsMasking = false;
 			List newArgs = new ArrayList();
@@ -92,6 +93,10 @@ public class ObservabilitySignature {
 				if (arg instanceof NonGuaranteedObject){
 					needsMasking = true;
 					newArgs.add(m.get(arg));
+					if (m.get(arg) == null) {
+						System.out.println("maskVar missing " + var + " map:" + m);
+						System.out.println(w);
+					}
 				}
 				else
 					newArgs.add(arg);
@@ -332,7 +337,7 @@ public class ObservabilitySignature {
 
 	}
 	
-	private static int obsSetID = 0;
+	public static int obsSetID = 0;
 	
 	public Set<String> generateSetObservationNames(String type, Integer num) {
 		Set<String> symbols = new HashSet<String>();
@@ -349,7 +354,7 @@ public class ObservabilitySignature {
 		Set<String> symbols = generateSetObservationNames(typ, num);
 		for (String name : symbols){
 			rtn += ""+ name +",";
-			end += "obs "+ name + "=" + name +";";
+			end += "obs " +  name + "()=" + name + ";";
 		}
 		if (num !=0)
 			rtn = rtn.substring(0, rtn.length()-1);

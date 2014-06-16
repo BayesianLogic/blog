@@ -68,6 +68,7 @@ import blog.common.MapWithPreimages;
 import blog.common.MultiMap;
 import blog.common.Util;
 import blog.model.DependencyModel;
+import blog.model.Function;
 import blog.model.Model;
 import blog.model.NonGuaranteedObject;
 import blog.model.POP;
@@ -152,7 +153,21 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 			basicVarToValue.put(var, value);
 			/*added by cheng*/
 			changedVarToValue.put(var, value);
-			if (value instanceof NonGuaranteedObject & var instanceof RandFuncAppVar){
+			if (value instanceof NonGuaranteedObject && var instanceof RandFuncAppVar){
+				/*if (genObjToVar.containsKey(value)) {
+					System.err.println(genObjToVar);
+					System.err.println("Trying to add " + value + " " + var);
+					for (Object o : genObjToVar.keySet()) {
+						Function f = ((RandFuncAppVar) genObjToVar.get(o)).func();
+						SkolemConstant sk = (SkolemConstant) f;
+						System.err.println(genObjToVar.get(o) + " " + sk.clauseList);
+					}
+					Function f = ((RandFuncAppVar) var).func();
+					SkolemConstant sk = (SkolemConstant) f;
+					System.err.println(var + " " + sk.clauseList);
+					new Exception().printStackTrace();
+					System.exit(1);
+				}*/
 				genObjToVar.put(value, var);
 			}
 		}

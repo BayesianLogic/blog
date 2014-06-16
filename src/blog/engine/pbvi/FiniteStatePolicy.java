@@ -238,6 +238,8 @@ public class FiniteStatePolicy extends PolicyModel {
 			if (liftedEvidenceWithHistory.equals(liftedEvidence))
 				return e;
 			else if (debug) {
+				liftedEvidenceWithHistory.getLiftedProperties().debug = true;
+				liftedEvidenceWithHistory.equals(liftedEvidence);
 				System.out.println(liftedEvidenceWithHistory);
 				System.out.println(liftedEvidence);
 			}

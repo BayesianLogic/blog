@@ -12,15 +12,11 @@ import java.util.Properties;
 import java.util.Set;
 import blog.DBLOGUtil;
 import blog.Main;
-import blog.engine.experiments.SUU;
 import blog.engine.experiments.query_parser;
 import blog.engine.onlinePF.ObservabilitySignature;
-import blog.engine.onlinePF.Util.FileCommunicator;
-import blog.engine.onlinePF.inverseBucket.UBT;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.common.Util;
-import blog.common.cmdline.AbstractOption;
 import blog.common.cmdline.BooleanOption;
 import blog.common.cmdline.IntOption;
 import blog.common.cmdline.StringOption;
@@ -655,7 +651,7 @@ public class OUPBVI {
 		Timer.start("FINAL EVALUATION");
 		FiniteStatePolicyEvaluator evaluator = new FiniteStatePolicyEvaluator(this.getPOMDP(), pomdp.getGamma());
 		Belief b;
-
+		ObservabilitySignature.obsSetID = 1;
 		for (int i = 0; i < 10; i++) {
 			b = pomdp.generateInitialBelief(500);
 			System.out.println(b);

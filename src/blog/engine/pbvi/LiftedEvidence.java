@@ -11,21 +11,19 @@ import blog.DBLOGUtil;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;
-import blog.common.Util;
 import blog.model.ArgSpec;
+import blog.model.EqualityFormula;
 import blog.model.BuiltInTypes;
 import blog.model.DecisionEvidenceStatement;
 import blog.model.DecisionFunction;
 import blog.model.Evidence;
 import blog.model.FuncAppTerm;
-import blog.model.Function;
-import blog.model.NonGuaranteedObject;
 import blog.model.RandomFunction;
 import blog.model.SkolemConstant;
 import blog.model.SymbolEvidenceStatement;
 import blog.model.Term;
+import blog.model.SymbolTerm;
 import blog.model.ValueEvidenceStatement;
-import blog.world.AbstractPartialWorld;
 
 /**
  * This is a wrapper for evidence 
@@ -83,6 +81,7 @@ public class LiftedEvidence {
 		for (Object stmt : statements) {
 			BayesNetVar var = null; 
 			Object value = null; 
+		
 			if (stmt instanceof ValueEvidenceStatement) {
 				var = ((ValueEvidenceStatement) stmt).getObservedVar();
 				value = ((ValueEvidenceStatement) stmt).getObservedValue();
@@ -96,9 +95,16 @@ public class LiftedEvidence {
 			
 			if (var instanceof DerivedVar) {
 				ArgSpec argSpec = ((DerivedVar) var).getArgSpec();
+				if (argSpec instanceof EqualityFormula) {
+					argSpec = ((EqualityFormula) argSpec).getTerm1();
+					liftedVars.add((DerivedVar) var);
+					continue;
+				} 
 				if (!(argSpec instanceof FuncAppTerm)) {
+					System.out.println("not a func app" + argSpec);
 					continue;
 				}
+			
 				FuncAppTerm term = (FuncAppTerm) argSpec;
 				RandomFunction function = null;
 				if (term.getFunction() instanceof blog.model.RandomFunction)
@@ -111,8 +117,13 @@ public class LiftedEvidence {
 					continue;
 				// if an observable_ function, skip
 				//if (function.getObservableFun() == null) continue;
-
+				
+				// Search for non-guaranteed symbols
 				ArgSpec[] args = term.getArgs();
+				if (args.length == 0) {
+					args = new ArgSpec[1];
+					args[0] = term; 
+				}
 				List<Object> newArgs = new ArrayList<Object>();
 				boolean hasNgo = false;
 				for (ArgSpec arg : args) {
@@ -120,12 +131,8 @@ public class LiftedEvidence {
 					if (!(arg instanceof FuncAppTerm)) continue;
 					FuncAppTerm fat = (FuncAppTerm) arg;
 					if (!(fat.getFunction() instanceof SkolemConstant)) continue;
-					//Object newArg = arg.evaluate(w);
-					//newArgs.add(newArg);
-					//System.out.println(newArg);
-					//if (newArg instanceof NonGuaranteedObject) {
 					hasNgo = true;
-					liftedProperties.addObject(arg); //using symbol object instead
+					liftedProperties.addObject(fat); //using symbol object instead
 					//liftedProperties.addObject(newArg);
 					//}
 				}
@@ -156,7 +163,7 @@ public class LiftedEvidence {
 			newEvidence.addDecisionEvidence(stmt);
 		}
 		for (SymbolEvidenceStatement stmt : evidence.getSymbolEvidence()) {
-			if (liftedVars.contains(stmt.getObservedVar())) continue;
+			if (liftedHistory != null) continue;//liftedVars.contains(stmt.getObservedVar())) continue;
 			newEvidence.addSymbolEvidence(stmt);
 		}
 		

@@ -15,4 +15,4 @@ export BLOG_HOME
 
 J_PATH_SEP=`${BLOG_HOME}/path_sep.sh`
 
-java -cp "${BLOG_HOME}/bin${J_PATH_SEP}${BLOG_HOME}/lib/java_cup.jar${J_PATH_SEP}${BLOG_HOME}/lib/JFlex-1.4.3.jar$" -Xmx2048M blog.Main $@ -e blog.engine.ParticleFilter
+java -cp "${BLOG_HOME}/bin${J_PATH_SEP}${BLOG_HOME}/lib/java_cup.jar${J_PATH_SEP}${BLOG_HOME}/lib/JFlex-1.4.3.jar$" -Xmx1048M blog.Main $@ -n 100 -e blog.engine.ParticleFilter
