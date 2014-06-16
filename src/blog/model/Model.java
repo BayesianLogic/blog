@@ -399,7 +399,7 @@ public class Model {
 
     NonRandomFunction f = ((NonRandomFunction) getFunction(new FunctionSignature(
         name)));
-    return (f == null) ? null : f.getValue();
+    return (f == null) ? null : f.getConstantValue();
   }
 
   /**
