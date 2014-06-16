@@ -11,7 +11,7 @@ import blog.distrib.TabularCPD;
 import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
 import blog.model.FuncAppTerm;
-import blog.model.NonRandomFunction;
+import blog.model.FixedFunction;
 import blog.model.Term;
 
 public class HiddenMarkovModel {
@@ -99,8 +99,8 @@ public class HiddenMarkovModel {
 	private Categorical createCategorical(String[] terms, double[] probs) {
 		Map<ArgSpec, Term> argsToProbs = new HashMap<ArgSpec, Term>();
 		for (int i = 0; i < terms.length; i++) {
-			argsToProbs.put(new FuncAppTerm(NonRandomFunction.createConstant(terms[i], BuiltInTypes.STRING, terms[i])),
-							new FuncAppTerm(NonRandomFunction.createConstant("" + probs[i], BuiltInTypes.REAL, probs[i])));
+			argsToProbs.put(new FuncAppTerm(FixedFunction.createConstant(terms[i], BuiltInTypes.STRING, terms[i])),
+							new FuncAppTerm(FixedFunction.createConstant("" + probs[i], BuiltInTypes.REAL, probs[i])));
 		}
 		List<Map<ArgSpec, Term>> argProbList = new ArrayList<Map<ArgSpec, Term>>();
 		argProbList.add(argsToProbs);
