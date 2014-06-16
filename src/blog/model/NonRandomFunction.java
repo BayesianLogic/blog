@@ -52,16 +52,17 @@ import blog.common.Util;
 import blog.sample.EvalContext;
 
 /**
- * Represents the symbol for a non-random function, whose value for the given
- * tuple of arguments is constant over worlds. Non-random functions do not have
- * dependency statement like the random functions do. Instead, the function
- * symbol's interpretation is given by an object that implements the
- * FunctionInterp interface.
+ * Represents the symbol for a fixed function, whose value for the given
+ * tuple of arguments is fixed over worlds. Fixed functions can have any
+ * expression in the body except reference to random symbol or Distribution.
+ * In addition, the function body can be a single statement of interpretation
+ * given by an object that implements the FunctionInterp interface.
  * 
  * @see blog.model.Function
  * @author unknown
  * @author leili
  * @date 2014/2/11
+ * @date 2014/6/16
  */
 public class NonRandomFunction extends Function {
 
@@ -73,16 +74,14 @@ public class NonRandomFunction extends Function {
   }
 
   /**
-   * Creates a non-random constant with the given name and type.
+   * Creates a fixed constant with the given name and type.
    */
   public NonRandomFunction(String fname, Type ret_type) {
     super(fname, Collections.EMPTY_LIST, ret_type);
   }
 
   public NonRandomFunction(String fname, List arg_types, Type ret_type) {
-
     super(fname, arg_types, ret_type);
-
   }
 
   /**
