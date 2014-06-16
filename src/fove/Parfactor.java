@@ -52,7 +52,7 @@ import blog.model.Formula;
 import blog.model.FuncAppTerm;
 import blog.model.LogicalVar;
 import blog.model.Model;
-import blog.model.NonRandomFunction;
+import blog.model.FixedFunction;
 import blog.model.RandomFunction;
 import blog.model.Substitution;
 import blog.model.Term;
@@ -1905,7 +1905,7 @@ public class Parfactor {
 
 		if (argSpec instanceof FuncAppTerm) {
 			FuncAppTerm funcApp = (FuncAppTerm) argSpec;
-			if (!(funcApp.getFunction() instanceof NonRandomFunction)) {
+			if (!(funcApp.getFunction() instanceof FixedFunction)) {
 				// Variables that are arguments to this func app are still
 				// liftable. Just recurse on arguments that are not
 				// logical variables.

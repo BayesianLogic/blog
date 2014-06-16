@@ -397,7 +397,7 @@ public class Model {
       return Boolean.FALSE;
     }
 
-    NonRandomFunction f = ((NonRandomFunction) getFunction(new FunctionSignature(
+    FixedFunction f = ((FixedFunction) getFunction(new FunctionSignature(
         name)));
     return (f == null) ? null : f.getConstantValue();
   }
@@ -409,8 +409,8 @@ public class Model {
    * @return the new non-random constant. To get its value (the new enumerated
    *         object), use its <code>getValue()</code> method.
    */
-  public NonRandomFunction addEnumeratedObject(String name, Type type) {
-    NonRandomFunction constant = new NonRandomFunction(name, type);
+  public FixedFunction addEnumeratedObject(String name, Type type) {
+    FixedFunction constant = new FixedFunction(name, type);
     Object o = type.addGuaranteedObject(constant);
     constant.setConstantInterp(o);
     addFunction(constant);
@@ -445,8 +445,8 @@ public class Model {
     // Print nonrandom functions
     for (Iterator iter = functions.iterator(); iter.hasNext();) {
       Function f = (Function) iter.next();
-      if (f instanceof NonRandomFunction) {
-        ((NonRandomFunction) f).print(s);
+      if (f instanceof FixedFunction) {
+        ((FixedFunction) f).print(s);
       }
     }
 
