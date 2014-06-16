@@ -1,4 +1,11 @@
-Please copy all the files to the Sublime package directory:
+# Install
+## Automatic install (easiest)
+```
+$ ./install.sh
+```
+
+## Manual install
+Alternatively you may install it manually. Copy all the files to the Sublime package directory:
 On MacOSx it is 
 ~/Library/Application Support/Sublime Text 3/Packages/User
 or 
