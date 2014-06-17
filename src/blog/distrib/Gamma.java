@@ -146,18 +146,10 @@ public class Gamma implements CondProbDistrib {
   @Override
   public Object sampleVal() {
     checkHasParams();
-    return sampleVal(k, lambda);
+    return sample_value();
   }
 
-  /**
-   * Should be compared with Marsiaglia's algorithm used in MATLAB.
-   * Uses Cheng's rejection algorithm (GB) for k>=1,
-   * rejection from Weibull distribution for 0 < k < 1.
-   * 
-   * @param k
-   * @param lambda
-   */
-  public static double sampleVal(double k, double lambda) {
+  public double sample_value() {
     boolean accept = false;
     if (k >= 1) {
       // Cheng's algorithm
@@ -195,6 +187,19 @@ public class Gamma implements CondProbDistrib {
       } while (!accept);
       return x / lambda;
     }
+  }
+
+  /**
+   * Should be compared with Marsiaglia's algorithm used in MATLAB.
+   * Uses Cheng's rejection algorithm (GB) for k>=1,
+   * rejection from Weibull distribution for 0 < k < 1.
+   * 
+   * @param k
+   * @param lambda
+   */
+  public static double sampleVal(double k, double lambda) {
+    throw new IllegalStateException(
+        "all references must be changed to instance method");
   }
 
   /**
