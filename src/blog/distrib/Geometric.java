@@ -50,19 +50,19 @@ import blog.common.Util;
  * Note that <code>alpha</code> cannot be 0, because then the value is infinite
  * with probability 1. However, alpha can be 1; this just means the value is 0
  * with probability 1.
+ * 
+ * @since June 17, 2014
  */
 public class Geometric implements CondProbDistrib {
 
-  /** Returns the parameter <code>alpha</code>. */
-  public double getAlpha() {
-    return alpha;
-  }
-
   /**
-   * mapping for <code>params</code>:
-   * <ul>
-   * <li>params[0]: <code>alpha</code></li>
-   * </ul>
+   * set parameters for Geometric distribution
+   * 
+   * @param params
+   *          An array of the form [Double]
+   *          <ul>
+   *          <li>params[0]: <code>alpha</code>(Double)</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
@@ -132,6 +132,7 @@ public class Geometric implements CondProbDistrib {
    * Returns the log probability of the given integer under this distribution.
    */
   public double getLogProb(int k) {
+    checkHasParams();
     if (k < 0) {
       return Double.NEGATIVE_INFINITY;
     }
@@ -152,7 +153,7 @@ public class Geometric implements CondProbDistrib {
   @Override
   public Object sampleVal() {
     checkHasParams();
-    return sampleVal_();
+    return sample_value();
   }
 
   /**
@@ -162,49 +163,20 @@ public class Geometric implements CondProbDistrib {
    * exploits the fact that the geometric distribution can be seen as a
    * discretization of the exponential distribution.
    */
-  public int sampleVal_() {
+  public int sample_value() {
     double u = Util.random();
     return (int) (Math.log(u) / logOneMinusAlpha);
   }
 
   @Override
   public String toString() {
-    return getClass().getName();
+    return "Geometric(" + alpha + " )";
   }
 
   private void computeLogParams() {
     logAlpha = Math.log(alpha);
     logOneMinusAlpha = Math.log(1 - alpha);
   }
-
-  /**
-   * Records an occurrence of the number n, for use in updating parameters.
-   */
-  /*
-   * public void collectStats(int n) { if (n < 0) { throw new
-   * IllegalArgumentException
-   * ("Geometric distribution can't generate a negative number."); }
-   * 
-   * count++; sum += n; }
-   */
-
-  /**
-   * Sets the parameter alpha to the value that maximizes the likelihood of the
-   * numbers passed to collectStats since the last call to updateParams. Then
-   * clears the collected statistics, and returns the difference between the log
-   * likelihood of the data under the new parameters and the log likelihood
-   * under the old parameters.
-   */
-  /*
-   * public double updateParams() { // Update parameter double oldLogProb =
-   * (count * logOneMinusAlpha) + (sum * logAlpha); if (count > 0) { double mean
-   * = sum / (double) count; alpha = mean / (1 + mean); cacheParams(); } double
-   * newLogProb = (count * logOneMinusAlpha) + (sum * logAlpha);
-   * 
-   * // Clear statistics count = 0; sum = 0;
-   * 
-   * return (newLogProb - oldLogProb); }
-   */
 
   private double alpha;
   private boolean hasAlpha;

@@ -169,7 +169,7 @@ public class NatNumDistribWithTail extends AbstractCondProbDistrib {
       return prefixDistrib.sampleVal_();
     } else {
       // X >= k
-      return k + geometric.sampleVal_();
+      return k + geometric.sample_value();
     }
   }
 
