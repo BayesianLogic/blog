@@ -25,8 +25,6 @@ public class TestBooleanDistrib implements TestDistributions {
 
   /** Testing a Boolean Distribution with p = 1.0 */
   public void testBooleanDistrib1(BooleanDistrib bool) {
-    assertEquals(1.0, bool.getP(), ERROR);
-
     assertEquals(1.0, bool.getProb(true), ERROR);
     assertEquals(0.0, bool.getProb(false), ERROR);
     assertEquals(0.0, bool.getLogProb(true), ERROR);
@@ -35,8 +33,6 @@ public class TestBooleanDistrib implements TestDistributions {
 
   /** Testing a Boolean Distribution with p = 0.6 */
   public void testBooleanDistrib2(BooleanDistrib bool) {
-    assertEquals(0.6, bool.getP(), ERROR);
-
     assertEquals(0.6, bool.getProb(true), ERROR);
     assertEquals(0.4, bool.getProb(false), ERROR);
     assertEquals(Math.log(0.6), bool.getLogProb(true), ERROR);
