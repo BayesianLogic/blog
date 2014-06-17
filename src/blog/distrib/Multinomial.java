@@ -274,9 +274,9 @@ public class Multinomial implements CondProbDistrib {
     }
 
     // Convert to Jama (nasty).
-    double[][] doubleResult = new double[n][1];
+    double[][] doubleResult = new double[1][n];
     for (int i = 0; i < n; i++) {
-      doubleResult[i][0] = result[i];
+      doubleResult[0][i] = result[i];
     }
     return MatrixFactory.fromArray(doubleResult);
   }
