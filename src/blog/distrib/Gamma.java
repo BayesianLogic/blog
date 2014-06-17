@@ -43,27 +43,20 @@ import blog.common.Util;
  * Defined as f(x) = (lambda*e^(-lambda*x)*(lambda*x)^(k - 1)) / Gamma(k) where
  * Gamma(k) = integral from 0 to infinity of t^(k-1) * e^(-t) dt
  * 
- * @since June 12, 2014
+ * @since June 17, 2014
  */
 
 public class Gamma implements CondProbDistrib {
 
-  /** Returns the scale parameter <code>lamdba</code>. */
-  public double getLambda() {
-    return lambda;
-  }
-
-  /** Returns the shape parameter <code>k</code>. */
-  public double getK() {
-    return k;
-  }
-
   /**
-   * mapping for <code>params</code>:
-   * <ul>
-   * <li>params[0]: <code>k</code> (shape parameter)</li>
-   * <li>params[1]: <code>lambda</code> (rate parameter)</li>
-   * </ul>
+   * set parameters for Gamma distribution
+   * 
+   * @param params
+   *          An array of the form [Double, Double]
+   *          <ul>
+   *          <li>params[0]: <code>k</code> (Double)</li>
+   *          <li>params[1]: <code>lambda</code> (Double)</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
@@ -161,34 +154,34 @@ public class Gamma implements CondProbDistrib {
    * Uses Cheng's rejection algorithm (GB) for k>=1,
    * rejection from Weibull distribution for 0 < k < 1.
    * 
-   * @param alpha
-   * @param beta
+   * @param k
+   * @param lambda
    */
-  public static double sampleVal(double alpha, double beta) {
+  public static double sampleVal(double k, double lambda) {
     boolean accept = false;
-    if (alpha >= 1) {
+    if (k >= 1) {
       // Cheng's algorithm
-      double b = (alpha - Math.log(4));
-      double c = (alpha + Math.sqrt(2 * alpha - 1));
-      double lam = Math.sqrt(2 * alpha - 1);
+      double b = (k - Math.log(4));
+      double c = (k + Math.sqrt(2 * k - 1));
+      double lam = Math.sqrt(2 * k - 1);
       double cheng = (1 + Math.log(4.5));
       double u, v, x, y, z, r;
       do {
         u = Util.random();
         v = Util.random();
         y = ((1 / lam) * Math.log(v / (1 - v)));
-        x = (alpha * Math.exp(y));
+        x = (k * Math.exp(y));
         z = (u * v * v);
         r = (b + (c * y) - x);
         if ((r >= ((4.5 * z) - cheng)) || (r >= Math.log(z))) {
           accept = true;
         }
       } while (!accept);
-      return x / beta;
+      return x / lambda;
     } else {
       // Weibull algorithm
-      double c = (1 / alpha);
-      double d = ((1 - alpha) * Math.pow(alpha, (alpha / (1 - alpha))));
+      double c = (1 / k);
+      double d = ((1 - k) * Math.pow(k, (k / (1 - k))));
       double u, v, z, e, x;
       do {
         u = Util.random();
@@ -200,7 +193,7 @@ public class Gamma implements CondProbDistrib {
           accept = true;
         }
       } while (!accept);
-      return x / beta;
+      return x / lambda;
     }
   }
 
