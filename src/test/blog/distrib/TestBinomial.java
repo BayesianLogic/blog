@@ -24,9 +24,6 @@ public class TestBinomial implements TestDistributions {
 
   /** Binomial, n = 2, p = 0.5 **/
   public void testBinomial1(Binomial binomial) {
-    assertEquals(2, binomial.getN(), ERROR);
-    assertEquals(0.5, binomial.getP(), ERROR);
-
     assertEquals(0, binomial.getProb(-20), ERROR);
     assertEquals(0, binomial.getProb(-1), ERROR);
     assertEquals(0.25, binomial.getProb(0), ERROR);
@@ -46,9 +43,6 @@ public class TestBinomial implements TestDistributions {
 
   /** Binomial, n = 2, p = 0.6 **/
   public void testBinomial2(Binomial binomial) {
-    assertEquals(2, binomial.getN(), ERROR);
-    assertEquals(0.6, binomial.getP(), ERROR);
-
     assertEquals(0, binomial.getProb(-20), ERROR);
     assertEquals(0, binomial.getProb(-1), ERROR);
     assertEquals(0.16, binomial.getProb(0), ERROR);
@@ -68,9 +62,6 @@ public class TestBinomial implements TestDistributions {
 
   /** Binomial, n = 5, p = 0.6 **/
   public void testBinomial3(Binomial binomial) {
-    assertEquals(5, binomial.getN(), ERROR);
-    assertEquals(0.6, binomial.getP(), ERROR);
-
     assertEquals(0.010240000000000008, binomial.getProb(0), ERROR);
     assertEquals(0.076800000000000007, binomial.getProb(1), ERROR);
     assertEquals(0.23039999999999999, binomial.getProb(2), ERROR);

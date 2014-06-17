@@ -43,30 +43,20 @@ import blog.common.Util;
  * k successes
  * P(k)= C(n,k) * p^k * (1-p)^(n-k).
  * 
- * @since June 12, 2014
+ * @since June 17, 2014
  */
 
 public class Binomial implements CondProbDistrib {
 
-  /** Returns the distribution parameter <code>n</code> (number of trials). */
-  public int getN() {
-    return n;
-  }
-
   /**
-   * Returns the distribution parameter <code>p</code> (probability of success
-   * for a given trial).
-   */
-  public double getP() {
-    return p;
-  }
-
-  /**
-   * mapping for <code>params</code>:
-   * <ul>
-   * <li>params[0]: <code>n</code></li>
-   * <li>params[1]: <code>p</code></li>
-   * </ul>
+   * set parameters for beta distribution
+   * 
+   * @param params
+   *          An array of the form: [Integer, Double]
+   *          <ul>
+   *          <li>params[0]: <code>n</code> (Integer)</li>
+   *          <li>params[1]: <code>p</code> (Double)</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
