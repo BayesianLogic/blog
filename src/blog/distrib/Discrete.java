@@ -22,8 +22,11 @@ public class Discrete implements CondProbDistrib {
    * set parameters for discrete distribution
    * 
    * @param params
-   * An array of one MatrixLib
-   * params[0]: <code>P</code> (MatrixLib in the form of a row vector)
+   * 
+   * An array of the form [MatrixLib]
+   * <ul>
+   * <li><code>P</code> (MatrixLib in the form of a row vector)
+   * </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
