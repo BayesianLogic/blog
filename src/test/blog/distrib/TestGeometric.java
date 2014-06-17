@@ -28,8 +28,6 @@ public class TestGeometric implements TestDistributions {
 
   /** Geometric with alpha = 1. */
   public void testGeometric1(Geometric geom) {
-    assertEquals(1, geom.getAlpha(), ERROR);
-
     assertEquals(0, geom.getProb(-1), ERROR);
     assertEquals(1, geom.getProb(0), ERROR);
     assertEquals(0, geom.getProb(1), ERROR);
@@ -43,8 +41,6 @@ public class TestGeometric implements TestDistributions {
 
   /** Geometric with alpha = 0.2. */
   public void testGeometric2(Geometric geom) {
-    assertEquals(0.2, geom.getAlpha(), ERROR);
-
     assertEquals(0, geom.getProb(-1), ERROR);
     assertEquals(0.2, geom.getProb(0), ERROR);
     assertEquals(0.16, geom.getProb(1), ERROR);
@@ -62,10 +58,7 @@ public class TestGeometric implements TestDistributions {
 
   @Test
   public void testProbabilityViaConstructor() {
-    Geometric geom = new Geometric(1);
-    testGeometric1(geom);
-    geom = new Geometric(0.2);
-    testGeometric2(geom);
+    // no longer needed. will be removed.
   }
 
   @Test
