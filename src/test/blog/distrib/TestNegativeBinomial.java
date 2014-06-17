@@ -24,9 +24,6 @@ public class TestNegativeBinomial implements TestDistributions {
 
   /** Negative Binomial. r = 1, p = 0.6 . */
   public void testNegativeBinomial1(NegativeBinomial neg) {
-    assertEquals(1, neg.getR(), ERROR);
-    assertEquals(0.6, neg.getP(), ERROR);
-
     assertEquals(0, neg.getProb(-1), ERROR);
     assertEquals(0.4, neg.getProb(0), ERROR);
     assertEquals(0.24, neg.getProb(1), ERROR);
@@ -41,9 +38,6 @@ public class TestNegativeBinomial implements TestDistributions {
 
   /** Negative Binomial. r = 5, p = 0.6 . */
   public void testNegativeBinomial2(NegativeBinomial neg) {
-    assertEquals(5, neg.getR(), ERROR);
-    assertEquals(0.6, neg.getP(), ERROR);
-
     assertEquals(Double.NEGATIVE_INFINITY, neg.getLogProb(-1), ERROR);
     assertEquals(-4.581453659370775, neg.getLogProb(0), ERROR);
     assertEquals(-3.4828413707026655, neg.getLogProb(1), ERROR);
