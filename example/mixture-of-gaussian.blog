@@ -1,0 +1,15 @@
+/** 
+ * A model for mixture of Gaussian distribution. 
+ * The latent variable \verb|z| determines the mixture component of \verb|x|. 
+ * The program asks the possible value of \verb|z| given the evidence of \verb|x| being 0.2.
+ *
+ * @author leili
+ * @since 2014-06-16
+ */
+
+random Integer z ~ Bernoulli(0.5);
+random Real x 
+  if (z == 1) then ~ Gaussian(0.5, 1.0);
+  else ~ Gaussian(-0.5, 1.0);
+obs x = 0.2;
+query z;
