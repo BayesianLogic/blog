@@ -116,7 +116,7 @@ public class Discrete implements CondProbDistrib {
    */
   public double getProb(Integer value) {
     checkHasParams();
-    if (value < 0 || value > this.k) {
+    if (value < 0 || value >= this.k) {
       return 0.0;
     }
     return p[value];
@@ -134,7 +134,7 @@ public class Discrete implements CondProbDistrib {
 
   public double getLogProb(Integer value) {
     checkHasParams();
-    if (value < 0 || value > this.k) {
+    if (value < 0 || value >= this.k) {
       return Double.NEGATIVE_INFINITY;
     }
     return logP[value];
