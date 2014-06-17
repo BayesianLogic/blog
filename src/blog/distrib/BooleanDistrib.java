@@ -42,13 +42,9 @@ import blog.common.Util;
  * is the probability of <code>true</code>.
  * 
  * @author cgioia
- * @since June 9, 2014
+ * @since June 17, 2014
  */
 public class BooleanDistrib implements CondProbDistrib {
-
-  public double getP() {
-    return p;
-  }
 
   private void checkHasParams() {
     if (!this.hasP) {
@@ -91,6 +87,7 @@ public class BooleanDistrib implements CondProbDistrib {
 
   @Override
   public Object sampleVal() {
+    checkHasParams();
     if (Util.random() < p) {
       return true;
     }
