@@ -54,7 +54,9 @@ import java.util.StringTokenizer;
 import blog.Main;
 import blog.ObjectIdentifier;
 import blog.common.Util;
+import blog.sample.DefaultEvalContext;
 import blog.type.Timestep;
+import blog.world.PartialWorld;
 import fove.Parfactor;
 
 /**
@@ -397,9 +399,9 @@ public class Model {
       return Boolean.FALSE;
     }
 
-    FixedFunction f = ((FixedFunction) getFunction(new FunctionSignature(
-        name)));
-    return (f == null) ? null : f.getConstantValue();
+    FixedFunction f = ((FixedFunction) getFunction(new FunctionSignature(name)));
+    return (f == null) ? null : f.getValueInContext(new Object[0],
+        new DefaultEvalContext(PartialWorld.EMPTY_INST), false);
   }
 
   /**
