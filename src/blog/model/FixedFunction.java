@@ -181,10 +181,6 @@ public class FixedFunction extends Function {
     return interpClass;
   }
 
-  public Object getConstantValue() {
-    return interp.getValue(Collections.EMPTY_LIST);
-  }
-
   private Object getValueInInterpretation(Object[] args) {
     for (int i = 0; i < args.length; ++i) {
       if (args[i] == Model.NULL) {
