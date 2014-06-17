@@ -428,7 +428,7 @@ public class FuncAppTerm extends Term {
   }
 
   public Term getCanonicalVersion() {
-    if ((f instanceof NonRandomFunction) && getFreeVars().isEmpty()) {
+    if ((f instanceof FixedFunction) && getFreeVars().isEmpty()) {
       Object value = getValueIfNonRandom();
       if (value != null) {
         Term canonical = getType().getCanonicalTerm(value);

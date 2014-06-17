@@ -10,7 +10,7 @@ import blog.distrib.Categorical;
 import blog.model.ArgSpec;
 import blog.model.BuiltInTypes;
 import blog.model.FuncAppTerm;
-import blog.model.NonRandomFunction;
+import blog.model.FixedFunction;
 import blog.model.SymbolTerm;
 import blog.model.Term;
 
@@ -100,10 +100,10 @@ public class Hurricane {
 	
 	private Categorical createCategorical(String[] terms, double[] probs) {
 		Map<ArgSpec, Term> argsToProbs = new HashMap<ArgSpec, Term>();
-		argsToProbs.put(new FuncAppTerm(NonRandomFunction.createConstant(terms[0], BuiltInTypes.STRING, terms[0])),
-						new FuncAppTerm(NonRandomFunction.createConstant("" + probs[0], BuiltInTypes.REAL, probs[0])));
-		argsToProbs.put(new FuncAppTerm(NonRandomFunction.createConstant(terms[1], BuiltInTypes.STRING, terms[1])),
-						new FuncAppTerm(NonRandomFunction.createConstant("" + probs[1], BuiltInTypes.REAL, probs[1])));
+		argsToProbs.put(new FuncAppTerm(FixedFunction.createConstant(terms[0], BuiltInTypes.STRING, terms[0])),
+						new FuncAppTerm(FixedFunction.createConstant("" + probs[0], BuiltInTypes.REAL, probs[0])));
+		argsToProbs.put(new FuncAppTerm(FixedFunction.createConstant(terms[1], BuiltInTypes.STRING, terms[1])),
+						new FuncAppTerm(FixedFunction.createConstant("" + probs[1], BuiltInTypes.REAL, probs[1])));
 		List<Map<ArgSpec, Term>> argProbList = new ArrayList<Map<ArgSpec, Term>>();
 		argProbList.add(argsToProbs);
 		return new Categorical(argProbList);
