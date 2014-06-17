@@ -8,8 +8,8 @@
  */
 
 random Integer z ~ Bernoulli(0.5);
-random Real x 
-  if (z == 1) then ~ Gaussian(0.5, 1.0);
+random Real x
+  if z == 1 then ~ Gaussian(0.5, 1.0)
   else ~ Gaussian(-0.5, 1.0);
 obs x = 0.2;
 query z;
