@@ -51,8 +51,10 @@ public class Categorical extends AbstractCondProbDistrib {
    * set parameters for categorical distribution
    * 
    * @param params
-   *          An array of one Map<Object, Double>
-   *          params[0]: <code>map</code> (Map from Object to Double)
+   *          An array of the form [Map<Object, Double>]
+   *          <ul>
+   *          <li>params[0]: <code>map</code> (Map<Object, Double>)</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
@@ -152,6 +154,11 @@ public class Categorical extends AbstractCondProbDistrib {
       }
     }
     return objects[objects.length - 1];
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getName();
   }
 
   private HashMap<Object, Double> map;
