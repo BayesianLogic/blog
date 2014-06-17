@@ -1,6 +1,5 @@
 package blog.common.numerical;
 
-
 /**
  * Creates MatrixLib objects.
  * 
@@ -25,6 +24,14 @@ public class MatrixFactory {
       }
     }
     return fromArray(result);
+  }
+
+  static public MatrixLib createRowVector(double... args) {
+    double[][] ary = new double[1][args.length];
+    for (int i = 0; i < args.length; i++) {
+      ary[0][i] = args[i];
+    }
+    return MatrixFactory.fromArray(ary);
   }
 
   static public MatrixLib zeros(int rows, int cols) {
