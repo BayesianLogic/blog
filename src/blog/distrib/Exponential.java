@@ -42,21 +42,19 @@ import blog.common.Util;
  * non-negative reals.
  * The probability of x is lambda * e^(-lambda*x).
  * 
- * @since June 12, 2014
+ * @since June 17, 2014
  */
 
 public class Exponential implements CondProbDistrib {
 
-  /** Returns the parameter <code>lambda</code>. */
-  public double getLambda() {
-    return lambda;
-  }
-
   /**
-   * Mapping for <code>params</code>.
-   * <ul>
-   * <li>params[0]: <code>lambda</code> as a Double.</li>
-   * </ul>
+   * set parameters for Exponential distribution
+   * 
+   * @param params
+   *          An array of the form [Double]
+   *          <ul>
+   *          <li>params[0]: <code>lambda</code> (Double)</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
@@ -137,8 +135,13 @@ public class Exponential implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
+    return sample_value();
+  }
+
+  /** Samples a value from an exponential distribution. */
+  public double sample_value() {
     checkHasParams();
-    return Exponential.sampleVal(lambda);
+    return -Math.log(Util.random()) / this.lambda;
   }
 
   /**
@@ -147,6 +150,11 @@ public class Exponential implements CondProbDistrib {
    */
   public static double sampleVal(double lambda) {
     return -Math.log(Util.random()) / lambda;
+  }
+
+  @Override
+  public String toString() {
+    return "Exponential(" + lambda + ")";
   }
 
   private boolean hasLambda;
