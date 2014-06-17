@@ -24,8 +24,6 @@ public class TestExponential implements TestDistributions {
 
   /** Exponential, lambda = 1. */
   public void testExponential1(Exponential exp) {
-    assertEquals(1, exp.getLambda(), ERROR);
-
     assertEquals(0.0, exp.getProb(-20), ERROR);
     assertEquals(0.0, exp.getProb(-0.01), ERROR);
     assertEquals(1.0, exp.getProb(0.0), ERROR);
@@ -43,8 +41,6 @@ public class TestExponential implements TestDistributions {
 
   /** Exponential, lambda = 5.5. */
   public void testExponential2(Exponential exp) {
-    assertEquals(5.5, exp.getLambda(), ERROR);
-
     assertEquals(0.0, exp.getProb(-20), ERROR);
     assertEquals(0.0, exp.getProb(-0.01), ERROR);
     assertEquals(5.5, exp.getProb(0.0), ERROR);
