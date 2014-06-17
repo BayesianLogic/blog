@@ -42,9 +42,7 @@ import java.util.List;
 
 import blog.common.TupleIterator;
 import blog.common.Util;
-import blog.sample.DefaultEvalContext;
 import blog.sample.EvalContext;
-import blog.world.PartialWorld;
 
 /**
  * Represents a BLOG function. A function is specified by its name, return type,
@@ -141,47 +139,6 @@ public abstract class Function {
    */
   public int compile(LinkedHashSet callStack) {
     return 0;
-  }
-
-  /**
-   * Returns the value of this function applied to the given tuple of arguments
-   * in the given partial world. If the given partial world is not complete
-   * enough to determine the function value, this method returns null.
-   */
-  public Object getValue(Object[] args, PartialWorld w) {
-    return getValueInContext(args, new DefaultEvalContext(w), false);
-  }
-
-  /**
-   * Returns the value of this function applied to an empty tuple of arguments
-   * in the given partial world (this method should be used only for zero-ary
-   * functions). If the given partial world is not complete enough to determine
-   * the function value, this method returns null.
-   */
-  public Object getValue(PartialWorld w) {
-    return getValueInContext(new Object[0], new DefaultEvalContext(w), true);
-  }
-
-  /**
-   * Returns the value of this function applied to the given single argument in
-   * the given partial world (this method should be used only for unary
-   * functions). If the given partial world is not complete enough to determine
-   * the function value, this method returns null.
-   */
-  public Object getValueSingleArg(Object arg, PartialWorld w) {
-    Object[] args = { arg };
-    return getValueInContext(args, new DefaultEvalContext(w), true);
-  }
-
-  /**
-   * Returns the value of this function applied to the given pair of arguments
-   * in the given partial world (this method should be used only for binary
-   * functions). If the given partial world is not complete enough to determine
-   * the function value, this method returns null.
-   */
-  public Object getValue(Object arg1, Object arg2, PartialWorld w) {
-    Object[] args = { arg1, arg2 };
-    return getValueInContext(args, new DefaultEvalContext(w), true);
   }
 
   /**
