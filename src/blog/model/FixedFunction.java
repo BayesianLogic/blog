@@ -129,13 +129,13 @@ public class FixedFunction extends Function {
   }
 
   /**
-   * Sets the interpretation of this function to be an instance of the given
+   * Sets the interpretation of a Fixedfunction to be an instance of the given
    * class, constructed with the given parameters.
    */
   public void setInterpretation(Class<? extends FunctionInterp> interpClass,
       List interpParams) {
     if (this.body != null) {
-      Util.fatalError("setting interpretation for body, but body is not null");
+      Util.fatalError("setting interpretation, but the function body is already set");
     }
     this.interpClass = interpClass;
     this.interpParams = interpParams;
@@ -143,7 +143,7 @@ public class FixedFunction extends Function {
   }
 
   /**
-   * Sets the interpretation of this function to be a ConstantInterp with the
+   * Sets the interpretation of a FixedFunction to be a ConstantInterp with the
    * given value.
    */
   public void setConstantInterp(Object value) {
@@ -158,7 +158,7 @@ public class FixedFunction extends Function {
    */
   public void setBody(ArgSpec body) {
     if (this.interp != null) {
-      Util.fatalError("Fixed function settting body, "
+      Util.fatalError("Setting body expression of fixed function, "
           + "but its interpretation is already set");
     }
     this.body = body;
