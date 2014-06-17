@@ -35,14 +35,10 @@
 
 package blog.distrib;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import blog.common.Util;
-import blog.common.numerical.MatrixLib;
-import blog.model.Model;
 
 /**
  * Categorical Distribution takes a distribution parameter <code>map</code>,
@@ -50,104 +46,6 @@ import blog.model.Model;
  * object represents the probability of that object occurring.
  */
 public class Categorical extends AbstractCondProbDistrib {
-
-  /**
-   * Returns an index sampled from this distribution.
-   * 
-   * @throws IllegalStateException
-   *           if the probability vector was not specified when this
-   *           distribution was constructed
-   */
-  public int sampleVal_() {
-    if (expectProbsAsArg) {
-      throw new IllegalStateException(
-          "Categorical distribution was constructed without a "
-              + "probability vector.");
-    }
-
-    return Util.sampleWithProbs(probs);
-  }
-
-  /**
-   * Returns a value sampled from the given child type according to this
-   * distribution. If this distribution was constructed with a probability
-   * vector, then no arguments are expected. Otherwise, there should be one
-   * argument, namely a column vector of probabilities.
-   * 
-   * @return a guaranteed object of the given type whose index is sampled
-   *         according to this distribution, or Model.NULL if the index sampled
-   *         is beyond the end of the guaranteed object list for the given type
-   * 
-   * @throws IllegalArgumentException
-   *           if the probability vector was specified at construction and
-   *           <code>args</code> is non-empty, or if the probability vector was
-   *           not specified and <code>args</code> is empty
-   */
-  public Object sampleVal(List args) {
-    ensureProbsInited(args);
-
-    int index = Util.sampleWithProbs(probs);
-    Object value = values[index];
-
-    if (value == null) {
-      // make list so we can print the probabilities easily
-      List probList = new ArrayList();
-      for (int i = 0; i < probs.length; ++i) {
-        probList.add(new Double(probs[i]));
-      }
-      System.err.println("Warning: distribution does not sum to 1");
-      value = Model.NULL;
-    }
-    return value;
-  }
-
-  private void ensureProbsInited(List args) {
-    if (expectProbsAsArg) {
-      if (args.isEmpty()) {
-        throw new IllegalArgumentException(
-            "Arguments to Categorical CPD should consist of a "
-                + "probability vector, since the probabilities were not "
-                + "specified as CPD parameters.");
-      }
-
-      Object arg = args.get(0);
-      if (arg instanceof MatrixLib) {
-        MatrixLib m = (MatrixLib) args.get(0);
-        probs = new double[m.numCols()];
-        values = new Object[m.numCols()];
-        for (int i = 0; i < probs.length; ++i) {
-          probs[i] = m.elementAt(0, i);
-          values[i] = Integer.valueOf(i);
-        }
-      } else if (arg instanceof Map) {
-        Map<Object, Number> map = (Map<Object, Number>) arg;
-        int entrysize = map.size();
-        probs = new double[entrysize];
-        values = new Object[entrysize];
-        int termIndex = 0;
-        for (Map.Entry<Object, Number> entry : map.entrySet()) {
-          probs[termIndex] = entry.getValue().doubleValue();
-          values[termIndex] = entry.getKey();
-          termIndex++;
-        }
-      } else {
-        throw new IllegalArgumentException(
-            "Argument to Categorical CPD should be a row "
-                + "vector of probabilities, or a map not: " + args.get(0));
-      }
-      normalizeProb();
-    } else if (args != null) {
-      if (!args.isEmpty()) {
-        throw new IllegalArgumentException(
-            "Categorical CPD expects no arguments (probabilities "
-                + "were specified as CPD parameters).");
-      }
-    }
-  }
-
-  boolean expectProbsAsArg = false;
-  private double[] probs;
-  private Object[] values;
 
   /**
    * set parameters for categorical distribution
