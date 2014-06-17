@@ -28,9 +28,6 @@ public class TestBeta implements TestDistributions {
 
   /** Beta(1, 1) Distribution. **/
   public void testBeta1_1(Beta beta) {
-    assertEquals(1.0, beta.getA(), ERROR);
-    assertEquals(1.0, beta.getB(), ERROR);
-
     assertEquals(0.0, beta.getProb(-0.01), ERROR);
     assertEquals(1.0, beta.getProb(0.0), ERROR);
     assertEquals(1.0, beta.getProb(0.5), ERROR);
@@ -45,9 +42,6 @@ public class TestBeta implements TestDistributions {
 
   /** Beta(1, 2) Distribution. **/
   public void testBeta1_2(Beta beta) {
-    assertEquals(1.0, beta.getA(), ERROR);
-    assertEquals(2.0, beta.getB(), ERROR);
-
     assertEquals(0.0, beta.getProb(-0.01), ERROR);
     assertEquals(2.0, beta.getProb(0), ERROR);
     assertEquals(1.0, beta.getProb(0.5), ERROR);
@@ -63,9 +57,6 @@ public class TestBeta implements TestDistributions {
 
   /** Beta(2, 2) Distribution. **/
   public void testBeta2_2(Beta beta) {
-    assertEquals(2.0, beta.getA(), ERROR);
-    assertEquals(2.0, beta.getB(), ERROR);
-
     assertEquals(0.0, beta.getProb(0), ERROR);
     assertEquals(1.5, beta.getProb(0.5), ERROR);
     assertEquals(0.0, beta.getProb(1.0), ERROR);
@@ -77,9 +68,6 @@ public class TestBeta implements TestDistributions {
 
   /** Beta(0.5, 5.8) Distribution. **/
   public void testBeta(Beta beta) {
-    assertEquals(0.5, beta.getA(), ERROR);
-    assertEquals(5.8, beta.getB(), ERROR);
-
     assertEquals(Double.POSITIVE_INFINITY, beta.getProb(0.0), ERROR);
     assertEquals(2.5360324296863515, beta.getProb(0.1), ERROR);
     assertEquals(0.067509015738754771, beta.getProb(0.5), ERROR);
