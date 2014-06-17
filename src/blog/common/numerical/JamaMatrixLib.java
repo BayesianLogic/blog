@@ -226,7 +226,7 @@ public class JamaMatrixLib implements MatrixLib {
         }
       }
     }
-    return false;
+    return true;
   }
 
 }

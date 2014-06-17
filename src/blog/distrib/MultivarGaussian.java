@@ -102,7 +102,7 @@ public class MultivarGaussian implements CondProbDistrib {
       this.hasCovariance = true;
       this.legalAssignment = false;
     }
-    if (!this.legalAssignment && !this.hasMean && !this.hasCovariance) {
+    if (!this.legalAssignment && this.hasMean && this.hasCovariance) {
       if (this.covariance.numCols() != this.mean.numCols()) {
         throw new IllegalArgumentException(
             "Dimensions of the mean vector and the covariance matrix do not match: "
@@ -111,6 +111,7 @@ public class MultivarGaussian implements CondProbDistrib {
                 + mean.numRows() + " by " + mean.numCols() + ".");
       }
       initializeConstants();
+      this.legalAssignment = true;
     }
   }
 
