@@ -41,26 +41,19 @@ package blog.distrib;
  * * (1-x)^(b-1)) / B(a,b) where B(a,b) is a normalization constant equal to
  * integral from 0 to 1 of x^(a-1) * (1-x)^(b-1) dx
  * 
- * @since June 12, 2014
+ * @since June 17, 2014
  */
 public class Beta implements CondProbDistrib {
 
-  /** Returns the shape parameter <code>a</code>. */
-  public double getA() {
-    return a;
-  }
-
-  /** Returns the shape parameter <code>b</code>. */
-  public double getB() {
-    return b;
-  }
-
   /**
-   * mapping for <code>params</code>:
-   * <ul>
-   * <li>params[0]: <code>a</code></li>
-   * <li>params[1]: <code>b</code></li>
-   * </ul>
+   * set parameters for beta distribution
+   * 
+   * @param params
+   *          An array of two Doubles.
+   *          <ul>
+   *          <li>params[0]: <code>a</code> (Double)</li>
+   *          <li>params[1]: <code>b</code> (Double)</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
