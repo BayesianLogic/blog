@@ -26,11 +26,14 @@ public class MatrixFactory {
     return fromArray(result);
   }
 
+  /**
+   * Returns a MatrixLib row vector of dimension 1 by args.length. args is
+   * interpreted as an array of doubles that comprise the first and only row for
+   * the returned MatrixLib instance.
+   */
   static public MatrixLib createRowVector(double... args) {
     double[][] ary = new double[1][args.length];
-    for (int i = 0; i < args.length; i++) {
-      ary[0][i] = args[i];
-    }
+    System.arraycopy(args, 0, ary[0], 0, args.length);
     return MatrixFactory.fromArray(ary);
   }
 
