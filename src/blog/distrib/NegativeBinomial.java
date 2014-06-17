@@ -167,6 +167,14 @@ public class NegativeBinomial implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
+    return sample_value();
+  }
+
+  /** Samples from the Negative Binomial distribution. */
+  public int sample_value() {
+    // Need to fix this to call instance methods sample_value of theta and
+    // poisson
+    checkHasParams();
     Double theta = (Double) gamma.sampleVal();
     return Poisson.sampleVal(theta);
   }
