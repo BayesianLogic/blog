@@ -64,6 +64,11 @@ public class BooleanDistrib implements CondProbDistrib {
     return log1_P;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
   @Override
   public double getLogProb(Object value) {
     return getLogProb(((Boolean) value).booleanValue());
@@ -80,11 +85,21 @@ public class BooleanDistrib implements CondProbDistrib {
     return 1 - p;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
   @Override
   public double getProb(Object value) {
     return getProb(((Boolean) value).booleanValue());
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
   @Override
   public Object sampleVal() {
     checkHasParams();
@@ -96,7 +111,7 @@ public class BooleanDistrib implements CondProbDistrib {
 
   /**
    * @param p
-   *          probability of <true>
+   *          probability of <code>true</code>
    */
   public void setParams(Double p) {
     if (p != null) {
@@ -112,7 +127,12 @@ public class BooleanDistrib implements CondProbDistrib {
   }
 
   /**
-   * params[0] -> p, probability of <code>true</code>
+   * set parameters for BooleanDistrib distribution
+   * 
+   * @param params
+   *          An array of a single double.
+   *          params[0]: <code>p</code>
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
   @Override
   public void setParams(Object[] params) {
@@ -123,6 +143,7 @@ public class BooleanDistrib implements CondProbDistrib {
     setParams((Double) params[0]);
   }
 
+  @Override
   public String toString() {
     return "BooleanDistrib(" + p + ")";
   }
