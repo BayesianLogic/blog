@@ -48,22 +48,20 @@ import blog.common.numerical.MatrixLib;
  * See https://en.wikipedia.org/wiki/Multinomial_distribution
  * 
  * @author cgioia
- * @since June 16, 2014
+ * @since June 17, 2014
  */
 public class Multinomial implements CondProbDistrib {
 
-  /** Returns the distribution parameter <code>N</code>. */
-  public int getN() {
-    return n;
-  }
-
-  /** Returns the distribution parameter <code>P</code>. */
-  public double[] getP() {
-    return p;
-  }
-
-  /*
-   * (non-Javadoc)
+  /**
+   * set parameters for multinomial distribution.
+   * 
+   * @param params
+   *          an array of the form [Integer, MatrixLib]
+   *          <ul>
+   *          <li>params[0]: <code>N</code>, number of trials (Integer)</li>
+   *          <li>params[1]: <code>P</code>, probability of success for each
+   *          category (MatrixLib)</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
@@ -101,7 +99,7 @@ public class Multinomial implements CondProbDistrib {
     if (p != null) {
       if (p.numRows() != 1 || p.numCols() == 0) {
         throw new IllegalArgumentException(
-            "The row vector p passed in is not a row vector");
+            "The vector p passed in is not a row vector");
       }
       initializeProbabilityVector(p);
       this.hasP = true;
@@ -117,7 +115,6 @@ public class Multinomial implements CondProbDistrib {
    * @param p
    */
   private void initializeProbabilityVector(MatrixLib p) {
-    double[] pi = new double[p.numCols()];
     double sum = 0.0;
     for (int i = 0; i < p.numCols(); i++) {
       double ele = p.elementAt(0, i);
@@ -125,21 +122,18 @@ public class Multinomial implements CondProbDistrib {
         throw new IllegalArgumentException("Probability " + ele
             + " for element " + i + " is negative.");
       }
-      sum += p.elementAt(0, i);
+      sum += ele;
     }
     if (sum < 1e-9) {
       throw new IllegalArgumentException("Probabilities sum to approx zero");
     }
-    for (int i = 0; i < p.numCols(); i++) {
-      pi[i] = p.elementAt(0, i) / sum;
-    }
-    this.p = pi;
-    this.k = this.p.length;
-
-    // CDF of p -- precompute it for sampling
+    this.k = p.numCols();
+    this.p = new double[k];
     this.pCDF = new double[k];
+    this.p[0] = p.elementAt(0, 0) / sum;
     pCDF[0] = this.p[0];
-    for (int i = 1; i < k; i++) {
+    for (int i = 1; i < p.numCols(); i++) {
+      this.p[i] = p.elementAt(0, i) / sum;
       this.pCDF[i] = pCDF[i - 1] + this.p[i];
     }
   }
@@ -171,6 +165,28 @@ public class Multinomial implements CondProbDistrib {
    */
   public double getProb(MatrixLib value) {
     checkHasParams();
+    if (!inSupport(value)) {
+      return 0.0;
+    }
+    double prob = Util.factorial(n);
+    for (int i = 0; i < k; i++) {
+      prob *= Math.pow(p[i], value.elementAt(0, i));
+      prob /= Util.factorial((int) Math.round(value.elementAt(0, i)));
+    }
+    return prob;
+  }
+
+  /**
+   * Returns whether or not the row vector <code>value</code> is a possible
+   * combination of occurrences for this multinomial distribution. In other
+   * words, returns true iff <code>value</code> is in the support of this
+   * multinomial distribution. Refer to
+   * http://en.wikipedia.org/wiki/Multinomial_distribution.
+   * 
+   * @throws IllegalArgumentException
+   *           if value is not a row vector of the correct dimension (1 by k)
+   */
+  private boolean inSupport(MatrixLib value) {
     if (value.numRows() != 1 || value.numCols() != k) {
       throw new IllegalArgumentException(
           "The matrix provided is of the incorrect dimensions. Expecting a 1 by "
@@ -181,22 +197,16 @@ public class Multinomial implements CondProbDistrib {
     for (int i = 0; i < k; i++) {
       double element = value.elementAt(0, i);
       if (element < 0 || element % 1 != 0.0) {
-        return 0.0; // Number of successes for a particular category is negative
-                    // or not an integer
+        return false; // Number of successes for a particular category is
+                      // negative
+        // or not an integer
       }
       sum += element;
     }
     if (sum != n) {
-      return 0.0; // N != the sum of values
+      return false; // N != the sum of values
     }
-    double prob = Util.factorial(n);
-    for (int i = 0; i < k; i++) {
-      prob *= Math.pow(p[i], value.elementAt(0, i));
-      prob /= Util.factorial((int) Math.round(value.elementAt(0, i)));
-      // FIXME: It would be better if we could take the param as an array
-      // of ints, so we don't have to worry about rounding.
-    }
-    return prob;
+    return true;
   }
 
   /*
@@ -217,24 +227,8 @@ public class Multinomial implements CondProbDistrib {
    */
   public double getLogProb(MatrixLib value) {
     checkHasParams();
-    if (value.numRows() != 1 || value.numCols() != this.k) {
-      throw new IllegalArgumentException(
-          "The matrix provided is of the incorrect dimensions. Expecting a 1 by "
-              + this.k + " row vector but instead got a matrix of dimension "
-              + value.numRows() + " by " + value.numCols());
-    }
-    double sum = 0.0;
-    for (int i = 0; i < k; i++) {
-      double element = value.elementAt(0, i);
-      if (element < 0 || element % 1 != 0.0) {
-        return Double.NEGATIVE_INFINITY; // Number of successes for a particular
-                                         // category is negative or not an
-                                         // integer
-      }
-      sum += element;
-    }
-    if (sum != n) {
-      return Double.NEGATIVE_INFINITY; // N != the sum of values
+    if (!inSupport(value)) {
+      return Double.NEGATIVE_INFINITY;
     }
     double logProb = Util.logFactorial(n);
     for (int i = 0; i < k; i++) {
