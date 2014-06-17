@@ -41,6 +41,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -51,37 +52,36 @@ import blog.common.Util;
 import blog.sample.EvalContext;
 
 /**
- * Represents the symbol for a non-random function, whose value for the given
- * tuple of arguments is constant over worlds. Non-random functions do not have
- * dependency statement like the random functions do. Instead, the function
- * symbol's interpretation is given by an object that implements the
- * FunctionInterp interface.
+ * Represents the symbol for a fixed function, whose value for the given
+ * tuple of arguments is fixed over worlds. Fixed functions can have any
+ * expression in the body except reference to random symbol or Distribution.
+ * In addition, the function body can be a single statement of interpretation
+ * given by an object that implements the FunctionInterp interface.
  * 
  * @see blog.model.Function
  * @author unknown
  * @author leili
  * @date 2014/2/11
+ * @date 2014/6/16
  */
-public class NonRandomFunction extends Function {
+public class FixedFunction extends Function {
 
-  public static NonRandomFunction createConstant(String name, Type ret_type,
+  public static FixedFunction createConstant(String name, Type ret_type,
       Object value) {
     List params = Collections.singletonList(value);
-    return new NonRandomFunction(name, Collections.EMPTY_LIST, ret_type,
+    return new FixedFunction(name, Collections.EMPTY_LIST, ret_type,
         new ConstantInterp(params));
   }
 
   /**
-   * Creates a non-random constant with the given name and type.
+   * Creates a fixed constant with the given name and type.
    */
-  public NonRandomFunction(String fname, Type ret_type) {
+  public FixedFunction(String fname, Type ret_type) {
     super(fname, Collections.EMPTY_LIST, ret_type);
   }
 
-  public NonRandomFunction(String fname, List arg_types, Type ret_type) {
-
+  public FixedFunction(String fname, List arg_types, Type ret_type) {
     super(fname, arg_types, ret_type);
-
   }
 
   /**
@@ -103,14 +103,14 @@ public class NonRandomFunction extends Function {
    *          interpretation's constructor. These must be non-random and must
    *          contain no free variables.
    */
-  public NonRandomFunction(String fname, List arg_types, Type ret_type,
+  public FixedFunction(String fname, List arg_types, Type ret_type,
       Class interpClass, List interpParams) {
     super(fname, arg_types, ret_type);
     this.interpClass = interpClass;
     this.interpParams = interpParams;
   }
 
-  public NonRandomFunction(String fname, List arg_types, Type ret_type,
+  public FixedFunction(String fname, List arg_types, Type ret_type,
       FunctionInterp interp) {
     super(fname, arg_types, ret_type);
     this.interpClass = interp.getClass();
@@ -121,27 +121,47 @@ public class NonRandomFunction extends Function {
    * Sets the interpretation of this function.
    */
   public void setInterpretation(FunctionInterp interp) {
+    if (this.body != null) {
+      Util.fatalError("setting interpretation for body, but body is not null");
+    }
     this.interpClass = interp.getClass();
     this.interp = interp;
   }
 
   /**
-   * Sets the interpretation of this function to be an instance of the given
+   * Sets the interpretation of a Fixedfunction to be an instance of the given
    * class, constructed with the given parameters.
    */
-  public void setInterpretation(Class interpClass, List interpParams) {
+  public void setInterpretation(Class<? extends FunctionInterp> interpClass,
+      List interpParams) {
+    if (this.body != null) {
+      Util.fatalError("setting interpretation, but the function body is already set");
+    }
     this.interpClass = interpClass;
     this.interpParams = interpParams;
     this.interp = null;
   }
 
   /**
-   * Sets the interpretation of this function to be a ConstantInterp with the
+   * Sets the interpretation of a FixedFunction to be a ConstantInterp with the
    * given value.
    */
   public void setConstantInterp(Object value) {
     List params = Collections.singletonList(value);
     setInterpretation(new ConstantInterp(params));
+  }
+
+  /**
+   * set the body of this nonRandomFunction
+   * The body must be an expression, (aka ArgSpec)
+   * if body is not null, all subsequent process will ignore interp class
+   */
+  public void setBody(ArgSpec body) {
+    if (this.interp != null) {
+      Util.fatalError("Setting body expression of fixed function, "
+          + "but its interpretation is already set");
+    }
+    this.body = body;
   }
 
   /**
@@ -161,33 +181,16 @@ public class NonRandomFunction extends Function {
     return interpClass;
   }
 
-  public Object getValue() {
-    return interp.getValue(Collections.EMPTY_LIST);
-  }
-
-  public Object getValue(Object[] args) {
+  private Object getValueInInterpretation(Object[] args) {
     for (int i = 0; i < args.length; ++i) {
-      // Don't need to check for invalid objects because non-random
-      // function interpretations return Model.NULL on non-guaranteed
-      // objects anyway.
       if (args[i] == Model.NULL) {
         return Model.NULL;
       }
-
       if (args[i] instanceof GenericObject) {
         return null; // can't determine value on generic object
       }
     }
-
     return interp.getValue(Arrays.asList(args));
-  }
-
-  public Object getValueSingleArg(Object arg) {
-    if (arg == Model.NULL) {
-      return Model.NULL;
-    }
-
-    return interp.getValue(Collections.singletonList(arg));
   }
 
   /**
@@ -214,15 +217,37 @@ public class NonRandomFunction extends Function {
         getArgTypes()[argIndex], value);
   }
 
+  /**
+   * evaluate this function on specified args in context
+   */
   public Object getValueInContext(Object[] args, EvalContext context,
       boolean stable) {
-    return getValue(args);
+    if (body != null) {
+      context.assignTuple(getArgVars(), args);
+      Object v = body.evaluate(context);
+      context.unassignTuple(getArgVars());
+      return v;
+    } else {
+      return getValueInInterpretation(args);
+    }
   }
 
   public boolean checkTypesAndScope(Model model) {
+    if (body != null) {
+      // this function has declared body
+      // need to check the scope of the body.
+      Map<String, LogicalVar> scope = new HashMap<String, LogicalVar>();
+      for (int i = 0; argVars != null && i < argVars.length; ++i) {
+        scope.put(argVars[i].getName(), argVars[i]);
+      }
+      return body.checkTypesAndScope(model, scope);
+    }
+
     if (interpClass == null) {
       return true; // no errors
     }
+
+    // assume using interpretation in Java
 
     boolean correct = true;
     Map scope = Collections.EMPTY_MAP;
@@ -238,7 +263,7 @@ public class NonRandomFunction extends Function {
       }
 
       // For ConstantInterp, we can do additional checking
-      if (interpClass == ConstantInterp.class) {
+      if (ConstantInterp.class.isAssignableFrom(interpClass)) {
         if (interpParams.size() != 1) {
           System.err.println("ConstantInterp takes exactly one parameter.");
           correct = false;
@@ -265,9 +290,9 @@ public class NonRandomFunction extends Function {
           }
 
           Type expected = getRetType();
-          if ((expected.isSubtypeOf(BuiltInTypes.REAL_ARRAY) ||
-                expected.isSubtypeOf(BuiltInTypes.REAL_MATRIX))
-                  && (param instanceof ListSpec)) {
+          if ((expected.isSubtypeOf(BuiltInTypes.REAL_ARRAY) || expected
+              .isSubtypeOf(BuiltInTypes.REAL_MATRIX))
+              && (param instanceof ListSpec)) {
             interpParams = Collections.singletonList(((ListSpec) param)
                 .transferToMatrix());
           } else if ((paramType != null) && (expected != null)
@@ -295,6 +320,18 @@ public class NonRandomFunction extends Function {
    *          invocation. Ordered by invocation order. Used to detect cycles.
    */
   public int compile(LinkedHashSet callStack) {
+    if (body != null) {
+      // this function has body expression
+      if (callStack.contains(this)) {
+        return 0; // recursion ok
+      }
+
+      callStack.add(this);
+      int errors = body.compile(callStack);
+      callStack.remove(this);
+      return errors;
+    }
+
     if (interp != null) {
       return 0; // already compiled
     }
@@ -416,29 +453,19 @@ public class NonRandomFunction extends Function {
    * same interpretation class, parameters and function interpretation.
    */
   public boolean equals(Object o) {
-    if (!(o instanceof NonRandomFunction))
+    if (!(o instanceof FixedFunction))
       return false;
-    NonRandomFunction oNRF = (NonRandomFunction) o;
+    FixedFunction oNRF = (FixedFunction) o;
     return Util.equalsOrBothNull(interpClass, oNRF.interpClass)
         && Util.equalsOrBothNull(interpParams, oNRF.interpParams)
         && Util.equalsOrBothNull(interp, oNRF.interp);
   }
 
-  // removed by leili 2012/12/17
-  // replaced by hashCode in Function
-  // public int hashCode() {
-  // int code = interpClass.hashCode();
-  // if (interpParams != null)
-  // for (Iterator it = interpParams.iterator(); it.hasNext();)
-  // code ^= it.next().hashCode();
-  // if (interp != null)
-  // code ^= interp.hashCode();
-  // return code;
-  // }
-
-  private Class interpClass;
+  private Class<? extends FunctionInterp> interpClass;
 
   private List interpParams; // of ArgSpec
 
   private FunctionInterp interp;
+
+  private ArgSpec body;
 }
