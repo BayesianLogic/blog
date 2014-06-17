@@ -24,9 +24,6 @@ public class TestGamma implements TestDistributions {
 
   /** Gamma with k = 2, Lambda = 1.0. */
   public void testGamma1(Gamma gamma) {
-    assertEquals(2, gamma.getK(), ERROR);
-    assertEquals(1.0, gamma.getLambda(), ERROR);
-
     assertEquals(0.0, gamma.getProb(-1), ERROR);
     assertEquals(0.0, gamma.getProb(0), ERROR);
     assertEquals(0.36787944117144233, gamma.getProb(1), ERROR);
@@ -42,9 +39,6 @@ public class TestGamma implements TestDistributions {
 
   /** Gamma with k = 5, Lambda = 0.5. */
   public void testGamma2(Gamma gamma) {
-    assertEquals(5, gamma.getK(), ERROR);
-    assertEquals(0.5, gamma.getLambda(), ERROR);
-
     assertEquals(0.0, gamma.getProb(0), ERROR);
     assertEquals(0.0, gamma.getProb(0), ERROR);
     assertEquals(0.066800942890542642, gamma.getProb(5), ERROR);
