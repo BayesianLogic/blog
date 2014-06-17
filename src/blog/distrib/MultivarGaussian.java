@@ -43,27 +43,21 @@ import blog.common.numerical.MatrixLib;
  * dimensionality <i>d</i> with parameters <code>mean</code> and
  * <code>covariance</code>.
  * 
- * @since June 12, 2014
+ * @since June 17, 2014
  */
 public class MultivarGaussian implements CondProbDistrib {
 
-  /** Returns the parameter <code>mean</code>. */
-  public MatrixLib getMean() {
-    return mean;
-  }
-
-  /** Returns the parameter <code>covariance</code>. */
-  public MatrixLib getCovariance() {
-    return covariance;
-  }
-
   /**
-   * Mapping for parameter <code>params</code>
-   * <ul>
-   * <li>params[0]: <code>mean</code>, as a MatrixLib that serves as a column
-   * vector</li>
-   * <li>params[1]: <code>covariance</code>, as a MatrixLib</li>
-   * </ul>
+   * set parameters for Multivariate Gaussian distribution
+   * 
+   * @param params
+   *          an array of the form [MatrixLib, MatrixLib]
+   *          <ul>
+   *          <li>params[0]: <code>mean</code>, as a MatrixLib that serves as a
+   *          column vector</li>
+   *          <li>params[1]: <code>covariance</code>, as a MatrixLib that serves
+   *          as a covariance matrix</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
