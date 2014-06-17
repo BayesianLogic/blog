@@ -50,24 +50,21 @@ import blog.common.numerical.MatrixLib;
  * and Binomial distributions), the Dirichlet generates parameters for
  * the Categorical process (Categorical and Multinomial distributions).
  * 
- * @since June 12, 2014
+ * @since June 17, 2014
  */
 public class Dirichlet implements CondProbDistrib {
 
   private final double TOLERANCE = 10e-3;
 
-  /** Return the shape parameter vector <code>alpha</code>. */
-  public double[] getAlpha() {
-    return alpha;
-  }
-
   /**
-   * Mapping for <code>params</code>:
+   * set parameters for Dirichlet distribution
    * 
-   * <ul>
-   * <li>params[0]: <code>alpha</code> in the form of a MatrixLib instance which
-   * takes on the shape of a row vector.</li>
-   * </ul>
+   * @param params
+   *          An array of the form [MatrixLib]
+   *          <ul>
+   *          <li>params[0]: <code>alpha</code> in the form of a MatrixLib
+   *          instance which takes on the shape of a row vector.</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */

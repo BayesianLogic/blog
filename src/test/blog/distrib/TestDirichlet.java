@@ -18,26 +18,26 @@ import blog.distrib.Dirichlet;
 public class TestDirichlet implements TestDistributions {
   private final double ERROR = 10e-3;
 
-  /**
-   * @param d
-   *          A Dirichlet distribution that has not been properly initialized.
-   *          Calling getProb, getLogProb, or sampleVal should all throw
-   *          IllegalArgumentExceptions
-   */
-  public void testDistributionRun(Dirichlet d) {
-    if (d.getAlpha() == null) {
-      shouldThrowExceptions(d, null);
-    } else {
-      int numAlphas = d.getAlpha().length;
-      double[] x = new double[numAlphas];
-      x[0] = 1.0;
-      shouldThrowExceptions(d, MatrixFactory.createVector(x));
-      for (int i = 0; i < numAlphas; i++) {
-        x[i] = 1.0 / numAlphas;
-      }
-      shouldThrowExceptions(d, MatrixFactory.createVector(x));
-    }
-  }
+  // /**
+  // * @param d
+  // * A Dirichlet distribution that has not been properly initialized.
+  // * Calling getProb, getLogProb, or sampleVal should all throw
+  // * IllegalArgumentExceptions
+  // */
+  // public void testDistributionRun(Dirichlet d) {
+  // if (d.getAlpha() == null) {
+  // shouldThrowExceptions(d, null);
+  // } else {
+  // int numAlphas = d.getAlpha().length;
+  // double[] x = new double[numAlphas];
+  // x[0] = 1.0;
+  // shouldThrowExceptions(d, MatrixFactory.createVector(x));
+  // for (int i = 0; i < numAlphas; i++) {
+  // x[i] = 1.0 / numAlphas;
+  // }
+  // shouldThrowExceptions(d, MatrixFactory.createVector(x));
+  // }
+  // }
 
   /**
    * Calling getProb and getLogProb with the argument <code>x</code> on the
@@ -68,11 +68,6 @@ public class TestDirichlet implements TestDistributions {
 
   /** Dirichlet, alpha = [1, 1]. */
   public void testDirichlet1(Dirichlet d) {
-    double[] alphas = d.getAlpha();
-    assertEquals(2, alphas.length, ERROR);
-    assertEquals(1.0, alphas[0], ERROR);
-    assertEquals(1.0, alphas[1], ERROR);
-
     assertEquals(1.0, d.getProb(MatrixFactory.createVector(0.0, 1.0)), ERROR);
     assertEquals(1.0, d.getProb(MatrixFactory.createVector(0.5, 0.5)), ERROR);
     assertEquals(1.0, d.getProb(MatrixFactory.createVector(1.0, 0.0)), ERROR);
@@ -90,12 +85,6 @@ public class TestDirichlet implements TestDistributions {
 
   /** Dirichlet, alpha = [2, 1, 1]. */
   public void testDirichlet2(Dirichlet d) {
-    double[] alphas = d.getAlpha();
-    assertEquals(3, alphas.length, ERROR);
-    assertEquals(2.0, alphas[0], ERROR);
-    assertEquals(1.0, alphas[1], ERROR);
-    assertEquals(1.0, alphas[2], ERROR);
-
     assertEquals(0.0, d.getProb(MatrixFactory.createVector(0.0, 0.5, 0.5)),
         ERROR);
     assertEquals(1.5,
@@ -113,12 +102,6 @@ public class TestDirichlet implements TestDistributions {
 
   /** Dirichlet, alpha = [2, 2, 2]. */
   public void testDirichlet3(Dirichlet d) {
-    double[] alphas = d.getAlpha();
-    assertEquals(3, alphas.length, ERROR);
-    assertEquals(2.0, alphas[0], ERROR);
-    assertEquals(2.0, alphas[1], ERROR);
-    assertEquals(2.0, alphas[2], ERROR);
-
     assertEquals(0, d.getProb(MatrixFactory.createVector(0.4, 0.4, 0.4)), ERROR);
     assertEquals(0, d.getProb(MatrixFactory.createVector(0.5, 0.5, 0.0)), ERROR);
     assertEquals(0, d.getProb(MatrixFactory.createVector(0.0, 0.5, 0.5)), ERROR);
@@ -141,12 +124,6 @@ public class TestDirichlet implements TestDistributions {
 
   /** Dirichlet, alpha = [3, 3, 4]. */
   public void testDirichlet4(Dirichlet d) {
-    double[] alphas = d.getAlpha();
-    assertEquals(3, alphas.length, ERROR);
-    assertEquals(2.0, alphas[0], ERROR);
-    assertEquals(2.0, alphas[1], ERROR);
-    assertEquals(2.0, alphas[2], ERROR);
-
     assertEquals(0, d.getProb(MatrixFactory.createVector(0.4, 0.4, 0.4)), ERROR);
     assertEquals(5.4432, d.getProb(MatrixFactory.createVector(0.5, 0.3, 0.2)),
         ERROR);
@@ -178,11 +155,11 @@ public class TestDirichlet implements TestDistributions {
     d.setParams(new Object[] { MatrixFactory.createVector(3, 3, 4) });
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments() {
     Dirichlet d = new Dirichlet();
     d.setParams(new Object[] { null });
-    testDistributionRun(d);
+    d.sampleVal();
   }
 
   // Not a row vector
@@ -194,7 +171,7 @@ public class TestDirichlet implements TestDistributions {
     ary[1][0] = 2.0;
     MatrixLib l = MatrixFactory.fromArray(ary);
     d.setParams(new Object[] { l });
-    testDistributionRun(d);
+    d.sampleVal();
   }
 
   // All elements in the alpha vector must be strictly positive
