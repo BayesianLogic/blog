@@ -45,19 +45,12 @@ package blog.distrib;
  * @see blog.distrib.BooleanDistrib.
  * 
  * @author cgioia
- * @since June 11, 2014
+ * @since June 17, 2014
  */
 public class Bernoulli implements CondProbDistrib {
 
   public Bernoulli() {
     booldist = new BooleanDistrib();
-  }
-
-  /**
-   * Returns <code>p</code>, the probability of <code>true</code>.
-   */
-  public double getP() {
-    return booldist.getP();
   }
 
   /*
@@ -67,7 +60,12 @@ public class Bernoulli implements CondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    return booldist.getProb(value.equals(1));
+    if (value.equals(1)) {
+      return booldist.getProb(true);
+    } else if (value.equals(0)) {
+      return booldist.getProb(false);
+    }
+    return 0.0;
   }
 
   /*
@@ -77,7 +75,12 @@ public class Bernoulli implements CondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    return booldist.getLogProb(value.equals(1));
+    if (value.equals(1)) {
+      return booldist.getLogProb(true);
+    } else if (value.equals(0)) {
+      return booldist.getLogProb(false);
+    }
+    return Double.NEGATIVE_INFINITY;
   }
 
   /*
@@ -91,10 +94,11 @@ public class Bernoulli implements CondProbDistrib {
   }
 
   /**
-   * <ul>
-   * <li><code>params[0]</code>: <code>p</code>, probability of
-   * <code>true</code>.</li>
-   * </ul>
+   * set parameters for Bernoulli distribution
+   * 
+   * @param params
+   *          An array of a single double
+   *          params[0]: <code>p</code>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
@@ -105,7 +109,7 @@ public class Bernoulli implements CondProbDistrib {
 
   @Override
   public String toString() {
-    return "Bernoulli(" + booldist.getP() + ")";
+    return getClass().getName();
   }
 
   /**
