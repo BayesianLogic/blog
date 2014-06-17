@@ -45,26 +45,20 @@ import blog.common.Util;
  * before <code>r</code> failures. The distribution follows the wikipedia
  * definition of the Negative Binomial distribution.
  * 
- * @since June 12, 2014
+ * @since June 17, 2014
  */
 public class NegativeBinomial implements CondProbDistrib {
 
-  /** Return the parameter <code>r</code>. */
-  public int getR() {
-    return r;
-  }
-
-  /** Return the parameter <code>p</code>. */
-  public double getP() {
-    return p;
-  }
-
   /**
-   * mapping for <code>params</code>:
-   * <ul>
-   * <li>params[0]: <code>r</code></li>
-   * <li>params[1]: <code>p</code></li>
-   * </ul>
+   * set parameters for Negative Binomial distribution.
+   * 
+   * @param params
+   *          array of the form [Integer, Double]
+   *          <ul>
+   *          <li>params[0]: <code>r</code>, number of failures (Integer)</li>
+   *          <li>params[1]: <code>p</code>, probability of succes at a given
+   *          trial (Double)</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
