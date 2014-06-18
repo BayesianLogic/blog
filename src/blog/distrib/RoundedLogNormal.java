@@ -116,7 +116,7 @@ public class RoundedLogNormal extends AbstractCondProbDistrib {
           "RoundedLogNormal expects no arguments.");
     }
 
-    double z = zDistrib.sampleValue();
+    double z = zDistrib.sample_value();
     double y = Math.exp(z);
     long x = Math.round(y);
     if ((x < Integer.MIN_VALUE) || (x > Integer.MAX_VALUE)) {
