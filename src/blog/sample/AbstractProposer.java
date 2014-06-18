@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -14,6 +13,7 @@ import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Queries;
 import blog.model.Query;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
@@ -36,7 +36,7 @@ public abstract class AbstractProposer implements Proposer {
     evidenceVars = new HashSet();
     numBasicEvidenceVars = 0;
 
-    this.queries = new LinkedList();
+    this.queries = new Queries(model);
     queryVars = new LinkedHashSet();
 
     add(evidence);
@@ -87,8 +87,9 @@ public abstract class AbstractProposer implements Proposer {
 
       if (evidence.isTrue(initWorld)) {
         if (Util.verbose()) {
-          System.out.println("Log probability of " + numInitialStateTriesThisTrial
-              + "th initial state = " + initialStateSampler.getLatestLogWeight());
+          System.out.println("Log probability of "
+              + numInitialStateTriesThisTrial + "th initial state = "
+              + initialStateSampler.getLatestLogWeight());
           initWorld.print(System.out);
         }
 
@@ -140,7 +141,7 @@ public abstract class AbstractProposer implements Proposer {
   // since a proposer is typically used by a sampler that also keeps them.
 
   protected Evidence evidence = null;
-  protected List queries; // of Query
+  protected Queries queries;
 
   protected Set evidenceVars;
   protected int numBasicEvidenceVars;
