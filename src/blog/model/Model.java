@@ -104,7 +104,7 @@ public class Model {
   }
 
   /** Reads a model from a file and returns it. */
-  public static Model readFromFile(String filename) {
+  public static Model fromFile(String filename) {
     List readersAndOrigins = Main.makeReaders(Util.list(filename));
     Model model = new Model();
     model.augmentFromReadersAndOrigins(readersAndOrigins);
@@ -112,7 +112,7 @@ public class Model {
   }
 
   /** Reads a model from a string and returns it. */
-  public static Model readFromString(String modelDescription) {
+  public static Model fromString(String modelDescription) {
     Model model = new Model();
     model.augmentFromString(modelDescription);
     return model;

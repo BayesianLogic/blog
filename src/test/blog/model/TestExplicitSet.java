@@ -14,6 +14,6 @@ public class TestExplicitSet {
 
   @Test
   public void testRun() {
-    Model.readFromFile("src/test/models/explicitset.blog");
+    Model.fromFile("src/test/models/explicitset.blog");
   }
 }

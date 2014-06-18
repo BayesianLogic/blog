@@ -14,6 +14,6 @@ public class TestTupleSet {
 
   @Test
   public void testRun() {
-    Model.readFromFile("src/test/models/tupleset.blog");
+    Model.fromFile("src/test/models/tupleset.blog");
   }
 }
