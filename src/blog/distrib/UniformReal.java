@@ -5,15 +5,21 @@ import blog.common.Util;
 /**
  * Uniform distribution over a range of real numbers [<code>lower</code>,
  * <code>upper</code>).
+ * 
+ * @author cgioia
+ * @since June 17, 2014
  */
 public class UniformReal implements CondProbDistrib {
 
   /**
-   * mapping for <code>params</code>:
-   * <ul>
-   * <li>params[0]:<code>lower</code></li>
-   * <li>params[1]:<code>upper</code></li>
-   * </ul>
+   * set parameters for UniformReal distribution
+   * 
+   * @param params
+   *          An array of the form [Double, Double]
+   *          <ul>
+   *          <li>params[0]:<code>lower</code>(Double)</li>
+   *          <li>params[1]:<code>upper</code>(Double)</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
@@ -98,23 +104,14 @@ public class UniformReal implements CondProbDistrib {
    * @see blog.distrib.CondProbDistrib#sampleVal()
    */
   public Object sampleVal() {
+    return sample_value();
+  }
+
+  /** Samples uniformly between <code>lower</code> and <code>upper</code>. */
+  public double sample_value() {
     checkHasParams();
     // rely on the fact that Util.random() returns a value in [0, 1)
     return (lower + (Util.random() * (upper - lower)));
-  }
-
-  /**
-   * Returns the parameter <code>lower</code>.
-   */
-  public double getLower() {
-    return lower;
-  }
-
-  /**
-   * Returns the parameter <code>upper</code>.
-   */
-  public double getUpper() {
-    return upper;
   }
 
   @Override
