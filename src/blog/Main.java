@@ -40,7 +40,6 @@ import java.io.FileReader;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,6 +62,7 @@ import blog.io.JsonWriter;
 import blog.io.TableWriter;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Queries;
 import blog.model.Query;
 import blog.msg.ErrorMsg;
 import blog.parse.Parse;
@@ -166,8 +166,8 @@ public class Main {
   public static void init(String[] args) {
     ok = true;
     model = new Model();
-    evidence = new Evidence();
-    queries = new ArrayList<Query>();
+    evidence = new Evidence(model);
+    queries = new Queries(model);
     parseOptions(args);
     Util.setVerbose(verbose);
     Util.setPrint(print);
@@ -373,7 +373,7 @@ public class Main {
    *         false if there is error in syntax or semantics
    */
   public static boolean simpleSetupFromFiles(Model model, Evidence evidence,
-      List<Query> queries, Collection<String> filenames) {
+      Queries queries, Collection<String> filenames) {
     return setupFromFiles(model, evidence, queries, filenames, false, true);
   }
 
@@ -393,7 +393,7 @@ public class Main {
    *         false if there is error in syntax or semantics
    */
   public static boolean setupFromFiles(Model model, Evidence evidence,
-      List<Query> queries, Collection<String> filenames, boolean verbose,
+      Queries queries, Collection<String> filenames, boolean verbose,
       boolean parseFromMessage) {
     List<Object[]> readersAndOrigins = makeReaders(filenames);
     return setup(model, evidence, queries, readersAndOrigins, verbose,
@@ -425,9 +425,9 @@ public class Main {
    *         true if the input is valid BLOG program
    *         false if there is error in syntax or semantics
    */
-  public static boolean setup(Model model, Evidence evidence,
-      List<Query> queries, Collection<Object[]> readersAndOrigins,
-      boolean verbose, boolean parseFromMessage) {
+  public static boolean setup(Model model, Evidence evidence, Queries queries,
+      Collection<Object[]> readersAndOrigins, boolean verbose,
+      boolean parseFromMessage) {
     // Parse input readers
     for (Object[] readerAndOrigin : readersAndOrigins) {
       Reader reader = (Reader) readerAndOrigin[0];
@@ -482,7 +482,7 @@ public class Main {
       return true;
   }
 
-  private static boolean parseAndTranslate(Model m, Evidence e, List<Query> qs,
+  private static boolean parseAndTranslate(Model m, Evidence e, Queries qs,
       Reader reader, String origin) {
     ErrorMsg msg = new ErrorMsg(origin);
     Parse parse = new Parse(reader, msg);
@@ -503,7 +503,7 @@ public class Main {
    *         false if there is error in syntax or semantics
    */
   public static boolean stringSetup(Model model, Evidence evidence,
-      List<Query> queries, String modelString) {
+      Queries queries, String modelString) {
     Reader reader = new StringReader(modelString);
     String origin = Util.abbreviation(modelString);
     List<Object[]> readersAndOrigins = new LinkedList<Object[]>();
@@ -527,7 +527,7 @@ public class Main {
     return numSamples;
   }
 
-  public static List<Query> getQueries() {
+  public static Queries getQueries() {
     return queries;
   }
 
@@ -538,7 +538,7 @@ public class Main {
   private static int numSamples;
   private static Model model;
   private static Evidence evidence;
-  private static List<Query> queries;
+  private static Queries queries;
   private static boolean generate;
   private static List<String> packages = new LinkedList<String>();
   private static boolean verbose;

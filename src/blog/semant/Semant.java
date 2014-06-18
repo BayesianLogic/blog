@@ -70,6 +70,7 @@ import blog.model.EqualityFormula;
 import blog.model.Evidence;
 import blog.model.ExistentialFormula;
 import blog.model.ExplicitSetSpec;
+import blog.model.FixedFunction;
 import blog.model.Formula;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
@@ -82,9 +83,9 @@ import blog.model.MatrixSpec;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.model.NegFormula;
-import blog.model.FixedFunction;
 import blog.model.OriginFunction;
 import blog.model.POP;
+import blog.model.Queries;
 import blog.model.Query;
 import blog.model.RandomFunction;
 import blog.model.SkolemConstant;
@@ -111,7 +112,7 @@ public class Semant {
   private ErrorMsg errorMsg;
   private Model model;
   private Evidence evidence;
-  private List<Query> queries;
+  private Queries queries;
 
   List<String> packages;
 
@@ -119,14 +120,17 @@ public class Semant {
   private Function currFunction;
 
   public Semant(ErrorMsg msg) {
-    this(new Model(), new Evidence(), new ArrayList<Query>(), msg);
+    model = new Model();
+    evidence = new Evidence(model);
+    queries = new Queries(model);
+    initialize();
   }
 
   public Semant(ModelEvidenceQueries meq, ErrorMsg msg) {
     this(meq.model, meq.evidence, meq.queries, msg);
   }
 
-  public Semant(Model m, Evidence e, List<Query> qs, ErrorMsg msg) {
+  public Semant(Model m, Evidence e, Queries qs, ErrorMsg msg) {
     model = m;
     evidence = e;
     errorMsg = msg;
@@ -1219,7 +1223,6 @@ public class Semant {
       q = new ArgSpecQuery((ArgSpec) as);
       queries.add(q);
     }
-
   }
 
   void transStmt(Stmt e) {
@@ -1283,10 +1286,8 @@ public class Semant {
         error(0, 0, "type checking failed for evidence");
       }
 
-      for (Query q : queries) {
-        if (!q.checkTypesAndScope(model)) {
-          error(0, 0, "type checking failed for query");
-        }
+      if (!queries.checkTypesAndScope()) {
+        error(0, 0, "type checking failed for query");
       }
 
     } else {

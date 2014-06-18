@@ -45,7 +45,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -128,7 +127,7 @@ public class Model {
    */
   public void augmentFromReadersAndOrigins(List<Object[]> readersAndOrigins) {
     Evidence evidence = new Evidence();
-    LinkedList<Query> queries = new LinkedList<Query>();
+    Queries queries = new Queries(this);
     Main.setup(this, evidence, queries, readersAndOrigins, false /* verbose */,
         false);
   }

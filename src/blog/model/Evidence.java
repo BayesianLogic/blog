@@ -103,8 +103,8 @@ public class Evidence {
   }
 
   public void addFromParse(Parse parse) {
-    List<Query> dummyQueries = new ArrayList<Query>();
     ErrorMsg dummyErr = new ErrorMsg("");
+    Queries dummyQueries = new Queries(model);
     Semant sem = new Semant(model, this, dummyQueries, dummyErr);
     sem.transProg(parse.getResult());
   }

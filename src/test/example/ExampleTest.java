@@ -16,6 +16,7 @@ import blog.io.TableWriter;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Queries;
 import blog.model.Query;
 
 /**
@@ -42,7 +43,7 @@ public abstract class ExampleTest {
 
   protected Model model;
   protected Evidence facts;
-  protected ArrayList<Query> queries;
+  protected Queries queries;
   protected ArrayList<HashMap<Object, Double>> refProbs;
 
   private double errBound;
@@ -50,8 +51,8 @@ public abstract class ExampleTest {
   public ExampleTest(double maxBound) {
     pathsSource = new ArrayList<String>();
     model = new Model();
-    facts = new Evidence();
-    queries = new ArrayList<Query>();
+    facts = new Evidence(model);
+    queries = new Queries(model);
     inferenceProps = new Properties();
     errBound = maxBound;
     Util.initRandom(false);

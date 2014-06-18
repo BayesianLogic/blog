@@ -18,6 +18,7 @@ import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
+import blog.model.Queries;
 
 /**
  * Compares the particle filter and likelihood weighting by running a temporal
@@ -110,7 +111,7 @@ public class ParticleFilteringVsLikelihoodWeightingMay2008Experiment {
     Model model = new Model();
     Collection filenames = new LinkedList();
     filenames.add(modelFilename);
-    Main.setup(model, new Evidence(), new LinkedList(),
+    Main.setup(model, new Evidence(), new Queries(model),
         Main.makeReaders(filenames), false, false);
     ParticleFilter particleFilter = new ParticleFilter(model,
         getParticleFilterProperties(currentNumberOfSamplesOrParticles));
@@ -128,7 +129,7 @@ public class ParticleFilteringVsLikelihoodWeightingMay2008Experiment {
       throws Exception {
     Model model = new Model();
     Evidence evidence = new Evidence();
-    List queries = new LinkedList();
+    Queries queries = new Queries(model);
     List filenames = new LinkedList();
     filenames.add(modelFilename);
     filenames.add(evidenceAndQueryFilename);
