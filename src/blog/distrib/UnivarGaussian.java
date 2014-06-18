@@ -7,7 +7,7 @@ import blog.common.Util;
  * <code>variance</code>.
  * 
  * @author cgioia
- * @since June 12, 2014
+ * @since June 18, 2014
  */
 public class UnivarGaussian implements CondProbDistrib {
 
@@ -29,9 +29,11 @@ public class UnivarGaussian implements CondProbDistrib {
    * 
    * @param params
    *          An array of two double
-   *          params[0]: mean
-   *          params[1]: variance
-   * 
+   *          <ul>
+   *          <li>params[0]: <code>mean</code></li>
+   *          <li>params[1]: <code>variance</code></li>
+   *          </ul>
+   *          
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
   public void setParams(Object[] params) {
@@ -112,14 +114,14 @@ public class UnivarGaussian implements CondProbDistrib {
    * @see blog.distrib.CondProbDistrib#sampleVal()
    */
   public Object sampleVal() {
-    return sampleValue();
+    return sample_value();
   }
 
   /**
    * Samples a value from the Univariate gaussian.
    * Intended for human use.
    */
-  public double sampleValue() {
+  public double sample_value() {
     checkHasParams();
     double U = Util.random();
     double V = Util.random();
