@@ -37,7 +37,6 @@ package blog.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -53,7 +52,6 @@ import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Query;
 import blog.sample.AfterSamplingListener;
-import blog.sample.DMHSampler;
 import blog.sample.Sampler;
 import blog.type.Timestep;
 
@@ -103,11 +101,6 @@ public class ParticleFilter extends InferenceEngine {
           + numParticlesStr); // do not dump stack.
     }
 
-    String useDecayedMCMCStr = properties
-        .getProperty("useDecayedMCMC", "false");
-    useDecayedMCMC = Boolean.parseBoolean(useDecayedMCMCStr);
-    // if (useDecayedMCMC) numParticles = 1;
-
     String numMovesStr = properties.getProperty("numMoves", "1");
     try {
       numMoves = Integer.parseInt(numMovesStr);
@@ -134,9 +127,6 @@ public class ParticleFilter extends InferenceEngine {
       Util.fatalError("Invalid reporting interval: " + queryReportIntervalStr,
           false);
     }
-
-    if (useDecayedMCMC)
-      dmhSampler = new DMHSampler(model, properties);
 
     dataLogLik = 0;
   }
@@ -167,13 +157,11 @@ public class ParticleFilter extends InferenceEngine {
 
   private void reset() {
     System.out.println("Using " + numParticles + " particles...");
-    int numTimeSlicesInMemory = useDecayedMCMC ? dmhSampler.getMaxRecall() : 1;
+    int numTimeSlicesInMemory = 1;
     if (evidence == null)
       evidence = new Evidence();
     if (queries == null)
       queries = new LinkedList();
-    if (useDecayedMCMC)
-      dmhSampler.initialize(evidence, queries);
     particles = new ArrayList();
     for (int i = 0; i < numParticles; i++) {
       Particle newParticle = makeParticle(idTypes, numTimeSlicesInMemory);
@@ -263,7 +251,6 @@ public class ParticleFilter extends InferenceEngine {
                                // should be ready to take queries.
 
       if (needsToBeResampledBeforeFurtherSampling) {
-        move();
         resample();
       }
 
@@ -303,9 +290,6 @@ public class ParticleFilter extends InferenceEngine {
 
       needsToBeResampledBeforeFurtherSampling = true;
 
-      if (useDecayedMCMC)
-        dmhSampler.add(evidence);
-
       if (afterTakesEvidence != null)
         afterTakesEvidence.evaluate(evidence, this);
     }
@@ -317,9 +301,6 @@ public class ParticleFilter extends InferenceEngine {
   public void answer(Collection queries) {
     if (particles == null)
       resetAndTakeInitialEvidence();
-
-    if (useDecayedMCMC)
-      dmhSampler.addQueries(queries);
   }
 
   public void answer(Query query) {
@@ -365,18 +346,6 @@ public class ParticleFilter extends InferenceEngine {
           + ((Particle) particles.get(i)).getLatestLogWeight());
     }
     System.out.println();
-  }
-
-  private void move() {
-    if (!useDecayedMCMC)
-      return;
-
-    for (int i = 0; i < numMoves; i++) {
-      for (Iterator iter = particles.iterator(); iter.hasNext();) {
-        Particle p = (Particle) iter.next();
-        p.setWorld(dmhSampler.nextSample(p.getLatestWorld()));
-      }
-    }
   }
 
   // PARTICLE TAKES EVIDENCE EVENT HANDLING
@@ -437,13 +406,11 @@ public class ParticleFilter extends InferenceEngine {
   private Set idTypes; // of Type
 
   private int numParticles;
-  private boolean useDecayedMCMC;
   public List<Particle> particles;
   private int numMoves;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
   private Sampler particleSampler;
   private AfterSamplingListener afterSamplingListener;
-  private DMHSampler dmhSampler;
   private int queryReportInterval;
   private double dataLogLik; // log likelihood of the data
 }
