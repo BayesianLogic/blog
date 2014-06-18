@@ -135,7 +135,7 @@ public class BLOGUtil {
    * Parses description string of a model.
    */
   public static Model parseModel_NE(String description) {
-    return Model.readFromString(description);
+    return Model.fromString(description);
   }
 
   /**

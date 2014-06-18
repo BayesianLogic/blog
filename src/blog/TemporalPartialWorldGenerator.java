@@ -119,7 +119,7 @@ public class TemporalPartialWorldGenerator {
   public static void main(String[] args) {
     Util.initRandom(true);
     Model model = Model
-        .readFromFile("examples/ParticleFilteringVsLikelihoodWeightingMay2008Experiment.mblog");
+        .fromFile("examples/ParticleFilteringVsLikelihoodWeightingMay2008Experiment.mblog");
     final TemporalPartialWorldGenerator gen = new TemporalPartialWorldGenerator(
         model, Util.list("query #{Blip r: Time(r) = t};"));
 

@@ -27,7 +27,7 @@ public class TestDBLOGUtil {
   @Test
   public void testSplitEvidenceInTime() {
     Model model = Model
-        .readFromString("random Boolean Weather(Timestep t) = true;"
+        .fromString("random Boolean Weather(Timestep t) = true;"
             + "random Boolean Dummy ~ Bernoulli(0.5);");
     Evidence evidence;
     String evidenceDescription = "obs Weather(@15) = true;"
@@ -51,7 +51,7 @@ public class TestDBLOGUtil {
   @Test
   public void testSplitQueriesInTime() {
     Model model = Model
-        .readFromString("random Boolean Weather(Timestep t) = true;"
+        .fromString("random Boolean Weather(Timestep t) = true;"
             + "random Boolean Dummy ~ Bernoulli(0.5);");
     ArrayList<Query> queries = new ArrayList<Query>();
     queries.add(BLOGUtil.parseQuery_NE("query Dummy;", model));
