@@ -137,6 +137,11 @@ public class SamplingEngine extends InferenceEngine {
     this(model, new Properties());
   }
 
+  public SamplingEngine(Sampler sampler) {
+    super(null);
+    this.sampler = sampler;
+  }
+
   public static void printGeneratedWorld(Sampler sampler, double logWeight) {
     PartialWorld curWorld = sampler.getLatestWorld();
     System.out.println("======== Generated World: ========");
