@@ -48,25 +48,15 @@ import blog.common.Util;
 public class UniformInt implements CondProbDistrib {
 
   /**
-   * Returns the parameter <code>lower</code>.
-   */
-  public int getLower() {
-    return lower;
-  }
-
-  /**
-   * Returns the parameter <code>upper</code>.
-   */
-  public int getUpper() {
-    return upper;
-  }
-
-  /**
-   * Mapping for the parameter <code>params</code>
-   * <ul>
-   * <li>params[0]: <code>lower</code></li>
-   * <li>params[1]: <code>upper</code></li>
-   * </ul>
+   * set parameters for UniformInt
+   * distribution
+   * 
+   * @param params
+   *          An array of [Integer, Integer]
+   *          <ul>
+   *          <li>params[0]: <code>lower</code> (Integer)</li>
+   *          <li>params[1]: <code>upper</code> (Integer)</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
@@ -164,8 +154,17 @@ public class UniformInt implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
+    return sample_value();
+  }
+
+  public int sample_value() {
     checkHasParams();
     return lower + Util.randInt(upper - lower + 1);
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getName();
   }
 
   /** Parameter <code>lower</code>. */
