@@ -22,7 +22,7 @@ public class TestArgSpec {
   @Test
   public void testMaxTimestep() {
     Model model = Model
-        .readFromString("random Boolean Weather(Timestep t) = true;");
+        .fromString("random Boolean Weather(Timestep t) = true;");
     ArgSpec a = BLOGUtil.parseArgSpec_NE("Weather(@13)", model);
     assertEquals(Timestep.at(13), a.maxTimestep());
   }
