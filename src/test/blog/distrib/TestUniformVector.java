@@ -18,14 +18,6 @@ public class TestUniformVector implements TestDistributions {
 
   /** Uniform Vector [0, 1] by [0, 1]. */
   public void testUniformVector1(UniformVector unif) {
-    double[] lower = unif.getLower();
-    double[] upper = unif.getUpper();
-    assertEquals(2, unif.getDimension(), ERROR);
-    assertEquals(0.0, lower[0], ERROR);
-    assertEquals(1.0, upper[0], ERROR);
-    assertEquals(0.0, lower[1], ERROR);
-    assertEquals(1.0, upper[1], ERROR);
-
     double[][] colVector = new double[][] { { 0 }, { 0 } };
     assertEquals(1.0, unif.getProb(MatrixFactory.fromArray(colVector)), ERROR);
     assertEquals(0.0, unif.getLogProb(MatrixFactory.fromArray(colVector)),
@@ -50,16 +42,6 @@ public class TestUniformVector implements TestDistributions {
 
   /** Uniform Vector [-1, 3] by [2.6, 3.6] by [6, 11]. */
   public void testUniformVector2(UniformVector unif) {
-    double[] lower = unif.getLower();
-    double[] upper = unif.getUpper();
-    assertEquals(3, unif.getDimension(), ERROR);
-    assertEquals(-1.0, lower[0], ERROR);
-    assertEquals(3.0, upper[0], ERROR);
-    assertEquals(2.6, lower[1], ERROR);
-    assertEquals(3.6, upper[1], ERROR);
-    assertEquals(6.0, lower[2], ERROR);
-    assertEquals(11.0, upper[2], ERROR);
-
     double[][] colVector = new double[][] { { 0 }, { 0 }, { 0 } };
     assertEquals(0.0, unif.getProb(MatrixFactory.fromArray(colVector)), ERROR);
     assertEquals(Double.NEGATIVE_INFINITY,
