@@ -23,9 +23,6 @@ public class TestUniformInt implements TestDistributions {
 
   /** UniformInt, lower = 0, upper = 0. */
   public void testUniformInt1(UniformInt unif) {
-    assertEquals(0, unif.getLower(), ERROR);
-    assertEquals(0, unif.getUpper(), ERROR);
-
     assertEquals(0, unif.getProb(-1), ERROR);
     assertEquals(1, unif.getProb(0), ERROR);
     assertEquals(0, unif.getProb(1), ERROR);
@@ -39,9 +36,6 @@ public class TestUniformInt implements TestDistributions {
 
   /** UniformInt, lower = 5, upper = 9. */
   public void testUniformInt2(UniformInt unif) {
-    assertEquals(5, unif.getLower(), ERROR);
-    assertEquals(9, unif.getUpper(), ERROR);
-
     assertEquals(0, unif.getProb(0), ERROR);
     assertEquals(0, unif.getProb(4), ERROR);
     assertEquals(0.2, unif.getProb(5), ERROR);
