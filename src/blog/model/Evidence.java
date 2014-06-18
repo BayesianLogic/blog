@@ -53,6 +53,9 @@ import blog.BLOGUtil;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
+import blog.msg.ErrorMsg;
+import blog.parse.Parse;
+import blog.semant.Semant;
 import blog.type.Timestep;
 import blog.world.PartialWorld;
 
@@ -84,7 +87,26 @@ public class Evidence {
    * Creates a new Evidence object with no evidence.
    */
   public Evidence() {
+    this.model = null;
+  }
 
+  public Evidence(Model model) {
+    this.model = model;
+  }
+
+  public void addFromFile(String path) {
+    addFromParse(Parse.parseFile(path));
+  }
+
+  public void addFromString(String string) {
+    addFromParse(Parse.parseString(string));
+  }
+
+  public void addFromParse(Parse parse) {
+    List<Query> dummyQueries = new ArrayList<Query>();
+    ErrorMsg dummyErr = new ErrorMsg("");
+    Semant sem = new Semant(model, this, dummyQueries, dummyErr);
+    sem.transProg(parse.getResult());
   }
 
   /**
@@ -445,4 +467,7 @@ public class Evidence {
   private Map<BayesNetVar, Object> observedValues = new LinkedHashMap<BayesNetVar, Object>();
 
   private boolean compiled = false;
+
+  // The model that this evidence is for.
+  private final Model model;
 }
