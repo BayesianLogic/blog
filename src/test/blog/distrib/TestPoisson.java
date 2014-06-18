@@ -25,8 +25,6 @@ public class TestPoisson implements TestDistributions {
 
   /** Poisson with lambda = 1.0. */
   public void testPoisson1(Poisson poiss) {
-    assertEquals(1.0, poiss.getLambda(), ERROR);
-
     assertEquals(0.36787944117144233, poiss.getProb(0), ERROR);
     assertEquals(0.36787944117144233, poiss.getProb(1), ERROR);
     assertEquals(0.18393972058572114, poiss.getProb(2), ERROR);
@@ -40,8 +38,6 @@ public class TestPoisson implements TestDistributions {
 
   /** Poisson with lambda = 5.0. */
   public void testPoisson2(Poisson poiss) {
-    assertEquals(5.0, poiss.getLambda(), ERROR);
-
     assertEquals(0.006737946999085467, poiss.getProb(0), ERROR);
     assertEquals(0.17546736976785068, poiss.getProb(5), ERROR);
     assertEquals(0.018132788707821854, poiss.getProb(10), ERROR);

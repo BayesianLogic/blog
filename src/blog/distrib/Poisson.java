@@ -61,17 +61,6 @@ public class Poisson implements CondProbDistrib {
   }
 
   /**
-   * Returns an integer sampled according to this distribution. This
-   * implementation takes time proportional to the magnitude of the integer
-   * returned. I got the algorithm from Anuj Kumar's course page for IEOR E4404
-   * at Columbia University, specifically the file: <blockquote>
-   * http://www.columbia.edu/~ak2108/ta/summer2003/poisson1.c </blockquote>
-   */
-  public int sampleInt() {
-    return sampleVal(lambda);
-  }
-
-  /**
    * sample from Poisson distribution when the parameter lambda is small (< 15)
    * 
    * @param lambda
@@ -92,31 +81,6 @@ public class Poisson implements CondProbDistrib {
     }
 
     return n;
-  }
-
-  /**
-   * Naive inverse CDF approach for Poisson is not advisable for lambda > 15.
-   * Here we are following MATLAB's implementation, where gamma random variables
-   * are subtracted from lambda until it falls into the range of lambda <= 15.
-   * Then, standard naive inverse CDF sampling is applied via sampleSmall.
-   * 
-   * @param lambda
-   * @return
-   */
-  public static int sampleVal(double lambda) {
-    if (lambda < 15)
-      return sampleSmall(lambda);
-
-    double alpha = 7.0 / 8.0;
-    int m = (int) Math.floor(alpha * lambda);
-    double x = Gamma.sampleVal(m, 1);
-    int r;
-    if (x < lambda) {
-      r = m + sampleVal(lambda - x);
-    } else {
-      r = Binomial.sampleVal(m - 1, lambda / x);
-    }
-    return r;
   }
 
   private double[] cdf_table = null;
@@ -177,16 +141,14 @@ public class Poisson implements CondProbDistrib {
     return w;
   }
 
-  /** Return the parameter <code>lambda</code>. */
-  public double getLambda() {
-    return lambda;
-  }
-
   /**
-   * mapping for <code>params</code>:
-   * <ul>
-   * <li>params[0]: <code>lambda</code></li>
-   * </ul>
+   * set parameters for Poisson distribution
+   * 
+   * @param params
+   *          array of the form [Double]
+   *          <ul>
+   *          <li>params[0]: <code>lambda</code> (Double)</li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
@@ -270,8 +232,33 @@ public class Poisson implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
+    return sample_value();
+  }
+
+  /**
+   * Returns an integer sampled according to the Poisson distribution. This
+   * implementation takes time proportional to the magnitude of the integer
+   * returned. I got the algorithm from Anuj Kumar's course page for IEOR E4404
+   * at Columbia University, specifically the file: <blockquote>
+   * http://www.columbia.edu/~ak2108/ta/summer2003/poisson1.c </blockquote>
+   */
+  public int sample_value() {
     checkHasParams();
-    return sampleInt();
+    if (lambda < 15)
+      return sampleSmall(lambda);
+
+    double alpha = 7.0 / 8.0;
+    int m = (int) Math.floor(alpha * lambda);
+    double x = Gamma.sampleVal(m, 1);
+    int r;
+    if (x < lambda) {
+      Poisson poiss = new Poisson();
+      poiss.setParams(lambda - x);
+      r = m + poiss.sample_value();
+    } else {
+      r = Binomial.sampleVal(m - 1, lambda / x);
+    }
+    return r;
   }
 
   @Override
