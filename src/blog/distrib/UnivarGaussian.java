@@ -1,5 +1,8 @@
 package blog.distrib;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import blog.common.Util;
 
 /**
@@ -33,7 +36,7 @@ public class UnivarGaussian implements CondProbDistrib {
    *          <li>params[0]: <code>mean</code></li>
    *          <li>params[1]: <code>variance</code></li>
    *          </ul>
-   *          
+   * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
   public void setParams(Object[] params) {
@@ -127,6 +130,40 @@ public class UnivarGaussian implements CondProbDistrib {
     double V = Util.random();
     return (mean + (sqrtVariance * Math.sin(2 * Math.PI * V) * Math
         .sqrt((-2 * Math.log(U)))));
+  }
+
+  /**
+   * Returns a Gaussian distribution corresponding to the product of this and
+   * another Gaussian distribution.
+   */
+  public UnivarGaussian product(UnivarGaussian another) {
+    double sumOfSigmaSquares = variance + another.variance;
+    return new UnivarGaussian((mean * another.variance + another.mean
+        * variance)
+        / sumOfSigmaSquares, (variance * another.variance) / sumOfSigmaSquares);
+  }
+
+  /**
+   * Returns the product of a set of UnivarGaussians, returning
+   * <code>null</code> if set is empty.
+   */
+  public static UnivarGaussian product(Collection<UnivarGaussian> gaussians) {
+    if (gaussians.size() == 0)
+      return null;
+    Iterator<UnivarGaussian> gaussiansIt = gaussians.iterator();
+    UnivarGaussian result = gaussiansIt.next();
+    while (gaussiansIt.hasNext()) {
+      result = result.product(gaussiansIt.next());
+    }
+    return result;
+  }
+
+  /**
+   * Returns a Gaussian representing the posterior of the mean of this Gaussian
+   * (but ignoring its currently set mean) given a value of its domain.
+   */
+  public UnivarGaussian meanPosterior(double value) {
+    return new UnivarGaussian(value, variance);
   }
 
   @Override
