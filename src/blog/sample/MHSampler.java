@@ -37,7 +37,6 @@ package blog.sample;
 
 import java.lang.reflect.Constructor;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -47,7 +46,7 @@ import blog.common.Timer;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
-import blog.model.Query;
+import blog.model.Queries;
 import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;
 
@@ -103,7 +102,7 @@ public class MHSampler extends Sampler {
   }
 
   @Override
-  public void initialize(Evidence evidence, List<Query> queries) {
+  public void initialize(Evidence evidence, Queries queries) {
     super.initialize(evidence, queries);
 
     ++numTrials;

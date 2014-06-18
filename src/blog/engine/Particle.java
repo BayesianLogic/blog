@@ -41,8 +41,8 @@ import java.util.Set;
 
 import blog.BLOGUtil;
 import blog.DBLOGUtil;
-import blog.common.Util;
 import blog.model.Evidence;
+import blog.model.Queries;
 import blog.model.Query;
 import blog.sample.Sampler;
 import blog.type.Timestep;
@@ -75,7 +75,7 @@ public class Particle {
    * on it, and recalculates particle logWeight according to its probability.
    */
   public void take(Evidence evidence) {
-    sampler.initialize(evidence, Util.list());
+    sampler.initialize(evidence, new Queries(null));
     sampler.setBaseWorld(curWorld);
 
     // System.out.println("Particle taking evidence.");

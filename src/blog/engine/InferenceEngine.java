@@ -36,7 +36,6 @@
 package blog.engine;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -44,6 +43,7 @@ import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
+import blog.model.Queries;
 import blog.model.Query;
 
 /**
@@ -170,5 +170,5 @@ public abstract class InferenceEngine {
    * List of Query objects specified by the last call to <code>setQueries</code>
    * . This list is empty if <code>setQueries</code> has not been called.
    */
-  protected List<Query> queries = new ArrayList<Query>();
+  protected Queries queries = null;
 }
