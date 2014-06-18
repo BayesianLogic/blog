@@ -35,9 +35,7 @@
 
 package blog.sample;
 
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import blog.bn.BayesNetVar;
@@ -46,6 +44,7 @@ import blog.common.Util;
 import blog.model.DependencyModel;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Queries;
 import blog.model.Query;
 import blog.world.PartialWorld;
 import blog.world.UninstVarIterator;
@@ -79,7 +78,7 @@ import blog.world.WorldInProgress;
  * non-guaranteed objects, the depth is one greater than the maximum depth of
  * their generating objects. This bound is ignored if it is negative (so objects
  * of depth 0 are always allowed as arguments).
- *
+ * 
  * <dt>timestepBound
  * <dd>The sampler will instantiate any Timestep variables from 0 up to
  * timestepBound.
@@ -91,184 +90,185 @@ import blog.world.WorldInProgress;
  * the program.
  */
 public class RejectionSampler extends Sampler {
-	/**
-	 * Creates a new RejectionSampler for the given model, with configuration
-	 * parameters specified by the given properties table.
-	 */
-	public RejectionSampler(Model model, Properties properties) {
-		super(model);
+  /**
+   * Creates a new RejectionSampler for the given model, with configuration
+   * parameters specified by the given properties table.
+   */
+  public RejectionSampler(Model model, Properties properties) {
+    super(model);
 
-		String intBoundStr = properties.getProperty("intBound");
-		if (intBoundStr != null) {
-			try {
-				intBound = Integer.parseInt(intBoundStr);
-			} catch (NumberFormatException e) {
-				Util.fatalError("Invalid intBound: " + intBoundStr);
-			}
-		}
+    String intBoundStr = properties.getProperty("intBound");
+    if (intBoundStr != null) {
+      try {
+        intBound = Integer.parseInt(intBoundStr);
+      } catch (NumberFormatException e) {
+        Util.fatalError("Invalid intBound: " + intBoundStr);
+      }
+    }
 
-		String depthBoundStr = properties.getProperty("depthBound");
-		if (depthBoundStr != null) {
-			try {
-				depthBound = Integer.parseInt(depthBoundStr);
-			} catch (NumberFormatException e) {
-				Util.fatalError("Invalid depthBound: " + depthBoundStr);
-			}
-		}
+    String depthBoundStr = properties.getProperty("depthBound");
+    if (depthBoundStr != null) {
+      try {
+        depthBound = Integer.parseInt(depthBoundStr);
+      } catch (NumberFormatException e) {
+        Util.fatalError("Invalid depthBound: " + depthBoundStr);
+      }
+    }
 
-		String timestepBoundStr = properties.getProperty("timestepBound");
-		if (timestepBoundStr != null) {
-			try {
-				timestepBound = Integer.parseInt(timestepBoundStr);
-			} catch (NumberFormatException e) {
-				Util.fatalError("Invalid timestepBound: " + timestepBoundStr);
-			}
-		}
-	}
+    String timestepBoundStr = properties.getProperty("timestepBound");
+    if (timestepBoundStr != null) {
+      try {
+        timestepBound = Integer.parseInt(timestepBoundStr);
+      } catch (NumberFormatException e) {
+        Util.fatalError("Invalid timestepBound: " + timestepBoundStr);
+      }
+    }
+  }
 
-	public void initialize(Evidence evidence, List queries) {
-		super.initialize(evidence, queries);
-		requireComplete = false;
+  public void initialize(Evidence evidence, Queries queries) {
+    super.initialize(evidence, queries);
+    requireComplete = false;
 
-		numSamplesThisTrial = 0;
-		numAcceptedThisTrial = 0;
+    numSamplesThisTrial = 0;
+    numAcceptedThisTrial = 0;
 
-		curWorld = null;
-	}
+    curWorld = null;
+  }
 
-	/**
-	 * Alternative initialization method that does not specify any evidence or
-	 * queries, but tells this object to generate complete worlds (possibly up to
-	 * the bounds specified by the intBound and depthBound properties).
-	 */
-	public void initializeCompleteSampling() {
-		super.initialize(new Evidence(), Collections.EMPTY_LIST);
-		requireComplete = true;
+  /**
+   * Alternative initialization method that does not specify any evidence or
+   * queries, but tells this object to generate complete worlds (possibly up to
+   * the bounds specified by the intBound and depthBound properties).
+   */
+  public void initializeCompleteSampling() {
+    super.initialize(new Evidence(), new Queries(model));
+    requireComplete = true;
 
-		numSamplesThisTrial = 0;
-		numAcceptedThisTrial = 0;
+    numSamplesThisTrial = 0;
+    numAcceptedThisTrial = 0;
 
-		curWorld = null;
-	}
+    curWorld = null;
+  }
 
-	public void setBaseWorld(PartialWorld world) {
-		Util.fatalError("setBaseWorld not implemented for RejectionSampler.");
-	}
+  public void setBaseWorld(PartialWorld world) {
+    Util.fatalError("setBaseWorld not implemented for RejectionSampler.");
+  }
 
-	public void nextSample() {
-		if (Util.verbose()) {
-			System.out.println();
-			System.out.println("Sampling world...");
-		}
-		curWorld = new WorldInProgress(model, evidence, intBound, depthBound, timestepBound);
+  public void nextSample() {
+    if (Util.verbose()) {
+      System.out.println();
+      System.out.println("Sampling world...");
+    }
+    curWorld = new WorldInProgress(model, evidence, intBound, depthBound,
+        timestepBound);
 
-		// Find the first variable that is supported but not instantiated.
-		// Instantiate it. Repeat until all evidence and query variables
-		// are determined.
-		while (!isCurWorldSufficient()) {
-			boolean varInstantiated = false;
+    // Find the first variable that is supported but not instantiated.
+    // Instantiate it. Repeat until all evidence and query variables
+    // are determined.
+    while (!isCurWorldSufficient()) {
+      boolean varInstantiated = false;
 
-			if (curWorld.isComplete()) {
-				Util.fatalError("World is complete (up to specified integer "
-						+ "and depth bounds) but does not determine "
-						+ "values for evidence and queries.", false);
-			}
+      if (curWorld.isComplete()) {
+        Util.fatalError("World is complete (up to specified integer "
+            + "and depth bounds) but does not determine "
+            + "values for evidence and queries.", false);
+      }
 
-			for (UninstVarIterator iter = curWorld.uninstVarIterator(); iter
-					.hasNext();) {
-				VarWithDistrib var = (VarWithDistrib) iter.next();
-				DependencyModel.Distrib distrib = var
-						.getDistrib(new DefaultEvalContext(curWorld, false));
-				if (distrib == null) {
-					if (Util.verbose()) {
-						System.out.println("Not supported yet: " + var);
-					}
-				} else {
-					// var is supported
-					if (Util.verbose()) {
-						System.out.println("Instantiating: " + var);
-					}
-					iter.setValue(distrib.getCPD().sampleVal(distrib.getArgValues(),
-							var.getType()));
+      for (UninstVarIterator iter = curWorld.uninstVarIterator(); iter
+          .hasNext();) {
+        VarWithDistrib var = (VarWithDistrib) iter.next();
+        DependencyModel.Distrib distrib = var
+            .getDistrib(new DefaultEvalContext(curWorld, false));
+        if (distrib == null) {
+          if (Util.verbose()) {
+            System.out.println("Not supported yet: " + var);
+          }
+        } else {
+          // var is supported
+          if (Util.verbose()) {
+            System.out.println("Instantiating: " + var);
+          }
+          iter.setValue(distrib.getCPD().sampleVal(distrib.getArgValues(),
+              var.getType()));
 
-					varInstantiated = true;
-					break; // start again from first uninstantiated var
-				}
-			}
+          varInstantiated = true;
+          break; // start again from first uninstantiated var
+        }
+      }
 
-			if (!varInstantiated) {
-				String msg = ("World is not complete, but no basic random "
-						+ "variable is supported.  Please check for "
-						+ "a possible cycle in your model.");
-				if ((intBound >= 0) || (depthBound >= 0)) {
-					msg = (msg + "  This problem could also be caused by " + "the intBound and depthBound flags.");
-				}
-				Util.fatalError(msg, false);
-			}
-		}
+      if (!varInstantiated) {
+        String msg = ("World is not complete, but no basic random "
+            + "variable is supported.  Please check for "
+            + "a possible cycle in your model.");
+        if ((intBound >= 0) || (depthBound >= 0)) {
+          msg = (msg + "  This problem could also be caused by " + "the intBound and depthBound flags.");
+        }
+        Util.fatalError(msg, false);
+      }
+    }
 
-		// See if world happens to satisfy the evidence
-		curWorldAccepted = evidence.isTrue(curWorld);
+    // See if world happens to satisfy the evidence
+    curWorldAccepted = evidence.isTrue(curWorld);
 
-		++numSamplesThisTrial;
-		if (curWorldAccepted) {
-			++numAcceptedThisTrial;
-		}
-	}
+    ++numSamplesThisTrial;
+    if (curWorldAccepted) {
+      ++numAcceptedThisTrial;
+    }
+  }
 
-	public PartialWorld getLatestWorld() {
-		if (curWorld == null) {
-			throw new IllegalStateException("Sampler has no latest sample.");
-		}
-		return curWorld;
-	}
+  public PartialWorld getLatestWorld() {
+    if (curWorld == null) {
+      throw new IllegalStateException("Sampler has no latest sample.");
+    }
+    return curWorld;
+  }
 
-	public double getLatestLogWeight() {
-		if (curWorld == null) {
-			throw new IllegalStateException("Sampler has no latest sample.");
-		}
-		return (curWorldAccepted ? 0.0 : Double.NEGATIVE_INFINITY);
-	}
+  public double getLatestLogWeight() {
+    if (curWorld == null) {
+      throw new IllegalStateException("Sampler has no latest sample.");
+    }
+    return (curWorldAccepted ? 0.0 : Double.NEGATIVE_INFINITY);
+  }
 
-	public void printStats() {
-		System.out.println("=== Rejection Sampler Trial Stats ===");
-		if (numSamplesThisTrial > 0) {
-			System.out.println("Fraction of worlds accepted (this trial): "
-					+ (numAcceptedThisTrial / (double) numSamplesThisTrial));
-		} else {
-			System.out.println("No samples this trial.");
-		}
-	}
+  public void printStats() {
+    System.out.println("=== Rejection Sampler Trial Stats ===");
+    if (numSamplesThisTrial > 0) {
+      System.out.println("Fraction of worlds accepted (this trial): "
+          + (numAcceptedThisTrial / (double) numSamplesThisTrial));
+    } else {
+      System.out.println("No samples this trial.");
+    }
+  }
 
-	private boolean isCurWorldSufficient() {
-		if (requireComplete) {
-			return curWorld.isComplete();
-		}
+  private boolean isCurWorldSufficient() {
+    if (requireComplete) {
+      return curWorld.isComplete();
+    }
 
-		if (!evidence.isDetermined(curWorld)) {
-			return false;
-		}
+    if (!evidence.isDetermined(curWorld)) {
+      return false;
+    }
 
-		for (Iterator iter = queries.iterator(); iter.hasNext();) {
-			Query q = (Query) iter.next();
-			for (BayesNetVar var : q.getVariables()) {
-				if (!var.isDetermined(curWorld)) {
-					return false;
-				}
-			}
-		}
+    for (Iterator iter = queries.iterator(); iter.hasNext();) {
+      Query q = (Query) iter.next();
+      for (BayesNetVar var : q.getVariables()) {
+        if (!var.isDetermined(curWorld)) {
+          return false;
+        }
+      }
+    }
 
-		return true;
-	}
+    return true;
+  }
 
-	private int intBound = -1;
-	private int depthBound = -1;
-	private int timestepBound = 0;
-	private boolean requireComplete = false;
+  private int intBound = -1;
+  private int depthBound = -1;
+  private int timestepBound = 0;
+  private boolean requireComplete = false;
 
-	private WorldInProgress curWorld;
-	private boolean curWorldAccepted;
+  private WorldInProgress curWorld;
+  private boolean curWorldAccepted;
 
-	private int numSamplesThisTrial;
-	private int numAcceptedThisTrial;
+  private int numSamplesThisTrial;
+  private int numAcceptedThisTrial;
 }

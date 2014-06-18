@@ -45,6 +45,7 @@ import blog.bn.BayesNetVar;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Queries;
 import blog.model.Query;
 import blog.model.Type;
 import blog.world.DefaultPartialWorld;
@@ -85,7 +86,7 @@ public class LWSampler extends Sampler {
   }
 
   @Override
-  public void initialize(Evidence evidence, List<Query> queries) {
+  public void initialize(Evidence evidence, Queries queries) {
     super.initialize(evidence, queries);
     for (Query query : queries) {
       queryVars.addAll(query.getVariables());

@@ -38,7 +38,6 @@ package blog.engine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -51,6 +50,7 @@ import blog.common.Util;
 import blog.io.TableWriter;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Queries;
 import blog.model.Query;
 import blog.sample.AfterSamplingListener;
 import blog.sample.DMHSampler;
@@ -168,12 +168,15 @@ public class ParticleFilter extends InferenceEngine {
   private void reset() {
     System.out.println("Using " + numParticles + " particles...");
     int numTimeSlicesInMemory = useDecayedMCMC ? dmhSampler.getMaxRecall() : 1;
-    if (evidence == null)
-      evidence = new Evidence();
-    if (queries == null)
-      queries = new LinkedList();
-    if (useDecayedMCMC)
+    if (evidence == null) {
+      evidence = new Evidence(model);
+    }
+    if (queries == null) {
+      queries = new Queries(model);
+    }
+    if (useDecayedMCMC) {
       dmhSampler.initialize(evidence, queries);
+    }
     particles = new ArrayList();
     for (int i = 0; i < numParticles; i++) {
       Particle newParticle = makeParticle(idTypes, numTimeSlicesInMemory);
