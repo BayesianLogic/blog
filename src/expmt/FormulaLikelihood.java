@@ -15,7 +15,7 @@ import blog.model.Formula;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.NegFormula;
-import blog.model.NonRandomFunction;
+import blog.model.FixedFunction;
 import blog.model.Term;
 
 
@@ -108,8 +108,8 @@ public class FormulaLikelihood {
 	private static boolean isVariable(ArgSpec t) {
 		FuncAppTerm fa = (FuncAppTerm) t;
 		Function f = fa.getFunction();
-		return !(f instanceof NonRandomFunction)
-				|| !((NonRandomFunction) f).getInterpClass().equals(
+		return !(f instanceof FixedFunction)
+				|| !((FixedFunction) f).getInterpClass().equals(
 						ConstantInterp.class);
 	}
 

@@ -5,7 +5,6 @@ package blog.semant;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,7 +71,6 @@ import blog.model.Evidence;
 import blog.model.ExistentialFormula;
 import blog.model.ExplicitSetSpec;
 import blog.model.Formula;
-import blog.model.FormulaQuery;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.FunctionSignature;
@@ -84,7 +82,7 @@ import blog.model.MatrixSpec;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.model.NegFormula;
-import blog.model.NonRandomFunction;
+import blog.model.FixedFunction;
 import blog.model.OriginFunction;
 import blog.model.POP;
 import blog.model.Query;
@@ -391,12 +389,13 @@ public class Semant {
     }
 
     if (e instanceof FixedFuncDec) {
-      NonRandomFunction f;
+      FixedFunction f;
       if (argTy.size() == 0) {
-        f = NonRandomFunction.createConstant(name, resTy, e.body);
+        f = FixedFunction.createConstant(name, resTy, e.body);
       } else {
-        f = new NonRandomFunction(name, argTy, resTy);
+        f = new FixedFunction(name, argTy, resTy);
       }
+      f.setArgVars(argVars);
       fun = f;
     } else if (e instanceof RandomFuncDec) {
       // dependency statement will added later
@@ -447,30 +446,38 @@ public class Semant {
           FuncCallExpr fc = (FuncCallExpr) e.body;
           List<ArgSpec> args = transExprList(fc.args, false);
           Class cls = getClassWithName(fc.func.toString());
-          ((NonRandomFunction) fun).setInterpretation(cls, args);
+          ((FixedFunction) fun).setInterpretation(cls, args);
         } else if (e.body instanceof DoubleExpr) {
           List<Object> args = new ArrayList<Object>();
           args.add(((DoubleExpr) e.body).value);
           ConstantInterp constant = new ConstantInterp(args);
-          ((NonRandomFunction) fun).setInterpretation(constant);
+          ((FixedFunction) fun).setInterpretation(constant);
         } else if (e.body instanceof IntExpr) {
           List<Object> args = new ArrayList<Object>();
           args.add(((IntExpr) e.body).value);
           ConstantInterp constant = new ConstantInterp(args);
-          ((NonRandomFunction) fun).setInterpretation(constant);
+          ((FixedFunction) fun).setInterpretation(constant);
         } else if (e.body instanceof StringExpr) {
           List<Object> args = new ArrayList<Object>();
           args.add(((StringExpr) e.body).value);
           ConstantInterp constant = new ConstantInterp(args);
-          ((NonRandomFunction) fun).setInterpretation(constant);
+          ((FixedFunction) fun).setInterpretation(constant);
         } else {
-          // TODO: Implement more general fixed functions
+          // general expression as function body
+          Object funcBody = transExpr(e.body);
+          if (funcBody instanceof ArgSpec) {
+            ArgSpec funcValue = (ArgSpec) funcBody;
+            ((FixedFunction) fun).setBody(funcValue);
+          } else {
+            error(e.body.line, e.body.col,
+                "expression not supported in body of fixed function");
+          }
         }
       } else {
         // note will do type checking later
         Object funcBody = transExpr(e.body);
         ArgSpec funcValue = (ArgSpec) funcBody;
-        ((NonRandomFunction) fun).setInterpretation(
+        ((FixedFunction) fun).setInterpretation(
             blog.model.ConstantInterp.class,
             Collections.singletonList(funcValue));
       }
@@ -524,7 +531,7 @@ public class Semant {
     Object body = transExpr(e);
     List<Clause> cl = new ArrayList<Clause>(1);
     if (body instanceof Term || body instanceof Formula
-        || body instanceof TupleSetExpr) {
+        || body instanceof TupleSetSpec) {
       cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
           .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
     } else if (body instanceof Clause) {
@@ -1037,7 +1044,7 @@ public class Semant {
     return null;
   }
 
-  Object transExpr(OpExpr e) {
+  ArgSpec transExpr(OpExpr e) {
     Object left = null, right = null;
     Term term;
     if (e.left != null) {
@@ -1206,16 +1213,10 @@ public class Semant {
    * @param e
    */
   void transQuery(QueryStmt e) {
-    // TODO Auto-generated method stub
     Object as = transExpr(e.query);
     Query q;
-    if (as != null) {
-      if (as instanceof Formula) {
-        q = new FormulaQuery((Formula) as);
-      } else {
-        q = new ArgSpecQuery((ArgSpec) as);
-      }
-
+    if (as != null && as instanceof ArgSpec) {
+      q = new ArgSpecQuery((ArgSpec) as);
       queries.add(q);
     }
 
@@ -1282,8 +1283,7 @@ public class Semant {
         error(0, 0, "type checking failed for evidence");
       }
 
-      for (Iterator iter = queries.iterator(); iter.hasNext();) {
-        Query q = (Query) iter.next();
+      for (Query q : queries) {
         if (!q.checkTypesAndScope(model)) {
           error(0, 0, "type checking failed for query");
         }

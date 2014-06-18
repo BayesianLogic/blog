@@ -50,7 +50,7 @@ import blog.model.FuncAppTerm;
 import blog.model.Function;
 import blog.model.LogicalVar;
 import blog.model.Model;
-import blog.model.NonRandomFunction;
+import blog.model.FixedFunction;
 import blog.model.Query;
 import blog.model.Term;
 import blog.model.Type;
@@ -194,7 +194,7 @@ public class LiftedVarElim extends InferenceEngine {
 		}
 
 		Function f = funcApp.getFunction();
-		if (f instanceof NonRandomFunction) {
+		if (f instanceof FixedFunction) {
 			return ("which is application of nonrandom function " + f);
 		}
 

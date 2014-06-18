@@ -22,15 +22,37 @@ endif
 JAVA_SRC_FILES=$(shell find src -name \*.java -print)
 SCALA_SRC_FILES=$(shell find src -name \*.scala -print)
 
-compile: ${JAVA_SRC_FILES}
+help:
+	@echo 'Makefile for BLOG                                                      '
+	@echo '                                                                       '
+	@echo 'Usage:                                                                 '
+	@echo '   make compile                     compile BLOG system                '
+	@echo '   make clean                       remove the generated files         '
+	@echo '   make debug                       compile the code with debug flag   '
+	@echo '   make release                     create release zip files           '
+	@echo '   make html                        create documentation and webpages  '
+	@echo '   make demo                        run the BLOG demo                  '
+	@echo '   make parser                      regenerate the parser              '
+	@echo '   make sync                        clean repo and sync with remote    '
+	@echo '                                                                       '
+
+
+compile: ${JAVA_SRC_FILES} ${SCALA_SRC_FILES}
 	mkdir -p bin
 	fsc -d bin/ ${SCALA_SRC_FILES}
 	javac -cp "/usr/share/scala/lib/scala-compiler.jar:bin/:lib/*" -d bin/ ${JAVA_SRC_FILES}
 
-debug: ${JAVA_SRC_FILES}
+debug: ${JAVA_SRC_FILES} ${SCALA_SRC_FILES}
 	mkdir -p bin
 	fsc -d bin/ ${SCALA_SRC_FILES}
 	javac -g -cp "/usr/share/scala/lib/scala-compiler.jar:bin/:lib/*" -d bin/ ${JAVA_SRC_FILES}
+
+release: release-compile html zip
+
+release-compile:
+	# TODO: add scala stuff here
+	mkdir -p bin
+	javac -source 1.5 -target 1.5 -cp "lib/*" -d bin/ ${SRC_FILES}
 
 tar: zip
 
@@ -38,17 +60,21 @@ zip:
 	mkdir -p tmp/${TARGETNAME}
 	cp ${RUN_FILE} tmp/${TARGETNAME}/
 	cp -r lib tmp/${TARGETNAME}/
+	mv docs/output tmp/${TARGETNAME}/docs 		
+	cp -r example tmp/${TARGETNAME}/
 	jar cfe ${TARGETNAME}.jar blog.Main -C bin . 
 	mv ${TARGETNAME}.jar tmp/${TARGETNAME}/lib/
 	cd tmp; zip -r ${TARGETNAME}-bin.zip ${TARGETNAME}
 	rm tmp/${TARGETNAME}/lib/${TARGETNAME}.jar
 	cp -r src tmp/${TARGETNAME}/
-	cp -r example tmp/${TARGETNAME}/
 	cp ${MISC_FILE} tmp/${TARGETNAME}/
 	cd tmp; zip -r ${TARGETNAME}.zip ${TARGETNAME}
 	mv tmp/${TARGETNAME}.zip ./
 	mv tmp/${TARGETNAME}-bin.zip ./
 	rm -r -f tmp
+
+html:
+	cd docs; make html
 
 demo:
 	./blog example/poisson-ball.blog

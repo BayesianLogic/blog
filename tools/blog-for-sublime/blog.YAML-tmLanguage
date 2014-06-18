@@ -2,7 +2,7 @@
 ---
 name: BLOG
 scopeName: source.blog
-fileTypes: [blog,dblog]
+fileTypes: [blog,dblog,mblog,eblog,qblog]
 uuid: 99d32618-4b9c-4a4c-b44b-fb8851e307be
 
 patterns:
@@ -42,9 +42,12 @@ patterns:
   match: \b(Integer|Real|Boolean|NaturalNum|Timestep|RealMatrix|IntegerMatrix)((\[\])*)\b
 - name: keyword.control.blog
   match: \b(if|then|else|forall|exists|for)\b
-# distributions
+# builtin functions
 - name: support.function.blog
-  match: \b(TabularCPD|Distribution|Gaussian|UniformChoice|MultivarGaussian|Poisson|Bernoulli|BooleanDistrib|Binomial|Beta|BoundedGenometric|Categorical|Dirichlet|EqualsCPD|Gamma|Geometric|Iota|LinearGaussian|MixtureDistrib|NegativeBinamial|RoundedLogNormal|TabularInterp|UniformVector|UnivarGaussian|Exponential|UniformInt|UniformReal|Multinomial)\b
+  match: \b(abs|round|inv|transpose|det|repmat|diag|vstack|hstack|eye|zeros|ones|exp|toReal|toInt|isEmptyString|prev|min|max|sum)\b
+# distributions
+- name: support.class.blog
+  match: \b(TabularCPD|Distribution|Gaussian|UniformChoice|MultivarGaussian|Poisson|Bernoulli|BooleanDistrib|Binomial|Beta|BoundedGenometric|Categorical|Dirichlet|EqualsCPD|Gamma|Geometric|Iota|LinearGaussian|MixtureDistrib|NegativeBinamial|RoundedLogNormal|TabularInterp|UniformVector|UnivarGaussian|Exponential|UniformInt|UniformReal|Multinomial|Laplace)\b
 # numbers
 - name: constant.numeric.blog
   match: \b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)([LlFfUuDd]|UL|ul)?\b

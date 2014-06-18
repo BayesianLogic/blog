@@ -108,7 +108,7 @@ public class OriginVar extends AbstractBayesNetVar {
 		// do nothing
 	}
 
-	public Timestep timestep() {
+	public Timestep maxTimestep() {
 		return null;
 	}
 
