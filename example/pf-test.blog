@@ -1,0 +1,15 @@
+fixed Real mu = 0.0;
+fixed Real sigma = 1.0;
+random Real x(Timestep t) {
+	if t == @0 then ~ Gaussian(mu, sigma)
+	else ~ Gaussian(x(prev(t)), sigma)
+};
+
+obs x(@1) = 0.1;
+obs x(@5) = 0.5;
+obs x(@10) = 0.0;
+
+query mu;
+query x(@3);
+query x(@5);
+query x(@11);

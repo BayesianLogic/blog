@@ -54,156 +54,164 @@ import blog.model.Type;
  * the Categorical process (Categorical and Multinomial distributions).
  */
 public class Dirichlet extends AbstractCondProbDistrib {
-	
-	private Double[] alpha;
-	private Gamma[] gammas;
-	
-	/**
-	 * Constructs a Dirichlet distribution with the given parameters.
-	 * 
-	 * @param a list of parameters for the distribution
-	 */
-	public Dirichlet(List<Double> params) {
-		alpha = new Double[params.size()];
-		params.toArray(alpha);
-		initGammas();
-	}
-	
-	/**
-	 * Constructs a Dirichlet distribution with the given dimension and
-	 * parameter value for all dimensions
-	 * 
-	 * @param the dimension of the distribution
-	 * @param the value for all parameters of this distribution
-	 */
-	public Dirichlet(int dimension, double paramVal) {
-		alpha = new Double[dimension];
-		Arrays.fill(alpha, paramVal);
-		initGammas();
-	}
-	
-	/**
-	 * Helper for constructor to construct needed gamma functions
-	 */
-	private void initGammas() {
-		int numParams = alpha.length;
-		gammas = new Gamma[numParams];
-		for (int i = 0; i < numParams; i++) {
-			gammas[i] = new Gamma(alpha[i], 1);
-		}
-	}
-	
-	/**
-	 * Helper for sampleVal() to reconstruct gamma functions
-	 */
-	private void reconstructGammas(int vec_size) {
-		int numParams = vec_size;
-		gammas = new Gamma[numParams];
-		for (int i = 0; i < numParams; i++) {
-			gammas[i] = new Gamma(alpha[0], 1);
-		}
-	}
 
+  private Double[] alpha;
+  private Gamma[] gammas;
 
-	/**
-	 * Returns the probability of a vector of values from this distribution.
-	 */
-	public double getProb(List args, Object childValue) {
-		if (!(childValue instanceof MatrixLib)) {
-			throw new IllegalArgumentException("Dirichlet distribution" +
-					"requires MatrixLib as argument, not " + childValue.getClass() + ".");
-		}
-		
-		MatrixLib mat = (MatrixLib)childValue;
-		if (mat.numRows() != 1 || mat.numCols() == 0) {
-			throw new IllegalArgumentException("Dirichlet distribution" +
-					"requires nonempty vector of Numbers as argument.");
-		}
-		
-		double prob = 1.0;
-		for (int i = 0; i < mat.numCols(); i++) {
-			double count_term = (args.size() != 0) ? alpha[0] : alpha[i];
-			double x = mat.elementAt(0, i);
-			prob *= Math.pow(x, count_term - 1);
-		}
-		prob /= normalize(alpha);
-		
-		return prob;
-	}
-	
-	/**
-	 * Returns the log of the probability of a vector of values from this distribution.
-	 */
-	public double getLogProb(List args, Object childValue) {
-		if (!(childValue instanceof MatrixLib)) {
-			throw new IllegalArgumentException("Dirichlet distribution" +
-					"requires MatrixLib as argument, not " + childValue.getClass() + ".");
-		}
-		
-		MatrixLib mat = (MatrixLib)childValue;
-		if (mat.numRows() != 1 || mat.numCols() == 0) {
-			throw new IllegalArgumentException("Dirichlet distribution" +
-					"requires nonempty vector of Numbers as argument.");
-		}
-		
-		double prob = 0.0;
-		for (int i = 0; i < mat.numCols(); i++) {
-			double count_term = (args.size() != 0) ? alpha[0] : alpha[i];
-			double x = mat.elementAt(0, i);
-			prob += Math.log(x) * (count_term - 1);
-		}
-		prob -= Math.log(normalize(alpha));
-		
-		return prob;
-	}
+  /**
+   * Constructs a Dirichlet distribution with the given parameters.
+   * 
+   * @param params
+   *          a list of parameters for the distribution
+   */
+  public Dirichlet(List<Double> params) {
+    alpha = new Double[params.size()];
+    params.toArray(alpha);
+    initGammas();
+  }
 
-	/**
-	 * Returns a list of doubles sampled from this distribution.
-	 */
-	public Object sampleVal(List args, Type childType) {
-		double sum = 0.0;
-		int vec_size = alpha.length;
-		if (args.size() != 0) {
-			vec_size = (Integer) args.get(0);
-			reconstructGammas(vec_size);
-		}
-		
-		double[][] samples = new double[1][vec_size];
-		List<Object> dummy = new ArrayList<Object>();
-		for (int i = 0; i < vec_size; i++) {
-			Gamma component = gammas[i];
-			double sample = (Double) component.sampleVal(dummy, childType);
-			sum += sample;
-			samples[0][i] = sample;
-		}
-		
-		for (int i = 0; i < vec_size; i++) {
-			samples[0][i] /= sum;
-		}
-		return MatrixFactory.fromArray(samples);
-	}
-	
-	/**
-	 * Computes the normalization constant for a Dirichlet distribution with
-	 * the given parameters.
-	 * 
-	 * @param a list of parameters of a Dirichlet distribution
-	 * @return the normalization constant for such a distribution
-	 */
-	public static final double normalize(Double[] params) {
-		double denom = 0.0;
-		double numer = 1.0;
-		
-		for (double param: params) {
-			numer *= Gamma.gamma(param);
-			denom += param;
-		}
-		denom = Gamma.gamma(denom);
-		
-		return numer / denom;
-	}
-	
-	public String toString() {
-		return getClass().getName();
-	}
+  /**
+   * Constructs a Dirichlet distribution with the given dimension and
+   * parameter value for all dimensions
+   * 
+   * @param dimension
+   *          the dimension of the distribution
+   * @param paramVal
+   *          the value for all parameters of this distribution
+   */
+  public Dirichlet(int dimension, double paramVal) {
+    alpha = new Double[dimension];
+    Arrays.fill(alpha, paramVal);
+    initGammas();
+  }
+
+  /**
+   * Helper for constructor to construct needed gamma functions
+   */
+  private void initGammas() {
+    int numParams = alpha.length;
+    gammas = new Gamma[numParams];
+    for (int i = 0; i < numParams; i++) {
+      gammas[i] = new Gamma(alpha[i], 1);
+    }
+  }
+
+  /**
+   * Helper for sampleVal() to reconstruct gamma functions
+   */
+  private void reconstructGammas(int vec_size) {
+    int numParams = vec_size;
+    gammas = new Gamma[numParams];
+    for (int i = 0; i < numParams; i++) {
+      gammas[i] = new Gamma(alpha[0], 1);
+    }
+  }
+
+  /**
+   * Returns the probability of a vector of values from this distribution.
+   */
+  public double getProb(List args, Object childValue) {
+    if (!(childValue instanceof MatrixLib)) {
+      throw new IllegalArgumentException("Dirichlet distribution"
+          + "requires MatrixLib as argument, not " + childValue.getClass()
+          + ".");
+    }
+
+    MatrixLib mat = (MatrixLib) childValue;
+    if (mat.numRows() != 1 || mat.numCols() == 0) {
+      throw new IllegalArgumentException("Dirichlet distribution"
+          + "requires nonempty vector of Numbers as argument.");
+    }
+
+    double prob = 1.0;
+    for (int i = 0; i < mat.numCols(); i++) {
+      double count_term = (args.size() != 0) ? alpha[0] : alpha[i];
+      double x = mat.elementAt(0, i);
+      prob *= Math.pow(x, count_term - 1);
+    }
+    prob /= normalize(alpha);
+
+    return prob;
+  }
+
+  /**
+   * Returns the log of the probability of a vector of values from this
+   * distribution.
+   */
+  public double getLogProb(List args, Object childValue) {
+    if (!(childValue instanceof MatrixLib)) {
+      throw new IllegalArgumentException("Dirichlet distribution"
+          + "requires MatrixLib as argument, not " + childValue.getClass()
+          + ".");
+    }
+
+    MatrixLib mat = (MatrixLib) childValue;
+    if (mat.numRows() != 1 || mat.numCols() == 0) {
+      throw new IllegalArgumentException("Dirichlet distribution"
+          + "requires nonempty vector of Numbers as argument.");
+    }
+
+    double prob = 0.0;
+    for (int i = 0; i < mat.numCols(); i++) {
+      double count_term = (args.size() != 0) ? alpha[0] : alpha[i];
+      double x = mat.elementAt(0, i);
+      if (count_term != 1) {
+        prob += Math.log(x) * (count_term - 1);
+      }
+    }
+    prob -= Math.log(normalize(alpha));
+
+    return prob;
+  }
+
+  /**
+   * Returns a list of doubles sampled from this distribution.
+   */
+  public Object sampleVal(List args, Type childType) {
+    double sum = 0.0;
+    int vec_size = alpha.length;
+    if (args.size() != 0) {
+      vec_size = (Integer) args.get(0);
+      reconstructGammas(vec_size);
+    }
+
+    double[][] samples = new double[1][vec_size];
+    List<Object> dummy = new ArrayList<Object>();
+    for (int i = 0; i < vec_size; i++) {
+      Gamma component = gammas[i];
+      double sample = (Double) component.sampleVal(dummy, childType);
+      sum += sample;
+      samples[0][i] = sample;
+    }
+
+    for (int i = 0; i < vec_size; i++) {
+      samples[0][i] /= sum;
+    }
+    return MatrixFactory.fromArray(samples);
+  }
+
+  /**
+   * Computes the normalization constant for a Dirichlet distribution with
+   * the given parameters.
+   * 
+   * @param params
+   *          a list of parameters of a Dirichlet distribution
+   * @return the normalization constant for such a distribution
+   */
+  public static final double normalize(Double[] params) {
+    double denom = 0.0;
+    double numer = 1.0;
+
+    for (double param : params) {
+      numer *= Gamma.gamma(param);
+      denom += param;
+    }
+    denom = Gamma.gamma(denom);
+
+    return numer / denom;
+  }
+
+  public String toString() {
+    return getClass().getName();
+  }
 }
