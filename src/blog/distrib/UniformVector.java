@@ -61,29 +61,13 @@ public class UniformVector implements CondProbDistrib {
   }
 
   /**
-   * Returns the lower bounds for each dimension.
-   */
-  public double[] getLower() {
-    return mins;
-  }
-
-  /**
-   * Returns the upper bounds for each dimension.
-   */
-  public double[] getUpper() {
-    return maxes;
-  }
-
-  /**
-   * Returns the dimensionality of the box.
-   */
-  public int getDimension() {
-    return dim;
-  }
-
-  /**
+   * set parameters for UniformVector distribution
+   * 
    * @param params
-   *          An array of MatrixLib instances in the form of 1 by 2 row vectors
+   *          An array of MatrixLib instances in the form of 1 by 2 row vectors.
+   *          The first element of the row vector represents the lower bound of
+   *          the dimension and the second of the row vector represents the
+   *          corresponding upper bound of the dimension.
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
@@ -104,9 +88,7 @@ public class UniformVector implements CondProbDistrib {
       this.dimensionSet = new boolean[dim];
     }
     MatrixLib[] m = new MatrixLib[dim];
-    for (int i = 0; i < dim; i++) {
-      m[i] = (MatrixLib) params[i];
-    }
+    System.arraycopy(params, 0, m, 0, params.length);
     setParams(m);
   }
 
@@ -215,6 +197,11 @@ public class UniformVector implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
+    return sample_value();
+  }
+
+  /** Samples from a UniformVector distribution. */
+  public MatrixLib sample_value() {
     checkHasParams();
     MatrixLib sample = MatrixFactory.fromArray(new double[dim][1]);
     for (int i = 0; i < dim; ++i) {
