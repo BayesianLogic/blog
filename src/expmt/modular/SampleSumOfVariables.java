@@ -207,7 +207,9 @@ abstract class SumSamplerForPoisson {
 
   public double sampleParent(int[] x, double lambdaParent, double lambdaChild,
       int[] evid) {
-    x[0] = Poisson.sampleVal(lambdaParent);
+    Poisson poiss = new Poisson();
+    poiss.setParams(lambdaParent);
+    x[0] = poiss.sample_value();
     return 1.0;
   }
 
@@ -332,7 +334,9 @@ class RescalingSumSamplerForPoissonOneStep extends SumSamplerForPoisson {
         int s = -1;
         double lambda = ((double) sum) / (k - i);
         do {
-          s = Poisson.sampleVal(lambda);
+          Poisson poiss = new Poisson();
+          poiss.setParams(lambda);
+          s = poiss.sample_value();
           numRej++;
         } while (s > sum);
         numRej--;
@@ -386,7 +390,9 @@ class RescalingSumSamplerForPoisson extends
       s += evid[i];
     }
     double lambda1 = ((double) s) / evid.length / lambdaChild;
-    x[0] = Poisson.sampleVal(lambda1);
+    Poisson poiss = new Poisson();
+    poiss.setParams(lambda1);
+    x[0] = poiss.sample_value();
     double w = Poisson.computeLogProb(lambdaParent, x[0]);
     w = Math.exp(w - Poisson.computeLogProb(lambda1, x[0]));
     return w;
