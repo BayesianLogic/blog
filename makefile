@@ -19,7 +19,8 @@ else
 TARGETNAME=blog
 endif
 
-SRC_FILES=$(shell find src -name \*.java -print)
+JAVA_SRC_FILES=$(shell find src -name \*.java -print)
+SCALA_SRC_FILES=$(shell find src -name \*.scala -print)
 
 help:
 	@echo 'Makefile for BLOG                                                      '
@@ -36,17 +37,20 @@ help:
 	@echo '                                                                       '
 
 
-compile: ${SRC_FILES}
+compile: ${JAVA_SRC_FILES} ${SCALA_SRC_FILES}
 	mkdir -p bin
-	javac -cp "lib/*" -d bin/ ${SRC_FILES}
+	fsc -d bin/ ${SCALA_SRC_FILES}
+	javac -cp "/usr/share/scala/lib/scala-compiler.jar:bin/:lib/*" -d bin/ ${JAVA_SRC_FILES}
 
-debug: ${SRC_FILES}
+debug: ${JAVA_SRC_FILES} ${SCALA_SRC_FILES}
 	mkdir -p bin
-	javac -g -cp "lib/*" -d bin/ ${SRC_FILES}
+	fsc -d bin/ ${SCALA_SRC_FILES}
+	javac -g -cp "/usr/share/scala/lib/scala-compiler.jar:bin/:lib/*" -d bin/ ${JAVA_SRC_FILES}
 
 release: release-compile html zip
 
 release-compile:
+	# TODO: add scala stuff here
 	mkdir -p bin
 	javac -source 1.5 -target 1.5 -cp "lib/*" -d bin/ ${SRC_FILES}
 

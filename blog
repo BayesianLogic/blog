@@ -20,4 +20,4 @@ fi
 
 CPATH="${CPATH}${J_PATH_SEP}${BLOG_HOME}/lib/*${J_PATH_SEP}${CLASSPATH}"
 
-java -cp ${CPATH} -Xmx4096M blog.Main $@
+JAVA_OPTS="-Xmx4096M" scala -cp ${CPATH} blog.Main $@

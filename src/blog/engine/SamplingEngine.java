@@ -40,6 +40,7 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import blog.BLOGUtil;
+import blog.MyILoop;
 import blog.common.Timer;
 import blog.common.Util;
 import blog.io.TableWriter;
@@ -203,6 +204,15 @@ public class SamplingEngine extends InferenceEngine {
         printGeneratedWorld(sampler, logWeight);
         printed = true;
       }
+
+      MyILoop repl = new MyILoop();
+      repl.bind("i", "Int", i);
+      repl.bind("evidence", "blog.model.Evidence", evidence);
+      repl.bind("queries", "java.util.ArrayList[blog.model.Query]", queries);
+      repl.bind("world", "blog.world.DefaultPartialWorld",
+          sampler.getLatestWorld());
+      repl.bind("logWeight", "Double", sampler.getLatestLogWeight());
+      repl.run();
     }
 
     sampler.printStats();
