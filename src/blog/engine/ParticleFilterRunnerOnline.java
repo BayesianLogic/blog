@@ -24,7 +24,7 @@ import blog.io.TableWriter;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
-import blog.model.Query;
+import blog.model.Queries;
 import blog.msg.ErrorMsg;
 import blog.parse.Parse;
 import blog.semant.Semant;
@@ -224,7 +224,7 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
     Util.setVerbose(verbose);
     Model model = new Model();
     Evidence evidence = new Evidence();
-    ArrayList<Query> queries = new ArrayList<Query>();
+    Queries queries = new Queries(model);
     List<Object[]> readersAndOrigins = new ArrayList<Object[]>();
     readersAndOrigins.add(new Object[] { new FileReader(modelFile), "blank" });
 
@@ -237,13 +237,9 @@ public class ParticleFilterRunnerOnline extends ParticleFilterRunner {
   // need to fix the error message for empty evidence string inputs
   private boolean parseAndTranslateEvidence(Evidence e, Reader reader) {
     Parse parse = new Parse(reader, null);
-    Semant sem = new Semant(model, e, new ArrayList<Query>(), new ErrorMsg(
-        "ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()")); // ignore
-                                                                         // this
-                                                                         // error
-                                                                         // message
-                                                                         // for
-                                                                         // now
+    Semant sem = new Semant(model, e, new Queries(model), new ErrorMsg(
+        "ParticleFilterRunnerOnGenerator.parseAndTranslateEvidence()"));
+    // ignore this error message for now
     sem.transProg(parse.getResult());
     return true;
   }
