@@ -43,15 +43,18 @@ import blog.objgen.ObjectSet;
  * CPD that takes <code>S</code>, a set of objects (an instance of the
  * ObjectSet interface), and defines a uniform distribution over this set.
  * 
- * @since June 12, 2014
+ * @since June 17, 2014
  */
 public class UniformChoice implements CondProbDistrib {
 
   /**
-   * mapping for <code>params</code>
-   * <ul>
-   * <li>params[0]: <code>S</code></li>
-   * </ul>
+   * set parameters for UniformChoice
+   * 
+   * @param params
+   *          an array of the form [ObjectSet]
+   *          <ul>
+   *          <li>params[0]: <code>S</code></li>
+   *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
@@ -115,6 +118,11 @@ public class UniformChoice implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
+    return sample_value();
+  }
+
+  /** Samples uniformly from <code>S</code>, a set of object. */
+  public Object sample_value() {
     checkHasParams();
     if (s.isEmpty()) {
       return Model.NULL;
