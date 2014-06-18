@@ -1,28 +1,41 @@
 Distribution of values for (Holds(F(Stephen_Gillers)) = true)
-	1.0	true
+	0.9991692500004489	true
+	8.307500000010133E-4	false
 Distribution of values for (Holds(F(Robert_Berne)) = true)
-	1.0	true
+	0.9912791250001174	false
+	0.00872087500001162	true
 Distribution of values for (Holds(F(Dr__Gary_I__Wadler)) = true)
-	1.0	true
+	0.605431250000217	false
+	0.39456875000026453	true
 Distribution of values for (Holds(F(Herbert_Menzel)) = true)
-	1.0	true
+	0.5679931250003023	false
+	0.4320068750002963	true
 Distribution of values for (Holds(F(New_York)) = true)
-	1.0	true
+	0.9925206250006875	false
+	0.007479375000009769	true
 Distribution of values for (Holds(F(William_Joseph_McKeon)) = true)
-	1.0	true
+	0.8150828750001543	false
+	0.18491712500019822	true
 Distribution of values for (Holds(F(Thomas_G__S__Christensen)) = true)
-	1.0	true
+	0.9952662500012611	false
+	0.0047337500000058114	true
 Distribution of values for (Holds(F(Prof__Stephen_Gillers)) = true)
-	1.0	false
+	0.9931825000009189	false
+	0.006817500000009004	true
 Distribution of values for (Holds(F(Dr__Seymour_Birnbach)) = true)
-	1.0	true
+	0.8212656250006694	false
+	0.17873437500018424	true
 Distribution of values for (Holds(F(Michael_Wishnie)) = true)
-	1.0	true
+	0.9929760000008558	false
+	0.007024000000009128	true
 Distribution of values for (Holds(F(Edward_Altman)) = true)
-	1.0	true
+	0.6371608750005688	false
+	0.3628391250001393	true
 Distribution of values for (Holds(F(Burt_Neuborne)) = true)
-	1.0	true
+	0.6362912500002907	false
+	0.36370875000010694	true
 Distribution of values for (Holds(F(William_L__Silber)) = true)
-	1.0	true
+	0.6259665000005336	false
+	0.374033500000189	true
 Distribution of values for (Holds(F(Sidney)) = true)
 	1.0	true

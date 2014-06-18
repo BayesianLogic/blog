@@ -1,72 +1,103 @@
 Distribution of values for (Holds(F(William_J__Casey, Central_Intelligence)) = true)
-	1.0	true
+	1.0	false
 Distribution of values for (Holds(F(Stephen_Gillers, New_York_University)) = true)
-	1.0	true
+	0.9998947499999752	true
+	1.0525000000004487E-4	false
 Distribution of values for (Holds(F(John_C__Coffee_Jr_, Columbia_University)) = true)
 	1.0	true
 Distribution of values for (Holds(F(Robert_Blendon, Harvard)) = true)
-	1.0	true
+	0.9968050000000794	false
+	0.003195000000001349	true
 Distribution of values for (Holds(F(Robert_Berne, New_York_University)) = true)
-	1.0	true
+	0.9931880000001263	false
+	0.006812000000003242	true
 Distribution of values for (Holds(F(Los_Angeles, University_of_California)) = true)
-	1.0	true
+	0.9350877499998704	false
+	0.06491225000004043	true
 Distribution of values for (Holds(F(Jeffrey_Sachs, Harvard)) = true)
-	1.0	true
+	0.7404829999996495	false
+	0.2595170000001551	true
 Distribution of values for (Holds(F(Dr__Gary_I__Wadler, New_York_University)) = true)
-	1.0	true
+	0.5100819999999879	false
+	0.48991800000009267	true
 Distribution of values for (Holds(F(Bob_Blendon, Harvard)) = true)
-	1.0	true
+	0.9865430000001824	false
+	0.013457000000006925	true
 Distribution of values for (Holds(F(Robert_M__Gates, Central_Intelligence)) = true)
-	1.0	true
+	1.0	false
 Distribution of values for (Holds(F(William_E__Colby, Central_Intelligence)) = true)
-	1.0	true
+	0.9814575000000336	false
+	0.01854250000000969	true
 Distribution of values for (Holds(F(Herbert_Menzel, New_York_University)) = true)
-	1.0	true
+	0.5374494999999673	true
+	0.4625504999999652	false
 Distribution of values for (Holds(F(Richard_Freeman, Harvard)) = true)
-	1.0	true
+	0.9981824999999934	false
+	0.0018175000000007545	true
 Distribution of values for (Holds(F(New_York, New_York_University)) = true)
-	1.0	true
+	0.8862632500000803	false
+	0.11373675000008032	true
 Distribution of values for (Holds(F(Priscilla_S__Hunt, Princeton)) = true)
-	1.0	true
+	0.9979647500000396	false
+	0.002035250000000863	true
 Distribution of values for (Holds(F(Orville_Schell, University_of_California)) = true)
-	1.0	false
+	0.9991519999997298	false
+	8.480000000003793E-4	true
 Distribution of values for (Holds(F(Michael_Beckerman, University_of_California)) = true)
-	1.0	false
+	0.9952482499998693	false
+	0.00475175000000233	true
 Distribution of values for (Holds(F(John_Van_Antwerp_Fine, Princeton)) = true)
 	1.0	false
 Distribution of values for (Holds(F(James_Shapiro, Columbia_University)) = true)
-	1.0	false
+	0.9920757499997981	false
+	0.007924250000003649	true
 Distribution of values for (Holds(F(Benjamin_M__Friedman, Harvard_University)) = true)
-	1.0	true
+	0.538730249999959	true
+	0.46126974999999193	false
 Distribution of values for (Holds(F(William_H__Webster, Central_Intelligence)) = true)
-	1.0	true
+	1.0	false
 Distribution of values for (Holds(F(Reagan, Central_Intelligence)) = true)
-	1.0	true
+	0.9917784999999073	false
+	0.00822150000000373	true
 Distribution of values for (Holds(F(Marshall_Goldman, Harvard)) = true)
-	1.0	false
+	0.994557500000064	false
+	0.005442500000002555	true
 Distribution of values for (Holds(F(Mark_A__R__Kleiman, Harvard_University)) = true)
-	1.0	true
+	0.9921214999998169	false
+	0.007878500000003594	true
 Distribution of values for (Holds(F(William_Joseph_McKeon, New_York_University)) = true)
-	1.0	true
+	0.7941707500000333	false
+	0.20582925000014304	true
 Distribution of values for (Holds(F(Walter_Gilbert, Harvard_University)) = true)
-	1.0	true
+	0.5359634999999714	true
+	0.4640364999999924	false
 Distribution of values for (Holds(F(Steven_Cohen, Columbia_University)) = true)
-	1.0	true
+	0.9798742500002767	false
+	0.020125750000009615	true
 Distribution of values for (Holds(F(Robert_B__Reich, Harvard)) = true)
-	1.0	true
+	0.7917897500000903	false
+	0.20821025000014293	true
 Distribution of values for (Holds(F(Ricardo_Hausmann, Harvard_University)) = true)
-	1.0	true
+	0.9970495000000915	false
+	0.002950500000001257	true
 Distribution of values for (Holds(F(John_Coffee, Columbia_University)) = true)
-	1.0	true
+	0.7875809999999291	false
+	0.21241900000013106	true
 Distribution of values for (Holds(F(Eli_Ginzberg, Columbia_University)) = true)
-	1.0	true
+	0.9792225000001986	false
+	0.020777500000009552	true
 Distribution of values for (Holds(F(Dr__James_F__Gilliam, Princeton)) = true)
-	1.0	true
+	0.7926634999999648	false
+	0.20733650000014547	true
 Distribution of values for (Holds(F(Tom_K__Lieser, University_of_California)) = true)
-	1.0	false
+	0.988169499999971	false
+	0.011830500000005061	true
 Distribution of values for (Holds(F(Prof__Otis_Graham_Jr_, University_of_California)) = true)
-	1.0	false
+	0.9897687500001321	false
+	0.01023125000000463	true
 Distribution of values for (Holds(F(Howard_Stein, Columbia_University)) = true)
-	1.0	false
+	0.9929035000000686	false
+	0.007096500000003261	true
 Distribution of values for (Holds(F(Cornell, Princeton)) = true)
-	1.0	false
+	0.999239249999767	false
+	7.607500000003374E-4	true
