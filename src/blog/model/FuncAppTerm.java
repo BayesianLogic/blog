@@ -399,10 +399,6 @@ public class FuncAppTerm extends Term {
     if (equals(t))
       return true; // check for the same constant
 
-    if (t instanceof fove.CountingTerm) {
-      return t.makeOverlapSubst(this, theta);
-    }
-
     if (args.length == 0) { // we are a constant
       if (t instanceof LogicalVar) { // they are a variable
         // can try to unify the other way
