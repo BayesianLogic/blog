@@ -45,7 +45,7 @@ import blog.common.Util;
  * which is a map from objects to numbers. The number corresponding to each
  * object represents the probability of that object occurring.
  */
-public class Categorical extends AbstractCondProbDistrib {
+public class Categorical implements CondProbDistrib {
 
   /**
    * set parameters for categorical distribution
@@ -56,7 +56,7 @@ public class Categorical extends AbstractCondProbDistrib {
    *          <li>params[0]: <code>map</code> (Map<Object, Double>)</li>
    *          </ul>
    * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
   @Override
   public void setParams(Object[] params) {
@@ -78,11 +78,11 @@ public class Categorical extends AbstractCondProbDistrib {
             "no elements within map for categorical distribution");
       }
       double sum = 0.0;
-      for (Object key : map.keySet()) {
-        double prob = map.get(key);
+      for (Map.Entry<Object, Double> entry : map.entrySet()) {
+        double prob = entry.getValue();
         if (prob < 0) {
           throw new IllegalArgumentException("Probability " + prob
-              + " for key " + key.toString() + " is negative");
+              + " for key " + entry.getKey().toString() + " is negative");
         }
         sum += prob;
       }
@@ -96,9 +96,11 @@ public class Categorical extends AbstractCondProbDistrib {
       this.cdfObjects = new double[map.size()];
       int count = 0;
       double cdf = 0.0;
-      for (Object key : map.keySet()) {
+      for (Map.Entry<Object, Double> entry : map.entrySet()) {
+        Object key = entry.getKey();
+        Double value = entry.getValue();
         this.objects[count] = key;
-        double prob = map.get(key) / sum;
+        double prob = value / sum;
         cdf += prob;
         this.cdfObjects[count] = cdf;
         this.map.put(key, prob);
