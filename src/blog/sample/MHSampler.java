@@ -187,10 +187,6 @@ public class MHSampler extends Sampler {
     // Accept or reject proposal
     if ((logAcceptRatio >= 0) || (Util.random() < Math.exp(logAcceptRatio))) {
       worldUpdateTimer.start();
-      // ensureQueriesAreDetAndSupported(); // this is not part of the MH
-      // algorithm, but sampling done on top of it. Since this sampling is done
-      // according to the model's distribution, it still converges to it.
-      // I moved this to SamplingEngine to keep the MHSampler's "purity".
       curWorld.save();
       worldUpdateTimer.stop();
       if (Util.verbose()) {
