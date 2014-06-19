@@ -49,7 +49,7 @@ import blog.common.Util;
 public class Binomial implements CondProbDistrib {
 
   /**
-   * set parameters for beta distribution
+   * set parameters for binomial distribution
    * 
    * @param params
    *          An array of the form: [Integer, Double]
@@ -141,7 +141,14 @@ public class Binomial implements CondProbDistrib {
 
   /** Returns the log probability of <code>value</code> successes. */
   public double getLogProb(int value) {
-    return Math.log(getProb(value));
+    checkHasParams();
+    int k = value;
+    if (k >= 0 && k <= n) {
+      return Util.logPartialFactorial(n, k) - Util.logFactorial(k) + k
+          * Math.log(p) + (n - k) * Math.log(1 - p);
+    } else {
+      return Double.NEGATIVE_INFINITY;
+    }
   }
 
   /*
@@ -152,14 +159,13 @@ public class Binomial implements CondProbDistrib {
   @Override
   public Object sampleVal() {
     checkHasParams();
-    return sampleVal(n, p);
+    return sample_value();
   }
 
   /**
-   * Samples a binomial distribution with parameter <code>n</code> (number of
-   * trials) and <code>p</code> (probability of success for each trial).
+   * Samples the current binomial distribution.
    */
-  public static int sampleVal(int n, double p) {
+  public int sample_value() {
     double q = -Math.log(1 - p);
     double sum = 0;
     int x = 0;
