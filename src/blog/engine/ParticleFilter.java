@@ -60,13 +60,6 @@ import blog.type.Timestep;
  * representing a partial world, weighted by the
  * evidence. It uses the following properties: <code>numParticles</code> or
  * <code>numSamples</code>: number of particles (default is <code>1000</code>).
- * <code>useDecayedMCMC</code>: takes values <code>true</code> or
- * <code>false</code> (the default). Whether to use rejuvenation, presented by
- * W. R. Gilks and C. Berzuini.
- * "Following a moving target --- Monte Carlo inference for dynamic Bayesian models."
- * Journal of the Royal Statistical Society, Series B, 63:127--146, 2001.
- * <code>numMoves</code>: the number of moves used in specified by the property
- * given at construction time (default is <code>1</code>).
  * 
  * The ParticleFilter is an unusual {@link InferenceEngine} in that it takes
  * evidence and queries additional to the ones taken by
@@ -99,13 +92,6 @@ public class ParticleFilter extends InferenceEngine {
     } catch (NumberFormatException e) {
       Util.fatalErrorWithoutStack("Invalid number of particles: "
           + numParticlesStr); // do not dump stack.
-    }
-
-    String numMovesStr = properties.getProperty("numMoves", "1");
-    try {
-      numMoves = Integer.parseInt(numMovesStr);
-    } catch (NumberFormatException e) {
-      Util.fatalErrorWithoutStack("Invalid number of moves: " + numMovesStr);
     }
 
     String idTypesString = properties.getProperty("idTypes", "none");
@@ -265,12 +251,6 @@ public class ParticleFilter extends InferenceEngine {
         p.take(evidence);
         if (afterParticleTakesEvidence != null)
           afterParticleTakesEvidence.evaluate(p, evidence, this);
-
-        // if (!useDecayedMCMC) {
-        // p.uninstantiatePreviousTimeslices();
-        // p.removeAllDerivedVars();
-        // }
-
       }
 
       double logSumWeights = Double.NEGATIVE_INFINITY;
@@ -409,7 +389,6 @@ public class ParticleFilter extends InferenceEngine {
 
   private int numParticles;
   public List<Particle> particles;
-  private int numMoves;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
   private Sampler particleSampler;
   private AfterSamplingListener afterSamplingListener;
