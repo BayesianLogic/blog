@@ -37,7 +37,6 @@ package blog.engine;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
 
 import blog.BLOGUtil;
 import blog.DBLOGUtil;
@@ -57,15 +56,10 @@ import blog.world.PartialWorld;
  */
 public class Particle {
 
-  /**
-   * Creates a new particle. The properties table specifies configuration
-   * parameters.
-   */
-  public Particle(Set idTypes, Sampler sampler) {
+  public Particle(Sampler sampler, PartialWorld world) {
     this.sampler = sampler;
-    this.idTypes = idTypes;
-    curWorld = new DefaultPartialWorld(idTypes);
-    logWeight = 1; // all particles are created equal.
+    this.curWorld = world;
+    logWeight = 1; // FIXME: shouldn't it be 0???
   }
 
   /**
@@ -132,16 +126,11 @@ public class Particle {
   }
 
   public Particle copy() {
-    Particle copy = new Particle(idTypes, sampler);
-    DefaultPartialWorld newWorld = (DefaultPartialWorld) ((DefaultPartialWorld) curWorld)
+    DefaultPartialWorld worldCopy = (DefaultPartialWorld) ((DefaultPartialWorld) curWorld)
         .clone();
-    copy.setWorld(newWorld);
+    Particle copy = new Particle(sampler, worldCopy);
     copy.logWeight = logWeight;
     return copy;
-  }
-
-  protected void setWorld(PartialWorld curWorld) {
-    this.curWorld = curWorld;
   }
 
   public void updateQueriesStats(Collection queries) {
@@ -161,7 +150,6 @@ public class Particle {
     return "(" + curWorld + "," + logWeight + ")";
   }
 
-  protected Set idTypes; // of Type
   public PartialWorld curWorld = null;
   protected double logWeight;
   private Sampler sampler;
