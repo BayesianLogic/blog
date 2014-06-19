@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
+import blog.common.Util;
 
 /**
  * Matrix and linear algebra operations
@@ -220,7 +221,7 @@ public class JamaMatrixLib implements MatrixLib {
       for (int i = 0; i < size; i++) {
         for (int j = i + 1; j < size; j++) {
           double ratio = elementAt(i, j) / elementAt(j, i);
-          if (Math.abs(ratio - 1) > 1e-6) {
+          if (Math.abs(ratio - 1) > Util.TOLERANCE) {
             return false;
           }
         }
