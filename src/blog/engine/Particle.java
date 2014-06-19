@@ -110,10 +110,6 @@ public class Particle {
     DBLOGUtil.removeVarsAtDiffTimestep(timestep, curWorld);
   }
 
-  public void removeAllDerivedVars() {
-    BLOGUtil.removeAllDerivedVars(curWorld);
-  }
-
   public PartialWorld getLatestWorld() {
     if (curWorld == null) {
       throw new IllegalStateException("Particle has no latest sample.");
