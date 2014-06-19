@@ -133,16 +133,12 @@ public class MHSampler extends Sampler {
     }
   }
 
-  public void setWorld(PartialWorld w) {
-    if (w instanceof PartialWorldDiff)
-      curWorld = (PartialWorldDiff) w;
-    else
-      curWorld = new PartialWorldDiff(w);
-  }
-
-  /** For MH samplers, same as {@link #setWorld(PartialWorld)}. */
   public void setBaseWorld(PartialWorld world) {
-    setWorld(world);
+    if (world instanceof PartialWorldDiff) {
+      curWorld = (PartialWorldDiff) world;
+    } else {
+      curWorld = new PartialWorldDiff(world);
+    }
   }
 
   /**
