@@ -54,6 +54,7 @@ import blog.model.Query;
 import blog.sample.AfterSamplingListener;
 import blog.sample.Sampler;
 import blog.type.Timestep;
+import blog.world.DefaultPartialWorld;
 
 /**
  * A Particle Filter. It works by keeping a set of {@link Particles}, each
@@ -212,7 +213,8 @@ public class ParticleFilter extends InferenceEngine {
    * {@link Particle#copy()} for it to return an object of its own class).
    */
   protected Particle makeParticle(Set idTypes) {
-    return new Particle(idTypes, particleSampler);
+    DefaultPartialWorld world = new DefaultPartialWorld(idTypes);
+    return new Particle(particleSampler, world);
   }
 
   /**
