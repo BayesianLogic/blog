@@ -8,7 +8,6 @@ import java.util.List;
 
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
-import blog.bn.DerivedVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.model.ArgSpec;
@@ -374,16 +373,6 @@ public class BLOGUtil {
   private static boolean isAtomicOrEquality(Formula formula) {
     return formula instanceof AtomicFormula
         || formula instanceof EqualityFormula;
-  }
-
-  /** Removes all derived vars from a partial world. */
-  public static void removeAllDerivedVars(PartialWorld world) {
-    LinkedList derivedVars = new LinkedList(world.getDerivedVars());
-    Iterator varIt = derivedVars.iterator();
-    while (varIt.hasNext()) {
-      DerivedVar var = (DerivedVar) varIt.next();
-      world.removeDerivedVar(var);
-    }
   }
 
   public static void uninstantiate(PartialWorld world, BasicVar var) {
