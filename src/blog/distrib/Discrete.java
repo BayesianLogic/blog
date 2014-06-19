@@ -7,10 +7,10 @@ import blog.common.Util;
 import blog.common.numerical.MatrixLib;
 
 /**
- * A Discrete Distribution takes a parameter <code>P</code> which is a MatrixLib
- * row vector of probabilities. It is basically a simplified case of Multinomial
- * distribution with <code>N = 1</code>. Consider the elements of <code>P</code>
- * to be P_0, P_1, ..,P_K-1.
+ * The discrete distribution generates values in 0 ... k-1, with p.m.f. p(x) =
+ * P_{x} where <code>P</code> is a distribution parameter that is a MatrixLib
+ * row vector of probabilities. It is basically a simplified case of a
+ * Multinomial distribution with <code>N = 1</code>.
  * 
  * @author cgioia
  * @since Jun 16, 2014
@@ -73,7 +73,7 @@ public class Discrete implements CondProbDistrib {
       }
       sum += p.elementAt(0, i);
     }
-    if (sum < 1e-9) {
+    if (sum < Util.NORMALIZATION_BOUND) {
       throw new IllegalArgumentException("Probabilities sum to approx zero");
     }
     // normalization

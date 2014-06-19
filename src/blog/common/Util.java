@@ -2024,4 +2024,10 @@ public class Util {
   private static Random rand;
   private static boolean verbose = false;
   private static boolean print = false;
+  /**
+   * For certain distributions, we allow a vector of unnormalized probabilities.
+   * This number is the minimum sum of these unnormalized probabilities that we
+   * are willing to tolerate without throwing an exeption.
+   */
+  public static final double NORMALIZATION_BOUND = 1e-9;
 }
