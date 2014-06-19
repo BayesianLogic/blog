@@ -169,7 +169,7 @@ public class Beta implements CondProbDistrib {
    * Gamma(a+b) Reference: Numerical Recipes in C
    * http://www.library.cornell.edu/nr/cbookcpdf.html
    */
-  public static double beta(double a, double b) {
+  private static double beta(double a, double b) {
     return ((Gamma.gamma(a) * Gamma.gamma(b)) / Gamma.gamma(a + b));
   }
 
