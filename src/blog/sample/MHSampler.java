@@ -212,19 +212,6 @@ public class MHSampler extends Sampler {
     }
   }
 
-  /**
-   * Samples from some given world, leaving the current world in sampler
-   * undisturbed.
-   */
-  public PartialWorld nextSample(PartialWorld world) {
-    PartialWorldDiff previousCurrentWorld = curWorld;
-    setWorld(world);
-    nextSample();
-    PartialWorld result = getLatestWorld();
-    curWorld = previousCurrentWorld;
-    return result;
-  }
-
   public PartialWorld getLatestWorld() {
     return curWorld; // for debugging
     // return curWorld.getSaved(); // return saved version for speed
