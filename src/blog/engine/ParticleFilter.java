@@ -143,7 +143,6 @@ public class ParticleFilter extends InferenceEngine {
 
   private void reset() {
     System.out.println("Using " + numParticles + " particles...");
-    int numTimeSlicesInMemory = 1;
     if (evidence == null) {
       evidence = new Evidence(model);
     }
@@ -152,7 +151,7 @@ public class ParticleFilter extends InferenceEngine {
     }
     particles = new ArrayList();
     for (int i = 0; i < numParticles; i++) {
-      Particle newParticle = makeParticle(idTypes, numTimeSlicesInMemory);
+      Particle newParticle = makeParticle(idTypes);
       particles.add(newParticle);
     }
     needsToBeResampledBeforeFurtherSampling = false;
@@ -212,8 +211,8 @@ public class ParticleFilter extends InferenceEngine {
    * extensions using specialized particles (don't forget to specialize
    * {@link Particle#copy()} for it to return an object of its own class).
    */
-  protected Particle makeParticle(Set idTypes, int numTimeSlicesInMemory) {
-    return new Particle(idTypes, numTimeSlicesInMemory, particleSampler);
+  protected Particle makeParticle(Set idTypes) {
+    return new Particle(idTypes, particleSampler);
   }
 
   /**
@@ -223,7 +222,6 @@ public class ParticleFilter extends InferenceEngine {
    *          Timestep before which the vars should be removed
    */
   public void removePriorTimeSlice(Timestep timestep) {
-    // For now we assume numTimeSlicesInMemory = 1.
     for (Particle p : particles) {
       p.removePriorTimeSlice(timestep);
     }

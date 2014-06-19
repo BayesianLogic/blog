@@ -58,13 +58,11 @@ import blog.world.PartialWorld;
 public class Particle {
 
   /**
-   * Creates a new particle. <code>numTimeSlicesInMemory</code> indicates how
-   * many time slices need to be kept in memory. The properties table specifies
-   * configuration parameters.
+   * Creates a new particle. The properties table specifies configuration
+   * parameters.
    */
-  public Particle(Set idTypes, int numTimeSlicesInMemory, Sampler sampler) {
+  public Particle(Set idTypes, Sampler sampler) {
     this.sampler = sampler;
-    this.numTimeSlicesInMemory = numTimeSlicesInMemory;
     this.idTypes = idTypes;
     curWorld = new DefaultPartialWorld(idTypes);
     logWeight = 1; // all particles are created equal.
@@ -134,7 +132,7 @@ public class Particle {
   }
 
   public Particle copy() {
-    Particle copy = new Particle(idTypes, numTimeSlicesInMemory, sampler);
+    Particle copy = new Particle(idTypes, sampler);
     DefaultPartialWorld newWorld = (DefaultPartialWorld) ((DefaultPartialWorld) curWorld)
         .clone();
     copy.setWorld(newWorld);
@@ -166,6 +164,5 @@ public class Particle {
   protected Set idTypes; // of Type
   public PartialWorld curWorld = null;
   protected double logWeight;
-  public int numTimeSlicesInMemory;
   private Sampler sampler;
 }
