@@ -10,3 +10,7 @@ To install:
 
 This package requires pygments package. You may install by 
     pip install Pygments
+
+
+If you do not have pip, you may install manually 
+    sudo python setup.py install 
