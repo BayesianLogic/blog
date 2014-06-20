@@ -136,22 +136,6 @@ public class LWSampler extends Sampler {
         latestSampleLogWeight);
   }
 
-  public LWSample sampleOne() {
-    nextSample();
-    LWSample result = new LWSample();
-    result.world = curWorld;
-    result.logWeight = latestSampleLogWeight;
-    return result;
-  }
-
-  public LWSample[] sample(int n) {
-    LWSample[] result = new LWSample[n];
-    for (int i = 0; i < n; i++) {
-      result[i] = sampleOne();
-    }
-    return result;
-  }
-
   protected double supportEvidenceAndCalculateLogWeight() {
     evidence.setEvidenceAndEnsureSupported(curWorld);
     return evidence.getEvidenceLogProb(curWorld);
