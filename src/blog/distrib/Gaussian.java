@@ -40,12 +40,4 @@ package blog.distrib;
  */
 public class Gaussian extends UnivarGaussian {
 
-  public Gaussian() {
-    super();
-  }
-
-  public Gaussian(double mean, double variance) {
-    super(mean, variance);
-  }
-
 }
