@@ -4,35 +4,7 @@
 #
 # blog [options] <blog-files>
 # 
-# By default it will use LWSampler (parental likelihood-weighting algorithm).
-# To use MHSampler (parental Metropolis-Hasting algorithm), 
-#   blog -s blog.sampler.MHSampler [options] <blog-files>
-#
-# It can accept an additional variable CLASSPATH to setup classpath of 
-# user provided distribution and library functions.
-# e.g. blog CLASSPATH=userdir -k User.blog example.blog
-#
-# Optional flags:
-# -r, --[no]randomize           Use clock time as random seed
-# -e <s>, --engine <s>          Use inference engine class <s>
-# -n <n>, --num_samples <n>     Run inference engine for <n> samples
-# -q <n>, --query_report_interval <n>Report Query values after <n> samples
-# -i <n>, --interval <n>        Write results after every <n> samples
-# -b <n>, --burn_in <n>         Treat first <n> samples as burn-in
-# -s <s>, --sampler <s>         Use sampler class <s>
-# -p <s>, --proposer <s>        Use Metropolis-Hastings proposer class <s>
-# -t <n>, --num_trials <n>      Do <n> independent runs of inference
-# --[no]generate                Sample worlds from prior and print them
-# --max_timestep <n>            If model is dynamic, generate up to <n> timesteps
-# -k <s>, --package <s>         Parser looks for classes in package <s>
-# -v, --[no]verbose             Print info about every world sampled
-# -d, --[no]displaycbn          Print the CBN of the sampled world
-# -g, --[no]debug               Print model, evidence, and queries
-# -w <s>, --write <s>           Write sampling results to file <s>
-# -h <s>, --histogram_output <s>Write histogram output to file <s>
-# -P<key>=<value>               Set inference configuration properties
-# -x <s>, --extend <s>          Extend setup with object of class <s>
-# -m <n>, --num_moves <n>       Use <m> moves per rejuvenation step (PF only)
+# Please refer to BLOG user manual for the full list of options
 #
 
 BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

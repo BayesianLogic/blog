@@ -210,7 +210,8 @@ public abstract class Function {
    * argument of type Timestep.
    */
   public boolean isTimeIndexed() {
-    return ((sig.argTypes.length > 0) && (sig.argTypes[sig.argTypes.length - 1] == BuiltInTypes.TIMESTEP));
+    return ((sig.getArgTypes().length > 0) && (sig.getArgTypes()[sig
+        .getArgTypes().length - 1] == BuiltInTypes.TIMESTEP));
   }
 
   /**
@@ -237,10 +238,9 @@ public abstract class Function {
    */
   public Iterator domainIterator(boolean skipLastArg) {
     List argDomains = new ArrayList();
-    int numDomains = (skipLastArg ? sig.argTypes.length - 1
-        : sig.argTypes.length);
-    for (int i = 0; i < numDomains; ++i) {
-      Type t = sig.argTypes[i];
+    int numDomains = (skipLastArg ? sig.getArgTypes().length - 1 : sig
+        .getArgTypes().length);
+    for (Type t : sig.getArgTypes()) {
       if (t.hasFiniteGuaranteed() && t.getPOPs().isEmpty()) {
         argDomains.add(t.getGuaranteedObjects());
       } else {
