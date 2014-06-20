@@ -82,6 +82,8 @@ public class Gamma implements CondProbDistrib {
       }
       this.hasK = true;
       this.k = k;
+      this.logGammaK = lgamma(this.k);
+      this.gammaK = Math.exp(this.logGammaK);
     }
     if (lambda != null) {
       if (lambda <= 0) {
@@ -90,6 +92,7 @@ public class Gamma implements CondProbDistrib {
       }
       this.hasLambda = true;
       this.lambda = lambda;
+      this.logLambda = Math.log(lambda);
     }
   }
 
@@ -119,7 +122,7 @@ public class Gamma implements CondProbDistrib {
       return 0;
     } else {
       return (lambda * Math.exp(-lambda * value)
-          * Math.pow(lambda * value, k - 1) / gamma(k));
+          * Math.pow(lambda * value, k - 1) / gammaK);
     }
   }
 
@@ -135,7 +138,13 @@ public class Gamma implements CondProbDistrib {
 
   /** Returns the log probability of <code>value</code>. */
   public double getLogProb(double value) {
-    return Math.log(getProb(value));
+    checkHasParams();
+    if (value < 0) {
+      return Double.NEGATIVE_INFINITY;
+    } else {
+      return logLambda - lambda * value + (k - 1) * Math.log(lambda * value)
+          - logGammaK;
+    }
   }
 
   /*
@@ -234,7 +243,7 @@ public class Gamma implements CondProbDistrib {
 
   @Override
   public String toString() {
-    return getClass().getName();
+    return "Gamma(" + lambda + ", " + k + ")";
   }
 
   private double lambda;
@@ -242,4 +251,7 @@ public class Gamma implements CondProbDistrib {
   private double k;
   private boolean hasK;
 
+  private double logLambda;
+  private double gammaK;
+  private double logGammaK;
 }
