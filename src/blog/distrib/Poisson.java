@@ -232,6 +232,12 @@ public class Poisson implements CondProbDistrib {
     return sample_value();
   }
 
+  /** Samples from the Poisson distribution. */
+  public int sample_value() {
+    checkHasParams();
+    return sample_value(lambda);
+  }
+
   /**
    * Returns an integer sampled according to the Poisson distribution. This
    * implementation takes time proportional to the magnitude of the integer
@@ -239,8 +245,7 @@ public class Poisson implements CondProbDistrib {
    * at Columbia University, specifically the file: <blockquote>
    * http://www.columbia.edu/~ak2108/ta/summer2003/poisson1.c </blockquote>
    */
-  public int sample_value() {
-    checkHasParams();
+  public static int sample_value(double lambda) {
     if (lambda < 15)
       return sampleSmall(lambda);
 
@@ -249,9 +254,7 @@ public class Poisson implements CondProbDistrib {
     double x = Gamma.sampleVal(m, 1);
     int r;
     if (x < lambda) {
-      Poisson poiss = new Poisson();
-      poiss.setParams(lambda - x);
-      r = m + poiss.sample_value();
+      r = m + Poisson.sample_value(lambda - x);
     } else {
       r = Binomial.sampleVal(m - 1, lambda / x);
     }
