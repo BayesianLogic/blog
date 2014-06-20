@@ -32,7 +32,7 @@ public abstract class AbstractProposer implements Proposer {
   }
 
   public PartialWorldDiff initialize(Evidence evidence, List queries) {
-    this.evidence = new Evidence();
+    this.evidence = new Evidence(model);
     evidenceVars = new HashSet();
     numBasicEvidenceVars = 0;
 

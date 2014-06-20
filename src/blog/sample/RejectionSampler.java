@@ -141,7 +141,7 @@ public class RejectionSampler extends Sampler {
    * the bounds specified by the intBound and depthBound properties).
    */
   public void initializeCompleteSampling() {
-    super.initialize(new Evidence(), new Queries(model));
+    super.initialize(new Evidence(model), new Queries(model));
     requireComplete = true;
 
     numSamplesThisTrial = 0;

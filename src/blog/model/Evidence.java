@@ -82,14 +82,6 @@ import blog.world.PartialWorld;
  * @see blog.model.ValueEvidenceStatement
  */
 public class Evidence {
-
-  /**
-   * Creates a new Evidence object with no evidence.
-   */
-  public Evidence() {
-    this.model = null;
-  }
-
   public Evidence(Model model) {
     this.model = model;
   }
@@ -112,11 +104,9 @@ public class Evidence {
   /**
    * Creates an Evidence object out of a collection of statements.
    */
-  public static Evidence constructAndCompile(Collection statements) {
-    Evidence result = new Evidence();
-    Iterator it;
-    for (it = statements.iterator(); it.hasNext();) {
-      Object statement = it.next();
+  public static Evidence constructAndCompile(Model model, Collection statements) {
+    Evidence result = new Evidence(model);
+    for (Object statement : statements) {
       if (statement instanceof ValueEvidenceStatement)
         result.addValueEvidence((ValueEvidenceStatement) statement);
       else
@@ -434,7 +424,7 @@ public class Evidence {
       newValueEvidence.add(newVes);
     }
     if (replacement) {
-      Evidence newEvidence = new Evidence();
+      Evidence newEvidence = new Evidence(model);
       newEvidence.valueEvidence.addAll(newValueEvidence);
       newEvidence.symbolEvidence.addAll(newSymbolEvidence);
       if (compiled)

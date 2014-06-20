@@ -72,8 +72,8 @@ public class DBLOGUtil {
     // Then we convert each list of statements to an Evidence object.
     Map<Timestep, Evidence> result = new HashMap<Timestep, Evidence>();
     for (Map.Entry<Timestep, List<Object>> entry : table.entrySet()) {
-      result
-          .put(entry.getKey(), Evidence.constructAndCompile(entry.getValue()));
+      result.put(entry.getKey(),
+          Evidence.constructAndCompile(evidence.model, entry.getValue()));
     }
     return result;
   }

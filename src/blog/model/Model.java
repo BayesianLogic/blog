@@ -124,7 +124,7 @@ public class Model {
    *          origin description
    */
   public void augmentFromReadersAndOrigins(List<Object[]> readersAndOrigins) {
-    Evidence evidence = new Evidence();
+    Evidence evidence = new Evidence(this);
     Queries queries = new Queries(this);
     Main.setup(this, evidence, queries, readersAndOrigins, false /* verbose */,
         false);
