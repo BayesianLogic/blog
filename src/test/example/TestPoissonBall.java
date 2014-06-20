@@ -5,8 +5,6 @@ import java.util.Properties;
 
 import org.apache.commons.math3.fraction.BigFraction;
 
-import test.ComputeUrnBall;
-
 /**
  * Regression test for poisson-ball.blog
  * (correct as of at least July 12, 2012)

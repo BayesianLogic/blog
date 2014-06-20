@@ -39,9 +39,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
-import ve.Factor;
-import ve.Potential;
-import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.UnaryFunction;
@@ -119,25 +116,6 @@ public class ArgSpecQuery extends AbstractQuery {
   public void updateStats(PartialWorld world, double logWeight) {
     Object value = getArgSpec().evaluate(world);
     histogram.increaseWeight(value, logWeight);
-  }
-
-  public void setPosterior(Factor posterior) {
-    if (!posterior.getRandomVars().contains((BasicVar) variable)) {
-      throw new IllegalArgumentException("Query variable " + variable
-          + " not covered by factor on " + posterior.getRandomVars());
-    }
-    if (posterior.getRandomVars().size() > 1) {
-      throw new IllegalArgumentException("Answer to query on " + variable
-          + " should be factor on " + "that variable alone, not "
-          + posterior.getRandomVars());
-    }
-
-    Potential pot = posterior.getPotential();
-    Type type = pot.getDims().get(0);
-    histogram.clear();
-    for (Object o : type.getGuaranteedObjects()) {
-      histogram.increaseWeight(o, pot.getValue(Collections.singletonList(o)));
-    }
   }
 
   public Histogram getHistogram() {

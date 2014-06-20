@@ -149,8 +149,8 @@ public class Main {
     fromString = false;
     init(args);
     List<Object[]> readersAndOrigins = makeReaders(filenames);
-    setup(model, evidence, queries, readersAndOrigins, Util.verbose(), true);
-    run();
+    if (setup(model, evidence, queries, readersAndOrigins, Util.verbose(), true))
+      run();
   }
 
   public static void runFromString(String modelstring, String[] args) {
@@ -159,8 +159,8 @@ public class Main {
       args = new String[0];
     }
     init(args);
-    stringSetup(modelstring);
-    run();
+    if (stringSetup(modelstring))
+      run();
   }
 
   public static void init(String[] args) {
@@ -367,10 +367,14 @@ public class Main {
    * {@link #setupFromFiles(Model, Evidence, List, Collection, Collection, boolean, boolean)}
    * , which has no setup extends, is not verbose and does prints "read from"
    * messages.
+   * 
+   * @return
+   *         true if the input is valid BLOG program
+   *         false if there is error in syntax or semantics
    */
-  public static void simpleSetupFromFiles(Model model, Evidence evidence,
+  public static boolean simpleSetupFromFiles(Model model, Evidence evidence,
       List<Query> queries, Collection<String> filenames) {
-    setupFromFiles(model, evidence, queries, filenames, false, true);
+    return setupFromFiles(model, evidence, queries, filenames, false, true);
   }
 
   /**
@@ -384,12 +388,15 @@ public class Main {
    *          Whether the procedure is verbose.
    * @param parseFromMessage
    *          whether to print a message indicating "Parsing from..."
+   * @return
+   *         true if the input is valid BLOG program
+   *         false if there is error in syntax or semantics
    */
-  public static void setupFromFiles(Model model, Evidence evidence,
+  public static boolean setupFromFiles(Model model, Evidence evidence,
       List<Query> queries, Collection<String> filenames, boolean verbose,
       boolean parseFromMessage) {
     List<Object[]> readersAndOrigins = makeReaders(filenames);
-    setup(model, evidence, queries, readersAndOrigins, verbose,
+    return setup(model, evidence, queries, readersAndOrigins, verbose,
         parseFromMessage);
   }
 
@@ -414,10 +421,13 @@ public class Main {
    * 
    * @param parseFromMessage
    *          Whether to print a message indicating "Parsing from..."
+   * @return
+   *         true if the input is valid BLOG program
+   *         false if there is error in syntax or semantics
    */
-  public static void setup(Model model, Evidence evidence, List<Query> queries,
-      Collection<Object[]> readersAndOrigins, boolean verbose,
-      boolean parseFromMessage) {
+  public static boolean setup(Model model, Evidence evidence,
+      List<Query> queries, Collection<Object[]> readersAndOrigins,
+      boolean verbose, boolean parseFromMessage) {
     // Parse input readers
     for (Object[] readerAndOrigin : readersAndOrigins) {
       Reader reader = (Reader) readerAndOrigin[0];
@@ -425,9 +435,7 @@ public class Main {
       try {
         if (!parseAndTranslate(model, evidence, queries, reader, origin)) {
           ok = false;
-          System.err.println();
-          Util.fatalErrorWithoutStack("File interpretation halted "
-              + "due to error(s) in \"" + origin + "\".");
+          return false;
         }
       } catch (Exception e) {
         ok = false;
@@ -457,8 +465,7 @@ public class Main {
     // Run semantic checks on model, evidence and queries
     if (!semanticsCorrect(model, evidence, queries)) {
       System.err.println("The model failed one or more checks.");
-      System.err.println("Quitting...");
-      System.exit(1);
+      return false;
     }
 
     // Do compilation pass
@@ -470,8 +477,9 @@ public class Main {
     if (errors > 0) {
       System.err.println("Encountered " + errors
           + " errors in compilation phase.");
-      System.exit(1);
-    }
+      return false;
+    } else
+      return true;
   }
 
   private static boolean parseAndTranslate(Model m, Evidence e, List<Query> qs,
@@ -489,23 +497,30 @@ public class Main {
    * A version of
    * {@link #setup(Model, Evidence, List, Collection, Collection, boolean, boolean)}
    * receiving a single string, no setup extenders, and not verbose.
+   * 
+   * @return
+   *         true if the input is valid BLOG program
+   *         false if there is error in syntax or semantics
    */
-  public static void stringSetup(Model model, Evidence evidence,
+  public static boolean stringSetup(Model model, Evidence evidence,
       List<Query> queries, String modelString) {
     Reader reader = new StringReader(modelString);
     String origin = Util.abbreviation(modelString);
     List<Object[]> readersAndOrigins = new LinkedList<Object[]>();
     readersAndOrigins.add(new Object[] { reader, origin });
-    setup(model, evidence, queries, readersAndOrigins, false /* verbose */,
-        false);
+    return setup(model, evidence, queries, readersAndOrigins,
+        false /* verbose */, false);
   }
 
   /**
    * 
    * @param modelString
+   * @return
+   *         true if the input is valid BLOG program
+   *         false if there is error in syntax or semantics
    */
-  public static void stringSetup(String modelString) {
-    stringSetup(model, evidence, queries, modelString);
+  public static boolean stringSetup(String modelString) {
+    return stringSetup(model, evidence, queries, modelString);
   }
 
   public static int numSamples() {
