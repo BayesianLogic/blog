@@ -1,7 +1,6 @@
 package blog;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +12,6 @@ import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.AtomicFormula;
-import blog.model.DependencyModel;
 import blog.model.EqualityFormula;
 import blog.model.Evidence;
 import blog.model.Formula;
@@ -352,53 +350,8 @@ public class BLOGUtil {
     return null;
   }
 
-  public static ModelEvidenceQueries parseModelEvidenceQueries_NE(
-      String description) {
-    ModelEvidenceQueries meq = new ModelEvidenceQueries();
-    Main.stringSetup(meq.model, meq.evidence, meq.queries, description);
-    return meq;
-  }
-
   private static boolean isAtomicOrEquality(Formula formula) {
     return formula instanceof AtomicFormula
         || formula instanceof EqualityFormula;
-  }
-
-  public static void uninstantiate(PartialWorld world, BasicVar var) {
-    world.setValue(var, null);
-  }
-
-  /**
-   * Returns the probability of a variable having a value in a given world.
-   */
-  public static double probability(VarWithDistrib var, Object value,
-      PartialWorld world) {
-    DependencyModel.Distrib distrib = var
-        .getDistrib(new ClassicInstantiatingEvalContext(world));
-    return distrib.getCPD().getProb(distrib.getArgValues(), value);
-  }
-
-  /**
-   * Indicates whether a collection of variables is independent given their
-   * parents in a given self-supporting partial world, which is determined by
-   * whether their set is disjoint from the set of their parents.
-   */
-  public static boolean allVariablesAreIndependentGivenTheirParents(
-      Collection vars, PartialWorld world) {
-    Collection parents = getAllParents(vars, world);
-    return !Util.intersect(parents, vars);
-  }
-
-  /**
-   * Returns a set with all parents of all variables in a given self-supporting
-   * partial world.
-   */
-  public static HashSet getAllParents(Collection vars, PartialWorld world) {
-    HashSet parents = new HashSet();
-    for (Iterator it = vars.iterator(); it.hasNext();) {
-      BayesNetVar var = (BayesNetVar) it.next();
-      parents.addAll(var.getParents(world));
-    }
-    return parents;
   }
 }
