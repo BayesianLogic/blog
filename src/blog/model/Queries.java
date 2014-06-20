@@ -6,6 +6,12 @@ import blog.msg.ErrorMsg;
 import blog.parse.Parse;
 import blog.semant.Semant;
 
+/**
+ * Container for queries for a particular model.
+ * 
+ * @author cberzan
+ * @since Jun 20, 2014
+ */
 public class Queries extends ArrayList<Query> {
   private static final long serialVersionUID = 1L;
 
@@ -46,5 +52,6 @@ public class Queries extends ArrayList<Query> {
     return errors;
   }
 
-  private final Model model;
+  // The model that these queries are for.
+  final public Model model;
 }
