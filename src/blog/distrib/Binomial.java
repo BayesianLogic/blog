@@ -180,7 +180,7 @@ public class Binomial implements CondProbDistrib {
 
   @Override
   public String toString() {
-    return getClass().getName();
+    return "Binomial(" + n + ", " + p + ")";
   }
 
   private int n;
