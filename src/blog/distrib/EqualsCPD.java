@@ -35,8 +35,6 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.model.Clause;
 
 /**
@@ -44,47 +42,45 @@ import blog.model.Clause;
  * value of the right-hand side of a {@link Clause} depends on a function
  * application rather than on a CPD.
  */
-public class EqualsCPD extends DetCondProbDistrib {
+public class EqualsCPD implements CondProbDistrib {
   /**
    * An instance of EqualsCPD.
    */
   public static final EqualsCPD CPD = new EqualsCPD();
 
   /**
-   * Creates a new EqualsCPD.
-   */
-  public EqualsCPD() {
-  }
-
-  /**
-   * Creates a new EqualsCPD. The parameters are ignored.
-   */
-  public EqualsCPD(List params) {
-  }
-
-  /**
-   * Returns the first element of the given argument tuple.
-   * 
-   * @throws IllegalArgumentException
-   *           if <code>args</code> is not of size 1
-   */
-  public Object getChildValue(List args) {
-    if (args.size() != 1) {
-      throw new IllegalArgumentException("Invalid arguments to EqualsCPD: "
-          + args);
-    }
-    return args.get(0);
-  }
-
-  /*
-   * (non-Javadoc)
+   * @param params
+   *          A single-element object array. If the first element is non-null,
+   *          set this element as the value that this deterministic distribution
+   *          takes on.
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
   @Override
   public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
+    if (params.length != 1) {
+      throw new IllegalArgumentException("expecting one parameter");
+    }
+    setParams(params[0]);
+  }
 
+  /**
+   * @param value
+   *          If non-null, this is the value that this deterministic
+   *          distribution should take on.
+   */
+  public void setParams(Object value) {
+    if (value != null) {
+      this.value = value;
+      this.hasValue = true;
+    }
+  }
+
+  private void checkHasParams() {
+    if (!this.hasValue) {
+      throw new IllegalArgumentException(
+          "have not provided value for EqualsCPD");
+    }
   }
 
   /*
@@ -94,8 +90,8 @@ public class EqualsCPD extends DetCondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
+    checkHasParams();
+    return value.equals(this.value) ? 1 : 0;
   }
 
   /*
@@ -105,8 +101,8 @@ public class EqualsCPD extends DetCondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
+    checkHasParams();
+    return value.equals(this.value) ? 0 : Double.NEGATIVE_INFINITY;
   }
 
   /*
@@ -116,7 +112,10 @@ public class EqualsCPD extends DetCondProbDistrib {
    */
   @Override
   public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
+    checkHasParams();
+    return value;
   }
+
+  private Object value;
+  private boolean hasValue;
 }

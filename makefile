@@ -21,6 +21,21 @@ endif
 
 SRC_FILES=$(shell find src -name \*.java -print)
 
+help:
+	@echo 'Makefile for BLOG                                                      '
+	@echo '                                                                       '
+	@echo 'Usage:                                                                 '
+	@echo '   make compile                     compile BLOG system                '
+	@echo '   make clean                       remove the generated files         '
+	@echo '   make debug                       compile the code with debug flag   '
+	@echo '   make zip                         create release zip files           '
+	@echo '   make html                        create documentation and webpages  '
+	@echo '   make demo                        run the BLOG demo                  '
+	@echo '   make parser                      regenerate the parser              '
+	@echo '   make sync                        clean repo and sync with remote    '
+	@echo '                                                                       '
+
+
 compile: ${SRC_FILES}
 	mkdir -p bin
 	javac -cp "lib/*" -d bin/ ${SRC_FILES}
@@ -31,21 +46,25 @@ debug: ${SRC_FILES}
 
 tar: zip
 
-zip: 
+zip: html 
 	mkdir -p tmp/${TARGETNAME}
 	cp ${RUN_FILE} tmp/${TARGETNAME}/
 	cp -r lib tmp/${TARGETNAME}/
+	mv docs/output tmp/${TARGETNAME}/docs 		
+	cp -r example tmp/${TARGETNAME}/
 	jar cfe ${TARGETNAME}.jar blog.Main -C bin . 
 	mv ${TARGETNAME}.jar tmp/${TARGETNAME}/lib/
 	cd tmp; zip -r ${TARGETNAME}-bin.zip ${TARGETNAME}
 	rm tmp/${TARGETNAME}/lib/${TARGETNAME}.jar
 	cp -r src tmp/${TARGETNAME}/
-	cp -r example tmp/${TARGETNAME}/
 	cp ${MISC_FILE} tmp/${TARGETNAME}/
 	cd tmp; zip -r ${TARGETNAME}.zip ${TARGETNAME}
 	mv tmp/${TARGETNAME}.zip ./
 	mv tmp/${TARGETNAME}-bin.zip ./
 	rm -r -f tmp
+
+html:
+	cd docs; make html
 
 demo:
 	./blog example/poisson-ball.blog

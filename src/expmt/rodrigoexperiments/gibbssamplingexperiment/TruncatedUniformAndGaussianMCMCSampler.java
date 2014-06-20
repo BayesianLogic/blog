@@ -80,7 +80,7 @@ public class TruncatedUniformAndGaussianMCMCSampler implements
     public Object calculateNext() {
       double sample;
       do {
-        sample = messageFromChildren.sampleValue();
+        sample = messageFromChildren.sample_value();
       } while (sample < uniformRealPrior.getLower()
           || sample > uniformRealPrior.getUpper());
 
