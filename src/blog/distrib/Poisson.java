@@ -42,10 +42,7 @@ import blog.common.Util;
  * over non-negative integers. The probability of n is exp(-lambda) lambda^n /
  * n!.
  * 
- * This is a slightly modified version of Poisson.java in the common directory,
- * tailored to implement the CondProbDistrib interface.
- * 
- * @since June 12, 2014
+ * @since June 20, 2014
  */
 public class Poisson implements CondProbDistrib {
 
@@ -263,7 +260,7 @@ public class Poisson implements CondProbDistrib {
 
   @Override
   public String toString() {
-    return getClass().getName();
+    return "Poisson(" + lambda + ")";
   }
 
   private double lambda;
