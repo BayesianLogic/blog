@@ -37,124 +37,85 @@ package blog.type;
 import java.util.HashMap;
 import java.util.Map;
 
-import blog.model.ArgSpec;
-import blog.model.BuiltInFunctions;
-import blog.model.FuncAppTerm;
-import blog.model.LogicalVar;
-
 /**
  * Represents a time step, and is used for DBLOG (Dynamic BLOG) to indicate
  * temporal random variables.
  */
-public class Timestep extends Number implements Comparable {
+public class Timestep extends Number implements Comparable<Timestep> {
 
-	private Timestep(int index) {
-		this.index = index;
-		if (index > max)
-			max = index;
-	}
+  private Timestep(int index) {
+    this.index = index;
+    if (index > max)
+      max = index;
+  }
 
-	public Timestep next() {
-		return at(index + 1);
-	}
+  public Timestep next() {
+    return at(index + 1);
+  }
 
-	public Timestep prev() {
-		return at(index - 1);
-	}
+  public Timestep prev() {
+    return at(index - 1);
+  }
 
-	public int getValue() {
-		return index;
-	}
+  public int getValue() {
+    return index;
+  }
 
-	public static int getMax() {
-		return max;
-	}
+  public static int getMax() {
+    return max;
+  }
 
-	// implement abstract methods of Number
+  // implement abstract methods of Number
 
-	public int intValue() {
-		return index;
-	}
+  public int intValue() {
+    return index;
+  }
 
-	public long longValue() {
-		return (long) index;
-	}
+  public long longValue() {
+    return (long) index;
+  }
 
-	public double doubleValue() {
-		return (double) index;
-	}
+  public double doubleValue() {
+    return (double) index;
+  }
 
-	public float floatValue() {
-		return (float) index;
-	}
+  public float floatValue() {
+    return (float) index;
+  }
 
-	public int compareTo(Object o) {
-		return index - ((Number) o).intValue();
-	}
+  public int compareTo(Timestep o) {
+    return index - o.intValue();
+  }
 
-	public String toString() {
-		return "@" + index;
-	}
+  public String toString() {
+    return "@" + index;
+  }
 
-	/**
-	 * After this object is constructed in deserialization, either add it to the
-	 * <code>generatedTimesteps</code> map or return its existing equivalent from
-	 * that map.
-	 */
-	private Object readResolve() {
-		Integer t = new Integer(index);
-		Timestep existing = (Timestep) generatedTimesteps.get(t);
-		if (existing == null) {
-			generatedTimesteps.put(t, this);
-			return this;
-		}
-		return existing;
-	}
+  /**
+   * After this object is constructed in deserialization, either add it to the
+   * <code>generatedTimesteps</code> map or return its existing equivalent from
+   * that map.
+   */
+  private Object readResolve() {
+    Integer t = new Integer(index);
+    Timestep existing = (Timestep) generatedTimesteps.get(t);
+    if (existing == null) {
+      generatedTimesteps.put(t, this);
+      return this;
+    }
+    return existing;
+  }
 
-	public static Timestep at(int t) {
-		Timestep ts = generatedTimesteps.get(t);
-		if (ts == null) {
-			ts = new Timestep(t);
-			generatedTimesteps.put(new Integer(t), ts);
-		}
-		return ts;
-	}
+  public static Timestep at(int t) {
+    Timestep ts = generatedTimesteps.get(t);
+    if (ts == null) {
+      ts = new Timestep(t);
+      generatedTimesteps.put(new Integer(t), ts);
+    }
+    return ts;
+  }
 
-	/**
-	 * Returns true if <code>term</code> is exactly the logical variable
-	 * <code>timeVar</code>.
-	 */
-	public static boolean isGivenTime(LogicalVar timeVar, ArgSpec term) {
-		return (term == timeVar);
-	}
-
-	/**
-	 * Returns true if <code>term</code> is an application of the built-in
-	 * function <code>BuiltInFunctions.PREV</code> to a term for which
-	 * <code>isGivenTime</code> returns true, or has the form <code>t - 1</code>
-	 * where <code>isGivenTime(t)</code> returns true.
-	 */
-	public static boolean isPrevTime(LogicalVar timeVar, ArgSpec term) {
-		if (term instanceof FuncAppTerm) {
-			FuncAppTerm funcApp = (FuncAppTerm) term;
-			if (funcApp.getFunction() == BuiltInFunctions.PREV) {
-				return isGivenTime(timeVar, funcApp.getArgs()[0]);
-			}
-			if ((funcApp.getFunction() == BuiltInFunctions.MINUS)
-					&& isGivenTime(timeVar, funcApp.getArgs()[0])) {
-				Object sub = funcApp.getArgs()[1].getValueIfNonRandom();
-				if ((sub instanceof Number) && (((Number) sub).intValue() == 1)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private int index;
-	private static int max = 0;
-	private static Map<Integer, Timestep> generatedTimesteps = new HashMap<Integer, Timestep>(); // from
-																																																// Integer
-																																																// to
-	// Timestep
+  private int index;
+  private static int max = 0;
+  private static Map<Integer, Timestep> generatedTimesteps = new HashMap<Integer, Timestep>();
 }

@@ -12,47 +12,95 @@ import blog.distrib.UniformInt;
 /**
  * Unit Tests for UniformInt
  */
-public class TestUniformInt extends TestDistribution {
+public class TestUniformInt implements TestDistributions {
+  private final double ERROR = 10e-3;
 
-  @Test
-  public void testGetProb() {
-    constructParams.add(2);
-    constructParams.add(6);
-    UniformInt unif = new UniformInt(constructParams);
-    assertEquals(0.0, unif.getProb(args, 1), ERROR_BOUND);
-    assertEquals(0.2, unif.getProb(args, 2), ERROR_BOUND);
-    assertEquals(0.2, unif.getProb(args, 4), ERROR_BOUND);
-    assertEquals(0.2, unif.getProb(args, 6), ERROR_BOUND);
-    assertEquals(0.0, unif.getProb(args, 7), ERROR_BOUND);
+  private void testDistributionRun(UniformInt unif) {
+    unif.getProb(1);
+    unif.getLogProb(1);
+    unif.sampleVal();
+  }
 
-    constructParams.clear();
-    constructParams.add(3);
-    constructParams.add(3);
-    unif = new UniformInt(constructParams);
-    assertEquals(1, unif.getProb(args, 3), ERROR_BOUND);
-    assertEquals(0, unif.getProb(args, 4), ERROR_BOUND);
+  /** UniformInt, lower = 0, upper = 0. */
+  public void testUniformInt1(UniformInt unif) {
+    assertEquals(0, unif.getProb(-1), ERROR);
+    assertEquals(1, unif.getProb(0), ERROR);
+    assertEquals(0, unif.getProb(1), ERROR);
+    assertEquals(0, unif.getProb(100), ERROR);
+
+    assertEquals(Double.NEGATIVE_INFINITY, unif.getLogProb(-1), ERROR);
+    assertEquals(0, unif.getLogProb(0), ERROR);
+    assertEquals(Double.NEGATIVE_INFINITY, unif.getLogProb(1), ERROR);
+    assertEquals(Double.NEGATIVE_INFINITY, unif.getLogProb(100), ERROR);
+  }
+
+  /** UniformInt, lower = 5, upper = 9. */
+  public void testUniformInt2(UniformInt unif) {
+    assertEquals(0, unif.getProb(0), ERROR);
+    assertEquals(0, unif.getProb(4), ERROR);
+    assertEquals(0.2, unif.getProb(5), ERROR);
+    assertEquals(0.2, unif.getProb(7), ERROR);
+    assertEquals(0.2, unif.getProb(9), ERROR);
+    assertEquals(0, unif.getProb(10), ERROR);
+
+    assertEquals(Double.NEGATIVE_INFINITY, unif.getLogProb(0), ERROR);
+    assertEquals(Double.NEGATIVE_INFINITY, unif.getLogProb(4), ERROR);
+    assertEquals(Math.log(0.2), unif.getLogProb(5), ERROR);
+    assertEquals(Math.log(0.2), unif.getLogProb(7), ERROR);
+    assertEquals(Math.log(0.2), unif.getLogProb(9), ERROR);
+    assertEquals(Double.NEGATIVE_INFINITY, unif.getLogProb(10), ERROR);
   }
 
   @Test
-  public void testGetLogProb() {
-    constructParams.add(2);
-    constructParams.add(6);
-    UniformInt unif = new UniformInt(constructParams);
-    assertEquals(Double.NEGATIVE_INFINITY, unif.getLogProb(args, 1),
-        ERROR_BOUND);
-    assertEquals(Math.log(0.2), unif.getLogProb(args, 2), ERROR_BOUND);
-    assertEquals(Math.log(0.2), unif.getLogProb(args, 4), ERROR_BOUND);
-    assertEquals(Math.log(0.2), unif.getLogProb(args, 6), ERROR_BOUND);
-    assertEquals(Double.NEGATIVE_INFINITY, unif.getLogProb(args, 7),
-        ERROR_BOUND);
+  public void testProbabilityViaConstructor() {
+    // no longer needed. will be removed.
+  }
 
-    constructParams.clear();
-    constructParams.add(3);
-    constructParams.add(3);
-    unif = new UniformInt(constructParams);
-    assertEquals(0, unif.getLogProb(args, 3), ERROR_BOUND);
-    assertEquals(Double.NEGATIVE_INFINITY, unif.getLogProb(args, 4),
-        ERROR_BOUND);
+  @Test
+  public void testProbabilityViaSetParams() {
+    UniformInt unif = new UniformInt();
+    unif.setParams(new Object[] { 0, 0 });
+    testUniformInt1(unif);
+    unif.setParams(new Object[] { 5, 9 });
+    testUniformInt2(unif);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testInsufficientArguments() {
+    UniformInt unif = new UniformInt();
+    unif.setParams(new Object[] { 2 });
+    testDistributionRun(unif);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testInsufficientArguments2() {
+    UniformInt unif = new UniformInt();
+    unif.setParams(new Object[] { 2, null });
+    testDistributionRun(unif);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testInsufficientArguments3() {
+    UniformInt unif = new UniformInt();
+    unif.setParams(new Object[] { null, 3 });
+    testDistributionRun(unif);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testIncorrectArguments() {
+    UniformInt unif = new UniformInt();
+    unif.setParams(new Object[] { 4, 3 });
+    testDistributionRun(unif);
+  }
+
+  @Test
+  public void testDoubleSet() {
+    UniformInt unif = new UniformInt();
+    unif.setParams(new Object[] { null, 9 });
+    unif.setParams(new Object[] { 5, null });
+    testUniformInt2(unif);
+    unif.setParams(new Object[] { null, null });
+    testUniformInt2(unif);
   }
 
 }

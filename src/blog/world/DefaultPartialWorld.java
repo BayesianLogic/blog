@@ -44,6 +44,7 @@ import blog.common.HashMultiMap;
 import blog.common.IndexedHashMultiMap;
 import blog.common.IndexedMultiMap;
 import blog.common.MultiMap;
+import blog.bn.BasicVar;
 import blog.bn.DefaultCBN;
 
 
@@ -72,6 +73,7 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
 	public DefaultPartialWorld(Set idTypes) {
 		super(idTypes);
 		basicVarToValue = new HashMap();
+    nameToBasicVar = new HashMap<String, BasicVar>();
 		objToUsesAsValue = new HashMultiMap();
 		objToUsesAsArg = new HashMultiMap();
 		assertedIdToPOPApp = new HashMap();
