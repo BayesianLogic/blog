@@ -79,6 +79,7 @@ public class Exponential implements CondProbDistrib {
       }
       this.hasLambda = true;
       this.lambda = lambda;
+      this.logLambda = Math.log(lambda);
     }
   }
 
@@ -124,7 +125,7 @@ public class Exponential implements CondProbDistrib {
     if (value < 0) {
       return Double.NEGATIVE_INFINITY;
     } else {
-      return Math.log(lambda) - lambda * value;
+      return logLambda - lambda * value;
     }
   }
 
@@ -159,4 +160,5 @@ public class Exponential implements CondProbDistrib {
 
   private boolean hasLambda;
   private double lambda;
+  private double logLambda;
 }
