@@ -143,8 +143,10 @@ class AircraftBlipSampler {
       SumSamplerForPoisson sumsampler) {
     this.airLambda = airLambda;
     this.blipLambda = blipLambda;
-    this.airpoisson = new Poisson(airLambda);
-    this.blipPoisson = new Poisson(blipLambda);
+    this.airpoisson = new Poisson();
+    airpoisson.setParams(airLambda);
+    this.blipPoisson = new Poisson();
+    blipPoisson.setParams(blipLambda);
     this.sumsampler = sumsampler;
     sumsampler.init();
   }
@@ -207,9 +209,7 @@ abstract class SumSamplerForPoisson {
 
   public double sampleParent(int[] x, double lambdaParent, double lambdaChild,
       int[] evid) {
-    Poisson poiss = new Poisson();
-    poiss.setParams(lambdaParent);
-    x[0] = poiss.sample_value();
+    x[0] = Poisson.sample_value(lambdaParent);
     return 1.0;
   }
 
@@ -235,7 +235,7 @@ class RangeSumSamplerForPoisson extends SumSamplerForPoisson {
       } else {
         int s = -1;
         do {
-          s = poss.sampleInt();
+          s = poss.sample_value();
           numRej++;
         } while (s > sum);
         numRej--;
@@ -278,7 +278,7 @@ class RejectionSumSamplerForPoisson extends SumSamplerForPoisson {
     int k = x.length - 1;
     int i;
     for (i = 0; i <= k; i++) {
-      int s = poss.sampleInt();
+      int s = poss.sample_value();
       x[i] = s;
       sum = sum - s;
     }
@@ -334,9 +334,7 @@ class RescalingSumSamplerForPoissonOneStep extends SumSamplerForPoisson {
         int s = -1;
         double lambda = ((double) sum) / (k - i);
         do {
-          Poisson poiss = new Poisson();
-          poiss.setParams(lambda);
-          s = poiss.sample_value();
+          s = Poisson.sample_value(lambda);
           numRej++;
         } while (s > sum);
         numRej--;
@@ -390,9 +388,7 @@ class RescalingSumSamplerForPoisson extends
       s += evid[i];
     }
     double lambda1 = ((double) s) / evid.length / lambdaChild;
-    Poisson poiss = new Poisson();
-    poiss.setParams(lambda1);
-    x[0] = poiss.sample_value();
+    x[0] = Poisson.sample_value(lambda1);
     double w = Poisson.computeLogProb(lambdaParent, x[0]);
     w = Math.exp(w - Poisson.computeLogProb(lambda1, x[0]));
     return w;
