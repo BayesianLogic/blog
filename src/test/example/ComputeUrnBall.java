@@ -1,4 +1,4 @@
-package test;
+package test.example;
 
 //import org.apache.commons.math.fraction.*;
 import java.math.BigDecimal;
