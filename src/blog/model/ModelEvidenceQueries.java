@@ -3,7 +3,6 @@
  */
 package blog.model;
 
-import blog.common.Util;
 
 public class ModelEvidenceQueries {
   public ModelEvidenceQueries() {
@@ -16,14 +15,6 @@ public class ModelEvidenceQueries {
     this.model = model;
     this.evidence = evidence;
     this.queries = queries;
-  }
-
-  /**
-   * Convenience method assuming there is only one query, of class ArgSpecQuery,
-   * and returning it.
-   */
-  public ArgSpecQuery argSpecQuery() {
-    return (ArgSpecQuery) Util.getFirst(queries);
   }
 
   public Model model;
