@@ -4,108 +4,244 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.distrib.Dirichlet;
-import blog.model.BuiltInTypes;
 
 /**
  * Unit Tests for Dirichlet
  */
-public class TestDirichlet extends TestDistribution {
+public class TestDirichlet implements TestDistributions {
+  private final double ERROR = 10e-3;
 
-  @Test
-  public void testDistribution() {
-    // Test Dirichlet(1, 1) returns pdf of 1 for all support vectors
-    List<Double> uniform = new LinkedList<Double>();
-    uniform.add(1.0);
-    uniform.add(1.0);
-    for (int i = 0; i <= 4; i++) {
-      List<Double> probs = new LinkedList<Double>();
-      probs.add((i + 0.0) / 4);
-      probs.add(1.0 - (i + 0.0) / 4);
-      testDirichletDistribution(uniform, probs, 1.0);
-    }
-
-    // Test Dirichlet(2, 1, 1) returns a linear pdf when scaled along parameter
-    List<Double> params = new LinkedList<Double>();
-    params.add(2.0);
-    params.add(1.0);
-    params.add(1.0);
-    for (int i = 0; i <= 4; i++) {
-      double probA = i * 0.25;
-      List<Double> probs = new LinkedList<Double>();
-      probs.add(probA);
-      probs.add(1 - (probA / 2));
-      probs.add(1 - (probA / 2));
-      testDirichletDistribution(params, probs, 6 * probA);
-    }
-
-    // Test Dirichlet(2, 2, 2)
-    params = new LinkedList<Double>();
-    params.add(2.0);
-    params.add(2.0);
-    params.add(2.0);
-    List<Double> probs = new LinkedList<Double>();
-    probs.add(0.0);
-    probs.add(0.5);
-    probs.add(0.5);
-    testDirichletDistribution(params, probs, 0);
-    probs.clear();
-    probs.add(0.5);
-    probs.add(0.0);
-    probs.add(0.5);
-    testDirichletDistribution(params, probs, 0);
-    probs.clear();
-    probs.add(0.25);
-    probs.add(0.25);
-    probs.add(0.5);
-    testDirichletDistribution(params, probs, 3.75);
-  }
+  // /**
+  // * @param d
+  // * A Dirichlet distribution that has not been properly initialized.
+  // * Calling getProb, getLogProb, or sampleVal should all throw
+  // * IllegalArgumentExceptions
+  // */
+  // public void testDistributionRun(Dirichlet d) {
+  // if (d.getAlpha() == null) {
+  // shouldThrowExceptions(d, null);
+  // } else {
+  // int numAlphas = d.getAlpha().length;
+  // double[] x = new double[numAlphas];
+  // x[0] = 1.0;
+  // shouldThrowExceptions(d, MatrixFactory.createVector(x));
+  // for (int i = 0; i < numAlphas; i++) {
+  // x[i] = 1.0 / numAlphas;
+  // }
+  // shouldThrowExceptions(d, MatrixFactory.createVector(x));
+  // }
+  // }
 
   /**
-   * Refer to Wikipedia for Description of Dirichlet Distribution
+   * Calling getProb and getLogProb with the argument <code>x</code> on the
+   * Dirichlet distribution <code>d</code> should throw an
+   * IllegalArgumentException, and sampleValue should throw a
+   * IllegalArgumentException.
    * 
-   * @param parameters
-   *          -- Concentration parameters (a_1, ... a_K)
-   * @param probs
-   *          -- (x_1, ... , x_K)
-   * @param pdf
-   *          -- The probability of the Dirichlet taking on (x_1,..., x_K) given
-   *          the concentration parameters
+   * @param d
+   * @param x
    */
-  public void testDirichletDistribution(List<Double> parameters,
-      List<Double> probs, double pdf) {
-    Dirichlet d = new Dirichlet(parameters);
-    double[][] values = new double[1][probs.size()];
-    for (int i = 0; i < probs.size(); i++) {
-      values[0][i] = probs.get(i);
+  private void shouldThrowExceptions(Dirichlet d, MatrixLib x) {
+    try {
+      d.getProb(x);
+      fail();
+    } catch (IllegalArgumentException ex) {
     }
-    MatrixLib probValues = MatrixFactory.fromArray(values);
-    List<Object> args = new LinkedList<Object>();
-    assertEquals(Math.log(pdf), d.getLogProb(args, probValues), ERROR_BOUND);
-    assertEquals(pdf, d.getProb(args, probValues), ERROR_BOUND);
+    try {
+      d.getLogProb(x);
+      fail();
+    } catch (IllegalArgumentException ex) {
+    }
+    try {
+      d.sampleVal();
+      fail();
+    } catch (IllegalArgumentException ex) {
+    }
+  }
+
+  /** Dirichlet, alpha = [1, 1]. */
+  public void testDirichlet1(Dirichlet d) {
+    assertEquals(1.0, d.getProb(MatrixFactory.createVector(0.0, 1.0)), ERROR);
+    assertEquals(1.0, d.getProb(MatrixFactory.createVector(0.5, 0.5)), ERROR);
+    assertEquals(1.0, d.getProb(MatrixFactory.createVector(1.0, 0.0)), ERROR);
+    assertEquals(0.0, d.getProb(MatrixFactory.createVector(1.1, 0.0)), ERROR);
+    assertEquals(0.0, d.getProb(MatrixFactory.createVector(0.4, 0.7)), ERROR);
+
+    assertEquals(0.0, d.getLogProb(MatrixFactory.createVector(0.0, 1.0)), ERROR);
+    assertEquals(0.0, d.getLogProb(MatrixFactory.createVector(0.5, 0.5)), ERROR);
+    assertEquals(0.0, d.getLogProb(MatrixFactory.createVector(1.0, 0.0)), ERROR);
+    assertEquals(Double.NEGATIVE_INFINITY,
+        d.getLogProb(MatrixFactory.createVector(1.1, 0.0)), ERROR);
+    assertEquals(Double.NEGATIVE_INFINITY,
+        d.getLogProb(MatrixFactory.createVector(0.4, 0.7)), ERROR);
+  }
+
+  /** Dirichlet, alpha = [2, 1, 1]. */
+  public void testDirichlet2(Dirichlet d) {
+    assertEquals(0.0, d.getProb(MatrixFactory.createVector(0.0, 0.5, 0.5)),
+        ERROR);
+    assertEquals(1.5,
+        d.getProb(MatrixFactory.createVector(0.25, 0.375, 0.375)), ERROR);
+    assertEquals(6.0, d.getProb(MatrixFactory.createVector(1.0, 0.0, 0.0)),
+        ERROR);
+
+    assertEquals(Double.NEGATIVE_INFINITY,
+        d.getLogProb(MatrixFactory.createVector(0.0, 0.5, 0.5)), ERROR);
+    assertEquals(Math.log(1.5),
+        d.getLogProb(MatrixFactory.createVector(0.25, 0.375, 0.375)), ERROR);
+    assertEquals(Math.log(6.0),
+        d.getLogProb(MatrixFactory.createVector(1.0, 0.0, 0.0)), ERROR);
+  }
+
+  /** Dirichlet, alpha = [2, 2, 2]. */
+  public void testDirichlet3(Dirichlet d) {
+    assertEquals(0, d.getProb(MatrixFactory.createVector(0.4, 0.4, 0.4)), ERROR);
+    assertEquals(0, d.getProb(MatrixFactory.createVector(0.5, 0.5, 0.0)), ERROR);
+    assertEquals(0, d.getProb(MatrixFactory.createVector(0.0, 0.5, 0.5)), ERROR);
+    assertEquals(3.75, d.getProb(MatrixFactory.createVector(0.25, 0.25, 0.5)),
+        ERROR);
+    assertEquals(3.75, d.getProb(MatrixFactory.createVector(0.5, 0.25, 0.25)),
+        ERROR);
+
+    assertEquals(Double.NEGATIVE_INFINITY,
+        d.getLogProb(MatrixFactory.createVector(0.4, 0.4, 0.4)), ERROR);
+    assertEquals(Double.NEGATIVE_INFINITY,
+        d.getLogProb(MatrixFactory.createVector(0.5, 0.5, 0.0)), ERROR);
+    assertEquals(Double.NEGATIVE_INFINITY,
+        d.getLogProb(MatrixFactory.createVector(0.0, 0.5, 0.5)), ERROR);
+    assertEquals(Math.log(3.75),
+        d.getLogProb(MatrixFactory.createVector(0.25, 0.25, 0.5)), ERROR);
+    assertEquals(Math.log(3.75),
+        d.getLogProb(MatrixFactory.createVector(0.5, 0.25, 0.25)), ERROR);
+  }
+
+  /** Dirichlet, alpha = [3, 3, 4]. */
+  public void testDirichlet4(Dirichlet d) {
+    assertEquals(0, d.getProb(MatrixFactory.createVector(0.4, 0.4, 0.4)), ERROR);
+    assertEquals(5.4432, d.getProb(MatrixFactory.createVector(0.5, 0.3, 0.2)),
+        ERROR);
+    assertEquals(15.676416,
+        d.getProb(MatrixFactory.createVector(0.3, 0.3, 0.4)), ERROR);
+
+    assertEquals(Double.NEGATIVE_INFINITY,
+        d.getProb(MatrixFactory.createVector(0.4, 0.4, 0.4)), ERROR);
+    assertEquals(Math.log(5.4432),
+        d.getProb(MatrixFactory.createVector(0.5, 0.3, 0.2)), ERROR);
+    assertEquals(Math.log(15.676416),
+        d.getProb(MatrixFactory.createVector(0.3, 0.3, 0.4)), ERROR);
   }
 
   @Test
-  public void testSampleVal() {
-    Util.initRandom(true);
-    Dirichlet d = new Dirichlet(5, 1.0);
-    MatrixLib samples = (MatrixLib) d.sampleVal(new ArrayList<Object>(),
-        BuiltInTypes.NULL);
+  public void testProbabilityViaConstructor() {
+    // no longer needed. will remove.
+  }
 
-    double sum = 0.0;
-    for (int i = 0; i < samples.numCols(); i++) {
-      sum += samples.elementAt(0, i);
+  @Test
+  public void testProbabilityViaSetParams() {
+    Dirichlet d = new Dirichlet();
+    d.setParams(new Object[] { MatrixFactory.createVector(1, 1) });
+    testDirichlet1(d);
+    d.setParams(new Object[] { MatrixFactory.createVector(2, 1, 1) });
+    testDirichlet2(d);
+    d.setParams(new Object[] { MatrixFactory.createVector(2, 2, 2) });
+    testDirichlet3(d);
+    d.setParams(new Object[] { MatrixFactory.createVector(3, 3, 4) });
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testInsufficientArguments() {
+    Dirichlet d = new Dirichlet();
+    d.setParams(new Object[] { null });
+    d.sampleVal();
+  }
+
+  // Not a row vector
+  @Test(expected = IllegalArgumentException.class)
+  public void testIncorrectArguments() {
+    Dirichlet d = new Dirichlet();
+    double[][] ary = new double[2][1];
+    ary[0][0] = 2.0;
+    ary[1][0] = 2.0;
+    MatrixLib l = MatrixFactory.fromArray(ary);
+    d.setParams(new Object[] { l });
+    d.sampleVal();
+  }
+
+  // All elements in the alpha vector must be strictly positive
+  @Test(expected = IllegalArgumentException.class)
+  public void testIncorrectArguments2() {
+    Dirichlet d = new Dirichlet();
+    d.setParams(MatrixFactory.createVector(0, 0.5));
+  }
+
+  // All elements in the alpha vector must be strictly positive
+  @Test(expected = IllegalArgumentException.class)
+  public void testIncorrectArguments3() {
+    Dirichlet d = new Dirichlet();
+    d.setParams(MatrixFactory.createVector(-1, 0.5));
+  }
+
+  // Must provide at least two elements for the alpha vector
+  @Test(expected = IllegalArgumentException.class)
+  public void testIncorrectArguments4() {
+    Dirichlet d = new Dirichlet();
+    d.setParams(MatrixFactory.createVector(0.5));
+  }
+
+  @Test
+  // Two elements in alpha vector, only one element in outcome vector
+  public void testIncorrectArguments5() {
+    Dirichlet d = new Dirichlet();
+    d.setParams(MatrixFactory.createVector(1.0, 1.0));
+    try {
+      d.getProb(MatrixFactory.createVector(1.0));
+      fail("the domain is underspecified");
+    } catch (IllegalArgumentException ex) {
     }
-    assertEquals(sum, 1.0, ERROR_BOUND);
+    try {
+      d.getLogProb(MatrixFactory.createVector(1.0));
+      fail("the domain is underspecified");
+    } catch (IllegalArgumentException ex) {
+    }
+  }
+
+  @Test
+  // Two elements in alpha vector, three elements in outcome vector
+  public void testIncorrectArguments6() {
+    Dirichlet d = new Dirichlet();
+    d.setParams(MatrixFactory.createVector(1.0, 1.0));
+    try {
+      d.getProb(MatrixFactory.createVector(0.5, 0.25, 0.25));
+      fail("the domain is overspecified");
+    } catch (IllegalArgumentException ex) {
+    }
+    try {
+      d.getLogProb(MatrixFactory.createVector(0.5, 0.25, 0.25));
+      fail("the domain is overspecified");
+    } catch (IllegalArgumentException ex) {
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see test.blog.distrib.TestDistributions#testDoubleSet()
+   */
+  @Override
+  public void testDoubleSet() {
+    Dirichlet d = new Dirichlet();
+    d.setParams(new Object[] { null });
+    d.setParams(new Object[] { MatrixFactory.createVector(1.0, 1.0) });
+    testDirichlet1(d);
+    d.setParams(new Object[] { null });
+    d.setParams(new Object[] { MatrixFactory.createVector(2.0, 1.0, 1.0) });
+    testDirichlet2(d);
   }
 }
