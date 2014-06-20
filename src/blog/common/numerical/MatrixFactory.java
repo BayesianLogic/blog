@@ -20,14 +20,6 @@ public class MatrixFactory {
     return MatrixFactory.fromArray(ary);
   }
 
-  static public MatrixLib createRowVector(double... args) {
-    double[][] ary = new double[1][args.length];
-    for (int i = 0; i < args.length; i++) {
-      ary[0][i] = args[i];
-    }
-    return MatrixFactory.fromArray(ary);
-  }
-
   static public MatrixLib eye(int size) {
     double[][] result = new double[size][size];
     for (int i = 0; i < size; i++) {
@@ -40,6 +32,17 @@ public class MatrixFactory {
       }
     }
     return fromArray(result);
+  }
+
+  /**
+   * Returns a MatrixLib row vector of dimension 1 by args.length. args is
+   * interpreted as an array of doubles that comprise the first and only row for
+   * the returned MatrixLib instance.
+   */
+  static public MatrixLib createRowVector(double... args) {
+    double[][] ary = new double[1][args.length];
+    System.arraycopy(args, 0, ary[0], 0, args.length);
+    return MatrixFactory.fromArray(ary);
   }
 
   static public MatrixLib zeros(int rows, int cols) {
