@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.distrib.MultivarGaussian;
@@ -25,9 +26,9 @@ public class TestMultivarGaussian implements TestDistributions {
 
   public TestMultivarGaussian() {
     // Create a Gaussian with a mean and covariance matrix
-    mean = MatrixFactory.zeros(2, 1);
+    mean = MatrixFactory.zeros(1, 2);
     mean.setElement(0, 0, 1);
-    mean.setElement(1, 0, 3);
+    mean.setElement(0, 1, 3);
 
     variance = MatrixFactory.eye(2);
     variance.setElement(0, 0, 4.25);
@@ -37,13 +38,13 @@ public class TestMultivarGaussian implements TestDistributions {
 
     // Used Scipy to compute the pdf of this MVG at particular points
     probVals = new HashMap<MatrixLib, Double>();
-    probVals.put(MatrixFactory.fromArray(new double[][] { { 0 }, { 0 } }),
+    probVals.put(MatrixFactory.fromArray(new double[][] { { 0, 0 } }),
         0.017816329802283811);
-    probVals.put(MatrixFactory.fromArray(new double[][] { { 0.5 }, { 0.7 } }),
+    probVals.put(MatrixFactory.fromArray(new double[][] { { 0.5, 0.7 } }),
         0.021411078817775459);
-    probVals.put(MatrixFactory.fromArray(new double[][] { { 1.0 }, { 3.0 } }),
+    probVals.put(MatrixFactory.fromArray(new double[][] { { 1.0, 3.0 } }),
         0.028420525552124164);
-    probVals.put(MatrixFactory.fromArray(new double[][] { { 5.0 }, { 5.0 } }),
+    probVals.put(MatrixFactory.fromArray(new double[][] { { 5.0, 5.0 } }),
         0.0040865387874093571);
 
   }
@@ -62,7 +63,7 @@ public class TestMultivarGaussian implements TestDistributions {
    */
   @Test
   public void testSigmaTinyDeterminant() {
-    MatrixLib mean = MatrixFactory.zeros(400, 1);
+    MatrixLib mean = MatrixFactory.zeros(1, 400);
     MatrixLib sigma = MatrixFactory.eye(400).timesScale(0.001);
 
     // Determinant is too small to fit in double precision.
@@ -72,9 +73,9 @@ public class TestMultivarGaussian implements TestDistributions {
     // (The values here were NOT verified against an external implementation.)
     MultivarGaussian dist = new MultivarGaussian();
     dist.setParams(mean, sigma);
-    assertEquals(dist.getLogProb(MatrixFactory.zeros(400, 1)),
+    assertEquals(dist.getLogProb(MatrixFactory.zeros(1, 400)),
         1013.9756425145674, 1e-10);
-    assertEquals(dist.getLogProb(MatrixFactory.ones(400, 1).timesScale(0.2)),
+    assertEquals(dist.getLogProb(MatrixFactory.ones(1, 400).timesScale(0.2)),
         -6986.024357485432, 1e-10);
   }
 
@@ -141,5 +142,13 @@ public class TestMultivarGaussian implements TestDistributions {
   public void testDoubleSet() {
     // TODO Auto-generated method stub
 
+  }
+
+  @Test
+  public void testSample() {
+    Util.initRandom(false);
+    MultivarGaussian gauss = new MultivarGaussian();
+    gauss.setParams(mean, variance);
+    gauss.sampleVal();
   }
 }
