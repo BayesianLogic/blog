@@ -20,6 +20,7 @@ import blog.model.Formula;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.model.NegFormula;
+import blog.model.Queries;
 import blog.model.Term;
 import blog.model.ValueEvidenceStatement;
 import blog.parse.Parse;
@@ -154,10 +155,10 @@ public class BLOGUtil {
 
   public static ModelEvidenceQueries parseAndTranslateFromString(Model m,
       String description) {
-    ModelEvidenceQueries meq = new ModelEvidenceQueries();
-    meq.model = m;
+    Evidence dummyEvidence = new Evidence(m);
+    Queries dummyQueries = new Queries(m);
     Parse parse = Parse.parseString(description);
-    Semant sem = new Semant(meq, parse.getErrorMsg());
+    Semant sem = new Semant(m, dummyEvidence, dummyQueries, parse.getErrorMsg());
     sem.transProg(parse.getResult());
     return sem.getModelEvidenceQueries();
   }
