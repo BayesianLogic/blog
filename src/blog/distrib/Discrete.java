@@ -73,7 +73,7 @@ public class Discrete implements CondProbDistrib {
       }
       sum += p.elementAt(0, i);
     }
-    if (sum < Util.NORMALIZATION_BOUND) {
+    if (Util.closeToZero(sum)) {
       throw new IllegalArgumentException("Probabilities sum to approx zero");
     }
     // normalization

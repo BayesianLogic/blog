@@ -2021,13 +2021,22 @@ public class Util {
         / (currentTotalWeight + weight);
   }
 
+  /**
+   * Returns true if <code>number</code> is really close to zero. Uses global
+   * constant <code>APPROXIMATE_ZERO</code> as the threshold.
+   */
+  public static boolean closeToZero(double number) {
+    return (number < APPROXIMATE_ZERO) && (number > -1 * APPROXIMATE_ZERO);
+  }
+
   private static Random rand;
   private static boolean verbose = false;
   private static boolean print = false;
   /**
-   * For certain distributions, we allow a vector of unnormalized probabilities.
-   * This number is the minimum sum of these unnormalized probabilities that we
-   * are willing to tolerate without throwing an exeption.
+   * For all intents and purposes, numbers below this constant are considered
+   * zero in terms of floating point. The use case for this is when the sum of a
+   * vector of unnormalized probabilities is too small to effectively normalize
+   * using floating point precision.
    */
-  public static final double NORMALIZATION_BOUND = 1e-9;
+  public static final double APPROXIMATE_ZERO = 1e-9;
 }
