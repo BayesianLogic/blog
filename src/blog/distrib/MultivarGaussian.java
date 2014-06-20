@@ -41,7 +41,8 @@ import blog.common.numerical.MatrixLib;
 /**
  * Multivariate Gaussian (normal) distribution over real vectors of some fixed
  * dimensionality <i>d</i> with parameters <code>mean</code> and
- * <code>covariance</code>.
+ * <code>covariance</code>. Mean is a row vector of dimension 1 by
+ * <code>d</code>.
  * 
  * @since June 17, 2014
  */
@@ -84,14 +85,13 @@ public class MultivarGaussian implements CondProbDistrib {
    */
   public void setParams(MatrixLib mean, MatrixLib covariance) {
     if (mean != null) {
-      if (!(mean.numCols() == 1 && mean.numRows() > 0)) {
+      if (!(mean.numCols() > 0 && mean.numRows() == 1)) {
         throw new IllegalArgumentException(
-            "The mean given is not a valid column vector. It has dimensions "
+            "The mean given is not a valid row vector. It has dimensions "
                 + mean.numRows() + " by " + mean.numCols() + ".");
       }
       this.mean = mean;
       this.hasMean = true;
-      this.legalAssignment = false;
     }
     if (covariance != null) {
       if (!(covariance.numCols() > 0 && covariance.isSymmetric())) {
@@ -100,10 +100,9 @@ public class MultivarGaussian implements CondProbDistrib {
       }
       this.covariance = covariance;
       this.hasCovariance = true;
-      this.legalAssignment = false;
     }
-    if (!this.legalAssignment && this.hasMean && this.hasCovariance) {
-      if (this.covariance.numCols() != this.mean.numCols()) {
+    if (this.hasMean && this.hasCovariance) {
+      if (this.covariance.numRows() != this.mean.numCols()) {
         throw new IllegalArgumentException(
             "Dimensions of the mean vector and the covariance matrix do not match: "
                 + "The covariance matrix is " + covariance.numCols() + " by "
@@ -111,7 +110,6 @@ public class MultivarGaussian implements CondProbDistrib {
                 + mean.numRows() + " by " + mean.numCols() + ".");
       }
       initializeConstants();
-      this.legalAssignment = true;
     }
   }
 
@@ -145,9 +143,13 @@ public class MultivarGaussian implements CondProbDistrib {
   }
 
   private void checkHasParams() {
-    if (!this.legalAssignment) {
+    if (!this.hasMean) {
       throw new IllegalArgumentException(
-          "The current mean and covariance are not legal");
+          "No mean provided for multivariate gaussian");
+    }
+    if (!this.hasCovariance) {
+      throw new IllegalArgumentException(
+          "No covariance provided for multivariate gaussian");
     }
   }
 
@@ -162,20 +164,23 @@ public class MultivarGaussian implements CondProbDistrib {
   }
 
   /**
-   * If <code>x</code> is of the correct dimension and the mean and covariance
-   * have been initialized correctly, return the density value p =
+   * If <code>x</code> is a column vector of (d by 1) and the mean and
+   * covariance have been initialized correctly, return the density value p =
    * 1/sqrt((2*pi)^d*|sigma|)*exp{-0.5(x-mean)'*inverse(sigma)*(x-mean)}
    * 
    * @throws IllegalStateException
    *           if the matrix <code>x</code> is not a d-dimensional column vector
+   * 
+   * @param x
+   *          row vector of dimension 1 by <code>d</code>
    */
   public double getProb(MatrixLib x) {
     checkHasParams();
-    if (x.numCols() == 1 && x.numRows() == d) {
+    if (x.numCols() == d && x.numRows() == 1) {
       return getProbInternal(x);
     }
     throw new IllegalArgumentException("The matrix given is " + x.numRows()
-        + " by " + x.numCols() + " but should be a " + d + " by 1 vector.");
+        + " by " + x.numCols() + " but should be a 1 by " + d + " vector.");
   }
 
   /**
@@ -184,8 +189,8 @@ public class MultivarGaussian implements CondProbDistrib {
    */
   private double getProbInternal(MatrixLib x) {
     return Math.exp(-0.5
-        * x.minus(mean).transpose().timesMat(inverseCovariance)
-            .timesMat(x.minus(mean)).elementAt(0, 0))
+        * x.minus(mean).timesMat(inverseCovariance)
+            .timesMat(x.minus(mean).transpose()).elementAt(0, 0))
         / normConst;
   }
 
@@ -201,23 +206,26 @@ public class MultivarGaussian implements CondProbDistrib {
 
   /**
    * Returns the natural log of the probability returned by getProb.
+   * 
+   * @param x
+   *          column vector of dimension 1 by <code>d</code>
    */
   public double getLogProb(MatrixLib x) {
     checkHasParams();
-    if (x.numCols() == 1 && x.numRows() == d) {
+    if (x.numCols() == d && x.numRows() == 1) {
       return getLogProbInternal(x);
     }
     throw new IllegalArgumentException("The matrix given is " + x.numRows()
-        + " by " + x.numCols() + " but should be a " + d + " by 1 vector.");
+        + " by " + x.numCols() + " but should be a 1 by " + d + " vector.");
   }
 
   private double getLogProbInternal(MatrixLib x) {
-    return ((-0.5 * x.minus(mean).transpose().timesMat(inverseCovariance)
-        .timesMat(x.minus(mean)).elementAt(0, 0)) - logNormConst);
+    return ((-0.5 * x.minus(mean).timesMat(inverseCovariance)
+        .timesMat(x.minus(mean).transpose()).elementAt(0, 0)) - logNormConst);
   }
 
   /**
-   * Samples a value from this multivariate Gaussian by generating <i>d </i>
+   * Samples a value from this multivariate Gaussian by generating <i>d</i>
    * independent samples from univariate Gaussians with unit variance, one for
    * each mean in the mean vector, and multiplying the obtained vector on the
    * left by the square root of sigma (Cholesky decomposition of sigma). This
@@ -232,15 +240,13 @@ public class MultivarGaussian implements CondProbDistrib {
       mat[i][0] = UnivarGaussian.STANDARD.sampleValue();
     }
     MatrixLib temp = MatrixFactory.fromArray(mat);
-    return mean.plus(sqrtCovariance.timesMat(temp));
+    return mean.transpose().plus(sqrtCovariance.timesMat(temp));
   }
 
   private MatrixLib mean;
   private boolean hasMean;
   private MatrixLib covariance;
   private boolean hasCovariance;
-  private boolean legalAssignment; // used to indicate that the mean and
-                                   // covariance has been set up properly
 
   private int d;
   private double dimFactor;
