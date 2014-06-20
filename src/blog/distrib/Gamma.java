@@ -199,19 +199,6 @@ public class Gamma implements CondProbDistrib {
   }
 
   /**
-   * Should be compared with Marsiaglia's algorithm used in MATLAB.
-   * Uses Cheng's rejection algorithm (GB) for k>=1,
-   * rejection from Weibull distribution for 0 < k < 1.
-   * 
-   * @param k
-   * @param lambda
-   */
-  public static double sampleVal(double k, double lambda) {
-    throw new IllegalStateException(
-        "all references must be changed to instance method");
-  }
-
-  /**
    * Returns an approximation of the Gamma function of x r(x) = integral from 0
    * to infinity of (t^(x-1) * e^(-t) dt) with |error| < 2e-10. Laczos
    * Approximation Reference: Numerical Recipes in C
