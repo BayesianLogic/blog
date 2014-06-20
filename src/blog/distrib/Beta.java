@@ -35,55 +35,109 @@
 
 package blog.distrib;
 
-import java.util.List;
-
-import blog.model.Type;
-
 /**
- * A Beta distribution with shape parameters a and b, defined by f(x) =(x^(a-1)
+ * A Beta distribution with shape parameters <code>a</code> and <code>b</code>,
+ * defined by f(x) =(x^(a-1)
  * * (1-x)^(b-1)) / B(a,b) where B(a,b) is a normalization constant equal to
  * integral from 0 to 1 of x^(a-1) * (1-x)^(b-1) dx
+ * 
+ * @since June 17, 2014
  */
-public class Beta extends AbstractCondProbDistrib {
+public class Beta implements CondProbDistrib {
+
   /**
-   * Returns a new Beta with shape parameters a and b.
+   * set parameters for beta distribution
+   * 
+   * @param params
+   *          An array of two Doubles.
+   *          <ul>
+   *          <li>params[0]: <code>a</code> (Double)</li>
+   *          <li>params[1]: <code>b</code> (Double)</li>
+   *          </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
-  public Beta(List params) {
-    if (!((params.get(0) instanceof Number) && (params.get(1) instanceof Number))) {
-      throw new IllegalArgumentException(
-          "Beta expects two numerical arguments "
-              + "{a, b} where both are Numbers. Got: " + params);
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 2) {
+      throw new IllegalArgumentException("expected two parameters");
     }
-    a = ((Number) params.get(0)).doubleValue();
-    b = ((Number) params.get(1)).doubleValue();
-    gammaA = new Gamma(a, 1);
-    gammaB = new Gamma(b, 1);
+    setParams((Double) params[0], (Double) params[1]);
   }
 
   /**
-   * Returns the probability of value under this distribution.
+   * If argument a is non-null and strictly positive, then set the shape
+   * parameter <code>a</code> to the method parameter a. Similarly for
+   * <code>b</code>.
    */
-  public double getProb(List args, Object value) {
-    if (!(value instanceof Number)) {
-      throw new IllegalArgumentException(
-          "Beta CPD defines a distribution over objects"
-              + " of class Number, not " + value.getClass() + ".");
-    } else {
-      double x = ((Number) value).doubleValue();
+  public void setParams(Double a, Double b) {
+    if (a != null) {
+      if (a <= 0) {
+        throw new IllegalArgumentException(
+            "alpha parameter for beta distribution must be strictly positive");
+      }
+      this.a = a;
+      this.hasA = true;
+      this.gammaA = new Gamma(a, 1);
+    }
+    if (b != null) {
+      if (b <= 0) {
+        throw new IllegalArgumentException(
+            "beta parameter for beta distribution must be strictly positive");
+      }
+      this.b = b;
+      this.hasB = true;
+      this.gammaB = new Gamma(b, 1);
+    }
+  }
+
+  private void checkHasParams() {
+    if (!this.hasA) {
+      throw new IllegalArgumentException("alpha parameter not provided");
+    }
+    if (!this.hasB) {
+      throw new IllegalArgumentException("beta parameter not provided");
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    return getProb(((Double) value).doubleValue());
+  }
+
+  /**
+   * Returns the probability of outcome x.
+   */
+  public double getProb(double x) {
+    checkHasParams();
+    if (x >= 0 && x <= 1) {
       return ((Math.pow(x, (a - 1)) * Math.pow((1 - x), (b - 1))) / beta(a, b));
+    } else {
+      return 0;
     }
   }
 
-  /**
-   * Returns the log of the probability of value under this distribution.
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
    */
-  public double getLogProb(List args, Object value) {
-    if (!(value instanceof Number)) {
-      throw new IllegalArgumentException(
-          "Beta CPD defines a distribution over objects"
-              + " of class Number, not " + value.getClass() + ".");
-    } else {
-      double x = ((Number) value).doubleValue();
+  @Override
+  public double getLogProb(Object value) {
+    return getLogProb(((Double) value).doubleValue());
+  }
+
+  /**
+   * Returns the log probability of outcome x.
+   */
+  public double getLogProb(double x) {
+    checkHasParams();
+    if (x >= 0 && x <= 1) {
       double t1 = 0;
       double t2 = 0;
       if (a != 1) {
@@ -93,15 +147,18 @@ public class Beta extends AbstractCondProbDistrib {
         t2 = (b - 1) * Math.log(1 - x);
       }
       return t1 + t2 - Math.log(beta(a, b));
+    } else {
+      return Double.NEGATIVE_INFINITY;
     }
   }
 
-  /**
-   * Returns a double sampled according to this distribution. Takes time
-   * equivalent to the distrib.Gamma sampling function. (Reference: A Guide To
-   * Simulation, 2nd Ed. Bratley, Paul, Bennett L. Fox and Linus E. Schrage.)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
    */
-  public Object sampleVal(List args, Type childType) {
+  @Override
+  public Object sampleVal() {
     double y = ((Double) gammaA.sampleVal()).doubleValue();
     double z = ((Double) gammaB.sampleVal()).doubleValue();
     return new Double(y / (y + z));
@@ -112,60 +169,22 @@ public class Beta extends AbstractCondProbDistrib {
    * Gamma(a+b) Reference: Numerical Recipes in C
    * http://www.library.cornell.edu/nr/cbookcpdf.html
    */
-  public static double beta(double a, double b) {
+  private static double beta(double a, double b) {
     return ((Gamma.gamma(a) * Gamma.gamma(b)) / Gamma.gamma(a + b));
   }
 
+  @Override
   public String toString() {
-    return getClass().getName();
+    return "Beta(" + a + "," + b + ")";
   }
 
-  private double a;
-  private double b;
+  /** Gamma(a, 1). Used for sampling. */
   private Gamma gammaA;
+  /** Gamma(b, 1). Used for sampling. */
   private Gamma gammaB;
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
-   */
-  @Override
-  public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
-   */
-  @Override
-  public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
-   */
-  @Override
-  public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#sampleVal()
-   */
-  @Override
-  public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  private double a;
+  private boolean hasA;
+  private double b;
+  private boolean hasB;
 }

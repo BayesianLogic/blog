@@ -4,69 +4,99 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.junit.Test;
 
-import blog.common.numerical.MatrixFactory;
-import blog.common.numerical.MatrixLib;
 import blog.distrib.Categorical;
 
 /**
- * Unit Tests for Categorical Distribution
+ * @author cgioia
+ * @since Jun 17, 2014
  */
-public class TestCategorical extends TestDistribution {
+public class TestCategorical implements TestDistributions {
+  private final double ERROR = 10e-5;
 
-  @Test
-  public void testArrayListImplementation() {
-    // Fixed Case
-    ArrayList<Double> probs = new ArrayList<Double>();
-    probs.add(0.5);
-    probs.add(0.3);
-    probs.add(0.2);
-    constructParams.add(probs);
-    Categorical categorical = new Categorical(constructParams);
-    assertEquals(0.5, categorical.getProb(null, 0), ERROR_BOUND);
-    assertEquals(0.3, categorical.getProb(null, 1), ERROR_BOUND);
-    assertEquals(0.2, categorical.getProb(null, 2), ERROR_BOUND);
-    assertEquals(0, categorical.getProb(null, 3), ERROR_BOUND);
+  /** Categorical. "Albert" => 0.5, "Bob" => 0.2, "Craig" => 0.3. */
+  public void testCategorical1(Categorical cat) {
+    assertEquals(0.0, cat.getProb("Andy"), ERROR);
+    assertEquals(0.5, cat.getProb("Albert"), ERROR);
+    assertEquals(0.2, cat.getProb("Bob"), ERROR);
+    assertEquals(0.3, cat.getProb("Craig"), ERROR);
+    assertEquals(0.0, cat.getProb(null), ERROR);
 
-    // Random Case (currently unsupported)
-    constructParams.clear();
-    categorical = new Categorical(constructParams);
-    fail("random case is currently unsupported");
+    assertEquals(Double.NEGATIVE_INFINITY, cat.getLogProb("Andy"), ERROR);
+    assertEquals(Math.log(0.5), cat.getLogProb("Albert"), ERROR);
+    assertEquals(Math.log(0.2), cat.getLogProb("Bob"), ERROR);
+    assertEquals(Math.log(0.3), cat.getLogProb("Craig"), ERROR);
+    assertEquals(Double.NEGATIVE_INFINITY, cat.getLogProb(null), ERROR);
   }
 
   @Test
-  public void testMatrixLibImplementation() {
-    // Fixed Case
-    double[][] array = new double[1][3];
-    array[0][0] = 0.2;
-    array[0][1] = 0.3;
-    array[0][2] = 0.5;
-    MatrixLib lib = MatrixFactory.fromArray(array);
-    constructParams.add(lib);
-    Categorical categorical = new Categorical(constructParams);
-    assertEquals(0.2, categorical.getProb(null, 0), ERROR_BOUND);
-    assertEquals(0.3, categorical.getProb(null, 1), ERROR_BOUND);
-    assertEquals(0.5, categorical.getProb(null, 2), ERROR_BOUND);
-    assertEquals(0.0, categorical.getProb(null, 3), ERROR_BOUND);
-
-    // Random Case
-    constructParams.clear();
-    categorical = new Categorical(constructParams);
-    args.add(lib);
-    assertEquals(0.2, categorical.getProb(args, 0), ERROR_BOUND);
-    assertEquals(0.3, categorical.getProb(args, 1), ERROR_BOUND);
-    assertEquals(0.5, categorical.getProb(args, 2), ERROR_BOUND);
-    assertEquals(0.0, categorical.getProb(args, 3), ERROR_BOUND);
+  public void testProbabilityViaConstructor() {
+    // not needed. will be removed
   }
 
   @Test
-  public void testMapImplementation() {
-    fail("Not tested yet. Waiting for new interface.");
+  public void testProbabilityViaSetParams() {
+    Categorical cat = new Categorical();
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("Bob", 0.2);
+    map.put("Craig", 0.3);
+    map.put("Albert", 0.5);
+    cat.setParams(new Object[] { map });
+    testCategorical1(cat);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testInsufficientArguments() {
+    Categorical cat = new Categorical();
+    cat.setParams(new Object[] { null });
+    cat.sampleVal();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testIncorrectArguments() {
+    Categorical cat = new Categorical();
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("Bob", 0.2);
+    map.put("Craig", -0.01);
+    cat.setParams(new Object[] { map });
+    cat.sampleVal();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testProbabilitySumTooSmall() {
+    Categorical cat = new Categorical();
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("Albert", 0.0);
+    map.put("Bob", 0.0);
+    cat.setParams(new Object[] { map });
+    cat.sampleVal();
+  }
+
+  @Test
+  public void testNormalization() {
+    Categorical cat = new Categorical();
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("Bob", 6.0);
+    map.put("Craig", 9.0);
+    map.put("Albert", 15.0);
+    cat.setParams(new Object[] { map });
+    testCategorical1(cat);
+  }
+
+  @Test
+  public void testDoubleSet() {
+    Categorical cat = new Categorical();
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("Albert", 0.5);
+    map.put("Bob", 0.2);
+    map.put("Craig", 0.3);
+    cat.setParams(new Object[] { null });
+    cat.setParams(new Object[] { map });
+    testCategorical1(cat);
   }
 
 }
