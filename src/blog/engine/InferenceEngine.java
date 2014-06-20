@@ -104,6 +104,8 @@ public abstract class InferenceEngine {
    */
   public InferenceEngine(Model model) {
     this.model = model;
+    this.evidence = new Evidence(model);
+    this.queries = new Queries(model);
   }
 
   /** Answer queries in <code>meq</code> using its evidence. */
