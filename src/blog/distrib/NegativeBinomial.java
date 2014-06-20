@@ -181,7 +181,7 @@ public class NegativeBinomial implements CondProbDistrib {
 
   @Override
   public String toString() {
-    return getClass().getName();
+    return "NegativeBinomial(" + r + ", " + p + ")";
   }
 
   private Gamma gamma;
