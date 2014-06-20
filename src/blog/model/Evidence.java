@@ -469,5 +469,5 @@ public class Evidence {
   private boolean compiled = false;
 
   // The model that this evidence is for.
-  private final Model model;
+  final public Model model;
 }
