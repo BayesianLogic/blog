@@ -12,6 +12,14 @@ public class MatrixFactory {
     return new JamaMatrixLib(array);
   }
 
+  static public MatrixLib createVector(double... args) {
+    double[][] ary = new double[1][args.length];
+    for (int i = 0; i < args.length; i++) {
+      ary[0][i] = args[i];
+    }
+    return MatrixFactory.fromArray(ary);
+  }
+
   static public MatrixLib createRowVector(double... args) {
     double[][] ary = new double[1][args.length];
     for (int i = 0; i < args.length; i++) {
