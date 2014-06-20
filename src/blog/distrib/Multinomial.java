@@ -251,7 +251,9 @@ public class Multinomial implements CondProbDistrib {
   /** Samples a value from the multinomial. */
   public MatrixLib sample_value() {
     checkHasParams();
-    int[] result = new int[k];
+    // result actually stores integers, but we declare it as double because we
+    // don't have support for int matrices
+    double[] result = new double[k];
     for (int i = 0; i < k; i++) {
       result[i] = 0;
     }
@@ -266,13 +268,7 @@ public class Multinomial implements CondProbDistrib {
       }
       result[bucket] += 1;
     }
-
-    // Convert to Jama (nasty).
-    double[][] doubleResult = new double[1][n];
-    for (int i = 0; i < n; i++) {
-      doubleResult[0][i] = result[i];
-    }
-    return MatrixFactory.fromArray(doubleResult);
+    return MatrixFactory.createRowVector(result);
   }
 
   private int n;
