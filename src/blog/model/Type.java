@@ -355,7 +355,7 @@ public class Type {
    * 
    * @return the object added
    */
-  public EnumeratedObject addGuaranteedObject(NonRandomFunction constant) {
+  public EnumeratedObject addGuaranteedObject(FixedFunction constant) {
     EnumeratedObject obj = new EnumeratedObject(this, userDefGuarObjs.size(),
         constant);
     userDefGuarObjs.add(obj);
