@@ -3,7 +3,6 @@
  */
 package blog.model;
 
-import blog.BLOGUtil;
 import blog.common.Util;
 
 public class ModelEvidenceQueries {
@@ -17,15 +16,6 @@ public class ModelEvidenceQueries {
     this.model = model;
     this.evidence = evidence;
     this.queries = queries;
-  }
-
-  @Deprecated
-  public ModelEvidenceQueries(String modelDescription, String evidenceString,
-      String queriesString) {
-    model = BLOGUtil.parseModel_NE(modelDescription);
-    evidence = BLOGUtil.parseEvidence_NE(evidenceString, model);
-    queries = new Queries(model);
-    queries.add(BLOGUtil.parseQuery_NE(queriesString, model));
   }
 
   /**
