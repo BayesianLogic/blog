@@ -35,215 +35,66 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * A geometric distribution over the natural numbers 0, 1, 2,... It has a single
- * parameter alpha, which equals the probability of a success trial. Thus an
- * alpha close to 0 yields a relatively flat distribution, whereas an alpha
- * close to 1 yields a distribution that decays quickly. The distribution is
- * defined by: P(Y = n) = (1 - alpha)^n alpha. Its mean is (1-alpha) / alpha, so
+ * parameter <code>alpha</code>, which equals the probability of a success
+ * trial. Thus an <code>alpha</code> close to 0 yields a relatively flat
+ * distribution, whereas an <code>alpha</code> close to 1 yields a distribution
+ * that decays quickly. The distribution is defined by: P(Y = n) = (1 - alpha)^n
+ * alpha. Its mean is (1-alpha) / alpha, so
  * to get a distribution with mean m, one should use alpha = 1 / (1 + m).
  * 
  * <p>
- * Note that alpha cannot be 0, because then the value is infinite with
- * probability 1. However, alpha can be 1; this just means the value is 0 with
- * probability 1.
+ * Note that <code>alpha</code> cannot be 0, because then the value is infinite
+ * with probability 1. However, alpha can be 1; this just means the value is 0
+ * with probability 1.
+ * 
+ * @since June 17, 2014
  */
-public class Geometric extends AbstractCondProbDistrib {
+public class Geometric implements CondProbDistrib {
 
   /**
-   * Returns a Geometric distribution with the given mean.
-   */
-  public static Geometric constructWithMean(double mean) {
-    return new Geometric(1 / (1 + mean));
-  }
-
-  /**
-   * Creates a geometric distribution with the given alpha parameter.
+   * set parameters for Geometric distribution
    * 
-   * @throws IllegalArgumentException
-   *           if <code>alpha</code> is not in the range [0, 1)
-   */
-  public Geometric(double alpha) {
-    if ((alpha <= 0) || (alpha > 1)) {
-      throw new IllegalArgumentException(
-          "Parameter of geometric distribution must be in the "
-              + "interval (0, 1], not " + alpha);
-    }
-
-    this.alpha = alpha;
-    computeLogParams();
-  }
-
-  /**
-   * Creates a geometric distribution with the given alpha parameter.
+   * @param params
+   *          An array of the form [Double]
+   *          <ul>
+   *          <li>params[0]: <code>alpha</code>(Double)</li>
+   *          </ul>
    * 
-   * @throws IllegalArgumentException
-   *           if alpha < 0 or alpha >= 1.
-   */
-  public Geometric(List params) {
-    if (params.size() != 1) {
-      throw new IllegalArgumentException(
-          "Geometric distribution requires exactly one parameter, "
-              + "the success probability.");
-    }
-
-    if (!(params.get(0) instanceof Number)) {
-      throw new IllegalArgumentException(
-          "The first parameter (alpha) for the geometric "
-              + "distribution must be of " + "class Number, not "
-              + params.get(0).getClass());
-    }
-
-    alpha = ((Number) params.get(0)).doubleValue();
-    if ((alpha <= 0) || (alpha > 1)) {
-      throw new IllegalArgumentException(
-          "Illegal alpha parameter for geometric distribution.");
-    }
-
-    computeLogParams();
-  }
-
-  /**
-   * Returns the probability of the given integer under this distribution.
-   */
-  public double getProb(int n) {
-    if (n < 0) {
-      return 0;
-    }
-    return alpha * Math.pow(1 - alpha, n);
-  }
-
-  /**
-   * Returns the probability of the given value, which should be an Integer.
-   * Expects no arguments.
-   */
-  public double getProb(List args, Object value) {
-    if (!args.isEmpty()) {
-      throw new IllegalArgumentException(
-          "Geometric distribution expects no arguments.");
-    }
-
-    if (!(value instanceof Integer)) {
-      throw new IllegalArgumentException("The value passed to the geometric "
-          + "distribution's getProb method must be " + "of class Integer, not "
-          + args.get(0).getClass() + ".");
-    }
-
-    return getProb(((Integer) value).intValue());
-  }
-
-  /**
-   * Returns the natural log of the probability of the given integer under this
-   * distribution.
-   */
-  public double getLogProb(int n) {
-    if (n < 0) {
-      return Double.NEGATIVE_INFINITY;
-    }
-
-    // log of alpha * (1 - alpha) ^ n
-    return logAlpha + (n * logOneMinusAlpha);
-  }
-
-  /**
-   * Returns the log probability of the given value, which should be an Integer.
-   * Expects no arguments.
-   */
-  public double getLogProb(List args, Object value) {
-    if (!args.isEmpty()) {
-      throw new IllegalArgumentException(
-          "Geometric distribution expects no arguments.");
-    }
-
-    if (!(value instanceof Integer)) {
-      throw new IllegalArgumentException("The value passed to the geometric "
-          + "distribution's getProb method must be " + "of class Integer, not "
-          + args.get(0).getClass() + ".");
-    }
-
-    return getLogProb(((Integer) value).intValue());
-  }
-
-  /**
-   * Generates a sample from this distribution. Expects no arguments.
-   */
-  public Object sampleVal(List args) {
-    if (!args.isEmpty()) {
-      throw new IllegalArgumentException(
-          "Geometric distribution expects no arguments.");
-    }
-
-    return new Integer(sampleVal_());
-  }
-
-  /**
-   * Returns an integer sampled from this distribution. Uses the method from p.
-   * 87 of <cite>Non-Uniform Random Variate Generation</cite> (by Luc Devroye,
-   * available at http://cg.scs.carleton.ca/~luc/rnbookindex.html), which
-   * exploits the fact that the geometric distribution can be seen as a
-   * discretization of the exponential distribution.
-   */
-  public int sampleVal_() {
-    double u = Util.random();
-    return (int) (Math.log(u) / logOneMinusAlpha);
-  }
-
-  public String toString() {
-    return getClass().getName();
-  }
-
-  private void computeLogParams() {
-    logAlpha = Math.log(alpha);
-    logOneMinusAlpha = Math.log(1 - alpha);
-  }
-
-  /**
-   * Records an occurrence of the number n, for use in updating parameters.
-   */
-  /*
-   * public void collectStats(int n) { if (n < 0) { throw new
-   * IllegalArgumentException
-   * ("Geometric distribution can't generate a negative number."); }
-   * 
-   * count++; sum += n; }
-   */
-
-  /**
-   * Sets the parameter alpha to the value that maximizes the likelihood of the
-   * numbers passed to collectStats since the last call to updateParams. Then
-   * clears the collected statistics, and returns the difference between the log
-   * likelihood of the data under the new parameters and the log likelihood
-   * under the old parameters.
-   */
-  /*
-   * public double updateParams() { // Update parameter double oldLogProb =
-   * (count * logOneMinusAlpha) + (sum * logAlpha); if (count > 0) { double mean
-   * = sum / (double) count; alpha = mean / (1 + mean); cacheParams(); } double
-   * newLogProb = (count * logOneMinusAlpha) + (sum * logAlpha);
-   * 
-   * // Clear statistics count = 0; sum = 0;
-   * 
-   * return (newLogProb - oldLogProb); }
-   */
-
-  private double alpha;
-  private double logAlpha;
-  private double logOneMinusAlpha;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
   @Override
   public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
+    if (params.length != 1) {
+      throw new IllegalArgumentException("expected 1 parameter");
+    }
+    setParams((Double) params[0]);
+  }
 
+  /**
+   * If method parameter alpha is non-null and 0 < alpha <= 1, then set
+   * distribution parameter <code>alpha</code> to method parameter alpha.
+   */
+  public void setParams(Double alpha) {
+    if (alpha != null) {
+      if (alpha <= 0 || alpha > 1) {
+        throw new IllegalArgumentException(
+            "Parameter of geometric distribution must be in the "
+                + "interval (0, 1], not " + alpha);
+      }
+      this.alpha = alpha;
+      this.hasAlpha = true;
+      computeLogParams();
+    }
+  }
+
+  private void checkHasParams() {
+    if (!this.hasAlpha) {
+      throw new IllegalArgumentException("parameter alpha not provided");
+    }
   }
 
   /*
@@ -253,19 +104,45 @@ public class Geometric extends AbstractCondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
+    return getProb(((Integer) value).intValue());
+  }
+
+  /**
+   * Returns the probability of the given integer under this distribution.
+   */
+  public double getProb(int k) {
+    checkHasParams();
+    if (k < 0) {
+      return 0;
+    }
+    return alpha * Math.pow(1 - alpha, k);
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   * @see blog.distrib.AbstractCondProbDistrib#getLogProb(java.lang.Object)
    */
   @Override
   public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
+    return getLogProb(((Integer) value).intValue());
+  }
+
+  /**
+   * Returns the log probability of the given integer under this distribution.
+   */
+  public double getLogProb(int k) {
+    checkHasParams();
+    if (k < 0) {
+      return Double.NEGATIVE_INFINITY;
+    }
+
+    // log of alpha * (1 - alpha) ^ k
+    // Special Case: Otherwise, k * log(1-alpha) is NaN in Java
+    if (k == 0 && alpha == 1) {
+      return 0.0;
+    }
+    return logAlpha + (k * logOneMinusAlpha);
   }
 
   /*
@@ -275,7 +152,34 @@ public class Geometric extends AbstractCondProbDistrib {
    */
   @Override
   public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
+    checkHasParams();
+    return sample_value();
   }
+
+  /**
+   * Returns an integer sampled from this distribution. Uses the method from p.
+   * 87 of <cite>Non-Uniform Random Variate Generation</cite> (by Luc Devroye,
+   * available at http://cg.scs.carleton.ca/~luc/rnbookindex.html), which
+   * exploits the fact that the geometric distribution can be seen as a
+   * discretization of the exponential distribution.
+   */
+  public int sample_value() {
+    double u = Util.random();
+    return (int) (Math.log(u) / logOneMinusAlpha);
+  }
+
+  @Override
+  public String toString() {
+    return "Geometric(" + alpha + " )";
+  }
+
+  private void computeLogParams() {
+    logAlpha = Math.log(alpha);
+    logOneMinusAlpha = Math.log(1 - alpha);
+  }
+
+  private double alpha;
+  private boolean hasAlpha;
+  private double logAlpha;
+  private double logOneMinusAlpha;
 }
