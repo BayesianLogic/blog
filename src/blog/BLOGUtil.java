@@ -107,18 +107,6 @@ public class BLOGUtil {
   }
 
   /**
-   * Returns the value of a variable described in a given string, in given
-   * world, according to a given model, sampling values if necessary.
-   */
-  public static Object getValue(String varString, PartialWorld world,
-      Model model) {
-    ArgSpecQuery query = BLOGUtil.parseQuery_NE("query " + varString + ";",
-        model);
-    BLOGUtil.ensureDetAndSupported(query.getVariable(), world);
-    return world.getValue(query.getVariable());
-  }
-
-  /**
    * Returns a collection with the BayesNetVars associated to a set of queries.
    */
   public static Collection getQueriesVars(Collection queries) {
