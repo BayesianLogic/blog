@@ -120,7 +120,7 @@ public abstract class InferenceEngine {
 
   /** Answer query given no evidence. */
   public void solve(Query query) {
-    solve(Util.list(query), new Evidence());
+    solve(Util.list(query), new Evidence(model));
   }
 
   /** Answer queries given evidence. */
