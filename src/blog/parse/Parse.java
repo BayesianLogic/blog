@@ -91,6 +91,8 @@ public class Parse {
     if (args.length > 1 && args[1].equals("--debug"))
       enableDebug();
     Parse parse = parseFile(args[0]);
-    new PrettyPrinter(System.out).printSyntax(parse.getResult());
+    if (parse.getResult() != null) {
+      new PrettyPrinter(System.out).printSyntax(parse.getResult());
+    }
   }
 }
