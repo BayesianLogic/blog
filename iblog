@@ -14,4 +14,4 @@ fi
 CPATH="${CPATH}${J_PATH_SEP}${BLOG_HOME}/lib/*${J_PATH_SEP}${CLASSPATH}${J_PATH_SEP}."
 echo $CPATH
 
-JAVA_OPTS="-Xmx4096M" scala -cp ${CPATH} -i iblog.scala
+JAVA_OPTS="-Xmx4096M" scala -cp ${CPATH} -i iblog.scala $@

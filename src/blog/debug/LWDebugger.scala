@@ -42,6 +42,10 @@ class LWDebugger(
     }
   }
 
+  // Turn verbosity on or off.
+  def verbose = Util.setVerbose(true)
+  def noverbose = Util.setVerbose(false)
+
   // Shortcuts.
   def m = model
   def e = evidence
