@@ -102,6 +102,15 @@ parser code {:
     this(s, sf);
     errorMsg = msg;
   }
+  
+  public void report_error(String message, Object info) {
+    if (info instanceof java_cup.runtime.ComplexSymbolFactory$ComplexSymbol) {
+      java_cup.runtime.ComplexSymbolFactory$ComplexSymbol s = 
+        (java_cup.runtime.ComplexSymbolFactory$ComplexSymbol) info;
+      error(s.xleft, "syntax error");
+    } else error("syntax error");
+  }
+  
 
 // WC: Methods that get automatically invoked when using the builtin error recovery mechanism.  
 /*
@@ -169,10 +178,6 @@ nonterminal ExprTupleList expression_pair_list;
 nonterminal Ty type, list_type, map_type;
 nonterminal ArrayTy array_type;
 nonterminal String array_type_or_sub;
-
-//attempt catch disctint decl errors
-nonterminal SymbolArray bracket_error;
-nonterminal String brackets;
 
 //attempt catch type var list errors
 nonterminal String extra_commas, extra_types;
@@ -546,39 +551,34 @@ distinct_decl ::=
     DISTINCT refer_name:ty id_or_subid_list:e 
     {: RESULT = new DistinctSymbolDec(currLineno(), currColno(), 
     new NameTy(currLineno(), currColno(), sym(ty)), e); :}
+  | DISTINCT:dct error
+    {:
+      error(dctxright, "error in distinct statement");
+      RESULT = null;
+    :}
   ;
 
 id_or_subid_list ::= id_or_subid:e {: RESULT = new SymbolArrayList(e, null); :}
   | id_or_subid:e COMMA id_or_subid_list:n
     {: RESULT = new SymbolArrayList(e, n); :}
   | id_or_subid:e id_or_subid_list:n
-    {: error(exright, "missing COMMA"); RESULT = null; :}
+    {: error(exright, "missing COMMA"); 
+        RESULT = new SymbolArrayList(e, n);
+    :}
   | id_or_subid:e extra_commas:ec id_or_subid_list:n
-    {: error(ecxleft, "extra COMMA"); RESULT = new SymbolArrayList(e, n); :}
-  ;
-
-brackets ::= LBRACKET {:RESULT = null;:}
-  | RBRACKET {:RESULT = null;:}
-  | brackets LBRACKET {:RESULT = null;:}
-  | brackets RBRACKET {:RESULT = null;:}
-  ;
-
-bracket_error ::= brackets:b {:error(bxleft, "missing integer literal in brackets"); RESULT = null;:}
-  | RBRACKET:rb INT_LITERAL:s LBRACKET {:error(rbxleft, "mismatched brackets"); RESULT = null;:}
-  | brackets INT_LITERAL:s {:error(sxright, "missing brackets"); RESULT = null;:}
-  | INT_LITERAL:s brackets {:error(sxleft, "missing brackets"); RESULT = null;:}
-  | INT_LITERAL:s {:error(sxleft, "missing brackets"); RESULT = null;:}
-  | brackets:b LBRACKET INT_LITERAL:s RBRACKET {:error(bxright, "mismatched brackets"); RESULT = null;:}
-  | LBRACKET INT_LITERAL:s RBRACKET brackets:b {:error(bxleft, "mismatched brackets"); RESULT = null;:}
-  | brackets:b LBRACKET INT_LITERAL:s RBRACKET brackets {:error(bxright, "mismatched brackets"); RESULT = null;:}
+    {: error(ecxleft, "extra COMMA"); 
+      RESULT = new SymbolArrayList(e, n); :}
+  | error:ex COMMA:cm id_or_subid_list:n
+    {:
+      error(exxleft, "invalid syntax for id");
+      RESULT = n;
+    :}
   ;
 
 id_or_subid ::= ID:id
     {: RESULT = new SymbolArray(idxleft.getLine(), idxleft.getColumn(), sym(id)); :}
   | ID:id LBRACKET INT_LITERAL:s RBRACKET
     {: RESULT = new SymbolArray(currLineno(), currColno(), sym(id), s.intValue()); :}
-  | ID:id bracket_error:be
-    {: error(bexleft, "error in sub expression"); :}
   ;
 
 /**
