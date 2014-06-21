@@ -272,7 +272,10 @@ statement_lst ::= statement:e SEMI statement_lst:slst
        if (e==null) RESULT = slst;
        else RESULT = new StmtList(e, slst);
     :}
-  | error SEMI {: RESULT = null; :}
+  | error:er SEMI opt_statement_lst:slst 
+    {: 
+    error(erxleft, "invalid statement");
+    RESULT = slst; :}
 ;
 
 /* A statement can be a declaration, an observation (assertion of some
@@ -557,11 +560,6 @@ distinct_decl ::=
     DISTINCT:d refer_name:ty id_or_subid_list:e 
     {: RESULT = new DistinctSymbolDec(dxleft.getLine(), dxleft.getColumn(), 
     new NameTy(tyxleft.getLine(), tyxleft.getColumn(), sym(ty)), e); :}
-  | DISTINCT:dct error
-    {:
-      error(dctxright, "error in distinct statement");
-      RESULT = null;
-    :}
   ;
 
 id_or_subid_list ::= id_or_subid:e {: RESULT = new SymbolArrayList(e, null); :}
@@ -574,21 +572,6 @@ id_or_subid_list ::= id_or_subid:e {: RESULT = new SymbolArrayList(e, null); :}
   | id_or_subid:e extra_commas:ec id_or_subid_list:n
     {: error(ecxleft, "extra COMMA"); 
       RESULT = new SymbolArrayList(e, n); :}
-  | error:ex COMMA:cm id_or_subid_list:n
-    {:
-      error(exxleft, "invalid syntax for id");
-      RESULT = n;
-    :}
-  | id_or_subid:e COMMA:cm error
-    {:
-      error(cmxright, "invalid syntax, possibly extra comma");
-      RESULT = new SymbolArrayList(e, null);
-    :}
-  | id_or_subid:e error
-    {:
-      error(exright, "invalid syntax");
-      RESULT = new SymbolArrayList(e, null);
-    :}
   ;
 
 id_or_subid ::= ID:id
