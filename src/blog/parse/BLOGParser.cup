@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2012, Regents of the University of California
+ * Copyright (c) 2005, 2012, 2013, 2014, Regents of the University of California
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -146,7 +146,6 @@ terminal DISTRIB;
 terminal NOT, AND, OR, DOUBLERIGHTARROW; // logical operator
 terminal COMMA, SEMI, COLON, DOT, NUMSIGN, RIGHTARROW; //seperators
 terminal LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET; // paired seperators
-terminal ERROR; // used by lexer
 
 nonterminal program;
 nonterminal StmtList opt_statement_lst, statement_lst;
@@ -170,9 +169,6 @@ nonterminal ExprTupleList expression_pair_list;
 nonterminal Ty type, list_type, map_type;
 nonterminal ArrayTy array_type;
 nonterminal String array_type_or_sub;
-
-//attempt catch array type errors
-nonterminal ArrayTy array_type_error;
 
 //attempt catch disctint decl errors
 nonterminal SymbolArray bracket_error;
@@ -227,7 +223,11 @@ start with program;
 
 /* The start nonterminal */
 program ::= opt_statement_lst : e {: parser.parseResult = e;  :}
-                ;
+  | error {: 
+    error("invalid syntax"); 
+    RESULT = null; 
+  :}
+  ;
 
 /* Represents a possibly-empty list of statements. */
 opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
@@ -236,7 +236,7 @@ opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
   {: error("Possible cause: forgotten semicolon" ); 
        if (e==null) RESULT = null;
        else RESULT = new StmtList(e, null);    
-  :}          
+  :}       
   ;
 
 /* Represents a non-empty list of statements terminated by semicolons. */
@@ -244,9 +244,10 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     {: if (e==null) RESULT = slst;
        else RESULT = new StmtList(e, slst);
     :}
-  | statement:e SEMI {: RESULT = new StmtList(e, null); :}
+  | statement:e SEMI {: if (e!=null) RESULT = new StmtList(e, null); 
+                        else RESULT = null; :}
   | statement:e statement_lst:slst
-    {: error(e.line, e.col, "Possible cause: forgotten semicolon before"); 
+    {: error(exright, "Possible cause: forgotten semicolon"); 
        if (e==null) RESULT = slst;
        else RESULT = new StmtList(e, slst);
     :}
@@ -259,7 +260,6 @@ statement_lst ::= statement:e SEMI statement_lst:slst
 statement ::= declaration_stmt : e {: RESULT = e; :}
   | evidence_stmt : e {: RESULT = e; :}
   | query_stmt : e {: RESULT = e; :}
-  | error {: error("invalid statement"); :}
   ;
 
 /* Represents a declaration, which can be:
@@ -332,11 +332,6 @@ array_type_or_sub ::= refer_name:typename LBRACKET
   {: RESULT = typename; :}
   ;
 
-array_type_error ::= refer_name:typename LBRACKET LBRACKET
-  | refer_name:typename RBRACKET RBRACKET
-  | refer_name:typename RBRACKET LBRACKET
-  ;
-
 array_type ::= array_type_or_sub:typename RBRACKET
     /* internally only allow nametype as array */
     {: RESULT = new ArrayTy(currLineno(), currColno(), 
@@ -379,11 +374,11 @@ opt_parenthesized_type_var_lst ::= /* EMPTY */
   | RPAREN:rp type_var_lst:tl LPAREN
     {: error(rpxleft, "mismatched parentheses"); RESULT = null; :}
   | extra_lparens:el type_var_lst:tl RPAREN
-    {: error(elxleft, "mismatched parentheses"); RESULT = null; :}
+    {: error(elxleft, "too many parentheses"); RESULT = null; :}
   | LPAREN type_var_lst:tl extra_rparens:er
-    {: error(erxleft, "mismatched parentheses"); RESULT = null; :}
+    {: error(erxleft, "too many parentheses"); RESULT = null; :}
   | extra_lparens:el type_var_lst:tl extra_rparens
-    {: error(elxleft, "mismatched parentheses"); RESULT = null; :}
+    {: error(elxleft, "too many parentheses"); RESULT = null; :}
   ;
 
 extra_commas ::= COMMA COMMA
@@ -419,9 +414,9 @@ type_var_lst ::= type:ty ID:id COMMA type_var_lst:tl
  * parenthesized list of arguments after the function/constant name.
  */
 fixed_func_decl ::=
-    FIXED type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
+    FIXED:fx type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
     EQ expression:ex
-    {: RESULT = new FixedFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type, ex); :}
+    {: RESULT = new FixedFuncDec(fxxleft.getLine(), fxxleft.getColumn(), sym(fname), otl, ret_type, ex); :}
     | FIXED type:ret_type ID:fname error:err
     EQ expression:ex
     {: error(errxleft, "malformed type variable list"); :}
