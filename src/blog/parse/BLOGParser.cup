@@ -210,8 +210,9 @@ nonterminal String EQS;
 nonterminal String SEMIS;
 
 //nonterminal Integer dims; //not used
-//nonterminal FieldList opt_parenthesized_type_lst, type_lst // Not Used
-nonterminal FieldList opt_parenthesized_type_var_lst, type_var_lst;
+//nonterminal FieldList type_lst // Not Used
+nonterminal FieldList opt_parenthesized_type_var_lst, 
+  parenthesized_type_var_lst, type_var_lst;
 nonterminal OriginFieldList opt_parenthesized_origin_var_list,
   origin_var_list;
 nonterminal SymbolArray id_or_subid;
@@ -389,20 +390,28 @@ map_type ::= MAP:m LT type:t1 COMMA type:t2 GT
 //  ;
 
 /* Represents a list of IDs denoting type names. */
-opt_parenthesized_type_var_lst ::= /* EMPTY */
+opt_parenthesized_type_var_lst ::= /* */
     {: RESULT = null; :}
-  | LPAREN RPAREN
+  | parenthesized_type_var_lst:tvl
+    {: RESULT = tvl; :}
+  | type_var_lst:tvl
+    {: error(tlxleft, "missing parentheses");
+      error(tlxright, "missing parentheses");
+      RESULT = tvl;
+    :}        
+  ;
+
+parenthesized_type_var_lst ::= 
+  LPAREN RPAREN
     {: RESULT = null; :}
   | LPAREN type_var_lst:tl RPAREN
     {: RESULT = tl; :}
-  | RPAREN:rp type_var_lst:tl LPAREN
-    {: error(rpxleft, "mismatched parentheses"); RESULT = null; :}
-  | extra_lparens:el type_var_lst:tl RPAREN
-    {: error(elxleft, "too many parentheses"); RESULT = null; :}
-  | LPAREN type_var_lst:tl extra_rparens:er
-    {: error(erxleft, "too many parentheses"); RESULT = null; :}
-  | extra_lparens:el type_var_lst:tl extra_rparens
-    {: error(elxleft, "too many parentheses"); RESULT = null; :}
+  | LPAREN:lp parenthesized_type_var_lst:tl
+    {: error(lpxleft, "too many left parentheses '(' "); 
+      RESULT = tl; :}
+  | parenthesized_type_var_lst:tl RPAREN:rp
+    {: error(rpxleft, "too many right parentheses ')' "); 
+      RESULT = tl; :}
   ;
 
 extra_commas ::= COMMA COMMA
@@ -411,26 +420,19 @@ extra_commas ::= COMMA COMMA
     {: RESULT = "uh oh";:}
   ;
 
-extra_types ::= type:ty type:ty2
-    {: RESULT = "uh oh";:}
-  | extra_types type:ty
-    {: RESULT = "uh oh";:}
-  ;
-
 type_var_lst ::= type:ty ID:id COMMA type_var_lst:tl
     {: RESULT = new FieldList(sym(id), ty, tl); :}
   | type:ty ID:id
     {: RESULT = new FieldList(sym(id), ty, null); :}
-  | type:ty ID:id COMMA 
-    {: error(idxright, "extra comma"); RESULT = null;:}
   | type:ty ID:id extra_commas type_var_lst:tl
-    {: error(idxright, "extra commas"); RESULT = null;:}
+    {: error(idxright, "extra commas"); 
+      RESULT = new FieldList(sym(id), ty, tl); :}
   | type:ty ID:id type_var_lst:tl
-    {: error(idxright, "missing comma"); RESULT = null;:}
+    {: error(idxright, "missing comma"); 
+      RESULT = new FieldList(sym(id), ty, tl);:}
   | type:ty COMMA type_var_lst:tl
-    {: error(tyxright, "missing id"); RESULT = null;:}
-  | extra_types:ety ID:id COMMA type_var_lst:tl
-    {: error(etyxright, "extra types"); RESULT = null;:}
+    {: error(tyxright, "missing id"); 
+      RESULT = tl;:}
   ;
 
 /* A nonrandom function declaration may declare a nonrandom constant or
