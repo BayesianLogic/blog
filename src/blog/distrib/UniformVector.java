@@ -126,6 +126,13 @@ public class UniformVector implements CondProbDistrib {
       this.hasBox = true;
       this.densityInBox = 1.0 / volume;
       this.logDensityInBox = -Math.log(volume);
+      StringBuffer s = new StringBuffer();
+      s.append("UniformVector(");
+      for (int i = 0; i < dim; i++) {
+        s.append("[" + this.mins[i] + "," + this.maxes[i] + "] ");
+      }
+      s.append(")");
+      this.stringRepr = s.toString();
     }
   }
 
@@ -212,7 +219,7 @@ public class UniformVector implements CondProbDistrib {
 
   @Override
   public String toString() {
-    return getClass().getName();
+    return stringRepr;
   }
 
   private int dim;
@@ -226,5 +233,5 @@ public class UniformVector implements CondProbDistrib {
   private double volume = 1.0;
   private double densityInBox;
   private double logDensityInBox;
-
+  private String stringRepr;
 }
