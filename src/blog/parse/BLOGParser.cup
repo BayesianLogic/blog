@@ -574,7 +574,7 @@ bracket_error ::= brackets:b {:error(bxleft, "missing integer literal in bracket
   ;
 
 id_or_subid ::= ID:id
-    {: RESULT = new SymbolArray(currLineno(), currColno(), sym(id)); :}
+    {: RESULT = new SymbolArray(idxleft.getLine(), idxleft.getColumn(), sym(id)); :}
   | ID:id LBRACKET INT_LITERAL:s RBRACKET
     {: RESULT = new SymbolArray(currLineno(), currColno(), sym(id), s.intValue()); :}
   | ID:id bracket_error:be
