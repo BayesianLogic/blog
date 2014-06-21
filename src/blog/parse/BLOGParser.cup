@@ -235,7 +235,7 @@ precedence right NOT, AT;
 //precedence left ID;
 precedence left RPAREN, RBRACKET, RBRACE;
 precedence right LBRACKET, LPAREN;
-precedence left SEMI, error;
+//precedence left SEMI, error;
 
 /* Grammar *******************************************************************/
 
