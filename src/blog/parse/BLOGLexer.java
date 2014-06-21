@@ -36,7 +36,7 @@
  */
  
 /**
- * Using JFlex-1.4.3
+ * Using JFlex-1.5.1
  * @author leili
  */ 
 package blog.parse;
@@ -510,12 +510,12 @@ public class BLOGLexer implements ScannerWithLocInfo, java_cup.runtime.Scanner {
     return filename;
   }
   
-  private void err(int line, int col, String s) {
+  private void error(int line, int col, String s) {
     errorMsg.error(line, col, s);
   }
 
-  private void err(String s) {
-    err(getCurLineNum(), getCurColNum(), s);
+  private void error(String s) {
+    error(getCurLineNum(), getCurColNum(), s);
   }  
   
   private Symbol symbol(int type) {
@@ -523,8 +523,7 @@ public class BLOGLexer implements ScannerWithLocInfo, java_cup.runtime.Scanner {
   }
 
   private Symbol symbol(int type, Object value) {
-    //return new BLOGSymbol(type, getCurLineNum(), getCurColNum(), yychar, yychar+yylength(), value);
-    return symbolFactory.newSymbol("token", type, new Location(yyline+1, yycolumn +1), new Location(yyline+1,yycolumn+yylength()), value);
+    return symbolFactory.newSymbol(yytext(), type, new Location(yyline+1, yycolumn +1), new Location(yyline+1,yycolumn+yylength()), value);
   }
   
   blog.msg.ErrorMsg errorMsg; //for error
@@ -913,8 +912,7 @@ public class BLOGLexer implements ScannerWithLocInfo, java_cup.runtime.Scanner {
 
       switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
         case 1: 
-          { return symbol(BLOGTokenConstants.ERROR, 
-                                          yytext());
+          { error("Lexer encountered some error");
           }
         case 75: break;
         case 2: 
@@ -1043,8 +1041,7 @@ public class BLOGLexer implements ScannerWithLocInfo, java_cup.runtime.Scanner {
           }
         case 106: break;
         case 33: 
-          { return symbol(BLOGTokenConstants.ERROR, 
-                         "Line terminator in string or character literal.");
+          { error("Line terminator in string or character literal.");
           }
         case 107: break;
         case 34: 
@@ -1060,16 +1057,15 @@ public class BLOGLexer implements ScannerWithLocInfo, java_cup.runtime.Scanner {
           { /* closing single-quote not matched by \' rule below */
        Symbol s;
        if (string_buf.length() == 1) {
-	   s = symbol(BLOGTokenConstants.CHAR_LITERAL, 
+	       s = symbol(BLOGTokenConstants.CHAR_LITERAL, 
                           new Character(string_buf.charAt(0)));
+         string_buf.setLength(0); /* re-init buffer */
+         yybegin(YYINITIAL);
+         return s;
        } else {
-	   s = symbol(BLOGTokenConstants.ERROR, 
-                          "Character literal must contain exactly one "
-                          + "character");
-       } 
-       string_buf = new StringBuffer(); /* re-init buffer */
-       yybegin(YYINITIAL);
-       return s;
+  	     error("Character literal must contain exactly one character");
+  	     yybegin(YYINITIAL);
+       }
           }
         case 109: break;
         case 36: 
@@ -1110,8 +1106,7 @@ public class BLOGLexer implements ScannerWithLocInfo, java_cup.runtime.Scanner {
           }
         case 118: break;
         case 45: 
-          { return symbol(BLOGTokenConstants.ERROR, 
-                         "Unrecognized escape character: \'" 
+          { error("Unrecognized escape character: \'" 
                          + yytext() + "\'");
           }
         case 119: break;
@@ -1243,10 +1238,8 @@ public class BLOGLexer implements ScannerWithLocInfo, java_cup.runtime.Scanner {
       break;
     case STR_LIT:
     case CHAR_LIT:
-      return symbol(BLOGTokenConstants.ERROR, 
-                        "File ended before string or character literal "
+      error("File ended before string or character literal "
                         + "was terminated.");
-
   }
   /* Reinitialize everything before signaling EOF */
   string_buf = new StringBuffer();

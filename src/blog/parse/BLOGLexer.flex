@@ -34,7 +34,7 @@
  */
  
 /**
- * Using JFlex-1.4.3
+ * Using JFlex-1.5.1
  * @author leili
  */ 
 package blog.parse;
@@ -76,12 +76,12 @@ import java_cup.runtime.Symbol;
     return filename;
   }
   
-  private void err(int line, int col, String s) {
+  private void error(int line, int col, String s) {
     errorMsg.error(line, col, s);
   }
 
-  private void err(String s) {
-    err(getCurLineNum(), getCurColNum(), s);
+  private void error(String s) {
+    error(getCurLineNum(), getCurColNum(), s);
   }  
   
   private Symbol symbol(int type) {
@@ -89,8 +89,7 @@ import java_cup.runtime.Symbol;
   }
 
   private Symbol symbol(int type, Object value) {
-    //return new BLOGSymbol(type, getCurLineNum(), getCurColNum(), yychar, yychar+yylength(), value);
-    return symbolFactory.newSymbol("token", type, new Location(yyline+1, yycolumn +1), new Location(yyline+1,yycolumn+yylength()), value);
+    return symbolFactory.newSymbol(yytext(), type, new Location(yyline+1, yycolumn +1), new Location(yyline+1,yycolumn+yylength()), value);
   }
   
   blog.msg.ErrorMsg errorMsg; //for error
@@ -118,10 +117,8 @@ import java_cup.runtime.Symbol;
       break;
     case STR_LIT:
     case CHAR_LIT:
-      return symbol(BLOGTokenConstants.ERROR, 
-                        "File ended before string or character literal "
+      error("File ended before string or character literal "
                         + "was terminated.");
-
   }
   /* Reinitialize everything before signaling EOF */
   string_buf = new StringBuffer();
@@ -255,16 +252,16 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 <CHAR_LIT>\' { /* closing single-quote not matched by \' rule below */
        Symbol s;
        if (string_buf.length() == 1) {
-	   s = symbol(BLOGTokenConstants.CHAR_LITERAL, 
+	       s = symbol(BLOGTokenConstants.CHAR_LITERAL, 
                           new Character(string_buf.charAt(0)));
+         string_buf.setLength(0); /* re-init buffer */
+         yybegin(YYINITIAL);
+         return s;
        } else {
-	   s = symbol(BLOGTokenConstants.ERROR, 
-                          "Character literal must contain exactly one "
-                          + "character");
+  	     error("Character literal must contain exactly one character");
+  	     yybegin(YYINITIAL);
        } 
-       string_buf = new StringBuffer(); /* re-init buffer */
-       yybegin(YYINITIAL);
-       return s; }
+     }
 
 <STR_LIT,CHAR_LIT>\\b  { string_buf.append('\b'); }
 <STR_LIT,CHAR_LIT>\\t  { string_buf.append('\t'); }
@@ -290,17 +287,14 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
        string_buf.append((char) code); }
 
 <STR_LIT,CHAR_LIT>\\.  { 
-       return symbol(BLOGTokenConstants.ERROR, 
-                         "Unrecognized escape character: \'" 
+       error("Unrecognized escape character: \'" 
                          + yytext() + "\'"); }
 
 <STR_LIT,CHAR_LIT>{LineTerminator}  { 
-       return symbol(BLOGTokenConstants.ERROR, 
-                         "Line terminator in string or character literal."); }
+       error("Line terminator in string or character literal."); }
 
 <STR_LIT,CHAR_LIT>. { /* Char in quotes, not matched by any rule above */
        string_buf.append(yytext()); }
 
 
-<YYINITIAL>.  { return symbol(BLOGTokenConstants.ERROR, 
-                                          yytext()); }
+<YYINITIAL>.  { error("Lexer encountered some error"); }
