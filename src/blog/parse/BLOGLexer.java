@@ -523,7 +523,9 @@ public class BLOGLexer implements ScannerWithLocInfo, java_cup.runtime.Scanner {
   }
 
   private Symbol symbol(int type, Object value) {
-    return symbolFactory.newSymbol(yytext(), type, new Location(yyline+1, yycolumn +1), new Location(yyline+1,yycolumn+yylength()), value);
+    return symbolFactory.newSymbol(yytext(), type, 
+      new Location(getCurFilename(), getCurLineNum(), getCurColNum(), yychar+1), 
+      new Location(getCurFilename(), getCurLineNum(), getCurColNum()+yylength(), yychar+1+yylength()), value);
   }
   
   blog.msg.ErrorMsg errorMsg; //for error
