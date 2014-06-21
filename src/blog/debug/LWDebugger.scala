@@ -12,9 +12,9 @@ import blog.model.Queries
 import blog.sample.LWSampler
 
 class LWDebugger(
-  model: Model,
-  evidence: Evidence,
-  queries: Queries) {
+  val model: Model,
+  val evidence: Evidence,
+  val queries: Queries) {
 
   // All samples so far.
   val samples: ListBuffer[LWSample] = new ListBuffer()
@@ -33,6 +33,7 @@ class LWDebugger(
       model, sampler.getLatestWorld(), sampler.getLatestLogWeight())
     println(lastSample)
     samples.append(lastSample)
+    queries.foreach(query => query.updateStats(lastSample.world, lastSample.logWeight))
   }
 
   // Compute next n samples.
