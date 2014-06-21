@@ -3,8 +3,6 @@
  */
 package blog.parse;
 
-import java.io.InputStream;
-
 import java_cup.runtime.ComplexSymbolFactory;
 import blog.absyn.Absyn;
 import blog.absyn.PrettyPrinter;
@@ -21,15 +19,19 @@ public class Parse {
 
   protected ErrorMsg errorMsg;
   protected Absyn absyn;
-  protected InputStream inp;
 
   public Parse(java.io.Reader inp, ErrorMsg errorMsg) {
+    this(inp, errorMsg, null);
+  }
+
+  public Parse(java.io.Reader inp, ErrorMsg errorMsg, String srcname) {
     this.errorMsg = errorMsg;
     BLOGParser parser;
     ComplexSymbolFactory symbolFactory = new ComplexSymbolFactory();
     try {
-      parser = new BLOGParser(new BLOGLexer(inp, symbolFactory, errorMsg),
-          symbolFactory, errorMsg);
+      BLOGLexer lexer = new BLOGLexer(inp, symbolFactory, errorMsg);
+      lexer.setFilename(srcname);
+      parser = new BLOGParser(lexer, symbolFactory, errorMsg);
       if (DEBUG_TAG)
         parser.debug_parse();
       else
@@ -54,7 +56,7 @@ public class Parse {
     } catch (java.io.FileNotFoundException e) {
       throw new Error("File not found: " + filename);
     }
-    return new Parse(inp, errorMsg);
+    return new Parse(inp, errorMsg, filename);
   }
 
   public static Parse parseString(String content) {

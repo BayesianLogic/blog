@@ -485,7 +485,7 @@ public class Main {
   private static boolean parseAndTranslate(Model m, Evidence e, List<Query> qs,
       Reader reader, String origin) {
     ErrorMsg msg = new ErrorMsg(origin);
-    Parse parse = new Parse(reader, msg);
+    Parse parse = new Parse(reader, msg, origin);
     Semant sem = new Semant(m, e, qs, msg);
     sem.addPackages(packages);
     if (msg.OK())
