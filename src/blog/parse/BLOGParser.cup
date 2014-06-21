@@ -717,9 +717,6 @@ operation_expr ::=
     {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), 
       new SymbolExpr(e1xleft.getLine(), e1xleft.getColumn(), sym(e1)), OpExpr.SUB, e2); :}
   | unary_operation_expr:e {: RESULT = e; :}
-  | LPAREN:lp unary_operation_expr:e error:err {: error(errxleft, "mismatched parentheses"); RESULT = null;:}
-  | extra_lparens:lp unary_operation_expr:e error:err {: error(errxleft, "mismatched parentheses"); RESULT = null;:}
-  | unary_operation_expr:e RPAREN error:err {: error(errxleft, "mismatched parentheses"); RESULT = null;:}
   ;
 
 unary_operation_expr ::=
@@ -731,8 +728,6 @@ unary_operation_expr ::=
     {: RESULT = new OpExpr(axleft.getLine(), axleft.getColumn(), null, OpExpr.AT, e); :}
   | LPAREN expression:e RPAREN
     {: RESULT = e; :}
-  | LPAREN expression:e error:err
-    {: error(errxleft, "mismatched parentheses"); RESULT = e; :}
   ;
 
 quantified_formula ::= FORALL:f type:ty ID:id expression:e
@@ -761,6 +756,8 @@ quantified_formula ::= FORALL:f type:ty ID:id expression:e
 
 function_call ::= refer_name:id LPAREN opt_expression_list:e RPAREN
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), e); :}
+    | refer_name:id error:err
+    {: error(errxleft, "error in expression list of function call"); :}
   ;
 
 distribution_expr ::= DISTRIB:d refer_name:name LPAREN opt_expression_list:e RPAREN
@@ -775,6 +772,8 @@ expression_list ::= expression:e COMMA expression_list:elst
     {: RESULT = new ExprList(e, elst); :}
   | expression:e
     {: RESULT = new ExprList(e, null); :}
+  | expression:e extra_commas:ec expression_list:elst
+    {: error(ecxleft, "extra commas in expression list");:}
   ;
 
 list_construct_expression ::= LBRACKET:l opt_expression_list:e RBRACKET
