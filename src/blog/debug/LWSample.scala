@@ -4,7 +4,7 @@ import blog.BLOGUtil
 import blog.model.Model
 import blog.world.PartialWorld
 
-class LWSample(model: Model, world: PartialWorld, logWeight: Double) {
+class LWSample(val model: Model, val world: PartialWorld, val logWeight: Double) {
   def eval(exprStr: String): Object = {
     var result: Object = null
 
