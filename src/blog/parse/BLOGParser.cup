@@ -305,10 +305,10 @@ declaration_stmt ::=
 /*  | parfactor : e {: RESULT = e; :}  */
   ;
 
-type_decl ::= TYPE ID:typename 
-    {: RESULT = new TypeDec(currLineno(), currColno(), sym(typename)); :}
-  | TYPE:ty error
-    {: error(tyxright, "malformed or missing id"); :}  
+type_decl ::= TYPE:ty ID:typename 
+    {: RESULT = new TypeDec(tyxleft.getLine(), tyxleft.getColumn(), sym(typename)); :}
+  | TYPE:ty error:err
+    {: error(errxleft, "malformed or missing id"); :}  
   ;
 
 /*
@@ -316,16 +316,16 @@ type_decl ::= TYPE ID:typename
  * can also be an array
  */
 type ::= refer_name:typename
-    {: RESULT = new NameTy(currLineno(), currColno(), sym(typename)); :}
+    {: RESULT = new NameTy(typenamexleft.getLine(), typenamexleft.getColumn(), sym(typename)); :}
   | list_type:e {: RESULT = e; :}
   | array_type : at {: RESULT = at; :}
   | map_type:e {: RESULT = e; :}
   ;
 
-list_type ::= LIST LT refer_name:typename GT
+list_type ::= LIST:l LT refer_name:typename GT
     /* here general name is allowed, but internally only allow nametype as list */
-    {: RESULT = new ListTy(currLineno(), currColno(), 
-      new NameTy(currLineno(), currColno(), sym(typename))); :}
+    {: RESULT = new ListTy(lxleft.getLine(), lxleft.getColumn(), 
+      new NameTy(typenamexleft.getLine(), typenamexleft.getColumn(), sym(typename))); :}
   ;
 
 array_type_or_sub ::= refer_name:typename LBRACKET
@@ -334,15 +334,15 @@ array_type_or_sub ::= refer_name:typename LBRACKET
 
 array_type ::= array_type_or_sub:typename RBRACKET
     /* internally only allow nametype as array */
-    {: RESULT = new ArrayTy(currLineno(), currColno(), 
-      new NameTy(currLineno(), currColno(), sym(typename)), 1); :} 
+    {: RESULT = new ArrayTy(typenamexleft.getLine(), typenamexleft.getColumn(), 
+      new NameTy(typenamexleft.getLine(), typenamexleft.getColumn(), sym(typename)), 1); :} 
   | array_type : arrty LBRACKET RBRACKET
     {: arrty.dim += 1; 
       RESULT = arrty; :} 
   ;
 
-map_type ::= MAP LT type:t1 COMMA type:t2 GT
-    {: RESULT = new MapTy(currLineno(), currColno(), t1, t2); :}
+map_type ::= MAP:m LT type:t1 COMMA type:t2 GT
+    {: RESULT = new MapTy(mxleft.getLine(), mxleft.getColumn(), t1, t2); :}
   ;
 
 /* A possibly empty list of IDs denoting type names. */
@@ -430,9 +430,9 @@ fixed_func_decl ::=
  * including dependency statement
  */
 rand_func_decl ::=
-    RANDOM type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
+    RANDOM:r type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
     dependency_statement_body:body 
-    {: RESULT = new RandomFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type, body); :}
+    {: RESULT = new RandomFuncDec(rxleft.getLine(), rxleft.getColumn(), sym(fname), otl, ret_type, body); :}
     | RANDOM type:ret_type ID:fname error:err dependency_statement_body:body
     {: error(errxleft, "malformed type variable list"); :}
     | RANDOM type:ret_type ID:fname opt_parenthesized_type_var_lst:otl error:err
@@ -443,10 +443,10 @@ rand_func_decl ::=
  * number statement
  */
 number_stmt ::=
-    NUMSIGN refer_name:ty opt_parenthesized_origin_var_list:otl
+    NUMSIGN:n refer_name:ty opt_parenthesized_origin_var_list:otl
   dependency_statement_body:body
-    {: RESULT = new NumberDec(currLineno(), currColno(), 
-    new NameTy(currLineno(), currColno(), sym(ty)), otl, body); :}
+    {: RESULT = new NumberDec(nxleft.getLine(), nxleft.getColumn(), 
+    new NameTy(tyxleft.getLine(), tyxleft.getColumn(), sym(ty)), otl, body); :}
    | NUMSIGN:ns opt_parenthesized_origin_var_list:otl
   dependency_statement_body:body 
     {: error(nsxright, "missing type name"); RESULT = null; :}
@@ -493,7 +493,7 @@ IDS ::= ID ID
   ;
 
 origin_var_list ::= ID:func EQ ID:var COMMA origin_var_list:n
-    {: RESULT = new OriginFieldList(currLineno(), currColno(), sym(func), sym(var), n); :}
+    {: RESULT = new OriginFieldList(funcxleft.getLine(), funcxleft.getColumn(), sym(func), sym(var), n); :}
   | ID:func EQ ID:var extra_commas:ec origin_var_list:n
     {: error(ecxleft, "extra commas");RESULT = null;:}
   | ID:func EQS:es ID:var COMMA origin_var_list:n
@@ -507,45 +507,35 @@ origin_var_list ::= ID:func EQ ID:var COMMA origin_var_list:n
   | ID:func ID:var COMMA origin_var_list:n
     {: error(funcxright, "missing equal sign");RESULT = null;:}
   | ID:func EQ ID:var
-    {: RESULT = new OriginFieldList(currLineno(), currColno(), sym(func), sym(var), null); :}
+    {: RESULT = new OriginFieldList(funcxleft.getLine(), funcxleft.getColumn(), sym(func), sym(var), null); :}
   ;
 
 /**
  * origin function declaration
  */
 origin_func_decl ::=
-    ORIGIN type:ret_type ID:fname LPAREN type:arg_type RPAREN 
-    {: RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
+    ORIGIN:o type:ret_type ID:fname LPAREN type:arg_type RPAREN 
+    {: RESULT = new OriginFuncDec(oxleft.getLine(), oxleft.getColumn(), sym(fname),
       new FieldList(null, arg_type, null), ret_type); :}
     | ORIGIN type:ret_type ID:fname extra_lparens:el type:arg_type RPAREN 
-    {: error(elxleft, "mismatched parentheses"); 
-      RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
-      new FieldList(null, arg_type, null), ret_type); :}
+    {: error(elxleft, "mismatched parentheses");  :}
     | ORIGIN type:ret_type ID:fname extra_lparens:el type:arg_type extra_rparens 
-    {: error(elxleft, "mismatched parentheses"); 
-      RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
-      new FieldList(null, arg_type, null), ret_type); :}
+    {: error(elxleft, "mismatched parentheses"); :}
     | ORIGIN type:ret_type ID:fname LPAREN type:arg_type extra_rparens:er 
-    {: error(erxright, "mismatched parentheses"); 
-      RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
-      new FieldList(null, arg_type, null), ret_type); :}
+    {: error(erxright, "mismatched parentheses"); :}
     | ORIGIN type:ret_type ID:fname LPAREN type:arg_type error:err
-    {: error(errxright, "missing parentheses"); 
-      RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
-      new FieldList(null, arg_type, null), ret_type); :}
+    {: error(errxright, "missing parentheses");  :}
     | ORIGIN type:ret_type ID:fname type:arg_type RPAREN 
-    {: error(fnamexright, "missing parentheses"); 
-      RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
-      new FieldList(null, arg_type, null), ret_type); :}
+    {: error(fnamexright, "missing parentheses"); :}
   ;
 
 /**
  * declaration of distinct symbols, (guaranteed objects)
  */
 distinct_decl ::=
-    DISTINCT refer_name:ty id_or_subid_list:e 
-    {: RESULT = new DistinctSymbolDec(currLineno(), currColno(), 
-    new NameTy(currLineno(), currColno(), sym(ty)), e); :}
+    DISTINCT:d refer_name:ty id_or_subid_list:e 
+    {: RESULT = new DistinctSymbolDec(dxleft.getLine(), dxleft.getColumn(), 
+    new NameTy(tyxleft.getLine(), tyxleft.getColumn(), sym(ty)), e); :}
   ;
 
 id_or_subid_list ::= id_or_subid:e {: RESULT = new SymbolArrayList(e, null); :}
@@ -574,9 +564,9 @@ bracket_error ::= brackets:b {:error(bxleft, "missing integer literal in bracket
   ;
 
 id_or_subid ::= ID:id
-    {: RESULT = new SymbolArray(currLineno(), currColno(), sym(id)); :}
+    {: RESULT = new SymbolArray(idxleft.getLine(), idxleft.getColumn(), sym(id)); :}
   | ID:id LBRACKET INT_LITERAL:s RBRACKET
-    {: RESULT = new SymbolArray(currLineno(), currColno(), sym(id), s.intValue()); :}
+    {: RESULT = new SymbolArray(idxleft.getLine(), idxleft.getColumn(), sym(id), s.intValue()); :}
   | ID:id bracket_error:be
     {: error(bexleft, "error in sub expression"); :}
   ;
@@ -585,10 +575,10 @@ id_or_subid ::= ID:id
  * declaration of a distribution
  */
 distribution_decl ::=
-    DISTRIBUTION ID:id EQ refer_name:name
+    DISTRIBUTION:d ID:id EQ refer_name:name
     LPAREN opt_expression_list:e RPAREN 
-    {: RESULT = new DistributionDec(currLineno(), currColno(), sym(id),
-      new ClassName(currLineno(), currColno(), sym(name)), e); :}
+    {: RESULT = new DistributionDec(dxleft.getLine(), dxleft.getColumn(), sym(id),
+      new ClassName(namexleft.getLine(), namexleft.getColumn(), sym(name)), e); :}
   ;
 
 /* reference to function name or Java class */
@@ -604,7 +594,7 @@ dependency_statement_body ::= EQ expression:e
   | distribution_expr:e
     {: RESULT = e; :}
   | IF:a expression:e1 THEN dependency_statement_body:e2 elseif_list:e3
-    {: RESULT = new IfExpr(currLineno(), currColno(), e1, e2, e3); :}
+    {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, e3); :}
   | IF:a expression:e1 THEN error elseif_list:e3
     {: error(e3xleft, "invalid expression after then"); :}
   | /* not recommended to add {}, just for compactibility of old syntax */
@@ -614,7 +604,7 @@ dependency_statement_body ::= EQ expression:e
     {: error("extra semicolon inside braces!"); :}
   | IF:a expression:e1 dependency_statement_body:e2 elseif_list:e3
     {: error("missing THEN in dependency statement clause, proceed anyway");
-    RESULT = new IfExpr(currLineno(), currColno(), e1, e2, e3); :}
+    RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, e3); :}
   ;
 
 elseif_list ::=
@@ -622,10 +612,10 @@ elseif_list ::=
   | {: RESULT = null; :}
   ;
 
-parameter_decl ::= PARAM type:ty ID:id 
-    {: RESULT = new ParameterDec(currLineno(), currColno(), ty, sym(id), null); :}
-  | PARAM type:ty ID:id COLON expression:e 
-    {: RESULT = new ParameterDec(currLineno(), currColno(), ty, sym(id), e); :}
+parameter_decl ::= PARAM:p type:ty ID:id 
+    {: RESULT = new ParameterDec(pxleft.getLine(), pxleft.getColumn(), ty, sym(id), null); :}
+  | PARAM:p type:ty ID:id COLON expression:e 
+    {: RESULT = new ParameterDec(pxleft.getLine(), pxleft.getColumn(), ty, sym(id), e); :}
   ;
 
 /* Represents an expression, which can be either a 0-ary function application, a
@@ -643,21 +633,21 @@ expression ::= operation_expr:e  {: RESULT = e; :}
   | quantified_formula:e {: RESULT = e; :}
   | set_expr:e {: RESULT = e; :}
   | number_expr:e {: RESULT = e; :}
-  | refer_name:e {: RESULT = new SymbolExpr(currLineno(), currColno(), sym(e)); :}
+  | refer_name:e {: RESULT = new SymbolExpr(exleft.getLine(), exleft.getColumn(), sym(e)); :}
   ;
 
 literal ::= STRING_LITERAL:e
-    {: RESULT = new StringExpr(currLineno(), currColno(), e.intern()); :}
+    {: RESULT = new StringExpr(exleft.getLine(), exleft.getColumn(), e.intern()); :}
   | CHAR_LITERAL:e
-    {: RESULT = new StringExpr(currLineno(), currColno(), e.toString().intern()); :}
+    {: RESULT = new StringExpr(exleft.getLine(), exleft.getColumn(), e.toString().intern()); :}
   | INT_LITERAL:e
-    {: RESULT = new IntExpr(currLineno(), currColno(), e.intValue()); :}
+    {: RESULT = new IntExpr(exleft.getLine(), exleft.getColumn(), e.intValue()); :}
   | DOUBLE_LITERAL:e
-    {: RESULT = new DoubleExpr(currLineno(), currColno(), e.doubleValue()); :}
+    {: RESULT = new DoubleExpr(exleft.getLine(), exleft.getColumn(), e.doubleValue()); :}
   | BOOLEAN_LITERAL:e
-    {: RESULT = new BooleanExpr(currLineno(), currColno(), e.booleanValue()); :}
+    {: RESULT = new BooleanExpr(exleft.getLine(), exleft.getColumn(), e.booleanValue()); :}
   | NULL:e
-    {: RESULT = new NullExpr(currLineno(), currColno()); :}
+    {: RESULT = new NullExpr(exleft.getLine(), exleft.getColumn()); :}
   ;
 
 binop ::= PLUS {:RESULT = null;:}
@@ -679,44 +669,44 @@ binop ::= PLUS {:RESULT = null;:}
 
 operation_expr ::= 
   expression:e1 PLUS expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.PLUS, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.PLUS, e2); :}
   | expression:e1 MINUS expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.MINUS, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.MINUS, e2); :}
   | expression:e1 MULT expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.MULT, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.MULT, e2); :}
   | expression:e1 DIV expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.DIV, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.DIV, e2); :}
   | expression:e1 MOD expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.MOD, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.MOD, e2); :}
   | expression:e1 POWER expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.POWER, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.POWER, e2); :}
   | expression:e1 LT expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.LT, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.LT, e2); :}
   | expression:e1 GT expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.GT, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.GT, e2); :}
   | expression:e1 LEQ expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.LEQ, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.LEQ, e2); :}
   | expression:e1 GEQ expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.GEQ, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.GEQ, e2); :}
   | expression:e1 EQEQ expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.EQ, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.EQ, e2); :}
   | expression:e1 NEQ expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.NEQ, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.NEQ, e2); :}
   | expression:e1 AND expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.AND, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.AND, e2); :}
   | expression:e1 OR expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.OR, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.OR, e2); :}
   | expression:e1 DOUBLERIGHTARROW expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.IMPLY, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.IMPLY, e2); :}
   | expression:e1 LBRACKET expression:e2 RBRACKET
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.SUB, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.SUB, e2); :}
   | expression:e1 binop error:err
   {: error(errxleft, "incorrect or missing righthand expression"); :}
   | error:err binop expression:e2
   {: error(errxleft, "incorrect or missing lefthand expression"); :}
   | array_type_or_sub:e1 expression:e2 RBRACKET
-    {: RESULT = new OpExpr(currLineno(), currColno(), 
-      new SymbolExpr(currLineno(), currColno(), sym(e1)), OpExpr.SUB, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), 
+      new SymbolExpr(e1xleft.getLine(), e1xleft.getColumn(), sym(e1)), OpExpr.SUB, e2); :}
   | unary_operation_expr:e {: RESULT = e; :}
   | LPAREN:lp unary_operation_expr:e error:err {: error(errxleft, "mismatched parentheses"); RESULT = null;:}
   | extra_lparens:lp unary_operation_expr:e error:err {: error(errxleft, "mismatched parentheses"); RESULT = null;:}
@@ -724,23 +714,23 @@ operation_expr ::=
   ;
 
 unary_operation_expr ::=
-    MINUS expression:e
-    {: RESULT = new OpExpr(currLineno(), currColno(), new IntExpr(currLineno(), currColno(), 0), OpExpr.NOT, e); :}
-  | NOT expression:e
-    {: RESULT = new OpExpr(currLineno(), currColno(), null, OpExpr.NOT, e); :}
+    MINUS:m expression:e
+    {: RESULT = new OpExpr(mxleft.getLine(), mxleft.getColumn(), new IntExpr(exleft.getLine(), exleft.getColumn(), 0), OpExpr.NOT, e); :}
+  | NOT:n expression:e
+    {: RESULT = new OpExpr(nxleft.getLine(), nxleft.getColumn(), null, OpExpr.NOT, e); :}
   | AT:a expression:e
-    {: RESULT = new OpExpr(currLineno(), currColno(), null, OpExpr.AT, e); :}
+    {: RESULT = new OpExpr(axleft.getLine(), axleft.getColumn(), null, OpExpr.AT, e); :}
   | LPAREN expression:e RPAREN
     {: RESULT = e; :}
   | LPAREN expression:e error:err
     {: error(errxleft, "mismatched parentheses"); RESULT = e; :}
   ;
 
-quantified_formula ::= FORALL type:ty ID:id expression:e
-    {: RESULT = new QuantifiedFormulaExpr(currLineno(), currColno(),
+quantified_formula ::= FORALL:f type:ty ID:id expression:e
+    {: RESULT = new QuantifiedFormulaExpr(fxleft.getLine(), fxleft.getColumn(),
     QuantifiedFormulaExpr.FORALL, ty, sym(id), e); :}
-  | EXISTS type:ty ID:id expression:e
-    {: RESULT = new QuantifiedFormulaExpr(currLineno(), currColno(),
+  | EXISTS:ex type:ty ID:id expression:e
+    {: RESULT = new QuantifiedFormulaExpr(exxleft.getLine(), exxleft.getColumn(),
     QuantifiedFormulaExpr.EXISTS, ty, sym(id), e); :}
   | FORALL error:err
     {: error(errxleft, "error in for all formula"); RESULT = null; :}
@@ -761,11 +751,11 @@ quantified_formula ::= FORALL type:ty ID:id expression:e
   ;
 
 function_call ::= refer_name:id LPAREN opt_expression_list:e RPAREN
-    {: RESULT = new FuncCallExpr(currLineno(), currColno(), sym(id), e); :}
+    {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), e); :}
   ;
 
-distribution_expr ::= DISTRIB refer_name:name LPAREN opt_expression_list:e RPAREN
-    {: RESULT = new DistributionExpr(currLineno(), currColno(), sym(name), e); :}
+distribution_expr ::= DISTRIB:d refer_name:name LPAREN opt_expression_list:e RPAREN
+    {: RESULT = new DistributionExpr(dxleft.getLine(), dxleft.getColumn(), sym(name), e); :}
   ;
 
 opt_expression_list ::= expression_list:e {: RESULT = e; :}
@@ -778,10 +768,10 @@ expression_list ::= expression:e COMMA expression_list:elst
     {: RESULT = new ExprList(e, null); :}
   ;
 
-list_construct_expression ::= LBRACKET opt_expression_list:e RBRACKET
-    {: RESULT = new ListInitExpr(currLineno(), currColno(), e); :}
-  | LBRACKET semi_colon_separated_expression_list:e RBRACKET
-    {: RESULT = new ListInitExpr(currLineno(), currColno(), e); :}
+list_construct_expression ::= LBRACKET:l opt_expression_list:e RBRACKET
+    {: RESULT = new ListInitExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
+  | LBRACKET:l semi_colon_separated_expression_list:e RBRACKET
+    {: RESULT = new ListInitExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
   ;
 
 SEMIS ::= SEMI SEMI
@@ -790,21 +780,21 @@ SEMIS ::= SEMI SEMI
 
 semi_colon_separated_expression_list ::=
     expression_list:e SEMI semi_colon_separated_expression_list:elst
-    {: RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), elst); :}
+    {: RESULT = new ExprList(new ListInitExpr(exleft.getLine(), exleft.getColumn(), e), elst); :}
   | expression_list:e SEMIS:s semi_colon_separated_expression_list:elst
-    {: error(sxleft, "extra semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), elst); :}
+    {: error(sxleft, "extra semicolon"); :}
   | expression_list:e SEMI expression_list:e2
-    {: RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2xleft.getLine(), e2), null)); :}
+    {: RESULT = new ExprList(new ListInitExpr(exleft.getLine(), exleft.getColumn(), e), new ExprList(new ListInitExpr(e2xleft.getLine(), e2), null)); :}
   | expression_list:e SEMIS:s expression_list:e2
-    {: error(sxleft, "extra semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2xleft.getLine(), e2), null)); :}
+    {: error(sxleft, "extra semicolon"); :}
   | expression_list:e semi_colon_separated_expression_list:elst
-    {: error(exright, "missing semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), elst); :}
+    {: error(exright, "missing semicolon"); :}
   | expression_list:e expression_list:e2
-    {: error(exright, "missing semicolon"); RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2xleft.getLine(), e2), null)); :}
+    {: error(exright, "missing semicolon"); :}
   ;
 
-map_construct_expression ::= LBRACE expression_pair_list:e RBRACE
-    {: RESULT = new MapInitExpr(currLineno(), currColno(), e); :}
+map_construct_expression ::= LBRACE:l expression_pair_list:e RBRACE
+    {: RESULT = new MapInitExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
   ;
 
 // to avoid conflict with Imply expression
@@ -815,10 +805,10 @@ expression_pair_list ::=
     {: RESULT = new ExprTupleList(e1, e2, null); :}
   ;
   
-number_expr ::= NUMSIGN set_expr:e
-    {: RESULT = new NumberExpr(currLineno(), currColno(), e); :}
-  | NUMSIGN type:ty
-    {: RESULT = new NumberExpr(currLineno(), currColno(), new ImplicitSetExpr(currLineno(), currColno(), ty, null, null)); :}
+number_expr ::= NUMSIGN:n set_expr:e
+    {: RESULT = new NumberExpr(nxleft.getLine(), nxleft.getColumn(), e); :}
+  | NUMSIGN:n type:ty
+    {: RESULT = new NumberExpr(nxleft.getLine(), nxleft.getColumn(), new ImplicitSetExpr(tyxleft.getLine(), tyxleft.getColumn(), ty, null, null)); :}
   | NUMSIGN error:err
     {: error(errxleft, "expecting number expression here. # should be followed by a type or a set"); :}
   ;
@@ -828,20 +818,20 @@ set_expr ::= explicit_set:e {: RESULT = e; :}
   | tuple_set:e {: RESULT = e; :}
   ;
 
-explicit_set ::= LBRACE opt_expression_list:e RBRACE
-    {: RESULT = new ExplicitSetExpr(currLineno(), currColno(), e); :}
+explicit_set ::= LBRACE:l opt_expression_list:e RBRACE
+    {: RESULT = new ExplicitSetExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
   ;
 
-implicit_set ::= LBRACE type:ty ID:id COLON expression:e RBRACE
-    {: RESULT = new ImplicitSetExpr(currLineno(), currColno(), ty, sym(id), e); :}
-  | LBRACE type:ty ID:id RBRACE
-    {: RESULT = new ImplicitSetExpr(currLineno(), currColno(), ty, sym(id), null); :}
+implicit_set ::= LBRACE:l type:ty ID:id COLON expression:e RBRACE
+    {: RESULT = new ImplicitSetExpr(lxleft.getLine(), lxleft.getColumn(), ty, sym(id), e); :}
+  | LBRACE:l type:ty ID:id RBRACE
+    {: RESULT = new ImplicitSetExpr(lxleft.getLine(), lxleft.getColumn(), ty, sym(id), null); :}
   ;
 
-tuple_set ::= LBRACE expression_list:elst FOR type_var_lst:vars COLON expression:e RBRACE
-    {: RESULT = new TupleSetExpr(currLineno(), currColno(), elst, vars, e); :}
-  | LBRACE expression_list:elst FOR type_var_lst:vars RBRACE
-    {: RESULT = new TupleSetExpr(currLineno(), currColno(), elst, vars, null); :}
+tuple_set ::= LBRACE:l expression_list:elst FOR type_var_lst:vars COLON expression:e RBRACE
+    {: RESULT = new TupleSetExpr(lxleft.getLine(), lxleft.getColumn(), elst, vars, e); :}
+  | LBRACE:l expression_list:elst FOR type_var_lst:vars RBRACE
+    {: RESULT = new TupleSetExpr(lxleft.getLine(), lxleft.getColumn(), elst, vars, null); :}
   ;
 
 ///no implementation for PARFACTOR
@@ -878,7 +868,7 @@ evidence ::=
  */
 value_evidence ::=
     expression:e1 EQ expression:e2
-    {: RESULT = new ValueEvidence(currLineno(), currColno(), e1, e2); :}
+    {: RESULT = new ValueEvidence(e1xleft.getLine(), e1xleft.getColumn(), e1, e2); :}
     | error:err EQ expression:e2
     {:error(errxleft, "incorrect first expression"); RESULT = null;:}
     | expression:e1 EQ error:err
@@ -887,7 +877,7 @@ value_evidence ::=
 
 symbol_evidence ::=
     implicit_set:e1 EQ explicit_set:e2
-    {: RESULT = new SymbolEvidence(currLineno(), currColno(), e1, e2); :}
+    {: RESULT = new SymbolEvidence(e1xleft.getLine(), e1xleft.getColumn(), e1, e2); :}
     | error EQ error
     {:error("error in first and second set"); RESULT = null;:}
   ;
@@ -898,5 +888,5 @@ query_stmt ::= QUERY  query:q
     {: error("invalid query"); RESULT = null;:}
   ;
 
-query ::= expression:e {: RESULT = new QueryStmt(currLineno(), currColno(), e); :}
+query ::= expression:e {: RESULT = new QueryStmt(exleft.getLine(), exleft.getColumn(), e); :}
   ;
