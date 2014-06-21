@@ -508,30 +508,27 @@ opt_parenthesized_origin_var_list ::= LPAREN origin_var_list:e RPAREN
   | {: RESULT = null; :}
   ;
 
-EQS ::= EQ EQ
-  | EQS EQ
-  ;
-
-IDS ::= ID ID
-  | IDS ID
-  ;
-
 origin_var_list ::= ID:func EQ ID:var COMMA origin_var_list:n
-    {: RESULT = new OriginFieldList(funcxleft.getLine(), funcxleft.getColumn(), sym(func), sym(var), n); :}
+    {: RESULT = new OriginFieldList(funcxleft.getLine(), 
+      funcxleft.getColumn(), sym(func), sym(var), n); :}
   | ID:func EQ ID:var extra_commas:ec origin_var_list:n
-    {: error(ecxleft, "extra commas");RESULT = null;:}
-  | ID:func EQS:es ID:var COMMA origin_var_list:n
-    {: error(esxleft, "extra equal sign");RESULT = null;:}
-  | ID:func EQ IDS:ids COMMA origin_var_list:n
-    {: error(idsxleft, "extra ids");RESULT = null;:}
+    {: error(ecxleft, "extra commas");
+      RESULT = new OriginFieldList(funcxleft.getLine(), 
+      funcxleft.getColumn(), sym(func), sym(var), n);:}
   | ID:func EQ:e COMMA origin_var_list:n
-    {: error(exright, "missing id");RESULT = null;:}
+    {: error(exright, "missing origin var name");
+      RESULT = n;:}
   | ID:func EQ ID:var origin_var_list:n
-    {: error(varxright, "missing comma");RESULT = null;:}
-  | ID:func ID:var COMMA origin_var_list:n
-    {: error(funcxright, "missing equal sign");RESULT = null;:}
+    {: error(varxright, "missing comma");
+      RESULT = new OriginFieldList(funcxleft.getLine(), 
+      funcxleft.getColumn(), sym(func), sym(var), n);:}
   | ID:func EQ ID:var
-    {: RESULT = new OriginFieldList(funcxleft.getLine(), funcxleft.getColumn(), sym(func), sym(var), null); :}
+    {: RESULT = new OriginFieldList(funcxleft.getLine(), 
+      funcxleft.getColumn(), sym(func), sym(var), null); :}
+  | ID:func ID:var
+    {: error(funcxright, "missing =");
+      RESULT = new OriginFieldList(funcxleft.getLine(), 
+      funcxleft.getColumn(), sym(func), sym(var), null);:}
   ;
 
 /**
