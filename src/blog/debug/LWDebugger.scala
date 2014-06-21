@@ -6,6 +6,7 @@ import scala.collection.mutable.ListBuffer
 
 import blog.Main
 import blog.common.Util
+import blog.io.TableWriter
 import blog.model.Evidence
 import blog.model.Model
 import blog.model.Queries
@@ -34,6 +35,8 @@ class LWDebugger(
     println(lastSample)
     samples.append(lastSample)
     queries.foreach(query => query.updateStats(lastSample.world, lastSample.logWeight))
+    // TODO: print number of samples so far
+    // TODO: stats method to print out sampler stats
   }
 
   // Compute next n samples.
@@ -41,6 +44,12 @@ class LWDebugger(
     for (i <- 1 to n) {
       sampleOne
     }
+  }
+
+  // Print query results so far.
+  def printResults {
+    val writer = new blog.io.TableWriter(queries)
+    writer.writeResults(System.out)
   }
 
   // Turn verbosity on or off.
@@ -53,6 +62,7 @@ class LWDebugger(
   def q = queries
   def n = sampleOne
   def s = lastSample
+  def hist = printResults
 }
 
 object LWDebugger {
