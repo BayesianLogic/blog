@@ -45,7 +45,6 @@ import java_cup.runtime.Symbol;
 %%
 
 %class BLOGLexer
-%implements ScannerWithLocInfo
 %cup
 %unicode
 %line

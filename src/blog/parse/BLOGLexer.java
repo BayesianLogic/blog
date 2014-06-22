@@ -50,7 +50,7 @@ import java_cup.runtime.Symbol;
  * <a href="http://www.jflex.de/">JFlex</a> 1.5.1
  * from the specification file <tt>src/blog/parse/BLOGLexer.flex</tt>
  */
-public class BLOGLexer implements ScannerWithLocInfo, java_cup.runtime.Scanner {
+public class BLOGLexer implements java_cup.runtime.Scanner {
 
   /** This character denotes the end of file */
   public static final int YYEOF = -1;

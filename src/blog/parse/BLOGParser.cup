@@ -52,25 +52,6 @@ action code {:
            return blog.symbol.Symbol.Symbol(s);
   }
 
-  LocationInFile getCurLocation() {
-    return new LocationInFile
-      (((ScannerWithLocInfo)parser.getScanner()).getCurFilename(),
-      ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum());
-  }
-
-  int currLineno() {
-    ScannerWithLocInfo scanner =  ((ScannerWithLocInfo)parser.getScanner());
-    return scanner.getCurLineNum();
-  }
-
-  int currColno() {
-    return ((ScannerWithLocInfo)parser.getScanner()).getCurColNum();
-  }
-
-  void error(String msg) {
-    error(currLineno(), currColno(), msg);
-  }
-
   void error(int line, int col, String msg) {
     parser.errorMsg.error(line, col, msg);
   }
@@ -79,14 +60,7 @@ action code {:
     parser.errorMsg.error(s.getLine(), s.getColumn(), msg);
   }
 
-  void warning( String message ){
-    System.err.println("\n" + curr_filename( ) + ":" + currLineno( )
-                            + " Warning: " + message);
-  }
 
-  String curr_filename() {
-    return ((ScannerWithLocInfo)parser.getScanner()).getCurFilename();
-  }
 :}
 
 
@@ -579,10 +553,10 @@ dependency_statement_body ::= EQ expression:e
   | /* not recommended to add {}, just for compactibility of old syntax */
     LBRACE dependency_statement_body:e RBRACE
     {: RESULT = e; :}
-  | LBRACE dependency_statement_body:e SEMI RBRACE
-    {: error("extra semicolon inside braces!"); :}
+  | LBRACE dependency_statement_body:e SEMI:se RBRACE
+    {: error(sexleft, "extra semicolon inside braces!"); :}
   | IF:a expression:e1 dependency_statement_body:e2 elseif_list:e3
-    {: error("missing THEN in dependency statement clause, proceed anyway");
+    {: error(e1xright, "missing THEN in dependency statement clause, proceed anyway");
     RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, e3); :}
   ;
 
@@ -835,14 +809,12 @@ value_evidence ::=
 symbol_evidence ::=
     implicit_set:e1 EQ explicit_set:e2
     {: RESULT = new SymbolEvidence(e1xleft.getLine(), e1xleft.getColumn(), e1, e2); :}
-    | error EQ error
-    {:error("error in first and second set"); RESULT = null;:}
   ;
 
 query_stmt ::= QUERY  query:q 
     {: RESULT = q; :}
-    | QUERY error 
-    {: error("invalid query"); RESULT = null;:}
+    | QUERY:q error 
+    {: error(qxright, "invalid query"); RESULT = null;:}
   ;
 
 query ::= expression:e {: RESULT = new QueryStmt(exleft.getLine(), exleft.getColumn(), e); :}
