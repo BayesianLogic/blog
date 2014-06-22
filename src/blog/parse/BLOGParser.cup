@@ -189,32 +189,24 @@ nonterminal ExplicitSetExpr explicit_set;
 nonterminal ImplicitSetExpr implicit_set;
 nonterminal TupleSetExpr tuple_set;
 nonterminal ExprList semi_colon_separated_expression_list,
-  opt_expression_list, expression_list;
+  opt_expression_list, expression_list, semi_ending_expression_list;
 nonterminal ExprTupleList expression_pair_list;
 nonterminal Ty type, list_type, map_type;
 nonterminal ArrayTy array_type;
 nonterminal String array_type_or_sub;
 
 //attempt catch type var list errors
-nonterminal String extra_commas, extra_types;
-
-//attempt catch func decl errors
-nonterminal String paren, extra_parens;
-nonterminal String extra_lparens, extra_rparens;
+nonterminal extra_commas;
 
 //attempt catch expression errors
 nonterminal String binop;
-
-nonterminal String IDS;
-nonterminal String EQS;
-nonterminal String SEMIS;
 
 //nonterminal Integer dims; //not used
 //nonterminal FieldList type_lst // Not Used
 nonterminal FieldList opt_parenthesized_type_var_lst, 
   parenthesized_type_var_lst, type_var_lst;
 nonterminal OriginFieldList opt_parenthesized_origin_var_list,
-  origin_var_list;
+  origin_var_list, parenthesized_origin_var_list;
 nonterminal SymbolArray id_or_subid;
 nonterminal SymbolArrayList id_or_subid_list;
 nonterminal String refer_name;
@@ -395,8 +387,8 @@ opt_parenthesized_type_var_lst ::= /* */
   | parenthesized_type_var_lst:tvl
     {: RESULT = tvl; :}
   | type_var_lst:tvl
-    {: error(tlxleft, "missing parentheses");
-      error(tlxright, "missing parentheses");
+    {: error(tvlxleft, "missing parentheses");
+      error(tvlxright, "missing parentheses");
       RESULT = tvl;
     :}        
   ;
@@ -415,9 +407,7 @@ parenthesized_type_var_lst ::=
   ;
 
 extra_commas ::= COMMA COMMA
-    {: RESULT = "uh oh";:}
   | extra_commas COMMA
-    {: RESULT = "uh oh";:}
   ;
 
 type_var_lst ::= type:ty ID:id COMMA type_var_lst:tl
@@ -443,12 +433,6 @@ fixed_func_decl ::=
     FIXED:fx type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
     EQ expression:ex
     {: RESULT = new FixedFuncDec(fxxleft.getLine(), fxxleft.getColumn(), sym(fname), otl, ret_type, ex); :}
-    | FIXED type:ret_type ID:fname error:err
-    EQ expression:ex
-    {: error(errxleft, "malformed type variable list"); :}
-    | FIXED type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
-    error:err
-    {: error(errxleft, "malformed function body"); :}
   ;
 
 /**
@@ -459,10 +443,6 @@ rand_func_decl ::=
     RANDOM:r type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
     dependency_statement_body:body 
     {: RESULT = new RandomFuncDec(rxleft.getLine(), rxleft.getColumn(), sym(fname), otl, ret_type, body); :}
-    | RANDOM type:ret_type ID:fname error:err dependency_statement_body:body
-    {: error(errxleft, "malformed type variable list"); :}
-    | RANDOM type:ret_type ID:fname opt_parenthesized_type_var_lst:otl error:err
-    {: error(errxleft, "malformed dependency statement body"); :}
    ;
 
 /**
@@ -483,31 +463,23 @@ number_stmt ::=
     {: error(errxleft, "error in number statement body"); RESULT = null; :}
   ;
 
-paren ::= LPAREN {:RESULT = null;:}
-  | RPAREN {:RESULT = null;:}
+/* list of origin_fun = var, used in number statement */
+opt_parenthesized_origin_var_list ::= /* Empty */
+    {: RESULT = null; :}
+  | parenthesized_origin_var_list:lst
+    {: RESULT = lst; :}
   ;
 
-extra_parens ::= paren paren {:RESULT = null;:}
-  | extra_parens paren {:RESULT = null;:}
-  ;
-
-extra_lparens ::= LPAREN LPAREN {:RESULT = null;:}
-  | extra_lparens LPAREN {:RESULT = null;:}
-  ;
-
-extra_rparens ::= RPAREN RPAREN {:RESULT = null;:}
-  | extra_rparens RPAREN {:RESULT = null;:}
-  ;
-
-opt_parenthesized_origin_var_list ::= LPAREN origin_var_list:e RPAREN
+parenthesized_origin_var_list ::= LPAREN origin_var_list:e RPAREN
     {: RESULT = e; :}
-  | extra_parens:ep origin_var_list:e extra_parens 
-    {: error(epxleft, "unmatched parentheses"); RESULT = e;:}
-  | LPAREN:lp origin_var_list:e extra_parens 
-    {: error(lpxleft, "unmatched parentheses"); RESULT = e;:}
-  | extra_parens:ep origin_var_list:e RPAREN
-    {: error(epxleft, "unmatched parentheses"); RESULT = e;:}
-  | {: RESULT = null; :}
+  | LPAREN:lp parenthesized_origin_var_list:lst
+    {: error(lpxleft, "extra left parenthesis '('");
+      RESULT = lst;
+    :}
+  | parenthesized_origin_var_list:lst RPAREN:rp
+    {: error(rpxleft, "extra right parenthesis ')'");
+      RESULT = lst;
+    :}
   ;
 
 origin_var_list ::= ID:func EQ ID:var COMMA origin_var_list:n
@@ -540,16 +512,14 @@ origin_func_decl ::=
     ORIGIN:o type:ret_type ID:fname LPAREN type:arg_type RPAREN 
     {: RESULT = new OriginFuncDec(oxleft.getLine(), oxleft.getColumn(), sym(fname),
       new FieldList(null, arg_type, null), ret_type); :}
-    | ORIGIN type:ret_type ID:fname extra_lparens:el type:arg_type RPAREN 
-    {: error(elxleft, "mismatched parentheses");  :}
-    | ORIGIN type:ret_type ID:fname extra_lparens:el type:arg_type extra_rparens 
-    {: error(elxleft, "mismatched parentheses"); :}
-    | ORIGIN type:ret_type ID:fname LPAREN type:arg_type extra_rparens:er 
-    {: error(erxright, "mismatched parentheses"); :}
-    | ORIGIN type:ret_type ID:fname LPAREN type:arg_type error:err
-    {: error(errxright, "missing parentheses");  :}
-    | ORIGIN type:ret_type ID:fname type:arg_type RPAREN 
-    {: error(fnamexright, "missing parentheses"); :}
+  | ORIGIN:o type:ret_type ID:fname LPAREN error:er RPAREN 
+    {: error(erxleft, "syntax error in type argument of origin function");
+      RESULT = null;
+    :}
+  | ORIGIN:o type:ret_type LPAREN type:arg_type RPAREN 
+    {: error(ret_typexright, "missing type or origin function name");
+      RESULT = null;
+    :}
   ;
 
 /**
@@ -586,7 +556,7 @@ distribution_decl ::=
     DISTRIBUTION:d ID:id EQ refer_name:name
     LPAREN opt_expression_list:e RPAREN 
     {: RESULT = new DistributionDec(dxleft.getLine(), dxleft.getColumn(), sym(id),
-      new ClassName(namexleft.getLine(), namexleft.getColumn(), sym(name)), e); :}
+      sym(name), e); :}
   ;
 
 /* reference to function name or Java class */
@@ -734,28 +704,12 @@ quantified_formula ::= FORALL:f type:ty ID:id expression:e
     QuantifiedFormulaExpr.FORALL, ty, sym(id), e); :}
   | EXISTS:ex type:ty ID:id expression:e
     {: RESULT = new QuantifiedFormulaExpr(exxleft.getLine(), exxleft.getColumn(),
-    QuantifiedFormulaExpr.EXISTS, ty, sym(id), e); :}
-  | FORALL error:err
-    {: error(errxleft, "error in for all formula"); RESULT = null; :}
-  | EXISTS error:err
-    {: error(errxleft, "error in exists formula"); RESULT = null; :}
-  | FORALL type:ty expression:e
-    {: error(tyxright, "missing id in for all statement"); RESULT = null;:}
-  | FORALL:fa ID:id expression:e
-    {: error(faxright, "missing type in for all statement"); RESULT = null;:}
-  | FORALL type:ty ID:id error:err
-    {: error(errxleft, "error in for all expression"); RESULT = null;:}
-  | EXISTS type:ty expression:e
-    {: error(tyxright, "missing id in exists statement"); RESULT = null;:}
-  | EXISTS:ex ID:id expression:e
-    {: error(exxright, "missing type in exists statement"); RESULT = null;:}
-  | EXISTS type:ty ID:id error:err
-    {: error(errxleft, "error in exists expression"); RESULT = null;:}
+    QuantifiedFormulaExpr.EXISTS, ty, sym(id), e); :}  
   ;
 
-function_call ::= refer_name:id LPAREN opt_expression_list:e RPAREN
+function_call ::= refer_name:id LPAREN opt_expression_list:e LPAREN
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), e); :}
-    | refer_name:id error:err
+    | refer_name:id LPAREN error:err LPAREN
     {: error(errxleft, "error in expression list of function call"); :}
   ;
 
@@ -781,25 +735,22 @@ list_construct_expression ::= LBRACKET:l opt_expression_list:e RBRACKET
     {: RESULT = new ListInitExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
   ;
 
-SEMIS ::= SEMI SEMI
-  | SEMIS SEMI
-  ;
-
 semi_colon_separated_expression_list ::=
-    expression_list:e SEMI semi_colon_separated_expression_list:elst
+    semi_ending_expression_list:e semi_colon_separated_expression_list:elst
     {: RESULT = new ExprList(new ListInitExpr(exleft.getLine(), exleft.getColumn(), e), elst); :}
-  | expression_list:e SEMIS:s semi_colon_separated_expression_list:elst
-    {: error(sxleft, "extra semicolon"); :}
-  | expression_list:e SEMI expression_list:e2
-    {: RESULT = new ExprList(new ListInitExpr(exleft.getLine(), exleft.getColumn(), e), new ExprList(new ListInitExpr(e2xleft.getLine(), e2), null)); :}
-  | expression_list:e SEMIS:s expression_list:e2
-    {: error(sxleft, "extra semicolon"); :}
-  | expression_list:e semi_colon_separated_expression_list:elst
-    {: error(exright, "missing semicolon"); :}
-  | expression_list:e expression_list:e2
-    {: error(exright, "missing semicolon"); :}
+  | semi_ending_expression_list:e expression_list:e2
+    {: RESULT = new ExprList(new ListInitExpr(exleft.getLine(), exleft.getColumn(), e), 
+    new ExprList(new ListInitExpr(e2xleft.getLine(), e2xleft.getColumn(), e2), null)); :}
   ;
 
+semi_ending_expression_list ::=
+    expression_list:e SEMI
+    {: RESULT = e; :}
+  | semi_ending_expression_list:e SEMI:s 
+    {: error(sxleft, "extra semicolon"); 
+      RESULT = e;
+    :}
+  ;
 map_construct_expression ::= LBRACE:l expression_pair_list:e RBRACE
     {: RESULT = new MapInitExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
   ;
