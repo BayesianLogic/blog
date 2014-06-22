@@ -180,9 +180,9 @@ nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   evidence_stmt, query_stmt;
 nonterminal Stmt evidence, value_evidence, symbol_evidence, query;
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
-  quantified_formula, distribution_expr,
-  function_call, list_construct_expression,
+  quantified_formula, distribution_expr, list_construct_expression,
   map_construct_expression, number_expr, elseif_list;
+nonterminal FuncCallExpr function_call;
 nonterminal Expr dependency_statement_body;
 nonterminal SetExpr set_expr;
 nonterminal ExplicitSetExpr explicit_set;
@@ -206,7 +206,7 @@ nonterminal String binop;
 nonterminal FieldList opt_parenthesized_type_var_lst, 
   parenthesized_type_var_lst, type_var_lst;
 nonterminal OriginFieldList opt_parenthesized_origin_var_list,
-  origin_var_list, parenthesized_origin_var_list;
+  origin_var_list;
 nonterminal SymbolArray id_or_subid;
 nonterminal SymbolArrayList id_or_subid_list;
 nonterminal String refer_name;
@@ -225,10 +225,7 @@ precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
 precedence left PLUS, MINUS;
 precedence left MULT, DIV, MOD, POWER;
 precedence right NOT, AT;
-//precedence left ID;
-precedence left RPAREN, RBRACKET, RBRACE;
 precedence right LBRACKET, LPAREN;
-//precedence left SEMI, error;
 
 /* Grammar *******************************************************************/
 
@@ -398,11 +395,8 @@ parenthesized_type_var_lst ::=
     {: RESULT = null; :}
   | LPAREN type_var_lst:tl RPAREN
     {: RESULT = tl; :}
-  | LPAREN:lp parenthesized_type_var_lst:tl
-    {: error(lpxleft, "too many left parentheses '(' "); 
-      RESULT = tl; :}
-  | parenthesized_type_var_lst:tl RPAREN:rp
-    {: error(rpxleft, "too many right parentheses ')' "); 
+  | error:lp parenthesized_type_var_lst:tl
+    {: error(lpxleft, "syntax error"); 
       RESULT = tl; :}
   ;
 
@@ -458,28 +452,13 @@ number_stmt ::=
     {: error(nsxright, "missing type name"); RESULT = null; :}
    | NUMSIGN error:err dependency_statement_body:body
    {: error(errxleft, "error in origin variable list"); :}
-   | NUMSIGN refer_name:ty opt_parenthesized_origin_var_list:otl
-  error:err
-    {: error(errxleft, "error in number statement body"); RESULT = null; :}
   ;
 
 /* list of origin_fun = var, used in number statement */
 opt_parenthesized_origin_var_list ::= /* Empty */
     {: RESULT = null; :}
-  | parenthesized_origin_var_list:lst
-    {: RESULT = lst; :}
-  ;
-
-parenthesized_origin_var_list ::= LPAREN origin_var_list:e RPAREN
+  | LPAREN origin_var_list:e RPAREN
     {: RESULT = e; :}
-  | LPAREN:lp parenthesized_origin_var_list:lst
-    {: error(lpxleft, "extra left parenthesis '('");
-      RESULT = lst;
-    :}
-  | parenthesized_origin_var_list:lst RPAREN:rp
-    {: error(rpxleft, "extra right parenthesis ')'");
-      RESULT = lst;
-    :}
   ;
 
 origin_var_list ::= ID:func EQ ID:var COMMA origin_var_list:n
@@ -611,7 +590,6 @@ expression ::= operation_expr:e  {: RESULT = e; :}
   | quantified_formula:e {: RESULT = e; :}
   | set_expr:e {: RESULT = e; :}
   | number_expr:e {: RESULT = e; :}
-  | refer_name:e {: RESULT = new SymbolExpr(exleft.getLine(), exleft.getColumn(), sym(e)); :}
   ;
 
 literal ::= STRING_LITERAL:e
@@ -682,9 +660,6 @@ operation_expr ::=
   {: error(errxleft, "incorrect or missing righthand expression"); :}
   | error:err binop expression:e2
   {: error(errxleft, "incorrect or missing lefthand expression"); :}
-  | array_type_or_sub:e1 expression:e2 RBRACKET
-    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), 
-      new SymbolExpr(e1xleft.getLine(), e1xleft.getColumn(), sym(e1)), OpExpr.SUB, e2); :}
   | unary_operation_expr:e {: RESULT = e; :}
   ;
 
@@ -709,12 +684,14 @@ quantified_formula ::= FORALL:f type:ty ID:id expression:e
 
 function_call ::= refer_name:id LPAREN opt_expression_list:e LPAREN
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), e); :}
-    | refer_name:id LPAREN error:err LPAREN
+  | refer_name:id LPAREN error:err LPAREN
     {: error(errxleft, "error in expression list of function call"); :}
+  | refer_name:id 
+    {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), null); :}
   ;
 
-distribution_expr ::= DISTRIB:d refer_name:name LPAREN opt_expression_list:e RPAREN
-    {: RESULT = new DistributionExpr(dxleft.getLine(), dxleft.getColumn(), sym(name), e); :}
+distribution_expr ::= DISTRIB:d function_call:fc
+    {: RESULT = new DistributionExpr(dxleft.getLine(), dxleft.getColumn(), fc.func, fc.args); :}
   ;
 
 opt_expression_list ::= expression_list:e {: RESULT = e; :}
