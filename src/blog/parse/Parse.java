@@ -95,6 +95,7 @@ public class Parse {
     Parse parse = parseFile(args[0]);
     if (parse.getResult() != null) {
       new PrettyPrinter(System.out).printSyntax(parse.getResult());
+      System.out.println();
     }
   }
 }
