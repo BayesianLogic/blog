@@ -216,6 +216,7 @@ nonterminal String refer_name;
  * Precedence declarations.  The later the precedence declaration, the
  * higher the precedence.
  */
+precedence left SEMI;
 precedence left ELSE;
 precedence nonassoc EQ, DISTRIB;
 precedence right RIGHTARROW;
@@ -225,7 +226,7 @@ precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
 precedence left PLUS, MINUS;
 precedence left MULT, DIV, MOD, POWER;
 precedence right NOT, AT;
-precedence right LBRACKET/*, LPAREN*/;
+precedence right LBRACKET;
 
 /* Grammar *******************************************************************/
 
@@ -233,21 +234,13 @@ start with program;
 
 
 /* The start nonterminal */
-program ::= opt_statement_lst : e {: parser.parseResult = e;  :}
-  | error {: 
-    error("invalid syntax"); 
-    RESULT = null; 
-  :}
-  ;
+program ::= opt_statement_lst : e {: parser.parseResult = e;  :} ;
 
 /* Represents a possibly-empty list of statements. */
 opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
   | statement_lst : e {: RESULT = e; :}
-  | statement:e 
-  {: error("Possible cause: forgotten semicolon" ); 
-       if (e==null) RESULT = null;
-       else RESULT = new StmtList(e, null);    
-  :}       
+  | statement_lst:e error
+  {: RESULT = e; :}
   ;
 
 /* Represents a non-empty list of statements terminated by semicolons. */
@@ -257,15 +250,10 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     :}
   | statement:e SEMI {: if (e!=null) RESULT = new StmtList(e, null); 
                         else RESULT = null; :}
-  | statement:e statement_lst:slst
-    {: error(exright, "Possible cause: forgotten semicolon"); 
-       if (e==null) RESULT = slst;
-       else RESULT = new StmtList(e, slst);
-    :}
-  | error:er SEMI opt_statement_lst:slst 
-    {: 
-    error(erxleft, "invalid statement");
-    RESULT = slst; :}
+  | error:er SEMI statement_lst:slst 
+    {: RESULT = slst; :}
+  | error:er SEMI
+    {: RESULT = null; :}
 ;
 
 /* A statement can be a declaration, an observation (assertion of some
