@@ -225,7 +225,7 @@ precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
 precedence left PLUS, MINUS;
 precedence left MULT, DIV, MOD, POWER;
 precedence right NOT, AT;
-precedence right LBRACKET, LPAREN;
+precedence right LBRACKET/*, LPAREN*/;
 
 /* Grammar *******************************************************************/
 
@@ -682,9 +682,9 @@ quantified_formula ::= FORALL:f type:ty ID:id expression:e
     QuantifiedFormulaExpr.EXISTS, ty, sym(id), e); :}  
   ;
 
-function_call ::= refer_name:id LPAREN opt_expression_list:e LPAREN
+function_call ::= refer_name:id LPAREN opt_expression_list:e RPAREN
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), e); :}
-  | refer_name:id LPAREN error:err LPAREN
+  | refer_name:id LPAREN error:err RPAREN
     {: error(errxleft, "error in expression list of function call"); :}
   | refer_name:id 
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), null); :}
