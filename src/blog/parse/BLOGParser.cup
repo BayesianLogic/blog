@@ -127,6 +127,40 @@ parser code {:
     } else errorMsg.error(0, 0, "the last encounterd token #" + cur_token);
   }
   
+  /**
+   * first try to use the default error recover
+   * if it doesnot succeed, try to do reduce
+   */
+  protected boolean error_recovery(boolean debug) throws java.lang.Exception {
+    int act = get_action(((Symbol)stack.peek()).parse_state, error_sym());
+    Symbol lhs_sym;
+    short handle_size, lhs_sym_num;
+    while (act < 0) {
+        /* perform the action for the reduce */
+        lhs_sym = do_action((-act)-1, this, stack, tos);
+
+        /* look up information about the production */
+        lhs_sym_num = production_tab[(-act)-1][0];
+        handle_size = production_tab[(-act)-1][1];
+
+        /* pop the handle off the stack */
+        for (int i = 0; i < handle_size; i++) {
+          stack.pop();
+          tos--;
+        }
+        
+        /* look up the state to go to from the one popped back to */
+        act = get_reduce(((Symbol)stack.peek()).parse_state, lhs_sym_num);
+
+        /* shift to that state */
+        lhs_sym.parse_state = act;
+        
+        stack.push(lhs_sym);
+        tos++;
+        act = get_action(((Symbol)stack.peek()).parse_state, error_sym());
+    }
+    return super.error_recovery(debug);
+  }
 
 // WC: Methods that get automatically invoked when using the builtin error recovery mechanism.  
 /*
@@ -239,7 +273,7 @@ program ::= opt_statement_lst : e {: parser.parseResult = e;  :} ;
 /* Represents a possibly-empty list of statements. */
 opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
   | statement_lst : e {: RESULT = e; :}
-  | statement_lst:e error
+  | statement_lst:e error:er
   {: RESULT = e; :}
   ;
 
