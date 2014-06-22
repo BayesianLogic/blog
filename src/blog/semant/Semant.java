@@ -310,7 +310,7 @@ public class Semant {
     Type type = getType(e.type);
     for (SymbolArrayList sa = e.symbols; sa != null; sa = sa.next) {
       if (sa.head == null) {
-        error(sa.head.line, sa.head.col, "Symbol mistake!");
+        error(sa.line, sa.col, "Symbol mistake!");
       } else {
         int sz = sa.head.size;
         String name = sa.head.name.toString();
@@ -776,7 +776,18 @@ public class Semant {
     return t;
   }
 
-  ArgSpec transExpr(FuncCallExpr e) {
+  Term transExpr(FuncCallExpr e) {
+
+    if (e.args == null) {
+      // this might be just logical variable
+      Function f = getFunction(e.func.toString(),
+          Collections.<Type> emptyList());
+      if (f == null) {
+        // must be reference to logical var
+        return new SymbolTerm(e.func.toString());
+      }
+    }
+
     List<ArgSpec> args = transExprList(e.args, true);
     List<Type> argTypes = new ArrayList<Type>();
     // TODO put type checking code here
@@ -785,8 +796,8 @@ public class Semant {
       // to add type for this argspec
     }
 
-    Term t = new FuncAppTerm(e.func.toString(), args.toArray(new ArgSpec[args
-        .size()]));
+    FuncAppTerm t = new FuncAppTerm(e.func.toString(),
+        args.toArray(new ArgSpec[args.size()]));
     t.setLocation(e.line);
     return t;
   }
@@ -1110,6 +1121,17 @@ public class Semant {
       return new NegFormula((Formula) right);
     case OpExpr.SUB:
       Function func;
+      if ((e.left instanceof FuncCallExpr) && (e.right instanceof IntExpr)) {
+        // check if this is declared distinct symbol;
+        FuncCallExpr funcall = (FuncCallExpr) e.left;
+        int idx = ((IntExpr) e.right).value;
+        if (funcall.args == null) {
+          Function f = getFunction(funcall.func.toString() + "[" + idx + "]",
+              Collections.<Type> emptyList());
+          if (f != null)
+            return new FuncAppTerm(f);
+        }
+      }
       if (left instanceof SymbolTerm) {
         if (e.right instanceof IntExpr) {
           String objectname = ((SymbolTerm) left).getName() + '['
