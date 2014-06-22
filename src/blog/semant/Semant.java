@@ -46,7 +46,6 @@ import blog.absyn.StmtList;
 import blog.absyn.StringExpr;
 import blog.absyn.SymbolArrayList;
 import blog.absyn.SymbolEvidence;
-import blog.absyn.SymbolExpr;
 import blog.absyn.TupleSetExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
@@ -70,6 +69,7 @@ import blog.model.EqualityFormula;
 import blog.model.Evidence;
 import blog.model.ExistentialFormula;
 import blog.model.ExplicitSetSpec;
+import blog.model.FixedFunction;
 import blog.model.Formula;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
@@ -82,7 +82,6 @@ import blog.model.MatrixSpec;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
 import blog.model.NegFormula;
-import blog.model.FixedFunction;
 import blog.model.OriginFunction;
 import blog.model.POP;
 import blog.model.Query;
@@ -250,11 +249,6 @@ public class Semant {
           error(fc.line, fc.col, "Invalid expression: expecting No argument");
         }
         res.add(fn);
-      } else if (h instanceof SymbolExpr) {
-        SymbolExpr var = (SymbolExpr) h;
-        String sym = var.name.toString();
-        checkSymbolDup(var.line, var.col, sym);
-        res.add(sym);
       } else {
         error(h.line, h.col, "Invalid expression: expecting Symbol names");
       }
@@ -768,8 +762,6 @@ public class Semant {
       return transExpr((ListInitExpr) e);
     } else if (e instanceof MapInitExpr) {
       return transExpr((MapInitExpr) e);
-    } else if (e instanceof SymbolExpr) {
-      return transExpr((SymbolExpr) e);
     } else if (e instanceof NullExpr) {
       return transExpr((NullExpr) e);
     } else if (e instanceof QuantifiedFormulaExpr) {
@@ -780,12 +772,6 @@ public class Semant {
 
   ArgSpec transExpr(NullExpr e) {
     Term t = new FuncAppTerm(BuiltInFunctions.NULL, Collections.EMPTY_LIST);
-    t.setLocation(e.line);
-    return t;
-  }
-
-  ArgSpec transExpr(SymbolExpr e) {
-    Term t = new SymbolTerm(e.name.toString());
     t.setLocation(e.line);
     return t;
   }
