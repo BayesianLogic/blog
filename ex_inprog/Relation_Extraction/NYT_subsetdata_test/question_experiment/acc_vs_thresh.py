@@ -12,11 +12,35 @@ def main():
 
 	args = sys.argv[1:]
 	true_label_file = open(args[0], 'r').readlines()
-	results_files = [open(args[i], 'r').readlines() for i in range(1, len(args))]
+	results_files = [open(args[i], 'r') for i in range(1, len(args))]
+
+	# Only two experiments, so I can quantify this here
+	if args[1].startswith('36'):
+		num_queries = 36
+	else:
+		num_queries = 14
 
 	# Preprocess values
 	true_values = [eval(line.strip().split('| ')[-1]) for line in true_label_file]
-	results_values = [[float(line.strip().split(' is ')[-1]) for line in result_file] for result_file in results_files]
+
+	results_values = [[0 for x in range(num_queries)] for i in range(len(results_files))]
+	for i in range(len(results_files)):
+		j = 0
+		line = results_files[i].readline()
+		while line != '': # Get the probability of true for each query
+
+			if "Distribution" in line:
+				next_line = results_files[i].readline().strip().split()
+
+				if next_line[-1] == 'true': # Add to results_values and move on
+					results_values[i][j] = float(next_line[0])
+				else: # false is first
+					prob_for_false = float(next_line[0])
+					results_values[i][j] = 1 - prob_for_false
+				j += 1
+
+			line = results_files[i].readline()
+
 
 	thresholds = [x/100.0 for x in range(101)]
 	

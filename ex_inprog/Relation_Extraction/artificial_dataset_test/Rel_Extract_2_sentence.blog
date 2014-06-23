@@ -6,8 +6,8 @@ type Relation;
 
 fixed Real alpha = 100;
 fixed Real beta = 900;
-random Real Sparsity(Relation r) ~ Beta(alpha, beta);
-//random Real Sparsity(Relation r) = 0.1;
+//random Real Sparsity(Relation r) ~ Beta(alpha, beta);
+random Real Sparsity(Relation r) = 0.1;
 
 type Entity;
 

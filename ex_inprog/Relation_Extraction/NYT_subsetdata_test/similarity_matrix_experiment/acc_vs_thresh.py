@@ -42,8 +42,6 @@ def main():
 		ith_label = label_stuff[3] + ' ' + label_stuff[4]
 		plt.plot(thresholds, accs[i-1], colors[i-1], label=ith_label)
 
-	print accs[1]
-
 	plt.legend(bbox_to_anchor=(0, 0, 1, 1), bbox_transform=plt.gcf().transFigure)
 	plt.xlabel('Threshold Value')
 	plt.ylabel('Accuracy')

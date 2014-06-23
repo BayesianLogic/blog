@@ -33,17 +33,20 @@ def compare_sentences():
 
 	for line in results_file:
 
-		if line.strip() == '':
+		if line.strip() == '' or 'Distribution' not in line:
 			continue
 
 		s1 = int(line.strip().split('[')[1].split(']')[0])
 		s2 = int(line.strip().split('[')[2].split(']')[0])
 
-		#triggers = get_clean_trig(sentences[s1]) + ' | ' + get_clean_trig(sentences[s2])
+		next_line = results_file.readline().strip().split()
+		if next_line[-1] == 'true':
+			score = float(next_line[0])
+		else:
+			prob_for_false = float(next_line[0])
+			score = 1 - prob_for_false
 
-		score = line.strip().split()[-1]
-
-		output_file.write('Sent[{0}], Sent[{1}]\tScore: '.format(s1,s2) + score + '\n\t' + construct_clean_sent(sentences[s1]) + ' | ' + construct_clean_sent(sentences[s2]) + '\n')
+		output_file.write('Sent[{0}], Sent[{1}]\tScore: '.format(s1,s2) + str(score) + '\n\t' + construct_clean_sent(sentences[s1]) + ' | ' + construct_clean_sent(sentences[s2]) + '\n')
 
 		# End for loop
 
