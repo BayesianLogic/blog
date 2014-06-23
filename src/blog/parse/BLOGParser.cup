@@ -287,7 +287,7 @@ statement_lst ::= statement:e SEMI statement_lst:slst
   | error:er SEMI statement_lst:slst 
     {: RESULT = slst; :}
   | error:er SEMI
-    {: RESULT = null; :}
+    {: RESULT = null; :} 
 ;
 
 /* A statement can be a declaration, an observation (assertion of some
@@ -296,6 +296,7 @@ statement_lst ::= statement:e SEMI statement_lst:slst
 statement ::= declaration_stmt : e {: RESULT = e; :}
   | evidence_stmt : e {: RESULT = e; :}
   | query_stmt : e {: RESULT = e; :}
+  | error {: RESULT = null; :}
   ;
 
 /* Represents a declaration, which can be:
