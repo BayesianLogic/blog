@@ -158,7 +158,7 @@ init with {:
  * the lexer returns it. For the terminals' interpretations, consult with
  * BLOGLexer.lex.
  */
-terminal ELSE, IF, THEN;
+terminal ELSE, IF, THEN, CASE;
 terminal TYPE, RANDOM, FIXED, ORIGIN, DISTINCT,
         QUERY, OBS, PARAM, LIST, MAP, DISTRIBUTION;
 terminal EXISTS, FORALL;
@@ -188,8 +188,8 @@ nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   evidence_stmt, query_stmt;
 nonterminal Stmt evidence, value_evidence, symbol_evidence, query;
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
-  quantified_formula, distribution_expr, list_construct_expression,
-  map_construct_expression, number_expr, elseif_list;
+  quantified_formula, list_construct_expression,
+  map_construct_expression, number_expr, elseif_list, if_expr, case_expr;
 nonterminal FuncCallExpr function_call;
 nonterminal Expr dependency_statement_body;
 nonterminal SetExpr set_expr;
@@ -205,9 +205,6 @@ nonterminal String array_type_or_sub;
 
 //attempt catch type var list errors
 nonterminal extra_commas;
-
-//attempt catch expression errors
-nonterminal String binop;
 
 //nonterminal Integer dims; //not used
 //nonterminal FieldList type_lst // Not Used
@@ -542,27 +539,8 @@ refer_name ::= ID:id {: RESULT = id; :}
 /**
  * body of random function or number statement
  */
-dependency_statement_body ::= EQ expression:e
+dependency_statement_body ::= DISTRIB expression:e
     {: RESULT = e; :}
-  | distribution_expr:e
-    {: RESULT = e; :}
-  | IF:a expression:e1 THEN dependency_statement_body:e2 elseif_list:e3
-    {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, e3); :}
-  | IF:a expression:e1 THEN error elseif_list:e3
-    {: error(e3xleft, "invalid expression after then"); :}
-  | /* not recommended to add {}, just for compactibility of old syntax */
-    LBRACE dependency_statement_body:e RBRACE
-    {: RESULT = e; :}
-  | LBRACE dependency_statement_body:e SEMI:se RBRACE
-    {: error(sexleft, "extra semicolon inside braces!"); :}
-  | IF:a expression:e1 dependency_statement_body:e2 elseif_list:e3
-    {: error(e1xright, "missing THEN in dependency statement clause, proceed anyway");
-    RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, e3); :}
-  ;
-
-elseif_list ::=
-    ELSE dependency_statement_body:e {: RESULT = e; :}
-  | {: RESULT = null; :}
   ;
 
 parameter_decl ::= PARAM:p type:ty ID:id 
@@ -578,7 +556,6 @@ parameter_decl ::= PARAM:p type:ty ID:id
  * Result is null if the term is invalid.
  */
 expression ::= operation_expr:e  {: RESULT = e; :}
-  | distribution_expr:e {: RESULT = e; :}
   | literal:e  {: RESULT = e; :}
   | function_call:e {: RESULT = e; :}
   | list_construct_expression:e {: RESULT = e; :}
@@ -586,6 +563,8 @@ expression ::= operation_expr:e  {: RESULT = e; :}
   | quantified_formula:e {: RESULT = e; :}
   | set_expr:e {: RESULT = e; :}
   | number_expr:e {: RESULT = e; :}
+  | if_expr:e {: RESULT = e; :}
+  | case_expr:e {: RESULT = e; :}
   ;
 
 literal ::= STRING_LITERAL:e
@@ -600,23 +579,6 @@ literal ::= STRING_LITERAL:e
     {: RESULT = new BooleanExpr(exleft.getLine(), exleft.getColumn(), e.booleanValue()); :}
   | NULL:e
     {: RESULT = new NullExpr(exleft.getLine(), exleft.getColumn()); :}
-  ;
-
-binop ::= PLUS {:RESULT = null;:}
-  | MINUS {:RESULT = null;:}
-  | MULT {:RESULT = null;:}
-  | DIV {:RESULT = null;:}
-  | MOD {:RESULT = null;:}
-  | POWER {:RESULT = null;:}
-  | LT {:RESULT = null;:}
-  | GT {:RESULT = null;:}
-  | LEQ {:RESULT = null;:}
-  | GEQ {:RESULT = null;:}
-  | EQEQ {:RESULT = null;:}
-  | NEQ {:RESULT = null;:}
-  | AND {:RESULT = null;:}
-  | OR {:RESULT = null;:}
-  | DOUBLERIGHTARROW {:RESULT = null;:}
   ;
 
 operation_expr ::= 
@@ -652,10 +614,6 @@ operation_expr ::=
     {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.IMPLY, e2); :}
   | expression:e1 LBRACKET expression:e2 RBRACKET
     {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.SUB, e2); :}
-  | expression:e1 binop error:err
-  {: error(errxleft, "incorrect or missing righthand expression"); :}
-  | error:err binop expression:e2
-  {: error(errxleft, "incorrect or missing lefthand expression"); :}
   | unary_operation_expr:e {: RESULT = e; :}
   ;
 
@@ -686,8 +644,10 @@ function_call ::= refer_name:id LPAREN opt_expression_list:e RPAREN
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), null); :}
   ;
 
-distribution_expr ::= DISTRIB:d function_call:fc
-    {: RESULT = new DistributionExpr(dxleft.getLine(), dxleft.getColumn(), fc.func, fc.args); :}
+if_expr ::= IF:a expression:e1 THEN expression:e2 ELSE expression:e3 {: RESULT = e; :}
+    {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, e3); :}
+  | IF:a expression:e1 expression:e2
+    {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, null); :}
   ;
 
 opt_expression_list ::= expression_list:e {: RESULT = e; :}
