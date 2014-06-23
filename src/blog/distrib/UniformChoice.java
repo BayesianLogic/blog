@@ -133,7 +133,14 @@ public class UniformChoice implements CondProbDistrib {
 
   @Override
   public String toString() {
-    return getClass().getName();
+    StringBuffer buffer = new StringBuffer();
+    buffer.append("UniformChoice(");
+    for (Object item : s) {
+      buffer.append(item.toString() + ", ");
+    }
+    buffer.replace(buffer.length() - 2, buffer.length(), "");
+    buffer.append(")");
+    return buffer.toString();
   }
 
   private ObjectSet s;
