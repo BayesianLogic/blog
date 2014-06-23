@@ -13,7 +13,7 @@ import blog.model.Queries
 import blog.sample.LWSampler
 
 class LWDebugger(model: Model, evidence: Evidence, queries: Queries)
-  extends SamplerDebugger(model, evidence, queries) {
+  extends SamplerDebugger[LWSample](model, evidence, queries) {
 
   def makeSampler = {
     val sampler = new LWSampler(model, new Properties())
