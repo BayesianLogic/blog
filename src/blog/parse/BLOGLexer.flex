@@ -189,7 +189,8 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Ll][Ii][Ss][Tt] { return symbol(BLOGTokenConstants.LIST); }
 [Mm][Aa][Pp] { return symbol(BLOGTokenConstants.MAP); }
 [Dd][Ii][Ss][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DISTRIBUTION); }
-	
+[Cc][Aa][Ss][Ee] { return symbol(BLOGTokenConstants.CASE); }
+
 
 /* literals */
 "true"	{ return symbol(BLOGTokenConstants.BOOLEAN_LITERAL, new Boolean(true)); }
