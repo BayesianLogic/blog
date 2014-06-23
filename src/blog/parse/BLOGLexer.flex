@@ -134,13 +134,13 @@ Digit = [0-9]
 
 Identifier = ({Alpha}|_)({Alpha}|{Digit}|_)*
 
-IntegerLiteral = [+-]?{Digit}+
+IntegerLiteral = {Digit}+
 
 FLit1    = {Digit}+ \. {Digit}* 
 FLit2    = \. {Digit}+ 
 FLit3    = {Digit}+ 
 Exponent = [eE] [+-]? {Digit}+
-DoubleLiteral = [+-]?({FLit1}|{FLit2}|{FLit3}) {Exponent}?
+DoubleLiteral = ({FLit1}|{FLit2}|{FLit3}) {Exponent}?
 
 LineTerminator	= [\n\r\r\n]
 
@@ -189,7 +189,8 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Ll][Ii][Ss][Tt] { return symbol(BLOGTokenConstants.LIST); }
 [Mm][Aa][Pp] { return symbol(BLOGTokenConstants.MAP); }
 [Dd][Ii][Ss][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DISTRIBUTION); }
-	
+[Cc][Aa][Ss][Ee] { return symbol(BLOGTokenConstants.CASE); }
+
 
 /* literals */
 "true"	{ return symbol(BLOGTokenConstants.BOOLEAN_LITERAL, new Boolean(true)); }
