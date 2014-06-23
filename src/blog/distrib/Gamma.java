@@ -35,109 +35,154 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
 
 /**
- * A Gamma distribution with shape parameter k and scale parameter 1/lambda.
+ * A Gamma distribution with shape parameter <code>k</code> and scale parameter
+ * 1/<code>lambda</code>.
  * Defined as f(x) = (lambda*e^(-lambda*x)*(lambda*x)^(k - 1)) / Gamma(k) where
  * Gamma(k) = integral from 0 to infinity of t^(k-1) * e^(-t) dt
+ * 
+ * @since June 17, 2014
  */
 
-public class Gamma extends AbstractCondProbDistrib {
-  /**
-   * Creates a new Gamma distribution with parameters k and lambda.
-   */
-  public Gamma(List params) {
-    if (!((params.get(0) instanceof Number) && (params.get(1) instanceof Number))) {
-      throw new IllegalArgumentException(
-          "Gamma expects two numerical arguments "
-              + "{k, lambda} where both are Numbers. Got: " + params);
-    }
-    k = ((Number) params.get(0)).doubleValue();
-    lambda = ((Number) params.get(1)).doubleValue();
-  }
+public class Gamma implements CondProbDistrib {
 
   /**
-   * Creates a new Gamma distribution with parameters k and lambda.
-   */
-  public Gamma(double k, double lambda) {
-    this.k = k;
-    this.lambda = lambda;
-  }
-
-  /**
-   * Returns the probability of x under this distribution
-   */
-  public double getProb(List args, Object value) {
-    if (!(value instanceof Number)) {
-      throw new IllegalArgumentException(
-          "Gamma CPD defines a distribution over objects"
-              + " of class Number, not " + value.getClass() + ".");
-    } else {
-      double x = ((Number) value).doubleValue();
-      return (lambda * Math.exp(-lambda * x) * Math.pow(lambda * x, k - 1) / gamma(k));
-    }
-  }
-
-  /**
-   * Returns the log of the probability of x under this distribution.
-   */
-  public double getLogProb(List args, Object value) {
-    if (!(value instanceof Number)) {
-      throw new IllegalArgumentException(
-          "Gamma CPD defines a distribution over objects"
-              + " of class Number, not " + value.getClass() + ".");
-    } else {
-      return Math.log(getProb(args, value));
-    }
-  }
-
-  /**
-   * Returns a double sampled according to this distribution. Uniformly fast for
-   * all k > 0. (Reference: Non-Uniform Random Variate Generation, Devroye
-   * http://cgm.cs.mcgill.ca/~luc/rnbookindex.html) Uses Cheng's rejection
-   * algorithm (GB) for k>=1, rejection from Weibull distribution for 0 < k < 1.
-   */
-  public Object sampleVal(List args) {
-    return sampleVal(k, lambda);
-  }
-
-  /**
-   * Should be compared with Marsiaglia's algorithm used in MATLAB.
-   * Uses Cheng's rejection algorithm (GB) for k>=1,
-   * rejection from Weibull distribution for 0 < k < 1.
+   * set parameters for Gamma distribution
    * 
-   * @param alpha
-   * @param beta
-   * @return
+   * @param params
+   *          An array of the form [Double, Double]
+   *          <ul>
+   *          <li>params[0]: <code>k</code> (Double)</li>
+   *          <li>params[1]: <code>lambda</code> (Double)</li>
+   *          </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
-  public static double sampleVal(double alpha, double beta) {
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 2) {
+      throw new IllegalArgumentException("expected 2 parameters");
+    }
+    setParams((Double) params[0], (Double) params[1]);
+  }
+
+  /**
+   * If the method parameter k is non-null and strictly positive, set the
+   * distribution parameter <code>k</code> to the method parameter k. If the
+   * method parameter lambda is non-null and strictly positive, set the
+   * distribution parameter <code>lambda</code> to the method parameter lambda.
+   */
+  public void setParams(Double k, Double lambda) {
+    if (k != null) {
+      if (k <= 0) {
+        throw new IllegalArgumentException(
+            "parameter k (shape) must be a stricly positive real number");
+      }
+      this.hasK = true;
+      this.k = k;
+      this.logGammaK = lgamma(this.k);
+      this.gammaK = Math.exp(this.logGammaK);
+    }
+    if (lambda != null) {
+      if (lambda <= 0) {
+        throw new IllegalArgumentException(
+            "parameter lambda (rate) must be a strictly positive real number");
+      }
+      this.hasLambda = true;
+      this.lambda = lambda;
+      this.logLambda = Math.log(lambda);
+    }
+  }
+
+  private void checkHasParams() {
+    if (!this.hasK) {
+      throw new IllegalArgumentException("parameter k not provided");
+    }
+    if (!this.hasLambda) {
+      throw new IllegalArgumentException("parameter lambda not provided");
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    return getProb(((Double) value).doubleValue());
+  }
+
+  /** Returns the probability of <code>value</code>. */
+  public double getProb(double value) {
+    checkHasParams();
+    if (value < 0) {
+      return 0;
+    } else {
+      return (lambda * Math.exp(-lambda * value)
+          * Math.pow(lambda * value, k - 1) / gammaK);
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    return getLogProb(((Double) value).doubleValue());
+  }
+
+  /** Returns the log probability of <code>value</code>. */
+  public double getLogProb(double value) {
+    checkHasParams();
+    if (value < 0) {
+      return Double.NEGATIVE_INFINITY;
+    } else {
+      return logLambda - lambda * value + (k - 1) * Math.log(lambda * value)
+          - logGammaK;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  @Override
+  public Object sampleVal() {
+    checkHasParams();
+    return sample_value();
+  }
+
+  public double sample_value() {
     boolean accept = false;
-    if (alpha >= 1) {
+    if (k >= 1) {
       // Cheng's algorithm
-      double b = (alpha - Math.log(4));
-      double c = (alpha + Math.sqrt(2 * alpha - 1));
-      double lam = Math.sqrt(2 * alpha - 1);
+      double b = (k - Math.log(4));
+      double c = (k + Math.sqrt(2 * k - 1));
+      double lam = Math.sqrt(2 * k - 1);
       double cheng = (1 + Math.log(4.5));
       double u, v, x, y, z, r;
       do {
         u = Util.random();
         v = Util.random();
         y = ((1 / lam) * Math.log(v / (1 - v)));
-        x = (alpha * Math.exp(y));
+        x = (k * Math.exp(y));
         z = (u * v * v);
         r = (b + (c * y) - x);
         if ((r >= ((4.5 * z) - cheng)) || (r >= Math.log(z))) {
           accept = true;
         }
       } while (!accept);
-      return x / beta;
+      return x / lambda;
     } else {
       // Weibull algorithm
-      double c = (1 / alpha);
-      double d = ((1 - alpha) * Math.pow(alpha, (alpha / (1 - alpha))));
+      double c = (1 / k);
+      double d = ((1 - k) * Math.pow(k, (k / (1 - k))));
       double u, v, z, e, x;
       do {
         u = Util.random();
@@ -149,11 +194,11 @@ public class Gamma extends AbstractCondProbDistrib {
           accept = true;
         }
       } while (!accept);
-      return x / beta;
+      return x / lambda;
     }
   }
 
-  /*
+  /**
    * Returns an approximation of the Gamma function of x r(x) = integral from 0
    * to infinity of (t^(x-1) * e^(-t) dt) with |error| < 2e-10. Laczos
    * Approximation Reference: Numerical Recipes in C
@@ -163,7 +208,7 @@ public class Gamma extends AbstractCondProbDistrib {
     return Math.exp(lgamma(x));
   }
 
-  /*
+  /**
    * Returns an approximation of the log of the Gamma function of x. Laczos
    * Approximation Reference: Numerical Recipes in C
    * http://www.library.cornell.edu/nr/cbookcpdf.html
@@ -183,50 +228,17 @@ public class Gamma extends AbstractCondProbDistrib {
     return (-tmp + Math.log(2.5066282746310005 * ser / x));
   }
 
+  @Override
+  public String toString() {
+    return "Gamma(" + lambda + ", " + k + ")";
+  }
+
   private double lambda;
+  private boolean hasLambda;
   private double k;
+  private boolean hasK;
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
-   */
-  @Override
-  public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
-   */
-  @Override
-  public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
-   */
-  @Override
-  public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.distrib.CondProbDistrib#sampleVal()
-   */
-  @Override
-  public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  private double logLambda;
+  private double gammaK;
+  private double logGammaK;
 }
