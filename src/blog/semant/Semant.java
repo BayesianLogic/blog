@@ -41,11 +41,11 @@ import blog.absyn.ParameterDec;
 import blog.absyn.QuantifiedFormulaExpr;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
+import blog.absyn.SetExpr;
 import blog.absyn.Stmt;
 import blog.absyn.StmtList;
 import blog.absyn.StringExpr;
 import blog.absyn.SymbolArrayList;
-import blog.absyn.SymbolEvidence;
 import blog.absyn.TupleSetExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
@@ -547,8 +547,6 @@ public class Semant {
   void transEvi(EvidenceStmt e) {
     if (e instanceof ValueEvidence) {
       transEvi((ValueEvidence) e);
-    } else if (e instanceof SymbolEvidence) {
-      transEvi((SymbolEvidence) e);
     } else {
       error(e.line, e.col, "Unsupported Evidence type: " + e);
     }
@@ -563,7 +561,9 @@ public class Semant {
    * @param e
    */
   void transEvi(ValueEvidence e) {
+    if (e.left instanceof SetExpr) {
 
+    }
     Object left = transExpr(e.left);
 
     if (left instanceof CardinalitySpec) {
@@ -609,7 +609,7 @@ public class Semant {
    * 
    * @param e
    */
-  void transEvi(SymbolEvidence e) {
+  void transSymbolEvidence(ValueEvidence e) {
     Object left = transExpr(e.left);
     if (left instanceof ImplicitSetSpec) {
       // symbol evidence

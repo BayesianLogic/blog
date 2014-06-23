@@ -171,7 +171,7 @@ terminal java.lang.String STRING_LITERAL;
 terminal java.lang.String ID;
 //terminal PARFACTOR, FACTOR; // Not Yet Implemented
 terminal AT; // time operator
-terminal PLUS, MINUS, MULT, DIV, MOD, POWER; //arithmetic operator
+terminal PLUS, MINUS, MULT, DIV, MOD, POWER, UMINUS; //arithmetic operator
 terminal LT, GT, LEQ, GEQ; // relational_expression
 terminal EQEQ, NEQ; // equality compare
 terminal EQ; // assignment operator
@@ -186,10 +186,10 @@ nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   rand_func_decl, number_stmt, origin_func_decl,
   distinct_decl, distribution_decl, parameter_decl,
   evidence_stmt, query_stmt;
-nonterminal Stmt evidence, value_evidence, symbol_evidence, query;
+nonterminal Stmt evidence, value_evidence;
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
   quantified_formula, list_construct_expression,
-  map_construct_expression, number_expr, elseif_list, if_expr, case_expr;
+  map_construct_expression, number_expr, if_expr, case_expr;
 nonterminal FuncCallExpr function_call;
 nonterminal Expr dependency_statement_body;
 nonterminal SetExpr set_expr;
@@ -221,17 +221,18 @@ nonterminal String refer_name;
  * Precedence declarations.  The later the precedence declaration, the
  * higher the precedence.
  */
+precedence nonassoc EQ, DISTRIB;
 precedence left SEMI;
 precedence left ELSE;
-precedence nonassoc EQ, DISTRIB;
-precedence right RIGHTARROW;
+precedence left RIGHTARROW;
 precedence left DOUBLERIGHTARROW;
 precedence left AND, OR;
 precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
 precedence left PLUS, MINUS;
 precedence left MULT, DIV, MOD, POWER;
-precedence right NOT, AT;
-precedence right LBRACKET;
+precedence left UMINUS;
+precedence left NOT, AT;
+precedence left LBRACKET/*, RBRACKET, LPAREN, RPAREN*/;
 
 /* Grammar *******************************************************************/
 
@@ -619,14 +620,15 @@ operation_expr ::=
 
 unary_operation_expr ::=
     MINUS:m expression:e
-    {: RESULT = new OpExpr(mxleft.getLine(), mxleft.getColumn(), new IntExpr(exleft.getLine(), exleft.getColumn(), 0), OpExpr.NOT, e); :}
+    {: RESULT = new OpExpr(mxleft.getLine(), mxleft.getColumn(), new IntExpr(exleft.getLine(), exleft.getColumn(), 0), OpExpr.MINUS, e); :}
+    %prec UMINUS
   | NOT:n expression:e
     {: RESULT = new OpExpr(nxleft.getLine(), nxleft.getColumn(), null, OpExpr.NOT, e); :}
   | AT:a expression:e
     {: RESULT = new OpExpr(axleft.getLine(), axleft.getColumn(), null, OpExpr.AT, e); :}
   | LPAREN expression:e RPAREN
     {: RESULT = e; :}
-  ;
+  ;  
 
 quantified_formula ::= FORALL:f type:ty ID:id expression:e
     {: RESULT = new QuantifiedFormulaExpr(fxleft.getLine(), fxleft.getColumn(),
@@ -638,15 +640,13 @@ quantified_formula ::= FORALL:f type:ty ID:id expression:e
 
 function_call ::= refer_name:id LPAREN opt_expression_list:e RPAREN
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), e); :}
-  | refer_name:id LPAREN error:err RPAREN
-    {: error(errxleft, "error in expression list of function call"); :}
   | refer_name:id 
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), null); :}
   ;
 
-if_expr ::= IF:a expression:e1 THEN expression:e2 ELSE expression:e3 {: RESULT = e; :}
+if_expr ::= IF:a expression:e1 THEN expression:e2 ELSE expression:e3 
     {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, e3); :}
-  | IF:a expression:e1 expression:e2
+  | IF:a expression:e1 THEN expression:e2
     {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, null); :}
   ;
 
@@ -747,8 +747,7 @@ tuple_set ::= LBRACE:l expression_list:elst FOR type_var_lst:vars COLON expressi
 evidence_stmt ::= OBS evidence:e  {: RESULT = e; :};
 
 evidence ::=
-   symbol_evidence:e {: RESULT = e; :}
-   | value_evidence:e {: RESULT = e; :}
+    value_evidence:e {: RESULT = e; :}
 //  | tuple_evidence:e {: RESULT = e; :} //not implemented yet
   ;
 
@@ -766,16 +765,10 @@ value_evidence ::=
     {:error(errxleft, "incorrect second expression"); RESULT = null;:}
   ;
 
-symbol_evidence ::=
-    implicit_set:e1 EQ explicit_set:e2
-    {: RESULT = new SymbolEvidence(e1xleft.getLine(), e1xleft.getColumn(), e1, e2); :}
+query_stmt ::= QUERY:q  expression:e
+    {: RESULT = new QueryStmt(qxleft.getLine(), qxleft.getColumn(), e); :}
+  | QUERY:q error 
+    {: error(qxright, "invalid query"); 
+      RESULT = null;:}
   ;
 
-query_stmt ::= QUERY  query:q 
-    {: RESULT = q; :}
-    | QUERY:q error 
-    {: error(qxright, "invalid query"); RESULT = null;:}
-  ;
-
-query ::= expression:e {: RESULT = new QueryStmt(exleft.getLine(), exleft.getColumn(), e); :}
-  ;
