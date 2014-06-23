@@ -41,7 +41,7 @@ patterns:
 - name: storage.type.primitive.blog
   match: \b(Integer|Real|Boolean|NaturalNum|Timestep|RealMatrix|IntegerMatrix)((\[\])*)\b
 - name: keyword.control.blog
-  match: \b(if|then|else|forall|exists|for)\b
+  match: \b(if|then|else|case|in|forall|exists|for)\b
 # builtin functions
 - name: support.function.blog
   match: \b(abs|round|inv|transpose|det|repmat|diag|vstack|hstack|eye|zeros|ones|exp|toReal|toInt|isEmptyString|prev|min|max|sum)\b
