@@ -15,54 +15,48 @@ fixed Integer xc  = 7;
 fixed Integer yc = 7;
 
 // SIZE OF THE OBJECT IN 3D
-random Integer sizeX(Object O) {
-    if (O != null) then
-        = 3
-    else
-        = 0
-};
+random Integer sizeX(Object O) ~
+    if (O != null) then 3
+    else 0
+;
 
-random Integer sizeY(Object O) {
-    if (O != null) then
-        = 3
-    else
-        = 0
-};
+random Integer sizeY(Object O) ~
+    if (O != null) then 3
+    else 0
+    ;
 
-random Integer sizeZ(Object O) {
-    if (O != null) then
-        = 3
-    else
-        = 0
-};
+random Integer sizeZ(Object O) ~
+    if (O != null) then 3
+    else 0
+    ;
 
 // LOCATION OF THE OBJECTS IN 3D
-random Integer X0(Object o) {
-    ~ UniformInt(Xmin, Xmax)
-};
+random Integer X0(Object o) ~
+    UniformInt(Xmin, Xmax)
+;
 
-random Integer Z0(Object o) {
-    ~ UniformInt(Zmin, Zmax)
-};
+random Integer Z0(Object o) ~
+    UniformInt(Zmin, Zmax)
+;
 
-random Integer Y0(Object o) {
-    ~ UniformInt(Ymin, Ymax)
-};
+random Integer Y0(Object o) ~
+    UniformInt(Ymin, Ymax)
+;
 
 
-random Integer X1(Object o) {
-    = X0(o) + sizeX(o)
-};
+random Integer X1(Object o) ~
+    X0(o) + sizeX(o)
+;
 
-random Integer Y1(Object o) {
-    = Y0(o) + sizeY(o)
-};
+random Integer Y1(Object o) ~
+    Y0(o) + sizeY(o)
+;
 
-random Integer Z1(Object o) {
-    = Z0(o) - sizeZ(o)
-};
+random Integer Z1(Object o) ~
+    Z0(o) - sizeZ(o)
+;
 
-random Integer Zintercept(Object o, Integer x, Integer y) {
+random Integer Zintercept(Object o, Integer x, Integer y) ~
     /*if (o!=null & (X0(o) <= myAdd(xc,Mult(Z1(o),Diff(xc,x)))) & (X1(o) >= myAdd(xc,Mult(Z1(o),Diff(xc,x)))) & (Y0(o) <= myAdd(yc,Mult(Z1(o),Diff(yc,y)))) & (Y1(o) >= myAdd(yc,Mult(Z1(o),Diff(yc,y))))   ) then
         = Z1(o)
     elseif (o!=null &  (x<=xc) &  (X0(o) >= myAdd(xc,Mult(Z0(o),Diff(xc,x)))) & (X0(o) <= myAdd(xc,Mult(Z1(o),Diff(xc,x)))) &  (Mult(Diff(X0(o),xc),Diff(y,yc)) <= Mult(Diff(Y0(o),yc),Diff(xc,x))) & (Mult(Diff(X0(o),xc),Diff(y,yc)) >= Mult(Diff(Y1(o),yc),Diff(xc,x))) ) then
@@ -74,23 +68,22 @@ random Integer Zintercept(Object o, Integer x, Integer y) {
     elseif (o!=null &  (y>yc) &  (Y1(o) >= myAdd(yc,Mult(Z1(o),Diff(yc,y)))) & (Y1(o) <= myAdd(yc,Mult(Z0(o),Diff(yc,y)))) &  (Mult(Diff(yc,Y1(o)),Diff(xc,x)) <= Mult(Diff(X1(o),xc),Diff(y,yc)))  &  (Mult(Diff(yc,Y1(o)),Diff(xc,x)) >= Mult(Diff(X0(o),xc),Diff(y,yc))) ) then
     = Z1(o) // need to change*/
     //else
-        = 0
-};
+        0
+;
 
 
-random Integer Z(Integer x, Integer y) {
+random Integer Z(Integer x, Integer y) ~
     if ((x <= xMax) & (x >= xMin) & (y <= yMax) & (y >= yMin)) then
         //~SetMin({Integer Z: Z < Zmax & (exists Object o (Zintercept(o, x, y) == Z))})
         //~SetMin({Integer Z: Z < Zmax & Z > 3})
-        = 1
-    else
-        = 0
-};
+        1
+    else 0
+    ;
 
 
 
 
-#Object = 1;
+#Object ~ 1;
 
 obs {Object o} = {o1};
 obs X0(o1) = 5;

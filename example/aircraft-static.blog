@@ -11,11 +11,9 @@ origin Aircraft Source(Blip);
 
 random Real Location(Aircraft a) ~ UniformReal(100.0, 200.0);
 
-random Real BlipLocation(Blip b) {
-        if Source(b) != null
-	then ~ UnivarGaussian(Location(Source(b)), 1.0)
-        else ~ UniformReal(90.0, 210.0)
-};
+random Real BlipLocation(Blip b) ~
+    if Source(b) != null then UnivarGaussian(Location(Source(b)), 1.0)
+    else UniformReal(90.0, 210.0);
 
 obs {Blip b} = {b1, b2, b3, b4};
 

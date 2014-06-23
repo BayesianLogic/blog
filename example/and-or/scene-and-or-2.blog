@@ -24,108 +24,108 @@ origin Bike ParentBike(Wheel);
 origin Cart ParentCart(Wheel);
 
 
-#Wheel(ParentBike = b) {
+#Wheel(ParentBike = b) ~
     if b != null then
-        = 3
+        3
     else 
-        = 0
-};
+        0
+;
 
-#Wheel(ParentCart = pc) {
+#Wheel(ParentCart = pc) ~
     if pc != null then
-        = 2
+        2
     else 
-        = 0
-};
+        0
+;
 
 
 distinct World theWorld;
 
-#Scene(ParentWorld = w){
+#Scene(ParentWorld = w)~
     if w!=null then
-        =1
+        1
     else
-        =0
-};
+        0
+;
 
-random Integer WhichScene(World w) {
+random Integer WhichScene(World w) ~
     if w != null then
-        ~ UniformInt(1, 2)
+        UniformInt(1, 2)
     else
-        = 0
-};
+        0
+;
 
-random Boolean IsStreet(Scene s) {
+random Boolean IsStreet(Scene s) ~
     if (s != null & ParentWorld(s) != null & WhichScene(ParentWorld(s)) == 1) then
-        = true
+        true
     else
-        = false
-};
+        false
+;
 
-random Boolean IsFarm(Scene s) {
+random Boolean IsFarm(Scene s) ~
     if (s != null & ParentWorld(s) != null & WhichScene(ParentWorld(s)) == 2) then
-        = true
+        true
     else
-        = false
-};
+        false
+;
 
-#Person(ParentScene = s) {
+#Person(ParentScene = s) ~
     if (s != null & IsStreet(s)) then
-        ~ UniformInt(5, 10)
+        UniformInt(5, 10)
     else if (s != null & IsFarm(s)) then
-        ~ UniformInt(1, 3)
+        UniformInt(1, 3)
     else
-        = 0
-};
+        0
+;
 
-#PersonPose(ParentPerson = p) {
+#PersonPose(ParentPerson = p) ~
     if (p != null) then
-        = 1
+        1
     else 
-        = 0
-};
+        0
+;
 
-random Integer WhichPose(Person p) {
+random Integer WhichPose(Person p) ~
     if (p != null) then
-        ~ UniformInt(1, 2)
+        UniformInt(1, 2)
     else
-        = 0
-};
+        0
+;
 
-random Boolean IsFrontal(PersonPose p) {
+random Boolean IsFrontal(PersonPose p) ~
     if (p != null & ParentPerson(p) != null & WhichPose(ParentPerson(p)) == 1) then
-        = true
+        true
     else
-        = false
-};
+        false
+;
 
-random Boolean IsSideway(PersonPose p) {
+random Boolean IsSideway(PersonPose p) ~
     if (p != null & ParentPerson(p) != null & WhichPose(ParentPerson(p)) == 2) then
-        = true
+        true
     else
-        = false
-};
+        false
+;
 
-#Bike(ParentScene = s) {
+#Bike(ParentScene = s) ~
     if (s != null & IsStreet(s)) then
-        ~ UniformInt(0, 3)
+        UniformInt(0, 3)
     else
-        = 0
-};
+        0
+;
 
-#Cow(ParentScene = s) {
+#Cow(ParentScene = s) ~
     if (s != null & IsFarm(s)) then
-        ~ UniformInt(1, 5)
+        UniformInt(1, 5)
     else
-        = 0
-};
+        0
+;
 
-#Cart(ParentScene = s) {
+#Cart(ParentScene = s) ~
     if(s != null & IsFarm(s)) then
-        ~ UniformInt(0, 3)
+        UniformInt(0, 3)
     else
-        = 0
-};
+        0
+;
 
 
 //obs {Wheel w}  = {W1, W2};
