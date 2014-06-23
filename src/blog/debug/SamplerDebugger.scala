@@ -9,7 +9,6 @@ import blog.io.TableWriter
 import blog.model.Evidence
 import blog.model.Model
 import blog.model.Queries
-import blog.sample.LWSampler
 import blog.sample.Sampler
 
 /**
@@ -20,16 +19,16 @@ import blog.sample.Sampler
  * @author cberzan
  * @since Jun 23, 2014
  */
-abstract class SamplerDebugger(
+abstract class SamplerDebugger[SampleType](
   val model: Model,
   val evidence: Evidence,
   val queries: Queries) {
 
   // All samples so far.
-  val samples: ListBuffer[Sample] = new ListBuffer()
+  val samples: ListBuffer[SampleType] = new ListBuffer()
 
   // Latest sampled world.
-  var lastSample: LWSample = null
+  var lastSample: SampleType = null.asInstanceOf[SampleType]
 
   // The underlying sampler.
   val sampler = makeSampler
