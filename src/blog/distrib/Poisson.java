@@ -256,7 +256,7 @@ public class Poisson implements CondProbDistrib {
     if (x < lambda) {
       r = m + Poisson.sample_value(lambda - x);
     } else {
-      r = Binomial.sampleVal(m - 1, lambda / x);
+      r = Binomial.sample_value(m - 1, lambda / x);
     }
     return r;
   }
