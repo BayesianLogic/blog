@@ -190,6 +190,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Mm][Aa][Pp] { return symbol(BLOGTokenConstants.MAP); }
 [Dd][Ii][Ss][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DISTRIBUTION); }
 [Cc][Aa][Ss][Ee] { return symbol(BLOGTokenConstants.CASE); }
+[Ii][Nn] { return symbol(BLOGTokenConstants.IN); }
 
 
 /* literals */
