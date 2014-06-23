@@ -668,7 +668,10 @@ if_expr ::= IF:a expression:e1 THEN expression:e2 ELSE expression:e3
 
 case_expr ::= CASE:c expression:e1 map_construct_expression:e2 
     {: 
-    if (e2 == null) {
+    if (e1 == null) {
+      error(e1xleft, "error in case expression");
+      RESULT = null;
+    } else if (e2 == null) {
       error(e2xleft, "error in case expression");
       RESULT = null;
     } else {
