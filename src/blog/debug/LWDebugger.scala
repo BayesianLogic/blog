@@ -12,22 +12,15 @@ import blog.model.Model
 import blog.model.Queries
 import blog.sample.LWSampler
 
-class LWDebugger(
-  val model: Model,
-  val evidence: Evidence,
-  val queries: Queries) {
+class LWDebugger(model: Model, evidence: Evidence, queries: Queries)
+  extends SamplerDebugger(model, evidence, queries) {
 
-  // All samples so far.
-  val samples: ListBuffer[LWSample] = new ListBuffer()
+  def makeSampler = {
+    val sampler = new LWSampler(model, new Properties())
+    sampler.initialize(evidence, queries)
+    sampler
+  }
 
-  // Latest sampled world.
-  var lastSample: LWSample = null
-
-  // The underlying sampler.
-  val sampler = new LWSampler(model, new Properties())
-  sampler.initialize(evidence, queries)
-
-  // Compute next sample, print it, and add it to samples.
   def sampleOne = {
     sampler.nextSample()
     lastSample = new LWSample(
@@ -38,31 +31,6 @@ class LWDebugger(
     // TODO: print number of samples so far
     // TODO: stats method to print out sampler stats
   }
-
-  // Compute next n samples.
-  def sampleMany(n: Int) {
-    for (i <- 1 to n) {
-      sampleOne
-    }
-  }
-
-  // Print query results so far.
-  def printResults {
-    val writer = new blog.io.TableWriter(queries)
-    writer.writeResults(System.out)
-  }
-
-  // Turn verbosity on or off.
-  def verbose = Util.setVerbose(true)
-  def noverbose = Util.setVerbose(false)
-
-  // Shortcuts.
-  def m = model
-  def e = evidence
-  def q = queries
-  def n = sampleOne
-  def s = lastSample
-  def hist = printResults
 }
 
 object LWDebugger {
