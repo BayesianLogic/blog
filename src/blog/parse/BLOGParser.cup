@@ -158,7 +158,7 @@ init with {:
  * the lexer returns it. For the terminals' interpretations, consult with
  * BLOGLexer.lex.
  */
-terminal ELSE, IF, THEN;
+terminal ELSE, IF, THEN, CASE;
 terminal TYPE, RANDOM, FIXED, ORIGIN, DISTINCT,
         QUERY, OBS, PARAM, LIST, MAP, DISTRIBUTION;
 terminal EXISTS, FORALL;
@@ -171,7 +171,7 @@ terminal java.lang.String STRING_LITERAL;
 terminal java.lang.String ID;
 //terminal PARFACTOR, FACTOR; // Not Yet Implemented
 terminal AT; // time operator
-terminal PLUS, MINUS, MULT, DIV, MOD, POWER; //arithmetic operator
+terminal PLUS, MINUS, MULT, DIV, MOD, POWER, UMINUS; //arithmetic operator
 terminal LT, GT, LEQ, GEQ; // relational_expression
 terminal EQEQ, NEQ; // equality compare
 terminal EQ; // assignment operator
@@ -186,10 +186,10 @@ nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   rand_func_decl, number_stmt, origin_func_decl,
   distinct_decl, distribution_decl, parameter_decl,
   evidence_stmt, query_stmt;
-nonterminal Stmt evidence, value_evidence, symbol_evidence, query;
+nonterminal Stmt evidence, value_evidence;
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
-  quantified_formula, distribution_expr, list_construct_expression,
-  map_construct_expression, number_expr, elseif_list;
+  quantified_formula, list_construct_expression,
+  map_construct_expression, number_expr, if_expr, case_expr;
 nonterminal FuncCallExpr function_call;
 nonterminal Expr dependency_statement_body;
 nonterminal SetExpr set_expr;
@@ -206,9 +206,6 @@ nonterminal String array_type_or_sub;
 //attempt catch type var list errors
 nonterminal extra_commas;
 
-//attempt catch expression errors
-nonterminal String binop;
-
 //nonterminal Integer dims; //not used
 //nonterminal FieldList type_lst // Not Used
 nonterminal FieldList opt_parenthesized_type_var_lst, 
@@ -224,17 +221,18 @@ nonterminal String refer_name;
  * Precedence declarations.  The later the precedence declaration, the
  * higher the precedence.
  */
+precedence nonassoc EQ, DISTRIB;
 precedence left SEMI;
 precedence left ELSE;
-precedence nonassoc EQ, DISTRIB;
-precedence right RIGHTARROW;
+precedence left RIGHTARROW;
 precedence left DOUBLERIGHTARROW;
 precedence left AND, OR;
 precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
 precedence left PLUS, MINUS;
 precedence left MULT, DIV, MOD, POWER;
-precedence right NOT, AT;
-precedence right LBRACKET;
+precedence left UMINUS;
+precedence left NOT, AT;
+precedence left LBRACKET/*, RBRACKET, LPAREN, RPAREN*/;
 
 /* Grammar *******************************************************************/
 
@@ -250,6 +248,12 @@ opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
   | statement_lst : e {: RESULT = e; :}
   | statement_lst:e error:er
   {: RESULT = e; :}
+  | statement:s 
+  {: error(sxright, "missing semicolon"); 
+     if (s != null) {
+       RESULT = new StmtList(s, null);
+     } 
+  :}
   ;
 
 /* Represents a non-empty list of statements terminated by semicolons. */
@@ -259,8 +263,8 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     :}
   | statement:e SEMI {: if (e!=null) RESULT = new StmtList(e, null); 
                         else RESULT = null; :}
-  | statement:s
-  {: error(sxright, "missing semicolon"); RESULT = null; :}
+  | statement:s statement_lst:slst
+  {: error(sxright, "missing semicolon"); RESULT = slst; :}
   | error:er SEMI statement_lst:slst 
     {: RESULT = slst; :}
   | error:er SEMI
@@ -323,7 +327,7 @@ declaration_stmt ::=
 type_decl ::= TYPE:ty ID:typename 
     {: RESULT = new TypeDec(tyxleft.getLine(), tyxleft.getColumn(), sym(typename)); :}
   | TYPE:ty error:err
-    {: error(errxleft, "malformed or missing id"); :}  
+    {: error(tyxright, "malformed or missing id"); :}  
   ;
 
 /*
@@ -451,8 +455,8 @@ number_stmt ::=
    | NUMSIGN:ns opt_parenthesized_origin_var_list:otl
   dependency_statement_body:body 
     {: error(nsxright, "missing type name"); RESULT = null; :}
-   | NUMSIGN error:err dependency_statement_body:body
-   {: error(errxleft, "error in origin variable list"); :}
+   | NUMSIGN:ns error:err dependency_statement_body:body
+   {: error(nsxright, "error in origin variable list"); :}
   ;
 
 /* list of origin_fun = var, used in number statement */
@@ -492,8 +496,8 @@ origin_func_decl ::=
     ORIGIN:o type:ret_type ID:fname LPAREN type:arg_type RPAREN 
     {: RESULT = new OriginFuncDec(oxleft.getLine(), oxleft.getColumn(), sym(fname),
       new FieldList(null, arg_type, null), ret_type); :}
-  | ORIGIN:o type:ret_type ID:fname LPAREN error:er RPAREN 
-    {: error(erxleft, "syntax error in type argument of origin function");
+  | ORIGIN:o type:ret_type ID:fname LPAREN:lp error:er RPAREN 
+    {: error(lpxright, "syntax error in type argument of origin function");
       RESULT = null;
     :}
   | ORIGIN:o type:ret_type LPAREN type:arg_type RPAREN 
@@ -547,27 +551,8 @@ refer_name ::= ID:id {: RESULT = id; :}
 /**
  * body of random function or number statement
  */
-dependency_statement_body ::= EQ expression:e
+dependency_statement_body ::= DISTRIB expression:e
     {: RESULT = e; :}
-  | distribution_expr:e
-    {: RESULT = e; :}
-  | IF:a expression:e1 THEN dependency_statement_body:e2 elseif_list:e3
-    {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, e3); :}
-  | IF:a expression:e1 THEN error elseif_list:e3
-    {: error(e3xleft, "invalid expression after then"); :}
-  | /* not recommended to add {}, just for compactibility of old syntax */
-    LBRACE dependency_statement_body:e RBRACE
-    {: RESULT = e; :}
-  | LBRACE dependency_statement_body:e SEMI:se RBRACE
-    {: error(sexleft, "extra semicolon inside braces!"); :}
-  | IF:a expression:e1 dependency_statement_body:e2 elseif_list:e3
-    {: error(e1xright, "missing THEN in dependency statement clause, proceed anyway");
-    RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, e3); :}
-  ;
-
-elseif_list ::=
-    ELSE dependency_statement_body:e {: RESULT = e; :}
-  | {: RESULT = null; :}
   ;
 
 parameter_decl ::= PARAM:p type:ty ID:id 
@@ -583,7 +568,6 @@ parameter_decl ::= PARAM:p type:ty ID:id
  * Result is null if the term is invalid.
  */
 expression ::= operation_expr:e  {: RESULT = e; :}
-  | distribution_expr:e {: RESULT = e; :}
   | literal:e  {: RESULT = e; :}
   | function_call:e {: RESULT = e; :}
   | list_construct_expression:e {: RESULT = e; :}
@@ -591,6 +575,8 @@ expression ::= operation_expr:e  {: RESULT = e; :}
   | quantified_formula:e {: RESULT = e; :}
   | set_expr:e {: RESULT = e; :}
   | number_expr:e {: RESULT = e; :}
+  | if_expr:e {: RESULT = e; :}
+  | case_expr:e {: RESULT = e; :}
   ;
 
 literal ::= STRING_LITERAL:e
@@ -605,23 +591,6 @@ literal ::= STRING_LITERAL:e
     {: RESULT = new BooleanExpr(exleft.getLine(), exleft.getColumn(), e.booleanValue()); :}
   | NULL:e
     {: RESULT = new NullExpr(exleft.getLine(), exleft.getColumn()); :}
-  ;
-
-binop ::= PLUS {:RESULT = null;:}
-  | MINUS {:RESULT = null;:}
-  | MULT {:RESULT = null;:}
-  | DIV {:RESULT = null;:}
-  | MOD {:RESULT = null;:}
-  | POWER {:RESULT = null;:}
-  | LT {:RESULT = null;:}
-  | GT {:RESULT = null;:}
-  | LEQ {:RESULT = null;:}
-  | GEQ {:RESULT = null;:}
-  | EQEQ {:RESULT = null;:}
-  | NEQ {:RESULT = null;:}
-  | AND {:RESULT = null;:}
-  | OR {:RESULT = null;:}
-  | DOUBLERIGHTARROW {:RESULT = null;:}
   ;
 
 operation_expr ::= 
@@ -659,23 +628,20 @@ operation_expr ::=
     {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.SUB, e2); :}
   | expression:e1 LBRACKET error:err
     {: error(errxleft, "operation expression syntax error"); :}
-  | expression:e1 binop error:err
-  {: error(errxleft, "incorrect or missing righthand expression"); :}
-  | error:err binop expression:e2
-  {: error(errxleft, "incorrect or missing lefthand expression"); :}
   | unary_operation_expr:e {: RESULT = e; :}
   ;
 
 unary_operation_expr ::=
     MINUS:m expression:e
-    {: RESULT = new OpExpr(mxleft.getLine(), mxleft.getColumn(), new IntExpr(exleft.getLine(), exleft.getColumn(), 0), OpExpr.NOT, e); :}
+    {: RESULT = new OpExpr(mxleft.getLine(), mxleft.getColumn(), new IntExpr(exleft.getLine(), exleft.getColumn(), 0), OpExpr.MINUS, e); :}
+    %prec UMINUS
   | NOT:n expression:e
     {: RESULT = new OpExpr(nxleft.getLine(), nxleft.getColumn(), null, OpExpr.NOT, e); :}
   | AT:a expression:e
     {: RESULT = new OpExpr(axleft.getLine(), axleft.getColumn(), null, OpExpr.AT, e); :}
   | LPAREN expression:e RPAREN
     {: RESULT = e; :}
-  ;
+  ;  
 
 quantified_formula ::= FORALL:f type:ty ID:id expression:e
     {: RESULT = new QuantifiedFormulaExpr(fxleft.getLine(), fxleft.getColumn(),
@@ -693,8 +659,10 @@ function_call ::= refer_name:id LPAREN opt_expression_list:e RPAREN
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), null); :}
   ;
 
-distribution_expr ::= DISTRIB:d function_call:fc
-    {: RESULT = new DistributionExpr(dxleft.getLine(), dxleft.getColumn(), fc.func, fc.args); :}
+if_expr ::= IF:a expression:e1 THEN expression:e2 ELSE expression:e3 
+    {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, e3); :}
+  | IF:a expression:e1 THEN expression:e2
+    {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, null); :}
   ;
 
 opt_expression_list ::= expression_list:e {: RESULT = e; :}
@@ -798,8 +766,7 @@ evidence_stmt ::= OBS evidence:e  {: RESULT = e; :}
               ;
 
 evidence ::=
-   symbol_evidence:e {: RESULT = e; :}
-   | value_evidence:e {: RESULT = e; :}
+    value_evidence:e {: RESULT = e; :}
 //  | tuple_evidence:e {: RESULT = e; :} //not implemented yet
   ;
 
@@ -817,16 +784,10 @@ value_evidence ::=
     {:error(errxleft, "incorrect second expression"); RESULT = null;:}
   ;
 
-symbol_evidence ::=
-    implicit_set:e1 EQ explicit_set:e2
-    {: RESULT = new SymbolEvidence(e1xleft.getLine(), e1xleft.getColumn(), e1, e2); :}
+query_stmt ::= QUERY:q  expression:e
+    {: RESULT = new QueryStmt(qxleft.getLine(), qxleft.getColumn(), e); :}
+  | QUERY:q error 
+    {: error(qxright, "invalid query"); 
+      RESULT = null;:}
   ;
 
-query_stmt ::= QUERY  query:q 
-    {: RESULT = q; :}
-    | QUERY:q error 
-    {: error(qxright, "invalid query"); RESULT = null;:}
-  ;
-
-query ::= expression:e {: RESULT = new QueryStmt(exleft.getLine(), exleft.getColumn(), e); :}
-  ;
