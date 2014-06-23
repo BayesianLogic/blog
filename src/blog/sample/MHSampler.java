@@ -175,10 +175,12 @@ public class MHSampler extends Sampler {
     // Compute the acceptance probability
     acceptProbTimer.start();
     double logProbRatio = computeLogProbRatio(curWorld.getSaved(), curWorld);
+    latestLogProbRatio = logProbRatio;
     if (Util.verbose()) {
       System.out.println("\tlog probability ratio: " + logProbRatio);
     }
     double logAcceptRatio = logProbRatio + logProposalRatio;
+    latestLogAcceptRatio = logAcceptRatio;
     if (Util.verbose()) {
       System.out.println("\tlog acceptance ratio: " + logAcceptRatio);
     }
@@ -194,12 +196,14 @@ public class MHSampler extends Sampler {
       }
       ++totalNumAccepted;
       ++numAcceptedThisTrial;
+      latestAccepted = true;
       proposer.updateStats(true);
     } else {
       curWorld.revert(); // clean slate for next proposal
       if (Util.verbose()) {
         System.out.println("\trejected");
       }
+      latestAccepted = false;
       proposer.updateStats(false);
     }
   }
@@ -395,6 +399,18 @@ public class MHSampler extends Sampler {
 
     proposer.printStats();
   }
+
+  // The following are for debugger use only!
+
+  public boolean latestAccepted;
+  public double latestLogProbRatio;
+  public double latestLogAcceptRatio;
+
+  public Proposer getProposer() {
+    return proposer;
+  }
+
+  // End of debugger-only members.
 
   protected Timer acceptProbTimer = new Timer();
   protected Timer worldUpdateTimer = new Timer();

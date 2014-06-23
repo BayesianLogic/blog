@@ -35,12 +35,14 @@
 
 package blog.sample;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Properties;
+import java.util.Set;
 
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
-import blog.common.HashMultiMap;
-import blog.common.MultiMap;
 import blog.common.Util;
 import blog.model.DependencyModel;
 import blog.model.Model;
@@ -53,7 +55,7 @@ import blog.world.PartialWorldDiff;
  * instantiated RVs), then samples values for previously uninstantiated RVs to
  * make the resulting instantiation self-supporting. It also uninstantiates any
  * RVs that become barren.
- *
+ * 
  * <p>
  * Each variable is sampled from its prior distribution given its parents. The
  * forward proposal probability is just the probability of choosing the selected
@@ -65,7 +67,7 @@ import blog.world.PartialWorldDiff;
  * No other moves can yield the same proposed world because each move changes
  * the value of exactly one instantiated variable (it just instantiates and
  * uninstantiates other variables).
- *
+ * 
  * <p>
  * GenericProposer does not use identifiers in the worlds it constructs.
  */
@@ -220,4 +222,16 @@ public class GenericProposer extends AbstractProposer {
 
     logProbForward += instantiator.getLogProbability();
   }
+
+  // The following are for debugger use only!
+
+  public double latestLogProbBackward() {
+    return logProbBackward;
+  }
+
+  public double latestLogProbForward() {
+    return logProbForward;
+  }
+
+  // End of debugger-only members.
 }
