@@ -24,32 +24,30 @@ type Login;
 random Boolean Honest(Person x) ~ BooleanDistrib(0.9);
 
 origin Person Owner(Login);
-#Login(Owner = x) 
-  if Honest(x) then = 1 
-    else ~ Geometric(0.8);
+#Login(Owner = x) ~
+  if Honest(x) then 1 
+    else Geometric(0.8);
 
-random Boolean Transaction(Login x, Login y) {
-  if x!=y & Owner(x) == Owner(y) then ~ BooleanDistrib(0.9)
+random Boolean Transaction(Login x, Login y) ~
+  if x!=y & Owner(x) == Owner(y) then BooleanDistrib(0.9)
   else if x!=y then 
-    ~ TabularCPD({true -> ~Categorical({true -> 0.6, false -> 0.4}), 
-                 false -> ~Categorical({true -> 0.1, false -> 0.9})}, 
-                Honest(Owner(x)))
-};
+      TabularCPD({true -> Categorical({true -> 0.6, false -> 0.4}), 
+                 false -> Categorical({true -> 0.1, false -> 0.9})}, 
+                Honest(Owner(x)));
 
-random Boolean Recommends(Login x, Login y) {
+random Boolean Recommends(Login x, Login y) ~
   if (x!=y) & Transaction(x,y) then
-    if Owner(x) == Owner(y) then ~ BooleanDistrib(0.99)
-    else ~ TabularCPD(
-      {[true, true]   -> ~ BooleanDistrib(0.9),
-       [true, false]  -> ~ BooleanDistrib(0.1), 
-       [false, true]  -> ~ BooleanDistrib(0.1),
-       [false, false] -> ~ BooleanDistrib(0.1)},
-    [Honest(Owner(x)), Honest(Owner(y))])
-};
+    if Owner(x) == Owner(y) then BooleanDistrib(0.99)
+    else TabularCPD(
+      {[true, true]   -> BooleanDistrib(0.9),
+       [true, false]  -> BooleanDistrib(0.1), 
+       [false, true]  -> BooleanDistrib(0.1),
+       [false, false] -> BooleanDistrib(0.1)},
+    [Honest(Owner(x)), Honest(Owner(y))]);
 
 obs {Person p} = {Person1, Person2};
 
 obs {Login l} = {Login1, Login2, Login3};
-Query Honest(Person1); 
+query Honest(Person1); 
 
 

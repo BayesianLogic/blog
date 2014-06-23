@@ -53,16 +53,16 @@ fixed Person player(Integer i, Integer k) // k-th player in i-th match
 random Boolean lazy(Person p, Integer i) 
   ~ BooleanDistrib(0.1);
 
-random Real pulling_power(Person p, Integer i) 
-	if lazy(p, i) then = strength(p) / 2
-	else = strength(p);
+random Real pulling_power(Person p, Integer i) ~
+	if lazy(p, i) then strength(p) / 2
+	else strength(p);
 
-random Boolean team1win(Integer i)
+random Boolean team1win(Integer i) ~
 	if (pulling_power(player(i, 1), i) + pulling_power(player(i, 2), i)
 	  + pulling_power(player(i, 3), i) > pulling_power(player(i, 4), i)
 	  + pulling_power(player(i, 5), i) + pulling_power(player(i, 6), i)) 
-	then = true
-	else = false;
+	then true
+	else false;
 
 obs team1win(1) = true;
 
