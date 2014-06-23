@@ -158,7 +158,7 @@ init with {:
  * the lexer returns it. For the terminals' interpretations, consult with
  * BLOGLexer.lex.
  */
-terminal ELSE, IF, THEN, CASE;
+terminal ELSE, IF, THEN, CASE, IN;
 terminal TYPE, RANDOM, FIXED, ORIGIN, DISTINCT,
         QUERY, OBS, PARAM, LIST, MAP, DISTRIBUTION;
 terminal EXISTS, FORALL;
@@ -666,7 +666,7 @@ if_expr ::= IF:a expression:e1 THEN expression:e2 ELSE expression:e3
     {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, null); :}
   ;
 
-case_expr ::= CASE:c expression:e1 map_construct_expression:e2 
+case_expr ::= CASE:c expression:e1 IN map_construct_expression:e2 
     {: 
     if (e2 == null) {
       error(e2xleft, "error in case expression");
