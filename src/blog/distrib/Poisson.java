@@ -35,9 +35,6 @@
 
 package blog.distrib;
 
-import java.io.Serializable;
-import java.util.List;
-
 import blog.common.Util;
 
 /**
@@ -45,82 +42,19 @@ import blog.common.Util;
  * over non-negative integers. The probability of n is exp(-lambda) lambda^n /
  * n!.
  * 
- * This is a slightly modified version of Poisson.java in the common directory,
- * tailored to implement the CondProbDistrib interface.
+ * @since June 20, 2014
  */
-public class Poisson extends AbstractCondProbDistrib implements Serializable {
-  /**
-   * Creates a new Poisson distribution with the specifies lambda parameter.
-   */
-  public Poisson(List params) {
-    if (params.isEmpty()) {
-      random_lambda = true;
-      return;
-    }
-    if (!(params.get(0) instanceof Number)) {
-      throw new IllegalArgumentException("The first parameter to Poisson "
-          + "distribution must be of class Number, " + "not "
-          + params.get(0).getClass() + ".");
-    }
-
-    lambda = ((Number) params.get(0)).doubleValue();
-  }
-
-  // more succinct constructor
-  public Poisson(double lambda) {
-    this.lambda = lambda;
-  }
+public class Poisson implements CondProbDistrib {
 
   /**
-   * Returns the probability of the integer n under this distribution.
+   * Computes the log probability of <code>n</code> for a Poisson with parameter
+   * <code>lambda</code>.
    */
-  public double getProb(List args, Object value) {
-    // Work in log domain to avoid overflow for large values of n
-    return Math.exp(getLogProb(args, value));
-  }
-
-  /**
-   * Returns the log probability of the integer n under this distribution.
-   */
-  public double getLogProb(List args, Object value) {
-    if (random_lambda) {
-      lambda = ((Number) args.get(0)).doubleValue();
-    }
-    int n = ((Number) value).intValue();
-    return computeLogProb(n);
-  }
-
-  public double computeLogProb(int n) {
-    if (lambda == 0) {
-      return n == 0 ? 0 : Double.NEGATIVE_INFINITY;
-    }
-    return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
-  }
-
   public static double computeLogProb(double lambda, int n) {
     if (lambda == 0) {
       return n == 0 ? 0 : Double.NEGATIVE_INFINITY;
     }
     return (-lambda + (n * Math.log(lambda)) - Util.logFactorial(n));
-  }
-
-  /**
-   * Returns an integer sampled according to this distribution. This
-   * implementation takes time proportional to the magnitude of the integer
-   * returned. I got the algorithm from Anuj Kumar's course page for IEOR E4404
-   * at Columbia University, specifically the file: <blockquote>
-   * http://www.columbia.edu/~ak2108/ta/summer2003/poisson1.c </blockquote>
-   */
-  public Object sampleVal(List args) {
-    if (random_lambda) {
-      lambda = ((Number) args.get(0)).doubleValue();
-    }
-    int n = sampleInt();
-    return new Integer(n);
-  }
-
-  public int sampleInt() {
-    return sampleVal(lambda);
   }
 
   /**
@@ -144,50 +78,6 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
     }
 
     return n;
-  }
-
-  /**
-   * Naive inverse CDF approach for Poisson is not advisable for lambda > 15.
-   * Here we are following MATLAB's implementation, where gamma random variables
-   * are subtracted from lambda until it falls into the range of lambda <= 15.
-   * Then,
-   * standard naive inverse CDF sampling is applied via sampleSmall.
-   * 
-   * @param lambda
-   * @return
-   */
-  public static int sampleVal(double lambda) {
-    if (lambda < 15)
-      return sampleSmall(lambda);
-
-    double alpha = 7.0 / 8.0;
-    int m = (int) Math.floor(alpha * lambda);
-    double x = Gamma.sampleVal(m, 1);
-    int r;
-    if (x < lambda) {
-      r = m + sampleVal(lambda - x);
-    } else {
-      r = Binomial.sampleVal(m - 1, lambda / x);
-    }
-    return r;
-  }
-
-  /**
-   * compute the cumulative density
-   * 
-   * @author leili
-   * @param args
-   * @param value
-   * @return
-   */
-  public double cdf(List args, Object value) {
-    int n = ((Number) value).intValue();
-    double w = 0;
-    for (int i = 0; i <= n; i++) {
-      w += Math.exp(computeLogProb(i));
-    }
-    return w;
-    // TODO cache of computed cdf
   }
 
   private double[] cdf_table = null;
@@ -248,22 +138,44 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
     return w;
   }
 
-  public String toString() {
-    return getClass().getName();
-  }
-
-  private double lambda;
-  private boolean random_lambda = false;
-
-  /*
-   * (non-Javadoc)
+  /**
+   * set parameters for Poisson distribution
    * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   * @param params
+   *          array of the form [Double]
+   *          <ul>
+   *          <li>params[0]: <code>lambda</code> (Double)</li>
+   *          </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
   @Override
   public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
+    if (params.length != 1) {
+      throw new IllegalArgumentException("expected one parameter");
+    }
+    setParams((Double) params[0]);
+  }
 
+  /**
+   * If the method parameter lambda is non-null and non-negative, set the
+   * distribution parameter <code>lambda</code> to the method parameter lambda.
+   */
+  public void setParams(Double lambda) {
+    if (lambda != null) {
+      if (lambda < 0) {
+        throw new IllegalArgumentException(
+            "parameter lambda must be a nonnegative real");
+      }
+      this.lambda = lambda;
+      this.hasLambda = true;
+    }
+  }
+
+  private void checkHasParams() {
+    if (!this.hasLambda) {
+      throw new IllegalArgumentException("parameter lambda not provided");
+    }
   }
 
   /*
@@ -273,8 +185,17 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
    */
   @Override
   public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
+    return getProb(((Integer) value).intValue());
+  }
+
+  /**
+   * Returns the probability of k occurrences in a Poisson distribution.
+   * 
+   * @param k
+   *          # occurrences
+   */
+  public double getProb(int k) {
+    return Math.exp(getLogProb(k));
   }
 
   /*
@@ -284,8 +205,21 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
    */
   @Override
   public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
+    return getLogProb(((Integer) value).intValue());
+  }
+
+  /**
+   * Returns the log probability of k occurrences in a Poisson distribution
+   * 
+   * @param k
+   *          # occurrences
+   */
+  public double getLogProb(int k) {
+    checkHasParams();
+    if (lambda == 0) {
+      return k == 0 ? 0 : Double.NEGATIVE_INFINITY;
+    }
+    return (-lambda + (k * Math.log(lambda)) - Util.logFactorial(k));
   }
 
   /*
@@ -295,7 +229,43 @@ public class Poisson extends AbstractCondProbDistrib implements Serializable {
    */
   @Override
   public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
+    return sample_value();
   }
+
+  /** Samples from the Poisson distribution. */
+  public int sample_value() {
+    checkHasParams();
+    return sample_value(lambda);
+  }
+
+  /**
+   * Returns an integer sampled according to the Poisson distribution. This
+   * implementation takes time proportional to the magnitude of the integer
+   * returned. I got the algorithm from Anuj Kumar's course page for IEOR E4404
+   * at Columbia University, specifically the file: <blockquote>
+   * http://www.columbia.edu/~ak2108/ta/summer2003/poisson1.c </blockquote>
+   */
+  public static int sample_value(double lambda) {
+    if (lambda < 15)
+      return sampleSmall(lambda);
+
+    double alpha = 7.0 / 8.0;
+    int m = (int) Math.floor(alpha * lambda);
+    double x = Gamma.sampleVal(m, 1);
+    int r;
+    if (x < lambda) {
+      r = m + Poisson.sample_value(lambda - x);
+    } else {
+      r = Binomial.sample_value(m - 1, lambda / x);
+    }
+    return r;
+  }
+
+  @Override
+  public String toString() {
+    return "Poisson(" + lambda + ")";
+  }
+
+  private double lambda;
+  private boolean hasLambda;
 }
