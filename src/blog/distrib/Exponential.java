@@ -149,7 +149,7 @@ public class Exponential implements CondProbDistrib {
    * Generate a value from Exponential distribution with parameter
    * <code>lambda</code>.
    */
-  public static double sampleVal(double lambda) {
+  public static double sample_value(double lambda) {
     return -Math.log(Util.random()) / lambda;
   }
 
