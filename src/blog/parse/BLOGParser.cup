@@ -242,7 +242,8 @@ start with program;
 
 
 /* The start nonterminal */
-program ::= opt_statement_lst : e {: parser.parseResult = e;  :} ;
+program ::= opt_statement_lst : e {: parser.parseResult = e;  :} 
+  ;
 
 /* Represents a possibly-empty list of statements. */
 opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
@@ -258,6 +259,8 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     :}
   | statement:e SEMI {: if (e!=null) RESULT = new StmtList(e, null); 
                         else RESULT = null; :}
+  | statement:s
+  {: error(sxright, "missing semicolon"); RESULT = null; :}
   | error:er SEMI statement_lst:slst 
     {: RESULT = slst; :}
   | error:er SEMI
@@ -652,6 +655,8 @@ operation_expr ::=
     {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.IMPLY, e2); :}
   | expression:e1 LBRACKET expression:e2 RBRACKET
     {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.SUB, e2); :}
+  | expression:e1 LBRACKET error:err
+    {: error(errxleft, "operation expression syntax error"); :}
   | expression:e1 binop error:err
   {: error(errxleft, "incorrect or missing righthand expression"); :}
   | error:err binop expression:e2
@@ -680,8 +685,8 @@ quantified_formula ::= FORALL:f type:ty ID:id expression:e
 
 function_call ::= refer_name:id LPAREN opt_expression_list:e RPAREN
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), e); :}
-  | refer_name:id LPAREN error:err RPAREN
-    {: error(errxleft, "error in expression list of function call"); :}
+  | refer_name:id LPAREN error:err
+   {: error(errxleft, "error in body of function call"); :}
   | refer_name:id 
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), null); :}
   ;
@@ -784,7 +789,9 @@ tuple_set ::= LBRACE:l expression_list:elst FOR type_var_lst:vars COLON expressi
  *      passed to it match;
  *            - whether the function has been declared.).
  */
-evidence_stmt ::= OBS evidence:e  {: RESULT = e; :};
+evidence_stmt ::= OBS evidence:e  {: RESULT = e; :}
+                | OBS error {: RESULT = null; :}
+              ;
 
 evidence ::=
    symbol_evidence:e {: RESULT = e; :}
