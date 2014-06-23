@@ -265,6 +265,8 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     {: RESULT = slst; :}
   | error:er SEMI
     {: RESULT = null; :}
+  | error
+    {: RESULT = null; :}
 ;
 
 /* A statement can be a declaration, an observation (assertion of some
@@ -762,6 +764,8 @@ implicit_set ::= LBRACE:l type:ty ID:id COLON expression:e RBRACE
     {: RESULT = new ImplicitSetExpr(lxleft.getLine(), lxleft.getColumn(), ty, sym(id), e); :}
   | LBRACE:l type:ty ID:id RBRACE
     {: RESULT = new ImplicitSetExpr(lxleft.getLine(), lxleft.getColumn(), ty, sym(id), null); :}
+  | LBRACE:l type ID  COLON error:err RBRACE
+    {: error(errxleft, "malformed expression in implicit set"); :}
   ;
 
 tuple_set ::= LBRACE:l expression_list:elst FOR type_var_lst:vars COLON expression:e RBRACE
