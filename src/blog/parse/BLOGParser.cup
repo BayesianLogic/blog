@@ -240,13 +240,20 @@ start with program;
 
 
 /* The start nonterminal */
-program ::= opt_statement_lst : e {: parser.parseResult = e;  :} ;
+program ::= opt_statement_lst : e {: parser.parseResult = e;  :} 
+  ;
 
 /* Represents a possibly-empty list of statements. */
 opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
   | statement_lst : e {: RESULT = e; :}
   | statement_lst:e error:er
   {: RESULT = e; :}
+  | statement:s 
+  {: error(sxright, "missing semicolon"); 
+     if (s != null) {
+       RESULT = new StmtList(s, null);
+     } 
+  :}
   ;
 
 /* Represents a non-empty list of statements terminated by semicolons. */
@@ -256,6 +263,8 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     :}
   | statement:e SEMI {: if (e!=null) RESULT = new StmtList(e, null); 
                         else RESULT = null; :}
+  | statement:s statement_lst:slst
+  {: error(sxright, "missing semicolon"); RESULT = slst; :}
   | error:er SEMI statement_lst:slst 
     {: RESULT = slst; :}
   | error:er SEMI
@@ -316,7 +325,7 @@ declaration_stmt ::=
 type_decl ::= TYPE:ty ID:typename 
     {: RESULT = new TypeDec(tyxleft.getLine(), tyxleft.getColumn(), sym(typename)); :}
   | TYPE:ty error:err
-    {: error(errxleft, "malformed or missing id"); :}  
+    {: error(tyxright, "malformed or missing id"); :}  
   ;
 
 /*
@@ -444,8 +453,8 @@ number_stmt ::=
    | NUMSIGN:ns opt_parenthesized_origin_var_list:otl
   dependency_statement_body:body 
     {: error(nsxright, "missing type name"); RESULT = null; :}
-   | NUMSIGN error:err dependency_statement_body:body
-   {: error(errxleft, "error in origin variable list"); :}
+   | NUMSIGN:ns error:err dependency_statement_body:body
+   {: error(nsxright, "error in origin variable list"); :}
   ;
 
 /* list of origin_fun = var, used in number statement */
@@ -485,8 +494,8 @@ origin_func_decl ::=
     ORIGIN:o type:ret_type ID:fname LPAREN type:arg_type RPAREN 
     {: RESULT = new OriginFuncDec(oxleft.getLine(), oxleft.getColumn(), sym(fname),
       new FieldList(null, arg_type, null), ret_type); :}
-  | ORIGIN:o type:ret_type ID:fname LPAREN error:er RPAREN 
-    {: error(erxleft, "syntax error in type argument of origin function");
+  | ORIGIN:o type:ret_type ID:fname LPAREN:lp error:er RPAREN 
+    {: error(lpxright, "syntax error in type argument of origin function");
       RESULT = null;
     :}
   | ORIGIN:o type:ret_type LPAREN type:arg_type RPAREN 
@@ -615,6 +624,8 @@ operation_expr ::=
     {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.IMPLY, e2); :}
   | expression:e1 LBRACKET expression:e2 RBRACKET
     {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.SUB, e2); :}
+  | expression:e1 LBRACKET error:err
+    {: error(errxleft, "operation expression syntax error"); :}
   | unary_operation_expr:e {: RESULT = e; :}
   ;
 
@@ -640,6 +651,8 @@ quantified_formula ::= FORALL:f type:ty ID:id expression:e
 
 function_call ::= refer_name:id LPAREN opt_expression_list:e RPAREN
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), e); :}
+  | refer_name:id LPAREN error:err
+   {: error(errxleft, "error in body of function call"); :}
   | refer_name:id 
     {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), null); :}
   ;
@@ -744,7 +757,9 @@ tuple_set ::= LBRACE:l expression_list:elst FOR type_var_lst:vars COLON expressi
  *      passed to it match;
  *            - whether the function has been declared.).
  */
-evidence_stmt ::= OBS evidence:e  {: RESULT = e; :};
+evidence_stmt ::= OBS evidence:e  {: RESULT = e; :}
+                | OBS error {: RESULT = null; :}
+              ;
 
 evidence ::=
     value_evidence:e {: RESULT = e; :}
