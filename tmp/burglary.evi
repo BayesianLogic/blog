@@ -1,7 +1,0 @@
-/* Evidence for the burglary model saying that both 
- * John and Mary called.  Given this evidence, the posterior probability 
- * of Burglary is 0.284 (see p. 505 of "AI: A Modern Approach", 2nd ed.).
- */
-
-obs JohnCalls = true;
-obs MaryCalls = true;
