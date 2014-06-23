@@ -22,30 +22,23 @@ fixed Integer BgMin = 0;
 fixed Integer BgMax = 2;
 
 // Is a 3D voxel at (X,Y,Z) occupied or not
-random Boolean Occupied3D(Integer X, Integer Y, Integer Z) {
-    if (X < Xmin | X > Xmax | Y < Ymin | Y > Ymax | Z < Zmin | Z > Zmax) then
-        = false
-    else if (X == Y & Y == Z & Y > 2) then
-        = true
-    else
-        = false
-};
+random Boolean Occupied3D(Integer X, Integer Y, Integer Z) ~
+    if (X < Xmin | X > Xmax | Y < Ymin | Y > Ymax | Z < Zmin | Z > Zmax) then false
+    else if (X == Y & Y == Z & Y > 2) then true
+    else false;
 
 
 // The color of a voxel at (X,Y,Z) is set to 0 if not occupied, else chosen uniformly from integers in [FgMin, FgMax]
-random Integer Color3D(Integer X, Integer Y, Integer Z) {
-    if (X >= Xmin & X <= Xmax & Y >= Ymin & Y <= Ymax & Z >= Zmin & Z <= Zmax & Occupied3D(X,Y,Z)) then
-        ~ UniformInt(FgMin, FgMax)
-    else
-        = 0
-};
+random Integer Color3D(Integer X, Integer Y, Integer Z) ~
+    if (X >= Xmin & X <= Xmax & Y >= Ymin & Y <= Ymax & Z >= Zmin & Z <= Zmax & Occupied3D(X,Y,Z)) then UniformInt(FgMin, FgMax)
+    else 0;
 
 // A 2D pixel at (x,y) is occupied only if a 3D voxel of the form (xZ,yZ,Z) is occupied
-random Boolean Occupied2D(Integer x, Integer y) {
+random Boolean Occupied2D(Integer x, Integer y) ~
     if (x < xmin | x > xmax | y < ymin | y > ymax) then
-        = false
+        false
     else 
-        = (exists Integer Z
+          (exists Integer Z
 	      ((Z >= Zmin & Z <= Zmax) &
 	       (exists Integer X
 	          (X >= Xmin & X <= Xmax & X == x * Z &
@@ -56,24 +49,22 @@ random Boolean Occupied2D(Integer x, Integer y) {
 	       )
 	      )
           )
-};
+;
 
 
 // The color of a 2D pixel at (x,y) is the color of the closest occupied voxel (xZ,yZ,Z). If there is no such occupied voxel then choose the color from some background model [BgMin,BgMax]
-random Integer Color2D(Integer x, Integer y) {
+random Integer Color2D(Integer x, Integer y) ~
     if (Occupied2D(x,y)) then
-        = Color3D(x * Setm(x,y), y * Setm(x,y), Setm(x,y))
+        Color3D(x * Setm(x,y), y * Setm(x,y), Setm(x,y))
     else
-        ~ UniformInt(BgMin, BgMax)
-};
+        UniformInt(BgMin, BgMax)
+;
 
 // Function for given a pixel (x,y), finding the closest occupied voxel (xZ,yZ,Z) - i.e. return the minimum z
-random Integer Setm(Integer x, Integer y) {
-    if (Occupied2D(x,y)) then
-        = min({Integer Z: Z >= Zmin & Z <= Zmax & x * Z >= Xmin & x * Z <= Xmax & y * Z >= Ymin & y * Z <= Ymax & Occupied3D(x * Z, y * Z, Z) == true})
-    else
-        = 0
-};
+random Integer Setm(Integer x, Integer y) ~
+    if (Occupied2D(x,y)) then 
+        min({Integer Z: Z >= Zmin & Z <= Zmax & x * Z >= Xmin & x * Z <= Xmax & y * Z >= Ymin & y * Z <= Ymax & Occupied3D(x * Z, y * Z, Z) == true})
+    else 0;
 
 query Occupied2D(1,1); 
 query Occupied2D(1,2);

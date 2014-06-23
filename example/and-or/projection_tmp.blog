@@ -27,27 +27,19 @@ fixed Integer ymax = 2;
 fixed Integer ymin = 0;
 
 
-#Voxel(X = X1, Y = Y1, Z = Z1) {
-    if (X1 >= Xmin & X1 <= Xmax & Y1 >= Ymin & Y1 <= Ymax & Z1 >= Zmin & Z1 <= Zmax) then
-        = 1
-    else 
-        = 0
-};
+#Voxel(X = X1, Y = Y1, Z = Z1) ~
+    if (X1 >= Xmin & X1 <= Xmax & Y1 >= Ymin & Y1 <= Ymax & Z1 >= Zmin & Z1 <= Zmax) then 1
+    else 0
+    ;
 
-#Pixel(x = x1, y = y1) {
-    if (x1 >= xmin & x1 <= xmax & y1 >= ymin & y1 <= ymax) then
-        = 1
-    else 
-        = 0
-};
+#Pixel(x = x1, y = y1) ~
+    if (x1 >= xmin & x1 <= xmax & y1 >= ymin & y1 <= ymax) then 1
+    else 0
+    ;
 
-random Boolean Occupied3D(Voxel v) {
-    = false
-};
+random Boolean Occupied3D(Voxel v) ~ false;
 
-random Boolean Occupied2D(Pixel p) {
-    = true
-};
+random Boolean Occupied2D(Pixel p) ~ true;
 
 query #{Pixel p: x(p) == 1 & y(p) == 1};
 query {Occupied2D(p) for Pixel p: x(p) == 1 & y(p) == 1};

@@ -3,7 +3,7 @@ fixed RealMatrix sigma0 = [1.0, 0.0; 0.0, 1.0];
 random Real scale ~ UniformReal(1.0, 2.0);
 
 random RealMatrix mu ~ MultivarGaussian(mu0, sigma0);
-random RealMatrix sigma = scale * eye(2);
+random RealMatrix sigma ~ scale * eye(2);
 
 random RealMatrix x ~ MultivarGaussian(mu, sigma);
 
