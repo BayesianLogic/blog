@@ -86,11 +86,11 @@ parser code {:
   }
   
   public void unrecovered_syntax_error(Symbol cur_token) {
-    if (cur_token instanceof java_cup.runtime.ComplexSymbolFactory.ComplexSymbol) {
-      java_cup.runtime.ComplexSymbolFactory.ComplexSymbol s = 
-        (java_cup.runtime.ComplexSymbolFactory.ComplexSymbol) cur_token;
-      errorMsg.error(s.xleft.getLine(), s.xleft.getColumn(), "cannot continue parse at " + s);
-    } else errorMsg.error(0, 0, "the last encounterd token #" + cur_token);
+    try {
+      try_do_reduce(cur_token.sym, false);
+    } catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
   }
   
   public void syntax_error(Symbol cur_token) {
@@ -100,20 +100,13 @@ parser code {:
       errorMsg.error(s.xleft.getLine(), s.xleft.getColumn(), "syntax error at " + s);
     } else errorMsg.error(0, 0, "the last encounterd token #" + cur_token);
   }
-  
-  /**
-   * first try to use the default error recover
-   * if it doesnot succeed, try to do reduce
-   */
-  protected boolean error_recovery(boolean debug) throws java.lang.Exception {
-    if (debug) {
-      debug_message("trying to recover error");
-    }
+
+  private void try_do_reduce(int sym, boolean debug) throws java.lang.Exception {
     Symbol lhs_sym;
     short handle_size, lhs_sym_num;
     int act;
     // try reduce
-    act = get_action(((Symbol)stack.peek()).parse_state, error_sym());
+    act = get_action(((Symbol)stack.peek()).parse_state, sym);
     while (act < 0) {
         /* perform the action for the reduce */
         lhs_sym = do_action((-act)-1, this, stack, tos);
@@ -148,6 +141,19 @@ parser code {:
         tos++;
         act = get_action(((Symbol)stack.peek()).parse_state, error_sym());
     }
+
+  }
+  
+  /**
+   * first try to use the default error recover
+   * if it doesnot succeed, try to do reduce
+   */
+  protected boolean error_recovery(boolean debug) throws java.lang.Exception {
+    if (debug) {
+      debug_message("trying to recover error");
+    }
+
+    try_do_reduce(error_sym(), debug);
     boolean flag = super.error_recovery(debug); // try normal recovery
     return flag;
   }
@@ -263,14 +269,14 @@ program ::= opt_statement_lst : e {: parser.parseResult = e;  :}
 /* Represents a possibly-empty list of statements. */
 opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
   | statement_lst : e {: RESULT = e; :}
-  | statement_lst:e error:er
-  {: RESULT = e; :}
+/*//  | statement_lst:e error:er
+//  {: RESULT = e; :}
   | statement:s 
   {: error(sxright, "missing semicolon"); 
      if (s != null) {
        RESULT = new StmtList(s, null);
      } 
-  :}
+  :}*/
   ;
 
 /* Represents a non-empty list of statements terminated by semicolons. */
@@ -280,14 +286,15 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     :}
   | statement:e SEMI {: if (e!=null) RESULT = new StmtList(e, null); 
                         else RESULT = null; :}
-  | statement:e statement_lst:slst
+/*  | statement:e statement_lst:slst
   {: error(exright, "missing semicolon"); 
     if (e==null) RESULT = slst;
     else RESULT = new StmtList(e, slst); :}
   | error:er SEMI statement_lst:slst 
     {: RESULT = slst; :}
   | error:er SEMI
-    {: RESULT = null; :} 
+    {: RESULT = null; :} */
+  | statement:e {: error(exright, "missing ;"); RESULT = null; :}
 ;
 
 /* A statement can be a declaration, an observation (assertion of some
