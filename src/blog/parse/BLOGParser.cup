@@ -106,9 +106,14 @@ parser code {:
    * if it doesnot succeed, try to do reduce
    */
   protected boolean error_recovery(boolean debug) throws java.lang.Exception {
-    int act = get_action(((Symbol)stack.peek()).parse_state, error_sym());
+    if (debug) {
+      debug_message("trying to recover error");
+    }
     Symbol lhs_sym;
     short handle_size, lhs_sym_num;
+    int act;
+    // try reduce
+    act = get_action(((Symbol)stack.peek()).parse_state, error_sym());
     while (act < 0) {
         /* perform the action for the reduce */
         lhs_sym = do_action((-act)-1, this, stack, tos);
@@ -116,6 +121,10 @@ parser code {:
         /* look up information about the production */
         lhs_sym_num = production_tab[(-act)-1][0];
         handle_size = production_tab[(-act)-1][1];
+        
+        if (debug) {
+          debug_reduce((-act)-1, lhs_sym_num, handle_size);
+        }
 
         /* pop the handle off the stack */
         for (int i = 0; i < handle_size; i++) {
@@ -129,11 +138,18 @@ parser code {:
         /* shift to that state */
         lhs_sym.parse_state = act;
         
+        if (debug) {
+          debug_message("# Reduce rule: top state " +
+           ((Symbol)stack.peek()).parse_state +
+           ", lhs sym " + lhs_sym_num + " -> state " + act); 
+        }
+        
         stack.push(lhs_sym);
         tos++;
         act = get_action(((Symbol)stack.peek()).parse_state, error_sym());
     }
-    return super.error_recovery(debug);
+    boolean flag = super.error_recovery(debug); // try normal recovery
+    return flag;
   }
 
 // WC: Methods that get automatically invoked when using the builtin error recovery mechanism.  
@@ -264,13 +280,13 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     :}
   | statement:e SEMI {: if (e!=null) RESULT = new StmtList(e, null); 
                         else RESULT = null; :}
-  | statement:s statement_lst:slst
-  {: error(sxright, "missing semicolon"); RESULT = slst; :}
+  | statement:e statement_lst:slst
+  {: error(exright, "missing semicolon"); 
+    if (e==null) RESULT = slst;
+    else RESULT = new StmtList(e, slst); :}
   | error:er SEMI statement_lst:slst 
     {: RESULT = slst; :}
   | error:er SEMI
-    {: RESULT = null; :}
-  | error
     {: RESULT = null; :}
 ;
 
@@ -401,9 +417,6 @@ parenthesized_type_var_lst ::=
     {: RESULT = null; :}
   | LPAREN type_var_lst:tl RPAREN
     {: RESULT = tl; :}
-  | error:lp parenthesized_type_var_lst:tl
-    {: error(lpxleft, "syntax error"); 
-      RESULT = tl; :}
   ;
 
 extra_commas ::= COMMA COMMA
@@ -433,6 +446,9 @@ fixed_func_decl ::=
     FIXED:fx type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
     EQ expression:ex
     {: RESULT = new FixedFuncDec(fxxleft.getLine(), fxxleft.getColumn(), sym(fname), otl, ret_type, ex); :}
+  | FIXED:fx error:er
+    {: error(fxxright, "error in fixed function defition");
+    RESULT = null; :}
   ;
 
 /**
@@ -443,7 +459,10 @@ rand_func_decl ::=
     RANDOM:r type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
     dependency_statement_body:body 
     {: RESULT = new RandomFuncDec(rxleft.getLine(), rxleft.getColumn(), sym(fname), otl, ret_type, body); :}
-   ;
+| RANDOM:r error:er
+  {: error(rxright, "error in random function definition");
+  RESULT = null; :}
+;
 
 /**
  * number statement
