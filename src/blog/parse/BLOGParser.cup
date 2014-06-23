@@ -189,7 +189,8 @@ nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
 nonterminal Stmt evidence, value_evidence;
 nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
   quantified_formula, list_construct_expression,
-  map_construct_expression, number_expr, if_expr, case_expr;
+  number_expr, if_expr, case_expr;
+nonterminal MapInitExpr map_construct_expression;
 nonterminal FuncCallExpr function_call;
 nonterminal Expr dependency_statement_body;
 nonterminal SetExpr set_expr;
@@ -663,6 +664,17 @@ if_expr ::= IF:a expression:e1 THEN expression:e2 ELSE expression:e3
     {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, e3); :}
   | IF:a expression:e1 THEN expression:e2
     {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, null); :}
+  ;
+
+case_expr ::= CASE:c expression:e1 map_construct_expression:e2 
+    {: 
+    if (e2 == null) {
+      error(e2xleft, "error in case expression");
+      RESULT = null;
+    } else {
+      RESULT = new CaseExpr(cxleft.getLine(), cxleft.getColumn(), e1, e2.values);
+    } 
+    :}
   ;
 
 opt_expression_list ::= expression_list:e {: RESULT = e; :}
