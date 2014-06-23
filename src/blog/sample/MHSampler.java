@@ -85,7 +85,7 @@ public class MHSampler extends Sampler {
   /** Method responsible for initializing the proposer field. */
   protected void constructProposer(Properties properties) {
     String proposerClassName = properties.getProperty("proposerClass",
-        "blog.GenericProposer");
+        "blog.sample.GenericProposer");
     System.out.println("Constructing M-H proposer of class "
         + proposerClassName);
 
