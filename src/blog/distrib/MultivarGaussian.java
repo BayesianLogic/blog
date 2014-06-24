@@ -55,7 +55,7 @@ public class MultivarGaussian implements CondProbDistrib {
    *          an array of the form [MatrixLib, MatrixLib]
    *          <ul>
    *          <li>params[0]: <code>mean</code>, as a MatrixLib that serves as a
-   *          column vector</li>
+   *          row vector</li>
    *          <li>params[1]: <code>covariance</code>, as a MatrixLib that serves
    *          as a covariance matrix</li>
    *          </ul>
@@ -71,7 +71,7 @@ public class MultivarGaussian implements CondProbDistrib {
   }
 
   /**
-   * If the method parameter mean is non-null and is a legal column vector, set
+   * If the method parameter mean is non-null and is a legal row vector, set
    * the distribution parameter <code>mean</code> to the method parameter mean.
    * If the method parameter covariance is non-null and is a valid square,
    * symmetric matrix, set the distribution parameter <code>covariance</code> to
@@ -164,12 +164,12 @@ public class MultivarGaussian implements CondProbDistrib {
   }
 
   /**
-   * If <code>x</code> is a column vector of (d by 1) and the mean and
+   * If <code>x</code> is a row vector of (d by 1) and the mean and
    * covariance have been initialized correctly, return the density value p =
    * 1/sqrt((2*pi)^d*|sigma|)*exp{-0.5(x-mean)'*inverse(sigma)*(x-mean)}
    * 
    * @throws IllegalStateException
-   *           if the matrix <code>x</code> is not a d-dimensional column vector
+   *           if the matrix <code>x</code> is not a d-dimensional row vector
    * 
    * @param x
    *          row vector of dimension 1 by <code>d</code>
@@ -184,7 +184,7 @@ public class MultivarGaussian implements CondProbDistrib {
   }
 
   /**
-   * Given a d-dimensional column vector x, returns the density value p =
+   * Given a d-dimensional row vector x, returns the density value p =
    * 1/sqrt((2*pi)^d*|sigma|)*exp{-0.5(x-mean)'*inverse(sigma)*(x-mean)}
    */
   private double getProbInternal(MatrixLib x) {
@@ -208,7 +208,7 @@ public class MultivarGaussian implements CondProbDistrib {
    * Returns the natural log of the probability returned by getProb.
    * 
    * @param x
-   *          column vector of dimension 1 by <code>d</code>
+   *          row vector of dimension 1 by <code>d</code>
    */
   public double getLogProb(MatrixLib x) {
     checkHasParams();
