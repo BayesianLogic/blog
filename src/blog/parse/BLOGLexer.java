@@ -919,7 +919,7 @@ public class BLOGLexer implements java_cup.runtime.Scanner {
 
       switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
         case 1: 
-          { error("Lexer encountered some error");
+          { error("Unrecognized character!");
           }
         case 77: break;
         case 2: 
