@@ -1,3 +1,6 @@
 random Date Birthday(Person p)
   ~ Real x;
  
+random Date Birthday(Person p)
+	Real x;
+ 

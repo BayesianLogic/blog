@@ -1,1 +1,3 @@
-query #{};
+query #{Person p true};
+
+query #{Person p :: true};
