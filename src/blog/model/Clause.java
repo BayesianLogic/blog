@@ -76,8 +76,8 @@ public class Clause {
    *          List of ArgSpec objects whose denotations will be passed to the
    *          CPD each time it is invoked
    */
-  public Clause(Formula cond, Class cpdClass, List<ArgSpec> cpdParams,
-      List<ArgSpec> cpdArgs) {
+  public Clause(Formula cond, Class<? extends CondProbDistrib> cpdClass,
+      List<ArgSpec> cpdParams, List<ArgSpec> cpdArgs) {
     this.cond = cond;
     this.cpdClass = cpdClass;
     this.cpdParams = cpdParams;
@@ -97,7 +97,8 @@ public class Clause {
    * @param cpdArgsAndParams
    *          A mixed list of arguments and parameters.
    */
-  public Clause(Formula cond, Class cpdClass, List<ArgSpec> cpdArgsAndParams) {
+  public Clause(Formula cond, Class<? extends CondProbDistrib> cpdClass,
+      List<ArgSpec> cpdArgsAndParams) {
     this.cond = cond;
     this.cpdClass = cpdClass;
     this.cpdParams = null;
@@ -131,13 +132,6 @@ public class Clause {
 
   public Formula getCond() {
     return cond;
-  }
-
-  public Class getCPDClass() {
-    if (cpd != null) {
-      return cpd.getClass();
-    }
-    return cpdClass;
   }
 
   public CondProbDistrib getCPD() {
@@ -431,7 +425,7 @@ public class Clause {
   private Object location = DEFAULT_LOCATION;
 
   private Formula cond;
-  private Class cpdClass;
+  private Class<? extends CondProbDistrib> cpdClass;
   private List<ArgSpec> cpdParams; // of ArgSpec;
   private CondProbDistrib cpd;
   private List<ArgSpec> cpdArgs; // of ArgSpec
