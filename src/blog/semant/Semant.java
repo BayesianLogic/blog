@@ -11,6 +11,7 @@ import java.util.List;
 import blog.absyn.Absyn;
 import blog.absyn.ArrayTy;
 import blog.absyn.BooleanExpr;
+import blog.absyn.CaseExpr;
 import blog.absyn.Dec;
 import blog.absyn.DistinctSymbolDec;
 import blog.absyn.DistributionDec;
@@ -723,6 +724,32 @@ public class Semant {
     return c;
   }
 
+  Clause transExpr(CaseExpr e) {
+    Class<? extends CondProbDistrib> cls = getDistributionClass("TabularCPD");
+
+    List<ArgSpec> probKeys = new ArrayList<ArgSpec>();
+    List<Object> probs = new ArrayList<Object>();
+    ExprTupleList mapExprs = e.clauses;
+    while (mapExprs != null) {
+      probKeys.add((ArgSpec) transExpr(mapExprs.from));
+      probs.add(transExpr(mapExprs.to));
+      mapExprs = mapExprs.next;
+    }
+    MapSpec m = new MapSpec(probKeys, probs);
+
+    List<ArgSpec> args = new ArrayList<ArgSpec>();
+    args.add((ArgSpec) m);
+    Object t = transExpr(e.test);
+    if (t instanceof ArgSpec) {
+      args.add((ArgSpec) t);
+    } else {
+      error(e.line, e.col, "Expression expected! but we get " + t.toString());
+    }
+    Clause c = new Clause(TrueFormula.TRUE, cls, args);
+    c.setLocation(e.line);
+    return c;
+  }
+
   ArgSpec transExpr(DoubleExpr e) {
     // TODO is there a better way than using function?
     Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
@@ -751,6 +778,8 @@ public class Semant {
       return transExpr((TupleSetExpr) e);
     } else if (e instanceof IfExpr) {
       return transExpr((IfExpr) e);
+    } else if (e instanceof CaseExpr) {
+      return transExpr((CaseExpr) e);
     } else if (e instanceof OpExpr) {
       return transExpr((OpExpr) e);
     } else if (e instanceof FuncCallExpr) {
