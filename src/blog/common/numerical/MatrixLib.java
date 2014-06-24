@@ -134,4 +134,9 @@ public interface MatrixLib {
    * Return the real parts of the eigenvalues of the matrix.
    */
   public double[] eigenvals();
+
+  /**
+   * Returns true if the matrix is symmetric
+   */
+  public boolean isSymmetric();
 }
