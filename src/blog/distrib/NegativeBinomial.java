@@ -98,9 +98,6 @@ public class NegativeBinomial implements CondProbDistrib {
       this.hasP = true;
       this.p = p;
     }
-    if (this.hasP && this.hasR) {
-      gamma = new Gamma(this.r, (this.p / (1 - this.p)));
-    }
   }
 
   private void checkHasParams() {
@@ -172,11 +169,9 @@ public class NegativeBinomial implements CondProbDistrib {
 
   /** Samples from the Negative Binomial distribution. */
   public int sample_value() {
-    // Need to fix this to call instance methods sample_value of theta and
-    // poisson
     checkHasParams();
-    Double theta = (Double) gamma.sampleVal();
-    return Poisson.sampleVal(theta);
+    double theta = Gamma.sample_value(this.r, (this.p / (1 - this.p)));
+    return Poisson.sample_value(theta);
   }
 
   @Override
@@ -184,7 +179,6 @@ public class NegativeBinomial implements CondProbDistrib {
     return "NegativeBinomial(" + r + ", " + p + ")";
   }
 
-  private Gamma gamma;
   private int r;
   private boolean hasR;
   private double p;

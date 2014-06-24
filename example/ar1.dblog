@@ -1,7 +1,7 @@
 random Real theta ~ Gaussian(0,0.1);
 random Real state(Timestep t) {
     if t == @0 then ~ Gaussian(0, 1)
-    else ~ Gaussian(theta * state(Prev(t)), 1)
+    else ~ Gaussian(theta * state(prev(t)), 1)
 };
 
 random Real NoisyObs(Timestep t) ~ Gaussian(state(t),1);

@@ -53,10 +53,10 @@ video. BLOG makes it easy and concise to represent:
 - Easy and automatic setup: from Eclipse, clone the git repo, import it. The git repo already contains eclipse setting files.
 
 
-## Package
+## Package and Release
 
 ```
-  make zip
+  make release
 ```
 
 

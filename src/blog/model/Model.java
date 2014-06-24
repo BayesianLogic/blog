@@ -54,8 +54,9 @@ import java.util.StringTokenizer;
 import blog.Main;
 import blog.ObjectIdentifier;
 import blog.common.Util;
+import blog.sample.DefaultEvalContext;
 import blog.type.Timestep;
-import fove.Parfactor;
+import blog.world.PartialWorld;
 
 /**
  * This class contains all the information available about the structure of the
@@ -98,7 +99,6 @@ public class Model {
     functions = new ArrayList<Function>(another.functions);
     functionsByName = new HashMap<String, List<Function>>(
         another.functionsByName);
-    parfactors = new ArrayList<Parfactor>(another.parfactors);
   }
 
   /** Reads a model from a file and returns it. */
@@ -397,9 +397,9 @@ public class Model {
       return Boolean.FALSE;
     }
 
-    NonRandomFunction f = ((NonRandomFunction) getFunction(new FunctionSignature(
-        name)));
-    return (f == null) ? null : f.getValue();
+    FixedFunction f = ((FixedFunction) getFunction(new FunctionSignature(name)));
+    return (f == null) ? null : f.getValueInContext(new Object[0],
+        new DefaultEvalContext(PartialWorld.EMPTY_INST), false);
   }
 
   /**
@@ -409,28 +409,12 @@ public class Model {
    * @return the new non-random constant. To get its value (the new enumerated
    *         object), use its <code>getValue()</code> method.
    */
-  public NonRandomFunction addEnumeratedObject(String name, Type type) {
-    NonRandomFunction constant = new NonRandomFunction(name, type);
+  public FixedFunction addEnumeratedObject(String name, Type type) {
+    FixedFunction constant = new FixedFunction(name, type);
     Object o = type.addGuaranteedObject(constant);
     constant.setConstantInterp(o);
     addFunction(constant);
     return constant;
-  }
-
-  /**
-   * Adds the given parfactor to this model.
-   */
-  public void addParfactor(Parfactor pf) {
-    parfactors.add(pf);
-  }
-
-  /**
-   * Returns the parfactors in this model, in the order they were declared.
-   * 
-   * @return unmodifiable list of parfactors
-   */
-  public List<Parfactor> getParfactors() {
-    return Collections.unmodifiableList(parfactors);
   }
 
   /** Prints this model to the given stream. */
@@ -445,8 +429,8 @@ public class Model {
     // Print nonrandom functions
     for (Iterator iter = functions.iterator(); iter.hasNext();) {
       Function f = (Function) iter.next();
-      if (f instanceof NonRandomFunction) {
-        ((NonRandomFunction) f).print(s);
+      if (f instanceof FixedFunction) {
+        ((FixedFunction) f).print(s);
       }
     }
 
@@ -464,13 +448,6 @@ public class Model {
       if (f instanceof RandomFunction) {
         ((RandomFunction) f).printDepStatement(s);
       }
-    }
-
-    // Print parfactors
-    for (Iterator iter = parfactors.iterator(); iter.hasNext();) {
-      Parfactor pf = (Parfactor) iter.next();
-      pf.print(s);
-      s.println();
     }
   }
 
@@ -506,14 +483,6 @@ public class Model {
       }
     }
 
-    // Check parfactors
-    for (Iterator pfIter = parfactors.iterator(); pfIter.hasNext();) {
-      Parfactor pf = (Parfactor) pfIter.next();
-      if (!pf.checkTypesAndScope(this)) {
-        correct = false;
-      }
-    }
-
     return correct;
   }
 
@@ -524,10 +493,6 @@ public class Model {
    */
   public boolean checkCompleteness() {
     boolean complete = true;
-
-    if (!parfactors.isEmpty()) {
-      return complete;
-    }
 
     for (Iterator iter = functions.iterator(); iter.hasNext();) {
       Function f = (Function) iter.next();
@@ -564,11 +529,6 @@ public class Model {
     for (Iterator iter = functions.iterator(); iter.hasNext();) {
       Function f = (Function) iter.next();
       errors += f.compile(callStack);
-    }
-
-    for (Iterator iter = parfactors.iterator(); iter.hasNext();) {
-      Parfactor pf = (Parfactor) iter.next();
-      errors += pf.compile(callStack);
     }
 
     return errors;
@@ -747,11 +707,6 @@ public class Model {
    * argument types). For user-defined functions.
    */
   protected Map<String, List<Function>> functionsByName = new HashMap<String, List<Function>>();
-
-  /**
-   * Parfactors, in the order they were defined.
-   */
-  protected List<Parfactor> parfactors = new ArrayList<Parfactor>();
 
   private static int creationIndex = 0;
 }

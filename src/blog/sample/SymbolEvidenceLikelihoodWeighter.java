@@ -9,7 +9,7 @@ import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.Evidence;
 import blog.model.FuncAppTerm;
-import blog.model.NonRandomFunction;
+import blog.model.FixedFunction;
 import blog.model.RandomFunction;
 import blog.model.SkolemConstant;
 import blog.model.SymbolEvidenceStatement;
@@ -347,7 +347,7 @@ public class SymbolEvidenceLikelihoodWeighter extends
 	}
 
 	private ArgSpec constantTerm(Type type, Object value) {
-		return new FuncAppTerm(NonRandomFunction.createConstant(value.toString(),
+		return new FuncAppTerm(FixedFunction.createConstant(value.toString(),
 				type, value));
 	}
 
