@@ -35,87 +35,58 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
 
 /**
- * An Exponential distribution with parameter lambda over non-negative reals.
+ * An Exponential distribution with parameter <code>lambda</code> over
+ * non-negative reals.
  * The probability of x is lambda * e^(-lambda*x).
+ * 
+ * @since June 17, 2014
  */
 
-public class Exponential extends AbstractCondProbDistrib {
-  /**
-   * Creates a new Exponential with parameter lambda
-   */
-  public Exponential(List params) {
-    if (!(params.get(0) instanceof Number)) {
-      throw new IllegalArgumentException("The first parameter to Exponential "
-          + "must be of class Number, " + "not " + params.get(0).getClass()
-          + ".");
-    }
-
-    lambda = ((Number) params.get(0)).doubleValue();
-  }
+public class Exponential implements CondProbDistrib {
 
   /**
-   * Returns the probability of x under this distribution
-   */
-  public double getProb(List args, Object value) {
-    if (!(value instanceof Number)) {
-      throw new IllegalArgumentException(
-          "The Exponential CPD is a distribution over Numbers, " + "not "
-              + value.getClass() + ".");
-    } else {
-      double x = ((Number) value).doubleValue();
-      return (lambda * Math.exp((-lambda) * x));
-    }
-  }
-
-  /**
-   * Returns the log of the probability of x under this distribution.
-   */
-  public double getLogProb(List args, Object value) {
-    if (!(value instanceof Number)) {
-      throw new IllegalArgumentException(
-          "The Exponential CPD is a distribution over Numbers, " + "not "
-              + value.getClass() + ".");
-    } else {
-      double x = ((Number) value).doubleValue();
-      return (Math.log(lambda) - (lambda * x));
-    }
-  }
-
-  /**
-   * Returns a double sampled according to this distribution. Takes constant
-   * time. (Reference: A Guide to Simulation, 2nd Ed. Bratley, Paul, Bennett L.
-   * Fox and Linus E. Schrage.)
-   */
-  public Object sampleVal(List args) {
-    return sampleVal(lambda);
-  }
-
-  /**
-   * generate a value from Exponential distribution with parameter lambda
+   * set parameters for Exponential distribution
    * 
-   * @param lambda
-   * @return
-   */
-  public static double sampleVal(double lambda) {
-    return -Math.log(Util.random()) / lambda;
-  }
-
-  private double lambda;
-
-  /*
-   * (non-Javadoc)
+   * @param params
+   *          An array of the form [Double]
+   *          <ul>
+   *          <li>params[0]: <code>lambda</code> (Double)</li>
+   *          </ul>
    * 
-   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
    */
   @Override
   public void setParams(Object[] params) {
-    // TODO Auto-generated method stub
+    if (params.length != 1) {
+      throw new IllegalArgumentException("expected one parameter");
+    }
+    setParams((Double) params[0]);
+  }
 
+  /**
+   * If the method parameter lambda is non-null and non-negative, set the
+   * distribution parameter <code>lambda</code> to the method parameter lambda.
+   * 
+   */
+  public void setParams(Double lambda) {
+    if (lambda != null) {
+      if (lambda <= 0) {
+        throw new IllegalArgumentException(
+            "parameter lambda for an exponential distribution must be a strictly positive real");
+      }
+      this.hasLambda = true;
+      this.lambda = lambda;
+      this.logLambda = Math.log(lambda);
+    }
+  }
+
+  private void checkHasParams() {
+    if (!this.hasLambda) {
+      throw new IllegalArgumentException("parameter lambda not provided");
+    }
   }
 
   /*
@@ -125,8 +96,17 @@ public class Exponential extends AbstractCondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
+    return getProb(((Double) value).doubleValue());
+  }
+
+  /** Return the probability of <code>value</code>. */
+  public double getProb(double value) {
+    checkHasParams();
+    if (value < 0) {
+      return 0;
+    } else {
+      return (lambda * Math.exp((-lambda) * value));
+    }
   }
 
   /*
@@ -136,8 +116,17 @@ public class Exponential extends AbstractCondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    // TODO Auto-generated method stub
-    return 0;
+    return getLogProb(((Double) value).doubleValue());
+  }
+
+  /** Return the log probability of <code>value</code>. */
+  public double getLogProb(double value) {
+    checkHasParams();
+    if (value < 0) {
+      return Double.NEGATIVE_INFINITY;
+    } else {
+      return logLambda - lambda * value;
+    }
   }
 
   /*
@@ -147,7 +136,29 @@ public class Exponential extends AbstractCondProbDistrib {
    */
   @Override
   public Object sampleVal() {
-    // TODO Auto-generated method stub
-    return null;
+    return sample_value();
   }
+
+  /** Samples a value from an exponential distribution. */
+  public double sample_value() {
+    checkHasParams();
+    return -Math.log(Util.random()) / this.lambda;
+  }
+
+  /**
+   * Generate a value from Exponential distribution with parameter
+   * <code>lambda</code>.
+   */
+  public static double sample_value(double lambda) {
+    return -Math.log(Util.random()) / lambda;
+  }
+
+  @Override
+  public String toString() {
+    return "Exponential(" + lambda + ")";
+  }
+
+  private boolean hasLambda;
+  private double lambda;
+  private double logLambda;
 }
