@@ -9,11 +9,14 @@ import blog.BLOGUtil
  *
  * Holds a PartialWorld and enables evaluating arbitrary expressions in that world.
  *
+ * Concrete subclasses must implement the following methods:
+ * - logWeight
+ *
  * @author cberzan
  * @since Jun 23, 2014
  *
  */
-class Sample(val model: Model, val world: PartialWorld) {
+abstract class Sample(val model: Model, val world: PartialWorld) {
   def eval(exprStr: String): Object = {
     var result: Object = null
 
@@ -35,6 +38,9 @@ class Sample(val model: Model, val world: PartialWorld) {
 
     result
   }
+
+  // Log-weight of this sample when updating queries.
+  def logWeight: Double
 
   override def toString = s"Sample(world: ${world})"
 }

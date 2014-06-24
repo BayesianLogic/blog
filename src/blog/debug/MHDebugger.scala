@@ -22,25 +22,18 @@ class MHDebugger(model: Model, evidence: Evidence, queries: Queries)
     sampler
   }
 
-  def sampleOne = {
+  def nextSample = {
     sampler.nextSample()
     val mhSampler = sampler.asInstanceOf[MHSampler]
     val proposer = mhSampler.getProposer().asInstanceOf[GenericProposer]
-    val changed =
-      lastSample = new MHSample(
-        model,
-        sampler.getLatestWorld(),
-        mhSampler.latestAccepted,
-        proposer.latestLogProbBackward(),
-        proposer.latestLogProbForward(),
-        mhSampler.latestLogProbRatio,
-        mhSampler.latestLogAcceptRatio)
-    println(lastSample)
-    samples.append(lastSample)
-    // For MH, all samples have weight 1, i.e. log-weight 0.
-    queries.foreach(query => query.updateStats(lastSample.world, 0.0))
-    // TODO: print number of samples so far
-    // TODO: stats method to print out sampler stats
+    new MHSample(
+      model,
+      sampler.getLatestWorld(),
+      mhSampler.latestAccepted,
+      proposer.latestLogProbBackward(),
+      proposer.latestLogProbForward(),
+      mhSampler.latestLogProbRatio,
+      mhSampler.latestLogAcceptRatio)
   }
 }
 
