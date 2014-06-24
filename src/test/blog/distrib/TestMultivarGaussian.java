@@ -151,4 +151,5 @@ public class TestMultivarGaussian implements TestDistributions {
     gauss.setParams(mean, variance);
     gauss.sampleVal();
   }
+
 }
