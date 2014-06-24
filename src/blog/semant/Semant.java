@@ -49,6 +49,7 @@ import blog.absyn.TupleSetExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
+import blog.distrib.CondProbDistrib;
 import blog.distrib.EqualsCPD;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
@@ -155,6 +156,14 @@ public class Semant {
       } catch (ClassNotFoundException e) {
         // continue loop
       }
+    }
+    return null;
+  }
+
+  Class<? extends CondProbDistrib> getDistributionClass(String classname) {
+    Class<?> cls = getClassWithName(classname);
+    if (CondProbDistrib.class.isAssignableFrom(cls)) {
+      return cls.asSubclass(CondProbDistrib.class);
     }
     return null;
   }
@@ -702,7 +711,8 @@ public class Semant {
   }
 
   Clause transToDistribution(FuncCallExpr e) {
-    Class<?> cls = getClassWithName(e.func.toString());
+    Class<? extends CondProbDistrib> cls = getDistributionClass(e.func
+        .toString());
     if (cls == null) {
       return null;
     }
