@@ -33,7 +33,7 @@ random Real[] Mean(Component c, Timestep t) {
 	// UniformVector(x_lower, x_upper, y_lower, y_upper, z_lower, z_upper)
     if (t == @1) then ~ UniformVector(0, 255, 0, 255, 0, 255)
 	// MultivarGaussian(dimension, mean, covariance)
-    else ~ MultivarGaussian(Mean(c, Prev(t)), variance)
+    else ~ MultivarGaussian(Mean(c, prev(t)), variance)
 };
 
 random Component AssociatedComponent(Integer x, Integer y, Timestep t)

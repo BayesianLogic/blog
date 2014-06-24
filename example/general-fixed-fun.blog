@@ -1,0 +1,15 @@
+fixed Real magic(Real x, Real y) 
+  = exp(2 * x) + sin(y ^ 3 - x) / 5;
+
+random Real x = magic(1.0, 2.4);
+
+
+query magic(1.0, 2.4);
+query x;
+query x == magic(1.0, 2.4);
+
+
+fixed Integer mow(Integer x) 
+  = round(magic(x, 2 * x + 0.4)) % 5;
+
+query mow(1);

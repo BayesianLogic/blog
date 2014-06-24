@@ -7,7 +7,7 @@ import blog.common.Util;
 import blog.model.BuiltInTypes;
 import blog.model.Function;
 import blog.model.Model;
-import blog.model.NonRandomFunction;
+import blog.model.FixedFunction;
 import blog.world.PartialWorld;
 
 /**
@@ -54,7 +54,7 @@ public class LiuWestFilter extends ParticleFilter {
     // parameters. We can extend it to perturb vectors etc. later.)
     funcNamesToPerturb = new ArrayList<String>();
     for (Function func : model.getFunctions()) {
-      if (func instanceof NonRandomFunction) {
+      if (func instanceof FixedFunction) {
         // We only perturb functions that are random.
         continue;
       }

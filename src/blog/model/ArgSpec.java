@@ -315,9 +315,9 @@ public abstract class ArgSpec {
       if (!(x instanceof FuncAppTerm))
         return;
       FuncAppTerm term = (FuncAppTerm) x;
-      if (!(term.getFunction() instanceof NonRandomFunction))
+      if (!(term.getFunction() instanceof FixedFunction))
         return;
-      FunctionInterp interp = ((NonRandomFunction) term.getFunction())
+      FunctionInterp interp = ((FixedFunction) term.getFunction())
           .getInterpretation();
       if (!(interp instanceof ConstantInterp))
         return;
