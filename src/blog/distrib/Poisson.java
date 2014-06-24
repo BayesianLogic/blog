@@ -248,10 +248,9 @@ public class Poisson implements CondProbDistrib {
   public static int sample_value(double lambda) {
     if (lambda < 15)
       return sampleSmall(lambda);
-
     double alpha = 7.0 / 8.0;
     int m = (int) Math.floor(alpha * lambda);
-    double x = Gamma.sampleVal(m, 1);
+    double x = Gamma.sample_value(m, 1);
     int r;
     if (x < lambda) {
       r = m + Poisson.sample_value(lambda - x);
