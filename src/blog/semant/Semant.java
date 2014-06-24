@@ -162,7 +162,7 @@ public class Semant {
 
   Class<? extends CondProbDistrib> getDistributionClass(String classname) {
     Class<?> cls = getClassWithName(classname);
-    if (CondProbDistrib.class.isAssignableFrom(cls)) {
+    if ((cls != null) && CondProbDistrib.class.isAssignableFrom(cls)) {
       return cls.asSubclass(CondProbDistrib.class);
     }
     return null;
