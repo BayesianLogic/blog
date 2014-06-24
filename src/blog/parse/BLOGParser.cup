@@ -500,6 +500,21 @@ origin_func_decl ::=
     {: error(ret_typexright, "missing type or origin function name");
       RESULT = null;
     :}
+  | ORIGIN:o type:ret_type ID:fname LPAREN type:arg_type 
+    {: error(arg_typexright, "missing )");
+      RESULT = new OriginFuncDec(oxleft.getLine(), oxleft.getColumn(), sym(fname),
+      new FieldList(null, arg_type, null), ret_type);
+    :}
+  | ORIGIN:o type:ret_type ID:fname type:arg_type RPAREN
+    {: error(fnamexright, "missing (");
+      RESULT = new OriginFuncDec(oxleft.getLine(), oxleft.getColumn(), sym(fname),
+      new FieldList(null, arg_type, null), ret_type);
+    :}
+  | ORIGIN:o error
+    {:
+      error(oxright, "error in origin function definition");
+      RESULT = null; 
+    :}
   ;
 
 /**
