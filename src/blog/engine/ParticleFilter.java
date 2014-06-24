@@ -36,7 +36,6 @@
 package blog.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -125,21 +124,9 @@ public class ParticleFilter extends InferenceEngine {
       System.out.println("Query: " + queries);
     }
     System.out.println("Report every: " + queryReportInterval + " timesteps");
-    resetAndTakeInitialEvidence();
-    answer(queries);
-    System.out.println("Log likelihood of data: " + dataLogLik);
-  }
-
-  /**
-   * Prepares particle filter for a new sequence of evidence and queries by
-   * generating a new set of particles from scratch, which are consistent with
-   * evidence set by {@link #setEvidence(Evidence)} (if it has not been invoked,
-   * empty evidence is assumed), ensuring behavior consistent with other
-   * {@link InferenceEngine}s.
-   */
-  public void resetAndTakeInitialEvidence() {
     reset();
     takeEvidenceAndAnswerQuery();
+    System.out.println("Log likelihood of data: " + dataLogLik);
   }
 
   private void reset() {
@@ -231,62 +218,46 @@ public class ParticleFilter extends InferenceEngine {
 
   /** Takes more evidence. */
   public void take(Evidence evidence) {
-    if (particles == null)
-      resetAndTakeInitialEvidence();
-
-    if (!evidence.isEmpty()) { // must be placed after check on particles ==
-                               // null because after this method the filter
-                               // should be ready to take queries.
-
-      if (needsToBeResampledBeforeFurtherSampling) {
-        resample();
-      }
-
-      if (beforeTakesEvidence != null)
-        beforeTakesEvidence.evaluate(evidence, this);
-
-      for (Particle p : particles) {
-        if (beforeParticleTakesEvidence != null)
-          beforeParticleTakesEvidence.evaluate(p, evidence, this);
-        p.take(evidence);
-        if (afterParticleTakesEvidence != null)
-          afterParticleTakesEvidence.evaluate(p, evidence, this);
-      }
-
-      double logSumWeights = Double.NEGATIVE_INFINITY;
-      ListIterator particleIt = particles.listIterator();
-      while (particleIt.hasNext()) {
-        Particle particle = (Particle) particleIt.next();
-        if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
-          particleIt.remove();
-        } else {
-          logSumWeights = Util.logSum(logSumWeights,
-              particle.getLatestLogWeight());
-        }
-      }
-
-      if (particles.size() == 0)
-        throw new IllegalArgumentException("All particles have zero weight");
-
-      dataLogLik += logSumWeights;
-
-      needsToBeResampledBeforeFurtherSampling = true;
-
-      if (afterTakesEvidence != null)
-        afterTakesEvidence.evaluate(evidence, this);
+    if (evidence.isEmpty()) {
+      return;
     }
-  }
 
-  /**
-   * Answer queries according to current distribution represented by filter.
-   */
-  public void answer(Collection queries) {
-    if (particles == null)
-      resetAndTakeInitialEvidence();
-  }
+    if (needsToBeResampledBeforeFurtherSampling) {
+      resample();
+    }
 
-  public void answer(Query query) {
-    answer(Util.list(query));
+    if (beforeTakesEvidence != null)
+      beforeTakesEvidence.evaluate(evidence, this);
+
+    for (Particle p : particles) {
+      if (beforeParticleTakesEvidence != null)
+        beforeParticleTakesEvidence.evaluate(p, evidence, this);
+      p.take(evidence);
+      if (afterParticleTakesEvidence != null)
+        afterParticleTakesEvidence.evaluate(p, evidence, this);
+    }
+
+    double logSumWeights = Double.NEGATIVE_INFINITY;
+    ListIterator particleIt = particles.listIterator();
+    while (particleIt.hasNext()) {
+      Particle particle = (Particle) particleIt.next();
+      if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
+        particleIt.remove();
+      } else {
+        logSumWeights = Util.logSum(logSumWeights,
+            particle.getLatestLogWeight());
+      }
+    }
+
+    if (particles.size() == 0)
+      throw new IllegalArgumentException("All particles have zero weight");
+
+    dataLogLik += logSumWeights;
+
+    needsToBeResampledBeforeFurtherSampling = true;
+
+    if (afterTakesEvidence != null)
+      afterTakesEvidence.evaluate(evidence, this);
   }
 
   protected void resample() {
