@@ -21,15 +21,9 @@ class LWDebugger(model: Model, evidence: Evidence, queries: Queries)
     sampler
   }
 
-  def sampleOne = {
+  def nextSample = {
     sampler.nextSample()
-    lastSample = new LWSample(
-      model, sampler.getLatestWorld(), sampler.getLatestLogWeight())
-    println(lastSample)
-    samples.append(lastSample)
-    queries.foreach(query => query.updateStats(lastSample.world, lastSample.logWeight))
-    // TODO: print number of samples so far
-    // TODO: stats method to print out sampler stats
+    new LWSample(model, sampler.getLatestWorld(), sampler.getLatestLogWeight())
   }
 }
 
