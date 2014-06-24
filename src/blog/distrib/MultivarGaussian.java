@@ -235,12 +235,12 @@ public class MultivarGaussian implements CondProbDistrib {
    */
   public Object sampleVal() {
     checkHasParams();
-    double[][] mat = new double[d][1];
+    double[][] mat = new double[1][d];
     for (int i = 0; i < d; i++) {
-      mat[i][0] = UnivarGaussian.STANDARD.sampleValue();
+      mat[0][i] = UnivarGaussian.STANDARD.sample_value();
     }
     MatrixLib temp = MatrixFactory.fromArray(mat);
-    return mean.transpose().plus(sqrtCovariance.timesMat(temp));
+    return mean.plus(temp.timesMat(sqrtCovariance));
   }
 
   private MatrixLib mean;
