@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 
 import blog.absyn.Absyn;
 import blog.absyn.BooleanExpr;
-import blog.absyn.DistributionExpr;
 import blog.absyn.DoubleExpr;
 import blog.absyn.Expr;
 import blog.absyn.ExprList;
@@ -176,8 +175,8 @@ public class TestParse {
     return new FuncCallExpr(0, x, null);
   }
 
-  public static DistributionExpr Distribution(Symbol n, ExprList args) {
-    return new DistributionExpr(n, args);
+  public static FuncCallExpr Distribution(Symbol n, ExprList args) {
+    return new FuncCallExpr(0, n, args);
   }
 
   public static ImplicitSetExpr ImplicitSet(Symbol n, Ty t, Expr cond) {
