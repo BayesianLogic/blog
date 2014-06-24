@@ -162,16 +162,20 @@ public class Binomial implements CondProbDistrib {
     return sample_value();
   }
 
+  public int sample_value() {
+    return sample_value(n, p);
+  }
+
   /**
    * Samples the current binomial distribution.
    */
-  public int sample_value() {
+  public static int sample_value(int n, double p) {
     double q = -Math.log(1 - p);
     double sum = 0;
     int x = 0;
     double e;
     while (sum <= q) {
-      e = Exponential.sampleVal(1);
+      e = Exponential.sample_value(1);
       sum += (e / (n - x));
       x += 1;
     }

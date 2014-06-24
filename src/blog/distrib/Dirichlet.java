@@ -95,7 +95,7 @@ public class Dirichlet implements CondProbDistrib {
       }
       int cols = matrix.numCols();
       this.alpha = new double[cols];
-      this.gammas = new Gamma[cols];
+
       for (int i = 0; i < cols; i++) {
         double elementValue = matrix.elementAt(0, i);
         if (elementValue <= 0) {
@@ -103,7 +103,6 @@ public class Dirichlet implements CondProbDistrib {
               "All elements in the alpha vector need to be strictly positive.");
         }
         alpha[i] = elementValue;
-        gammas[i] = new Gamma(elementValue, 1);
       }
       this.normalizationConstant = Dirichlet.normalize(alpha);
       this.hasAlpha = true;
@@ -232,7 +231,7 @@ public class Dirichlet implements CondProbDistrib {
 
     double[][] samples = new double[1][vec_size];
     for (int i = 0; i < vec_size; i++) {
-      double sample = Gamma.sampleVal(alpha[i], 1);
+      double sample = Gamma.sample_value(alpha[i], 1);
       sum += sample;
       samples[0][i] = sample;
     }
@@ -271,6 +270,5 @@ public class Dirichlet implements CondProbDistrib {
 
   private double[] alpha;
   private boolean hasAlpha;
-  private Gamma[] gammas;
   private double normalizationConstant;
 }

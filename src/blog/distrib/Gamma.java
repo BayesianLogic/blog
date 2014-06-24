@@ -159,6 +159,10 @@ public class Gamma implements CondProbDistrib {
   }
 
   public double sample_value() {
+    return sample_value(k, lambda);
+  }
+
+  public static double sample_value(double k, double lambda) {
     boolean accept = false;
     if (k >= 1) {
       // Cheng's algorithm
