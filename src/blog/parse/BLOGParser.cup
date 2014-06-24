@@ -286,11 +286,7 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     :}
   | statement:e statement_lst:slst
     {:
-       int l = slstxleft.getLine();
-       int c = slstxleft.getColumn() - 1;
-       if (c == 0) 
-          l--;
-       error(l, c, "missing ; at the end of the statement");
+       error(exright, "missing ; at the end of the statement");
        if (e==null) RESULT = slst;
        else RESULT = new StmtList(e, slst);
     :}
@@ -298,7 +294,7 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     {: if (e!=null) RESULT = new StmtList(e, null); 
        else RESULT = null; :}
   | statement:e 
-  {: error(exright.getLine() + 1, 1, "missing ; at the end of this statement"); 
+  {: error(exright, "missing ; at the end of this statement"); 
     RESULT = null; :}
 ;
 
@@ -788,9 +784,9 @@ value_evidence ::=
     expression:e1 EQ expression:e2
     {: RESULT = new ValueEvidence(e1xleft.getLine(), e1xleft.getColumn(), e1, e2); :}
     | error:err EQ expression:e2
-    {:error(errxleft, "incorrect first expression"); RESULT = null;:}
+    {:error(errxleft, "incorrect expression in left hand side of evidence"); RESULT = null;:}
     | expression:e1 EQ error:err
-    {:error(errxleft, "incorrect second expression"); RESULT = null;:}
+    {:error(errxleft, "incorrect expression in right hand side of evidence"); RESULT = null;:}
   ;
 
 query_stmt ::= QUERY:q  expression:e
