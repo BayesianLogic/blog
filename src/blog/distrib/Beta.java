@@ -78,7 +78,7 @@ public class Beta implements CondProbDistrib {
       }
       this.a = a;
       this.hasA = true;
-      this.gammaA = new Gamma(a, 1);
+      this.gammaA.setParams(a, 1.0);
     }
     if (b != null) {
       if (b <= 0) {
@@ -87,7 +87,7 @@ public class Beta implements CondProbDistrib {
       }
       this.b = b;
       this.hasB = true;
-      this.gammaB = new Gamma(b, 1);
+      this.gammaB.setParams(b, 1.0);
     }
   }
 
@@ -159,9 +159,13 @@ public class Beta implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
-    double y = ((Double) gammaA.sampleVal()).doubleValue();
-    double z = ((Double) gammaB.sampleVal()).doubleValue();
-    return new Double(y / (y + z));
+    return sample_value();
+  }
+
+  public double sample_value() {
+    double y = gammaA.sample_value();
+    double z = gammaB.sample_value();
+    return y / (y + z);
   }
 
   /**
@@ -179,9 +183,9 @@ public class Beta implements CondProbDistrib {
   }
 
   /** Gamma(a, 1). Used for sampling. */
-  private Gamma gammaA;
+  private Gamma gammaA = new Gamma();
   /** Gamma(b, 1). Used for sampling. */
-  private Gamma gammaB;
+  private Gamma gammaB = new Gamma();
 
   private double a;
   private boolean hasA;
