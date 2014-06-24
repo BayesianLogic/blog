@@ -72,6 +72,7 @@ import blog.model.FixedFunction;
 import blog.model.Formula;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
+import blog.model.FunctionInterp;
 import blog.model.FunctionSignature;
 import blog.model.ImplicFormula;
 import blog.model.ImplicitSetSpec;
@@ -112,9 +113,6 @@ public class Semant {
   private List<Query> queries;
 
   List<String> packages;
-
-  // Maintains the currently active function
-  private Function currFunction;
 
   public Semant(ErrorMsg msg) {
     this(new Model(), new Evidence(), new ArrayList<Query>(), msg);
@@ -168,8 +166,16 @@ public class Semant {
     return null;
   }
 
+  Class<? extends FunctionInterp> getFunctionInterpClass(String classname) {
+    Class<?> cls = getClassWithName(classname);
+    if ((cls != null) && FunctionInterp.class.isAssignableFrom(cls)) {
+      return cls.asSubclass(FunctionInterp.class);
+    }
+    return null;
+  }
+
   protected boolean checkSymbolDup(int line, int col, String name) {
-    if (getFunction(name, Collections.EMPTY_LIST) == null) {
+    if (getFunction(name, Collections.<Type> emptyList()) == null) {
       return true;
     } else {
       error(line, col, "Function/Symbol " + name
@@ -435,7 +441,6 @@ public class Semant {
 
     String name = e.name.toString();
     Function fun = getFunction(name, argTy);
-    currFunction = fun;
 
     if (e instanceof FixedFuncDec) {
       if (e.body == null) {
@@ -444,7 +449,8 @@ public class Semant {
         if (e.body instanceof FuncCallExpr) {
           FuncCallExpr fc = (FuncCallExpr) e.body;
           List<ArgSpec> args = transExprList(fc.args, false);
-          Class cls = getClassWithName(fc.func.toString());
+          Class<? extends FunctionInterp> cls = getFunctionInterpClass(fc.func
+              .toString());
           ((FixedFunction) fun).setInterpretation(cls, args);
         } else if (e.body instanceof DoubleExpr) {
           List<Object> args = new ArrayList<Object>();
@@ -486,7 +492,6 @@ public class Semant {
       ((RandomFunction) fun).setDepModel(dm);
     }
 
-    currFunction = null;
   }
 
   /**
@@ -588,17 +593,8 @@ public class Semant {
       // general value expression
       Object value = transExpr(e.right);
       if (value instanceof ArgSpec) {
-        // need more semantic checking on type match
-        // if (left instanceof Term) {
-        // value = getTypedValue(((Term) left).getType(), (ArgSpec) value);
-        // }
-        // let us use the type checking in Evidence,
-        if (value != null)
-          evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
-              (ArgSpec) value));
-        else
-          error(e.line, e.col,
-              "type mistach for observation or translation error");
+        evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
+            (ArgSpec) value));
       } else {
         error(e.right.line, e.right.col,
             "Invalid expression on the right side of evidence.");
@@ -949,7 +945,7 @@ public class Semant {
   }
 
   ExplicitSetSpec transExpr(ExplicitSetExpr e) {
-    List terms = new ArrayList();
+    List<Object> terms = new ArrayList<Object>();
 
     ExprList currTerm = e.values;
     while (currTerm != null) {
@@ -1142,7 +1138,8 @@ public class Semant {
         if (e.right instanceof IntExpr) {
           String objectname = ((SymbolTerm) left).getName() + '['
               + ((IntExpr) e.right).value + ']';
-          Function object = getFunction(objectname, Collections.EMPTY_LIST);
+          Function object = getFunction(objectname,
+              Collections.<Type> emptyList());
           if (object != null)
             return new FuncAppTerm(object);
         }
