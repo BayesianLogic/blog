@@ -85,6 +85,10 @@ parser code {:
     } else errorMsg.error(0, 0, message);
   }
   
+  /**
+   * this got automatically called if we try to recover error but hit EOF.
+   * in our implementation we will try to reduce as much as possible.
+   */
   public void unrecovered_syntax_error(Symbol cur_token) {
     try {
       try_do_reduce(cur_token.sym, false);
@@ -93,6 +97,9 @@ parser code {:
     }
   }
   
+  /**
+   * report a syntax error
+   */
   public void syntax_error(Symbol cur_token) {
    if (cur_token instanceof java_cup.runtime.ComplexSymbolFactory.ComplexSymbol) {
       java_cup.runtime.ComplexSymbolFactory.ComplexSymbol s = 
@@ -141,12 +148,12 @@ parser code {:
         tos++;
         act = get_action(((Symbol)stack.peek()).parse_state, error_sym());
     }
-
   }
   
   /**
-   * first try to use the default error recover
-   * if it doesnot succeed, try to do reduce
+   * This is automatically called when trying to recover the error
+   * try to do reduce first under error symbol,
+   * then try to use the default error recover
    */
   protected boolean error_recovery(boolean debug) throws java.lang.Exception {
     if (debug) {
@@ -269,14 +276,6 @@ program ::= opt_statement_lst : e {: parser.parseResult = e;  :}
 /* Represents a possibly-empty list of statements. */
 opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
   | statement_lst : e {: RESULT = e; :}
-/*//  | statement_lst:e error:er
-//  {: RESULT = e; :}
-  | statement:s 
-  {: error(sxright, "missing semicolon"); 
-     if (s != null) {
-       RESULT = new StmtList(s, null);
-     } 
-  :}*/
   ;
 
 /* Represents a non-empty list of statements terminated by semicolons. */
@@ -284,17 +283,22 @@ statement_lst ::= statement:e SEMI statement_lst:slst
     {: if (e==null) RESULT = slst;
        else RESULT = new StmtList(e, slst);
     :}
-  | statement:e SEMI {: if (e!=null) RESULT = new StmtList(e, null); 
-                        else RESULT = null; :}
-/*  | statement:e statement_lst:slst
-  {: error(exright, "missing semicolon"); 
-    if (e==null) RESULT = slst;
-    else RESULT = new StmtList(e, slst); :}
-  | error:er SEMI statement_lst:slst 
-    {: RESULT = slst; :}
-  | error:er SEMI
-    {: RESULT = null; :} */
-  | statement:e {: error(exright, "missing ;"); RESULT = null; :}
+  | statement:e statement_lst:slst
+    {:
+       int l = slstxleft.getLine();
+       int c = slstxleft.getColumn() - 1;
+       if (c == 0) 
+          l--;
+       error(l, c, "missing ; at the end of the statement");
+       if (e==null) RESULT = slst;
+       else RESULT = new StmtList(e, slst);
+    :}
+  | statement:e SEMI 
+    {: if (e!=null) RESULT = new StmtList(e, null); 
+       else RESULT = null; :}
+  | statement:e 
+  {: error(exright.getLine() + 1, 1, "missing ; at the end of this statement"); 
+    RESULT = null; :}
 ;
 
 /* A statement can be a declaration, an observation (assertion of some
@@ -303,40 +307,12 @@ statement_lst ::= statement:e SEMI statement_lst:slst
 statement ::= declaration_stmt : e {: RESULT = e; :}
   | evidence_stmt : e {: RESULT = e; :}
   | query_stmt : e {: RESULT = e; :}
-  | error {: RESULT = null; :}
+  | error:ex 
+    {: 
+    error(exxright.getLine() + 1, 1, "incorrect statement");
+    RESULT = null; :}
   ;
 
-/* Represents a declaration, which can be:
- *    * a type declaration;
- *    * a parameter declaration;
- *    * a random function or generating function declaration
- *        (Semantic checks:
- *            - whether the return type is a declared type;
- *            - whether the argument types have been declared (an error-check
- *      propagated from the type_lst production.);
- *    * a random function definition
- *    * a non-random function (or constant) declaration
- *    * a non-random function (or constant) definition, specifying the
- *      interpretation of the function
- *    * a random function dependency statement description
- *        (Semantic checks:
- *        - whether the numbers of actual and declared parameters match;
- *            - whether the function by this name has been declared.);
- *    * a guaranteed object declaration
- *        (Semantic checks:
- *            - whether the type has been declared.);
- *    * a POP number statement description
- *        (Semantic checks:
- *            - whether the numbers of generating functions and parameters
- *                match;
- *            - whether the generating functions have been declared (an
- *                error-check propagated from the function_lst production);
- *            - whether each generating function takes exactly one parameter (an
- *                error-check propagated from the function_lst production);
- *            - whether the only parameter of each generating function is of the
- *                type being generated.).
- *    * a parfactor statement // not used in current blog
- */
 declaration_stmt ::=
     type_decl:e {: RESULT = e; :}
   | fixed_func_decl:e {: RESULT = e; :}
@@ -346,7 +322,7 @@ declaration_stmt ::=
   | distinct_decl : e {: RESULT = e; :}
   | parameter_decl : e {: RESULT = e; :}
   | distribution_decl :e {: RESULT = e; :}
-/*  | parfactor : e {: RESULT = e; :}  */
+/*  | parfactor : e {: RESULT = e; :}  */ // not supporting parfactor now
   ;
 
 type_decl ::= TYPE:ty ID:typename 
@@ -388,25 +364,6 @@ array_type ::= array_type_or_sub:typename RBRACKET
 map_type ::= MAP:m LT type:t1 COMMA type:t2 GT
     {: RESULT = new MapTy(mxleft.getLine(), mxleft.getColumn(), t1, t2); :}
   ;
-
-/* A possibly empty list of IDs denoting type names. */
-// Currently commented this code out since it isn't being
-// used anywhere else in this cup file and cup is giving
-// warnings. Uncomment once these rules are used elsewhere.
-//   
-//opt_parenthesized_type_lst ::= /* EMPTY */
-//      {: RESULT = null; :}
-//      | LPAREN RPAREN
-//      {: RESULT = null; :}
-//      | LPAREN type_lst:tl RPAREN
-//      {: RESULT = tl; :}
-//      ;
-
-//type_lst ::= type:ty COMMA type_lst:tl
-//    {: RESULT = new FieldList(null, ty, tl); :}
-//  | type:ty
-//    {: RESULT = new FieldList(null, ty, null); :}
-//  ;
 
 /* Represents a list of IDs denoting type names. */
 opt_parenthesized_type_var_lst ::= /* */
@@ -787,35 +744,16 @@ tuple_set ::= LBRACE:l expression_list:elst FOR type_var_lst:vars COLON expressi
 ///no implementation for PARFACTOR
 
 
-/* Represents an evidence statement, which can be:
- *
- *    * a symbol evidence statement, listing observed objects of the specified
- *    type subject to certain constraints
- *        (Semantic checks:
- *        - whether the type for which the evidence is presented has been
- *      declared;
- *        - whether the formula is valid (error-check is propagated from
- *      the productions for various kinds of formulas).);
- *    * a value evidence statement, stating the value of the specified
- *    function on the specified tuple of arguments
- *        (Semantic checks:
- *        - whether the numbers of the function's parameters and arguments
- *      passed to it match;
- *            - whether the function has been declared.).
- */
 evidence_stmt ::= OBS evidence:e  {: RESULT = e; :}
                 | OBS error {: RESULT = null; :}
               ;
 
 evidence ::=
     value_evidence:e {: RESULT = e; :}
-//  | tuple_evidence:e {: RESULT = e; :} //not implemented yet
   ;
 
 /* valid evidence format include (will be checked in semantic checking)
  *   - general form: random expression = fixed expression
- *   - symbol evidence: implicit_set = explicit_set of ids
- *   - number_evidence: # implicit_set = int constant
  */
 value_evidence ::=
     expression:e1 EQ expression:e2
