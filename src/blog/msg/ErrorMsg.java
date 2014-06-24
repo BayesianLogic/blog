@@ -3,6 +3,8 @@
  */
 package blog.msg;
 
+import java.io.PrintStream;
+
 /**
  * @author leili
  * @since Apr 18, 2012
@@ -10,32 +12,39 @@ package blog.msg;
  */
 public class ErrorMsg {
 
-	// private List<Integer> linePos;
-	// private int lineNum=1;
-	private String filename;
+  private String filename;
+  private PrintStream out;
 
-	// public boolean anyErrors = false;
+  public ErrorMsg(String f, PrintStream out) {
+    filename = f;
+    this.out = out;
+  }
 
-	public ErrorMsg(String f) {
-		// linePos = new LinkedList<Integer>();
-		filename = f;
-	}
+  public ErrorMsg(String f) {
+    this(f, System.err);
+  }
 
-	// public void newline(int pos) {
-	// lineNum++;
-	// linePos.add(pos);
-	// }
+  /**
+   * indicating error on line, col with the message
+   * 
+   * @param line
+   * @param col
+   * @param msg
+   */
+  public void error(int line, int col, String msg) {
+    errorMark = false;
+    out.print(filename);
+    out.print("::");
+    out.print(line);
+    out.print(".");
+    out.print(col);
+    out.print(": ");
+    out.println(msg);
+  }
 
-	public void error(int line, int col, String msg) {
-		errorMark = false;
-		// anyErrors = true;
-		String sayPos = String.valueOf(line) + "." + String.valueOf(col);
-		System.out.println(filename + "::" + sayPos + ": " + msg);
-	}
+  public boolean OK() {
+    return errorMark;
+  }
 
-	public boolean OK() {
-		return errorMark;
-	}
-
-	private boolean errorMark = true;
+  private boolean errorMark = true;
 }
