@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import blog.common.Util;
 import blog.distrib.BooleanDistrib;
 
 /**
@@ -47,16 +46,16 @@ public class TestBooleanDistrib implements TestDistributions {
   @Test
   public void testProbabilityViaSetParams() {
     BooleanDistrib bool = new BooleanDistrib();
-    bool.setParams(Util.array(1.0));
+    bool.setParams(new Double[] { 1.0 });
     testBooleanDistrib1(bool);
-    bool.setParams(Util.array(0.6));
+    bool.setParams(new Double[] { 0.6 });
     testBooleanDistrib2(bool);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testInsufficientArguments() {
     BooleanDistrib bool = new BooleanDistrib();
-    bool.setParams(Util.array(null));
+    bool.setParams(new Double[] { null });
     testDistributionRun(bool);
   }
 
@@ -71,31 +70,31 @@ public class TestBooleanDistrib implements TestDistributions {
   @Test(expected = IllegalArgumentException.class)
   public void testExtraneousArguments() {
     BooleanDistrib bool = new BooleanDistrib();
-    bool.setParams(Util.array(0.6, 0.2));
+    bool.setParams(new Double[] { 0.6, 0.2 });
     testDistributionRun(bool);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments() {
     BooleanDistrib bool = new BooleanDistrib();
-    bool.setParams(Util.array(1.1));
+    bool.setParams(new Double[] { 1.1 });
     testDistributionRun(bool);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments2() {
     BooleanDistrib bool = new BooleanDistrib();
-    bool.setParams(Util.array(-1.0));
+    bool.setParams(new Double[] { -1.0 });
     testDistributionRun(bool);
   }
 
   @Test
   public void testDoubleSet() {
     BooleanDistrib bool = new BooleanDistrib();
-    bool.setParams(Util.array(null));
-    bool.setParams(Util.array(1.0));
+    bool.setParams(new Double[] { null });
+    bool.setParams(new Double[] { 1.0 });
     testBooleanDistrib1(bool);
-    bool.setParams(Util.array(null));
+    bool.setParams(new Double[] { null });
     testBooleanDistrib1(bool);
   }
 
