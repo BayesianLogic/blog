@@ -328,7 +328,7 @@ declaration_stmt ::=
 type_decl ::= TYPE:ty ID:typename 
     {: RESULT = new TypeDec(tyxleft.getLine(), tyxleft.getColumn(), sym(typename)); :}
   | TYPE:ty error:err
-    {: error(tyxright, "malformed or missing id"); :}  
+    {: error(tyxright, "invalid type declaration. Possibe cause: malformed, missing, or extra ids"); :}  
   ;
 
 /*
@@ -424,7 +424,13 @@ rand_func_decl ::=
     RANDOM:r type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
     dependency_statement_body:body 
     {: RESULT = new RandomFuncDec(rxleft.getLine(), rxleft.getColumn(), sym(fname), otl, ret_type, body); :}
-| RANDOM:r error:er
+ | RANDOM:r error
+    dependency_statement_body:body 
+    {: 
+    error(rxright, "incorrect function header, possibly missing return type or function name");
+    RESULT = null; 
+    :}
+ | RANDOM:r error:er
   {: error(rxright, "error in random function definition");
   RESULT = null; :}
 ;
@@ -745,8 +751,11 @@ tuple_set ::= LBRACE:l expression_list:elst FOR type_var_lst:vars COLON expressi
 
 
 evidence_stmt ::= OBS evidence:e  {: RESULT = e; :}
-                | OBS error {: RESULT = null; :}
-              ;
+  | OBS:ob error 
+    {: 
+      error(obxleft, "incorrect obs statement");
+      RESULT = null; :}
+  ;
 
 evidence ::=
     value_evidence:e {: RESULT = e; :}
