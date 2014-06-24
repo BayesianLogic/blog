@@ -35,7 +35,6 @@
 
 package blog.model;
 
-import ve.Factor;
 import blog.world.PartialWorld;
 
 /**
@@ -45,14 +44,6 @@ import blog.world.PartialWorld;
  * @author Rodrigo, Brian
  */
 public abstract class AbstractQuery implements Query {
-  /**
-   * Throws an UnsupportedOperationException.
-   */
-  public void setPosterior(Factor posterior) {
-    throw new UnsupportedOperationException(this.getClass().getName()
-        + " does not support setPosterior.");
-  }
-
   /**
    * Returns an object whose toString method yields a description of the
    * location where this query occurred in an input file.

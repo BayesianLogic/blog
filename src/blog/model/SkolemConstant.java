@@ -90,7 +90,7 @@ public class SkolemConstant extends RandomFunction {
     List clauseList = new ArrayList();
     clauseList.add(clause);
 
-    setArgVars(Collections.EMPTY_LIST); // no arguments
+    setArgVars(Collections.<String> emptyList()); // no arguments
     setDepModel(new DependencyModel(clauseList, setSpec.getType(), Model.NULL));
   }
 }

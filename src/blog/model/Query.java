@@ -37,7 +37,6 @@ package blog.model;
 
 import java.util.Collection;
 
-import ve.Factor;
 import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.world.PartialWorld;
@@ -98,21 +97,6 @@ public interface Query {
    * Same as {@link #updateStats(PartialWorld, double)} with weight 1.
    */
   void updateStats(PartialWorld world);
-
-  /**
-   * Sets the posterior distribution for the variables returned by
-   * <code>getVariables</code>. This overwrites any results specified previously
-   * for the current run using this method or <code>updateStats</code>.
-   * 
-   * <p>
-   * The effects of calling both <code>updateStats</code> and
-   * <code>setPosterior</code> in the same run are not defined.
-   * 
-   * @param posterior
-   *          factor whose set of variables is the same as the collection
-   *          returned by getVariables, and whose entries sum to 1
-   */
-  void setPosterior(Factor posterior);
 
   /**
    * Returns an object whose toString method yields a description of the

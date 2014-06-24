@@ -42,9 +42,7 @@ import java.util.List;
 
 import blog.common.TupleIterator;
 import blog.common.Util;
-import blog.sample.DefaultEvalContext;
 import blog.sample.EvalContext;
-import blog.world.PartialWorld;
 
 /**
  * Represents a BLOG function. A function is specified by its name, return type,
@@ -145,47 +143,6 @@ public abstract class Function {
 
   /**
    * Returns the value of this function applied to the given tuple of arguments
-   * in the given partial world. If the given partial world is not complete
-   * enough to determine the function value, this method returns null.
-   */
-  public Object getValue(Object[] args, PartialWorld w) {
-    return getValueInContext(args, new DefaultEvalContext(w), false);
-  }
-
-  /**
-   * Returns the value of this function applied to an empty tuple of arguments
-   * in the given partial world (this method should be used only for zero-ary
-   * functions). If the given partial world is not complete enough to determine
-   * the function value, this method returns null.
-   */
-  public Object getValue(PartialWorld w) {
-    return getValueInContext(new Object[0], new DefaultEvalContext(w), true);
-  }
-
-  /**
-   * Returns the value of this function applied to the given single argument in
-   * the given partial world (this method should be used only for unary
-   * functions). If the given partial world is not complete enough to determine
-   * the function value, this method returns null.
-   */
-  public Object getValueSingleArg(Object arg, PartialWorld w) {
-    Object[] args = { arg };
-    return getValueInContext(args, new DefaultEvalContext(w), true);
-  }
-
-  /**
-   * Returns the value of this function applied to the given pair of arguments
-   * in the given partial world (this method should be used only for binary
-   * functions). If the given partial world is not complete enough to determine
-   * the function value, this method returns null.
-   */
-  public Object getValue(Object arg1, Object arg2, PartialWorld w) {
-    Object[] args = { arg1, arg2 };
-    return getValueInContext(args, new DefaultEvalContext(w), true);
-  }
-
-  /**
-   * Returns the value of this function applied to the given tuple of arguments
    * in the given context. If the partial world in the given context is not
    * complete enough to determine the function value, this method returns null.
    * 
@@ -195,6 +152,20 @@ public abstract class Function {
    */
   public abstract Object getValueInContext(Object[] args, EvalContext context,
       boolean stable);
+
+  /**
+   * Sets the variables that will stand for the function arguments in this
+   * function's dependency model.
+   * 
+   * @param vars
+   *          List of String objects representing the variables
+   */
+  public void setArgVars(List<String> vars) {
+    argVars = new LogicalVar[vars.size()];
+    for (int i = 0; i < argVars.length; ++i) {
+      argVars[i] = new LogicalVar(vars.get(i), getArgTypes()[i]);
+    }
+  }
 
   /**
    * Returns the value of this function on arguments that are not in its domain.
@@ -253,6 +224,16 @@ public abstract class Function {
   }
 
   /**
+   * Returns the logical variables that stand for the function arguments
+   */
+  public LogicalVar[] getArgVars() {
+    if (argVars == null) {
+      throw new IllegalStateException("Argument variables not set for " + this);
+    }
+    return argVars;
+  }
+
+  /**
    * Returns an index indicating when this function was declared (or otherwise
    * created).
    */
@@ -275,4 +256,5 @@ public abstract class Function {
   private Type retType;
 
   private int creationIndex = Model.nextCreationIndex();
+  protected LogicalVar[] argVars = null; // Variable for the arguments
 }

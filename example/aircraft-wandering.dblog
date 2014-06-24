@@ -11,7 +11,7 @@ type Blip;
 
 random Real Position(Timestep t) {
     if t == @0 then ~ UniformReal(-10, 10)
-    else ~ UnivarGaussian(Position(Prev(t)), 2)
+    else ~ UnivarGaussian(Position(prev(t)), 2)
 };
 
 origin Aircraft Source(Blip);

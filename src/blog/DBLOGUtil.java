@@ -1,18 +1,14 @@
 package blog;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import blog.bn.BasicVar;
-import blog.bn.BayesNetVar;
-import blog.common.FilteredIterator;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
-import blog.model.Model;
 import blog.model.Query;
 import blog.model.SymbolEvidenceStatement;
 import blog.model.ValueEvidenceStatement;
@@ -28,57 +24,6 @@ import blog.world.PartialWorld;
  * @author cberzan
  */
 public class DBLOGUtil {
-  /**
-   * Returns a string obtained by replacing all identifiers <code>t</code> in a
-   * given string by the string representation of a timestep the index of which
-   * is given.
-   */
-  public static String replaceTByTimeStep(String string, int timestepIndex) {
-    return string.replaceAll("\\bt\\b", "@" + timestepIndex);
-  }
-
-  /**
-   * Returns the query obtained by instantiating a query string with a given
-   * time step.
-   */
-  public static ArgSpecQuery getQueryForTimestep(String queryString,
-      Model model, int timestepIndex) {
-    String queryForLastestTimestepString = DBLOGUtil.replaceTByTimeStep(
-        queryString, timestepIndex);
-    ArgSpecQuery query = BLOGUtil.parseQuery_NE("query "
-        + queryForLastestTimestepString + ";", model);
-    return query;
-  }
-
-  /**
-   * An iterator over the time step indices present in a partial world.
-   */
-  public static class TimestepIndicesIterator extends FilteredIterator {
-    public TimestepIndicesIterator(PartialWorld world) {
-      super(world.getInstantiatedVars().iterator());
-    }
-
-    public Object filter(int index, Object varObj) {
-      BayesNetVar var = (BayesNetVar) varObj;
-      int timestepIndex = var.maxTimestep().getValue();
-      if (timestepIndex < 0 || alreadyReturned.contains(timestepIndex)) {
-        // Don't want to return the same timestep twice.
-        return null;
-      }
-      alreadyReturned.add(timestepIndex);
-      return timestepIndex;
-    }
-
-    private HashSet<Integer> alreadyReturned = new HashSet<Integer>();
-  }
-
-  /**
-   * Returns an iterator over the time step indices present in a partial world.
-   */
-  public static Iterator getTimestepIndicesIterator(PartialWorld world) {
-    return new TimestepIndicesIterator(world);
-  }
-
   /**
    * remove the temporal variables from the possible world that are
    * different from the specified timestep
@@ -150,19 +95,5 @@ public class DBLOGUtil {
       qs.add(q);
     }
     return table;
-  }
-
-  /**
-   * Return all evidence up to and including the given timestep index.
-   */
-  public static Evidence getEvidenceUpTo(int timestepIndex, Evidence evidence) {
-    Map<Timestep, Evidence> splitEvidence = splitEvidenceInTime(evidence);
-    final Evidence result = new Evidence();
-    for (Map.Entry<Timestep, Evidence> entry : splitEvidence.entrySet()) {
-      if (entry.getKey().intValue() <= timestepIndex) {
-        result.addAll(entry.getValue());
-      }
-    }
-    return result;
   }
 }

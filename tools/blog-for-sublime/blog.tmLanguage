@@ -6,6 +6,9 @@
 	<array>
 		<string>blog</string>
 		<string>dblog</string>
+		<string>mblog</string>
+		<string>eblog</string>
+		<string>qblog</string>
 	</array>
 	<key>name</key>
 	<string>BLOG</string>
@@ -135,9 +138,15 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\b(TabularCPD|Distribution|Gaussian|UniformChoice|MultivarGaussian|Poisson|Bernoulli|BooleanDistrib|Binomial|Beta|BoundedGenometric|Categorical|Dirichlet|EqualsCPD|Gamma|Geometric|Iota|LinearGaussian|MixtureDistrib|NegativeBinamial|RoundedLogNormal|TabularInterp|UniformVector|UnivarGaussian|Exponential|UniformInt|UniformReal|Multinomial)\b</string>
+			<string>\b(abs|round|inv|transpose|det|repmat|diag|vstack|hstack|eye|zeros|ones|exp|toReal|toInt|isEmptyString|prev|min|max|sum)\b</string>
 			<key>name</key>
 			<string>support.function.blog</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>\b(TabularCPD|Distribution|Gaussian|UniformChoice|MultivarGaussian|Poisson|Bernoulli|BooleanDistrib|Binomial|Beta|BoundedGenometric|Categorical|Dirichlet|EqualsCPD|Gamma|Geometric|Iota|LinearGaussian|MixtureDistrib|NegativeBinamial|RoundedLogNormal|TabularInterp|UniformVector|UnivarGaussian|Exponential|UniformInt|UniformReal|Multinomial|Laplace)\b</string>
+			<key>name</key>
+			<string>support.class.blog</string>
 		</dict>
 		<dict>
 			<key>match</key>

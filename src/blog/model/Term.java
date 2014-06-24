@@ -159,7 +159,7 @@ public abstract class Term extends ArgSpec {
 	public Double asDouble() {
 		try {
 			FuncAppTerm faTerm = (FuncAppTerm) this;
-			NonRandomFunction nrFunction = (NonRandomFunction) faTerm.getFunction();
+			FixedFunction nrFunction = (FixedFunction) faTerm.getFunction();
 			ConstantInterp interp = (ConstantInterp) nrFunction.getInterpretation();
 			Double d = (Double) interp.getValue(new LinkedList());
 			return d;

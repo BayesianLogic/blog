@@ -15,7 +15,7 @@ random RainEvent Weather(Timestep d) {
     	   	       [true, Dry] -> ~ Categorical({Rainy -> 0.3, Dry -> 0.7}),
 		       [false, Rainy] -> ~ Categorical({Rainy -> 0.5, Dry -> 0.5}),
 		       [false, Dry] -> ~ Categorical({Rainy -> 0.2, Dry -> 0.8})}, 
-		 [RainyRegion, Weather(Prev(d))])
+		 [RainyRegion, Weather(prev(d))])
 };
 
 obs Weather(@0) = Rainy;
