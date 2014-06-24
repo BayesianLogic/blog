@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
+import blog.common.Util;
 
 /**
  * Matrix and linear algebra operations
@@ -207,4 +208,26 @@ public class JamaMatrixLib implements MatrixLib {
     }
     return new JamaMatrixLib(v);
   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.common.numerical.MatrixLib#isSymmetric()
+   */
+  @Override
+  public boolean isSymmetric() {
+    if (numRows() == numCols()) {
+      int size = numRows();
+      for (int i = 0; i < size; i++) {
+        for (int j = i + 1; j < size; j++) {
+          double ratio = elementAt(i, j) / elementAt(j, i);
+          if (Util.closeToZero(ratio - 1)) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
 }
