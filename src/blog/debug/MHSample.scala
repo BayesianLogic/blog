@@ -21,6 +21,9 @@ class MHSample(
 
   override def toString = s"MHSample(changed: ${changed}, world: ${world})"
 
+  // For MH, all samples have weight 1, i.e. log-weight 0.
+  def logWeight: Double = 1.0
+
   def dump = {
     println(s"MHSample:")
     println(s"world: ${world}")

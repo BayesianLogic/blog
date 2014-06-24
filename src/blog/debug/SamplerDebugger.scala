@@ -10,16 +10,19 @@ import blog.model.Evidence
 import blog.model.Model
 import blog.model.Queries
 import blog.sample.Sampler
+import blog.BLOGUtil
 
 /**
  * A debugger for a BLOG sampling algorithm.
  *
- * Concrete subclasses must implement makeSampler and sampleOne.
+ * Concrete subclasses must implement the following methods:
+ * - makeSampler
+ * - nextSample
  *
  * @author cberzan
  * @since Jun 23, 2014
  */
-abstract class SamplerDebugger[SampleType](
+abstract class SamplerDebugger[SampleType <: Sample](
   val model: Model,
   val evidence: Evidence,
   val queries: Queries) {
@@ -34,10 +37,26 @@ abstract class SamplerDebugger[SampleType](
   val sampler = makeSampler
 
   // Create the underlying sampler.
-  def makeSampler: Sampler
+  protected def makeSampler: Sampler
 
-  // Compute next sample, print it, and add it to samples.
-  def sampleOne: Unit
+  // Compute and return next sample.
+  protected def nextSample: SampleType
+
+  // Compute next sample, print it, and update queries.
+  def sampleOne = {
+    lastSample = nextSample
+    println(lastSample)
+
+    // Update queries. This causes additional sampling if the world is not
+    // complete enough to support the query vars.
+    BLOGUtil.ensureDetAndSupported(queries.getVariables(), lastSample.world);
+    queries.foreach(query => query.updateStats(
+      lastSample.world, lastSample.logWeight))
+
+    samples.append(lastSample)
+    // TODO: print number of samples so far
+    // TODO: stats method to print out sampler stats
+  }
 
   // Compute next n samples.
   def sampleMany(n: Int) {

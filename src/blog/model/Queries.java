@@ -1,7 +1,10 @@
 package blog.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
+import blog.bn.BayesNetVar;
 import blog.msg.ErrorMsg;
 import blog.parse.Parse;
 import blog.semant.Semant;
@@ -50,6 +53,17 @@ public class Queries extends ArrayList<Query> {
       query.compile();
     }
     return errors;
+  }
+
+  /**
+   * @return Union of variables that are sufficient to answer the queries.
+   */
+  public Collection<? extends BayesNetVar> getVariables() {
+    HashSet<BayesNetVar> result = new HashSet<BayesNetVar>();
+    for (Query query : this) {
+      result.addAll(query.getVariables());
+    }
+    return result;
   }
 
   // The model that these queries are for.
