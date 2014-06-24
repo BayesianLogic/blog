@@ -44,7 +44,7 @@ public class UnivarGaussian implements CondProbDistrib {
       throw new IllegalArgumentException(
           "expected two params: mean and variance");
     }
-    setParams((Double) params[0], (Double) params[1]);
+    setParams((Number) params[0], (Number) params[1]);
   }
 
   /**
@@ -52,21 +52,21 @@ public class UnivarGaussian implements CondProbDistrib {
    * <code>mean</code> to the method parameter mean. Similarly for variance
    * assuming variance is strictly positive.
    */
-  public void setParams(Double mean, Double variance) {
+  public void setParams(Number mean, Number variance) {
     if (mean != null) {
-      this.mean = mean;
+      this.mean = mean.doubleValue();
       this.hasMean = true;
     }
 
     if (variance != null) {
-      if (variance <= 0) {
+      if (variance.doubleValue() <= 0) {
         throw new IllegalArgumentException("variance must be positive");
       }
-      this.variance = variance;
+      this.variance = variance.doubleValue();
       this.hasVariance = true;
-      this.sqrtVariance = Math.sqrt(variance);
+      this.sqrtVariance = Math.sqrt(this.variance);
       this.normConst = sqrtVariance * ROOT_2PI;
-      this.logNormConst = (0.5 * Math.log(variance)) + LOG_ROOT_2PI;
+      this.logNormConst = (0.5 * Math.log(this.variance)) + LOG_ROOT_2PI;
     }
   }
 
@@ -85,7 +85,7 @@ public class UnivarGaussian implements CondProbDistrib {
    * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
    */
   public double getProb(Object value) {
-    return getProb(((Double) value).doubleValue());
+    return getProb(((Number) value).doubleValue());
   }
 
   /**
@@ -102,7 +102,7 @@ public class UnivarGaussian implements CondProbDistrib {
    * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
    */
   public double getLogProb(Object value) {
-    return getLogProb(((Double) value).doubleValue());
+    return getLogProb(((Number) value).doubleValue());
   }
 
   /** Returns the log probability of <code>x</code>. */
