@@ -224,6 +224,15 @@ public class MultivarGaussian implements CondProbDistrib {
         .timesMat(x.minus(mean).transpose()).elementAt(0, 0)) - logNormConst);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  public Object sampleVal() {
+    return sample_value();
+  }
+
   /**
    * Samples a value from this multivariate Gaussian by generating <i>d</i>
    * independent samples from univariate Gaussians with unit variance, one for
@@ -233,7 +242,7 @@ public class MultivarGaussian implements CondProbDistrib {
    * fixed mean and covariance matrix (internal calls are ok if the private
    * method <code>initParams</code> is called first).
    */
-  public Object sampleVal() {
+  public MatrixLib sample_value() {
     checkHasParams();
     double[][] mat = new double[1][d];
     for (int i = 0; i < d; i++) {
@@ -241,6 +250,7 @@ public class MultivarGaussian implements CondProbDistrib {
     }
     MatrixLib temp = MatrixFactory.fromArray(mat);
     return mean.plus(temp.timesMat(sqrtCovariance));
+
   }
 
   private MatrixLib mean;
