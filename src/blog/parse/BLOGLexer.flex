@@ -300,4 +300,4 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
        string_buf.append(yytext()); }
 
 
-<YYINITIAL>.  { error("Lexer encountered some error"); }
+<YYINITIAL>.  { error("Unrecognized character!"); }
