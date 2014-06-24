@@ -221,7 +221,7 @@ public class JamaMatrixLib implements MatrixLib {
       for (int i = 0; i < size; i++) {
         for (int j = i + 1; j < size; j++) {
           double ratio = elementAt(i, j) / elementAt(j, i);
-          if (Math.abs(ratio - 1) > Util.TOLERANCE) {
+          if (Util.closeToZero(ratio - 1)) {
             return false;
           }
         }
