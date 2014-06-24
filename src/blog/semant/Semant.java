@@ -14,7 +14,6 @@ import blog.absyn.BooleanExpr;
 import blog.absyn.Dec;
 import blog.absyn.DistinctSymbolDec;
 import blog.absyn.DistributionDec;
-import blog.absyn.DistributionExpr;
 import blog.absyn.DoubleExpr;
 import blog.absyn.EvidenceStmt;
 import blog.absyn.ExplicitSetExpr;
@@ -50,7 +49,7 @@ import blog.absyn.TupleSetExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
-import blog.common.Util;
+import blog.distrib.CondProbDistrib;
 import blog.distrib.EqualsCPD;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
@@ -144,7 +143,7 @@ public class Semant {
    * @param classname
    * @return
    */
-  Class getClassWithName(String classname) {
+  Class<?> getClassWithName(String classname) {
     for (String pkg : packages) {
       String name;
       if (pkg.isEmpty()) {
@@ -158,8 +157,14 @@ public class Semant {
         // continue loop
       }
     }
-    Util.fatalError("Could not load class '" + classname
-        + "'; looked in the following packages: " + packages);
+    return null;
+  }
+
+  Class<? extends CondProbDistrib> getDistributionClass(String classname) {
+    Class<?> cls = getClassWithName(classname);
+    if (CondProbDistrib.class.isAssignableFrom(cls)) {
+      return cls.asSubclass(CondProbDistrib.class);
+    }
     return null;
   }
 
@@ -705,13 +710,11 @@ public class Semant {
     }
   }
 
-  Clause transExpr(DistributionExpr e) {
-    /*
-     * TODO 1: Handle map expressions, not just lists
-     */
-    Class cls = getClassWithName(e.name.toString());
+  Clause transToDistribution(FuncCallExpr e) {
+    Class<? extends CondProbDistrib> cls = getDistributionClass(e.func
+        .toString());
     if (cls == null) {
-      error(e.line, e.col, "Class not found: " + e.name);
+      return null;
     }
 
     List<ArgSpec> as = null;
@@ -734,9 +737,7 @@ public class Semant {
   }
 
   Object transExpr(Expr e) {
-    if (e instanceof DistributionExpr) {
-      return transExpr((DistributionExpr) e);
-    } else if (e instanceof BooleanExpr) {
+    if (e instanceof BooleanExpr) {
       return transExpr((BooleanExpr) e);
     } else if (e instanceof DoubleExpr) {
       return transExpr((DoubleExpr) e);
@@ -776,7 +777,12 @@ public class Semant {
     return t;
   }
 
-  Term transExpr(FuncCallExpr e) {
+  Object transExpr(FuncCallExpr e) {
+    // now checking whether it is a distribution
+    Clause cl = transToDistribution(e);
+    if (cl != null) {
+      return cl;
+    }
 
     if (e.args == null) {
       // this might be just logical variable
