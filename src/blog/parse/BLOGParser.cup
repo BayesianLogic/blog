@@ -444,11 +444,15 @@ number_stmt ::=
   dependency_statement_body:body
     {: RESULT = new NumberDec(nxleft.getLine(), nxleft.getColumn(), 
     new NameTy(tyxleft.getLine(), tyxleft.getColumn(), sym(ty)), otl, body); :}
-   | NUMSIGN:ns opt_parenthesized_origin_var_list:otl
+  | NUMSIGN:ns opt_parenthesized_origin_var_list:otl
   dependency_statement_body:body 
-    {: error(nsxright, "missing type name"); RESULT = null; :}
-   | NUMSIGN:ns error:err dependency_statement_body:body
-   {: error(nsxright, "error in origin variable list"); :}
+    {: error(nsxright, "missing type name in number statement"); RESULT = null; :}
+  | NUMSIGN:ns refer_name:ty opt_parenthesized_origin_var_list:otl DISTRIB:ds error
+    {: error(dsxright, "missing body in number statement"); RESULT = null; :}
+  | NUMSIGN:ns refer_name:ty error
+    {: error(tyxright, "missing body in number statement"); RESULT = null; :}
+  | NUMSIGN:ns error:err 
+    {: error(nsxright, "error in number statement"); :}
   ;
 
 /* list of origin_fun = var, used in number statement */
