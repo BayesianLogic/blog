@@ -95,4 +95,18 @@ public class TestPoisson implements TestDistributions {
     testPoisson2(poiss);
   }
 
+  @Test
+  public void testSetParamsIntegerArguments() {
+    Poisson poiss = new Poisson();
+    poiss.setParams(new Object[] { new Integer(1) });
+    testPoisson1(poiss);
+    poiss.setParams(new Object[] { new Integer(5) });
+    testPoisson2(poiss);
+  }
+
+  @Test
+  public void testGetProbIntegerArguments() {
+    // not needed
+  }
+
 }
