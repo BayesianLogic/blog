@@ -18,8 +18,9 @@ public class TestUnivariateGaussian {
   private HashMap<Double, Double> probVals;
   private final double MEAN = 0.5;
   private final double VARIANCE = 2.25;
-  private final double ERROR = 10e-10;
+  private final double ERROR = 1e-9;
 
+  /** Univariate Gaussian, MEAN = 0.5, VARIANCe = 2.25. */
   public void testGaussian(UnivarGaussian gaussian) {
     assertEquals(0.25158881846199549, gaussian.getProb(0.0), ERROR);
     assertEquals(0.26360789392387846, gaussian.getProb(0.3), ERROR);
@@ -37,6 +38,18 @@ public class TestUnivariateGaussian {
         ERROR);
     assertEquals(Math.log(0.00032018043441388045), gaussian.getLogProb(6.0),
         ERROR);
+  }
+
+  /** Univariate Gaussian, MEAN = 0.0, VARIANCE = 1.0. */
+  public void testGaussian2(UnivarGaussian gaussian) {
+    assertEquals(0.24197072451914337, gaussian.getProb(-1.0), ERROR);
+    assertEquals(0.35206532676429952, gaussian.getProb(-0.5), ERROR);
+    assertEquals(0.3989422804014327, gaussian.getProb(0), ERROR);
+    assertEquals(Math.log(0.24197072451914337), gaussian.getLogProb(-1.0),
+        ERROR);
+    assertEquals(Math.log(0.35206532676429952), gaussian.getLogProb(-0.5),
+        ERROR);
+    assertEquals(Math.log(0.3989422804014327), gaussian.getLogProb(0), ERROR);
   }
 
   public TestUnivariateGaussian() {
@@ -91,6 +104,23 @@ public class TestUnivariateGaussian {
     gaussian.setParams(MEAN, null);
     gaussian.setParams(null, VARIANCE);
     testGaussian(gaussian);
+  }
+
+  @Test
+  public void testSetParamsIntegerArguments() {
+    // Tests that providing integer arguments to mean and variance works
+    // correctly.
+    UnivarGaussian gaussian = new UnivarGaussian();
+    gaussian.setParams(0, 1);
+    testGaussian2(gaussian);
+  }
+
+  public void testGetProbIntegerArguments() {
+    // Tests providing integer arguments to getProb
+    UnivarGaussian gaussian = new UnivarGaussian();
+    gaussian.setParams(0, 1);
+    assertEquals(0.3989422804014327, gaussian.getProb(0), ERROR);
+    assertEquals(Math.log(0.3989422804014327), gaussian.getLogProb(0), ERROR);
   }
 
   @Test(expected = IllegalArgumentException.class)
