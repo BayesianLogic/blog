@@ -15,12 +15,11 @@ random Color TrueColor(Ball b) ~ Categorical({Blue -> 0.5, Green -> 0.5});
 
 random Ball BallDrawn(Draw d) ~ UniformChoice({Ball b});
 
-random Color ObsColor(Draw d) {
+random Color ObsColor(Draw d) ~
     if (BallDrawn(d) != null)
-       then ~ TabularCPD({Blue -> ~ Categorical({Blue -> 0.8, Green -> 0.2}),
-       	    	          Green -> ~ Categorical({Blue -> 0.2, Green -> 0.8})},
-	            TrueColor(BallDrawn(d)))
-};
+       then TabularCPD({Blue -> Categorical({Blue -> 0.8, Green -> 0.2}),
+       	    	          Green -> Categorical({Blue -> 0.2, Green -> 0.8})},
+	            TrueColor(BallDrawn(d)));
 
 /* Evidence file asserting that the drawn balls appeared blue on half the 
  * draws and green on half the draws.

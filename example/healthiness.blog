@@ -19,28 +19,28 @@ distinct Person P1;
 random Boolean HealthConscious(Person p) ~ BooleanDistrib(0.5);
 random Boolean LittleFreeTime(Person p) ~ BooleanDistrib(0.5);
 random Boolean Exercise(Person p) 
-  ~ TabularCPD({[true, true] -> ~ BooleanDistrib(0.5),
-                [true, false] -> ~ BooleanDistrib(0.9),
-                [false, true] -> ~ BooleanDistrib(0.1),
-                [false, false] -> ~ BooleanDistrib(0.5)},
+  ~ TabularCPD({[true, true] -> BooleanDistrib(0.5),
+                [true, false] -> BooleanDistrib(0.9),
+                [false, true] -> BooleanDistrib(0.1),
+                [false, false] -> BooleanDistrib(0.5)},
     [HealthConscious(p), LittleFreeTime(p)]);
 random Boolean GoodDiet(Person p) 
-  ~ TabularCPD({true -> ~ BooleanDistrib(0.7),
-                false -> ~ BooleanDistrib(0.3)},
+  ~ TabularCPD({true -> BooleanDistrib(0.7),
+                false -> BooleanDistrib(0.3)},
     HealthConscious(p));
 random Boolean NormalWeight(Person p) 
-  ~ TabularCPD({[true, true] -> ~ BooleanDistrib(0.8),
-                [true, false] -> ~ BooleanDistrib(0.5),
-                [false, true] -> ~ BooleanDistrib(0.5),
-                [false, false] -> ~ BooleanDistrib(0.2)},
+  ~ TabularCPD({[true, true] -> BooleanDistrib(0.8),
+                [true, false] -> BooleanDistrib(0.5),
+                [false, true] -> BooleanDistrib(0.5),
+                [false, false] -> BooleanDistrib(0.2)},
     [GoodDiet(p), Exercise(p)]);
 random Boolean HighCholesterol(Person p) 
-  ~ TabularCPD({true -> ~ BooleanDistrib(0.3),
-                 false -> ~ BooleanDistrib(0.7)},
+  ~ TabularCPD({true -> BooleanDistrib(0.3),
+                 false -> BooleanDistrib(0.7)},
     GoodDiet(p));
 random Boolean TestedHighCholesterol(Person p) 
-  ~ TabularCPD({true -> ~ BooleanDistrib(0.9),
-               false -> ~ BooleanDistrib(0.1)},
+  ~ TabularCPD({true -> BooleanDistrib(0.9),
+               false -> BooleanDistrib(0.1)},
     HighCholesterol(p));
                                          
 /* Evidence */

@@ -1,0 +1,5 @@
+query GradeObtained(John, CS106));
+
+query GradeObtained(John CS106);
+
+query GradeObtained(John, CS106;
