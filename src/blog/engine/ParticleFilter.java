@@ -293,14 +293,6 @@ public class ParticleFilter extends InferenceEngine {
     particles = newParticles;
   }
 
-  private void printLogWeights() {
-    for (int i = 0; i < particles.size(); i++) {
-      System.out.println(i + ":"
-          + ((Particle) particles.get(i)).getLatestLogWeight());
-    }
-    System.out.println();
-  }
-
   // PARTICLE TAKES EVIDENCE EVENT HANDLING
   /**
    * An interface specifying handlers for before and after a particle takes
