@@ -217,15 +217,16 @@ nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   distinct_decl, distribution_decl, parameter_decl,
   evidence_stmt, query_stmt;
 nonterminal Stmt evidence, value_evidence;
-nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
-  quantified_formula, list_construct_expression,
-  number_expr, if_expr, case_expr;
+nonterminal Expr expression, literal,
+  quantified_formula, list_expr,
+  number_expr, if_expr, case_expr, opt_colon_expr,
+  operation_expr, unary_operation_expr;
+nonterminal Absyn[] comprehension_expr;
 nonterminal MapInitExpr map_construct_expression;
 nonterminal FuncCallExpr function_call;
 nonterminal Expr dependency_statement_body;
 nonterminal SetExpr set_expr;
 nonterminal ExplicitSetExpr explicit_set;
-nonterminal ImplicitSetExpr implicit_set;
 nonterminal TupleSetExpr tuple_set;
 nonterminal ExprList semi_colon_separated_expression_list,
   opt_expression_list, expression_list, semi_ending_expression_list;
@@ -237,8 +238,6 @@ nonterminal String array_type_or_sub;
 //attempt catch type var list errors
 nonterminal extra_commas;
 
-//nonterminal Integer dims; //not used
-//nonterminal FieldList type_lst // Not Used
 nonterminal FieldList opt_parenthesized_type_var_lst, 
   parenthesized_type_var_lst, type_var_lst;
 nonterminal OriginFieldList opt_parenthesized_origin_var_list,
@@ -254,8 +253,8 @@ nonterminal String refer_name;
  */
 precedence nonassoc EQ, DISTRIB;
 precedence left SEMI;
-precedence left ELSE;
-precedence left RIGHTARROW;
+//precedence nonassoc RIGHTARROW;
+precedence left IF, THEN, ELSE;
 precedence left DOUBLERIGHTARROW;
 precedence left AND, OR;
 precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
@@ -577,7 +576,7 @@ parameter_decl ::= PARAM:p type:ty ID:id
 expression ::= operation_expr:e  {: RESULT = e; :}
   | literal:e  {: RESULT = e; :}
   | function_call:e {: RESULT = e; :}
-  | list_construct_expression:e {: RESULT = e; :}
+  | list_expr:e {: RESULT = e; :}
   | map_construct_expression:e {: RESULT = e; :}
   | quantified_formula:e {: RESULT = e; :}
   | set_expr:e {: RESULT = e; :}
@@ -633,8 +632,6 @@ operation_expr ::=
     {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.IMPLY, e2); :}
   | expression:e1 LBRACKET expression:e2 RBRACKET
     {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.SUB, e2); :}
-  | expression:e1 LBRACKET error:err
-    {: error(errxleft, "operation expression syntax error"); :}
   | unary_operation_expr:e {: RESULT = e; :}
   ;
 
@@ -674,15 +671,13 @@ if_expr ::= IF:a expression:e1 THEN expression:e2 ELSE expression:e3
 
 case_expr ::= CASE:c expression:e1 IN map_construct_expression:e2 
     {: 
-    if (e1 == null) {
-      error(e1xleft, "error in case expression");
-      RESULT = null;
-    } else if (e2 == null) {
-      error(e2xleft, "error in case expression");
+    if (e1 == null || e2 == null) {
+      error(cxright, "error in case expression");
       RESULT = null;
     } else {
-      RESULT = new CaseExpr(cxleft.getLine(), cxleft.getColumn(), e1, e2.values);
-    } 
+      RESULT = new CaseExpr(cxleft.getLine(), cxleft.getColumn(), e1, 
+        e2.values);
+    }
     :}
   ;
 
@@ -696,12 +691,6 @@ expression_list ::= expression:e COMMA expression_list:elst
     {: RESULT = new ExprList(e, null); :}
   | expression:e extra_commas:ec expression_list:elst
     {: error(ecxleft, "extra commas in expression list");:}
-  ;
-
-list_construct_expression ::= LBRACKET:l opt_expression_list:e RBRACKET
-    {: RESULT = new ListInitExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
-  | LBRACKET:l semi_colon_separated_expression_list:e RBRACKET
-    {: RESULT = new ListInitExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
   ;
 
 semi_colon_separated_expression_list ::=
@@ -735,13 +724,32 @@ expression_pair_list ::=
 number_expr ::= NUMSIGN:n set_expr:e
     {: RESULT = new NumberExpr(nxleft.getLine(), nxleft.getColumn(), e); :}
   | NUMSIGN:n type:ty
-    {: RESULT = new NumberExpr(nxleft.getLine(), nxleft.getColumn(), new ImplicitSetExpr(tyxleft.getLine(), tyxleft.getColumn(), ty, null, null)); :}
+    {: 
+    String var = "#_var_" + n.hashCode();
+    ExprList explist = new ExprList(new FuncCallExpr(nxright.getLine(), nxright.getColumn(), sym(var), null), null);
+    RESULT = new NumberExpr(nxleft.getLine(), nxleft.getColumn(), 
+     new TupleSetExpr(tyxleft.getLine(), tyxleft.getColumn(), explist, new FieldList(sym(var), ty, null), null)); :}
   | NUMSIGN error:err
     {: error(errxleft, "expecting number expression here. # should be followed by a type or a set"); :}
   ;
 
+list_expr ::= LBRACKET:l opt_expression_list:e RBRACKET
+    {: RESULT = new ListInitExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
+  | LBRACKET:l semi_colon_separated_expression_list:e RBRACKET
+    {: RESULT = new ListInitExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
+  | LBRACKET:l comprehension_expr:e RBRACKET
+    {: 
+    if (e == null) {
+      error(exleft, "invalid tupleset");
+      RESULT = null;
+    } else {
+      RESULT = new ListComprehension(lxleft.getLine(), lxleft.getColumn(), 
+       (ExprList) e[0], (FieldList) e[1], (Expr) e[2]); 
+    }
+    :}
+  ;
+
 set_expr ::= explicit_set:e {: RESULT = e; :}
-  | implicit_set:e {: RESULT = e; :}
   | tuple_set:e {: RESULT = e; :}
   ;
 
@@ -749,18 +757,35 @@ explicit_set ::= LBRACE:l opt_expression_list:e RBRACE
     {: RESULT = new ExplicitSetExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
   ;
 
-implicit_set ::= LBRACE:l type:ty ID:id COLON expression:e RBRACE
-    {: RESULT = new ImplicitSetExpr(lxleft.getLine(), lxleft.getColumn(), ty, sym(id), e); :}
-  | LBRACE:l type:ty ID:id RBRACE
-    {: RESULT = new ImplicitSetExpr(lxleft.getLine(), lxleft.getColumn(), ty, sym(id), null); :}
-  | LBRACE:l type ID  COLON error:err RBRACE
-    {: error(errxleft, "malformed expression in implicit set"); :}
+comprehension_expr ::= expression_list:elst FOR type_var_lst:vars opt_colon_expr:condexpr
+    {: 
+      if (elst == null || vars == null) {
+        error(elstxleft, "error in the comprehension");
+        RESULT = null;
+      } else RESULT = new Absyn[] {elst, vars, condexpr };
+    :}
   ;
 
-tuple_set ::= LBRACE:l expression_list:elst FOR type_var_lst:vars COLON expression:e RBRACE
-    {: RESULT = new TupleSetExpr(lxleft.getLine(), lxleft.getColumn(), elst, vars, e); :}
-  | LBRACE:l expression_list:elst FOR type_var_lst:vars RBRACE
-    {: RESULT = new TupleSetExpr(lxleft.getLine(), lxleft.getColumn(), elst, vars, null); :}
+opt_colon_expr ::= /* EMPTY */
+  | COLON expression:e
+    {: 
+    if (e == null) {
+      error(exleft, "error in the condition of comprehension");
+    }
+    RESULT = e; 
+    :}
+  ;
+
+tuple_set ::= LBRACE:l comprehension_expr:e RBRACE
+    {: 
+    if (e == null) {
+      error(exleft, "invalid tupleset");
+      RESULT = null;
+    } else {
+      RESULT = new TupleSetExpr(lxleft.getLine(), lxleft.getColumn(), 
+       (ExprList) e[0], (FieldList) e[1], (Expr) e[2]); 
+    }
+    :}
   ;
 
 ///no implementation for PARFACTOR
