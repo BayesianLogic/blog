@@ -724,7 +724,7 @@ number_expr ::= NUMSIGN:n set_expr:e
     {: RESULT = new NumberExpr(nxleft.getLine(), nxleft.getColumn(), e); :}
   | NUMSIGN:n type:ty
     {: 
-    String var = "#_var_" + n.hashCode();
+    String var = "#_var_" + nxleft.hashCode();
     ExprList explist = new ExprList(new FuncCallExpr(nxright.getLine(), nxright.getColumn(), sym(var), null), null);
     RESULT = new NumberExpr(nxleft.getLine(), nxleft.getColumn(), 
      new TupleSetExpr(tyxleft.getLine(), tyxleft.getColumn(), explist, new FieldList(sym(var), ty, null), null)); :}
