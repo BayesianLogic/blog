@@ -1,6 +1,5 @@
 package blog.absyn;
 
-import java.util.Iterator;
 
 /**
  * Represents a list of BLOG statements.
@@ -17,12 +16,8 @@ public class StmtList extends Absyn implements Iterable<Stmt> {
   public StmtList next;
 
   public StmtList(Stmt h, StmtList t) {
-    super();
-    if (h != null) {
-      this.line = h.line;
-      this.col = h.col;
-      head = h;
-    }
+    super(h.line, h.col);
+    head = h;
     next = t;
   }
 

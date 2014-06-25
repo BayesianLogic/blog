@@ -9,25 +9,24 @@ distinct State A, C, G, T;
 type Output;
 distinct Output ResultA, ResultC, ResultG, ResultT;
 
-random State S(Timestep t) {
-    if t == @0 then ~ Categorical({A -> 0.3,
+random State S(Timestep t) ~
+    if t == @0 then Categorical({A -> 0.3,
                  C -> 0.2, 
                  G -> 0.1, 
                  T -> 0.4})
-    else ~ TabularCPD(
-      {A -> ~ Categorical({A -> 0.1, C -> 0.3, G -> 0.3, T -> 0.3}),
-       C -> ~ Categorical({A -> 0.3, C -> 0.1, G -> 0.3, T -> 0.3}),
-       G -> ~ Categorical({A -> 0.3, C -> 0.3, G -> 0.1, T -> 0.3}),
-       T -> ~ Categorical({A -> 0.3, C -> 0.3, G -> 0.3, T -> 0.1})},
-      S(prev(t)))
-};
+    else TabularCPD(
+      {A -> Categorical({A -> 0.1, C -> 0.3, G -> 0.3, T -> 0.3}),
+       C -> Categorical({A -> 0.3, C -> 0.1, G -> 0.3, T -> 0.3}),
+       G -> Categorical({A -> 0.3, C -> 0.3, G -> 0.1, T -> 0.3}),
+       T -> Categorical({A -> 0.3, C -> 0.3, G -> 0.3, T -> 0.1})},
+      S(prev(t)));
 
 random Output O(Timestep t)
    ~ TabularCPD(
-     {A -> ~ Categorical({ResultA -> 0.85, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.05}),
-      C -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.85, ResultG -> 0.05, ResultT -> 0.05}),
-      G -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.85, ResultT -> 0.05}),
-      T -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.85})},
+     {A -> Categorical({ResultA -> 0.85, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.05}),
+      C -> Categorical({ResultA -> 0.05, ResultC -> 0.85, ResultG -> 0.05, ResultT -> 0.05}),
+      G -> Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.85, ResultT -> 0.05}),
+      T -> Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.85})},
      S(t));
 
 /* Evidence for the Hidden Markov Model.

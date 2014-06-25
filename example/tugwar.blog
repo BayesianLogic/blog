@@ -39,15 +39,15 @@ random Person team2player2(Match m)
 random Boolean lazy(Person p, Match m) 
   ~ BooleanDistrib(0.1);
 
-random Real pulling_power(Person p, Match m) 
-	if lazy(p, m) then = strength(p) / 2.0
-	else = strength(p);
+random Real pulling_power(Person p, Match m) ~
+	if lazy(p, m) then strength(p) / 2.0
+	else strength(p);
 
-random Boolean team1win(Match m)
+random Boolean team1win(Match m) ~
 	if (pulling_power(team1player1(m), m) + pulling_power(team1player2(m), m)
 	  > pulling_power(team2player1(m), m)	+ pulling_power(team2player2(m), m) ) 
-	then = true
-	else = false;
+	then true
+	else false;
 
 obs team1player1(M[0]) = James;
 obs team1player2(M[0]) = David;
