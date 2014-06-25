@@ -149,8 +149,8 @@ public class ParticleFilter extends InferenceEngine {
     // Split evidence and queries according to the timestep it occurs in.
     Map<Timestep, Evidence> slicedEvidence = DBLOGUtil
         .splitEvidenceInTime(evidence);
-    Map<Timestep, List<Query>> slicedQueries = DBLOGUtil
-        .splitQueriesInTime((List<Query>) queries);
+    Map<Timestep, Queries> slicedQueries = DBLOGUtil
+        .splitQueriesInTime(queries);
 
     // Process atemporal evidence (if any) before everything else.
     if (slicedEvidence.containsKey(null)) {
