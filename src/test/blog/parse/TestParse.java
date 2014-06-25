@@ -10,7 +10,6 @@ import blog.absyn.ExprList;
 import blog.absyn.Field;
 import blog.absyn.FieldList;
 import blog.absyn.FuncCallExpr;
-import blog.absyn.ImplicitSetExpr;
 import blog.absyn.IntExpr;
 import blog.absyn.NameTy;
 import blog.absyn.OpExpr;
@@ -20,6 +19,7 @@ import blog.absyn.StmtList;
 import blog.absyn.StringExpr;
 import blog.absyn.SymbolArray;
 import blog.absyn.SymbolArrayList;
+import blog.absyn.TupleSetExpr;
 import blog.absyn.Ty;
 import blog.parse.Parse;
 import blog.symbol.Symbol;
@@ -179,11 +179,12 @@ public class TestParse {
     return new FuncCallExpr(0, n, args);
   }
 
-  public static ImplicitSetExpr ImplicitSet(Symbol n, Ty t, Expr cond) {
-    return new ImplicitSetExpr(t, n, cond);
+  public static TupleSetExpr TupleSet(Symbol n, Ty t, Expr cond) {
+    return new TupleSetExpr(0, Exprs(new FuncCallExpr(0, n, null)),
+        new FieldList(n, t, null), cond);
   }
 
-  public static ImplicitSetExpr ImplicitSet(Symbol n, Ty t) {
-    return new ImplicitSetExpr(t, n, null);
+  public static TupleSetExpr TupleSet(Symbol n, Ty t) {
+    return TupleSet(n, t, null);
   }
 }
