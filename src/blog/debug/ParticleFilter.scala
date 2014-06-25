@@ -23,14 +23,7 @@ class ParticleFilter(
   val numParticles: Int,
   feeder: FilterFeeder) {
 
-  object State extends Enumeration {
-    type State = Value
-    val ProcessingInitialEvidence, TemporalLoop, ProcessingFinalQueries, Finished = Value
-  }
-  import State._
-
-  var state = ProcessingInitialEvidence
-  var currentTimestep: Int = null.asInstanceOf[Int]
+  var currentTimestep: Int = -1
   var currentEvidence: Evidence = null
   var currentQueries: Queries = null
   var particles: List[Particle] = null
@@ -91,43 +84,23 @@ class ParticleFilter(
    * Advance to the next timestep given by the feeder.
    */
   def advance: Unit = {
-    if (state == ProcessingInitialEvidence) {
-      createInitialParticles
-      currentTimestep = null.asInstanceOf[Int]
-      currentEvidence = feeder.initialEvidence
-      currentQueries = null
-      takeEvidence(currentEvidence)
-      state = TemporalLoop
-      currentTimestep = 0
-      println("advance: processed initial evidence")
-    } else if (state == TemporalLoop) {
-      if (!feeder.hasNext) {
-        state = ProcessingFinalQueries
-        advance
-      } else {
-        val (timestep, evidence, queries) = feeder.next
-        assert(timestep > currentTimestep)
-        currentTimestep = timestep
-        currentEvidence = evidence
-        currentQueries = queries
-        resample
-        takeEvidence(currentEvidence)
-        answerQueries(currentQueries)
-        forgetPast
-        println(s"advance: processed timestep ${timestep}")
-      }
-    } else if (state == ProcessingFinalQueries) {
-      currentTimestep = null.asInstanceOf[Int]
-      currentEvidence = null
-      currentQueries = feeder.finalQueries
-      answerQueries(currentQueries)
-      state = Finished
-      println("advance: processed final queries")
-    } else if (state == Finished) {
-      currentTimestep = null.asInstanceOf[Int]
-      currentEvidence = null
-      currentQueries = null
+    if (!feeder.hasNext) {
       println("advance: finished")
+    } else {
+      val (timestep, evidence, queries) = feeder.next
+      assert(timestep >= currentTimestep)
+      currentTimestep = timestep
+      currentEvidence = evidence
+      currentQueries = queries
+      if (particles == null) {
+        createInitialParticles
+      } else {
+        resample
+      }
+      takeEvidence(currentEvidence)
+      answerQueries(currentQueries)
+      forgetPast
+      println(s"advance: processed timestep ${timestep}")
     }
   }
 
@@ -135,7 +108,7 @@ class ParticleFilter(
    * Advance until after the given timestep.
    */
   def advanceUntil(timestep: Int): Unit = {
-    while (state != Finished && currentTimestep < timestep) {
+    while (feeder.hasNext && currentTimestep < timestep) {
       advance
     }
   }
@@ -144,7 +117,7 @@ class ParticleFilter(
    * Advance until the feeder is exhausted.
    */
   def advanceUntilFinished: Unit = {
-    while (state != Finished) {
+    while (feeder.hasNext) {
       advance
     }
   }
