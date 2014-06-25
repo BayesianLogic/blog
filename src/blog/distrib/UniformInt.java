@@ -143,7 +143,7 @@ public class UniformInt implements CondProbDistrib {
    */
   public double getLogProb(int value) {
     checkHasParams();
-    return (value >= lower) && (value <= upper) ? logProb
+    return ((value >= lower) && (value <= upper)) ? logProb
         : Double.NEGATIVE_INFINITY;
   }
 

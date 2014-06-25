@@ -114,22 +114,9 @@ public class MultivarGaussian implements CondProbDistrib {
   }
 
   /**
+   * Initializes constants for the Multivariate Gaussian.
    * Precondition: The current covariance and mean parameters constitute a legal
    * assignment.
-   * 
-   * Initializes the following constants for the Multivariate Gaussian:
-   * <ul>
-   * <li>dimension</li>
-   * <li>dimension factor</li>
-   * <li>log of the dimensions factor</li>
-   * <li>normalization constant</li>
-   * <li>log of the normalization constant</li>
-   * <li>inverse of the covariance matrix</li>
-   * <li>square root of the covariance matrix</li>
-   * </ul>
-   * dimension
-   * factor, log of the dimension factor, normalization constant, log of the
-   * normalization constant, inverse of
    */
   private void initializeConstants() {
     this.d = mean.numCols();
@@ -177,21 +164,13 @@ public class MultivarGaussian implements CondProbDistrib {
   public double getProb(MatrixLib x) {
     checkHasParams();
     if (x.numCols() == d && x.numRows() == 1) {
-      return getProbInternal(x);
+      return Math.exp(-0.5
+          * x.minus(mean).timesMat(inverseCovariance)
+              .timesMat(x.minus(mean).transpose()).elementAt(0, 0))
+          / normConst;
     }
     throw new IllegalArgumentException("The matrix given is " + x.numRows()
         + " by " + x.numCols() + " but should be a 1 by " + d + " vector.");
-  }
-
-  /**
-   * Given a d-dimensional row vector x, returns the density value p =
-   * 1/sqrt((2*pi)^d*|sigma|)*exp{-0.5(x-mean)'*inverse(sigma)*(x-mean)}
-   */
-  private double getProbInternal(MatrixLib x) {
-    return Math.exp(-0.5
-        * x.minus(mean).timesMat(inverseCovariance)
-            .timesMat(x.minus(mean).transpose()).elementAt(0, 0))
-        / normConst;
   }
 
   /*

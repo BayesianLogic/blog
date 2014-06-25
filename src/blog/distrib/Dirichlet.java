@@ -126,14 +126,13 @@ public class Dirichlet implements CondProbDistrib {
   }
 
   /**
-   * Returns the pdf of row vector x (of correct dimensions) in a Dirichlet
-   * distribution.
+   * check if the value is valid, i.e. it is 1 by n row vector, where n is the
+   * same as the length of alpha
    * 
    * @param x
-   *          row vector
+   * @return
    */
-  public double getProb(MatrixLib x) {
-    checkHasParams();
+  private boolean checkValue(MatrixLib x) {
     if (x == null) {
       throw new IllegalArgumentException("The random outcome vector is null");
     }
@@ -143,6 +142,19 @@ public class Dirichlet implements CondProbDistrib {
               + alpha.length + " matrix, but is a " + x.numRows() + " by "
               + x.numCols() + " matrix");
     }
+    return true;
+  }
+
+  /**
+   * Returns the pdf of row vector x (of correct dimensions) in a Dirichlet
+   * distribution.
+   * 
+   * @param x
+   *          row vector
+   */
+  public double getProb(MatrixLib x) {
+    checkHasParams();
+    checkValue(x);
     if (!checkSupport(x)) {
       return 0.0;
     }
@@ -187,15 +199,7 @@ public class Dirichlet implements CondProbDistrib {
    */
   public double getLogProb(MatrixLib x) {
     checkHasParams();
-    if (x == null) {
-      throw new IllegalArgumentException("The random outcome vector is null");
-    }
-    if (x.numRows() != 1 || x.numCols() != this.alpha.length) {
-      throw new IllegalArgumentException(
-          "Incorrect dimensions given for row vector of Dirichlet. should be a 1 by "
-              + alpha.length + " matrix, but is a " + x.numRows() + " by "
-              + x.numCols() + " matrix");
-    }
+    checkValue(x);
     if (!checkSupport(x)) {
       return Double.NEGATIVE_INFINITY;
     }
@@ -218,14 +222,14 @@ public class Dirichlet implements CondProbDistrib {
   @Override
   public Object sampleVal() {
     checkHasParams();
-    return sampleValue();
+    return sample_value();
   }
 
   /**
    * Samples a dirichlet distribution using the method at the following url:
    * http://en.wikipedia.org/wiki/Dirichlet_distribution#
    */
-  public MatrixLib sampleValue() {
+  public MatrixLib sample_value() {
     double sum = 0.0;
     int vec_size = alpha.length;
 
