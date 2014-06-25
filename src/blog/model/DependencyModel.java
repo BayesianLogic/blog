@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 
 import blog.bn.BasicVar;
-import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
 import blog.distrib.EqualsCPD;
@@ -65,6 +64,11 @@ public class DependencyModel {
   /**
    * Nested class representing a distribution over child values, in the form of
    * a CPD and a list of values for the CPD's arguments.
+   * 
+   * TODO: This class is no longer necessary after the new distribution
+   * interface is implemented. Instead of storing the args in this container, we
+   * can just call setParams() on the distribution. So we only need to pass
+   * around a CondProbDistrib, not a CondProbDistrib + args.
    */
   public static class Distrib {
     public Distrib(CondProbDistrib cpd, List argValues) {
@@ -76,20 +80,8 @@ public class DependencyModel {
       return cpd;
     }
 
-    public List getArgValues() {
-      return Collections.unmodifiableList(argValues);
-    }
-
-    public Object sampleVal(Type type) {
-      return cpd.sampleVal(argValues, type);
-    }
-
-    public Object sampleVal(VarWithDistrib var) {
-      return cpd.sampleVal(argValues, var.getType());
-    }
-
-    public double getProb(Object value) {
-      return cpd.getProb(argValues, value);
+    public Object[] getArgValues() {
+      return argValues.toArray();
     }
 
     public String toString() {
@@ -111,7 +103,7 @@ public class DependencyModel {
       Util.fatalError("No canonical term for default value " + defaultVal
           + " of type " + childType);
     }
-    defaultClause = new Clause(TrueFormula.TRUE, EqualsCPD.CPD,
+    defaultClause = new Clause(TrueFormula.TRUE, EqualsCPD.class,
         Collections.singletonList((ArgSpec) defaultTerm));
   }
 
