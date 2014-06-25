@@ -1,15 +1,18 @@
 package blog.debug
 
+import java.util.Properties
+import scala.collection.JavaConversions._
+import scala.collection.mutable.ListBuffer
+
+import blog.common.Util
 import blog.engine.Particle
+import blog.Main
 import blog.model.Evidence
 import blog.model.Queries
-import scala.collection.mutable.ListBuffer
-import blog.world.DefaultPartialWorld
 import blog.model.Model
-import java.util.Properties
 import blog.sample.LWSampler
-import blog.common.Util
 import blog.`type`.Timestep
+import blog.world.DefaultPartialWorld
 
 /**
  * @author cberzan
@@ -22,12 +25,14 @@ class ParticleFilter(
 
   object State extends Enumeration {
     type State = Value
-    val TakingInitialEvidence, TemporalLoop, TakingFinalQueries, Finished = Value
+    val ProcessingInitialEvidence, TemporalLoop, ProcessingFinalQueries, Finished = Value
   }
   import State._
 
-  var state = TakingInitialEvidence
+  var state = ProcessingInitialEvidence
   var currentTimestep: Int = null.asInstanceOf[Int]
+  var currentEvidence: Evidence = null
+  var currentQueries: Queries = null
   var particles: List[Particle] = null
 
   protected def createInitialParticles: Unit = {
@@ -86,31 +91,43 @@ class ParticleFilter(
    * Advance to the next timestep given by the feeder.
    */
   def advance: Unit = {
-    if (state == TakingInitialEvidence) {
+    if (state == ProcessingInitialEvidence) {
       createInitialParticles
-      val evidence = feeder.initialEvidence
-      takeEvidence(evidence)
+      currentTimestep = null.asInstanceOf[Int]
+      currentEvidence = feeder.initialEvidence
+      currentQueries = null
+      takeEvidence(currentEvidence)
       state = TemporalLoop
       currentTimestep = 0
+      println("advance: processed initial evidence")
     } else if (state == TemporalLoop) {
       if (!feeder.hasNext) {
-        state = TakingFinalQueries
+        state = ProcessingFinalQueries
         advance
       } else {
         val (timestep, evidence, queries) = feeder.next
         assert(timestep > currentTimestep)
         currentTimestep = timestep
+        currentEvidence = evidence
+        currentQueries = queries
         resample
-        takeEvidence(evidence)
-        answerQueries(queries)
+        takeEvidence(currentEvidence)
+        answerQueries(currentQueries)
         forgetPast
+        println(s"advance: processed timestep ${timestep}")
       }
-    } else if (state == TakingFinalQueries) {
-      val queries = feeder.finalQueries
-      answerQueries(queries)
+    } else if (state == ProcessingFinalQueries) {
+      currentTimestep = null.asInstanceOf[Int]
+      currentEvidence = null
+      currentQueries = feeder.finalQueries
+      answerQueries(currentQueries)
       state = Finished
+      println("advance: processed final queries")
     } else if (state == Finished) {
-      println("advance called, but PF is already finished")
+      currentTimestep = null.asInstanceOf[Int]
+      currentEvidence = null
+      currentQueries = null
+      println("advance: finished")
     }
   }
 
@@ -118,14 +135,31 @@ class ParticleFilter(
    * Advance until after the given timestep.
    */
   def advanceUntil(timestep: Int): Unit = {
-    Iterator.continually(advance).takeWhile(_ =>
-      state != Finished && (currentTimestep <= timestep))
+    while (state != Finished && currentTimestep < timestep) {
+      advance
+    }
   }
 
   /**
    * Advance until the feeder is exhausted.
    */
   def advanceUntilFinished: Unit = {
-    Iterator.continually(advance).takeWhile(_ => state != Finished)
+    while (state != Finished) {
+      advance
+    }
+  }
+}
+
+object ParticleFilter {
+  def make(path: String, numParticles: Int): ParticleFilter = {
+    Util.initRandom(false)
+
+    val model = new Model()
+    val evidence = new Evidence(model)
+    val queries = new Queries(model)
+    Main.simpleSetupFromFiles(model, evidence, queries, path :: Nil)
+
+    val feeder = new OfflineFilterFeeder(evidence, queries)
+    new ParticleFilter(model, numParticles, feeder)
   }
 }

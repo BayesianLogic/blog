@@ -26,12 +26,12 @@ class OfflineFilterFeeder(allEvidence: Evidence, allQueries: Queries) extends Fi
 
   def next = {
     val timestep = timestepIterator.next
-    val evidence = slicedEvidence(timestep)
-    val queries = slicedQueries(timestep)
+    val evidence = slicedEvidence.getOrElse(timestep, null)
+    val queries = slicedQueries.getOrElse(timestep, null)
     (timestep.getValue(), evidence, queries)
   }
 
-  def initialEvidence = slicedEvidence(null)
+  def initialEvidence = slicedEvidence.getOrElse(null, null)
 
-  def finalQueries = slicedQueries(null)
+  def finalQueries = slicedQueries.getOrElse(null, null)
 }
