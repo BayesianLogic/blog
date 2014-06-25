@@ -29,25 +29,25 @@ fixed Real sigma = 2;
 random Real strength(Person p) ~ Gaussian(mu, sigma);
 
 random Person[] team1(Integer i) // 1st team of i-th match 
-  = ~ UniformChoice({Person p}, 3);
+  ~ UniformChoice({Person p}, 3);
 
 random Person[] team2(Integer i) // 2nd team of i-th match 
-  = ~ UniformChoice({Person p}, 3);
+  ~ UniformChoice({Person p}, 3);
 
 random Boolean lazy(Person p, Integer i) 
   ~ Bernoulli(0.1); // person p at i-th match
 
-random Real pulling_power(Person p, Integer i) 
-	if lazy(p, i) then = strength(p) / 2
-	else = strength(p);
+random Real pulling_power(Person p, Integer i) ~ 
+	if lazy(p, i) then strength(p) / 2
+	else strength(p);
 
-random Real team_power(Person[] ps, i)
-  = reduce(__PLUS, map(lambda x : pulling_power(x, i), ps));
+random Real team_power(Person[] ps, i) ~
+  reduce(__PLUS, map(lambda x : pulling_power(x, i), ps));
 
-random Boolean team1win(Integer i)
+random Boolean team1win(Integer i) ~
 	if (team_power(team1(i), i) > team_power(team2(i), i)) 
-	then = true
-	else = false;
+	then true
+	else false;
 
 obs team1(1) = [James, David, Christopher];
 obs team2(1) = [George, Ronald, John];

@@ -24,13 +24,10 @@ random Integer doclen(Document d) ~ UniformInt(4, 7);
 
 random Real[] theta(Document d) ~ Dirichlet(0.2, 0.2, 0.2, 0.2, 0.2);
 
-random Integer topic(Document d, Integer i) {
-    if (i < doclen(d)) then ~ Categorical(theta(d))
-};
+random Integer topic(Document d, Integer i) ~
+    if (i < doclen(d)) then Categorical(theta(d));
 
-random Integer wordidx(Document d, Integer i) {
-    ~ Categorical(beta[topic(d, i)])
-};
+random Integer wordidx(Document d, Integer i) ~ Categorical(beta[topic(d, i)]);
 
 // define a dictionary mapping from index to word
 fixed String Dictionary(Integer i)
@@ -45,9 +42,7 @@ query wordidx(Document[1], 0);
 query wordidx(Document[1], 1);
 query wordidx(Document[1], 2);
 
-random String word(Document d, Integer i) {
-    = Dictionary( wordidx(d, i) )
-};
+random String word(Document d, Integer i) ~ Dictionary( wordidx(d, i) );
 
 query word(Document[1], 0);
 query word(Document[1], 1);
