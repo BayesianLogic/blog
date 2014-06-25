@@ -65,7 +65,7 @@ public class UniformChoice implements CondProbDistrib {
     if (params.length != 1) {
       throw new IllegalArgumentException("expected one parameter");
     }
-    setParams((Collection) params[0]);
+    setParams((Collection<?>) params[0]);
   }
 
   /**
@@ -73,7 +73,7 @@ public class UniformChoice implements CondProbDistrib {
    * parameter <code>S</code> to <code>set</code>
    * 
    */
-  public void setParams(Collection set) {
+  public void setParams(Collection<?> set) {
     if (set != null) {
       this.s = set;
       this.hasS = true;
@@ -130,7 +130,7 @@ public class UniformChoice implements CondProbDistrib {
       return Model.NULL;
     }
     int n = Util.randInt(s.size());
-    Iterator it = s.iterator();
+    Iterator<?> it = s.iterator();
     while (it.hasNext()) {
       if (n == 0)
         return (Object) it.next();
@@ -152,6 +152,6 @@ public class UniformChoice implements CondProbDistrib {
     return builder.toString();
   }
 
-  private Collection s;
+  private Collection<?> s;
   private boolean hasS;
 }
