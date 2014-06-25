@@ -3,7 +3,6 @@ package test.blog.distrib;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +19,25 @@ public class TestUnivariateGaussian {
   private final double MEAN = 0.5;
   private final double VARIANCE = 2.25;
   private final double ERROR = 10e-10;
+
+  public void testGaussian(UnivarGaussian gaussian) {
+    assertEquals(0.25158881846199549, gaussian.getProb(0.0), ERROR);
+    assertEquals(0.26360789392387846, gaussian.getProb(0.3), ERROR);
+    assertEquals(0.25667124973067595, gaussian.getProb(0.9), ERROR);
+    assertEquals(0.082088348017233054, gaussian.getProb(2.8), ERROR);
+    assertEquals(0.023649728564154305, gaussian.getProb(3.8), ERROR);
+    assertEquals(0.00032018043441388045, gaussian.getProb(6.0), ERROR);
+
+    assertEquals(Math.log(0.25158881846199549), gaussian.getLogProb(0.0), ERROR);
+    assertEquals(Math.log(0.26360789392387846), gaussian.getLogProb(0.3), ERROR);
+    assertEquals(Math.log(0.25667124973067595), gaussian.getLogProb(0.9), ERROR);
+    assertEquals(Math.log(0.082088348017233054), gaussian.getLogProb(2.8),
+        ERROR);
+    assertEquals(Math.log(0.023649728564154305), gaussian.getLogProb(3.8),
+        ERROR);
+    assertEquals(Math.log(0.00032018043441388045), gaussian.getLogProb(6.0),
+        ERROR);
+  }
 
   public TestUnivariateGaussian() {
     // We have a normal random variable Z ~ N(0.5, 1.5)
@@ -95,15 +113,6 @@ public class TestUnivariateGaussian {
     UnivarGaussian gaussian = new UnivarGaussian();
     gaussian.setParams(params);
     testGaussian(gaussian);
-  }
-
-  public void testGaussian(UnivarGaussian gaussian) {
-    Set<Double> points = probVals.keySet();
-    for (Double point : points) {
-      assertEquals(probVals.get(point), gaussian.getProb(point), ERROR);
-      assertEquals(Math.log(probVals.get(point)), gaussian.getLogProb(point),
-          ERROR);
-    }
   }
 
 }
