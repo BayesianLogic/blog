@@ -271,9 +271,9 @@ public class Multinomial implements CondProbDistrib {
     return MatrixFactory.createRowVector(result);
   }
 
-  private int n;
+  private int n; // the number of trials
   private boolean hasN;
-  private double[] p;
+  private double[] p; // probability vector
   private double[] pCDF;
   private boolean hasP;
   private int k; // the number of categories; dimension of p
