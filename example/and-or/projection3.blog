@@ -15,47 +15,45 @@ fixed Integer xc  = 7;
 fixed Integer yc = 7;
 
 // SIZE OF THE OBJECT IN 3D
-random Integer sizeX(Object O) = 3;
-random Integer sizeY(Object O) = 3;
-random Integer sizeZ(Object O) = 3;
+random Integer sizeX(Object O) ~ 3;
+random Integer sizeY(Object O) ~ 3;
+random Integer sizeZ(Object O) ~ 3;
 
 // LOCATION OF THE OBJECTS IN 3D
 random Integer X0(Object o) ~ UniformInt(Xmin, Xmax);
 random Integer Y0(Object o) ~ UniformInt(Ymin, Ymax);
 random Integer Z0(Object o) ~ UniformInt(Zmin, Zmax);
 
-random Integer X1(Object o) = X0(o) + sizeX(o);
-random Integer Y1(Object o) = Y0(o) + sizeY(o);
-random Integer Z1(Object o) = Z0(o) + sizeZ(o);
+random Integer X1(Object o) ~ X0(o) + sizeX(o);
+random Integer Y1(Object o) ~ Y0(o) + sizeY(o);
+random Integer Z1(Object o) ~ Z0(o) + sizeZ(o);
 
 
-random Integer Zintercept(Object o, Integer x, Integer y) {
+random Integer Zintercept(Object o, Integer x, Integer y) ~
     if ((X0(o) <= xc + Z1(o) * (xc - x)) & (X1(o) >= xc + Z1(o) * (xc - x)) & (Y0(o) <= yc + Z1(o) * (yc - y)) & (Y1(o) >= yc + Z1(o) * (yc - y))) then
-        = Z0(o)
+        Z0(o)
             
     else if ((x <= xc) & (X0(o) >= xc + Z0(o) * (xc - x)) & (X0(o) <= xc + Z1(o) * (xc - x)) & ((X0(o) - xc) * (y - yc) <= (Y0(o) - yc) * (xc - x)) & ((X0(o) - xc) * (y - yc) >= (Y1(o) - yc) * (xc - x))) then
-        = Z0(o) // need to change
+        Z0(o) // need to change
 
     else if ((y <= yc) & (Y0(o) >= yc + Z0(o) * (yc - y)) & (Y0(o) <= yc + Z1(o) * (yc - y)) & ((Y0(o) - yc) * (x - xc) <= (X0(o) - xc) * (yc - y)) & ((Y0(o) - yc) * (x - xc) >= (X1(o) - xc) * (yc - y))) then
-        = Z0(o) // need to change
+        Z0(o) // need to change
        
     else if ((x > xc) & (X1(o) >= xc + Z1(o) * (xc - x)) & (X1(o) <= xc + Z0(o) * (xc - x)) & ((xc - X1(o)) * (yc - y) <= (Y1(o) - yc) * (x - xc)) & ((xc - X1(o)) * (yc - y) >= (Y0(o) - yc) * (x - xc))) then
-        = Z0(o) // need to change
+        Z0(o) // need to change
         
     else if ((y > yc) & (Y1(o) >= yc + Z1(o) * (yc - y)) & (Y1(o) <= yc + Z0(o) * (yc - y)) & ((yc - Y1(o)) * (xc - x) <= (X1(o) - xc) * (y - yc)) & ((yc - Y1(o)) * (xc - x) >= (X0(o) - xc) * (y - yc))) then
-        = Z0(o) // need to change
+        Z0(o) // need to change
 
-    else 
-        = 0
-};
+    else 0
+    ;
 
 
-random Integer Z(Integer x, Integer y) {
+random Integer Z(Integer x, Integer y) ~
     if ((x <= xMax) & (x >= xMin) & (y <= yMax) & (y >= yMin)) then
-        = min({Integer Z: Z < Zmax & (exists Object o (Zintercept(o,x,y) == Z))})
-    else
-        = 0
-};
+        min({Integer Z: Z < Zmax & (exists Object o (Zintercept(o,x,y) == Z))})
+    else 0
+    ;  
 
 
 distinct Object o1;

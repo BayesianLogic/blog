@@ -35,14 +35,14 @@ random Component AssociatedComponent(Integer x, Integer y, Timestep t)
 
 /*Make a 10x10 grid, over 10 timesteps*/
 
-random Real[] Intensity(Integer x, Integer y, Timestep t) {
+random Real[] Intensity(Integer x, Integer y, Timestep t) ~
     if AssociatedComponent(x, y, t) == Vehicle then 
-        ~ MultivarGaussian(mean_car, variance)
+        MultivarGaussian(mean_car, variance)
     else if AssociatedComponent(x, y, t) == Shadow then 
-    	~ MultivarGaussian(mean_shadow, variance)
+        MultivarGaussian(mean_shadow, variance)
     else if AssociatedComponent(x, y, t) == Road then 
-    	~ MultivarGaussian(mean_road, variance)
-};
+    	MultivarGaussian(mean_road, variance)
+;
 
 obs Intensity(1, 1, @1) = [135; 85; 170];
 

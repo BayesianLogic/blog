@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2012, Regents of the University of California
+ * Copyright (c) 2005, 2012, 2013, 2014, Regents of the University of California
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,8 @@
  * use JFlex
  * @author leili
  * @author bramsundar
- * @date 2012-07
+ * @author tejas
+ * @date 2014-06
  */
 
 package blog.parse;
@@ -48,43 +49,17 @@ import blog.absyn.*;
 action code {:
 
   static blog.symbol.Symbol sym(String s) {
-	         return blog.symbol.Symbol.Symbol(s);
+           return blog.symbol.Symbol.Symbol(s);
   }
 
-    LocationInFile getCurLocation() {
-        return new LocationInFile
-            (((ScannerWithLocInfo)parser.getScanner()).getCurFilename(),
-             ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum());
-    }
-
-    int currLineno() {
-	return ((ScannerWithLocInfo)parser.getScanner()).getCurLineNum();
-    }
-
-
-    int currColno() {
-	return ((ScannerWithLocInfo)parser.getScanner()).getCurColNum();
-    }
-
-/* //TO-DO
-    void semantic_error( String message ){
-         System.err.println("\n" + curr_filename( ) + ":" + curr_lineno( )
-                            + " Semantic error: " + message);
-	 parser.omerrs++;
-    }
-*/
-  void error(String msg) {
-    parser.errorMsg.error(currLineno(), currColno(), msg);
+  void error(int line, int col, String msg) {
+    parser.errorMsg.error(line, col, msg);
   }
 
-    void warning( String message ){
-         System.err.println("\n" + curr_filename( ) + ":" + currLineno( )
-                            + " Warning: " + message);
-    }
+  void error(Location s, String msg){
+    parser.errorMsg.error(s.getLine(), s.getColumn(), msg);
+  }
 
-    String curr_filename() {
-	  return ((ScannerWithLocInfo)parser.getScanner()).getCurFilename();
-    }
 
 :}
 
@@ -96,10 +71,99 @@ parser code {:
   public Absyn getParseResult() {
     return parseResult;
   }
-
-  public BLOGParser(Scanner s, blog.msg.ErrorMsg msg) {
-    this(s);
+  
+  public BLOGParser(java_cup.runtime.Scanner s, java_cup.runtime.SymbolFactory sf, blog.msg.ErrorMsg msg) {
+    this(s, sf);
     errorMsg = msg;
+  }
+  
+  public void report_error(String message, Object info) {
+    if (info instanceof java_cup.runtime.ComplexSymbolFactory.ComplexSymbol) {
+      java_cup.runtime.ComplexSymbolFactory.ComplexSymbol s = 
+        (java_cup.runtime.ComplexSymbolFactory.ComplexSymbol) info;
+      errorMsg.error(s.xleft.getLine(), s.xleft.getColumn(), message);
+    } else errorMsg.error(0, 0, message);
+  }
+  
+  /**
+   * this got automatically called if we try to recover error but hit EOF.
+   * in our implementation we will try to reduce as much as possible.
+   */
+  public void unrecovered_syntax_error(Symbol cur_token) {
+    report_error("cannot continue, trying final measure to recover", cur_token);
+    try {
+      try_do_reduce(cur_token.sym, false);
+    } catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+  }
+  
+  /**
+   * report a syntax error
+   */
+  public void syntax_error(Symbol cur_token) {
+   if (cur_token instanceof java_cup.runtime.ComplexSymbolFactory.ComplexSymbol) {
+      java_cup.runtime.ComplexSymbolFactory.ComplexSymbol s = 
+        (java_cup.runtime.ComplexSymbolFactory.ComplexSymbol) cur_token;
+      errorMsg.error(s.xleft.getLine(), s.xleft.getColumn(), "syntax error at " + s);
+    } else errorMsg.error(0, 0, "the last encounterd token #" + cur_token);
+  }
+
+  private void try_do_reduce(int sym, boolean debug) throws java.lang.Exception {
+    Symbol lhs_sym;
+    short handle_size, lhs_sym_num;
+    int act;
+    // try reduce
+    act = get_action(((Symbol)stack.peek()).parse_state, sym);
+    while (act < 0) {
+        /* perform the action for the reduce */
+        lhs_sym = do_action((-act)-1, this, stack, tos);
+
+        /* look up information about the production */
+        lhs_sym_num = production_tab[(-act)-1][0];
+        handle_size = production_tab[(-act)-1][1];
+        
+        if (debug) {
+          debug_reduce((-act)-1, lhs_sym_num, handle_size);
+        }
+
+        /* pop the handle off the stack */
+        for (int i = 0; i < handle_size; i++) {
+          stack.pop();
+          tos--;
+        }
+        
+        /* look up the state to go to from the one popped back to */
+        act = get_reduce(((Symbol)stack.peek()).parse_state, lhs_sym_num);
+
+        /* shift to that state */
+        lhs_sym.parse_state = act;
+        
+        if (debug) {
+          debug_message("# Reduce rule: top state " +
+           ((Symbol)stack.peek()).parse_state +
+           ", lhs sym " + lhs_sym_num + " -> state " + act); 
+        }
+        
+        stack.push(lhs_sym);
+        tos++;
+        act = get_action(((Symbol)stack.peek()).parse_state, error_sym());
+    }
+  }
+  
+  /**
+   * This is automatically called when trying to recover the error
+   * try to do reduce first under error symbol,
+   * then try to use the default error recover
+   */
+  protected boolean error_recovery(boolean debug) throws java.lang.Exception {
+    if (debug) {
+      debug_message("trying to recover error");
+    }
+
+    try_do_reduce(error_sym(), debug);
+    boolean flag = super.error_recovery(debug); // try normal recovery
+    return flag;
   }
 
 // WC: Methods that get automatically invoked when using the builtin error recovery mechanism.  
@@ -124,7 +188,7 @@ init with {:
  * the lexer returns it. For the terminals' interpretations, consult with
  * BLOGLexer.lex.
  */
-terminal ELSE, IF, THEN;
+terminal ELSE, IF, THEN, CASE, IN;
 terminal TYPE, RANDOM, FIXED, ORIGIN, DISTINCT,
         QUERY, OBS, PARAM, LIST, MAP, DISTRIBUTION;
 terminal EXISTS, FORALL;
@@ -135,10 +199,9 @@ terminal java.lang.Boolean BOOLEAN_LITERAL;
 terminal java.lang.Character CHAR_LITERAL;
 terminal java.lang.String STRING_LITERAL;
 terminal java.lang.String ID;
-terminal PARFACTOR, FACTOR; // Not Yet Implemented
-terminal ERROR, ELSEIF; // Not Yet Implemented
+//terminal PARFACTOR, FACTOR; // Not Yet Implemented
 terminal AT; // time operator
-terminal PLUS, MINUS, MULT, DIV, MOD, POWER; //arithmetic operator
+terminal PLUS, MINUS, MULT, DIV, MOD, POWER, UMINUS; //arithmetic operator
 terminal LT, GT, LEQ, GEQ; // relational_expression
 terminal EQEQ, NEQ; // equality compare
 terminal EQ; // assignment operator
@@ -153,25 +216,30 @@ nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   rand_func_decl, number_stmt, origin_func_decl,
   distinct_decl, distribution_decl, parameter_decl,
   evidence_stmt, query_stmt;
-nonterminal Stmt evidence, value_evidence, symbol_evidence, query;
-nonterminal Expr expression, literal, operation_expr, unary_operation_expr,
-  quantified_formula, distribution_expr,
-  function_call, list_construct_expression,
-  map_construct_expression, number_expr, elseif_list;
+nonterminal Stmt evidence, value_evidence;
+nonterminal Expr expression, literal,
+  quantified_formula, list_expr,
+  number_expr, if_expr, case_expr, opt_colon_expr,
+  operation_expr, unary_operation_expr;
+nonterminal Absyn[] comprehension_expr;
+nonterminal MapInitExpr map_construct_expression;
+nonterminal FuncCallExpr function_call;
 nonterminal Expr dependency_statement_body;
 nonterminal SetExpr set_expr;
 nonterminal ExplicitSetExpr explicit_set;
-nonterminal ImplicitSetExpr implicit_set;
 nonterminal TupleSetExpr tuple_set;
 nonterminal ExprList semi_colon_separated_expression_list,
-  opt_expression_list, expression_list;
+  opt_expression_list, expression_list, semi_ending_expression_list;
 nonterminal ExprTupleList expression_pair_list;
 nonterminal Ty type, list_type, map_type;
 nonterminal ArrayTy array_type;
 nonterminal String array_type_or_sub;
-//nonterminal Integer dims; //not used
-//nonterminal FieldList opt_parenthesized_type_lst, type_lst // Not Used
-nonterminal FieldList opt_parenthesized_type_var_lst, type_var_lst;
+
+//attempt catch type var list errors
+nonterminal extra_commas;
+
+nonterminal FieldList opt_parenthesized_type_var_lst, 
+  parenthesized_type_var_lst, type_var_lst;
 nonterminal OriginFieldList opt_parenthesized_origin_var_list,
   origin_var_list;
 nonterminal SymbolArray id_or_subid;
@@ -183,18 +251,17 @@ nonterminal String refer_name;
  * Precedence declarations.  The later the precedence declaration, the
  * higher the precedence.
  */
-precedence left ELSE;
 precedence nonassoc EQ, DISTRIB;
-precedence right RIGHTARROW;
+precedence left SEMI;
+precedence left ELSE;
 precedence left DOUBLERIGHTARROW;
 precedence left AND, OR;
-precedence left LT, GT, LEQ, GEQ, EQEQ, NEQ;
+precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
 precedence left PLUS, MINUS;
 precedence left MULT, DIV, MOD, POWER;
-precedence right NOT, AT;
-precedence right LBRACKET;
-precedence left RBRACKET;
-
+precedence left UMINUS;
+precedence left NOT, AT;
+precedence left LBRACKET/*, RBRACKET, LPAREN, RPAREN*/;
 
 /* Grammar *******************************************************************/
 
@@ -202,101 +269,78 @@ start with program;
 
 
 /* The start nonterminal */
-program ::= opt_statement_lst : e {: parser.parseResult = e;  :}
-                ;
+program ::= opt_statement_lst : e {: parser.parseResult = e;  :} 
+  ;
 
 /* Represents a possibly-empty list of statements. */
 opt_statement_lst ::= /* EMPTY */ {: RESULT = null; :}
-                | statement_lst : e {: RESULT = e; :}
-                ;
+  | statement_lst : e {: RESULT = e; :}
+  ;
 
 /* Represents a non-empty list of statements terminated by semicolons. */
-statement_lst ::= statement:e statement_lst:slst
+statement_lst ::= statement:e SEMI statement_lst:slst
     {: if (e==null) RESULT = slst;
        else RESULT = new StmtList(e, slst);
     :}
-  | statement:e {: RESULT = new StmtList(e, null); :}
-  | error
-	{: System.err.println(
-		"Possible cause: forgotten semicolon" );
-		RESULT = null; :}
+  | statement:e statement_lst:slst
+    {:
+       error(exright, "missing ; at the end of the statement");
+       if (e==null) RESULT = slst;
+       else RESULT = new StmtList(e, slst);
+    :}
+  | statement:e SEMI 
+    {: if (e!=null) RESULT = new StmtList(e, null); 
+       else RESULT = null; :}
+  | statement:e 
+  {: error(exright, "missing ; at the end of this statement"); 
+    RESULT = null; :}
 ;
 
 /* A statement can be a declaration, an observation (assertion of some
  * evidence), or a query.
  */
 statement ::= declaration_stmt : e {: RESULT = e; :}
-            | evidence_stmt : e {: RESULT = e; :}
-            | query_stmt : e {: RESULT = e; :}
-            | error SEMI
-            {: error("unmatched statement, or possible missing semicolon");
-              RESULT = null; :}
-            ;
+  | evidence_stmt : e {: RESULT = e; :}
+  | query_stmt : e {: RESULT = e; :}
+  | error:ex 
+    {: 
+    error(exxright.getLine() + 1, 1, "incorrect statement");
+    RESULT = null; :}
+  ;
 
-/* Represents a declaration, which can be:
- *    * a type declaration;
- *    * a parameter declaration;
- *    * a random function or generating function declaration
- *        (Semantic checks:
- *            - whether the return type is a declared type;
- *            - whether the argument types have been declared (an error-check
- *		  propagated from the type_lst production.);
- *    * a random function definition
- *    * a non-random function (or constant) declaration
- *    * a non-random function (or constant) definition, specifying the
- *      interpretation of the function
- *    * a random function dependency statement description
- *        (Semantic checks:
- *	      - whether the numbers of actual and declared parameters match;
- *            - whether the function by this name has been declared.);
- *    * a guaranteed object declaration
- *        (Semantic checks:
- *            - whether the type has been declared.);
- *    * a POP number statement description
- *        (Semantic checks:
- *            - whether the numbers of generating functions and parameters
- *                match;
- *            - whether the generating functions have been declared (an
- *                error-check propagated from the function_lst production);
- *            - whether each generating function takes exactly one parameter (an
- *                error-check propagated from the function_lst production);
- *            - whether the only parameter of each generating function is of the
- *                type being generated.).
- *    * a parfactor statement // not used in current blog
- */
 declaration_stmt ::=
     type_decl:e {: RESULT = e; :}
   | fixed_func_decl:e {: RESULT = e; :}
   | rand_func_decl:e {: RESULT = e; :}
   | origin_func_decl : e {: RESULT = e; :}
-//  | dep_stmt : e {: RESULT = e; :}
   | number_stmt : e {: RESULT = e; :}
   | distinct_decl : e {: RESULT = e; :}
   | parameter_decl : e {: RESULT = e; :}
   | distribution_decl :e {: RESULT = e; :}
-/*  | parfactor : e {: RESULT = e; :}  */
+/*  | parfactor : e {: RESULT = e; :}  */ // not supporting parfactor now
   ;
 
-type_decl ::= TYPE ID:typename SEMI
-    {: RESULT = new TypeDec(currLineno(), currColno(), sym(typename)); :}
+type_decl ::= TYPE:ty ID:typename 
+    {: RESULT = new TypeDec(tyxleft.getLine(), tyxleft.getColumn(), sym(typename)); :}
+  | TYPE:ty error:err
+    {: error(tyxright, "invalid type declaration. Possibe cause: malformed, missing, or extra ids"); :}  
   ;
-
 
 /*
  * Represents a type that is built in or has already been declared.
  * can also be an array
  */
 type ::= refer_name:typename
-    {: RESULT = new NameTy(currLineno(), currColno(), sym(typename)); :}
+    {: RESULT = new NameTy(typenamexleft.getLine(), typenamexleft.getColumn(), sym(typename)); :}
   | list_type:e {: RESULT = e; :}
   | array_type : at {: RESULT = at; :}
   | map_type:e {: RESULT = e; :}
   ;
 
-list_type ::= LIST LT refer_name:typename GT
+list_type ::= LIST:l LT refer_name:typename GT
     /* here general name is allowed, but internally only allow nametype as list */
-    {: RESULT = new ListTy(currLineno(), currColno(), 
-			new NameTy(currLineno(), currColno(), sym(typename))); :}
+    {: RESULT = new ListTy(lxleft.getLine(), lxleft.getColumn(), 
+      new NameTy(typenamexleft.getLine(), typenamexleft.getColumn(), sym(typename))); :}
   ;
 
 array_type_or_sub ::= refer_name:typename LBRACKET
@@ -305,60 +349,66 @@ array_type_or_sub ::= refer_name:typename LBRACKET
 
 array_type ::= array_type_or_sub:typename RBRACKET
     /* internally only allow nametype as array */
-    {: RESULT = new ArrayTy(currLineno(), currColno(), 
-    	new NameTy(currLineno(), currColno(), sym(typename)), 1); :}
+    {: RESULT = new ArrayTy(typenamexleft.getLine(), typenamexleft.getColumn(), 
+      new NameTy(typenamexleft.getLine(), typenamexleft.getColumn(), sym(typename)), 1); :} 
   | array_type : arrty LBRACKET RBRACKET
     {: arrty.dim += 1; 
-      RESULT = arrty; :}    
+      RESULT = arrty; :} 
   ;
 
-map_type ::= MAP LT type:t1 COMMA type:t2 GT
-    {: RESULT = new MapTy(currLineno(), currColno(), t1, t2); :}
+map_type ::= MAP:m LT type:t1 COMMA type:t2 GT
+    {: RESULT = new MapTy(mxleft.getLine(), mxleft.getColumn(), t1, t2); :}
   ;
-
-/* A possibly empty list of IDs denoting type names. */
-// Currently commented this code out since it isn't being
-// used anywhere else in this cup file and cup is giving
-// warnings. Uncomment once these rules are used elsewhere.
-//   
-//opt_parenthesized_type_lst ::= /* EMPTY */
-//	    {: RESULT = null; :}
-//	    | LPAREN RPAREN
-//	    {: RESULT = null; :}
-//	    | LPAREN type_lst:tl RPAREN
-//	    {: RESULT = tl; :}
-//	    ;
-
-//type_lst ::= type:ty COMMA type_lst:tl
-//	  {: RESULT = new FieldList(null, ty, tl); :}
-//	| type:ty
-//	  {: RESULT = new FieldList(null, ty, null); :}
-//	;
 
 /* Represents a list of IDs denoting type names. */
-opt_parenthesized_type_var_lst ::= /* EMPTY */
+opt_parenthesized_type_var_lst ::= /* */
     {: RESULT = null; :}
-  | LPAREN RPAREN
+  | parenthesized_type_var_lst:tvl
+    {: RESULT = tvl; :}
+  | type_var_lst:tvl
+    {: error(tvlxleft, "missing parentheses");
+      error(tvlxright, "missing parentheses");
+      RESULT = tvl;
+    :}        
+  ;
+
+parenthesized_type_var_lst ::= 
+  LPAREN RPAREN
     {: RESULT = null; :}
   | LPAREN type_var_lst:tl RPAREN
     {: RESULT = tl; :}
+  ;
+
+extra_commas ::= COMMA COMMA
+  | extra_commas COMMA
   ;
 
 type_var_lst ::= type:ty ID:id COMMA type_var_lst:tl
     {: RESULT = new FieldList(sym(id), ty, tl); :}
   | type:ty ID:id
     {: RESULT = new FieldList(sym(id), ty, null); :}
+  | type:ty ID:id extra_commas type_var_lst:tl
+    {: error(idxright, "extra commas"); 
+      RESULT = new FieldList(sym(id), ty, tl); :}
+  | type:ty ID:id type_var_lst:tl
+    {: error(idxright, "missing comma"); 
+      RESULT = new FieldList(sym(id), ty, tl);:}
+  | type:ty COMMA type_var_lst:tl
+    {: error(tyxright, "missing id"); 
+      RESULT = tl;:}
   ;
-
 
 /* A nonrandom function declaration may declare a nonrandom constant or
  * a non-random function.  The distinction is whether there is a
  * parenthesized list of arguments after the function/constant name.
  */
 fixed_func_decl ::=
-    FIXED type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
-    EQ expression:ex SEMI
-    {: RESULT = new FixedFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type, ex); :}
+    FIXED:fx type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
+    EQ expression:ex
+    {: RESULT = new FixedFuncDec(fxxleft.getLine(), fxxleft.getColumn(), sym(fname), otl, ret_type, ex); :}
+  | FIXED:fx error:er
+    {: error(fxxright, "error in fixed function defition");
+    RESULT = null; :}
   ;
 
 /**
@@ -366,71 +416,137 @@ fixed_func_decl ::=
  * including dependency statement
  */
 rand_func_decl ::=
-    RANDOM type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
-    dependency_statement_body:body SEMI
-    {: RESULT = new RandomFuncDec(currLineno(), currColno(), sym(fname), otl, ret_type, body); :}
-  ;
+    RANDOM:r type:ret_type ID:fname opt_parenthesized_type_var_lst:otl
+    dependency_statement_body:body 
+    {: RESULT = new RandomFuncDec(rxleft.getLine(), rxleft.getColumn(), sym(fname), otl, ret_type, body); :}
+ | RANDOM:r error
+    dependency_statement_body:body 
+    {: 
+    error(rxright, "incorrect function header, possibly missing return type or function name");
+    RESULT = null; 
+    :}
+ | RANDOM:r error:er
+  {: error(rxright, "error in random function definition");
+  RESULT = null; :}
+;
 
 /**
  * number statement
  */
 number_stmt ::=
-    NUMSIGN refer_name:ty opt_parenthesized_origin_var_list:otl
-	dependency_statement_body:body SEMI
-    {: RESULT = new NumberDec(currLineno(), currColno(), 
-    new NameTy(currLineno(), currColno(), sym(ty)), otl, body); :}
+    NUMSIGN:n refer_name:ty opt_parenthesized_origin_var_list:otl
+  dependency_statement_body:body
+    {: RESULT = new NumberDec(nxleft.getLine(), nxleft.getColumn(), 
+    new NameTy(tyxleft.getLine(), tyxleft.getColumn(), sym(ty)), otl, body); :}
+  | NUMSIGN:ns opt_parenthesized_origin_var_list:otl
+  dependency_statement_body:body 
+    {: error(nsxright, "missing type name in number statement"); RESULT = null; :}
+  | NUMSIGN:ns refer_name:ty opt_parenthesized_origin_var_list:otl DISTRIB:ds error
+    {: error(dsxright, "missing body in number statement"); RESULT = null; :}
+  | NUMSIGN:ns refer_name:ty error
+    {: error(tyxright, "missing body in number statement"); RESULT = null; :}
+  | NUMSIGN:ns error:err 
+    {: error(nsxright, "error in number statement"); :}
   ;
 
-opt_parenthesized_origin_var_list ::= LPAREN origin_var_list:e RPAREN
+/* list of origin_fun = var, used in number statement */
+opt_parenthesized_origin_var_list ::= /* Empty */
+    {: RESULT = null; :}
+  | LPAREN origin_var_list:e RPAREN
     {: RESULT = e; :}
-  | {: RESULT = null; :}
   ;
 
 origin_var_list ::= ID:func EQ ID:var COMMA origin_var_list:n
-    {: RESULT = new OriginFieldList(currLineno(), currColno(), sym(func), sym(var), n); :}
+    {: RESULT = new OriginFieldList(funcxleft.getLine(), 
+      funcxleft.getColumn(), sym(func), sym(var), n); :}
+  | ID:func EQ ID:var extra_commas:ec origin_var_list:n
+    {: error(ecxleft, "extra commas");
+      RESULT = new OriginFieldList(funcxleft.getLine(), 
+      funcxleft.getColumn(), sym(func), sym(var), n);:}
+  | ID:func EQ:e COMMA origin_var_list:n
+    {: error(exright, "missing origin var name");
+      RESULT = n;:}
+  | ID:func EQ ID:var origin_var_list:n
+    {: error(varxright, "missing comma");
+      RESULT = new OriginFieldList(funcxleft.getLine(), 
+      funcxleft.getColumn(), sym(func), sym(var), n);:}
   | ID:func EQ ID:var
-    {: RESULT = new OriginFieldList(currLineno(), currColno(), sym(func), sym(var), null); :}
+    {: RESULT = new OriginFieldList(funcxleft.getLine(), 
+      funcxleft.getColumn(), sym(func), sym(var), null); :}
+  | ID:func ID:var
+    {: error(funcxright, "missing =");
+      RESULT = new OriginFieldList(funcxleft.getLine(), 
+      funcxleft.getColumn(), sym(func), sym(var), null);:}
   ;
 
 /**
  * origin function declaration
  */
 origin_func_decl ::=
-    ORIGIN type:ret_type ID:fname LPAREN type:arg_type RPAREN SEMI
-    {: RESULT = new OriginFuncDec(currLineno(), currColno(), sym(fname),
+    ORIGIN:o type:ret_type ID:fname LPAREN type:arg_type RPAREN 
+    {: RESULT = new OriginFuncDec(oxleft.getLine(), oxleft.getColumn(), sym(fname),
       new FieldList(null, arg_type, null), ret_type); :}
+  | ORIGIN:o type:ret_type ID:fname LPAREN:lp error:er RPAREN 
+    {: error(lpxright, "syntax error in type argument of origin function");
+      RESULT = null;
+    :}
+  | ORIGIN:o type:ret_type LPAREN type:arg_type RPAREN 
+    {: error(ret_typexright, "missing type or origin function name");
+      RESULT = null;
+    :}
+  | ORIGIN:o type:ret_type ID:fname LPAREN type:arg_type 
+    {: error(arg_typexright, "missing )");
+      RESULT = new OriginFuncDec(oxleft.getLine(), oxleft.getColumn(), sym(fname),
+      new FieldList(null, arg_type, null), ret_type);
+    :}
+  | ORIGIN:o type:ret_type ID:fname type:arg_type RPAREN
+    {: error(fnamexright, "missing (");
+      RESULT = new OriginFuncDec(oxleft.getLine(), oxleft.getColumn(), sym(fname),
+      new FieldList(null, arg_type, null), ret_type);
+    :}
+  | ORIGIN:o error
+    {:
+      error(oxright, "error in origin function definition");
+      RESULT = null; 
+    :}
   ;
 
 /**
  * declaration of distinct symbols, (guaranteed objects)
  */
 distinct_decl ::=
-    DISTINCT refer_name:ty id_or_subid_list:e SEMI
-    {: RESULT = new DistinctSymbolDec(currLineno(), currColno(), 
-    new NameTy(currLineno(), currColno(), sym(ty)), e); :}
+    DISTINCT:d refer_name:ty id_or_subid_list:e 
+    {: RESULT = new DistinctSymbolDec(dxleft.getLine(), dxleft.getColumn(), 
+    new NameTy(tyxleft.getLine(), tyxleft.getColumn(), sym(ty)), e); :}
   ;
 
 id_or_subid_list ::= id_or_subid:e {: RESULT = new SymbolArrayList(e, null); :}
   | id_or_subid:e COMMA id_or_subid_list:n
     {: RESULT = new SymbolArrayList(e, n); :}
+  | id_or_subid:e id_or_subid_list:n
+    {: error(exright, "missing COMMA"); 
+        RESULT = new SymbolArrayList(e, n);
+    :}
+  | id_or_subid:e extra_commas:ec id_or_subid_list:n
+    {: error(ecxleft, "extra COMMA"); 
+      RESULT = new SymbolArrayList(e, n); :}
   ;
 
 id_or_subid ::= ID:id
-    {: RESULT = new SymbolArray(currLineno(), currColno(), sym(id)); :}
+    {: RESULT = new SymbolArray(idxleft.getLine(), idxleft.getColumn(), sym(id)); :}
   | ID:id LBRACKET INT_LITERAL:s RBRACKET
-    {: RESULT = new SymbolArray(currLineno(), currColno(), sym(id), s.intValue()); :}
+    {: RESULT = new SymbolArray(idxleft.getLine(), idxleft.getColumn(), sym(id), s.intValue()); :}
   ;
 
 /**
  * declaration of a distribution
  */
 distribution_decl ::=
-    DISTRIBUTION ID:id EQ refer_name:name
-    LPAREN opt_expression_list:e RPAREN SEMI
-    {: RESULT = new DistributionDec(currLineno(), currColno(), sym(id),
-      new ClassName(currLineno(), currColno(), sym(name)), e); :}
+    DISTRIBUTION:d ID:id EQ refer_name:name
+    LPAREN opt_expression_list:e RPAREN 
+    {: RESULT = new DistributionDec(dxleft.getLine(), dxleft.getColumn(), sym(id),
+      sym(name), e); :}
   ;
-
 
 /* reference to function name or Java class */
 refer_name ::= ID:id {: RESULT = id; :}
@@ -440,131 +556,128 @@ refer_name ::= ID:id {: RESULT = id; :}
 /**
  * body of random function or number statement
  */
-dependency_statement_body ::= EQ expression:e
+dependency_statement_body ::= DISTRIB expression:e
     {: RESULT = e; :}
-  | distribution_expr:e
-    {: RESULT = e; :}
-  | IF:a expression:e1 THEN dependency_statement_body:e2 elseif_list:e3
-    {: RESULT = new IfExpr(currLineno(), currColno(), e1, e2, e3); :}
-  | /* not recommended to add {}, just for compactibility of old syntax */
-    LBRACE dependency_statement_body:e RBRACE
-    {: RESULT = e; :}
-  | LBRACE dependency_statement_body:e SEMI RBRACE
-    {: error("extra semicolon inside braces!"); :}
-  | IF:a expression:e1 dependency_statement_body:e2 elseif_list:e3
-    {: error("missing THEN in dependency statement clause, proceed anyway");
-    RESULT = new IfExpr(currLineno(), currColno(), e1, e2, e3); :}
   ;
 
-elseif_list ::=
-    ELSE dependency_statement_body:e {: RESULT = e; :}
-  | {: RESULT = null; :}
+parameter_decl ::= PARAM:p type:ty ID:id 
+    {: RESULT = new ParameterDec(pxleft.getLine(), pxleft.getColumn(), ty, sym(id), null); :}
+  | PARAM:p type:ty ID:id COLON expression:e 
+    {: RESULT = new ParameterDec(pxleft.getLine(), pxleft.getColumn(), ty, sym(id), e); :}
   ;
 
-parameter_decl ::= PARAM type:ty ID:id SEMI
-    {: RESULT = new ParameterDec(currLineno(), currColno(), ty, sym(id), null); :}
-  | PARAM type:ty ID:id COLON expression:e SEMI
-    {: RESULT = new ParameterDec(currLineno(), currColno(), ty, sym(id), e); :}
-  ;
-
-/* Represents a term, which can be either a 0-ary function application, a
+/* Represents an expression, which can be either a 0-ary function application, a
  * variable, a  non-0-ary function application, or a built-in constant.
  * (Propagates an error-check from production for specific kinds of terms.)
  *
  * Result is null if the term is invalid.
  */
-
 expression ::= operation_expr:e  {: RESULT = e; :}
-  | distribution_expr:e {: RESULT = e; :}
   | literal:e  {: RESULT = e; :}
   | function_call:e {: RESULT = e; :}
-  | list_construct_expression:e {: RESULT = e; :}
+  | list_expr:e {: RESULT = e; :}
   | map_construct_expression:e {: RESULT = e; :}
   | quantified_formula:e {: RESULT = e; :}
   | set_expr:e {: RESULT = e; :}
   | number_expr:e {: RESULT = e; :}
-  | refer_name:e {: RESULT = new SymbolExpr(currLineno(), currColno(), sym(e)); :}
+  | if_expr:e {: RESULT = e; :}
+  | case_expr:e {: RESULT = e; :}
   ;
 
 literal ::= STRING_LITERAL:e
-    {: RESULT = new StringExpr(currLineno(), currColno(), e.intern()); :}
+    {: RESULT = new StringExpr(exleft.getLine(), exleft.getColumn(), e.intern()); :}
   | CHAR_LITERAL:e
-    {: RESULT = new StringExpr(currLineno(), currColno(), e.toString().intern()); :}
+    {: RESULT = new StringExpr(exleft.getLine(), exleft.getColumn(), e.toString().intern()); :}
   | INT_LITERAL:e
-    {: RESULT = new IntExpr(currLineno(), currColno(), e.intValue()); :}
+    {: RESULT = new IntExpr(exleft.getLine(), exleft.getColumn(), e.intValue()); :}
   | DOUBLE_LITERAL:e
-    {: RESULT = new DoubleExpr(currLineno(), currColno(), e.doubleValue()); :}
-//  | TIME_LITERAL:e
-//    {: RESULT = new TimeExpr(currLineno(), currColno(), e.intValue()); :}
+    {: RESULT = new DoubleExpr(exleft.getLine(), exleft.getColumn(), e.doubleValue()); :}
   | BOOLEAN_LITERAL:e
-    {: RESULT = new BooleanExpr(currLineno(), currColno(), e.booleanValue()); :}
+    {: RESULT = new BooleanExpr(exleft.getLine(), exleft.getColumn(), e.booleanValue()); :}
   | NULL:e
-    {: RESULT = new NullExpr(currLineno(), currColno()); :}
+    {: RESULT = new NullExpr(exleft.getLine(), exleft.getColumn()); :}
   ;
 
-operation_expr ::= expression:e1 PLUS expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.PLUS, e2); :}
+operation_expr ::= 
+  expression:e1 PLUS expression:e2
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.PLUS, e2); :}
   | expression:e1 MINUS expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.MINUS, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.MINUS, e2); :}
   | expression:e1 MULT expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.MULT, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.MULT, e2); :}
   | expression:e1 DIV expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.DIV, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.DIV, e2); :}
   | expression:e1 MOD expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.MOD, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.MOD, e2); :}
   | expression:e1 POWER expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.POWER, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.POWER, e2); :}
   | expression:e1 LT expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.LT, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.LT, e2); :}
   | expression:e1 GT expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.GT, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.GT, e2); :}
   | expression:e1 LEQ expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.LEQ, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.LEQ, e2); :}
   | expression:e1 GEQ expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.GEQ, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.GEQ, e2); :}
   | expression:e1 EQEQ expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.EQ, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.EQ, e2); :}
   | expression:e1 NEQ expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.NEQ, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.NEQ, e2); :}
   | expression:e1 AND expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.AND, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.AND, e2); :}
   | expression:e1 OR expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.OR, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.OR, e2); :}
   | expression:e1 DOUBLERIGHTARROW expression:e2
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.IMPLY, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.IMPLY, e2); :}
   | expression:e1 LBRACKET expression:e2 RBRACKET
-    {: RESULT = new OpExpr(currLineno(), currColno(), e1, OpExpr.SUB, e2); :}
-  | array_type_or_sub:e1 expression:e2 RBRACKET
-    {: RESULT = new OpExpr(currLineno(), currColno(), 
-      new SymbolExpr(currLineno(), currColno(), sym(e1)), OpExpr.SUB, e2); :}
+    {: RESULT = new OpExpr(e1xleft.getLine(), e1xleft.getColumn(), e1, OpExpr.SUB, e2); :}
   | unary_operation_expr:e {: RESULT = e; :}
   ;
 
 unary_operation_expr ::=
-    MINUS expression:e
-    {: RESULT = new OpExpr(currLineno(), currColno(), new IntExpr(currLineno(), currColno(), 0), OpExpr.NOT, e); :}
-  | NOT expression:e
-    {: RESULT = new OpExpr(currLineno(), currColno(), null, OpExpr.NOT, e); :}
+    MINUS:m expression:e
+    {: RESULT = new OpExpr(mxleft.getLine(), mxleft.getColumn(), new IntExpr(exleft.getLine(), exleft.getColumn(), 0), OpExpr.MINUS, e); :}
+    %prec UMINUS
+  | NOT:n expression:e
+    {: RESULT = new OpExpr(nxleft.getLine(), nxleft.getColumn(), null, OpExpr.NOT, e); :}
   | AT:a expression:e
-    {: RESULT = new OpExpr(currLineno(), currColno(), null, OpExpr.AT, e); :}
+    {: RESULT = new OpExpr(axleft.getLine(), axleft.getColumn(), null, OpExpr.AT, e); :}
   | LPAREN expression:e RPAREN
     {: RESULT = e; :}
-  ;
+  ;  
 
-quantified_formula ::= FORALL type:ty ID:id expression:e
-    {: RESULT = new QuantifiedFormulaExpr(currLineno(), currColno(),
+quantified_formula ::= FORALL:f type:ty ID:id expression:e
+    {: RESULT = new QuantifiedFormulaExpr(fxleft.getLine(), fxleft.getColumn(),
     QuantifiedFormulaExpr.FORALL, ty, sym(id), e); :}
-  | EXISTS type:ty ID:id expression:e
-    {: RESULT = new QuantifiedFormulaExpr(currLineno(), currColno(),
-    QuantifiedFormulaExpr.EXISTS, ty, sym(id), e); :}
+  | EXISTS:ex type:ty ID:id expression:e
+    {: RESULT = new QuantifiedFormulaExpr(exxleft.getLine(), exxleft.getColumn(),
+    QuantifiedFormulaExpr.EXISTS, ty, sym(id), e); :}  
   ;
 
 function_call ::= refer_name:id LPAREN opt_expression_list:e RPAREN
-    {: RESULT = new FuncCallExpr(currLineno(), currColno(), sym(id), e); :}
+    {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), e); :}
+  | refer_name:id LPAREN error:err
+   {: error(errxleft, "error in body of function call"); :}
+  | refer_name:id 
+    {: RESULT = new FuncCallExpr(idxleft.getLine(), idxleft.getColumn(), sym(id), null); :}
   ;
 
-distribution_expr ::= DISTRIB refer_name:name LPAREN opt_expression_list:e RPAREN
-    {: RESULT = new DistributionExpr(currLineno(), currColno(), sym(name), e); :}
+if_expr ::= IF:a expression:e1 THEN expression:e2 ELSE expression:e3 
+    {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, e3); :}
+  | IF:a expression:e1 THEN expression:e2
+    {: RESULT = new IfExpr(axleft.getLine(), axleft.getColumn(), e1, e2, null); :}
+  ;
+
+case_expr ::= CASE:c expression:e1 IN map_construct_expression:e2 
+    {: 
+    if (e1 == null || e2 == null) {
+      error(cxright, "error in case expression");
+      RESULT = null;
+    } else {
+      RESULT = new CaseExpr(cxleft.getLine(), cxleft.getColumn(), e1, 
+        e2.values);
+    }
+    :}
   ;
 
 opt_expression_list ::= expression_list:e {: RESULT = e; :}
@@ -575,23 +688,28 @@ expression_list ::= expression:e COMMA expression_list:elst
     {: RESULT = new ExprList(e, elst); :}
   | expression:e
     {: RESULT = new ExprList(e, null); :}
-  ;
-
-list_construct_expression ::= LBRACKET opt_expression_list:e RBRACKET
-    {: RESULT = new ListInitExpr(currLineno(), currColno(), e); :}
-  | LBRACKET semi_colon_separated_expression_list:e RBRACKET
-    {: RESULT = new ListInitExpr(currLineno(), currColno(), e); :}
+  | expression:e extra_commas:ec expression_list:elst
+    {: error(ecxleft, "extra commas in expression list");:}
   ;
 
 semi_colon_separated_expression_list ::=
-    expression_list:e SEMI semi_colon_separated_expression_list:elst
-    {: RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), elst); :}
-  | expression_list:e SEMI expression_list:e2
-    {: RESULT = new ExprList(new ListInitExpr(currLineno(), currColno(), e), new ExprList(new ListInitExpr(e2left, e2), null)); :}
+    semi_ending_expression_list:e semi_colon_separated_expression_list:elst
+    {: RESULT = new ExprList(new ListInitExpr(exleft.getLine(), exleft.getColumn(), e), elst); :}
+  | semi_ending_expression_list:e expression_list:e2
+    {: RESULT = new ExprList(new ListInitExpr(exleft.getLine(), exleft.getColumn(), e), 
+    new ExprList(new ListInitExpr(e2xleft.getLine(), e2xleft.getColumn(), e2), null)); :}
   ;
 
-map_construct_expression ::= LBRACE expression_pair_list:e RBRACE
-    {: RESULT = new MapInitExpr(currLineno(), currColno(), e); :}
+semi_ending_expression_list ::=
+    expression_list:e SEMI
+    {: RESULT = e; :}
+  | semi_ending_expression_list:e SEMI:s 
+    {: error(sxleft, "extra semicolon"); 
+      RESULT = e;
+    :}
+  ;
+map_construct_expression ::= LBRACE:l expression_pair_list:e RBRACE
+    {: RESULT = new MapInitExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
   ;
 
 // to avoid conflict with Imply expression
@@ -602,82 +720,103 @@ expression_pair_list ::=
     {: RESULT = new ExprTupleList(e1, e2, null); :}
   ;
   
-number_expr ::= NUMSIGN set_expr:e
-    {: RESULT = new NumberExpr(currLineno(), currColno(), e); :}
-  | NUMSIGN type:ty
-    {: RESULT = new NumberExpr(currLineno(), currColno(), new ImplicitSetExpr(currLineno(), currColno(), ty, null, null)); :}
-  | NUMSIGN error
-    {: error("expecting number expresssion here. # should be followed by a type or a set"); :}
+number_expr ::= NUMSIGN:n set_expr:e
+    {: RESULT = new NumberExpr(nxleft.getLine(), nxleft.getColumn(), e); :}
+  | NUMSIGN:n type:ty
+    {: 
+    String var = "#_var_" + nxleft.hashCode();
+    ExprList explist = new ExprList(new FuncCallExpr(nxright.getLine(), nxright.getColumn(), sym(var), null), null);
+    RESULT = new NumberExpr(nxleft.getLine(), nxleft.getColumn(), 
+     new TupleSetExpr(tyxleft.getLine(), tyxleft.getColumn(), explist, new FieldList(sym(var), ty, null), null)); :}
+  | NUMSIGN error:err
+    {: error(errxleft, "expecting number expression here. # should be followed by a type or a set"); :}
   ;
 
+list_expr ::= LBRACKET:l opt_expression_list:e RBRACKET
+    {: RESULT = new ListInitExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
+  | LBRACKET:l semi_colon_separated_expression_list:e RBRACKET
+    {: RESULT = new ListInitExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
+  | LBRACKET:l comprehension_expr:e RBRACKET
+    {: 
+    if (e == null) {
+      error(exleft, "invalid tupleset");
+      RESULT = null;
+    } else {
+      RESULT = new ListComprehension(lxleft.getLine(), lxleft.getColumn(), 
+       (ExprList) e[0], (FieldList) e[1], (Expr) e[2]); 
+    }
+    :}
+  ;
 
 set_expr ::= explicit_set:e {: RESULT = e; :}
-  | implicit_set:e {: RESULT = e; :}
   | tuple_set:e {: RESULT = e; :}
   ;
 
-explicit_set ::= LBRACE opt_expression_list:e RBRACE
-    {: RESULT = new ExplicitSetExpr(currLineno(), currColno(), e); :}
+explicit_set ::= LBRACE:l opt_expression_list:e RBRACE
+    {: RESULT = new ExplicitSetExpr(lxleft.getLine(), lxleft.getColumn(), e); :}
   ;
 
-implicit_set ::= LBRACE type:ty ID:id COLON expression:e RBRACE
-    {: RESULT = new ImplicitSetExpr(currLineno(), currColno(), ty, sym(id), e); :}
-  | LBRACE type:ty ID:id RBRACE
-    {: RESULT = new ImplicitSetExpr(currLineno(), currColno(), ty, sym(id), null); :}
+comprehension_expr ::= expression_list:elst FOR type_var_lst:vars opt_colon_expr:condexpr
+    {: 
+      if (elst == null || vars == null) {
+        error(elstxleft, "error in the comprehension");
+        RESULT = null;
+      } else RESULT = new Absyn[] {elst, vars, condexpr };
+    :}
   ;
 
-tuple_set ::= LBRACE expression_list:elst FOR type_var_lst:vars COLON expression:e RBRACE
-    {: RESULT = new TupleSetExpr(currLineno(), currColno(), elst, vars, e); :}
-  | LBRACE expression_list:elst FOR type_var_lst:vars RBRACE
-    {: RESULT = new TupleSetExpr(currLineno(), currColno(), elst, vars, null); :}
+opt_colon_expr ::= /* EMPTY */
+  | COLON expression:e
+    {: 
+    if (e == null) {
+      error(exleft, "error in the condition of comprehension");
+    }
+    RESULT = e; 
+    :}
+  ;
+
+tuple_set ::= LBRACE:l comprehension_expr:e RBRACE
+    {: 
+    if (e == null) {
+      error(exleft, "invalid tupleset");
+      RESULT = null;
+    } else {
+      RESULT = new TupleSetExpr(lxleft.getLine(), lxleft.getColumn(), 
+       (ExprList) e[0], (FieldList) e[1], (Expr) e[2]); 
+    }
+    :}
   ;
 
 ///no implementation for PARFACTOR
 
 
-/* Represents an evidence statement, which can be:
- *
- *    * a symbol evidence statement, listing observed objects of the specified
- *	  type subject to certain constraints
- *        (Semantic checks:
- *	      - whether the type for which the evidence is presented has been
- *		  declared;
- *	      - whether the formula is valid (error-check is propagated from
- *		  the productions for various kinds of formulas).);
- *    * a value evidence statement, stating the value of the specified
- *	  function on the specified tuple of arguments
- *        (Semantic checks:
- *	      - whether the numbers of the function's parameters and arguments
- *		  passed to it match;
- *            - whether the function has been declared.).
- */
-evidence_stmt ::= OBS evidence:e SEMI {: RESULT = e; :}
+evidence_stmt ::= OBS evidence:e  {: RESULT = e; :}
+  | OBS:ob error 
+    {: 
+      error(obxleft, "incorrect obs statement");
+      RESULT = null; :}
   ;
 
 evidence ::=
-   symbol_evidence:e {: RESULT = e; :}
-   | value_evidence:e {: RESULT = e; :}
-//  | tuple_evidence:e {: RESULT = e; :} //not implemented yet
+    value_evidence:e {: RESULT = e; :}
   ;
 
 /* valid evidence format include (will be checked in semantic checking)
  *   - general form: random expression = fixed expression
- *   - symbol evidence: implicit_set = explicit_set of ids
- *   - number_evidence: # implicit_set = int constant
  */
 value_evidence ::=
     expression:e1 EQ expression:e2
-    {: RESULT = new ValueEvidence(currLineno(), currColno(), e1, e2); :}
+    {: RESULT = new ValueEvidence(e1xleft.getLine(), e1xleft.getColumn(), e1, e2); :}
+    | error:err EQ expression:e2
+    {:error(errxleft, "incorrect expression in left hand side of evidence"); RESULT = null;:}
+    | expression:e1 EQ error:err
+    {:error(errxleft, "incorrect expression in right hand side of evidence"); RESULT = null;:}
   ;
 
-symbol_evidence ::=
-    implicit_set:e1 EQ explicit_set:e2
-    {: RESULT = new SymbolEvidence(currLineno(), currColno(), e1, e2); :}
+query_stmt ::= QUERY:q  expression:e
+    {: RESULT = new QueryStmt(qxleft.getLine(), qxleft.getColumn(), e); :}
+  | QUERY:q error 
+    {: error(qxright, "invalid query"); 
+      RESULT = null;:}
   ;
 
-query_stmt ::= QUERY  query:q SEMI
-    {: RESULT = q; :}
-  ;
-
-query ::= expression:e {: RESULT = new QueryStmt(currLineno(), currColno(), e); :}
-  ;
