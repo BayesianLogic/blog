@@ -35,9 +35,11 @@
 
 package blog.distrib;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import blog.common.Util;
 import blog.model.Model;
-import blog.objgen.ObjectSet;
 
 /**
  * CPD that takes <code>S</code>, a set of objects (an instance of the
@@ -63,7 +65,7 @@ public class UniformChoice implements CondProbDistrib {
     if (params.length != 1) {
       throw new IllegalArgumentException("expected one parameter");
     }
-    setParams((ObjectSet) params[0]);
+    setParams((Collection) params[0]);
   }
 
   /**
@@ -71,7 +73,7 @@ public class UniformChoice implements CondProbDistrib {
    * parameter <code>S</code> to <code>set</code>
    * 
    */
-  public void setParams(ObjectSet set) {
+  public void setParams(Collection set) {
     if (set != null) {
       this.s = set;
       this.hasS = true;
@@ -128,7 +130,14 @@ public class UniformChoice implements CondProbDistrib {
       return Model.NULL;
     }
     int n = Util.randInt(s.size());
-    return s.sample(n);
+    Iterator it = s.iterator();
+    while (it.hasNext()) {
+      if (n == 0)
+        return (Object) it.next();
+      --n;
+      it.next();
+    }
+    return null;
   }
 
   @Override
@@ -143,6 +152,6 @@ public class UniformChoice implements CondProbDistrib {
     return builder.toString();
   }
 
-  private ObjectSet s;
+  private Collection s;
   private boolean hasS;
 }
