@@ -51,7 +51,7 @@ import blog.common.Util;
  * with probability 1. However, alpha can be 1; this just means the value is 0
  * with probability 1.
  * 
- * @since June 17, 2014
+ * @since June 25, 2014
  */
 public class Geometric implements CondProbDistrib {
 
@@ -59,9 +59,9 @@ public class Geometric implements CondProbDistrib {
    * set parameters for Geometric distribution
    * 
    * @param params
-   *          An array of the form [Double]
+   *          An array of the form [Number]
    *          <ul>
-   *          <li>params[0]: <code>alpha</code>(Double)</li>
+   *          <li>params[0]: <code>alpha</code>(Number)</li>
    *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
@@ -71,21 +71,22 @@ public class Geometric implements CondProbDistrib {
     if (params.length != 1) {
       throw new IllegalArgumentException("expected 1 parameter");
     }
-    setParams((Double) params[0]);
+    setParams((Number) params[0]);
   }
 
   /**
    * If method parameter alpha is non-null and 0 < alpha <= 1, then set
    * distribution parameter <code>alpha</code> to method parameter alpha.
    */
-  public void setParams(Double alpha) {
+  public void setParams(Number alpha) {
     if (alpha != null) {
-      if (alpha <= 0 || alpha > 1) {
+      double alphaDouble = alpha.doubleValue();
+      if (alphaDouble <= 0 || alphaDouble > 1) {
         throw new IllegalArgumentException(
             "Parameter of geometric distribution must be in the "
                 + "interval (0, 1], not " + alpha);
       }
-      this.alpha = alpha;
+      this.alpha = alphaDouble;
       this.hasAlpha = true;
       computeLogParams();
     }
