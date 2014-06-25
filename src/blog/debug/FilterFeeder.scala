@@ -9,8 +9,4 @@ import blog.model.Queries
  */
 abstract class FilterFeeder extends Iterator[(Int, Evidence, Queries)] {
 
-  def initialEvidence: Evidence
-
-  def finalQueries: Queries
-
 }
