@@ -26,8 +26,8 @@ import blog.absyn.FixedFuncDec;
 import blog.absyn.FuncCallExpr;
 import blog.absyn.FunctionDec;
 import blog.absyn.IfExpr;
-import blog.absyn.ImplicitSetExpr;
 import blog.absyn.IntExpr;
+import blog.absyn.ListComprehension;
 import blog.absyn.ListInitExpr;
 import blog.absyn.MapInitExpr;
 import blog.absyn.NameTy;
@@ -770,8 +770,8 @@ public class Semant {
       return transExpr((StringExpr) e);
     } else if (e instanceof NumberExpr) {
       return transExpr((NumberExpr) e);
-    } else if (e instanceof ImplicitSetExpr) {
-      return transExpr((ImplicitSetExpr) e);
+    } else if (e instanceof ListComprehension) {
+      return transExpr((ListComprehension) e);
     } else if (e instanceof ExplicitSetExpr) {
       return transExpr((ExplicitSetExpr) e);
     } else if (e instanceof TupleSetExpr) {
@@ -984,27 +984,11 @@ public class Semant {
     return new ExplicitSetSpec(terms);
   }
 
-  ImplicitSetSpec transExpr(ImplicitSetExpr e) {
-    Type typ = getType(e.typ);
-    String vn;
-    if (e.var != null) {
-      vn = e.var.toString();
-    } else {
-      vn = "_";
-    }
-    Formula cond = TrueFormula.TRUE;
-    if (e.cond != null) {
-      Object c = transExpr(e.cond);
-      if (c instanceof Formula) {
-        cond = (Formula) c;
-      } else {
-        error(
-            e.cond.line,
-            e.cond.col,
-            "Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
-      }
-    }
-    return new ImplicitSetSpec(vn, typ, cond);
+  Object transExpr(ListComprehension e) {
+    // TODO lei to chris: pls add
+    // see example in TupleSet, may reuse code there.
+    // please change return type as well
+    return e;
   }
 
   TupleSetSpec transExpr(TupleSetExpr e) {

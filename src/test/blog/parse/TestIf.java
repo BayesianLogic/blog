@@ -27,7 +27,7 @@ public class TestIf extends TestParse {
     String generated = toRepr(Stmts(new RandomFuncDec(Symbol("ObsColor"),
         Fields(Field(Symbol("d"), Type(Symbol("Draw")))),
         Type(Symbol("Color")), Distribution(Symbol("UniformChoice"),
-            Exprs(ImplicitSet(Symbol("b"), Type(Symbol("Ball"))))))));
+            Exprs(TupleSet(Symbol("b"), Type(Symbol("Ball"))))))));
     assertEquals(generated, parsed);
   }
 
