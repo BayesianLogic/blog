@@ -4,85 +4,72 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
 
 import org.junit.Test;
-
 
 import blog.distrib.Bernoulli;
 
 /**
  * Unit Tests for Bernoulli Distribution
  */
-public class TestBernoulli extends TestDistribution {
+public class TestBernoulli implements TestDistributions {
+  private final double ERROR = 10e-5;
 
   @Test
-  public void testCorrect() {
-    constructParams.add(0.6);
-    testBernoulli(constructParams, args);
+  public void testProbabilityViaConstructor() {
+    // no longer testing.
+  }
 
-    constructParams.clear();
-    constructParams.add(0);
-    testBernoulli(constructParams, args);
-
-    constructParams.clear();
-    constructParams.add(1);
-    testBernoulli(constructParams, args);
+  @Test
+  public void testProbabilityViaSetParams() {
+    Bernoulli b = new Bernoulli();
+    b.setParams(new Object[] { 0.4 });
+    assertEquals(0.4, b.getProb(1), ERROR);
+    assertEquals(0.6, b.getProb(0), ERROR);
+    assertEquals(0.0, b.getProb(2), ERROR);
+    assertEquals(Math.log(0.4), b.getLogProb(1), ERROR);
+    assertEquals(Math.log(0.6), b.getLogProb(0), ERROR);
+    assertEquals(Double.NEGATIVE_INFINITY, b.getLogProb(2), ERROR);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNotProbabilityUnder() {
-    constructParams.add(-1);
-    testBernoulli(constructParams, args);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testNotProbabilityOver() {
-    constructParams.add(1.5);
-    testBernoulli(constructParams, args);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testNoProbability() {
-    testBernoulli(constructParams, args);
+  public void testInsufficientArguments() {
+    Bernoulli b = new Bernoulli();
+    b.setParams(new Object[] { null });
+    b.sampleVal();
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testExtraneousArgs() {
-    constructParams.add(0.5);
-    args.add(1);
-    testBernoulli(constructParams, args);
+    Bernoulli b = new Bernoulli();
+    b.setParams(new Object[] { 1.0, 0.5 });
+    b.sampleVal();
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testExtraneousConstructParams() {
-    constructParams.add(0.5);
-    constructParams.add(0.7);
-    testBernoulli(constructParams, args);
+  public void testIncorrectArguments() {
+    Bernoulli b = new Bernoulli();
+    b.setParams(new Object[] { 1.1 });
+    b.sampleVal();
   }
 
-  public void testBernoulli(List<Object> constructParams, List<Object> args) {
-    Bernoulli b = new Bernoulli(constructParams);
-    double probTrue = b.getProb(args, 1);
-    double probFalse = b.getProb(args, 0);
-    double logProbTrue = b.getLogProb(args, 1);
-    double logProbFalse = b.getLogProb(args, 0);
-    if (args.size() != 0 || constructParams.size() != 1) {
-      // this line should never be reached as getProb should
-      // throw an IllegalArgumentException
-      assertTrue(false);
-    }
-    if (!(constructParams.get(0) instanceof Number)) {
-      assertTrue(false);
-    }
-    double p = ((Number) constructParams.get(0)).doubleValue();
-    assertEquals(probTrue, p, ERROR_BOUND);
-    assertEquals(probFalse, 1 - p, ERROR_BOUND);
-    assertEquals(logProbTrue, Math.log(p), ERROR_BOUND);
-    assertEquals(logProbFalse, Math.log(1 - p), ERROR_BOUND);
+  @Test(expected = IllegalArgumentException.class)
+  public void testIncorrectArguments2() {
+    Bernoulli b = new Bernoulli();
+    b.setParams(new Object[] { -0.1 });
+    b.sampleVal();
+  }
 
+  @Test
+  public void testDoubleSet() {
+    Bernoulli b = new Bernoulli();
+    b.setParams(new Object[] { null });
+    b.setParams(new Object[] { 0.5 });
+    assertEquals(0.5, b.getProb(1), ERROR);
+    assertEquals(0.5, b.getProb(0), ERROR);
+    b.setParams(new Object[] { 0.7 });
+    assertEquals(0.7, b.getProb(1), ERROR);
+    assertEquals(0.3, b.getProb(0), ERROR);
   }
 
 }
