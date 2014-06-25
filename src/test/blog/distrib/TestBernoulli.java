@@ -72,4 +72,17 @@ public class TestBernoulli implements TestDistributions {
     assertEquals(0.3, b.getProb(0), ERROR);
   }
 
+  @Test
+  public void testSetParamsIntegerArguments() {
+    Bernoulli b = new Bernoulli();
+    b.setParams(new Integer[] { 1 });
+    assertEquals(1, b.getProb(1), ERROR);
+    assertEquals(0, b.getProb(0), ERROR);
+  }
+
+  @Test
+  public void testGetProbIntegerArguments() {
+    // already tested
+  }
+
 }
