@@ -253,8 +253,7 @@ nonterminal String refer_name;
  */
 precedence nonassoc EQ, DISTRIB;
 precedence left SEMI;
-//precedence nonassoc RIGHTARROW;
-precedence left IF, THEN, ELSE;
+precedence left ELSE;
 precedence left DOUBLERIGHTARROW;
 precedence left AND, OR;
 precedence nonassoc LT, GT, LEQ, GEQ, EQEQ, NEQ;
