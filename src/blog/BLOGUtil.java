@@ -10,7 +10,6 @@ import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.bn.VarWithDistrib;
-import blog.common.Histogram;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
 import blog.model.ArgSpec;
@@ -426,16 +425,5 @@ public class BLOGUtil {
       parents.addAll(var.getParents(world));
     }
     return parents;
-  }
-
-  /**
-   * Helper function to get the probability of a value in an answered query from
-   * its string.
-   */
-  public static double getProbabilityByString(ArgSpecQuery query, Model model,
-      String valueString) {
-    Histogram hist = query.getHistogram();
-    Object value = model.getConstantValue(valueString);
-    return hist.getLogProb(value);
   }
 }
