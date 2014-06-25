@@ -115,4 +115,16 @@ public class TestGeometric implements TestDistributions {
     testGeometric1(geom);
   }
 
+  @Test
+  public void testSetParamsIntegerArguments() {
+    Geometric geom = new Geometric();
+    geom.setParams(new Object[] { 1 });
+    testGeometric1(geom);
+  }
+
+  @Test
+  public void testGetProbIntegerArguments() {
+    // not needed
+  }
+
 }
