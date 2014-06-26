@@ -152,4 +152,14 @@ public class TestUniformVector implements TestDistributions {
     testUniformVector1(unif);
   }
 
+  @Test
+  public void testSetParamsIntegerArguments() {
+    // not needed
+  }
+
+  @Test
+  public void testGetProbIntegerArguments() {
+    // not needed
+  }
+
 }
