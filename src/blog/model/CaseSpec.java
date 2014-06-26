@@ -40,8 +40,8 @@ public class CaseSpec extends ArgSpec {
     Map<Object, Object> mp = clause.evaluate(context);
     if (mp.containsKey(t)) {
       Object ret = mp.get(t);
-      if (ret instanceof CaseSpec)
-        return ((CaseSpec) ret).evaluate(context);
+      if (ret instanceof ArgSpec) // lazy evaluate
+        return ((ArgSpec) ret).evaluate(context);
       return ret;
     } else
       return Model.NULL;
