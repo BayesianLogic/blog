@@ -177,7 +177,9 @@ public class Clause {
       } else {
         ArgSpec arg = cpdArgs.get(0);
         Type argType = null;
-        if (arg instanceof Term) {
+        if (arg instanceof CaseSpec) {
+          // Do Nothing
+        } else if (arg instanceof Term) {
           argType = ((Term) arg).getType();
         } else if (arg instanceof Formula) {
           argType = BuiltInTypes.BOOLEAN;
