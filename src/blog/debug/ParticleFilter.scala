@@ -5,7 +5,6 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 
 import blog.common.Util
-import blog.engine.Particle
 import blog.Main
 import blog.model.Evidence
 import blog.model.Queries
@@ -34,13 +33,14 @@ class ParticleFilter(
     val idTypes = model.getListedTypes("none");
     for (i <- 1 to numParticles) {
       val world = new DefaultPartialWorld(idTypes);
-      newParticles.append(new Particle(sampler, world))
+      val underlyingParticle = new blog.engine.Particle(sampler, world)
+      newParticles.append(new Particle(model, underlyingParticle))
     }
     particles = newParticles.toList
   }
 
   protected def resample: Unit = {
-    val logWeights = particles.map(particle => particle.getLatestLogWeight())
+    val logWeights = particles.map(particle => particle.logWeight)
     val logSumWeights = logWeights.reduceLeft(Util.logSum)
     if (logSumWeights == Double.NegativeInfinity) {
       throw new IllegalArgumentException("All particles have zero weight");
@@ -55,7 +55,8 @@ class ParticleFilter(
         newParticles.append(oldParticles(selection))
         alreadySampled(selection) = true
       } else {
-        newParticles.append(oldParticles(selection).copy())
+        val underlyingParticle = oldParticles(selection).particle.copy()
+        newParticles.append(new Particle(model, underlyingParticle))
       }
     }
     particles = newParticles.toList
@@ -64,20 +65,20 @@ class ParticleFilter(
   protected def takeEvidence(evidence: Evidence): Unit = {
     // TODO verify that evidence is either atemporal, or it is for currentTimestep.
     if (evidence != null && !evidence.isEmpty) {
-      particles.foreach(particle => particle.take(evidence))
+      particles.foreach(particle => particle.particle.take(evidence))
     }
   }
 
   protected def answerQueries(queries: Queries): Unit = {
     // TODO verify that queries are either atemporal, or they are for currentTimestep.
     if (queries != null && !queries.isEmpty) {
-      particles.foreach(particle => particle.answer(queries))
+      particles.foreach(particle => particle.particle.answer(queries))
     }
   }
 
   protected def forgetPast: Unit = {
     particles.foreach(particle =>
-      particle.removePriorTimeSlice(Timestep.at(currentTimestep)))
+      particle.particle.removePriorTimeSlice(Timestep.at(currentTimestep)))
   }
 
   /**
