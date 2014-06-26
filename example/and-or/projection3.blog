@@ -51,7 +51,7 @@ random Integer Zintercept(Object o, Integer x, Integer y) ~
 
 random Integer Z(Integer x, Integer y) ~
     if ((x <= xMax) & (x >= xMin) & (y <= yMax) & (y >= yMin)) then
-        min({Integer Z: Z < Zmax & (exists Object o (Zintercept(o,x,y) == Z))})
+        min({Z for Integer Z: Z < Zmax & (exists Object o (Zintercept(o,x,y) == Z))})
     else 0
     ;  
 
@@ -75,7 +75,7 @@ obs Z0(o2) = 10;
 
 
 //query #{Object o};
-query #{Object o: X0(o) > 0};
-query {Integer X: X < Xmax & (exists Object o (X0(o) == X))};
-query {Integer z: z < Zmax & (exists Object o (z == Zintercept(o, 7, 7)))};
-query {Integer z: z < Zmax & z == Z(7, 7)};
+query #{o for Object o: X0(o) > 0};
+query {X for Integer X: X < Xmax & (exists Object o (X0(o) == X))};
+query {z for Integer z: z < Zmax & (exists Object o (z == Zintercept(o, 7, 7)))};
+query {z for Integer z: z < Zmax & z == Z(7, 7)};

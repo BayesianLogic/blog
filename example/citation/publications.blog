@@ -28,14 +28,14 @@ origin Publication Source(Citation);
 
 // no self-citations        
 random Publication Target(Citation c)
-       ~ UniformChoice({Publication p : p != Source(c)});
+       ~ UniformChoice({p for Publication p : p != Source(c)});
 
 
 // Begin evidence, queries
 distinct Researcher Einstein, Galileo;
 obs Productive(Einstein) = true;
 
-query #{Publication p : Author(p) == Einstein};
+query #{p for Publication p : Author(p) == Einstein};
 query (exists Citation c 
          Author(Source(c)) == Einstein &
          Author(Target(c)) == Galileo);

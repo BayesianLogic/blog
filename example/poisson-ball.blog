@@ -13,7 +13,7 @@ distinct Draw Draw[10];
 
 random Color TrueColor(Ball b) ~ Categorical({Blue -> 0.5, Green -> 0.5});
 
-random Ball BallDrawn(Draw d) ~ UniformChoice({Ball b});
+random Ball BallDrawn(Draw d) ~ UniformChoice({b for Ball b});
 
 random Color ObsColor(Draw d) ~
     if (BallDrawn(d) != null)
@@ -38,7 +38,7 @@ obs ObsColor(Draw[9]) = Green;
 
 /* Query file asking for the total number of balls in the urn.
  */
-query #{Ball b};
+query #{b for Ball b};
 
 
 /* Answers to some queries on this model, computed by exhaustive 
