@@ -91,7 +91,7 @@ public class MapSpec extends ArgSpec {
   /**
 	 * 
 	 */
-  public Object evaluate(EvalContext context) {
+  public Map<Object, Object> evaluate(EvalContext context) {
     HashMap<Object, Object> newmap = new HashMap<Object, Object>();
     for (Map.Entry<ArgSpec, Object> entry : map.entrySet()) {
       Object k = entry.getKey().evaluate(context);
