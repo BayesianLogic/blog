@@ -18,6 +18,6 @@ else
   CPATH="${BLOG_HOME}/*"
 fi
 
-CPATH="${CPATH}${J_PATH_SEP}${BLOG_HOME}/lib/*${J_PATH_SEP}${CLASSPATH}"
+CPATH="${CPATH}${J_PATH_SEP}${BLOG_HOME}/lib/java-cup-11b.jar${J_PATH_SEP}${BLOG_HOME}/lib/*${J_PATH_SEP}${CLASSPATH}"
 
 java -cp ${CPATH} -Xmx4096M blog.Main $@
