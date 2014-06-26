@@ -120,6 +120,7 @@ public class GenericProposer extends AbstractProposer {
     logProbBackward = 0;
 
     PickVarToSampleResult result = pickVarToSample(world);
+    chosenVar = result.varToSample;
 
     if (result.varToSample == null)
       return 1.0;
@@ -198,11 +199,13 @@ public class GenericProposer extends AbstractProposer {
     DependencyModel.Distrib distrib = varToSample
         .getDistrib(new DefaultEvalContext(world, true));
     Object oldValue = world.getValue(varToSample);
+    chosenVarOldValue = oldValue;
     logProbBackward += Math.log(distrib.getCPD().getProb(
         distrib.getArgValues(), oldValue));
 
     Object newValue = distrib.getCPD().sampleVal(distrib.getArgValues(),
         varToSample.getType());
+    chosenVarNewValue = newValue;
     world.setValue(varToSample, newValue);
     logProbForward += Math.log(distrib.getCPD().getProb(distrib.getArgValues(),
         newValue));
@@ -224,6 +227,22 @@ public class GenericProposer extends AbstractProposer {
   }
 
   // The following are for debugger use only!
+
+  private VarWithDistrib chosenVar = null;
+  private Object chosenVarOldValue = null;
+  private Object chosenVarNewValue = null;
+
+  public VarWithDistrib latestChosenVar() {
+    return chosenVar;
+  }
+
+  public Object latestChosenVarOldValue() {
+    return chosenVarOldValue;
+  }
+
+  public Object latestChosenVarNewValue() {
+    return chosenVarNewValue;
+  }
 
   public double latestLogProbBackward() {
     return logProbBackward;
