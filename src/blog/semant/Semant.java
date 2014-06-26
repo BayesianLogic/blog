@@ -58,6 +58,7 @@ import blog.model.ArrayType;
 import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
+import blog.model.CaseSpec;
 import blog.model.Clause;
 import blog.model.ComparisonFormula;
 import blog.model.ComparisonFormula.Operator;
@@ -540,7 +541,7 @@ public class Semant {
     Object body = transExpr(e);
     List<Clause> cl = new ArrayList<Clause>(1);
     if (body instanceof Term || body instanceof Formula
-        || body instanceof TupleSetSpec) {
+        || body instanceof TupleSetSpec || body instanceof CaseSpec) {
       cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
           .singletonList((ArgSpec) body)));
     } else if (body instanceof Clause) {
@@ -728,9 +729,7 @@ public class Semant {
     return c;
   }
 
-  Clause transExpr(CaseExpr e) {
-    Class<? extends CondProbDistrib> cls = getDistributionClass("TabularCPD");
-
+  CaseSpec transExpr(CaseExpr e) {
     List<ArgSpec> probKeys = new ArrayList<ArgSpec>();
     List<Object> probs = new ArrayList<Object>();
     ExprTupleList mapExprs = e.clauses;
@@ -740,18 +739,12 @@ public class Semant {
       mapExprs = mapExprs.next;
     }
     MapSpec m = new MapSpec(probKeys, probs);
-
-    List<ArgSpec> args = new ArrayList<ArgSpec>();
-    args.add((ArgSpec) m);
     Object t = transExpr(e.test);
-    if (t instanceof ArgSpec) {
-      args.add((ArgSpec) t);
-    } else {
+    if (!(t instanceof ArgSpec)) {
       error(e.line, e.col, "Expression expected! but we get " + t.toString());
+      t = null;
     }
-    Clause c = new Clause(TrueFormula.TRUE, cls, args);
-    c.setLocation(e.line);
-    return c;
+    return new CaseSpec((ArgSpec) t, m);
   }
 
   ArgSpec transExpr(DoubleExpr e) {
