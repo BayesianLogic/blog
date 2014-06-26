@@ -51,7 +51,7 @@ import blog.model.Model;
 import blog.model.Queries;
 import blog.model.Query;
 import blog.sample.AfterSamplingListener;
-import blog.sample.Sampler;
+import blog.sample.OldSampler;
 import blog.type.Timestep;
 import blog.world.DefaultPartialWorld;
 
@@ -103,7 +103,7 @@ public class ParticleFilter extends InferenceEngine {
     String samplerClassName = properties.getProperty("samplerClass",
         "blog.sample.LWSampler");
     System.out.println("Constructing sampler of class " + samplerClassName);
-    particleSampler = Sampler.make(samplerClassName, model, properties);
+    particleSampler = OldSampler.make(samplerClassName, model, properties);
 
     String queryReportIntervalStr = properties.getProperty(
         "queryReportInterval", "10");
@@ -241,7 +241,7 @@ public class ParticleFilter extends InferenceEngine {
     ListIterator particleIt = particles.listIterator();
     while (particleIt.hasNext()) {
       Particle particle = (Particle) particleIt.next();
-      if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
+      if (particle.getLatestLogWeight() < OldSampler.NEGLIGIBLE_LOG_WEIGHT) {
         particleIt.remove();
       } else {
         logSumWeights = Util.logSum(logSumWeights,
@@ -353,7 +353,7 @@ public class ParticleFilter extends InferenceEngine {
   private int numParticles;
   public List<Particle> particles;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
-  private Sampler particleSampler;
+  private OldSampler particleSampler;
   private AfterSamplingListener afterSamplingListener;
   private int queryReportInterval;
   private double dataLogLik; // log likelihood of the data

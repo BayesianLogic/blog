@@ -9,7 +9,7 @@ import blog.io.TableWriter
 import blog.model.Evidence
 import blog.model.Model
 import blog.model.Queries
-import blog.sample.Sampler
+import blog.sample.OldSampler
 import blog.BLOGUtil
 
 /**
@@ -37,7 +37,7 @@ abstract class SamplerDebugger[SampleType <: Sample](
   val sampler = makeSampler
 
   // Create the underlying sampler.
-  protected def makeSampler: Sampler
+  protected def makeSampler: OldSampler
 
   // Compute and return next sample.
   protected def nextSample: SampleType

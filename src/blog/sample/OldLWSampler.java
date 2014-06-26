@@ -70,7 +70,7 @@ import blog.world.PartialWorld;
  * objects should be represented by identifiers. Default: "none".
  * </dl>
  */
-public class OldLWSampler extends Sampler {
+public class OldLWSampler extends OldSampler {
   /**
    * Creates a new sampler for the given BLOG model. The properties table
    * specifies configuration parameters.

@@ -43,7 +43,7 @@ import blog.DBLOGUtil;
 import blog.model.Evidence;
 import blog.model.Queries;
 import blog.model.Query;
-import blog.sample.Sampler;
+import blog.sample.OldSampler;
 import blog.type.Timestep;
 import blog.world.DefaultPartialWorld;
 import blog.world.PartialWorld;
@@ -56,7 +56,7 @@ import blog.world.PartialWorld;
  */
 public class Particle {
 
-  public Particle(Sampler sampler, PartialWorld world) {
+  public Particle(OldSampler sampler, PartialWorld world) {
     this.sampler = sampler;
     this.curWorld = world;
     logWeight = 1; // FIXME: shouldn't it be 0???
@@ -131,7 +131,7 @@ public class Particle {
 
   public void updateQueriesStats(Collection queries) {
     // System.out.println("Particle.updateQueriesStats: start");
-    if (getLatestLogWeight() > Sampler.NEGLIGIBLE_LOG_WEIGHT) {
+    if (getLatestLogWeight() > OldSampler.NEGLIGIBLE_LOG_WEIGHT) {
       // System.out.println("Particle.updateQueriesStats: going over queries");
       for (Iterator iter = queries.iterator(); iter.hasNext();) {
         Query q = (Query) iter.next();
@@ -148,5 +148,5 @@ public class Particle {
 
   public PartialWorld curWorld = null;
   protected double logWeight;
-  private Sampler sampler;
+  private OldSampler sampler;
 }

@@ -55,21 +55,21 @@ import blog.world.PartialWorld;
  * arguments: a blog.Model object and a java.util.Properties object. The
  * properties object specifies configuration parameters for the sampler.
  */
-public abstract class Sampler {
+public abstract class OldSampler {
   // Samples with log weight <= NEGLIGIBLE_LOG_WEIGHT are ignored.
   public static final double NEGLIGIBLE_LOG_WEIGHT = -10000;
 
   /**
    * Creates a Sampler object for the given BLOG model.
    */
-  public Sampler(Model model) {
+  public OldSampler(Model model) {
     this.model = model;
   }
 
   /** Make new sampler instance of named class. */
-  public static Sampler make(String samplerClassName, Model model,
+  public static OldSampler make(String samplerClassName, Model model,
       Properties properties) {
-    return (Sampler) Util.makeInstance_NE(samplerClassName, new Class[] {
+    return (OldSampler) Util.makeInstance_NE(samplerClassName, new Class[] {
         Model.class, Properties.class }, new Object[] { model, properties });
   }
 

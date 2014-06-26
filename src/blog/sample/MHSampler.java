@@ -65,7 +65,7 @@ import blog.world.PartialWorldDiff;
  * </dl>
  * The property table is also passed to the proposer's constructor.
  */
-public class MHSampler extends Sampler {
+public class MHSampler extends OldSampler {
   /**
    * Creates a new sampler for the given BLOG model.
    **/

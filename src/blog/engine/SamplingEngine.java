@@ -45,7 +45,7 @@ import blog.common.Util;
 import blog.io.TableWriter;
 import blog.model.Model;
 import blog.model.Query;
-import blog.sample.Sampler;
+import blog.sample.OldSampler;
 import blog.world.PartialWorld;
 
 /**
@@ -97,7 +97,7 @@ public class SamplingEngine extends InferenceEngine {
       Constructor constructor = samplerClass.getConstructor(paramTypes);
 
       Object[] args = { model, properties };
-      sampler = (Sampler) constructor.newInstance(args);
+      sampler = (OldSampler) constructor.newInstance(args);
     } catch (Exception e) {
       Util.fatalError(e);
     }
@@ -137,12 +137,12 @@ public class SamplingEngine extends InferenceEngine {
     this(model, new Properties());
   }
 
-  public SamplingEngine(Sampler sampler) {
+  public SamplingEngine(OldSampler sampler) {
     super(null);
     this.sampler = sampler;
   }
 
-  public static void printGeneratedWorld(Sampler sampler, double logWeight) {
+  public static void printGeneratedWorld(OldSampler sampler, double logWeight) {
     PartialWorld curWorld = sampler.getLatestWorld();
     System.out.println("======== Generated World: ========");
     curWorld.print(System.out);
@@ -180,7 +180,7 @@ public class SamplingEngine extends InferenceEngine {
       }
 
       if (i >= numBurnIn) {
-        if (logWeight > Sampler.NEGLIGIBLE_LOG_WEIGHT) {
+        if (logWeight > OldSampler.NEGLIGIBLE_LOG_WEIGHT) {
           // Update statistics to reflect this sample.
           for (Iterator iter = queries.iterator(); iter.hasNext();) {
             Query query = ((Query) iter.next());
@@ -204,7 +204,7 @@ public class SamplingEngine extends InferenceEngine {
             + timer.elapsedTime() + " s.");
       }
 
-      if (Util.print() && logWeight > Sampler.NEGLIGIBLE_LOG_WEIGHT && !printed) {
+      if (Util.print() && logWeight > OldSampler.NEGLIGIBLE_LOG_WEIGHT && !printed) {
         printGeneratedWorld(sampler, logWeight);
         printed = true;
       }
@@ -213,7 +213,7 @@ public class SamplingEngine extends InferenceEngine {
     sampler.printStats();
   }
 
-  private Sampler sampler;
+  private OldSampler sampler;
   private int numSamples;
   private int reportInterval;
   private int queryReportInterval;

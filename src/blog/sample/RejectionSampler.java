@@ -89,7 +89,7 @@ import blog.world.WorldInProgress;
  * arguments. In such cases, the sampler will print an error message and exit
  * the program.
  */
-public class RejectionSampler extends Sampler {
+public class RejectionSampler extends OldSampler {
   /**
    * Creates a new RejectionSampler for the given model, with configuration
    * parameters specified by the given properties table.

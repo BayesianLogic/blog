@@ -74,7 +74,7 @@ public abstract class AbstractProposer implements Proposer {
    * can change it alone.
    */
   protected PartialWorldDiff constructInitialState() {
-    Sampler initialStateSampler = new OldLWSampler(model, properties);
+    OldSampler initialStateSampler = new OldLWSampler(model, properties);
     ++numTrials;
     numInitialStateTriesThisTrial = 0;
     initialStateSampler.initialize(evidence, queries);
