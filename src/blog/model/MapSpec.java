@@ -92,8 +92,6 @@ public class MapSpec extends ArgSpec {
 	 * 
 	 */
   public Object evaluate(EvalContext context) {
-    if (!containsRandomSymbol())
-      return map;
     HashMap<Object, Object> newmap = new HashMap<Object, Object>();
     for (Map.Entry<ArgSpec, Object> entry : map.entrySet()) {
       Object k = entry.getKey().evaluate(context);
