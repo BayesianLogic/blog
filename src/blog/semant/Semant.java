@@ -59,13 +59,13 @@ import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
 import blog.model.CaseSpec;
-import blog.model.Clause;
 import blog.model.ComparisonFormula;
 import blog.model.ComparisonFormula.Operator;
 import blog.model.ConjFormula;
 import blog.model.ConstantInterp;
 import blog.model.DependencyModel;
 import blog.model.DisjFormula;
+import blog.model.DistribSpec;
 import blog.model.EqualityFormula;
 import blog.model.Evidence;
 import blog.model.ExistentialFormula;
@@ -539,15 +539,14 @@ public class Semant {
 
   DependencyModel transDependency(Expr e, Type resTy, Object defVal) {
     Object body = transExpr(e);
-    List<Clause> cl = new ArrayList<Clause>(1);
+    ArgSpec cl = null;
     if (body instanceof Term || body instanceof Formula
-        || body instanceof TupleSetSpec || body instanceof CaseSpec) {
-      cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-          .singletonList((ArgSpec) body)));
-    } else if (body instanceof Clause) {
-      cl.add((Clause) body);
-    } else if (e instanceof IfExpr) {
-      cl = (List<Clause>) body;
+        || body instanceof TupleSetSpec) {
+      cl = new DistribSpec(EqualsCPD.class, (ArgSpec) body);
+    } else if (body instanceof CaseSpec) {
+      cl = (CaseSpec) body;
+    } else if (body instanceof DistribSpec) {
+      cl = (DistribSpec) body;
     } else {
       error(e.line, e.col, "invalid body of dependency clause");
     }
@@ -712,19 +711,19 @@ public class Semant {
     }
   }
 
-  Clause transToDistribution(FuncCallExpr e) {
+  DistribSpec transToDistribution(FuncCallExpr e) {
     Class<? extends CondProbDistrib> cls = getDistributionClass(e.func
         .toString());
     if (cls == null) {
       return null;
     }
 
-    List<ArgSpec> as = null;
+    List<ArgSpec> as = new LinkedList<ArgSpec>();
     if (e.args != null) {
       as = transExprList(e.args, true);
     }
 
-    Clause c = new Clause(TrueFormula.TRUE, cls, as);
+    DistribSpec c = new DistribSpec(cls, as);
     c.setLocation(e.line);
     return c;
   }
@@ -805,7 +804,7 @@ public class Semant {
 
   Object transExpr(FuncCallExpr e) {
     // now checking whether it is a distribution
-    Clause cl = transToDistribution(e);
+    DistribSpec cl = transToDistribution(e);
     if (cl != null) {
       return cl;
     }
@@ -869,36 +868,6 @@ public class Semant {
     }
   }
 
-  /**
-   * combine clauses from if
-   * 
-   * @param test
-   * @param value
-   * @param clauses
-   */
-  void combineFormula(Formula test, Object value, List<Clause> clauses) {
-    if (value instanceof Clause) {
-      Clause c = (Clause) value;
-      clauses.add(addTestConditionToClause(test, c));
-    } else if (value instanceof List<?>) {
-      for (Object v : ((List<?>) value)) {
-        Clause c = (Clause) v;
-        clauses.add(addTestConditionToClause(test, c));
-      }
-    } else {
-      // should be ArgSpec
-      clauses.add(new Clause(test, EqualsCPD.class, Collections
-          .singletonList((ArgSpec) value)));
-    }
-  }
-
-  private Clause addTestConditionToClause(Formula test, Clause c) {
-    Formula old = c.getCond();
-    Formula ne = createConjunction(test, old);
-    c.setCond(ne);
-    return c;
-  }
-
   private Formula createConjunction(Formula c1, Formula c2) {
     if (c2 == TrueFormula.TRUE)
       return c1;
@@ -907,50 +876,30 @@ public class Semant {
     return new ConjFormula(c1, c2);
   }
 
-  /**
-   * combine clauses from else
-   * 
-   * @param value
-   * @param clauses
-   */
-
-  void combineFormula(Object value, List<Clause> clauses) {
-    if (value instanceof Clause) {
-      clauses.add((Clause) value);
-    } else if (value instanceof List<?>) {
-      clauses.addAll((List<Clause>) value);
-    } else {
-      // should be ArgSpec
-      clauses.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-          .singletonList((ArgSpec) value)));
+  CaseSpec transExpr(IfExpr e) {
+    List<ArgSpec> probKeys = new ArrayList<ArgSpec>();
+    List<Object> probs = new ArrayList<Object>();
+    probKeys.add(BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+    probs.add(transExpr(e.thenclause));
+    if (e.elseclause != null) {
+      probKeys.add(BuiltInTypes.BOOLEAN.getCanonicalTerm(false));
+      probs.add(transExpr(e.elseclause));
     }
-  }
-
-  List<Clause> transExpr(IfExpr e) {
-    ArrayList<Clause> clauses = new ArrayList<Clause>();
-    Formula test = TrueFormula.TRUE;
-
+    MapSpec m = new MapSpec(probKeys, probs);
     // TODO: write a test for the SymbolTerm case to exclude non-Boolean
     // variables/functions
     Object cond = transExpr(e.test);
+    ArgSpec t = TrueFormula.TRUE;
     if (cond instanceof Formula) {
-      test = (Formula) cond;
+      t = (Formula) cond;
     } else if (cond instanceof Term) {
-      test = new EqualityFormula((Term) cond,
-          BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+      t = (Term) cond;
     } else {
       error(e.test.line, e.test.col,
           "Cannot use non-Boolean value as predicate for if clause");
       System.exit(1);
     }
-
-    Object thenClause = transExpr(e.thenclause);
-    combineFormula(test, thenClause, clauses);
-    if (e.elseclause != null) {
-      Object elseClause = transExpr(e.elseclause);
-      combineFormula(elseClause, clauses);
-    }
-    return clauses;
+    return new CaseSpec(t, m);
   }
 
   FuncAppTerm transFixedIfExpr(IfExpr e) {

@@ -34,6 +34,8 @@ public class CaseSpec extends ArgSpec {
   @Override
   public Object evaluate(EvalContext context) {
     Object t = test.evaluate(context);
+    if (t == null)
+      return null;
     Map<Object, Object> mp = clause.evaluate(context);
     if (mp.containsKey(t)) {
       return mp.get(t);
@@ -62,6 +64,19 @@ public class CaseSpec extends ArgSpec {
         && clause.checkTypesAndScope(model, scope);
   }
 
+  public int compile(LinkedHashSet callStack) {
+    callStack.add(this);
+    int errors = test.compile(callStack) + clause.compile(callStack);
+    compiled = true;
+    if (clause.containsRandomSymbol()) {
+      // make sure every branch will return a distribution spec
+      // namely: for each branch of Term, generate a EqualsCPD distribution spec
+      errors += clause.enforceDistribSpec();
+    }
+    callStack.remove(this);
+    return errors;
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -85,6 +100,7 @@ public class CaseSpec extends ArgSpec {
   @Override
   public void applyToTerms(UnaryProcedure procedure) {
     test.applyToTerms(procedure);
+    clause.applyToTerms(procedure);
   }
 
   /*
