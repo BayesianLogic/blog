@@ -2,6 +2,7 @@ package blog.model;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -175,6 +176,21 @@ public class MapSpec extends ArgSpec {
    * any.
    */
   public ArgSpec find(Term t) {
+    if (this.equals(t))
+      return this;
+    ArgSpec ret = null;
+    for (ArgSpec key : keys) {
+      ret = key.find(t);
+      if (ret != null)
+        return ret;
+    }
+    for (Object val : values) {
+      if (val instanceof ArgSpec) {
+        ret = ((ArgSpec) val).find(t);
+        if (ret != null)
+          return ret;
+      }
+    }
     return null;
   }
 
@@ -183,6 +199,13 @@ public class MapSpec extends ArgSpec {
    * predicate to a given collection.
    */
   public void applyToTerms(UnaryProcedure procedure) {
+    for (ArgSpec key : keys)
+      key.applyToTerms(procedure);
+    for (Object val : values) {
+      if (val instanceof ArgSpec) {
+        ((ArgSpec) val).applyToTerms(procedure);
+      }
+    }
   }
 
   /**
@@ -191,7 +214,23 @@ public class MapSpec extends ArgSpec {
    * this is compiled.
    */
   public ArgSpec replace(Term t, ArgSpec another) {
-    return this;
+    List<ArgSpec> newKeys = new LinkedList<ArgSpec>();
+    for (ArgSpec key : keys) {
+      newKeys.add(key.replace(t, another));
+    }
+    List<Object> newValues = new LinkedList<Object>();
+    for (Object val : values) {
+      if (val instanceof ArgSpec) {
+        newValues.add(((ArgSpec) val).replace(t, another));
+      } else
+        newValues.add(val);
+    }
+    if (newKeys.equals(keys) && newValues.equals(values))
+      return this;
+    MapSpec mp = new MapSpec(newKeys, newValues);
+    if (compiled)
+      mp.compile(new LinkedHashSet());
+    return mp;
   }
 
   /**
@@ -203,7 +242,18 @@ public class MapSpec extends ArgSpec {
    * being applied.
    */
   public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
-    return null;
+    List<ArgSpec> newKeys = new LinkedList<ArgSpec>();
+    for (ArgSpec key : keys) {
+      newKeys.add(key.getSubstResult(subst, boundVars));
+    }
+    List<Object> newValues = new LinkedList<Object>();
+    for (Object val : values) {
+      if (val instanceof ArgSpec) {
+        newValues.add(((ArgSpec) val).getSubstResult(subst, boundVars));
+      } else
+        newValues.add(val);
+    }
+    return new MapSpec(newKeys, newValues);
   }
 
   public String toString() {
