@@ -85,6 +85,10 @@ sync:
 	git pull
 	git push
 
+clean:
+	rm -rf bin
+	rm -rf docs/output
+
 log:
 	git log --stat --name-only --date=short --abbrev-commit > ChangeLog
 	
