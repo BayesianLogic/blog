@@ -1,6 +1,7 @@
 package blog.debug
 
 import blog.model.Model
+import blog.sample.Sample
 
 /**
  * A wrapper for blog.engine.Particle that extends blog.debug.Particle, thus

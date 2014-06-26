@@ -3,7 +3,6 @@ package blog.debug
 import java.util.Properties
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
-
 import blog.Main
 import blog.common.Util
 import blog.io.TableWriter
@@ -11,6 +10,7 @@ import blog.model.Evidence
 import blog.model.Model
 import blog.model.Queries
 import blog.sample.OldLWSampler
+import blog.sample.LWSample
 
 class LWDebugger(model: Model, evidence: Evidence, queries: Queries)
   extends SamplerDebugger[LWSample](model, evidence, queries) {

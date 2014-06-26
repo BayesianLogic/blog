@@ -1,4 +1,4 @@
-package blog.debug
+package blog.sample
 
 import blog.world.PartialWorld
 import blog.model.Model
@@ -14,7 +14,6 @@ import blog.BLOGUtil
  *
  * @author cberzan
  * @since Jun 23, 2014
- *
  */
 abstract class Sample(val model: Model, val world: PartialWorld) {
   def eval(exprStr: String): Object = {

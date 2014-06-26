@@ -11,6 +11,7 @@ import blog.model.Model
 import blog.model.Queries
 import blog.sample.OldSampler
 import blog.BLOGUtil
+import blog.sample.Sample
 
 /**
  * A debugger for a BLOG sampling algorithm.

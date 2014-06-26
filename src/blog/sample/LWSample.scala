@@ -1,4 +1,4 @@
-package blog.debug
+package blog.sample
 
 import blog.model.Model
 import blog.world.PartialWorld
