@@ -36,7 +36,6 @@
 package blog.distrib;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import blog.common.Util;
 import blog.model.Model;
@@ -75,8 +74,11 @@ public class UniformChoice implements CondProbDistrib {
    */
   public void setParams(Collection<?> set) {
     if (set != null) {
-      this.s = set;
+      this.set = set;
+      elements = set.toArray();
       this.hasS = true;
+      prob = set.isEmpty() ? 1 : 1.0 / set.size();
+      logprob = set.isEmpty() ? 0 : (-Math.log(set.size()));
     }
   }
 
@@ -96,10 +98,10 @@ public class UniformChoice implements CondProbDistrib {
   @Override
   public double getProb(Object value) {
     checkHasParams();
-    if (s.isEmpty()) {
+    if (set.isEmpty()) {
       return (value == Model.NULL) ? 1 : 0;
     }
-    return (s.contains(value) ? (1.0 / s.size()) : 0);
+    return (set.contains(value) ? prob : 0);
   }
 
   /*
@@ -109,7 +111,11 @@ public class UniformChoice implements CondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    return Math.log(getProb(value));
+    checkHasParams();
+    if (set.isEmpty()) {
+      return (value == Model.NULL) ? 0 : Double.NEGATIVE_INFINITY;
+    }
+    return (set.contains(value) ? logprob : Double.NEGATIVE_INFINITY);
   }
 
   /**
@@ -126,32 +132,27 @@ public class UniformChoice implements CondProbDistrib {
   /** Samples uniformly from <code>S</code>, a set of object. */
   public Object sample_value() {
     checkHasParams();
-    if (s.isEmpty()) {
+    if (elements.length <= 0) {
       return Model.NULL;
     }
-    int n = Util.randInt(s.size());
-    Iterator<?> it = s.iterator();
-    while (it.hasNext()) {
-      if (n == 0)
-        return (Object) it.next();
-      --n;
-      it.next();
-    }
-    return null;
+    int n = Util.randInt(elements.length);
+    return elements[n];
   }
 
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
     builder.append("UniformChoice(");
-    for (Object item : s) {
-      builder.append(item.toString() + ", ");
+    if (set != null) {
+      builder.append(set.toString());
     }
-    builder.replace(builder.length() - 2, builder.length(), "");
     builder.append(")");
     return builder.toString();
   }
 
-  private Collection<?> s;
+  private Object[] elements; // the elements to be sampled from
+  private Collection<?> set; // original collect of elements
+  private double prob; // pre-calculated probability
+  private double logprob; // pre-calculated log of probability
   private boolean hasS;
 }
