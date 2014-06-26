@@ -191,7 +191,7 @@ public class MapSpec extends ArgSpec {
    * this is compiled.
    */
   public ArgSpec replace(Term t, ArgSpec another) {
-    return null;
+    return this;
   }
 
   /**
