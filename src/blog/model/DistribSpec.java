@@ -80,17 +80,12 @@ public class DistribSpec extends ArgSpec {
     List<Object> argValues = new ArrayList<Object>();
 
     for (ArgSpec spec : args) {
-      if (spec.containsRandomSymbol()) {
-        // This is a random argument that needs to be evaluated.
-        Object argValue = spec.evaluate(context);
-        if (argValue == null) {
-          break; // CPD arg not determined
-        }
-        argValues.add(argValue);
-      } else {
-        // This is a fixed argument that was given at CPD construction time.
-        argValues.add(null);
+      // This is a random argument that needs to be evaluated.
+      Object argValue = spec.evaluate(context);
+      if (argValue == null) {
+        break; // CPD arg not determined
       }
+      argValues.add(argValue);
     }
 
     context.popEvaluee();
