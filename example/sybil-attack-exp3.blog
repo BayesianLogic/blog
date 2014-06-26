@@ -34,7 +34,7 @@ random Boolean Transaction(Login x, Login y) ~
       		  false -> BooleanDistrib(0.1)},
     		Honest(Owner(x)));
 
-obs {Login l} = {Login1, Login2, Login3, Login4, Login5};  
+obs {l for Login l} = {Login1, Login2, Login3, Login4, Login5};  
 
 obs Transaction(Login1, Login2) = true;
 obs Transaction(Login3, Login4) = true;

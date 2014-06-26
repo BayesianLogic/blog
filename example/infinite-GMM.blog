@@ -20,7 +20,7 @@ fixed Real[][] var_obs = [4, 0; 0, 4];
  */
 random Real[] Theta(Component c) ~ MultivarGaussian(mean_of_means, var_of_means);
 
-random Component Z(Integer n) ~ UniformChoice({Component c});
+random Component Z(Integer n) ~ UniformChoice({c for Component c});
 
 /*
  * Here we use a MultivarGaussian distribution with only two fixed 

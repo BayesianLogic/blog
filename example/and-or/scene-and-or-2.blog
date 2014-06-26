@@ -130,7 +130,7 @@ random Boolean IsSideway(PersonPose p) ~
 
 //obs {Wheel w}  = {W1, W2};
 //obs {Wheel w}  = {W1, W2, W3};
-obs {Wheel w}  = {W1, W2, W3, W4, W5, W6};
+obs {w for Wheel w}  = {W1, W2, W3, W4, W5, W6};
 //obs {Wheel w}  = {W1, W2, W3, W4, W5};
 
 /* Query file asking for the total number of balls in the urn.
@@ -138,13 +138,13 @@ obs {Wheel w}  = {W1, W2, W3, W4, W5, W6};
 
 //query #{World w};
 //query #{Scene s};
-query #{Scene s: IsStreet(s) == true};
-query #{Scene s: IsFarm(s) == true};
-query #{Cow c};
-query #{Person p};
+query #{s for Scene s: IsStreet(s) == true};
+query #{s for Scene s: IsFarm(s) == true};
+query #{c for Cow c};
+query #{p for Person p};
 //query #{PersonPose p};
 //query #{PersonPose p: IsFrontal(p) = true};
 //query #{PersonPose p: IsSideway(p) = true};
-query #{Bike b};
-query #{Cart c};
-query #{Wheel w};
+query #{b for Bike b};
+query #{c for Cart c};
+query #{w for Wheel w};

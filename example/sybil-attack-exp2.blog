@@ -40,7 +40,7 @@ random Boolean Recommends(Login x, Login y) ~
             then BooleanDistrib(0.9)
     else BooleanDistrib(0.1);
 
-obs {Login l} = {Login1, Login2, Login3, Login4, Login5};
+obs {l for Login l} = {Login1, Login2, Login3, Login4, Login5};
 
 obs Transaction(Login1, Login2) = true;
 obs Transaction(Login1, Login3) = true;
