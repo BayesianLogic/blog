@@ -120,4 +120,21 @@ public class TestExponential implements TestDistributions {
 
   }
 
+  @Test
+  public void testSetParamsIntegerArguments() {
+    Exponential exp = new Exponential();
+    exp.setParams(new Object[] { 1 });
+    testExponential1(exp);
+  }
+
+  @Test
+  public void testGetProbIntegerArguments() {
+    Exponential exp = new Exponential();
+    exp.setParams(new Object[] { 1 });
+    assertEquals(1.0, exp.getProb(new Integer(0)), ERROR);
+    assertEquals(0.1353352832366127, exp.getProb(new Integer(2)), ERROR);
+    assertEquals(0.0, exp.getLogProb(new Integer(0)), ERROR);
+    assertEquals(-2, exp.getLogProb(new Integer(2)), ERROR);
+  }
+
 }

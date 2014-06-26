@@ -41,7 +41,7 @@ package blog.distrib;
  * * (1-x)^(b-1)) / B(a,b) where B(a,b) is a normalization constant equal to
  * integral from 0 to 1 of x^(a-1) * (1-x)^(b-1) dx
  * 
- * @since June 17, 2014
+ * @since June 25, 2014
  */
 public class Beta implements CondProbDistrib {
 
@@ -49,10 +49,10 @@ public class Beta implements CondProbDistrib {
    * set parameters for beta distribution
    * 
    * @param params
-   *          An array of two Doubles.
+   *          An array of two Numbers.
    *          <ul>
-   *          <li>params[0]: <code>a</code> (Double)</li>
-   *          <li>params[1]: <code>b</code> (Double)</li>
+   *          <li>params[0]: <code>a</code> (Number)</li>
+   *          <li>params[1]: <code>b</code> (Number)</li>
    *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
@@ -62,7 +62,7 @@ public class Beta implements CondProbDistrib {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected two parameters");
     }
-    setParams((Double) params[0], (Double) params[1]);
+    setParams((Number) params[0], (Number) params[1]);
   }
 
   /**
@@ -70,24 +70,26 @@ public class Beta implements CondProbDistrib {
    * parameter <code>a</code> to the method parameter a. Similarly for
    * <code>b</code>.
    */
-  public void setParams(Double a, Double b) {
+  public void setParams(Number a, Number b) {
     if (a != null) {
-      if (a <= 0) {
+      double aDouble = a.doubleValue();
+      if (aDouble <= 0) {
         throw new IllegalArgumentException(
             "alpha parameter for beta distribution must be strictly positive");
       }
-      this.a = a;
+      this.a = aDouble;
       this.hasA = true;
-      this.gammaA.setParams(a, 1.0);
+      this.gammaA.setParams(aDouble, 1.0);
     }
     if (b != null) {
-      if (b <= 0) {
+      double bDouble = b.doubleValue();
+      if (bDouble <= 0) {
         throw new IllegalArgumentException(
             "beta parameter for beta distribution must be strictly positive");
       }
-      this.b = b;
+      this.b = bDouble;
       this.hasB = true;
-      this.gammaB.setParams(b, 1.0);
+      this.gammaB.setParams(bDouble, 1.0);
     }
   }
 
@@ -107,7 +109,7 @@ public class Beta implements CondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    return getProb(((Double) value).doubleValue());
+    return getProb(((Number) value).doubleValue());
   }
 
   /**
@@ -129,7 +131,7 @@ public class Beta implements CondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    return getLogProb(((Double) value).doubleValue());
+    return getLogProb(((Number) value).doubleValue());
   }
 
   /**
