@@ -60,7 +60,7 @@ public class Categorical implements CondProbDistrib {
     if (params.length != 1) {
       throw new IllegalArgumentException("expecting one parameter");
     }
-    setParams((Map<Object, Number>) params[0]);
+    setParams((Map<?, ?>) params[0]);
   }
 
   /**
@@ -68,15 +68,17 @@ public class Categorical implements CondProbDistrib {
    * values for each object, and set the distribution parameter <code>map</code>
    * to the method parameter map.
    */
-  public void setParams(Map<Object, Number> map) {
+  public void setParams(Map<?, ?> map) {
     if (map != null) {
       if (map.size() == 0) {
         throw new IllegalArgumentException(
             "no elements within map for categorical distribution");
       }
       double sum = 0.0;
-      for (Map.Entry<Object, Number> entry : map.entrySet()) {
-        double prob = entry.getValue().doubleValue();
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
+        Object o = entry.getValue();
+        Number probNum = (Number) entry.getValue();
+        double prob = probNum.doubleValue();
         if (prob < 0) {
           throw new IllegalArgumentException("Probability " + prob
               + " for key " + entry.getKey().toString() + " is negative");
@@ -93,9 +95,10 @@ public class Categorical implements CondProbDistrib {
       this.cdfObjects = new double[map.size()];
       int count = 0;
       double cdf = 0.0;
-      for (Map.Entry<Object, Number> entry : map.entrySet()) {
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
         Object key = entry.getKey();
-        Double value = entry.getValue().doubleValue();
+        Number num = (Number) entry.getValue();
+        double value = num.doubleValue();
         this.objects[count] = key;
         double prob = value / sum;
         cdf += prob;
