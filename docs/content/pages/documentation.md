@@ -9,6 +9,9 @@ sortorder: 11
 # [User's Manual]({filename}user-manual.md)
   A manual for BLOG system, including setting and tuning all options. 
 
+# [Debugging BLOG models]({filename}debug.md)
+  Using the interactive shell to debug BLOG models.
+
 # [Trying BLOG from browser](http://patmos.banatao.berkeley.edu:8080/)
   Without installing BLOG system, you may try small BLOG models on our server.
 
