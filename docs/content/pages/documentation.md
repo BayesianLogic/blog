@@ -9,7 +9,7 @@ sortorder: 11
 # [User's Manual]({filename}user-manual.md)
   A manual for BLOG system, including setting and tuning all options. 
 
-# [Debugging BLOG models]({filename}debug.md)
+# [Interactive Shell and Debugging BLOG models]({filename}iblog.md)
   Using the interactive shell to debug BLOG models.
 
 # [Trying BLOG from browser](http://patmos.banatao.berkeley.edu:8080/)
