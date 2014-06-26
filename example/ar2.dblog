@@ -1,11 +1,10 @@
  
 fixed Real[] beta = [0.2, 0.8];
 fixed Real sigma = 0.1;
-random Real x(Timestep t) {
-	if t == @0 then = 0
-	else if t == @1 then ~ Gaussian(0, sigma)
-	else ~ Gaussian(beta[0] * x(prev(prev(t))) + beta[1] * x(prev(t)), sigma)
-};
+random Real x(Timestep t) ~
+	if t == @0 then 0
+	else if t == @1 then Gaussian(0, sigma)
+	else Gaussian(beta[0] * x(prev(prev(t))) + beta[1] * x(prev(t)), sigma);
 
 obs x(@1) = 1.0;
 

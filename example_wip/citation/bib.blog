@@ -22,11 +22,11 @@ random String Title(Publication p) ~ LetterNgram["apps/bib/model/Title", 20];
 random NaturalNum NumAuthors(Publication p) 
     ~ NatNumDistribWithTail([0.01, 0.19, 0.5, 0.2, 0.1], 0.8, 0.1);
 
-random Researcher NthAuthor(Publication p, NaturalNum n) {
+random Researcher NthAuthor(Publication p, NaturalNum n) ~
     if n < NumAuthors(p) then 
-    ~ UniformChoice({Researcher r: !exists NaturalNum m 
+      UniformChoice({Researcher r: !exists NaturalNum m 
                                   ((m < n) & (NthAuthor(p, m) == r))})
-};
+;
 
 
 // Citations
@@ -39,99 +39,99 @@ random String TitleAsCited(Citation c)
 random NaturalNum NumAuthorsDropped(Citation c)
     ~ Binomial(0.005, NumAuthors(PubCited(c)));
 
-random NaturalNum NumAuthorsAdded(Citation c) {
-    if (NumAuthorsDropped(c) == 0) then ~ Geometric(0.001)
-    else = 0
-};
+random NaturalNum NumAuthorsAdded(Citation c) ~
+    if (NumAuthorsDropped(c) == 0) then Geometric(0.001)
+    else 0
+;
 
 random NaturalNum NumAuthorsListed(Citation c)
-    = NonNegPart(Sum(Diff(NumAuthors(PubCited(c)), NumAuthorsDropped(c)), 
+    ~ NonNegPart(Sum(Diff(NumAuthors(PubCited(c)), NumAuthorsDropped(c)), 
                      NumAuthorsAdded(c)));
 
 type AuthorMention;
 
 generating Citation Container(AuthorMention);
 generating NaturalNum Index(AuthorMention);
-#AuthorMention(Container = c, Index = n) {
-    if n < NumAuthorsListed(c) then = 1
-};
+#AuthorMention(Container = c, Index = n) ~
+    if n < NumAuthorsListed(c) then 1
+;
 
-random AuthorMention NthAuthorMention(Citation c, NaturalNum n) {
+random AuthorMention NthAuthorMention(Citation c, NaturalNum n) ~
     if n < NumAuthorsListed(c)
-        then ~ UniformChoice({AuthorMention m : 
+        then UniformChoice({AuthorMention m : 
                               Container(m) == c & Index(m) == n})
-};
+;
 
-random Researcher Referent(AuthorMention m) {
+random Researcher Referent(AuthorMention m) ~
     if (Index(m) < NumAuthors(PubCited(Container(m)))) then  
-        = NthAuthor(PubCited(Container(m)), Index(m))
-};
+        NthAuthor(PubCited(Container(m)), Index(m))
+;
 
-random String SurnameAsCited(AuthorMention m) 
+random String SurnameAsCited(AuthorMention m) ~
     if (Referent(m) == null) then 
-        ~ LetterNgram["apps/bib/model/surname", 10]
-    else ~ StringEditModel(Surname(Referent(m)));
+        LetterNgram["apps/bib/model/surname", 10]
+    else StringEditModel(Surname(Referent(m)));
 
-random String GivenNameAsCited(AuthorMention m) 
+random String GivenNameAsCited(AuthorMention m) ~
     if (Referent(m) == null) then 
-        ~ GivenNameDistrib["apps/bib/model/given", 7]
-    else ~ GivenNameEditModel(GivenName(Referent(m)));
+        GivenNameDistrib["apps/bib/model/given", 7]
+    else GivenNameEditModel(GivenName(Referent(m)));
 
-random Boolean NameReversed(AuthorMention m) 
-    if !IsEmptyString(GivenNameAsCited(m)) then ~ Bernoulli(0.5);
+random Boolean NameReversed(AuthorMention m) ~
+    if !IsEmptyString(GivenNameAsCited(m)) then Bernoulli(0.5);
 
-random Boolean HasComma(AuthorMention m) {
-    if NameReversed(m) then ~ Bernoulli(0.9)
-};
+random Boolean HasComma(AuthorMention m) ~
+    if NameReversed(m) then Bernoulli(0.9)
+;
 
-random Boolean HasCommaSpace(AuthorMention m) {
-    if HasComma(m) then ~ Bernoulli(0.9)
-};
+random Boolean HasCommaSpace(AuthorMention m) ~
+    if HasComma(m) then Bernoulli(0.9)
+;
 
-random String InternalSep(AuthorMention m) {
+random String InternalSep(AuthorMention m) ~
     if HasCommaSpace(m)
-        then = ", "
+        then ", "
     else if HasComma(m)
-        then = ","
+        then ","
     else if NameReversed(m)
-        then = " "
-};
+        then " "
+;
 
-random String NameListed(AuthorMention m) { 
+random String NameListed(AuthorMention m) ~
     if NameReversed(m)
-        then = Concat(Concat(SurnameAsCited(m), 
+        then Concat(Concat(SurnameAsCited(m), 
                              InternalSep(m)),
                       GivenNameAsCited(m))
     else if !IsEmptyString(GivenNameAsCited(m))
-        then = Concat(Concat(GivenNameAsCited(m), " "), SurnameAsCited(m))
-    else = SurnameAsCited(m)
-};
+        then Concat(Concat(GivenNameAsCited(m), " "), SurnameAsCited(m))
+    else SurnameAsCited(m)
+;
 
-random String NthAuthorSeparator(Citation c, NaturalNum n) {
+random String NthAuthorSeparator(Citation c, NaturalNum n) ~
     if (NumAuthorsListed(c) > 1) & (n < Pred(NumAuthorsListed(c))) 
-    then ~ TokenUnigramDistrib[0.99, "apps/bib/model/citation_known.xml", 
+    then TokenUnigramDistrib[0.99, "apps/bib/model/citation_known.xml", 
                                    "apps/bib/model/vocabularyKnown", 1, 0.18]
-};
+;
 
-random String AuthorListTerminator(Citation c) {
-    ~ TokenUnigramDistrib[0.97, "apps/bib/model/citation_known.xml", 
+random String AuthorListTerminator(Citation c) ~
+    TokenUnigramDistrib[0.97, "apps/bib/model/citation_known.xml", 
                           "apps/bib/model/vocabularyKnown", 2, 0.5]
-};
+;
 
-random String FirstNAuthorsText(Citation c, NaturalNum n) {
-    if n == 0 then = ""
+random String FirstNAuthorsText(Citation c, NaturalNum n) ~
+    if n == 0 then ""
     else if n < NumAuthorsListed(c) 
-        then = Concat(Concat(FirstNAuthorsText(c, Pred(n)), 
+        then Concat(Concat(FirstNAuthorsText(c, Pred(n)), 
                              NameListed(NthAuthorMention(c, Pred(n)))),
                       NthAuthorSeparator(c, Pred(n)))
     else if n == NumAuthorsListed(c)
-        then = Concat(Concat(FirstNAuthorsText(c, Pred(n)),
+        then Concat(Concat(FirstNAuthorsText(c, Pred(n)),
                              NameListed(NthAuthorMention(c, Pred(n)))),
                       AuthorListTerminator(c))
-};
+;
 
 random String AuthorText(Citation c)
-     = FirstNAuthorsText(c, NumAuthorsListed(c));
+     ~ FirstNAuthorsText(c, NumAuthorsListed(c));
 
 random String InitialFiller(Citation c)
     ~ TokenUnigramDistrib[0.02, "apps/bib/model/citation_known.xml", 
@@ -148,16 +148,16 @@ random String FinalFiller(Citation c)
 random Boolean AuthorsBeforeTitle(Citation c)
     ~ Bernoulli(0.99);
 
-random String Text(Citation c) {
+random String Text(Citation c) ~
     if AuthorsBeforeTitle(c) 
-        then = Concat(InitialFiller(c), 
+        then Concat(InitialFiller(c), 
                       Concat(AuthorText(c),
                              Concat(MiddleFiller(c),
                                     Concat(TitleAsCited(c),
                                            FinalFiller(c)))))
-    else = Concat(InitialFiller(c),
+    else Concat(InitialFiller(c),
                   Concat(TitleAsCited(c),
                          Concat(MiddleFiller(c),
                                 Concat(AuthorText(c),
                                        FinalFiller(c)))))
-};
+;
