@@ -35,9 +35,10 @@
 
 package blog.distrib;
 
+import java.util.Collection;
+
 import blog.common.Util;
 import blog.model.Model;
-import blog.objgen.ObjectSet;
 
 /**
  * CPD that takes <code>S</code>, a set of objects (an instance of the
@@ -63,7 +64,7 @@ public class UniformChoice implements CondProbDistrib {
     if (params.length != 1) {
       throw new IllegalArgumentException("expected one parameter");
     }
-    setParams((ObjectSet) params[0]);
+    setParams((Collection<?>) params[0]);
   }
 
   /**
@@ -71,10 +72,13 @@ public class UniformChoice implements CondProbDistrib {
    * parameter <code>S</code> to <code>set</code>
    * 
    */
-  public void setParams(ObjectSet set) {
+  public void setParams(Collection<?> set) {
     if (set != null) {
-      this.s = set;
+      this.set = set;
+      elements = set.toArray();
       this.hasS = true;
+      prob = set.isEmpty() ? 1 : 1.0 / set.size();
+      logprob = set.isEmpty() ? 0 : (-Math.log(set.size()));
     }
   }
 
@@ -94,10 +98,10 @@ public class UniformChoice implements CondProbDistrib {
   @Override
   public double getProb(Object value) {
     checkHasParams();
-    if (s.isEmpty()) {
+    if (set.isEmpty()) {
       return (value == Model.NULL) ? 1 : 0;
     }
-    return (s.contains(value) ? (1.0 / s.size()) : 0);
+    return (set.contains(value) ? prob : 0);
   }
 
   /*
@@ -107,7 +111,11 @@ public class UniformChoice implements CondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    return Math.log(getProb(value));
+    checkHasParams();
+    if (set.isEmpty()) {
+      return (value == Model.NULL) ? 0 : Double.NEGATIVE_INFINITY;
+    }
+    return (set.contains(value) ? logprob : Double.NEGATIVE_INFINITY);
   }
 
   /**
@@ -124,25 +132,27 @@ public class UniformChoice implements CondProbDistrib {
   /** Samples uniformly from <code>S</code>, a set of object. */
   public Object sample_value() {
     checkHasParams();
-    if (s.isEmpty()) {
+    if (elements.length <= 0) {
       return Model.NULL;
     }
-    int n = Util.randInt(s.size());
-    return s.sample(n);
+    int n = Util.randInt(elements.length);
+    return elements[n];
   }
 
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
     builder.append("UniformChoice(");
-    for (Object item : s) {
-      builder.append(item.toString() + ", ");
+    if (set != null) {
+      builder.append(set.toString());
     }
-    builder.replace(builder.length() - 2, builder.length(), "");
     builder.append(")");
     return builder.toString();
   }
 
-  private ObjectSet s;
+  private Object[] elements; // the elements to be sampled from
+  private Collection<?> set; // original collect of elements
+  private double prob; // pre-calculated probability
+  private double logprob; // pre-calculated log of probability
   private boolean hasS;
 }
