@@ -102,8 +102,9 @@ public class MapSpec extends ArgSpec {
     for (Map.Entry<ArgSpec, Object> entry : map.entrySet()) {
       Object k = entry.getKey().evaluate(context);
       Object v = entry.getValue();
-      if (v instanceof ArgSpec) {
-        v = ((ArgSpec) v).evaluate(context);
+      if ((v instanceof Term) || (v instanceof Formula)
+          || (v instanceof TupleSetSpec)) {
+        v = ((ArgSpec) v).evaluate(context); // Do not evaluate CaseSpec
       }
       newmap.put(k, v);
     }

@@ -151,7 +151,7 @@ public class DependencyModel {
     if (tmp == null)
       return null;
     if (tmp == Model.NULL)
-      defaultClause.getDistrib(context);
+      return defaultClause.getDistrib(context);
     if (tmp instanceof DistribSpec)
       return ((DistribSpec) tmp).getDistrib(context);
     else

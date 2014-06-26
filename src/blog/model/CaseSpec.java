@@ -34,11 +34,15 @@ public class CaseSpec extends ArgSpec {
   @Override
   public Object evaluate(EvalContext context) {
     Object t = test.evaluate(context);
-    if (t == null)
+    if (t == null) {
       return null;
+    }
     Map<Object, Object> mp = clause.evaluate(context);
     if (mp.containsKey(t)) {
-      return mp.get(t);
+      Object ret = mp.get(t);
+      if (ret instanceof CaseSpec)
+        return ((CaseSpec) ret).evaluate(context);
+      return ret;
     } else
       return Model.NULL;
   }
@@ -68,11 +72,10 @@ public class CaseSpec extends ArgSpec {
     callStack.add(this);
     int errors = test.compile(callStack) + clause.compile(callStack);
     compiled = true;
-    if (clause.containsRandomSymbol()) {
-      // make sure every branch will return a distribution spec
-      // namely: for each branch of Term, generate a EqualsCPD distribution spec
-      errors += clause.enforceDistribSpec();
-    }
+    // make sure every branch will return a distribution spec
+    // namely: for each branch of Term, generate a EqualsCPD distribution spec
+    errors += clause.enforceDistribSpec();
+
     callStack.remove(this);
     return errors;
   }
@@ -132,4 +135,7 @@ public class CaseSpec extends ArgSpec {
         (MapSpec) clause.getSubstResult(subst, boundVars));
   }
 
+  public String toString() {
+    return "case " + test + " in " + clause;
+  }
 }
