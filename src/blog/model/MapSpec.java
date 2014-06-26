@@ -104,7 +104,8 @@ public class MapSpec extends ArgSpec {
       Object v = entry.getValue();
       if ((v instanceof Term) || (v instanceof Formula)
           || (v instanceof TupleSetSpec)) {
-        v = ((ArgSpec) v).evaluate(context); // Do not evaluate CaseSpec
+        if (!((ArgSpec) v).containsRandomSymbol())
+          v = ((ArgSpec) v).evaluate(context); // We only evaluate fixed value
       }
       newmap.put(k, v);
     }
