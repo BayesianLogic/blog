@@ -1,4 +1,4 @@
-title: Debugging BLOG models
+title: Interactive Shell and Debugging BLOG Models
 status: hidden
 date: 2014-06-25 17:09
 sortorder: 15
