@@ -30,7 +30,7 @@ random Boolean BladeFlash(Blip b) ~
 	  	      Short -> BooleanDistrib(0.6)}, RotorLength(Source(b)))
     else  BooleanDistrib(0.1);
 
-obs {Blip b} = {b1, b2, b3, b4, b5, b6};
+obs {b for Blip b} = {b1, b2, b3, b4, b5, b6};
 
 
 obs BladeFlash(b1) = true;

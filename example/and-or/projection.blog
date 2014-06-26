@@ -63,7 +63,7 @@ random Integer Color2D(Integer x, Integer y) ~
 // Function for given a pixel (x,y), finding the closest occupied voxel (xZ,yZ,Z) - i.e. return the minimum z
 random Integer Setm(Integer x, Integer y) ~
     if (Occupied2D(x,y)) then 
-        min({Integer Z: Z >= Zmin & Z <= Zmax & x * Z >= Xmin & x * Z <= Xmax & y * Z >= Ymin & y * Z <= Ymax & Occupied3D(x * Z, y * Z, Z) == true})
+        min({Z for Integer Z: Z >= Zmin & Z <= Zmax & x * Z >= Xmin & x * Z <= Xmax & y * Z >= Ymin & y * Z <= Ymax & Occupied3D(x * Z, y * Z, Z) == true})
     else 0;
 
 query Occupied2D(1,1); 

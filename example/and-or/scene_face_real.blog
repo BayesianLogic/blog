@@ -191,7 +191,7 @@ random Boolean Zintercept(Cow o, Integer x, Integer y) ~
 
 random Real Z(Integer x, Integer y) ~
     if ((x <= xMax) & (x >= xMin) & (y <= yMax) & (y >= yMin)) then
-          min({Real z: z >= 0 & z < Zmax & 
+          min({z for Real z: z >= 0 & z < Zmax & 
 	             ((exists Person o (Zintercept(o, x, y) & (Z0(o) == z))) |
 		      (exists Car o (Zintercept(o, x, y) & (Z0(o) == z))) |
              	      (exists Cow o (Zintercept(o, x, y) & (Z0(o) == z))) | 
@@ -224,9 +224,9 @@ obs Color2D(7, 8) = 5;
 
 
 // QUERY
-query #{Car c};
-query #{Cow c};
-query #{Person p};
+query #{c for Car c};
+query #{c for Cow c};
+query #{p for Person p};
 query Color2D(8, 7);
 query Color2D(8, 11);
 //query {Integer i: i <= Zmax & i >= Zmin & (exists Person p (Z0(p) == i))};
