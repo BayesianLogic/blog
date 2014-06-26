@@ -320,6 +320,14 @@ public class FuncAppTerm extends Term {
           args[i] = argInScope;
           argTypes[i] = argInScope.getType();
         }
+      } else if (args[i] instanceof Formula) {
+        Formula arg = (Formula) args[i];
+        if (!arg.checkTypesAndScope(model, scope)) {
+          correct = false;
+        } else {
+          args[i] = arg;
+          argTypes[i] = BuiltInTypes.BOOLEAN;
+        }
       } else if (args[i] instanceof ImplicitSetSpec) {
         argTypes[i] = BuiltInTypes.SET;
         ImplicitSetSpec setDef = (ImplicitSetSpec) args[i];
