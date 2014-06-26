@@ -4,6 +4,6 @@ fixed Real b = abs(a);
 query b;
 
 random Real c ~ UnivarGaussian(0, 10);
-random Real d = abs(c);
+random Real d ~ abs(c);
 
 query d;

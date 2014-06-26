@@ -1,9 +1,8 @@
 fixed Real mu = 0.0;
 fixed Real sigma = 1.0;
-random Real x(Timestep t) {
-	if t == @0 then ~ Gaussian(mu, sigma)
-	else ~ Gaussian(x(prev(t)), sigma)
-};
+random Real x(Timestep t) ~
+	if t == @0 then Gaussian(mu, sigma)
+	else Gaussian(x(prev(t)), sigma);
 
 obs x(@1) = 0.1;
 obs x(@5) = 0.5;

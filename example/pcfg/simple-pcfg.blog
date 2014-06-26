@@ -69,7 +69,7 @@ origin Integer GenIndex(ParseNode);
 
 // root node of the parse tree
 origin Sentence RootSentence(ParseNode);
-#ParseNode(RootSentence = s) = 1;
+#ParseNode(RootSentence = s) ~ 1;
 
 // get the node corresponding to a sentence
 random ParseNode ParseTreeRoot(Sentence s) 
@@ -81,67 +81,67 @@ random NodeClass ClassAsRoot(ParseNode node) {
 };
 */
 
-random NodeClass Class(ParseNode node) {
+random NodeClass Class(ParseNode node) ~
   //if (Parent(node) == null) then = ClassAsRoot(node)
-  if (Parent(node) == null) then = S
-  else = NthChildClass(ExpansionApplied(Parent(node)), GenIndex(node))
-};
+  if (Parent(node) == null) then S
+  else NthChildClass(ExpansionApplied(Parent(node)), GenIndex(node))
+;
 
-#ParseNode(Parent = p, GenIndex = n) {
+#ParseNode(Parent = p, GenIndex = n) ~
     if (ExpansionApplied(p) != null) 
             & (NthChildClass(ExpansionApplied(p), n) != null)
-        then = 1
-};
+        then 1
+;
 
-random ParseNode NthChild(ParseNode node, Integer n) {
+random ParseNode NthChild(ParseNode node, Integer n) ~
     if (ExpansionApplied(node) != null)
             & (NthChildClass(ExpansionApplied(node), n) != null)
-        then ~ Iota({ParseNode q : Parent(q) == node & GenIndex(q) == n})
-};
+        then Iota({ParseNode q : Parent(q) == node & GenIndex(q) == n})
+;
 
-random String TextStartingAtNthChild(ParseNode p, Integer n) {
-    if (NthChild(p, Succ(n)) == null) then = NodeText(NthChild(p, n))
-    else = NodeText(NthChild(p, n)) + TextStartingAtNthChild(p, Succ(n))
-};
+random String TextStartingAtNthChild(ParseNode p, Integer n) ~
+    if (NthChild(p, Succ(n)) == null) then NodeText(NthChild(p, n))
+    else NodeText(NthChild(p, n)) + TextStartingAtNthChild(p, Succ(n))
+;
 
-random String NodeText(ParseNode node) {
-    if (NthChild(node, 0) != null) then = TextStartingAtNthChild(node, 0)
-    else if OwnText(node) != null then = OwnText(node)
-    else = ""
-};
+random String NodeText(ParseNode node) ~
+    if (NthChild(node, 0) != null) then TextStartingAtNthChild(node, 0)
+    else if OwnText(node) != null then OwnText(node)
+    else ""
+;
 
 
-random Expansion ExpansionApplied(ParseNode node) {
-	if (Class(node) == S) then = SNPVP
+random Expansion ExpansionApplied(ParseNode node) ~
+	if (Class(node) == S) then SNPVP
 	
-	else if (Class(node) == PP) then = PPPNP
+	else if (Class(node) == PP) then PPPNP
 	
 	else if (Class(node) == VP) then
-	  ~ Categorical({VPVNP -> 0.7, VPVPPP -> 0.3})
+	  Categorical({VPVNP -> 0.7, VPVPPP -> 0.3})
 	
 	else if (Class(node) == NP) then 
-	  ~ Categorical({NPNPPP -> 0.4, 
+	  Categorical({NPNPPP -> 0.4, 
 	                 NPw_astronomers -> 0.1, 
 	                 NPw_ears -> 0.18, 
 	                 NPw_saw -> 0.04, 
 	                 NPw_stars -> 0.18, 
 	                 NPw_telescopes -> 0.1})
 
-	else if (Class(node) == P) then = Pw_with
+	else if (Class(node) == P) then Pw_with
 
-	else if (Class(node) == V) then = Vw_saw
-};
+	else if (Class(node) == V) then Vw_saw
+;
 
-random String OwnText(ParseNode node) {
-   if (Class(node) == w_astronomers) then = "astronomers "
-   else if (Class(node) == w_ears) then = "ears "
-   else if (Class(node) == w_saw) then = "saw "
-   else if (Class(node) == w_stars) then = "stars "
-   else if (Class(node) == w_telescopes) then = "telescopes "   
-   else if (Class(node) == w_with) then = "with "   
-   else if (Class(node) == w_saw) then = "saw "
-};
+random String OwnText(ParseNode node) ~
+   if (Class(node) == w_astronomers) then "astronomers "
+   else if (Class(node) == w_ears) then "ears "
+   else if (Class(node) == w_saw) then "saw "
+   else if (Class(node) == w_stars) then "stars "
+   else if (Class(node) == w_telescopes) then "telescopes "   
+   else if (Class(node) == w_with) then "with "   
+   else if (Class(node) == w_saw) then "saw "
+;
 
-random String Text(Sentence s) = NodeText(ParseTreeRoot(s));
+random String Text(Sentence s) ~ NodeText(ParseTreeRoot(s));
 
 query Text(Sen1);
