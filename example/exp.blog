@@ -6,16 +6,16 @@ query b;
 
 // exponential of a random real value
 random Real c ~ UnivarGaussian(0, 10);
-random Real d = exp(c);
+random Real d ~ exp(c);
 query d;
 
 // exponential of a random Integer value
 random Integer e ~ UniformInt(0, 10);
-random Real f = exp(e);
+random Real f ~ exp(e);
 query f;
 
 // exponential of a matrix
 fixed RealMatrix mu = [0; 0];
 random RealMatrix z ~ MultivarGaussian(mu, 1.0 * eye(2));
-random RealMatrix x = exp(z);
+random RealMatrix x ~ exp(z);
 query x;

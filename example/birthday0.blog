@@ -6,7 +6,7 @@ type Person;
 random Date Birthday(Person p) 
   ~ UniformChoice({Date d});
 
-#Person = 13;
+#Person ~ 13;
 
 query exists Person x exists Person y  
   ((x != y) & (Birthday(x) == Birthday(y)));

@@ -83,13 +83,6 @@ public class Clause {
     return cond;
   }
 
-  public Class getCPDClass() {
-    if (cpd != null) {
-      return cpd.getClass();
-    }
-    return cpdClass;
-  }
-
   public CondProbDistrib getCPD() {
     return cpd;
   }

@@ -17,61 +17,61 @@ fixed Integer Zmax = 20;
 
 // ROAD
 origin Scene WhichScene(Road);
-#Road(WhichScene = s) {
+#Road(WhichScene = s) ~
     if (s != null & SceneType(s) == 1) then
-        = 1
+        1
     else
-        = 0
-};
+        0
+;
 random Integer Height(Road r) ~ UniformInt(3, 5); 
 
 // GRASS
 origin Scene WhichScene(Grass);
-#Grass(WhichScene = s) {
+#Grass(WhichScene = s) ~
     if (s != null & SceneType(s) == 2) then
-        = 1
+        1
     else
-        = 0
-};
+        0
+  ;
 random Integer Height(Grass g) ~ UniformInt(3, 5);
 
 // CAR
 origin Scene WhichScene(Car);
 origin Road OnRoad(Car);
-#Car(WhichScene = s, OnRoad = r) {
+#Car(WhichScene = s, OnRoad = r) ~
     if (s != null & r != null & SceneType(s) == 1) then
-        = 1
+        1
     else
-        = 0
-};
+        0
+  ;
 
 random Integer Xsize(Car c) ~ UniformInt(6, 9);
 random Integer X0(Car c) ~ UniformInt(Xmin, Xmax);
-random Integer X1(Car c) = X0(c) + Xsize(c);
+random Integer X1(Car c) ~ X0(c) + Xsize(c);
 
 random Integer Ysize(Car c) ~ UniformInt(2, 4);
-random Integer Y0(Car c) = Height(OnRoad(c));
-random Integer Y1(Car c) = Y0(c) + Ysize(c);
+random Integer Y0(Car c) ~ Height(OnRoad(c));
+random Integer Y1(Car c) ~ Y0(c) + Ysize(c);
 
 random Integer Z0(Car c) ~ UniformInt(Zmin, Zmax);
 
 // COW
 origin Scene WhichScene(Cow);
 origin Grass OnGrass(Cow);
-#Cow(WhichScene = s, OnGrass = g) {
+#Cow(WhichScene = s, OnGrass = g) ~
     if (s != null & SceneType(s) == 2 & g != null) then
-        = 1
+        1
     else
-        = 0
-};
+        0
+;
 
 random Integer Xsize(Cow c) ~ UniformInt(5, 8);
 random Integer X0(Cow c) ~ UniformInt(Xmin, Xmax);
-random Integer X1(Cow c) = X0(c) + Xsize(c);
+random Integer X1(Cow c) ~ X0(c) + Xsize(c);
 
 random Integer Ysize(Cow c) ~ UniformInt(2, 4);
-random Integer Y0(Cow c) = Height(OnGrass(c));
-random Integer Y1(Cow c) = Y0(c) + Ysize(c);
+random Integer Y0(Cow c) ~ Height(OnGrass(c));
+random Integer Y1(Cow c) ~ Y0(c) + Ysize(c);
 
 random Integer Z0(Cow c) ~ UniformInt(Zmin, Zmax);
 
@@ -80,91 +80,91 @@ random Integer Z0(Cow c) ~ UniformInt(Zmin, Zmax);
 origin Scene WhichScene(Person);
 origin Road OnRoad(Person);
 origin Grass OnGrass(Person);
-#Person(WhichScene = s, OnRoad = r) {
+#Person(WhichScene = s, OnRoad = r) ~
     if (s != null & SceneType(s) == 1 & r != null) then
-        = 1
+      1
     else
-        = 0
-};
-#Person(WhichScene = s, OnGrass = g) {
+      0
+    ;
+#Person(WhichScene = s, OnGrass = g) ~
     if (s != null & SceneType(s) == 2 & g != null) then
-        = 1
+        1
     else
-        = 0
-};
+        0
+  ;
 
 random Integer Xsize(Person p) ~ UniformInt(1, 3);
 random Integer X0(Person p) ~ UniformInt(Xmin, Xmax);
-random Integer X1(Person p) = X0(p) + Xsize(p);
+random Integer X1(Person p) ~ X0(p) + Xsize(p);
 
 random Integer Ysize(Person p) ~ UniformInt(2, 3);
-random Integer Y0(Person p) {
+random Integer Y0(Person p) ~
     if (SceneType(WhichScene(p)) == 1) then
-        = Height(OnRoad(p))
+        Height(OnRoad(p))
     else
-        = Height(OnGrass(p))
-};
-random Integer Y1(Person p) = Y0(p) + Ysize(p);
+        Height(OnGrass(p))
+  ;
+random Integer Y1(Person p) ~ Y0(p) + Ysize(p);
 
 random Integer Z0(Person p) ~ UniformInt(Zmin, Zmax);
 
 
 // NO OVERLAPS IN 3D FOR THE SCENE
 random Boolean NoOverlap_person2()
-    = (forall Person p1
+    ~ (forall Person p1
           (forall Person p2 ((p2 != p1) =>
 	      ((X1(p1) < X0(p2)) | (X0(p1) > X1(p2)) | (Y1(p1) < Y0(p2)) | (Y0(p1) > Y1(p2)) | (Z0(p1) != Z0(p2)))
 	  ))
       );
 
 random Boolean NoOverlap_car2()
-    = (forall Car c1
+    ~ (forall Car c1
           (forall Car c2 ((c2 != c1) =>
 	      ((X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z0(c1) != Z0(c2)))
 	  ))
       );
 
 random Boolean NoOverlap_cow2()
-    = (forall Cow c1
+    ~ (forall Cow c1
           (forall Cow c2 ((c2 != c1) =>
 	      ((X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z0(c1) != Z0(c2)))
 	  ))
       );
 
 random Boolean NoOverlap_person_car()
-    = (forall Person p1
+    ~ (forall Person p1
           (forall Car c2
 	      ((X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z0(p1) != Z0(c2)))
 	  )
       );
 
 random Boolean NoOverlap_person_cow()
-    = (forall Person p1
+    ~ (forall Person p1
           (forall Cow c2
 	      ((X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z0(p1) != Z0(c2)))
 	  )
       );
 
-random Boolean NoOverlap() = (NoOverlap_person2() & NoOverlap_car2() & NoOverlap_cow2() & NoOverlap_person_car() & NoOverlap_person_cow());
+random Boolean NoOverlap() ~ (NoOverlap_person2() & NoOverlap_car2() & NoOverlap_cow2() & NoOverlap_person_car() & NoOverlap_person_cow());
 
 
 // COLOR OF VOXELS IN 3D
-random Integer Color3D(Integer X, Integer Y, Integer Z) {
+random Integer Color3D(Integer X, Integer Y, Integer Z) ~
     if (X < Xmin | X > Xmax | Y < Ymin | Y > Ymax | Z < Zmin | Z > Zmax) then
-        = 0
+        0
     else if (exists Car o ( ((Z == Z0(o)) & (X >= X0(o)) & (X <= X1(o)) & (Y >= Y0(o)) & (Y <= Y1(o))) )) then
-        = 5
+        5
     else if (exists Cow o ( ((Z == Z0(o)) & (X >= X0(o)) & (X <= X1(o)) & (Y >= Y0(o)) & (Y <= Y1(o))) )) then
-        = 10
+        10
     else if (exists Person o ( ((Z == Z0(o)) & (X >= X0(o)) & (X <= X1(o)) & (Y >= Y0(o)) & (Y <= Y1(o))) )) then
-        = 15
+        15
     else if (exists Grass o (Y == Height(o))) then
-        = 25
+        25
     else if (exists Road o (Y == Height(o))) then
-        = 30
+        30
     else if (X == Xmin | X == Xmax | Y == Ymin | Y == Ymax | Z == Zmax) then
-        = 40
-};
+        40
+  ;
 
 
 // 2D IMAGE FORMATION FOR CAMERA  
@@ -175,22 +175,22 @@ fixed Integer yMax = 11;
 fixed Integer xc = 7;
 fixed Integer yc = 7;
 
-random Boolean Zintercept(Person o, Integer x, Integer y) {
-        = ((X0(o) <= xc + Z0(o) * (xc - x)) & (X1(o) >= xc + Z0(o) * (xc - x)) & (Y0(o) <= yc + Z0(o) * (yc - y)) & (Y1(o) >= yc + Z0(o) * (yc - y)))
-};
+random Boolean Zintercept(Person o, Integer x, Integer y) ~
+        ((X0(o) <= xc + Z0(o) * (xc - x)) & (X1(o) >= xc + Z0(o) * (xc - x)) & (Y0(o) <= yc + Z0(o) * (yc - y)) & (Y1(o) >= yc + Z0(o) * (yc - y)))
+  ;
 
-random Boolean Zintercept(Car o, Integer x, Integer y) {
-        = ((X0(o) <= xc + Z0(o) * (xc - x)) & (X1(o) >= xc + Z0(o) * (xc - x)) & (Y0(o) <= yc + Z0(o) * (yc - y)) & (Y1(o) >= yc + Z0(o) * (yc - y)))
-};
+random Boolean Zintercept(Car o, Integer x, Integer y) ~
+        ((X0(o) <= xc + Z0(o) * (xc - x)) & (X1(o) >= xc + Z0(o) * (xc - x)) & (Y0(o) <= yc + Z0(o) * (yc - y)) & (Y1(o) >= yc + Z0(o) * (yc - y)))
+  ;
 
-random Boolean Zintercept(Cow o, Integer x, Integer y) {
-        = ((X0(o) <= xc + Z0(o) * (xc - x)) & (X1(o) >= xc + Z0(o) * (xc - x)) & (Y0(o) <= yc + Z0(o) * (yc - y)) & (Y1(o) >= yc + Z0(o) * (yc - y)))
-};
+random Boolean Zintercept(Cow o, Integer x, Integer y) ~
+        ((X0(o) <= xc + Z0(o) * (xc - x)) & (X1(o) >= xc + Z0(o) * (xc - x)) & (Y0(o) <= yc + Z0(o) * (yc - y)) & (Y1(o) >= yc + Z0(o) * (yc - y)))
+  ;
 
 
-random Integer Z(Integer x, Integer y) {
+random Integer Z(Integer x, Integer y) ~
     if ((x <= xMax) & (x >= xMin) & (y <= yMax) & (y >= yMin)) then
-        = min({Integer z: z >= 0 & z < Zmax &
+          min({Integer z: z >= 0 & z < Zmax &
 	             ((exists Person o (Zintercept(o, x, y) & (Z0(o) == z))) | 
         	      (exists Car o (Zintercept(o, x, y) & (Z0(o) == z))) | 
 		      (exists Cow o (Zintercept(o, x, y) & (Z0(o) == z))) | 
@@ -202,15 +202,15 @@ random Integer Z(Integer x, Integer y) {
              	      ((Ymax == yc + z * (yc - y)) & (Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x))) |
              	      ((z == Zmax) & (Ymin <= yc + z * (yc - y)) & (Ymax >= yc + z * (yc - y)) & (Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x))) ) })
     else
-        = 0
-};
+        0
+  ;
 
-random Integer Color2D(Integer x, Integer y) {
+random Integer Color2D(Integer x, Integer y) ~
     if ((x <= xMax) & (x >= xMin) & (y <= yMax) & (y >= yMin) & (Z(x, y) == 0)) then
-        = 40
+        40
     else if ((x <= xMax) & (x >= xMin) & (y <= yMax) & (y >= yMin) & (Z(x,y) > 0)) then
-        = Color3D(xc + Z(x,y) * (xc - x), yc + Z(x,y) * (yc - y), Z(x, y))
-};
+        Color3D(xc + Z(x,y) * (xc - x), yc + Z(x,y) * (yc - y), Z(x, y))
+  ;
 
 
 // OBSERVATIONS

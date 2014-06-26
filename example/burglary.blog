@@ -6,30 +6,22 @@ random Boolean Burglary ~ BooleanDistrib(0.001);
 
 random Boolean Earthquake ~ BooleanDistrib(0.002);
 
-random Boolean Alarm {
+random Boolean Alarm ~
 	if Burglary then
-		if Earthquake then
-		  ~ BooleanDistrib(0.95)
-		else
-		  ~ BooleanDistrib(0.94)
+		if Earthquake then BooleanDistrib(0.95)
+		else  BooleanDistrib(0.94)
 	else
-		if Earthquake then
-		  ~ BooleanDistrib(0.29)
-		else
-		  ~ BooleanDistrib(0.001)  
-};
+		if Earthquake then BooleanDistrib(0.29)
+		else BooleanDistrib(0.001)
+	;
 
-random Boolean JohnCalls 
-	if Alarm then 
-	  ~ BooleanDistrib(0.9)
-	else 
-	  ~ BooleanDistrib(0.05);
+random Boolean JohnCalls ~
+	if Alarm then BooleanDistrib(0.9)
+	else BooleanDistrib(0.05);
 
-random Boolean MaryCalls 
-  if Alarm then 
-    ~ BooleanDistrib(0.7)
-  else 
-    ~ BooleanDistrib(0.01);
+random Boolean MaryCalls ~
+  if Alarm then BooleanDistrib(0.7)
+  else BooleanDistrib(0.01);
 
 /* Evidence for the burglary model saying that both 
  * John and Mary called.  Given this evidence, the posterior probability 
