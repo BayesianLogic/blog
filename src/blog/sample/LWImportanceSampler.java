@@ -11,7 +11,7 @@ import blog.model.Model;
  * {@link TupleSetSpecEvidenceLikelihoodWeighter}. Ideally, it should include
  * all {@link EvidenceLikelihoodWeighter} developed.
  */
-public class LWImportanceSampler extends LWSampler {
+public class LWImportanceSampler extends OldLWSampler {
 
 	public LWImportanceSampler(Model model, Properties properties) {
 		super(model, properties);

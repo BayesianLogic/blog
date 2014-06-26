@@ -10,13 +10,13 @@ import blog.io.TableWriter
 import blog.model.Evidence
 import blog.model.Model
 import blog.model.Queries
-import blog.sample.LWSampler
+import blog.sample.OldLWSampler
 
 class LWDebugger(model: Model, evidence: Evidence, queries: Queries)
   extends SamplerDebugger[LWSample](model, evidence, queries) {
 
   def makeSampler = {
-    val sampler = new LWSampler(model, new Properties())
+    val sampler = new OldLWSampler(model, new Properties())
     sampler.initialize(evidence, queries)
     sampler
   }

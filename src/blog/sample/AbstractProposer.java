@@ -21,7 +21,7 @@ import blog.world.PartialWorldDiff;
 
 /**
  * A class providing basic Proposer functionality, including the creation of an
- * initial world by a {@link LWSampler}. The user must implement
+ * initial world by a {@link OldLWSampler}. The user must implement
  * {@link #proposeNextState(PartialWorldDiff)}.
  */
 public abstract class AbstractProposer implements Proposer {
@@ -74,7 +74,7 @@ public abstract class AbstractProposer implements Proposer {
    * can change it alone.
    */
   protected PartialWorldDiff constructInitialState() {
-    Sampler initialStateSampler = new LWSampler(model, properties);
+    Sampler initialStateSampler = new OldLWSampler(model, properties);
     ++numTrials;
     numInitialStateTriesThisTrial = 0;
     initialStateSampler.initialize(evidence, queries);

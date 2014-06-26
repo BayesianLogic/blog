@@ -42,7 +42,7 @@ import blog.model.Query;
 import blog.model.RandomFunction;
 import blog.model.Type;
 import blog.sample.IntRegion;
-import blog.sample.LWSampler;
+import blog.sample.OldLWSampler;
 import blog.sample.Region;
 import blog.sample.SingletonRegion;
 import blog.world.DefaultPartialWorld;
@@ -53,7 +53,7 @@ import blog.world.PartialWorld;
  * @author leili
  * @date Apr 22, 2012
  */
-public class ModularLWSampler extends LWSampler {
+public class ModularLWSampler extends OldLWSampler {
 
   private static final int intBound = -1; // TODO parse from Configuration
   private static final int depthBound = -1; // TODO parse from Configuration

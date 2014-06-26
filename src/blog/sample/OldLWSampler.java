@@ -70,12 +70,12 @@ import blog.world.PartialWorld;
  * objects should be represented by identifiers. Default: "none".
  * </dl>
  */
-public class LWSampler extends Sampler {
+public class OldLWSampler extends Sampler {
   /**
    * Creates a new sampler for the given BLOG model. The properties table
    * specifies configuration parameters.
    */
-  public LWSampler(Model model, Properties properties) {
+  public OldLWSampler(Model model, Properties properties) {
     super(model);
 
     String idTypesString = properties.getProperty("idTypes", "none");

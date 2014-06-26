@@ -9,7 +9,7 @@ import blog.Main
 import blog.model.Evidence
 import blog.model.Queries
 import blog.model.Model
-import blog.sample.LWSampler
+import blog.sample.OldLWSampler
 import blog.`type`.Timestep
 import blog.world.DefaultPartialWorld
 
@@ -29,7 +29,7 @@ class ParticleFilter(
 
   protected def createInitialParticles: Unit = {
     val newParticles = new ListBuffer[Particle]
-    val sampler = new LWSampler(model, new Properties)
+    val sampler = new OldLWSampler(model, new Properties)
     val idTypes = model.getListedTypes("none");
     for (i <- 1 to numParticles) {
       val world = new DefaultPartialWorld(idTypes);
