@@ -879,13 +879,14 @@ public class Semant {
   CaseSpec transExpr(IfExpr e) {
     List<ArgSpec> probKeys = new ArrayList<ArgSpec>();
     List<Object> probs = new ArrayList<Object>();
-    probKeys.add(BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+    probKeys.add(TrueFormula.TRUE);
     probs.add(transExpr(e.thenclause));
     if (e.elseclause != null) {
       probKeys.add(BuiltInTypes.BOOLEAN.getCanonicalTerm(false));
       probs.add(transExpr(e.elseclause));
     }
     MapSpec m = new MapSpec(probKeys, probs);
+
     // TODO: write a test for the SymbolTerm case to exclude non-Boolean
     // variables/functions
     Object cond = transExpr(e.test);
