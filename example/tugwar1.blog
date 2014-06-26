@@ -20,17 +20,17 @@ fixed Real sigma = 2;
 random Real strength(Person p) ~ Gaussian(mu, sigma);
 
 random Person team1player1(Integer i) // i-th match
-  ~ UniformChoice({Person p});
+  ~ UniformChoice({p for Person p});
 
 random Person team1player2(Integer i) // i-th match
-  ~ UniformChoice({Person p : p != team1player1(i)});
+  ~ UniformChoice({p for Person p : p != team1player1(i)});
 
 random Person team2player1(Integer i) // i-th match
-  ~ UniformChoice({Person p : (p != team1player1(i)) 
+  ~ UniformChoice({p for Person p : (p != team1player1(i)) 
                           & (p != team1player2(i))});
 
 random Person team2player2(Integer i) // i-th match
-  ~ UniformChoice({Person p : (p != team1player1(i)) 
+  ~ UniformChoice({p for Person p : (p != team1player1(i)) 
                           & (p != team1player2(i))
                           & (p != team2player1(i))});
 

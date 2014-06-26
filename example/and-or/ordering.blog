@@ -32,4 +32,4 @@ query {Start(i) for Integer i: i < maxIntervals};
 
 //query #{Integer i: Index(i) == 0};
 //query #{Integer i: Index(i) < 10};
-query #{Integer i: i < 10};
+query #{i for Integer i: i < 10};
