@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import blog.common.UnaryProcedure;
+import blog.distrib.EqualsCPD;
 import blog.sample.EvalContext;
 
 /**
@@ -71,12 +72,16 @@ public class MapSpec extends ArgSpec {
         if (o instanceof Term) {
           Term t = (Term) o;
           errors += t.compile(callStack);
-        } else if (o instanceof Clause) {
-          Clause c = (Clause) o;
+        } else if (o instanceof DistribSpec) {
+          DistribSpec d = (DistribSpec) o;
+          errors += d.compile(callStack);
+        } else if (o instanceof CaseSpec) {
+          CaseSpec c = (CaseSpec) o;
           errors += c.compile(callStack);
         } else {
-          throw new IllegalArgumentException("Map values must "
-              + "either be terms or clauses!");
+          throw new IllegalArgumentException(
+              "Map values must "
+                  + "either be terms or clauses (if-then-else, case, distributions)!");
         }
       }
 
@@ -143,6 +148,29 @@ public class MapSpec extends ArgSpec {
     return false;
   }
 
+  /*
+   * This will be called in CaseSpec
+   * We call this method to ensure that all the value of this map
+   * will be a distribSpec
+   * No Term is allowed here!
+   * 
+   * @return: recompile and return the number of errors
+   */
+  public int enforceDistribSpec() {
+    int errors = 0;
+    for (int i = 0; i < keys.size(); ++i) {
+      if ((values.get(i) instanceof Term) || (values.get(i) instanceof Formula)
+          || (values.get(i) instanceof TupleSetSpec)) {
+        ArgSpec t = (ArgSpec) values.get(i);
+        DistribSpec dis = new DistribSpec(EqualsCPD.class, t);
+        errors += dis.initCPD();
+        values.set(i, dis);
+        map.put(keys.get(i), dis);
+      }
+    }
+    return errors;
+  }
+
   public boolean checkTypesAndScope(Model model, Map scope) {
     return checkTypesAndScope(model, scope, null);
   }
@@ -156,12 +184,7 @@ public class MapSpec extends ArgSpec {
     }
 
     for (Object val : values) {
-      if (val instanceof Clause) {
-        Clause c = (Clause) val;
-        if (!c.checkTypesAndScope(model, scope, childType)) {
-          return false;
-        }
-      } else if (val instanceof ArgSpec) {
+      if (val instanceof ArgSpec) {
         ArgSpec as = (ArgSpec) val;
         if (!as.checkTypesAndScope(model, scope)) {
           return false;
