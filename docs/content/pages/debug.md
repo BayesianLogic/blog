@@ -165,3 +165,65 @@ probability.
 
 
 # Example: Debugging the Particle Filter
+
+You can run the particle filter one step at a time using the `advance` method,
+and inspect the particles on the way. Note that if there is atemporal evidence
+provided, it will be processed before the first timestep. (That's why you see
+"processed timestep -1" in the output below.) If there are atemporal queries,
+they will be processed after the last timestep. (That's why you see "procesed
+timestep 11" twice in the output below.)
+
+```text
+scala> val d = ParticleFilter.make("example/pf-test.blog", 10)
+Using fixed random seed for repeatability.
+d: blog.debug.ParticleFilter = blog.debug.ParticleFilter@13973a69
+
+scala> import d._
+import d._
+
+scala> advance
+advance: processed timestep -1
+
+scala> advance
+advance: processed timestep 1
+
+scala> d.currentEvidence
+res2: blog.model.Evidence = [x(@1) = 0.1]
+
+scala> d.currentQueries
+res3: blog.model.Queries = null
+
+scala> advanceUntilFinished
+advance: processed timestep 3
+advance: processed timestep 5
+advance: processed timestep 10
+advance: processed timestep 11
+advance: processed timestep 11
+
+scala> d.currentEvidence
+res13: blog.model.Evidence = null
+
+scala> d.currentQueries
+res12: blog.model.Queries = [/*DerivedVar*/ mu]
+
+scala> particles.size
+res5: Int = 10
+
+scala> val p = particles(2)
+p: blog.debug.Particle = Particle(logWeight: -0.9387766035733844, world: {Basic: {something=3.0, x(@11)=1.2672851367814115}, Derived: {}})
+
+scala> p.eval("something")
+res6: Object = 3.0
+
+scala> particles.foreach(particle => println(particle.eval("x(@11)")))
+-0.16279602410074512
+1.2672851367814115
+1.2672851367814115
+-1.0869420759611352
+1.2672851367814115
+0.21966510934467814
+-2.4999577147848684
+-0.2898923550912115
+-0.2898923550912115
+1.0845004791444346
+```
