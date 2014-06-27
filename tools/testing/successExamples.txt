@@ -1,0 +1,11 @@
+Successful Examples
+../example/trig.blog
+../example/pf-test.blog
+../example/array-test.blog
+../example/birthday0.blog
+../example/abs.blog
+../example/multinomial.blog
+../example/linear-algebra.blog
+../example/linear-algebra-2.blog
+../example/transpose.blog
+../example/exp.blog
