@@ -3,7 +3,6 @@
  */
 package test.blog.distrib;
 
-
 /**
  * Tests the correctness of Distributions that implement the
  * blog.distrib.CondProb Interface
@@ -44,4 +43,18 @@ public interface TestDistributions {
    * Test that calling setParams multiple times results in the correct behavior.
    */
   void testDoubleSet();
+
+  /**
+   * If the distribution takes a Double as one of its elements to setParams, a
+   * user can choose to pass in an Integer, and in this case, there should be a
+   * proper cast from the Integer value to its Double equivalent.
+   */
+  void testSetParamsIntegerArguments();
+
+  /**
+   * If the distribution takes a Double as argument to getProb and getLogProb, a
+   * user should be able to pass in an Integer instead, and in this case, there
+   * should be a proper cast from the Integer value its Double equivalent
+   */
+  void testGetProbIntegerArguments();
 }

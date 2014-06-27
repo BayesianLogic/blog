@@ -43,7 +43,7 @@ import blog.common.Util;
  * Defined as f(x) = (lambda*e^(-lambda*x)*(lambda*x)^(k - 1)) / Gamma(k) where
  * Gamma(k) = integral from 0 to infinity of t^(k-1) * e^(-t) dt
  * 
- * @since June 17, 2014
+ * @since June 25, 2014
  */
 
 public class Gamma implements CondProbDistrib {
@@ -52,10 +52,10 @@ public class Gamma implements CondProbDistrib {
    * set parameters for Gamma distribution
    * 
    * @param params
-   *          An array of the form [Double, Double]
+   *          An array of the form [Number, Number]
    *          <ul>
-   *          <li>params[0]: <code>k</code> (Double)</li>
-   *          <li>params[1]: <code>lambda</code> (Double)</li>
+   *          <li>params[0]: <code>k</code> (Number)</li>
+   *          <li>params[1]: <code>lambda</code> (Number)</li>
    *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
@@ -65,7 +65,7 @@ public class Gamma implements CondProbDistrib {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected 2 parameters");
     }
-    setParams((Double) params[0], (Double) params[1]);
+    setParams((Number) params[0], (Number) params[1]);
   }
 
   /**
@@ -74,25 +74,26 @@ public class Gamma implements CondProbDistrib {
    * method parameter lambda is non-null and strictly positive, set the
    * distribution parameter <code>lambda</code> to the method parameter lambda.
    */
-  public void setParams(Double k, Double lambda) {
+  public void setParams(Number k, Number lambda) {
     if (k != null) {
-      if (k <= 0) {
+      double kDouble = k.doubleValue();
+      if (kDouble <= 0) {
         throw new IllegalArgumentException(
             "parameter k (shape) must be a stricly positive real number");
       }
       this.hasK = true;
-      this.k = k;
+      this.k = kDouble;
       this.logGammaK = lgamma(this.k);
       this.gammaK = Math.exp(this.logGammaK);
     }
     if (lambda != null) {
-      if (lambda <= 0) {
+      if (lambda.doubleValue() <= 0) {
         throw new IllegalArgumentException(
             "parameter lambda (rate) must be a strictly positive real number");
       }
       this.hasLambda = true;
-      this.lambda = lambda;
-      this.logLambda = Math.log(lambda);
+      this.lambda = lambda.doubleValue();
+      this.logLambda = Math.log(this.lambda);
     }
   }
 
@@ -112,7 +113,7 @@ public class Gamma implements CondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    return getProb(((Double) value).doubleValue());
+    return getProb(((Number) value).doubleValue());
   }
 
   /** Returns the probability of <code>value</code>. */
@@ -133,7 +134,7 @@ public class Gamma implements CondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    return getLogProb(((Double) value).doubleValue());
+    return getLogProb(((Number) value).doubleValue());
   }
 
   /** Returns the log probability of <code>value</code>. */

@@ -22,7 +22,8 @@ fixed Real[][] beta =
 
 random Integer doclen(Document d) ~ UniformInt(4, 7);
 
-random Real[] theta(Document d) ~ Dirichlet(0.2, 0.2, 0.2, 0.2, 0.2);
+fixed RealMatrix vector = [0.2, 0.2, 0.2, 0.2, 0.2];
+random Real[] theta(Document d) ~ Dirichlet(vector);
 
 random Integer topic(Document d, Integer i) ~
     if (i < doclen(d)) then Categorical(theta(d));
