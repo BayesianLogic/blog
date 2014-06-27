@@ -6,11 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import blog.common.numerical.JamaMatrixLib;
-import blog.common.numerical.MatrixLib;
-import blog.common.Util;
-
-
 /**
  * Creates MatrixLib objects.
  * 
@@ -150,7 +145,7 @@ public class MatrixFactory {
 
   /**
    * Read matrix from space-separated text file.
-   *
+   * 
    * To save in this format from numpy: savetxt('a.txt', a)
    * To save in this format from matlab: save('a.txt', 'a', '-ascii')
    */
@@ -171,21 +166,30 @@ public class MatrixFactory {
       }
       reader.close();
     } catch (FileNotFoundException e) {
-      Util.fatalError(e);
+      throw new IllegalArgumentException("File " + filename + " not found");
     } catch (IOException e) {
-      Util.fatalError(e);
+      throw new IllegalArgumentException("Error reading " + filename);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("Could not parse matrix");
     }
 
-    double[][] result = new double[rows.size()][rows.get(0).size()];
-    for (int r = 0; r < rows.size(); r++) {
+    final int numRows = rows.size();
+    final int numCols = rows.get(0).size();
+    if (numRows == 0 || numCols == 0) {
+      throw new IllegalArgumentException("Tried to read an empty matrix");
+    }
+    double[][] result = new double[numRows][numCols];
+    for (int r = 0; r < numRows; r++) {
       ArrayList<Double> row = rows.get(r);
-      // TODO: should check that all rows have the same size
-      for (int c = 0; c < row.size(); c++) {
+      if (row.size() != numCols) {
+        throw new IllegalArgumentException("Matrix rows have unequal lengths");
+      }
+      for (int c = 0; c < numCols; c++) {
         result[r][c] = row.get(c);
       }
     }
-    System.out.println("Loaded " + result.length + "x" + result[0].length +
-      " matrix from " + filename);
+    System.out.println("Loaded " + result.length + "x" + result[0].length
+        + " matrix from " + filename);
     return fromArray(result);
   }
 }
