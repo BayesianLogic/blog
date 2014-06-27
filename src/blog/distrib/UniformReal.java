@@ -1,137 +1,129 @@
-/*
- * Copyright (c) 2005, Regents of the University of California
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
- * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the
- *   distribution.  
- *
- * * Neither the name of the University of California, Berkeley nor
- *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior 
- *   written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package blog.distrib;
 
-import blog.*;
 import blog.common.Util;
-import blog.model.Type;
-
-import java.util.*;
 
 /**
- * Uniform distribution over a range of real numbers [lower, upper). The range
- * is open at the upper end for consistency with Random.nextDouble().
+ * Uniform distribution over a range of real numbers [<code>lower</code>,
+ * <code>upper</code>).
+ * 
+ * @author cgioia
+ * @since June 17, 2014
  */
-public class UniformReal extends AbstractCondProbDistrib {
-	/**
-	 * Interprets the parameters as a pair of real numbers (lower, upper) and
-	 * creates a uniform distribution over the range [lower, upper).
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if params does not consist of exactly two Number objects, or if
-	 *           lower &gt;= upper
-	 */
-	public UniformReal(List params) {
-		try {
-			lower = ((Number) params.get(0)).doubleValue();
-			upper = ((Number) params.get(1)).doubleValue();
-			if ((lower >= upper) || (params.size() > 2)) {
-				throw new IllegalArgumentException();
-			}
-		} catch (RuntimeException e) {
-			throw new IllegalArgumentException(
-					"UniformReal CPD expects two numeric arguments "
-							+ "[lower, upper) with lower < upper.  Got: " + params);
-		}
-	}
+public class UniformReal implements CondProbDistrib {
 
-	/**
-	 * Returns 1 / (upper - lower) if the given number is in the range of this
-	 * distribution, otherwise returns zero. Takes no arguments.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if <code>args</code> is non-empty or <code>value</code> is not a
-	 *           Number
-	 */
-	public double getProb(List args, Object value) {
-		if (!args.isEmpty()) {
-			throw new IllegalArgumentException(
-					"UniformReal CPD does not take any arguments.");
-		}
-		if (!(value instanceof Number)) {
-			throw new IllegalArgumentException(
-					"UniformReal CPD defines distribution over objects of class "
-							+ "Number, not " + value.getClass() + " (value is " + value
-							+ ").");
-		}
-		double x = ((Number) value).doubleValue();
+  /**
+   * set parameters for UniformReal distribution
+   * 
+   * @param params
+   *          An array of the form [Number, Number]
+   *          <ul>
+   *          <li>params[0]:<code>lower</code>(Number)</li>
+   *          <li>params[1]:<code>upper</code>(Number)</li>
+   *          </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
+   */
+  public void setParams(Object[] params) {
+    if (params.length != 2) {
+      throw new IllegalArgumentException("expected two params: lower and upper");
+    }
+    setParams((Number) params[0], (Number) params[1]);
+  }
 
-		if ((x >= lower) && (x < upper)) {
-			return 1.0 / (upper - lower);
-		}
-		return 0;
-	}
+  /**
+   * If the method parameter lower is non-null, sets the distribution parameter
+   * <code>lower</code> to lower. Similarly for upper. Once both parameters
+   * <code>lower</code> and <code>upper</code> have been set, checks to see that
+   * <code>lower</code> < <code>upper</code>.
+   */
+  public void setParams(Number lower, Number upper) {
+    if (lower != null) {
+      this.lower = lower.doubleValue();
+      this.hasLower = true;
+    }
+    if (upper != null) {
+      this.upper = upper.doubleValue();
+      this.hasUpper = true;
+    }
+    if (this.hasLower && this.hasUpper) {
+      if (this.lower >= this.upper) {
+        throw new IllegalArgumentException("lower >= upper");
+      }
+      this.density = 1 / (this.upper - this.lower);
+      this.logDensity = Math.log(this.density);
+    }
+  }
 
-	/**
-	 * Returns a sample from this distribution.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if <code>args</code> is non-empty
-	 */
-	public Object sampleVal(List args, Type childType) {
-		if (!args.isEmpty()) {
-			throw new IllegalArgumentException(
-					"UniformReal CPD does not take any arguments.");
-		}
+  private void checkHasParams() {
+    if (!hasLower) {
+      throw new IllegalArgumentException("lower not provided");
+    }
+    if (!hasUpper) {
+      throw new IllegalArgumentException("upper not provided");
+    }
+  }
 
-		// rely on the fact that Util.random() returns a value in [0, 1)
-		double x = lower + (Util.random() * (upper - lower));
-		return new Double(x);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  public double getProb(Object value) {
+    return getProb(((Number) value).doubleValue());
+  }
 
-	private double lower;
-	private double upper;
+  /**
+   * Returns the probability of <code>value</code>.
+   */
+  public double getProb(double value) {
+    checkHasParams();
+    return (value >= lower) && (value < upper) ? this.density : 0;
+  }
 
-	public double getLower() {
-		return lower;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  public double getLogProb(Object value) {
+    return getLogProb(((Number) value).doubleValue());
+  }
 
-	public void setLower(double lower) {
-		this.lower = lower;
-	}
+  /**
+   * Returns the log probability of <code>value</code>.
+   */
+  public double getLogProb(double value) {
+    checkHasParams();
+    return (value >= lower) && (value < upper) ? this.logDensity
+        : Double.NEGATIVE_INFINITY;
+  }
 
-	public double getUpper() {
-		return upper;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  public Object sampleVal() {
+    return sample_value();
+  }
 
-	public void setUpper(double upper) {
-		this.upper = upper;
-	}
+  /** Samples uniformly between <code>lower</code> and <code>upper</code>. */
+  public double sample_value() {
+    checkHasParams();
+    // rely on the fact that Util.random() returns a value in [0, 1)
+    return (lower + (Util.random() * (upper - lower)));
+  }
 
-	public String toString() {
-		return "U[" + lower + ", " + upper + "]";
-	}
+  @Override
+  public String toString() {
+    return getClass().getName();
+  }
+
+  private boolean hasLower;
+  private boolean hasUpper;
+
+  private double lower;
+  private double upper;
+  private double density;
+  private double logDensity;
 }

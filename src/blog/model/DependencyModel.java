@@ -37,13 +37,11 @@ package blog.model;
 
 import java.io.PrintStream;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
 import blog.bn.BasicVar;
-import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
 import blog.distrib.EqualsCPD;
@@ -65,6 +63,11 @@ public class DependencyModel {
   /**
    * Nested class representing a distribution over child values, in the form of
    * a CPD and a list of values for the CPD's arguments.
+   * 
+   * TODO: This class is no longer necessary after the new distribution
+   * interface is implemented. Instead of storing the args in this container, we
+   * can just call setParams() on the distribution. So we only need to pass
+   * around a CondProbDistrib, not a CondProbDistrib + args.
    */
   public static class Distrib {
     public Distrib(CondProbDistrib cpd, List argValues) {
@@ -76,20 +79,8 @@ public class DependencyModel {
       return cpd;
     }
 
-    public List getArgValues() {
-      return Collections.unmodifiableList(argValues);
-    }
-
-    public Object sampleVal(Type type) {
-      return cpd.sampleVal(argValues, type);
-    }
-
-    public Object sampleVal(VarWithDistrib var) {
-      return cpd.sampleVal(argValues, var.getType());
-    }
-
-    public double getProb(Object value) {
-      return cpd.getProb(argValues, value);
+    public Object[] getArgValues() {
+      return argValues.toArray();
     }
 
     public String toString() {
@@ -100,9 +91,9 @@ public class DependencyModel {
     private List argValues;
   }
 
-  public DependencyModel(List cl, Type childType, Object defaultVal) {
+  public DependencyModel(ArgSpec cl, Type childType, Object defaultVal) {
 
-    clause_lst = cl;
+    clause = cl;
     this.childType = childType;
     this.defaultVal = defaultVal;
 
@@ -111,14 +102,12 @@ public class DependencyModel {
       Util.fatalError("No canonical term for default value " + defaultVal
           + " of type " + childType);
     }
-    defaultClause = new Clause(TrueFormula.TRUE, EqualsCPD.CPD,
+    defaultClause = new DistribSpec(EqualsCPD.class,
         Collections.singletonList((ArgSpec) defaultTerm));
   }
 
-  public List getClauseList() {
-
-    return clause_lst;
-
+  public ArgSpec getClause() {
+    return clause;
   }
 
   public Object getDefaultValue() {
@@ -158,37 +147,15 @@ public class DependencyModel {
    * satisfied clause and its argument values, then this method returns null.
    */
   public Distrib getDistrib(EvalContext context) {
-    Clause activeClause = getActiveClause(context);
-    if (activeClause == null) {
+    Object tmp = clause.evaluate(context);
+    if (tmp == null)
       return null;
-    }
-    return activeClause.getDistrib(context);
-  }
-
-  /**
-   * Returns the first clause in this dependency model whose condition is
-   * satisfied in the given context. If no clause's condition is satisfied, this
-   * method returns an automatically-constructed default clause whose condition
-   * is "true" and whose CPD is an EqualsCPD with an argument denoting this
-   * dependency model's default value. If the given context is not complete
-   * enough to determine the first satisfied clause, this method returns null.
-   */
-  public Clause getActiveClause(EvalContext context) {
-    for (Iterator iter = clause_lst.iterator(); iter.hasNext();) {
-      Clause clause = (Clause) iter.next();
-      Boolean condValue = (Boolean) clause.getCond().evaluate(context);
-      if (condValue == null) {
-        return null; // condition's truth value not determined
-      }
-
-      if (condValue.booleanValue()) {
-        // this is the first satisfied clause
-        return clause;
-      }
-    }
-
-    // None of the clauses are satisfied.
-    return defaultClause;
+    if (tmp == Model.NULL)
+      return defaultClause.getDistrib(context);
+    if (tmp instanceof DistribSpec)
+      return ((DistribSpec) tmp).getDistrib(context);
+    else
+      return null;
   }
 
   /**
@@ -198,20 +165,10 @@ public class DependencyModel {
    * context is not complete enough to determine the equal parent.
    */
   public BasicVar getEqualParent(EvalContext context) {
-    for (Iterator iter = clause_lst.iterator(); iter.hasNext();) {
-      Clause clause = (Clause) iter.next();
-      Boolean condValue = (Boolean) clause.getCond().evaluate(context);
-      if (condValue == null) {
-        return null; // condition's truth value not determined
-      }
+    Object tmp = clause.evaluate(context);
+    if (tmp instanceof DistribSpec)
+      return ((DistribSpec) tmp).getEqualParent(context);
 
-      if (condValue.booleanValue()) {
-        // This is the first satisfied clause
-        return clause.getEqualParent(context);
-      }
-    }
-
-    // None of the clauses are satisfied.
     return null;
   }
 
@@ -221,27 +178,13 @@ public class DependencyModel {
    * with "if"; all subsequent clauses begin with "elseif".
    */
   public void print(PrintStream s) {
-    for (int i = 0; i < clause_lst.size(); ++i) {
-      Clause c = (Clause) clause_lst.get(i);
-      s.print("\t");
-      if (i > 0) {
-        s.print("else");
-      }
-      s.println(c);
-    }
+    s.println(clause);
   }
 
   public boolean checkTypesAndScope(Model model, Map scope) {
-    boolean correct = true;
-
-    for (Iterator iter = clause_lst.iterator(); iter.hasNext();) {
-      Clause c = (Clause) iter.next();
-      if (!c.checkTypesAndScope(model, scope, childType)) {
-        correct = false;
-      }
-    }
-
-    return correct;
+    if (clause instanceof DistribSpec)
+      return ((DistribSpec) clause).checkTypesAndScope(model, scope, childType);
+    return clause.checkTypesAndScope(model, scope);
   }
 
   /**
@@ -256,12 +199,7 @@ public class DependencyModel {
    */
   public int compile(LinkedHashSet callStack) {
     callStack.add(this);
-    int errors = 0;
-
-    for (Iterator iter = clause_lst.iterator(); iter.hasNext();) {
-      errors += ((Clause) iter.next()).compile(callStack);
-    }
-
+    int errors = clause.compile(callStack);
     callStack.remove(this);
     return errors;
   }
@@ -273,8 +211,8 @@ public class DependencyModel {
     return creationIndex;
   }
 
-  private List clause_lst; // of Clause, not including the default clause
-  private Clause defaultClause;
+  private ArgSpec clause; // of Clause, not including the default clause
+  private DistribSpec defaultClause;
   private Type childType;
   private Object defaultVal;
   private int creationIndex = Model.nextCreationIndex();

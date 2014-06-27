@@ -1,0 +1,10 @@
+random Integer z ~ Bernoulli(0.5);
+1234 ;
+obs x = 1;
+ty;
+type x, y;
+type z;
+type ;
+random Real z ~ 1.0;
+z;
+random Real z ~ Gaussian(1, );

@@ -1,6 +1,5 @@
 package test.blog;
 
-import static blog.BLOGUtil.parseEvidence_NE;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
@@ -9,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import blog.BLOGUtil;
 import blog.DBLOGUtil;
 import blog.common.Util;
 import blog.model.Evidence;
@@ -24,13 +22,12 @@ import blog.type.Timestep;
 public class TestDBLOGUtil {
   @Test
   public void testSplitEvidenceInTime() {
-    Model model = Model.fromString("random Boolean Weather(Timestep t) = true;"
+    Model model = Model.fromString("random Boolean Weather(Timestep t) ~ true;"
         + "random Boolean Dummy ~ Bernoulli(0.5);");
-    Evidence evidence;
-    String evidenceDescription = "obs Weather(@15) = true;"
-        + "obs Weather(@2) = true;" + "obs Dummy = true;";
+    Evidence evidence = new Evidence(model);
+    evidence.addFromString("obs Weather(@15) = true;"
+        + "obs Weather(@2) = true;" + "obs Dummy = true;");
     // TODO: test SymbolEvidenceStatements too.
-    evidence = parseEvidence_NE(evidenceDescription, model);
 
     Map<Timestep, Evidence> splitEvidence = DBLOGUtil
         .splitEvidenceInTime(evidence);
@@ -47,12 +44,11 @@ public class TestDBLOGUtil {
 
   @Test
   public void testSplitQueriesInTime() {
-    Model model = Model.fromString("random Boolean Weather(Timestep t) = true;"
+    Model model = Model.fromString("random Boolean Weather(Timestep t) ~ true;"
         + "random Boolean Dummy ~ Bernoulli(0.5);");
     Queries queries = new Queries(model);
-    queries.add(BLOGUtil.parseQuery_NE("query Dummy;", model));
-    queries.add(BLOGUtil.parseQuery_NE("query Weather(@3);", model));
-    queries.add(BLOGUtil.parseQuery_NE("query Weather(@13);", model));
+    queries.addFromString("query Dummy;" + "query Weather(@3);"
+        + "query Weather(@13);");
 
     Map<Timestep, Queries> splitQueries = DBLOGUtil.splitQueriesInTime(queries);
     // System.out.println(splitQueries);

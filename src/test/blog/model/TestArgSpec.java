@@ -21,9 +21,8 @@ import blog.type.Timestep;
 public class TestArgSpec {
   @Test
   public void testMaxTimestep() {
-    Model model = Model
-        .fromString("random Boolean Weather(Timestep t) = true;");
-    ArgSpec a = BLOGUtil.parseArgSpec_NE("Weather(@13)", model);
+    Model model = Model.fromString("fixed Boolean Weather(Timestep t) = true;");
+    ArgSpec a = BLOGUtil.parseArgSpec("query Weather(@13);", model);
     assertEquals(Timestep.at(13), a.maxTimestep());
   }
 }

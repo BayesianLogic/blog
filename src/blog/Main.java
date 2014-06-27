@@ -447,19 +447,17 @@ public class Main {
     if (debug || verbose) {
       // Print model for debugging
       System.out.println("............................................");
-      model.print(System.out);
+      System.out.println(model);
       System.out.println("............................................");
 
       // Print evidence for debugging
       System.out.println("\nEvidence:");
-      evidence.print(System.out);
+      System.out.println(evidence);
       System.out.println("............................................");
 
       // Print queries for debugging
       System.out.println("\nQueries:");
-      for (Query q : queries) {
-        System.out.println(q);
-      }
+      System.out.println(queries);
     }
 
     // Run semantic checks on model, evidence and queries
@@ -485,7 +483,7 @@ public class Main {
   private static boolean parseAndTranslate(Model m, Evidence e, Queries qs,
       Reader reader, String origin) {
     ErrorMsg msg = new ErrorMsg(origin);
-    Parse parse = new Parse(reader, msg);
+    Parse parse = new Parse(reader, msg, origin);
     Semant sem = new Semant(m, e, qs, msg);
     sem.addPackages(packages);
     if (msg.OK())

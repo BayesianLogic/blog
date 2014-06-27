@@ -44,6 +44,7 @@ import java.util.Set;
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
+import blog.distrib.CondProbDistrib;
 import blog.model.DependencyModel;
 import blog.model.Model;
 import blog.world.PartialWorld;
@@ -198,17 +199,16 @@ public class GenericProposer extends AbstractProposer {
 
     DependencyModel.Distrib distrib = varToSample
         .getDistrib(new DefaultEvalContext(world, true));
+    CondProbDistrib cpd = distrib.getCPD();
+    cpd.setParams(distrib.getArgValues());
     Object oldValue = world.getValue(varToSample);
     chosenVarOldValue = oldValue;
-    logProbBackward += Math.log(distrib.getCPD().getProb(
-        distrib.getArgValues(), oldValue));
+    logProbBackward += Math.log(cpd.getProb(oldValue));
 
-    Object newValue = distrib.getCPD().sampleVal(distrib.getArgValues(),
-        varToSample.getType());
+    Object newValue = cpd.sampleVal();
     chosenVarNewValue = newValue;
     world.setValue(varToSample, newValue);
-    logProbForward += Math.log(distrib.getCPD().getProb(distrib.getArgValues(),
-        newValue));
+    logProbForward += Math.log(cpd.getProb(newValue));
 
     // Make the world self-supporting. The only variables whose active
     // parent sets could have changed are the children of varToSample.

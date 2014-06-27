@@ -29,10 +29,9 @@ distinct IntelligenceLevel Weak, Average, Smart;
  * attempt to ensure that it's symmetric, and ensuring that in BLOG is 
  * hard. Here we use "Likes", which doesn't imply symmetry.
  */
-random Boolean Likes(Professor p1, Professor p2) { 
-    if (p1 == p2) then = true
-    else ~ BooleanDistrib(0.2)
-};
+random Boolean Likes(Professor p1, Professor p2) ~
+    if (p1 == p2) then true
+    else BooleanDistrib(0.2);
 
 random DifficultyLevel Difficulty(Course c) ~ Categorical({Easy -> 0.7, Hard -> 0.3});
 
@@ -43,19 +42,18 @@ random IntelligenceLevel Intelligence(Student s) ~ Categorical({Smart -> 0.2, Av
  * then student s usually gets an A.  Otherwise the grade depends on 
  * the student's intelligence and the course's difficulty.  
  */
-random Grade GradeObtained(Student s, Course c) {
+random Grade GradeObtained(Student s, Course c) ~
     if (Takes(s, c) & (exists Professor p1 exists Professor p2 
                   (Teaches(p1, c) & Advises(p2, s) & Likes(p1, p2))))
-    then ~ Categorical({A -> 0.85, B -> 0.1, C -> 0.03, D -> 0.01, F -> 0.01})
+    then Categorical({A -> 0.85, B -> 0.1, C -> 0.03, D -> 0.01, F -> 0.01})
     else if Takes(s, c)
-        then ~ TabularCPD({[Weak, Easy] -> ~ Categorical({A -> 0.2, B -> 0.4, C -> 0.3, D -> 0.07, F -> 0.03}),
-	       		   [Weak, Hard] -> ~ Categorical({A -> 0.05, B -> 0.1, C -> 0.55, D -> 0.2, F -> 0.1}),
-			   [Average, Easy] -> ~ Categorical({A -> 0.3, B -> 0.55, C -> 0.10, D -> 0.04, F -> 0.01}),
-			   [Average, Hard] -> ~ Categorical({A -> 0.15, B -> 0.3, C -> 0.45, D -> 0.07, F -> 0.03}),
-			   [Smart, Easy] -> ~ Categorical({A -> 0.85, B -> 0.1, C -> 0.03, D -> 0.01, F -> 0.01}),
-			   [Smart, Hard] -> ~ Categorical({A -> 0.60, B -> 0.25, C -> 0.1, D -> 0.03, F -> 0.02})},
-			[Intelligence(s), Difficulty(c)])
-};
+        then TabularCPD({[Weak, Easy] -> Categorical({A -> 0.2, B -> 0.4, C -> 0.3, D -> 0.07, F -> 0.03}),
+	       		   [Weak, Hard] -> Categorical({A -> 0.05, B -> 0.1, C -> 0.55, D -> 0.2, F -> 0.1}),
+			   [Average, Easy] -> Categorical({A -> 0.3, B -> 0.55, C -> 0.10, D -> 0.04, F -> 0.01}),
+			   [Average, Hard] -> Categorical({A -> 0.15, B -> 0.3, C -> 0.45, D -> 0.07, F -> 0.03}),
+			   [Smart, Easy] -> Categorical({A -> 0.85, B -> 0.1, C -> 0.03, D -> 0.01, F -> 0.01}),
+			   [Smart, Hard] -> Categorical({A -> 0.60, B -> 0.25, C -> 0.1, D -> 0.03, F -> 0.02})},
+			[Intelligence(s), Difficulty(c)]);
 
 
 /* Relational skeleton and evidence.

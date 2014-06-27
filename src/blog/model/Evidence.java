@@ -35,7 +35,6 @@
 
 package blog.model;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -266,21 +265,6 @@ public class Evidence {
   /** Indicates whether evidence is empty or not. */
   public boolean isEmpty() {
     return getValueEvidence().isEmpty() && getSymbolEvidence().isEmpty();
-  }
-
-  /**
-   * Prints the evidence to the given stream.
-   */
-  public void print(PrintStream s) {
-    for (Iterator iter = symbolEvidence.iterator(); iter.hasNext();) {
-      SymbolEvidenceStatement stmt = (SymbolEvidenceStatement) iter.next();
-      System.out.println(stmt);
-    }
-
-    for (Iterator iter = valueEvidence.iterator(); iter.hasNext();) {
-      ValueEvidenceStatement stmt = (ValueEvidenceStatement) iter.next();
-      System.out.println(stmt);
-    }
   }
 
   private void recordEvidence(BayesNetVar observedVar, Object observedValue,
