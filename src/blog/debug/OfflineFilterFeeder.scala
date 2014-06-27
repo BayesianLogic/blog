@@ -9,6 +9,16 @@ import blog.`type`.Timestep
 import scala.collection.mutable.ListBuffer
 
 /**
+ * FilterFeeder for a fixed batch of evidence and queries.
+ *
+ * Use this if your evidence and queries are known ahead of time, i.e. you
+ * have an offline ParticleFilter.
+ *
+ * This feeds all evidence and queries in the following order:
+ * 1. Atemporal evidence, if any. (Timestep = -1)
+ * 2. For all timesteps t present: All evidence and queries for timestep t.
+ * 3. Atemporal queries, if any. (Timestep = max timestep from above)
+ *
  * @author cberzan
  * @since Jun 25, 2014
  */
