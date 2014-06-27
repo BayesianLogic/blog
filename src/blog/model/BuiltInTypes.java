@@ -65,6 +65,7 @@ public class BuiltInTypes {
   public static final String MAP_TYPE_NAME = "Map";
   public static final String REAL_MATRIX_NAME = "RealMatrix";
   public static final String INTEGER_MATRIX_NAME = "IntegerMatrix";
+  private static final String ANY_TYPE_NAME = "ANY";
 
   /**
    * Supertype for all built-in types. Used to determine whether a type is
@@ -159,6 +160,15 @@ public class BuiltInTypes {
    */
   public static final Type MAP = new Type(MAP_TYPE_NAME, BUILT_IN);
 
+  /**
+   * TYPE that could match any type, be assigned to any type
+   */
+  public static final Type ANY = new Type(ANY_TYPE_NAME, BUILT_IN) {
+    public boolean isSubtypeOf(Type other) {
+      return true;
+    }
+  };
+
   // /**
   // * Type for lists of elements of a given type. Objects of this type
   // * are represented as java.util.ArrayList objects.
@@ -185,8 +195,7 @@ public class BuiltInTypes {
         throw new IllegalArgumentException("Object " + obj + " not of type "
             + this);
       }
-      FixedFunction c = BuiltInFunctions.getLiteral(obj.toString(), this,
-          obj);
+      FixedFunction c = BuiltInFunctions.getLiteral(obj.toString(), this, obj);
       return new FuncAppTerm(c);
     }
   };
@@ -252,8 +261,8 @@ public class BuiltInTypes {
         throw new IllegalArgumentException("Object " + obj + " not of type "
             + this);
       }
-      FixedFunction c = BuiltInFunctions.getLiteral(String.valueOf(obj),
-          this, obj);
+      FixedFunction c = BuiltInFunctions.getLiteral(String.valueOf(obj), this,
+          obj);
       return new FuncAppTerm(c);
     }
 
@@ -280,8 +289,8 @@ public class BuiltInTypes {
         throw new IllegalArgumentException("Object " + obj + " is not of type "
             + this);
       }
-      FixedFunction c = BuiltInFunctions.getLiteral(String.valueOf(obj),
-          this, obj);
+      FixedFunction c = BuiltInFunctions.getLiteral(String.valueOf(obj), this,
+          obj);
       return new FuncAppTerm(c);
     }
   }
@@ -385,6 +394,8 @@ public class BuiltInTypes {
     addType(REAL_MATRIX);
     addType(INTEGER_ARRAY);
     addType(INTEGER_MATRIX);
+    addType(SET);
+    addType(ANY);
 
     // special treatment for NaturalNum
     // builtInTypes.put(NATURALNUM_TYPE_NAME, NATURAL_NUM);
