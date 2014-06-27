@@ -6,9 +6,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import blog.BLOGUtil;
 import blog.model.ArgSpec;
+import blog.model.ArgSpecQuery;
 import blog.model.Model;
+import blog.model.Queries;
 import blog.type.Timestep;
 
 /**
@@ -21,9 +22,10 @@ import blog.type.Timestep;
 public class TestArgSpec {
   @Test
   public void testMaxTimestep() {
-    Model model = Model
-        .fromString("random Boolean Weather(Timestep t) = true;");
-    ArgSpec a = BLOGUtil.parseArgSpec_NE("Weather(@13)", model);
+    Model model = Model.fromString("fixed Boolean Weather(Timestep t) = true;");
+    Queries queries = new Queries(model);
+    queries.addFromString("query Weather(@13);");
+    ArgSpec a = ((ArgSpecQuery) queries.get(0)).argSpec();
     assertEquals(Timestep.at(13), a.maxTimestep());
   }
 }
