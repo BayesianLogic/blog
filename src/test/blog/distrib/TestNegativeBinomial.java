@@ -4,8 +4,6 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -151,23 +149,6 @@ public class TestNegativeBinomial implements TestDistributions {
     nb.setParams(new Object[] { 5, null });
     nb.setParams(new Object[] { null, null });
     testNegativeBinomial2(nb);
-  }
-
-  @Test
-  public void testSetParamsIntegerArguments() {
-    NegativeBinomial nb = new NegativeBinomial();
-    try {
-      nb.setParams(new Object[] { 2, new Integer(1) });
-    } catch (ClassCastException ex) {
-      fail("An integer value of 1 is a valid 2nd argument, but isn't in the range of p");
-    } catch (IllegalArgumentException ex) {
-      assertTrue(true);
-    }
-  }
-
-  @Test
-  public void testGetProbIntegerArguments() {
-    // not needed
   }
 
 }

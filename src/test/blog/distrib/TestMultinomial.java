@@ -116,14 +116,4 @@ public class TestMultinomial implements TestDistributions {
         MatrixFactory.createRowVector(1, 1, 1, 1) });
     testMultinomial2(mult);
   }
-
-  @Test
-  public void testSetParamsIntegerArguments() {
-    // not needed
-  }
-
-  @Test
-  public void testGetProbIntegerArguments() {
-    // not needed
-  }
 }

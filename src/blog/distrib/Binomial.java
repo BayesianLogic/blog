@@ -43,7 +43,7 @@ import blog.common.Util;
  * k successes
  * P(k)= C(n,k) * p^k * (1-p)^(n-k).
  * 
- * @since June 25, 2014
+ * @since June 17, 2014
  */
 
 public class Binomial implements CondProbDistrib {
@@ -52,10 +52,10 @@ public class Binomial implements CondProbDistrib {
    * set parameters for binomial distribution
    * 
    * @param params
-   *          An array of the form: [Integer, Number]
+   *          An array of the form: [Integer, Double]
    *          <ul>
    *          <li>params[0]: <code>n</code> (Integer)</li>
-   *          <li>params[1]: <code>p</code> (Number)</li>
+   *          <li>params[1]: <code>p</code> (Double)</li>
    *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
@@ -65,7 +65,7 @@ public class Binomial implements CondProbDistrib {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected two parameters");
     }
-    setParams((Integer) params[0], (Number) params[1]);
+    setParams((Integer) params[0], (Double) params[1]);
   }
 
   /**
@@ -79,7 +79,7 @@ public class Binomial implements CondProbDistrib {
    *          <code>p</code> (probability of success); to be legal, must be a
    *          probability (0 <= p <= 1)
    */
-  public void setParams(Integer n, Number p) {
+  public void setParams(Integer n, Double p) {
     if (n != null) {
       if (n < 0) {
         throw new IllegalArgumentException(
@@ -89,12 +89,11 @@ public class Binomial implements CondProbDistrib {
       this.hasN = true;
     }
     if (p != null) {
-      double pDouble = p.doubleValue();
-      if (pDouble < 0 || pDouble > 1) {
+      if (p < 0 || p > 1) {
         throw new IllegalArgumentException(
             "parameter p for a binomial distribution must be a probability in the interval [0, 1]");
       }
-      this.p = pDouble;
+      this.p = p;
       this.hasP = true;
     }
   }

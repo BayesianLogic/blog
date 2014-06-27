@@ -142,9 +142,9 @@ public class Poisson implements CondProbDistrib {
    * set parameters for Poisson distribution
    * 
    * @param params
-   *          array of the form [Number]
+   *          array of the form [Double]
    *          <ul>
-   *          <li>params[0]: <code>lambda</code> (Number)</li>
+   *          <li>params[0]: <code>lambda</code> (Double)</li>
    *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
@@ -154,20 +154,20 @@ public class Poisson implements CondProbDistrib {
     if (params.length != 1) {
       throw new IllegalArgumentException("expected one parameter");
     }
-    setParams((Number) params[0]);
+    setParams((Double) params[0]);
   }
 
   /**
    * If the method parameter lambda is non-null and non-negative, set the
    * distribution parameter <code>lambda</code> to the method parameter lambda.
    */
-  public void setParams(Number lambda) {
+  public void setParams(Double lambda) {
     if (lambda != null) {
-      if (lambda.doubleValue() < 0) {
+      if (lambda < 0) {
         throw new IllegalArgumentException(
             "parameter lambda must be a nonnegative real");
       }
-      this.lambda = lambda.doubleValue();
+      this.lambda = lambda;
       this.hasLambda = true;
     }
   }
