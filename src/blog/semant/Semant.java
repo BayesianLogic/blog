@@ -11,6 +11,7 @@ import java.util.List;
 import blog.absyn.Absyn;
 import blog.absyn.ArrayTy;
 import blog.absyn.BooleanExpr;
+import blog.absyn.CaseExpr;
 import blog.absyn.Dec;
 import blog.absyn.DistinctSymbolDec;
 import blog.absyn.DistributionDec;
@@ -57,13 +58,14 @@ import blog.model.ArrayType;
 import blog.model.BuiltInFunctions;
 import blog.model.BuiltInTypes;
 import blog.model.CardinalitySpec;
-import blog.model.Clause;
+import blog.model.CaseSpec;
 import blog.model.ComparisonFormula;
 import blog.model.ComparisonFormula.Operator;
 import blog.model.ConjFormula;
 import blog.model.ConstantInterp;
 import blog.model.DependencyModel;
 import blog.model.DisjFormula;
+import blog.model.DistribSpec;
 import blog.model.EqualityFormula;
 import blog.model.Evidence;
 import blog.model.ExistentialFormula;
@@ -112,6 +114,7 @@ public class Semant {
   private Model model;
   private Evidence evidence;
   private Queries queries;
+  private boolean isFixedFuncBody;
 
   List<String> packages;
 
@@ -131,6 +134,7 @@ public class Semant {
     evidence = e;
     errorMsg = msg;
     queries = qs;
+    isFixedFuncBody = false;
     initialize();
   }
 
@@ -473,7 +477,9 @@ public class Semant {
           ((FixedFunction) fun).setInterpretation(constant);
         } else {
           // general expression as function body
+          isFixedFuncBody = true;
           Object funcBody = transExpr(e.body);
+          isFixedFuncBody = false;
           if (funcBody instanceof ArgSpec) {
             ArgSpec funcValue = (ArgSpec) funcBody;
             ((FixedFunction) fun).setBody(funcValue);
@@ -537,15 +543,14 @@ public class Semant {
 
   DependencyModel transDependency(Expr e, Type resTy, Object defVal) {
     Object body = transExpr(e);
-    List<Clause> cl = new ArrayList<Clause>(1);
+    ArgSpec cl = null;
     if (body instanceof Term || body instanceof Formula
         || body instanceof TupleSetSpec) {
-      cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-          .singletonList((ArgSpec) body)));
-    } else if (body instanceof Clause) {
-      cl.add((Clause) body);
-    } else if (e instanceof IfExpr) {
-      cl = (List<Clause>) body;
+      cl = new DistribSpec(EqualsCPD.class, (ArgSpec) body);
+    } else if (body instanceof CaseSpec) {
+      cl = (CaseSpec) body;
+    } else if (body instanceof DistribSpec) {
+      cl = (DistribSpec) body;
     } else {
       error(e.line, e.col, "invalid body of dependency clause");
     }
@@ -710,21 +715,39 @@ public class Semant {
     }
   }
 
-  Clause transToDistribution(FuncCallExpr e) {
+  DistribSpec transToDistribution(FuncCallExpr e) {
     Class<? extends CondProbDistrib> cls = getDistributionClass(e.func
         .toString());
     if (cls == null) {
       return null;
     }
 
-    List<ArgSpec> as = null;
+    List<ArgSpec> as = new LinkedList<ArgSpec>();
     if (e.args != null) {
       as = transExprList(e.args, true);
     }
 
-    Clause c = new Clause(TrueFormula.TRUE, cls, as);
+    DistribSpec c = new DistribSpec(cls, as);
     c.setLocation(e.line);
     return c;
+  }
+
+  CaseSpec transExpr(CaseExpr e) {
+    List<ArgSpec> probKeys = new ArrayList<ArgSpec>();
+    List<Object> probs = new ArrayList<Object>();
+    ExprTupleList mapExprs = e.clauses;
+    while (mapExprs != null) {
+      probKeys.add((ArgSpec) transExpr(mapExprs.from));
+      probs.add(transExpr(mapExprs.to));
+      mapExprs = mapExprs.next;
+    }
+    MapSpec m = new MapSpec(probKeys, probs);
+    Object t = transExpr(e.test);
+    if (!(t instanceof ArgSpec)) {
+      error(e.line, e.col, "Expression expected! but we get " + t.toString());
+      t = null;
+    }
+    return new CaseSpec((ArgSpec) t, m);
   }
 
   ArgSpec transExpr(DoubleExpr e) {
@@ -754,7 +777,13 @@ public class Semant {
     } else if (e instanceof TupleSetExpr) {
       return transExpr((TupleSetExpr) e);
     } else if (e instanceof IfExpr) {
+      if (isFixedFuncBody)
+        return transFixedIfExpr((IfExpr) e);
       return transExpr((IfExpr) e);
+    } else if (e instanceof CaseExpr) {
+      if (isFixedFuncBody)
+        return transFixedCaseExpr((CaseExpr) e);
+      return transExpr((CaseExpr) e);
     } else if (e instanceof OpExpr) {
       return transExpr((OpExpr) e);
     } else if (e instanceof FuncCallExpr) {
@@ -779,7 +808,7 @@ public class Semant {
 
   Object transExpr(FuncCallExpr e) {
     // now checking whether it is a distribution
-    Clause cl = transToDistribution(e);
+    DistribSpec cl = transToDistribution(e);
     if (cl != null) {
       return cl;
     }
@@ -843,36 +872,6 @@ public class Semant {
     }
   }
 
-  /**
-   * combine clauses from if
-   * 
-   * @param test
-   * @param value
-   * @param clauses
-   */
-  void combineFormula(Formula test, Object value, List<Clause> clauses) {
-    if (value instanceof Clause) {
-      Clause c = (Clause) value;
-      clauses.add(addTestConditionToClause(test, c));
-    } else if (value instanceof List<?>) {
-      for (Object v : ((List<?>) value)) {
-        Clause c = (Clause) v;
-        clauses.add(addTestConditionToClause(test, c));
-      }
-    } else {
-      // should be ArgSpec
-      clauses.add(new Clause(test, EqualsCPD.class, Collections
-          .singletonList((ArgSpec) value)));
-    }
-  }
-
-  private Clause addTestConditionToClause(Formula test, Clause c) {
-    Formula old = c.getCond();
-    Formula ne = createConjunction(test, old);
-    c.setCond(ne);
-    return c;
-  }
-
   private Formula createConjunction(Formula c1, Formula c2) {
     if (c2 == TrueFormula.TRUE)
       return c1;
@@ -881,50 +880,94 @@ public class Semant {
     return new ConjFormula(c1, c2);
   }
 
-  /**
-   * combine clauses from else
-   * 
-   * @param value
-   * @param clauses
-   */
-
-  void combineFormula(Object value, List<Clause> clauses) {
-    if (value instanceof Clause) {
-      clauses.add((Clause) value);
-    } else if (value instanceof List<?>) {
-      clauses.addAll((List<Clause>) value);
-    } else {
-      // should be ArgSpec
-      clauses.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-          .singletonList((ArgSpec) value)));
+  CaseSpec transExpr(IfExpr e) {
+    List<ArgSpec> probKeys = new ArrayList<ArgSpec>();
+    List<Object> probs = new ArrayList<Object>();
+    probKeys.add(TrueFormula.TRUE);
+    probs.add(transExpr(e.thenclause));
+    if (e.elseclause != null) {
+      probKeys.add(BuiltInTypes.BOOLEAN.getCanonicalTerm(false));
+      probs.add(transExpr(e.elseclause));
     }
-  }
-
-  List<Clause> transExpr(IfExpr e) {
-    ArrayList<Clause> clauses = new ArrayList<Clause>();
-    Formula test = TrueFormula.TRUE;
+    MapSpec m = new MapSpec(probKeys, probs);
 
     // TODO: write a test for the SymbolTerm case to exclude non-Boolean
     // variables/functions
     Object cond = transExpr(e.test);
+    ArgSpec t = TrueFormula.TRUE;
     if (cond instanceof Formula) {
-      test = (Formula) cond;
+      t = (Formula) cond;
     } else if (cond instanceof Term) {
-      test = new EqualityFormula((Term) cond,
-          BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+      t = (Term) cond;
     } else {
       error(e.test.line, e.test.col,
           "Cannot use non-Boolean value as predicate for if clause");
       System.exit(1);
     }
+    return new CaseSpec(t, m);
+  }
 
-    Object thenClause = transExpr(e.thenclause);
-    combineFormula(test, thenClause, clauses);
-    if (e.elseclause != null) {
-      Object elseClause = transExpr(e.elseclause);
-      combineFormula(elseClause, clauses);
+  FuncAppTerm transFixedIfExpr(IfExpr e) {
+    List<ArgSpec> args = new ArrayList<ArgSpec>();
+    ArgSpec test = (ArgSpec) transExpr(e.test);
+    if (test == null) {
+      error(e.test.line, e.test.col,
+          "Cannot use non-Boolean value as predicate for if expression");
+      System.exit(1);
     }
-    return clauses;
+    args.add(test);
+    args.add(BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
+    ArgSpec sub = (ArgSpec) transExpr(e.thenclause);
+    if (sub == null) {
+      error(e.thenclause.line, e.thenclause.col,
+          "Then clause for if expression in fixed funcion body must be an expression!");
+      System.exit(1);
+    }
+    args.add(sub);
+    if (e.elseclause != null) {
+      args.add(BuiltInTypes.BOOLEAN.getCanonicalTerm(false));
+      sub = (ArgSpec) transExpr(e.elseclause);
+      if (sub == null) {
+        error(e.elseclause.line, e.elseclause.col,
+            "Else clause for if expression in fixed funcion body must be an expression!");
+        System.exit(1);
+      }
+      args.add(sub);
+    }
+    FuncAppTerm t = new FuncAppTerm(BuiltInFunctions.CASE_EXPR_NAME,
+        args.toArray(new ArgSpec[args.size()]));
+    t.setLocation(e.line);
+    return t;
+  }
+
+  FuncAppTerm transFixedCaseExpr(CaseExpr e) {
+    List<ArgSpec> args = new ArrayList<ArgSpec>();
+    ArgSpec test = (ArgSpec) transExpr(e.test);
+    if (test == null) {
+      error(e.test.line, e.test.col,
+          "Cannot use non-Boolean value as predicate for case expression");
+      System.exit(1);
+    }
+    args.add(test);
+    ExprTupleList ptr = e.clauses;
+    while (ptr != null) {
+      ArgSpec from = (ArgSpec) transExpr(ptr.from);
+      ArgSpec to = (ArgSpec) transExpr(ptr.to);
+      if (from == null || to == null) {
+        error(
+            ptr.from.line,
+            ptr.from.col,
+            "The clause of case expression in the body of fixed function must be a pair of expressions");
+        System.exit(1);
+      }
+      args.add(from);
+      args.add(to);
+      ptr = ptr.next;
+    }
+    FuncAppTerm t = new FuncAppTerm(BuiltInFunctions.CASE_EXPR_NAME,
+        args.toArray(new ArgSpec[args.size()]));
+    t.setLocation(e.line);
+    return t;
   }
 
   ArgSpec transExpr(BooleanExpr e) {
