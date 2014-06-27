@@ -35,89 +35,124 @@
 
 package blog.distrib;
 
-import java.util.*;
-import blog.*;
+import java.util.Collection;
+
 import blog.common.Util;
 import blog.model.Model;
-import blog.model.Type;
-import blog.objgen.ObjectSet;
 
 /**
- * CPD that takes a set of objects (an instance of the ObjectSet interface) as
- * an argument, and defines a uniform distribution over this set.
+ * CPD that takes <code>S</code>, a set of objects (an instance of the
+ * ObjectSet interface), and defines a uniform distribution over this set.
+ * 
+ * @since June 17, 2014
  */
-public class UniformChoice extends AbstractCondProbDistrib {
-	/**
-	 * Creates a UniformChoice CPD. This constructor is not used by the parser,
-	 * which looks for a constructor taking a List as an argument. Instead, it's
-	 * used when we create a UniformChoice CPD in the program.
-	 */
-	public UniformChoice() {
-	}
+public class UniformChoice implements CondProbDistrib {
 
-	/**
-	 * Creates a UniformChoice CPD. The CPD takes no parameters.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if <code>params</code> is non-empty
-	 */
-	public UniformChoice(List params) {
-		if (!params.isEmpty()) {
-			throw new IllegalArgumentException(
-					"UniformChoice CPD does not take any parameters.");
-		}
-	}
+  /**
+   * set parameters for UniformChoice
+   * 
+   * @param params
+   *          an array of the form [ObjectSet]
+   *          <ul>
+   *          <li>params[0]: <code>S</code></li>
+   *          </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   */
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 1) {
+      throw new IllegalArgumentException("expected one parameter");
+    }
+    setParams((Collection<?>) params[0]);
+  }
 
-	/**
-	 * Takes a single argument, namely a set S. If S is non-empty, returns 1 / |S|
-	 * if <code>value</code> is in S, and otherwise 0. If S is empty, returns 1 if
-	 * the value is Model.NULL, and 0 otherwise.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if <code>args</code> contains anything other than a single
-	 *           argument of class ObjectSet.
-	 */
-	public double getProb(List args, Object value) {
-		ObjectSet s = processArgs(args);
-		// if (!s.contains(value)) {
-		// System.out.println("UniformChoice: " + value + " is not in " + s);
-		// System.out.println("Explicit version of set is: "
-		// + new ArrayList(s));
-		// }
-		if (s.isEmpty()) {
-			return (value == Model.NULL) ? 1 : 0;
-		}
-		return (s.contains(value) ? (1.0 / s.size()) : 0);
-	}
+  /**
+   * If the method parameter <code>set</code> is non-null, sets the distribution
+   * parameter <code>S</code> to <code>set</code>
+   * 
+   */
+  public void setParams(Collection<?> set) {
+    if (set != null) {
+      this.set = set;
+      elements = set.toArray();
+      this.hasS = true;
+      prob = set.isEmpty() ? 1 : 1.0 / set.size();
+      logprob = set.isEmpty() ? 0 : (-Math.log(set.size()));
+    }
+  }
 
-	/**
-	 * Takes a single argument, namely a finite set S. Returns an element of S
-	 * selected uniformly at random. If S is empty, returns Model.NULL.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if <code>args</code> contains anything other than a single
-	 *           argument of class ObjectSet.
-	 */
-	public Object sampleVal(List args, Type childType) {
-		ObjectSet s = processArgs(args);
-		if (s.isEmpty()) {
-			return Model.NULL;
-		}
-		int n = Util.randInt(s.size());
-		return s.sample(n);
-	}
+  private void checkHasParams() {
+    if (!this.hasS) {
+      throw new IllegalArgumentException("parameter S not provided");
+    }
+  }
 
-	private ObjectSet processArgs(List args) {
-		if (args.size() != 1) {
-			throw new IllegalArgumentException(
-					"UniformChoice CPD takes exactly one argument.");
-		}
-		if (!(args.get(0) instanceof ObjectSet)) {
-			throw new IllegalArgumentException(
-					"UniformChoice CPD takes an argument of class ObjectSet, "
-							+ "not one of " + args.get(0).getClass() + ".");
-		}
+  /**
+   * If <code>S</code> is non-empty, return 1 / |S| if <code>value</code> is in
+   * <code>S</code>, and otherwise 0. If <code>S</code> is empty, returns 1 if
+   * the value is Model.NULL, and 0 otherwise.
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    checkHasParams();
+    if (set.isEmpty()) {
+      return (value == Model.NULL) ? 1 : 0;
+    }
+    return (set.contains(value) ? prob : 0);
+  }
 
-		return (ObjectSet) args.get(0);
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    checkHasParams();
+    if (set.isEmpty()) {
+      return (value == Model.NULL) ? 0 : Double.NEGATIVE_INFINITY;
+    }
+    return (set.contains(value) ? logprob : Double.NEGATIVE_INFINITY);
+  }
+
+  /**
+   * Returns an element of <code>S</code> selected uniformly at random. If
+   * <code>S</code> is empty, returns Model.NULL.
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  @Override
+  public Object sampleVal() {
+    return sample_value();
+  }
+
+  /** Samples uniformly from <code>S</code>, a set of object. */
+  public Object sample_value() {
+    checkHasParams();
+    if (elements.length <= 0) {
+      return Model.NULL;
+    }
+    int n = Util.randInt(elements.length);
+    return elements[n];
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("UniformChoice(");
+    if (set != null) {
+      builder.append(set.toString());
+    }
+    builder.append(")");
+    return builder.toString();
+  }
+
+  private Object[] elements; // the elements to be sampled from
+  private Collection<?> set; // original collect of elements
+  private double prob; // pre-calculated probability
+  private double logprob; // pre-calculated log of probability
+  private boolean hasS;
 }

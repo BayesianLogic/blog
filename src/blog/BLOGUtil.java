@@ -11,6 +11,7 @@ import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
+import blog.distrib.CondProbDistrib;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.AtomicFormula;
@@ -397,7 +398,9 @@ public class BLOGUtil {
       PartialWorld world) {
     DependencyModel.Distrib distrib = var
         .getDistrib(new ClassicInstantiatingEvalContext(world));
-    return distrib.getCPD().getProb(distrib.getArgValues(), value);
+    CondProbDistrib cpd = distrib.getCPD();
+    cpd.setParams(distrib.getArgValues());
+    return cpd.getProb(value);
   }
 
   /**
