@@ -15,10 +15,10 @@ public class UniformReal implements CondProbDistrib {
    * set parameters for UniformReal distribution
    * 
    * @param params
-   *          An array of the form [Double, Double]
+   *          An array of the form [Number, Number]
    *          <ul>
-   *          <li>params[0]:<code>lower</code>(Double)</li>
-   *          <li>params[1]:<code>upper</code>(Double)</li>
+   *          <li>params[0]:<code>lower</code>(Number)</li>
+   *          <li>params[1]:<code>upper</code>(Number)</li>
    *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
@@ -27,7 +27,7 @@ public class UniformReal implements CondProbDistrib {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected two params: lower and upper");
     }
-    setParams((Double) params[0], (Double) params[1]);
+    setParams((Number) params[0], (Number) params[1]);
   }
 
   /**
@@ -36,13 +36,13 @@ public class UniformReal implements CondProbDistrib {
    * <code>lower</code> and <code>upper</code> have been set, checks to see that
    * <code>lower</code> < <code>upper</code>.
    */
-  public void setParams(Double lower, Double upper) {
+  public void setParams(Number lower, Number upper) {
     if (lower != null) {
-      this.lower = lower;
+      this.lower = lower.doubleValue();
       this.hasLower = true;
     }
     if (upper != null) {
-      this.upper = upper;
+      this.upper = upper.doubleValue();
       this.hasUpper = true;
     }
     if (this.hasLower && this.hasUpper) {
@@ -69,7 +69,7 @@ public class UniformReal implements CondProbDistrib {
    * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
    */
   public double getProb(Object value) {
-    return getProb(((Double) value).doubleValue());
+    return getProb(((Number) value).doubleValue());
   }
 
   /**
@@ -86,7 +86,7 @@ public class UniformReal implements CondProbDistrib {
    * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
    */
   public double getLogProb(Object value) {
-    return getLogProb(((Double) value).doubleValue());
+    return getLogProb(((Number) value).doubleValue());
   }
 
   /**
