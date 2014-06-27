@@ -160,4 +160,20 @@ public class TestBeta implements TestDistributions {
     testBeta(beta);
   }
 
+  @Test
+  public void testSetParamsIntegerArguments() {
+    Beta beta = new Beta();
+    beta.setParams(new Object[] { 1, 1 });
+    testBeta1_1(beta);
+  }
+
+  @Test
+  public void testGetProbIntegerArguments() {
+    Beta beta = new Beta();
+    beta.setParams(new Object[] { 1, 1 });
+    testBeta1_1(beta);
+    assertEquals(1.0, beta.getProb(0), ERROR);
+    assertEquals(0, beta.getLogProb(0), ERROR);
+  }
+
 }

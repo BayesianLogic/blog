@@ -5,7 +5,7 @@ class BlogLexer(RegexLexer):
   name = 'BLOG'
   aliases = ['blog']
   filenames = ['*.blog', '*.dblog']
-  operators = ['\\-\\>','=','~',':', '\\+', '\\-', '\\*', '/', '\\[', ']', 
+  operators = ['\\-\\>', ':', '\\+', '\\-', '\\*', '/', '\\[', ']', 
          '\\{', '}', '!', '\\<', '\\>', '\\<=', '\\>=', '==', '!=', 
          '&', '\\|', '=\\>', '#', '\\^', '%', '@']
   wordops = ['isEmptyString', 'succ', 'pred',
@@ -14,10 +14,10 @@ class BlogLexer(RegexLexer):
              'atan2', 'sum', 'vstack', 'eye', 'zeros', 
              'ones', 'toInt', 'toReal', 'diag', 'repmat', 
              'hstack', 'vstack', 'pi']
-  deliminators = [',', ';', '\\(', '\\)']
+  deliminators = [',', ';', '\\(', '\\)', '=', '~']
   keywords = ['extern','import','fixed','distinct','random','origin',
         'param','type', 'forall', 'exists', 'obs', 'query', 
-        'if', 'then', 'else', 'for']
+        'if', 'then', 'else', 'for', 'case', 'in']
   types = ['Integer','Real','Boolean','NaturalNum','List','Map',
            'Timestep','RealMatrix','IntegerMatrix']
   distribs = ['TabularCPD', 'Distribution','Gaussian',
