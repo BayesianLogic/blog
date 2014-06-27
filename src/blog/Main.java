@@ -447,7 +447,7 @@ public class Main {
     if (debug || verbose) {
       // Print model for debugging
       System.out.println("............................................");
-      model.print(System.out);
+      System.out.println(model);
       System.out.println("............................................");
 
       // Print evidence for debugging
