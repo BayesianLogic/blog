@@ -113,16 +113,15 @@ public class BooleanDistrib implements CondProbDistrib {
    * @param p
    *          probability of <code>true</code>
    */
-  public void setParams(Number p) {
+  public void setParams(Double p) {
     if (p != null) {
-      double pDouble = p.doubleValue();
-      if (pDouble > 1 || pDouble < 0) {
+      if (p > 1 || p < 0) {
         throw new IllegalArgumentException(
             "Parameter to Bernoulli must be in interval [0, 1], not " + p + ".");
       }
-      this.p = pDouble;
-      this.logP = Math.log(pDouble);
-      this.log1_P = Math.log(1 - pDouble);
+      this.p = p;
+      this.logP = Math.log(p);
+      this.log1_P = Math.log(1 - p);
       this.hasP = true;
     }
   }
@@ -141,7 +140,7 @@ public class BooleanDistrib implements CondProbDistrib {
       throw new IllegalArgumentException(
           "expected one parameter: probability of success");
     }
-    setParams((Number) params[0]);
+    setParams((Double) params[0]);
   }
 
   @Override

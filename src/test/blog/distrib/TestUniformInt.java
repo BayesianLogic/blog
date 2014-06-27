@@ -103,14 +103,4 @@ public class TestUniformInt implements TestDistributions {
     testUniformInt2(unif);
   }
 
-  @Test
-  public void testSetParamsIntegerArguments() {
-    // not needed
-  }
-
-  @Test
-  public void testGetProbIntegerArguments() {
-    // not needed
-  }
-
 }

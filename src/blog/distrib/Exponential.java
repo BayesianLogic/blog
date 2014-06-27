@@ -42,7 +42,7 @@ import blog.common.Util;
  * non-negative reals.
  * The probability of x is lambda * e^(-lambda*x).
  * 
- * @since June 26, 2014
+ * @since June 17, 2014
  */
 
 public class Exponential implements CondProbDistrib {
@@ -51,9 +51,9 @@ public class Exponential implements CondProbDistrib {
    * set parameters for Exponential distribution
    * 
    * @param params
-   *          An array of the form [Number]
+   *          An array of the form [Double]
    *          <ul>
-   *          <li>params[0]: <code>lambda</code> (Number)</li>
+   *          <li>params[0]: <code>lambda</code> (Double)</li>
    *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
@@ -63,7 +63,7 @@ public class Exponential implements CondProbDistrib {
     if (params.length != 1) {
       throw new IllegalArgumentException("expected one parameter");
     }
-    setParams((Number) params[0]);
+    setParams((Double) params[0]);
   }
 
   /**
@@ -71,15 +71,15 @@ public class Exponential implements CondProbDistrib {
    * distribution parameter <code>lambda</code> to the method parameter lambda.
    * 
    */
-  public void setParams(Number lambda) {
+  public void setParams(Double lambda) {
     if (lambda != null) {
-      if (lambda.doubleValue() <= 0) {
+      if (lambda <= 0) {
         throw new IllegalArgumentException(
             "parameter lambda for an exponential distribution must be a strictly positive real");
       }
       this.hasLambda = true;
-      this.lambda = lambda.doubleValue();
-      this.logLambda = Math.log(this.lambda);
+      this.lambda = lambda;
+      this.logLambda = Math.log(lambda);
     }
   }
 
@@ -96,7 +96,7 @@ public class Exponential implements CondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    return getProb(((Number) value).doubleValue());
+    return getProb(((Double) value).doubleValue());
   }
 
   /** Return the probability of <code>value</code>. */
@@ -116,7 +116,7 @@ public class Exponential implements CondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    return getLogProb(((Number) value).doubleValue());
+    return getLogProb(((Double) value).doubleValue());
   }
 
   /** Return the log probability of <code>value</code>. */

@@ -74,14 +74,4 @@ public class TestDiscrete implements TestDistributions {
     testDiscrete1(disc);
   }
 
-  @Test
-  public void testSetParamsIntegerArguments() {
-    // not needed
-  }
-
-  @Test
-  public void testGetProbIntegerArguments() {
-    // not needed
-  }
-
 }
