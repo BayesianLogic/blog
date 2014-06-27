@@ -1,0 +1,2 @@
+random Real x ~ UniformReal(1, 10);
+query x;
