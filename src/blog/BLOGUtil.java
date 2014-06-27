@@ -3,30 +3,18 @@ package blog;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
-import blog.bn.VarWithDistrib;
 import blog.common.Util;
-import blog.distrib.CondProbDistrib;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
-import blog.model.AtomicFormula;
-import blog.model.EqualityFormula;
 import blog.model.Evidence;
-import blog.model.Formula;
 import blog.model.Model;
-import blog.model.ModelEvidenceQueries;
-import blog.model.NegFormula;
 import blog.model.Queries;
-import blog.model.Term;
-import blog.model.ValueEvidenceStatement;
-import blog.parse.Parse;
 import blog.sample.AfterSamplingListener;
 import blog.sample.ClassicInstantiatingEvalContext;
 import blog.sample.InstantiatingEvalContext;
-import blog.semant.Semant;
 import blog.world.PartialWorld;
 
 /**
@@ -107,6 +95,19 @@ public class BLOGUtil {
   }
 
   /**
+   * Returns an ArgSpec parsed from a string description, according to a model.
+   */
+  public static ArgSpec parseArgSpec(String description, Model model) {
+    Queries queries = new Queries(model);
+    queries.addFromString(description);
+    if (queries.size() != 1) {
+      throw new IllegalArgumentException("Parsed " + queries.size()
+          + " queries instead of a single one");
+    }
+    return ((ArgSpecQuery) queries.get(0)).argSpec();
+  }
+
+  /**
    * Returns a collection with the BayesNetVars associated to a set of queries.
    */
   public static Collection getQueriesVars(Collection queries) {
@@ -116,243 +117,5 @@ public class BLOGUtil {
       result.add(var);
     }
     return result;
-  }
-
-  /**
-   * Parses description string of a model.
-   */
-  public static Model parseModel_NE(String description) {
-    return Model.fromString(description);
-  }
-
-  /**
-   * Parses description string of a list of queries, using model as background,
-   * and returns it.
-   * 
-   * @throws Exception
-   *           in case of a parsing error.
-   */
-  public static List parseQueries(String description, Model model)
-      throws Exception {
-    ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
-    return meq.queries;
-  }
-
-  /**
-   * Same as {@link #parseQueries(String, Model)} but terminating program rather
-   * than throwing an exception when there is an error.
-   */
-  public static List parseQueries_NE(String description, Model model) {
-    try {
-      ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
-      return meq.queries;
-    } catch (Exception e) {
-      Util.fatalError(e);
-    }
-    return null;
-  }
-
-  public static ModelEvidenceQueries parseAndTranslateFromString(Model m,
-      String description) {
-    Evidence dummyEvidence = new Evidence(m);
-    Queries dummyQueries = new Queries(m);
-    Parse parse = Parse.parseString(description);
-    Semant sem = new Semant(m, dummyEvidence, dummyQueries, parse.getErrorMsg());
-    sem.transProg(parse.getResult());
-    return sem.getModelEvidenceQueries();
-  }
-
-  /**
-   * Parses description string of a query, using model as background, and
-   * returns the query. Assumes there is only one query in the string.
-   * 
-   * @throws Exception
-   *           in case of a parsing error.
-   */
-  public static ArgSpecQuery parseQuery(String description, Model model)
-      throws Exception {
-    ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
-    return (ArgSpecQuery) Util.getFirst(meq.queries);
-  }
-
-  /**
-   * Same as {@link #parseQuery(String, Model)} but terminating program rather
-   * than throwing an exception when there is an error.
-   */
-  public static ArgSpecQuery parseQuery_NE(String description, Model model) {
-    try {
-      ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
-      return (ArgSpecQuery) Util.getFirst(meq.queries);
-    } catch (Exception e) {
-      Util.fatalError(e);
-    }
-    return null;
-  }
-
-  /**
-   * Parses description string of evidence, using model as background, and
-   * returns the evidence.
-   * 
-   * @throws Exception
-   *           in case of a parsing error.
-   */
-  public static Evidence parseEvidence(String description, Model model)
-      throws Exception {
-    ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
-    meq.evidence.compile();
-    return meq.evidence;
-  }
-
-  /**
-   * Same as {@link #parseEvidence(String, Model)} but terminating program
-   * rather than throwing an exception when there is an error.
-   */
-  public static Evidence parseEvidence_NE(String description, Model model) {
-    try {
-      ModelEvidenceQueries meq = parseAndTranslateFromString(model, description);
-      return meq.evidence;
-    } catch (Exception e) {
-      Util.fatalError(e);
-    }
-    return null;
-  }
-
-  public static ValueEvidenceStatement parseValueEvidenceStatement_NE(
-      String description, Model model) {
-    Evidence evidence = parseEvidence_NE(description, model);
-    if (evidence.getValueEvidence().size() == 1
-        && evidence.getSymbolEvidence().size() == 0)
-      return (ValueEvidenceStatement) Util
-          .getFirst(evidence.getValueEvidence());
-    Util.fatalError(description + " is not a ValueEvidenceStatement.");
-    return null;
-  }
-
-  /**
-   * Returns a variable parsed from a string description, according to a model.
-   */
-  public static BayesNetVar parseVariable(String description, Model model)
-      throws Exception {
-    return parseQuery("query " + description + ";", model).getVariable();
-  }
-
-  /**
-   * Returns a variable parsed from a string description, according to a model,
-   * issuing an error if an exception is raised.
-   */
-  public static BayesNetVar parseVariable_NE(String description, Model model) {
-    return parseQuery_NE("query " + description + ";", model).getVariable();
-  }
-
-  /**
-   * Returns a BasicVar parsed from a string description, according to a model.
-   */
-  public static BasicVar parseBasicVar(String description, Model model)
-      throws Exception {
-    return (BasicVar) parseVariable(description, model);
-  }
-
-  /**
-   * Returns a BasicVar parsed from a string description, according to a model,
-   * issuing an error if an exception is raised.
-   */
-  public static BasicVar parseBasicVar_NE(String description, Model model) {
-    return (BasicVar) parseVariable_NE(description, model);
-  }
-
-  /**
-   * Returns a VarWithDistrib parsed from a string description, according to a
-   * model.
-   */
-  public static VarWithDistrib parseVarWithDistrib(String description,
-      Model model) throws Exception {
-    return (VarWithDistrib) parseVariable(description, model);
-  }
-
-  /**
-   * Returns a VarWithDistrib parsed from a string description, according to a
-   * model, issuing an error if an exception is raised.
-   */
-  public static VarWithDistrib parseVarWithDistrib_NE(String description,
-      Model model) {
-    return (VarWithDistrib) parseVariable_NE(description, model);
-  }
-
-  /**
-   * Returns an ArgSpec parsed from a string description, according to a model.
-   */
-  public static ArgSpec parseArgSpec(String description, Model model)
-      throws Exception {
-    ArgSpecQuery query = parseQuery("query " + description + ";", model);
-    return query.argSpec();
-  }
-
-  /**
-   * Returns an ArgSpec parsed from a string description, according to a model,
-   * returning null if parse fails.
-   */
-  public static ArgSpec parseArgSpec_NE(String description, Model model) {
-    ArgSpecQuery query = parseQuery_NE("query " + description + ";", model);
-    if (query == null)
-      return null;
-    return query.argSpec();
-  }
-
-  public static Term parseTerm_NE(String description, Model model) {
-    return (Term) parseArgSpec_NE(description, model);
-  }
-
-  /**
-   * Returns a formula parsed from a string according to a model - THIS METHOD
-   * STILL DOESNT WORK FOR ALL CASES.
-   */
-  public static Formula parseFormula(String description, Model model)
-      throws Exception {
-    ArgSpec argSpec = parseArgSpec(description, model);
-    if (argSpec instanceof Formula)
-      return (Formula) argSpec;
-    if (argSpec instanceof Term)
-      return new AtomicFormula((Term) argSpec);
-    throw new Exception(description + " not a formula, but a "
-        + argSpec.getClass());
-  }
-
-  /**
-   * Returns a formula parsed from a string according to a model.
-   */
-  public static Formula parseFormula_NE(String description, Model model) {
-    try {
-      Formula formula = parseFormula(description, model);
-      return formula;
-    } catch (Exception e) {
-      Util.fatalError(e);
-    }
-    return null;
-  }
-
-  public static Formula parseLiteral(String description, Model model)
-      throws Exception {
-    Formula formula = parseFormula(description, model);
-    if (isAtomicOrEquality(formula)
-        || (formula instanceof NegFormula && isAtomicOrEquality(((NegFormula) formula)
-            .getNeg())))
-      return formula;
-
-    throw new Exception(description + " not a literal.");
-  }
-
-  public static Formula parseLiteral_NE(String description, Model model) {
-    try {
-      Formula formula = parseLiteral(description, model);
-      return formula;
-    } catch (Exception e) {
-      Util.fatalError(e);
-    }
-    return null;
-  }
-
-  private static boolean isAtomicOrEquality(Formula formula) {
-    return formula instanceof AtomicFormula
-        || formula instanceof EqualityFormula;
   }
 }
