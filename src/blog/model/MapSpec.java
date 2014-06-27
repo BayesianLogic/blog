@@ -2,13 +2,11 @@ package blog.model;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import blog.common.UnaryProcedure;
-import blog.distrib.EqualsCPD;
 import blog.sample.EvalContext;
 
 /**
@@ -72,16 +70,12 @@ public class MapSpec extends ArgSpec {
         if (o instanceof Term) {
           Term t = (Term) o;
           errors += t.compile(callStack);
-        } else if (o instanceof DistribSpec) {
-          DistribSpec d = (DistribSpec) o;
-          errors += d.compile(callStack);
-        } else if (o instanceof CaseSpec) {
-          CaseSpec c = (CaseSpec) o;
+        } else if (o instanceof Clause) {
+          Clause c = (Clause) o;
           errors += c.compile(callStack);
         } else {
-          throw new IllegalArgumentException(
-              "Map values must "
-                  + "either be terms or clauses (if-then-else, case, distributions)!");
+          throw new IllegalArgumentException("Map values must "
+              + "either be terms or clauses!");
         }
       }
 
@@ -97,15 +91,15 @@ public class MapSpec extends ArgSpec {
   /**
 	 * 
 	 */
-  public Map<Object, Object> evaluate(EvalContext context) {
+  public Object evaluate(EvalContext context) {
+    if (!containsRandomSymbol())
+      return map;
     HashMap<Object, Object> newmap = new HashMap<Object, Object>();
     for (Map.Entry<ArgSpec, Object> entry : map.entrySet()) {
       Object k = entry.getKey().evaluate(context);
       Object v = entry.getValue();
-      if ((v instanceof Term) || (v instanceof Formula)
-          || (v instanceof TupleSetSpec)) {
-        if (!((ArgSpec) v).containsRandomSymbol())
-          v = ((ArgSpec) v).evaluate(context); // We only evaluate fixed value
+      if (v instanceof ArgSpec) {
+        v = ((ArgSpec) v).evaluate(context);
       }
       newmap.put(k, v);
     }
@@ -150,29 +144,6 @@ public class MapSpec extends ArgSpec {
     return false;
   }
 
-  /*
-   * This will be called in CaseSpec
-   * We call this method to ensure that all the value of this map
-   * will be a distribSpec
-   * No Term is allowed here!
-   * 
-   * @return: recompile and return the number of errors
-   */
-  public int enforceDistribSpec() {
-    int errors = 0;
-    for (int i = 0; i < keys.size(); ++i) {
-      if ((values.get(i) instanceof Term) || (values.get(i) instanceof Formula)
-          || (values.get(i) instanceof TupleSetSpec)) {
-        ArgSpec t = (ArgSpec) values.get(i);
-        DistribSpec dis = new DistribSpec(EqualsCPD.class, t);
-        errors += dis.initCPD();
-        values.set(i, dis);
-        map.put(keys.get(i), dis);
-      }
-    }
-    return errors;
-  }
-
   public boolean checkTypesAndScope(Model model, Map scope) {
     return checkTypesAndScope(model, scope, null);
   }
@@ -186,7 +157,12 @@ public class MapSpec extends ArgSpec {
     }
 
     for (Object val : values) {
-      if (val instanceof ArgSpec) {
+      if (val instanceof Clause) {
+        Clause c = (Clause) val;
+        if (!c.checkTypesAndScope(model, scope, childType)) {
+          return false;
+        }
+      } else if (val instanceof ArgSpec) {
         ArgSpec as = (ArgSpec) val;
         if (!as.checkTypesAndScope(model, scope)) {
           return false;
@@ -201,21 +177,6 @@ public class MapSpec extends ArgSpec {
    * any.
    */
   public ArgSpec find(Term t) {
-    if (this.equals(t))
-      return this;
-    ArgSpec ret = null;
-    for (ArgSpec key : keys) {
-      ret = key.find(t);
-      if (ret != null)
-        return ret;
-    }
-    for (Object val : values) {
-      if (val instanceof ArgSpec) {
-        ret = ((ArgSpec) val).find(t);
-        if (ret != null)
-          return ret;
-      }
-    }
     return null;
   }
 
@@ -224,13 +185,6 @@ public class MapSpec extends ArgSpec {
    * predicate to a given collection.
    */
   public void applyToTerms(UnaryProcedure procedure) {
-    for (ArgSpec key : keys)
-      key.applyToTerms(procedure);
-    for (Object val : values) {
-      if (val instanceof ArgSpec) {
-        ((ArgSpec) val).applyToTerms(procedure);
-      }
-    }
   }
 
   /**
@@ -239,23 +193,7 @@ public class MapSpec extends ArgSpec {
    * this is compiled.
    */
   public ArgSpec replace(Term t, ArgSpec another) {
-    List<ArgSpec> newKeys = new LinkedList<ArgSpec>();
-    for (ArgSpec key : keys) {
-      newKeys.add(key.replace(t, another));
-    }
-    List<Object> newValues = new LinkedList<Object>();
-    for (Object val : values) {
-      if (val instanceof ArgSpec) {
-        newValues.add(((ArgSpec) val).replace(t, another));
-      } else
-        newValues.add(val);
-    }
-    if (newKeys.equals(keys) && newValues.equals(values))
-      return this;
-    MapSpec mp = new MapSpec(newKeys, newValues);
-    if (compiled)
-      mp.compile(new LinkedHashSet());
-    return mp;
+    return null;
   }
 
   /**
@@ -267,18 +205,7 @@ public class MapSpec extends ArgSpec {
    * being applied.
    */
   public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
-    List<ArgSpec> newKeys = new LinkedList<ArgSpec>();
-    for (ArgSpec key : keys) {
-      newKeys.add(key.getSubstResult(subst, boundVars));
-    }
-    List<Object> newValues = new LinkedList<Object>();
-    for (Object val : values) {
-      if (val instanceof ArgSpec) {
-        newValues.add(((ArgSpec) val).getSubstResult(subst, boundVars));
-      } else
-        newValues.add(val);
-    }
-    return new MapSpec(newKeys, newValues);
+    return null;
   }
 
   public String toString() {

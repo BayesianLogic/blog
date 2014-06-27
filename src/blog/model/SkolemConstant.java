@@ -86,9 +86,11 @@ public class SkolemConstant extends RandomFunction {
     List cpdArgs = new ArrayList();
     cpdArgs.add(newSetSpec);
 
-    DistribSpec clause = new DistribSpec(UniformChoice.class, cpdArgs);
+    Clause clause = new Clause(TrueFormula.TRUE, UniformChoice.class, cpdArgs);
+    List clauseList = new ArrayList();
+    clauseList.add(clause);
 
     setArgVars(Collections.<String> emptyList()); // no arguments
-    setDepModel(new DependencyModel(clause, setSpec.getType(), Model.NULL));
+    setDepModel(new DependencyModel(clauseList, setSpec.getType(), Model.NULL));
   }
 }
