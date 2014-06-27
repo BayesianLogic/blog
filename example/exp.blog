@@ -15,7 +15,7 @@ random Real f ~ exp(e);
 query f;
 
 // exponential of a matrix
-fixed RealMatrix mu = [0; 0];
+fixed RealMatrix mu = [0, 0];
 random RealMatrix z ~ MultivarGaussian(mu, 1.0 * eye(2));
 random RealMatrix x ~ exp(z);
 query x;
