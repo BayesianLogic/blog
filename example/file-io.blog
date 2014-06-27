@@ -3,7 +3,7 @@
 
 // This matrix was generated from Python with:
 // a = np.eye(3)
-// savetxt("matrix-from-numpy.txt", a)
+// np.savetxt("matrix-from-numpy.txt", a)
 
 fixed RealMatrix a = loadRealMatrix("example/matrix-from-numpy.txt");
 query a;
