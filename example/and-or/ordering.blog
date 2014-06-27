@@ -6,8 +6,8 @@ random Integer Start(Integer n)
     ~ UniformInt(minVal, maxVal);
 
 
-random Boolean nooverlap
-    = (forall Integer i
+random Boolean nooverlap ~
+      (forall Integer i
       	  (i < maxIntervals =>
 	      (forall Integer j
 	          (i != j & j < maxIntervals) =>

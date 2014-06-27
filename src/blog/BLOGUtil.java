@@ -9,6 +9,7 @@ import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
+import blog.distrib.CondProbDistrib;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.AtomicFormula;

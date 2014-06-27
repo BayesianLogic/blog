@@ -35,78 +35,86 @@
 
 package blog.distrib;
 
-import java.util.List;
-
-import blog.common.Util;
-import blog.model.Type;
-
 /**
- * A distribution over {0,1}. It takes one parameter, which is the probability
+ * A distribution over {0,1}. It takes one parameter <code>p</code>, which is
+ * the probability
  * of <code>true</code>.
+ * 
+ * The actual implementation relies on BooleanDistrib.
+ * 
+ * @see blog.distrib.BooleanDistrib.
+ * 
+ * @author cgioia
+ * @since June 17, 2014
  */
-public class Bernoulli extends AbstractCondProbDistrib {
+public class Bernoulli implements CondProbDistrib {
 
-  public Bernoulli(List params) {
-    if (params.size() != 1) {
-      throw new IllegalArgumentException(
-          "Binary Bernoulli distribution requires exactly one parameter, "
-              + "not " + params.size() + ".");
-    }
-    Object param_obj = params.get(0);
-    if (!(param_obj instanceof Number)) {
-      throw new IllegalArgumentException(
-          "Parameter to Binary Bernoulli distrib must be of class Number, "
-              + "not " + param_obj.getClass() + ".");
-    }
-
-    pi = ((Number) param_obj).doubleValue();
-    if ((pi < 0) || (pi > 1)) {
-      throw new IllegalArgumentException(
-          "Parameter to Binary Bernoulli must be in interval [0, 1], not " + pi
-              + ".");
-    }
+  public Bernoulli() {
+    booldist = new BooleanDistrib();
   }
 
-  public double getProb(List args, Object value) {
-    if (args.size() != 0) {
-      throw new IllegalArgumentException(
-          "Binary Bernoulli distribution takes zero arguments, not "
-              + args.size() + ".");
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    if (value.equals(1)) {
+      return booldist.getProb(true);
+    } else if (value.equals(0)) {
+      return booldist.getProb(false);
     }
-    if (!(value instanceof Integer)) {
-      throw new IllegalArgumentException(
-          "Binary Bernoulli distribution is over objects of class Integer, "
-              + "not " + value.getClass() + ".");
-    }
-
-    int int_value = ((Integer) value).intValue();
-
-    if (!((int_value == 0) || (int_value == 1))) {
-      throw new IllegalArgumentException(
-          "Binary Bernoulli distribution is over the set {0,1}; passed value: "
-              + value.getClass() + ".");
-
-    }
-
-    if (int_value == 1) {
-      return pi;
-    }
-    return (1 - pi);
+    return 0.0;
   }
 
-  public Object sampleVal(List args, Type childType) {
-    if (args.size() != 0) {
-      throw new IllegalArgumentException(
-          "Binary Bernoulli distribution takes zero arguments, not "
-              + args.size() + ".");
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    if (value.equals(1)) {
+      return booldist.getLogProb(true);
+    } else if (value.equals(0)) {
+      return booldist.getLogProb(false);
     }
-
-    if (Util.random() < pi) {
-      return new Integer(1);
-    }
-    return new Integer(0);
+    return Double.NEGATIVE_INFINITY;
   }
 
-  private double pi;
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  @Override
+  public Object sampleVal() {
+    return ((Boolean) booldist.sampleVal()) ? 1 : 0;
+  }
+
+  /**
+   * set parameters for Bernoulli distribution
+   * 
+   * @param params
+   *          An array of a single double
+   *          params[0]: <code>p</code>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
+   */
+  @Override
+  public void setParams(Object[] params) {
+    booldist.setParams(params);
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getName();
+  }
+
+  /**
+   * Actual holder of underlying boolean distribution.
+   */
+  private BooleanDistrib booldist;
 
 }

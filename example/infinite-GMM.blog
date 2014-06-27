@@ -18,23 +18,17 @@ fixed Real[][] var_obs = [4, 0; 0, 4];
  * Here we use a MultivarGaussian distribution with three parameters: 
  * the dimension, mean, and covariance matrix.
  */
-random Real[] Theta(Component c) {
-   ~  MultivarGaussian(mean_of_means, var_of_means)
-};
+random Real[] Theta(Component c) ~ MultivarGaussian(mean_of_means, var_of_means);
 
-random Component Z(Integer n) {
-   ~ UniformChoice({Component c})
-};
+random Component Z(Integer n) ~ UniformChoice({Component c});
 
 /*
  * Here we use a MultivarGaussian distribution with only two fixed 
  * parameters, the dimension and the covariant argument. 
  * The random variable Theta(Z(n)) is interpreted as the mean.  
  */
-random Real[] X(Integer n) {
-	if Z(n) != null 
-        then ~ MultivarGaussian(Theta(Z(n)), var_obs)
-};
+random Real[] X(Integer n) ~
+	if Z(n) != null then MultivarGaussian(Theta(Z(n)), var_obs);
 
 /* Evidence for the Gaussian mixture model.  These are 
  * 100 observations from a world-generation run (using the inference

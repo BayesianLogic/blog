@@ -40,6 +40,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import blog.distrib.UniformChoice;
+
 /**
  * Represents a skolem constant -- a constant introduced by symbol evidence
  * statements.
@@ -84,8 +86,7 @@ public class SkolemConstant extends RandomFunction {
     List cpdArgs = new ArrayList();
     cpdArgs.add(newSetSpec);
 
-    Clause clause = new Clause(TrueFormula.TRUE,
-        new blog.distrib.UniformChoice(), cpdArgs);
+    Clause clause = new Clause(TrueFormula.TRUE, UniformChoice.class, cpdArgs);
     List clauseList = new ArrayList();
     clauseList.add(clause);
 

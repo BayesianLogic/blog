@@ -2021,7 +2021,25 @@ public class Util {
         / (currentTotalWeight + weight);
   }
 
+  /**
+   * Returns true if <code>number</code> is really close to zero. Uses global
+   * constant <code>APPROXIMATE_ZERO</code> as the threshold.
+   */
+  public static boolean closeToZero(double number) {
+    /**
+     * For all intents and purposes, numbers below this constant are considered
+     * zero in terms of floating point. The use case for this is when the sum of
+     * a vector of unnormalized probabilities is too small to effectively
+     * normalize using floating point precision.
+     * note a single precision can represent up to 1E-38
+     * double precision 1E-308
+     */
+    final double APPROXIMATE_ZERO = 1e-20;
+    return (number < APPROXIMATE_ZERO) && (number > -1 * APPROXIMATE_ZERO);
+  }
+
   private static Random rand;
   private static boolean verbose = false;
   private static boolean print = false;
+
 }

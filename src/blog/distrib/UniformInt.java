@@ -35,82 +35,154 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
-import blog.model.Type;
 
 /**
  * Uniform distribution over a range of integers. This distribution has two
- * parameters: the lower end of the range and the upper end of the range. The
+ * parameters: <code>lower</code>, which indicates the lower end of the range
+ * and <code>upper</code>, which indicates upper end of the range. The
  * range is inclusive (it includes the upper and lower ends).
+ * 
+ * @since June 11, 2014
  */
-public class UniformInt extends AbstractCondProbDistrib {
+public class UniformInt implements CondProbDistrib {
+
   /**
-   * Interprets the parameters as a pair of integers (lower, upper) and creates
-   * a uniform distribution over the range {lower, ..., upper}.
+   * set parameters for UniformInt
+   * distribution
    * 
-   * @throws IllegalArgumentException
-   *           if params does not consist of exactly two Integer objects, or if
-   *           lower > upper
+   * @param params
+   *          An array of [Integer, Integer]
+   *          <ul>
+   *          <li>params[0]: <code>lower</code> (Integer)</li>
+   *          <li>params[1]: <code>upper</code> (Integer)</li>
+   *          </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
    */
-  public UniformInt(List params) {
-    try {
-      lower = ((Number) params.get(0)).intValue();
-      upper = ((Number) params.get(1)).intValue();
-      if ((lower > upper) || (params.size() > 2)) {
-        throw new IllegalArgumentException();
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 2) {
+      throw new IllegalArgumentException("expected two parameters");
+    }
+    setParams((Integer) params[0], (Integer) params[1]);
+  }
+
+  /**
+   * For a non-null value of method parameter lower, sets the
+   * distribution parameter <code>lower</code> to method parameter lower.
+   * Similarly for <code>upper</code>. Then checks to see if assignment of
+   * parameters is legal. In other words, an assignment of parameters is legal
+   * if <code>lower <= upper</code>.
+   * 
+   * @param lower
+   *          parameter <code>lower</code>
+   * @param upper
+   *          parameter <code>upper</code>
+   */
+  public void setParams(Integer lower, Integer upper) {
+    if (lower != null) {
+      this.lower = lower;
+      this.hasLower = true;
+    }
+    if (upper != null) {
+      this.upper = upper;
+      this.hasUpper = true;
+    }
+    if (this.hasLower && this.hasUpper) {
+      if (this.lower > this.upper) {
+        throw new IllegalArgumentException(
+            "UniformInt distribution requires that lower <= upper");
       }
-    } catch (RuntimeException e) {
-      throw new IllegalArgumentException(
-          "UniformInt CPD expects two integer arguments "
-              + "[lower, upper] with lower <= upper.  Got: " + params);
+      this.prob = 1.0 / (this.upper - this.lower + 1);
+      this.logProb = Math.log(this.prob);
     }
+  }
+
+  private void checkHasParams() {
+    if (!this.hasLower) {
+      throw new IllegalArgumentException("parameter lower not provided");
+    }
+    if (!this.hasUpper) {
+      throw new IllegalArgumentException("parameter upper not provided");
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    return getProb(((Integer) value).intValue());
   }
 
   /**
-   * Returns 1 / (upper - lower + 1) if the given integer is in the range of
-   * this distribution, otherwise returns zero. Takes no arguments.
-   * 
-   * @throws IllegalArgumentException
-   *           if <code>args</code> is non-empty or <code>value</code> is not an
-   *           Integer
+   * Returns the probability of the UniformInt distribution having outcome
+   * <code>value</code>.
    */
-  public double getProb(List args, Object value) {
-    if (!args.isEmpty()) {
-      throw new IllegalArgumentException(
-          "UniformInt CPD does not take any arguments.");
-    }
-    if (!(value instanceof Integer)) {
-      throw new IllegalArgumentException(
-          "UniformInt CPD defines distribution over objects of class "
-              + "Integer, not " + value.getClass() + ".");
-    }
-    int x = ((Integer) value).intValue();
+  public double getProb(int value) {
+    checkHasParams();
+    return (value >= lower) && (value <= upper) ? prob : 0;
+  }
 
-    if ((x >= lower) && (x <= upper)) {
-      return 1.0 / (upper - lower + 1);
-    }
-    return 0;
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    return getLogProb(((Integer) value).intValue());
   }
 
   /**
-   * Returns a sample from this distribution.
-   * 
-   * @throws IllegalArgumentException
-   *           if <code>args</code> is non-empty
+   * Returns the log probability of the UniformInt distribution having outcome
+   * <code>value</code>.
    */
-  public Object sampleVal(List args, Type childType) {
-    if (!args.isEmpty()) {
-      throw new IllegalArgumentException(
-          "UniformInt CPD does not take any arguments.");
-    }
-
-    // rely on the fact that Util.random() returns a value in [0, 1)
-    double x = lower + Math.floor(Util.random() * (upper - lower + 1));
-    return new Integer((int) x);
+  public double getLogProb(int value) {
+    checkHasParams();
+    return ((value >= lower) && (value <= upper)) ? logProb
+        : Double.NEGATIVE_INFINITY;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  @Override
+  public Object sampleVal() {
+    return sample_value();
+  }
+
+  public int sample_value() {
+    checkHasParams();
+    return lower + Util.randInt(upper - lower + 1);
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getName();
+  }
+
+  /** Parameter <code>lower</code>. */
   private int lower;
+  /** Flag indicating whether <code>lower</code> has been set. */
+  private boolean hasLower;
+  /** Parameter <code>upper</code>. */
   private int upper;
+  /** Flag indicating whether <code>upper</code> has been set. */
+  private boolean hasUpper;
+  /**
+   * The probability of an outcome between <code>lower</code> and
+   * <code>upper</code> inclusive.
+   */
+  private double prob;
+  /**
+   * The log probability of an outcome between <code>lower</code> and
+   * <code>upper</code> inclusive.
+   */
+  private double logProb;
 }
