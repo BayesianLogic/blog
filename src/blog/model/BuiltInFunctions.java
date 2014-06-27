@@ -491,7 +491,7 @@ public class BuiltInFunctions {
   /**
    * Load RealMatrix from space-separeted text file.
    */
-  public static NonRandomFunction LOAD_REAL_MATRIX;
+  public static FixedFunction LOAD_REAL_MATRIX;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -1487,8 +1487,8 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(BuiltInTypes.STRING);
     retType = BuiltInTypes.REAL_MATRIX;
-    LOAD_REAL_MATRIX = new NonRandomFunction(LOAD_REAL_MATRIX_NAME, argTypes,
-      retType, loadRealMatrixInterp);
+    LOAD_REAL_MATRIX = new FixedFunction(LOAD_REAL_MATRIX_NAME, argTypes,
+        retType, loadRealMatrixInterp);
     addFunction(LOAD_REAL_MATRIX);
 
     /**
