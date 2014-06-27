@@ -35,13 +35,12 @@
 
 package blog.sample;
 
-import java.util.List;
 import java.util.Properties;
 
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
-import blog.model.Query;
+import blog.model.Queries;
 import blog.world.PartialWorld;
 
 /**
@@ -87,7 +86,7 @@ public abstract class Sampler {
    * @param queries
    *          List of Query objects
    */
-  public void initialize(Evidence evidence, List<Query> queries) {
+  public void initialize(Evidence evidence, Queries queries) {
     this.evidence = evidence;
     this.queries = queries;
   }
@@ -167,5 +166,5 @@ public abstract class Sampler {
    * <code>initialize</code>, but extending classes may have methods to increase
    * it) or null if <code>initialize</code> has not been called.
    */
-  protected List<Query> queries;
+  protected Queries queries;
 }

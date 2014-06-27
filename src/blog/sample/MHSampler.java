@@ -37,7 +37,6 @@ package blog.sample;
 
 import java.lang.reflect.Constructor;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -47,7 +46,7 @@ import blog.common.Timer;
 import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
-import blog.model.Query;
+import blog.model.Queries;
 import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;
 
@@ -86,7 +85,7 @@ public class MHSampler extends Sampler {
   /** Method responsible for initializing the proposer field. */
   protected void constructProposer(Properties properties) {
     String proposerClassName = properties.getProperty("proposerClass",
-        "blog.GenericProposer");
+        "blog.sample.GenericProposer");
     System.out.println("Constructing M-H proposer of class "
         + proposerClassName);
 
@@ -103,7 +102,7 @@ public class MHSampler extends Sampler {
   }
 
   @Override
-  public void initialize(Evidence evidence, List<Query> queries) {
+  public void initialize(Evidence evidence, Queries queries) {
     super.initialize(evidence, queries);
 
     ++numTrials;
@@ -134,16 +133,12 @@ public class MHSampler extends Sampler {
     }
   }
 
-  public void setWorld(PartialWorld w) {
-    if (w instanceof PartialWorldDiff)
-      curWorld = (PartialWorldDiff) w;
-    else
-      curWorld = new PartialWorldDiff(w);
-  }
-
-  /** For MH samplers, same as {@link #setWorld(PartialWorld)}. */
   public void setBaseWorld(PartialWorld world) {
-    setWorld(world);
+    if (world instanceof PartialWorldDiff) {
+      curWorld = (PartialWorldDiff) world;
+    } else {
+      curWorld = new PartialWorldDiff(world);
+    }
   }
 
   /**
@@ -180,10 +175,12 @@ public class MHSampler extends Sampler {
     // Compute the acceptance probability
     acceptProbTimer.start();
     double logProbRatio = computeLogProbRatio(curWorld.getSaved(), curWorld);
+    latestLogProbRatio = logProbRatio;
     if (Util.verbose()) {
       System.out.println("\tlog probability ratio: " + logProbRatio);
     }
     double logAcceptRatio = logProbRatio + logProposalRatio;
+    latestLogAcceptRatio = logAcceptRatio;
     if (Util.verbose()) {
       System.out.println("\tlog acceptance ratio: " + logAcceptRatio);
     }
@@ -192,10 +189,6 @@ public class MHSampler extends Sampler {
     // Accept or reject proposal
     if ((logAcceptRatio >= 0) || (Util.random() < Math.exp(logAcceptRatio))) {
       worldUpdateTimer.start();
-      // ensureQueriesAreDetAndSupported(); // this is not part of the MH
-      // algorithm, but sampling done on top of it. Since this sampling is done
-      // according to the model's distribution, it still converges to it.
-      // I moved this to SamplingEngine to keep the MHSampler's "purity".
       curWorld.save();
       worldUpdateTimer.stop();
       if (Util.verbose()) {
@@ -203,27 +196,16 @@ public class MHSampler extends Sampler {
       }
       ++totalNumAccepted;
       ++numAcceptedThisTrial;
+      latestAccepted = true;
       proposer.updateStats(true);
     } else {
       curWorld.revert(); // clean slate for next proposal
       if (Util.verbose()) {
         System.out.println("\trejected");
       }
+      latestAccepted = false;
       proposer.updateStats(false);
     }
-  }
-
-  /**
-   * Samples from some given world, leaving the current world in sampler
-   * undisturbed.
-   */
-  public PartialWorld nextSample(PartialWorld world) {
-    PartialWorldDiff previousCurrentWorld = curWorld;
-    setWorld(world);
-    nextSample();
-    PartialWorld result = getLatestWorld();
-    curWorld = previousCurrentWorld;
-    return result;
   }
 
   public PartialWorld getLatestWorld() {
@@ -417,6 +399,18 @@ public class MHSampler extends Sampler {
 
     proposer.printStats();
   }
+
+  // The following are for debugger use only!
+
+  public boolean latestAccepted;
+  public double latestLogProbRatio;
+  public double latestLogAcceptRatio;
+
+  public Proposer getProposer() {
+    return proposer;
+  }
+
+  // End of debugger-only members.
 
   protected Timer acceptProbTimer = new Timer();
   protected Timer worldUpdateTimer = new Timer();

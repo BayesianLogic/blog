@@ -35,6 +35,7 @@
 
 package blog.model;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -45,7 +46,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,7 +102,7 @@ public class Model {
   }
 
   /** Reads a model from a file and returns it. */
-  public static Model readFromFile(String filename) {
+  public static Model fromFile(String filename) {
     List readersAndOrigins = Main.makeReaders(Util.list(filename));
     Model model = new Model();
     model.augmentFromReadersAndOrigins(readersAndOrigins);
@@ -110,7 +110,7 @@ public class Model {
   }
 
   /** Reads a model from a string and returns it. */
-  public static Model readFromString(String modelDescription) {
+  public static Model fromString(String modelDescription) {
     Model model = new Model();
     model.augmentFromString(modelDescription);
     return model;
@@ -125,8 +125,8 @@ public class Model {
    *          origin description
    */
   public void augmentFromReadersAndOrigins(List<Object[]> readersAndOrigins) {
-    Evidence evidence = new Evidence();
-    LinkedList<Query> queries = new LinkedList<Query>();
+    Evidence evidence = new Evidence(this);
+    Queries queries = new Queries(this);
     Main.setup(this, evidence, queries, readersAndOrigins, false /* verbose */,
         false);
   }
@@ -417,8 +417,10 @@ public class Model {
     return constant;
   }
 
-  /** Prints this model to the given stream. */
-  public void print(PrintStream s) {
+  public String toString() {
+    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+    PrintStream s = new PrintStream(byteStream);
+
     // Print guaranteed objects
     for (Iterator iter = types.iterator(); iter.hasNext();) {
       Type type = (Type) iter.next();
@@ -449,6 +451,8 @@ public class Model {
         ((RandomFunction) f).printDepStatement(s);
       }
     }
+
+    return byteStream.toString();
   }
 
   /**
