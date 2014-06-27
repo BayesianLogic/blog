@@ -99,7 +99,7 @@ public class BLOGUtil {
    */
   public static ArgSpec parseArgSpec(String description, Model model) {
     Queries queries = new Queries(model);
-    queries.addFromString(description);
+    queries.addFromString("query " + description + ";");
     if (queries.size() != 1) {
       throw new IllegalArgumentException("Parsed " + queries.size()
           + " queries instead of a single one");
