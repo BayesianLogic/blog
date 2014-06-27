@@ -13,4 +13,4 @@ setup(
     author       = "Sharad Vikram, Lei Li", 
     packages     = ['blog'], 
     entry_points = entry_points 
-) 
+)

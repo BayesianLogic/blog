@@ -19,11 +19,11 @@ random Color Color(Ball b) ~ Categorical({Black -> 0.3, White -> 0.7});
 
 random Ball BallDrawn(Draw d) ~ UniformChoice({Ball b});
 
-random Color ObsColor(Draw d) {
+random Color ObsColor(Draw d) ~
        if (BallDrawn(d) != null) then
-       	  	~ TabularCPD({Black -> ~ Categorical({Black -> 0.8, White -> 0.2}),
-		  	      White -> ~ Categorical({White -> 0.8, Black -> 0.2})}, Color(BallDrawn(d)))
-};
+       	  	TabularCPD({Black -> Categorical({Black -> 0.8, White -> 0.2}),
+		  	      White -> Categorical({White -> 0.8, Black -> 0.2})}, Color(BallDrawn(d)))
+;
 
 distinct Color Black, White;
 distinct Draw Draw1, Draw2, Draw3;
