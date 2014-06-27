@@ -1,0 +1,12 @@
+status.txt
+- A CSV of all Blog Examples alongside their status
+
+successExamples.txt
+- A list of all BLOG examples that run successfully
+
+errorExamples.txt
+- A list of all BLOG examples that throw exceptions
+
+errors/*
+- A list of files that threw a Java Exception (non-empty Standard Error)
+- Each file as its content contains the Stack Trace
