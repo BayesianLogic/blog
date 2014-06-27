@@ -394,6 +394,8 @@ public class BuiltInTypes {
     addType(REAL_MATRIX);
     addType(INTEGER_ARRAY);
     addType(INTEGER_MATRIX);
+    addType(SET);
+    addType(ANY);
 
     // special treatment for NaturalNum
     // builtInTypes.put(NATURALNUM_TYPE_NAME, NATURAL_NUM);
