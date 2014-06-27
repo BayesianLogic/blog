@@ -35,21 +35,9 @@
 
 package blog.distrib;
 
-import blog.*;
-import blog.common.Util;
-
-import java.util.*;
-
 /**
  * An alias for {@link UnivarGaussian}.
  */
 public class Gaussian extends UnivarGaussian {
 
-	public Gaussian(double mean, double variance) {
-		super(mean, variance);
-	}
-
-	public Gaussian(List parameters) {
-		super(parameters);
-	}
 }

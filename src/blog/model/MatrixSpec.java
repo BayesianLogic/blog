@@ -63,7 +63,7 @@ public class MatrixSpec extends ArgSpec {
     for (int i = 0; i < num_rows; i++) {
       List<ArgSpec> rowList = ((ListSpec) values.get(i)).elements;
       if (rowList.size() != num_cols) {
-        Util.fatalError("Matrix is not square!");
+        Util.fatalError("Matrix rows have unequal length.");
       }
 
       for (int j = 0; j < num_cols; j++) {

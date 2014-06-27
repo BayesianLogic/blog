@@ -72,7 +72,7 @@ public class ExplicitSetSpec extends ArgSpec {
 	public Object evaluate(EvalContext context) {
 		Multiset values = new HashMultiset();
 		for (Iterator iter = terms.iterator(); iter.hasNext();) {
-			Term term = (Term) iter.next();
+			ArgSpec term = (ArgSpec) iter.next();
 			Object termValue = term.evaluate(context);
 			if (termValue == null) {
 				return null;
@@ -95,12 +95,23 @@ public class ExplicitSetSpec extends ArgSpec {
 	public boolean checkTypesAndScope(Model model, Map scope) {
 		boolean correct = true;
 		for (int i = 0; i < terms.size(); ++i) {
-			Term termInScope = ((Term) terms.get(i)).getTermInScope(model, scope);
-			if (termInScope == null) {
-				correct = false;
-			} else {
-				terms.set(i, termInScope);
-			}
+      // TODO: "terms" member variable should be renamed "elements".
+      Object element = terms.get(i);
+      if (element instanceof Term) {
+        Term term = (Term) element;
+        if (term.getTermInScope(model, scope) == null) {
+          correct = false;
+        }
+      } else if (element instanceof ListSpec) {
+        ListSpec listSpec = (ListSpec) element;
+        if (!listSpec.checkTypesAndScope(model, scope)) {
+          correct = false;
+        }
+      } else {
+        throw new IllegalArgumentException(
+          "don't know how to process set element of type " +
+          terms.get(i).getClass().getName());
+      }
 		}
 		return correct;
 	}

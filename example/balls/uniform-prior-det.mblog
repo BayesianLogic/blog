@@ -10,10 +10,10 @@ random Color Color(Ball b) ~ Categorical({Blue -> 0.5, Green -> 0.5});
 
 random Ball BallDrawn(Draw d) ~ UniformChoice({Ball b});
 
-random Color ObsColor(Draw d) {
+random Color ObsColor(Draw d) ~
 	if (BallDrawn(d) != null) then 
-		= Color(BallDrawn(d))
-};
+		Color(BallDrawn(d))
+;
 
 distinct Color Blue, Green;
 distinct Draw Draw[10];

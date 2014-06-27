@@ -34,16 +34,17 @@
  */
  
 /**
- * Using JFlex-1.4.3
+ * Using JFlex-1.5.1
  * @author leili
  */ 
 package blog.parse;
-import java_cup.runtime.*;
+import java_cup.runtime.ComplexSymbolFactory;
+import java_cup.runtime.ComplexSymbolFactory.Location;
+import java_cup.runtime.Symbol;
 
 %%
 
 %class BLOGLexer
-%implements ScannerWithLocInfo
 %cup
 %unicode
 %line
@@ -74,12 +75,12 @@ import java_cup.runtime.*;
     return filename;
   }
   
-  private void err(int line, int col, String s) {
+  private void error(int line, int col, String s) {
     errorMsg.error(line, col, s);
   }
 
-  private void err(String s) {
-    err(getCurLineNum(), getCurColNum(), s);
+  private void error(String s) {
+    error(getCurLineNum(), getCurColNum(), s);
   }  
   
   private Symbol symbol(int type) {
@@ -87,14 +88,17 @@ import java_cup.runtime.*;
   }
 
   private Symbol symbol(int type, Object value) {
-    return new BLOGSymbol(type, getCurLineNum(), getCurColNum(), yychar, yychar+yylength(), value);
-
+    return symbolFactory.newSymbol(yytext(), type, 
+      new Location(getCurFilename(), getCurLineNum(), getCurColNum(), yychar+1), 
+      new Location(getCurFilename(), getCurLineNum(), getCurColNum()+yylength(), yychar+1+yylength()), value);
   }
   
   blog.msg.ErrorMsg errorMsg; //for error
-  
-  public BLOGLexer(java.io.Reader r, blog.msg.ErrorMsg e) {
+  private ComplexSymbolFactory symbolFactory; //for generating symbol
+
+  public BLOGLexer(java.io.Reader r, ComplexSymbolFactory sf, blog.msg.ErrorMsg e){
     this(r);
+    symbolFactory = sf;
     errorMsg=e;
   }
 
@@ -114,10 +118,8 @@ import java_cup.runtime.*;
       break;
     case STR_LIT:
     case CHAR_LIT:
-      return symbol(BLOGTokenConstants.ERROR, 
-                        "File ended before string or character literal "
+      error("File ended before string or character literal "
                         + "was terminated.");
-
   }
   /* Reinitialize everything before signaling EOF */
   string_buf = new StringBuffer();
@@ -130,15 +132,15 @@ Alpha = [A-Za-z]
 
 Digit = [0-9]
 
-Identifier = {Alpha}({Alpha}|{Digit}|_)*
+Identifier = ({Alpha}|_)({Alpha}|{Digit}|_)*
 
-IntegerLiteral = [+-]?{Digit}+
+IntegerLiteral = {Digit}+
 
 FLit1    = {Digit}+ \. {Digit}* 
 FLit2    = \. {Digit}+ 
 FLit3    = {Digit}+ 
 Exponent = [eE] [+-]? {Digit}+
-DoubleLiteral = [+-]?({FLit1}|{FLit2}|{FLit3}) {Exponent}?
+DoubleLiteral = ({FLit1}|{FLit2}|{FLit3}) {Exponent}?
 
 LineTerminator	= [\n\r\r\n]
 
@@ -175,12 +177,9 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Oo][Rr][Ii][Gg][Ii][Nn] { return symbol(BLOGTokenConstants.ORIGIN); }
 [Gg][Uu][Aa][Rr][Aa][Nn][Tt][Ee][Ee][Dd] { return symbol(BLOGTokenConstants.DISTINCT); }
 [Dd][Ii][Ss][Tt][Ii][Nn][Cc][Tt] { return symbol(BLOGTokenConstants.DISTINCT); }
-[Ff][Aa][Cc][Tt][Oo][Rr] { return symbol(BLOGTokenConstants.FACTOR); }
-[Pp][Aa][Rr][Ff][Aa][Cc][Tt][Oo][Rr] { return symbol(BLOGTokenConstants.PARFACTOR); }
 [Tt][Hh][Ee][Nn]     { return symbol(BLOGTokenConstants.THEN); }
 [Ee][Ll][Ss][Ee]  	{ return symbol(BLOGTokenConstants.ELSE); }
 [Ff][Oo][Rr]         { return symbol(BLOGTokenConstants.FOR); }
-[Ee][Ll][Ss][Ee][Ii][Ff]  { return symbol(BLOGTokenConstants.ELSEIF); }
 [Ii][Ff]  		{ return symbol(BLOGTokenConstants.IF); }
 [Qq][Uu][Ee][Rr][Yy]	{ return symbol(BLOGTokenConstants.QUERY);}
 [Oo][Bb][Ss]         { return symbol(BLOGTokenConstants.OBS);}
@@ -190,7 +189,9 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Ll][Ii][Ss][Tt] { return symbol(BLOGTokenConstants.LIST); }
 [Mm][Aa][Pp] { return symbol(BLOGTokenConstants.MAP); }
 [Dd][Ii][Ss][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DISTRIBUTION); }
-	
+[Cc][Aa][Ss][Ee] { return symbol(BLOGTokenConstants.CASE); }
+[Ii][Nn] { return symbol(BLOGTokenConstants.IN); }
+
 
 /* literals */
 "true"	{ return symbol(BLOGTokenConstants.BOOLEAN_LITERAL, new Boolean(true)); }
@@ -254,16 +255,16 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 <CHAR_LIT>\' { /* closing single-quote not matched by \' rule below */
        Symbol s;
        if (string_buf.length() == 1) {
-	   s = symbol(BLOGTokenConstants.CHAR_LITERAL, 
+	       s = symbol(BLOGTokenConstants.CHAR_LITERAL, 
                           new Character(string_buf.charAt(0)));
+         string_buf.setLength(0); /* re-init buffer */
+         yybegin(YYINITIAL);
+         return s;
        } else {
-	   s = symbol(BLOGTokenConstants.ERROR, 
-                          "Character literal must contain exactly one "
-                          + "character");
+  	     error("Character literal must contain exactly one character");
+  	     yybegin(YYINITIAL);
        } 
-       string_buf = new StringBuffer(); /* re-init buffer */
-       yybegin(YYINITIAL);
-       return s; }
+     }
 
 <STR_LIT,CHAR_LIT>\\b  { string_buf.append('\b'); }
 <STR_LIT,CHAR_LIT>\\t  { string_buf.append('\t'); }
@@ -289,17 +290,14 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
        string_buf.append((char) code); }
 
 <STR_LIT,CHAR_LIT>\\.  { 
-       return symbol(BLOGTokenConstants.ERROR, 
-                         "Unrecognized escape character: \'" 
+       error("Unrecognized escape character: \'" 
                          + yytext() + "\'"); }
 
 <STR_LIT,CHAR_LIT>{LineTerminator}  { 
-       return symbol(BLOGTokenConstants.ERROR, 
-                         "Line terminator in string or character literal."); }
+       error("Line terminator in string or character literal."); }
 
 <STR_LIT,CHAR_LIT>. { /* Char in quotes, not matched by any rule above */
        string_buf.append(yytext()); }
 
 
-<YYINITIAL>.  { return symbol(BLOGTokenConstants.ERROR, 
-                                          yytext()); }
+<YYINITIAL>.  { error("Unrecognized character!"); }

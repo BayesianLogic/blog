@@ -47,60 +47,60 @@ import blog.world.PartialWorld;
  * model).
  */
 public interface BayesNetVar {
-	/**
-	 * Returns true if the given world is complete enough to determine the value
-	 * of this random variable.
-	 */
-	boolean isDetermined(PartialWorld w);
+  /**
+   * Returns true if the given world is complete enough to determine the value
+   * of this random variable.
+   */
+  boolean isDetermined(PartialWorld w);
 
-	/**
-	 * Returns the value of this random variable in the given world.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if the given partial world is not complete enough to determine
-	 *           the value of this variable
-	 */
-	Object getValue(PartialWorld w);
+  /**
+   * Returns the value of this random variable in the given world.
+   * 
+   * @throws IllegalArgumentException
+   *           if the given partial world is not complete enough to determine
+   *           the value of this variable
+   */
+  Object getValue(PartialWorld w);
 
-	/**
-	 * Returns the set of parents of this variable in the given partial world. The
-	 * parents are those random variables which, if they changed, could change the
-	 * probability of this variable having a given value. This method yields a
-	 * fatal error if the partial world is not complete enough to determine this
-	 * variable's parents.
-	 * 
-	 * @return Set of BayesNetVar
-	 */
-	Set getParents(PartialWorld w);
+  /**
+   * Returns the set of parents of this variable in the given partial world. The
+   * parents are those random variables which, if they changed, could change the
+   * probability of this variable having a given value. This method yields a
+   * fatal error if the partial world is not complete enough to determine this
+   * variable's parents.
+   * 
+   * @return Set of BayesNetVar
+   */
+  Set getParents(PartialWorld w);
 
-	/**
-	 * Returns the first parent of this variable that is uninstantiated in the
-	 * given partial world. This method uses a decision tree view of the
-	 * variable's CPD; it walks down the tree until it reaches a node
-	 * corresponding to an uninstantiated variable. If all of this variable's
-	 * active parents in the given partial world are instantiated, then this
-	 * method returns null.
-	 */
-	BasicVar getFirstUninstParent(PartialWorld w);
+  /**
+   * Returns the first parent of this variable that is uninstantiated in the
+   * given partial world. This method uses a decision tree view of the
+   * variable's CPD; it walks down the tree until it reaches a node
+   * corresponding to an uninstantiated variable. If all of this variable's
+   * active parents in the given partial world are instantiated, then this
+   * method returns null.
+   */
+  BasicVar getFirstUninstParent(PartialWorld w);
 
-	/**
-	 * Ensures that the partial world underlying the given
-	 * InstantiatingEvalContext is complete enough to determine the value of this
-	 * variable and to determine its probability distribution conditional on its
-	 * parents.
-	 */
-	void ensureDetAndSupported(InstantiatingEvalContext instantiator);
+  /**
+   * Ensures that the partial world underlying the given
+   * InstantiatingEvalContext is complete enough to determine the value of this
+   * variable and to determine its probability distribution conditional on its
+   * parents.
+   */
+  void ensureDetAndSupported(InstantiatingEvalContext instantiator);
 
-	/**
-	 * Convenience version of
-	 * {@link #ensureDetAndSupported(ClassicInstantiatingEvalContext)} taking a
-	 * world and creating an InstantiatingEvalContext on it.
-	 */
-	void ensureDetAndSupported(PartialWorld world);
+  /**
+   * Convenience version of
+   * {@link #ensureDetAndSupported(ClassicInstantiatingEvalContext)} taking a
+   * world and creating an InstantiatingEvalContext on it.
+   */
+  void ensureDetAndSupported(PartialWorld world);
 
-	/**
-	 * Returns the timestep that this variable is associated with, or null if it
-	 * is atemporal.
-	 */
-	Timestep timestep();
+  /**
+   * Returns the maximum timestep that this variable is associated with, or null
+   * if it is atemporal.
+   */
+  Timestep maxTimestep();
 }
