@@ -17,8 +17,6 @@ type Match;
 distinct Person James, David,
   Jason, Brian, Mary, Nancy, Susan, Karen;
 distinct Match M[4];
-//fixed Real mu = 10;
-//fixed Real sigma = 2;
 random Real strength(Person p) ~ Gaussian(10, 2);
 
 random Person team1player1(Match m) 
