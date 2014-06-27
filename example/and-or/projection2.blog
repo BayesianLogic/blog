@@ -85,13 +85,13 @@ random Integer Z(Integer x, Integer y) ~
 
 #Object ~ 1;
 
-obs {Object o} = {o1};
+obs {o for Object o} = {o1};
 obs X0(o1) = 5;
 obs Y0(o1) = 5;
 obs Z0(o1) = 5;
 
-query #{Object o};
-query #{Object o: X0(o) > 0};
+query #{o for Object o};
+query #{o for Object o: X0(o) > 0};
 //query {Integer X: X < Xmax & (exists Object o (X0(o) == X))};
 //query {Integer X: X < Xmax & (exists Object o (X1(o) == X))};
 //query {Integer z: z < Zmax & (exists Object o (z == Zintercept(o, 7, 7)))};

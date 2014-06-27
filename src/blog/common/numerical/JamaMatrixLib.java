@@ -220,8 +220,8 @@ public class JamaMatrixLib implements MatrixLib {
       int size = numRows();
       for (int i = 0; i < size; i++) {
         for (int j = i + 1; j < size; j++) {
-          double val = elementAt(i, j) - elementAt(j, i);
-          if (!Util.closeToZero(val)) {
+          double ratio = elementAt(i, j) / elementAt(j, i);
+          if (Util.closeToZero(ratio - 1)) {
             return false;
           }
         }
