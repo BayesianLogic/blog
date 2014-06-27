@@ -14,7 +14,6 @@ import blog.absyn.BooleanExpr;
 import blog.absyn.Dec;
 import blog.absyn.DistinctSymbolDec;
 import blog.absyn.DistributionDec;
-import blog.absyn.DistributionExpr;
 import blog.absyn.DoubleExpr;
 import blog.absyn.EvidenceStmt;
 import blog.absyn.ExplicitSetExpr;
@@ -26,8 +25,8 @@ import blog.absyn.FixedFuncDec;
 import blog.absyn.FuncCallExpr;
 import blog.absyn.FunctionDec;
 import blog.absyn.IfExpr;
-import blog.absyn.ImplicitSetExpr;
 import blog.absyn.IntExpr;
+import blog.absyn.ListComprehension;
 import blog.absyn.ListInitExpr;
 import blog.absyn.MapInitExpr;
 import blog.absyn.NameTy;
@@ -41,17 +40,16 @@ import blog.absyn.ParameterDec;
 import blog.absyn.QuantifiedFormulaExpr;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
+import blog.absyn.SetExpr;
 import blog.absyn.Stmt;
 import blog.absyn.StmtList;
 import blog.absyn.StringExpr;
 import blog.absyn.SymbolArrayList;
-import blog.absyn.SymbolEvidence;
-import blog.absyn.SymbolExpr;
 import blog.absyn.TupleSetExpr;
 import blog.absyn.Ty;
 import blog.absyn.TypeDec;
 import blog.absyn.ValueEvidence;
-import blog.common.Util;
+import blog.distrib.CondProbDistrib;
 import blog.distrib.EqualsCPD;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
@@ -74,6 +72,7 @@ import blog.model.FixedFunction;
 import blog.model.Formula;
 import blog.model.FuncAppTerm;
 import blog.model.Function;
+import blog.model.FunctionInterp;
 import blog.model.FunctionSignature;
 import blog.model.ImplicFormula;
 import blog.model.ImplicitSetSpec;
@@ -116,9 +115,6 @@ public class Semant {
 
   List<String> packages;
 
-  // Maintains the currently active function
-  private Function currFunction;
-
   public Semant(ErrorMsg msg) {
     model = new Model();
     evidence = new Evidence(model);
@@ -149,7 +145,7 @@ public class Semant {
    * @param classname
    * @return
    */
-  Class getClassWithName(String classname) {
+  Class<?> getClassWithName(String classname) {
     for (String pkg : packages) {
       String name;
       if (pkg.isEmpty()) {
@@ -163,13 +159,27 @@ public class Semant {
         // continue loop
       }
     }
-    Util.fatalError("Could not load class '" + classname
-        + "'; looked in the following packages: " + packages);
+    return null;
+  }
+
+  Class<? extends CondProbDistrib> getDistributionClass(String classname) {
+    Class<?> cls = getClassWithName(classname);
+    if ((cls != null) && CondProbDistrib.class.isAssignableFrom(cls)) {
+      return cls.asSubclass(CondProbDistrib.class);
+    }
+    return null;
+  }
+
+  Class<? extends FunctionInterp> getFunctionInterpClass(String classname) {
+    Class<?> cls = getClassWithName(classname);
+    if ((cls != null) && FunctionInterp.class.isAssignableFrom(cls)) {
+      return cls.asSubclass(FunctionInterp.class);
+    }
     return null;
   }
 
   protected boolean checkSymbolDup(int line, int col, String name) {
-    if (getFunction(name, Collections.EMPTY_LIST) == null) {
+    if (getFunction(name, Collections.<Type> emptyList()) == null) {
       return true;
     } else {
       error(line, col, "Function/Symbol " + name
@@ -254,11 +264,6 @@ public class Semant {
           error(fc.line, fc.col, "Invalid expression: expecting No argument");
         }
         res.add(fn);
-      } else if (h instanceof SymbolExpr) {
-        SymbolExpr var = (SymbolExpr) h;
-        String sym = var.name.toString();
-        checkSymbolDup(var.line, var.col, sym);
-        res.add(sym);
       } else {
         error(h.line, h.col, "Invalid expression: expecting Symbol names");
       }
@@ -320,7 +325,7 @@ public class Semant {
     Type type = getType(e.type);
     for (SymbolArrayList sa = e.symbols; sa != null; sa = sa.next) {
       if (sa.head == null) {
-        error(sa.head.line, sa.head.col, "Symbol mistake!");
+        error(sa.line, sa.col, "Symbol mistake!");
       } else {
         int sz = sa.head.size;
         String name = sa.head.name.toString();
@@ -440,7 +445,6 @@ public class Semant {
 
     String name = e.name.toString();
     Function fun = getFunction(name, argTy);
-    currFunction = fun;
 
     if (e instanceof FixedFuncDec) {
       if (e.body == null) {
@@ -449,7 +453,8 @@ public class Semant {
         if (e.body instanceof FuncCallExpr) {
           FuncCallExpr fc = (FuncCallExpr) e.body;
           List<ArgSpec> args = transExprList(fc.args, false);
-          Class cls = getClassWithName(fc.func.toString());
+          Class<? extends FunctionInterp> cls = getFunctionInterpClass(fc.func
+              .toString());
           ((FixedFunction) fun).setInterpretation(cls, args);
         } else if (e.body instanceof DoubleExpr) {
           List<Object> args = new ArrayList<Object>();
@@ -491,7 +496,6 @@ public class Semant {
       ((RandomFunction) fun).setDepModel(dm);
     }
 
-    currFunction = null;
   }
 
   /**
@@ -537,7 +541,7 @@ public class Semant {
     if (body instanceof Term || body instanceof Formula
         || body instanceof TupleSetSpec) {
       cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-          .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
+          .singletonList((ArgSpec) body)));
     } else if (body instanceof Clause) {
       cl.add((Clause) body);
     } else if (e instanceof IfExpr) {
@@ -557,8 +561,6 @@ public class Semant {
   void transEvi(EvidenceStmt e) {
     if (e instanceof ValueEvidence) {
       transEvi((ValueEvidence) e);
-    } else if (e instanceof SymbolEvidence) {
-      transEvi((SymbolEvidence) e);
     } else {
       error(e.line, e.col, "Unsupported Evidence type: " + e);
     }
@@ -573,7 +575,9 @@ public class Semant {
    * @param e
    */
   void transEvi(ValueEvidence e) {
+    if (e.left instanceof SetExpr) {
 
+    }
     Object left = transExpr(e.left);
 
     if (left instanceof CardinalitySpec) {
@@ -593,17 +597,8 @@ public class Semant {
       // general value expression
       Object value = transExpr(e.right);
       if (value instanceof ArgSpec) {
-        // need more semantic checking on type match
-        // if (left instanceof Term) {
-        // value = getTypedValue(((Term) left).getType(), (ArgSpec) value);
-        // }
-        // let us use the type checking in Evidence,
-        if (value != null)
-          evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
-              (ArgSpec) value));
-        else
-          error(e.line, e.col,
-              "type mistach for observation or translation error");
+        evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
+            (ArgSpec) value));
       } else {
         error(e.right.line, e.right.col,
             "Invalid expression on the right side of evidence.");
@@ -619,7 +614,7 @@ public class Semant {
    * 
    * @param e
    */
-  void transEvi(SymbolEvidence e) {
+  void transSymbolEvidence(ValueEvidence e) {
     Object left = transExpr(e.left);
     if (left instanceof ImplicitSetSpec) {
       // symbol evidence
@@ -715,13 +710,11 @@ public class Semant {
     }
   }
 
-  Clause transExpr(DistributionExpr e) {
-    /*
-     * TODO 1: Handle map expressions, not just lists
-     */
-    Class cls = getClassWithName(e.name.toString());
+  Clause transToDistribution(FuncCallExpr e) {
+    Class<? extends CondProbDistrib> cls = getDistributionClass(e.func
+        .toString());
     if (cls == null) {
-      error(e.line, e.col, "Class not found: " + e.name);
+      return null;
     }
 
     List<ArgSpec> as = null;
@@ -744,9 +737,7 @@ public class Semant {
   }
 
   Object transExpr(Expr e) {
-    if (e instanceof DistributionExpr) {
-      return transExpr((DistributionExpr) e);
-    } else if (e instanceof BooleanExpr) {
+    if (e instanceof BooleanExpr) {
       return transExpr((BooleanExpr) e);
     } else if (e instanceof DoubleExpr) {
       return transExpr((DoubleExpr) e);
@@ -756,8 +747,8 @@ public class Semant {
       return transExpr((StringExpr) e);
     } else if (e instanceof NumberExpr) {
       return transExpr((NumberExpr) e);
-    } else if (e instanceof ImplicitSetExpr) {
-      return transExpr((ImplicitSetExpr) e);
+    } else if (e instanceof ListComprehension) {
+      return transExpr((ListComprehension) e);
     } else if (e instanceof ExplicitSetExpr) {
       return transExpr((ExplicitSetExpr) e);
     } else if (e instanceof TupleSetExpr) {
@@ -772,8 +763,6 @@ public class Semant {
       return transExpr((ListInitExpr) e);
     } else if (e instanceof MapInitExpr) {
       return transExpr((MapInitExpr) e);
-    } else if (e instanceof SymbolExpr) {
-      return transExpr((SymbolExpr) e);
     } else if (e instanceof NullExpr) {
       return transExpr((NullExpr) e);
     } else if (e instanceof QuantifiedFormulaExpr) {
@@ -788,13 +777,23 @@ public class Semant {
     return t;
   }
 
-  ArgSpec transExpr(SymbolExpr e) {
-    Term t = new SymbolTerm(e.name.toString());
-    t.setLocation(e.line);
-    return t;
-  }
+  Object transExpr(FuncCallExpr e) {
+    // now checking whether it is a distribution
+    Clause cl = transToDistribution(e);
+    if (cl != null) {
+      return cl;
+    }
 
-  ArgSpec transExpr(FuncCallExpr e) {
+    if (e.args == null) {
+      // this might be just logical variable
+      Function f = getFunction(e.func.toString(),
+          Collections.<Type> emptyList());
+      if (f == null) {
+        // must be reference to logical var
+        return new SymbolTerm(e.func.toString());
+      }
+    }
+
     List<ArgSpec> args = transExprList(e.args, true);
     List<Type> argTypes = new ArrayList<Type>();
     // TODO put type checking code here
@@ -803,8 +802,8 @@ public class Semant {
       // to add type for this argspec
     }
 
-    Term t = new FuncAppTerm(e.func.toString(), args.toArray(new ArgSpec[args
-        .size()]));
+    FuncAppTerm t = new FuncAppTerm(e.func.toString(),
+        args.toArray(new ArgSpec[args.size()]));
     t.setLocation(e.line);
     return t;
   }
@@ -863,7 +862,7 @@ public class Semant {
     } else {
       // should be ArgSpec
       clauses.add(new Clause(test, EqualsCPD.class, Collections
-          .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
+          .singletonList((ArgSpec) value)));
     }
   }
 
@@ -897,7 +896,7 @@ public class Semant {
     } else {
       // should be ArgSpec
       clauses.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-          .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
+          .singletonList((ArgSpec) value)));
     }
   }
 
@@ -950,7 +949,7 @@ public class Semant {
   }
 
   ExplicitSetSpec transExpr(ExplicitSetExpr e) {
-    List terms = new ArrayList();
+    List<Object> terms = new ArrayList<Object>();
 
     ExprList currTerm = e.values;
     while (currTerm != null) {
@@ -960,27 +959,11 @@ public class Semant {
     return new ExplicitSetSpec(terms);
   }
 
-  ImplicitSetSpec transExpr(ImplicitSetExpr e) {
-    Type typ = getType(e.typ);
-    String vn;
-    if (e.var != null) {
-      vn = e.var.toString();
-    } else {
-      vn = "_";
-    }
-    Formula cond = TrueFormula.TRUE;
-    if (e.cond != null) {
-      Object c = transExpr(e.cond);
-      if (c instanceof Formula) {
-        cond = (Formula) c;
-      } else {
-        error(
-            e.cond.line,
-            e.cond.col,
-            "Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
-      }
-    }
-    return new ImplicitSetSpec(vn, typ, cond);
+  Object transExpr(ListComprehension e) {
+    // TODO lei to chris: pls add
+    // see example in TupleSet, may reuse code there.
+    // please change return type as well
+    return e;
   }
 
   TupleSetSpec transExpr(TupleSetExpr e) {
@@ -1128,11 +1111,23 @@ public class Semant {
       return new NegFormula((Formula) right);
     case OpExpr.SUB:
       Function func;
+      if ((e.left instanceof FuncCallExpr) && (e.right instanceof IntExpr)) {
+        // check if this is declared distinct symbol;
+        FuncCallExpr funcall = (FuncCallExpr) e.left;
+        int idx = ((IntExpr) e.right).value;
+        if (funcall.args == null) {
+          Function f = getFunction(funcall.func.toString() + "[" + idx + "]",
+              Collections.<Type> emptyList());
+          if (f != null)
+            return new FuncAppTerm(f);
+        }
+      }
       if (left instanceof SymbolTerm) {
         if (e.right instanceof IntExpr) {
           String objectname = ((SymbolTerm) left).getName() + '['
               + ((IntExpr) e.right).value + ']';
-          Function object = getFunction(objectname, Collections.EMPTY_LIST);
+          Function object = getFunction(objectname,
+              Collections.<Type> emptyList());
           if (object != null)
             return new FuncAppTerm(object);
         }

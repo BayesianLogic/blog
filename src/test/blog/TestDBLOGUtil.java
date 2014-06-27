@@ -24,7 +24,7 @@ import blog.type.Timestep;
 public class TestDBLOGUtil {
   @Test
   public void testSplitEvidenceInTime() {
-    Model model = Model.fromString("random Boolean Weather(Timestep t) = true;"
+    Model model = Model.fromString("random Boolean Weather(Timestep t) ~ true;"
         + "random Boolean Dummy ~ Bernoulli(0.5);");
     Evidence evidence;
     String evidenceDescription = "obs Weather(@15) = true;"
@@ -47,7 +47,7 @@ public class TestDBLOGUtil {
 
   @Test
   public void testSplitQueriesInTime() {
-    Model model = Model.fromString("random Boolean Weather(Timestep t) = true;"
+    Model model = Model.fromString("random Boolean Weather(Timestep t) ~ true;"
         + "random Boolean Dummy ~ Bernoulli(0.5);");
     Queries queries = new Queries(model);
     queries.add(BLOGUtil.parseQuery_NE("query Dummy;", model));

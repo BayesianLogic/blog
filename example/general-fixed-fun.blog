@@ -1,7 +1,7 @@
 fixed Real magic(Real x, Real y) 
   = exp(2 * x) + sin(y ^ 3 - x) / 5;
 
-random Real x = magic(1.0, 2.4);
+random Real x ~ magic(1.0, 2.4);
 
 
 query magic(1.0, 2.4);

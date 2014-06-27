@@ -25,7 +25,7 @@ distinct Player Dealer, Gambler;
 origin Suit Suit(Card);
 origin Rank Rank(Card);
 
-#Card(Suit=s, Rank=r) = 1;
+#Card(Suit=s, Rank=r) ~ 1;
 
 fixed Integer Value(Rank r)
     = TabularInterp(1,
@@ -43,21 +43,21 @@ fixed Integer Value(Rank r)
 	Queen, 10,
 	King, 10);
 
-random Player Turn(Timestep t) {
-    if Score(Gambler, t) < 16 then = Gambler
-    else if Score(Dealer, t) < 16 then = Dealer
-};
+random Player Turn(Timestep t) ~
+    if Score(Gambler, t) < 16 then Gambler
+    else if Score(Dealer, t) < 16 then Dealer
+;
 
-random Integer Score(Player p, Timestep t) {
-    if (t == @0) then = Value(Rank(InitialCard(p, 0))) + Value(Rank(InitialCard(p, 1)))
-    else = Score(p, Prev(t)) + Value(Rank(DrawCard(t)))
-};
+random Integer Score(Player p, Timestep t) ~
+    if (t == @0) then Value(Rank(InitialCard(p, 0))) + Value(Rank(InitialCard(p, 1)))
+    else Score(p, Prev(t)) + Value(Rank(DrawCard(t)))
+;
 
-random Card InitialCard(Player p, Integer n) {
+random Card InitialCard(Player p, Integer n) ~
     if (n == 0 | n == 1) then
-        ~ UniformChoice({Card c: 
+        UniformChoice({Card c: 
             !(exists Player p exists Integer n (c == InitialCard(p, n)))})
-};
+;
 
 random Card DrawCard(Timestep t)
     ~ UniformChoice(

@@ -11,7 +11,9 @@ MISC_FILE= compile.bat \
  parse.sh \
  test-ex.sh \
  ex_test_classes
- 
+
+CLASSPATH=lib/java-cup-11b.jar:lib/*
+
 TAGNAME=$(shell git describe --exact-match --abbrev=0 2> /dev/null)
 ifneq (${TAGNAME},)
 TARGETNAME=${TAGNAME}
@@ -38,17 +40,17 @@ help:
 
 compile: ${SRC_FILES}
 	mkdir -p bin
-	javac -cp "lib/*" -d bin/ ${SRC_FILES}
+	javac -cp ${CLASSPATH} -d bin/ ${SRC_FILES}
 
 debug: ${SRC_FILES}
 	mkdir -p bin
-	javac -g -cp "lib/*" -d bin/ ${SRC_FILES}
+	javac -g -cp ${CLASSPATH} -d bin/ ${SRC_FILES}
 
 release: release-compile html zip
 
 release-compile:
 	mkdir -p bin
-	javac -source 1.5 -target 1.5 -cp "lib/*" -d bin/ ${SRC_FILES}
+	javac -source 1.5 -target 1.5 -cp ${CLASSPATH} -d bin/ ${SRC_FILES}
 
 tar: zip
 
@@ -76,14 +78,18 @@ demo:
 	./blog example/poisson-ball.blog
 
 parser: src/blog/parse/BLOGLexer.flex src/blog/parse/BLOGParser.cup
-	java -cp lib/JFlex-1.4.3.jar JFlex.Main src/blog/parse/BLOGLexer.flex
-	cd src/blog/parse; java -cp ../../../lib/java_cup.jar java_cup.Main -symbols BLOGTokenConstants -parser BLOGParser BLOGParser.cup
+	java -cp jflex-1.6.0.jar jflex.Main src/blog/parse/BLOGLexer.flex
+	cd src/blog/parse; java -cp ../../../lib/java-cup-11b.jar java_cup.Main -locations -symbols BLOGTokenConstants -parser BLOGParser BLOGParser.cup
 
 sync:
 	git remote prune origin
 	git branch --merged | grep -v "\*" | xargs -n 1 git branch -d
 	git pull
 	git push
+
+clean:
+	rm -rf bin
+	rm -rf docs/output
 
 log:
 	git log --stat --name-only --date=short --abbrev-commit > ChangeLog

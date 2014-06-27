@@ -41,6 +41,7 @@ import java.util.Properties;
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
+import blog.distrib.CondProbDistrib;
 import blog.model.DependencyModel;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -179,6 +180,8 @@ public class RejectionSampler extends Sampler {
         VarWithDistrib var = (VarWithDistrib) iter.next();
         DependencyModel.Distrib distrib = var
             .getDistrib(new DefaultEvalContext(curWorld, false));
+        CondProbDistrib cpd = distrib.getCPD();
+        cpd.setParams(distrib.getArgValues());
         if (distrib == null) {
           if (Util.verbose()) {
             System.out.println("Not supported yet: " + var);
@@ -188,8 +191,7 @@ public class RejectionSampler extends Sampler {
           if (Util.verbose()) {
             System.out.println("Instantiating: " + var);
           }
-          iter.setValue(distrib.getCPD().sampleVal(distrib.getArgValues(),
-              var.getType()));
+          iter.setValue(cpd.sampleVal());
 
           varInstantiated = true;
           break; // start again from first uninstantiated var
