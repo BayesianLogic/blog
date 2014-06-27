@@ -452,14 +452,12 @@ public class Main {
 
       // Print evidence for debugging
       System.out.println("\nEvidence:");
-      evidence.print(System.out);
+      System.out.println(evidence);
       System.out.println("............................................");
 
       // Print queries for debugging
       System.out.println("\nQueries:");
-      for (Query q : queries) {
-        System.out.println(q);
-      }
+      System.out.println(queries);
     }
 
     // Run semantic checks on model, evidence and queries
