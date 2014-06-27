@@ -33,17 +33,16 @@ public class TestIf extends TestParse {
 
   @Test
   public void testIfDecl1() {
-    String toParse = "random Real test ~ " + "if 1 == 2 then Poisson(5) "
-        + "else if 1 == 3 then Poisson(4);";
+    String toParse = "random Real test " + "if 1 == 2 then ~ Poisson(5) "
+        + "else if 1 == 3 then ~ Poisson(4);";
     String parsed = parseToRepr(toParse);
-    // TODO tejas pls add
+    System.out.println(parsed);
   }
 
   @Test
   public void testIfDecl2() {
-    String parsed = parseToRepr("random Color test(some d) ~ if Ball(d) == 2 & 1 == 3 then Poisson(5.0);");
+    String parsed = parseToRepr("random Color test(some d) if Ball(d) == 2 & 1 == 3 then ~ Poisson(5.0);");
     System.out.println(parsed);
-    // TODO tejas pls add
   }
 
 }

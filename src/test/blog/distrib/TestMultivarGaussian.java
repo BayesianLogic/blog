@@ -152,13 +152,4 @@ public class TestMultivarGaussian implements TestDistributions {
     gauss.sampleVal();
   }
 
-  @Test
-  public void testSetParamsIntegerArguments() {
-    // not needed
-  }
-
-  @Test
-  public void testGetProbIntegerArguments() {
-    // not needed
-  }
 }
