@@ -121,23 +121,4 @@ public class TestGamma implements TestDistributions {
     testGamma2(gamma);
   }
 
-  @Test
-  public void testSetParamsIntegerArguments() {
-    Gamma gamma = new Gamma();
-    gamma.setParams(new Object[] { 2, 1 });
-    testGamma1(gamma);
-  }
-
-  @Test
-  public void testGetProbIntegerArguments() {
-    Gamma gamma = new Gamma();
-    gamma.setParams(new Object[] { 2.0, 1.0 });
-    assertEquals(0.0, gamma.getProb(new Integer(-1)), ERROR);
-    assertEquals(0.0, gamma.getProb(new Integer(0)), ERROR);
-    assertEquals(Double.NEGATIVE_INFINITY, gamma.getLogProb(new Integer(-1)),
-        ERROR);
-    assertEquals(Double.NEGATIVE_INFINITY, gamma.getLogProb(new Integer(0)),
-        ERROR);
-  }
-
 }

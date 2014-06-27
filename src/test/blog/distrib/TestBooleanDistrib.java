@@ -98,16 +98,4 @@ public class TestBooleanDistrib implements TestDistributions {
     testBooleanDistrib1(bool);
   }
 
-  @Test
-  public void testSetParamsIntegerArguments() {
-    BooleanDistrib bool = new BooleanDistrib();
-    bool.setParams(new Integer[] { 1 });
-    testBooleanDistrib1(bool);
-  }
-
-  @Test
-  public void testGetProbIntegerArguments() {
-    // not needed
-  }
-
 }

@@ -167,23 +167,4 @@ public class TestBinomial implements TestDistributions {
     testBinomial3(bin);
   }
 
-  @Test
-  public void testSetParamsIntegerArguments() {
-    Binomial bin = new Binomial();
-    bin.setParams(new Object[] { 2, 1 });
-    assertEquals(0.0, bin.getProb(0), ERROR);
-    assertEquals(0.0, bin.getProb(1), ERROR);
-    assertEquals(1.0, bin.getProb(2), ERROR);
-    bin.setParams(new Object[] { 3, 0 });
-    assertEquals(1.0, bin.getProb(0), ERROR);
-    assertEquals(0.0, bin.getProb(1), ERROR);
-    assertEquals(0.0, bin.getProb(2), ERROR);
-    assertEquals(0.0, bin.getProb(3), ERROR);
-  }
-
-  @Test
-  public void testGetProbIntegerArguments() {
-    // not needed
-  }
-
 }

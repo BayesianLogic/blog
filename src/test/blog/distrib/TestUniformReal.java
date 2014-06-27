@@ -70,24 +70,4 @@ public class TestUniformReal implements TestDistributions {
     unif.setParams(new Object[] { 1.0, null });
     testUniform1(unif);
   }
-
-  @Test
-  public void testSetParamsIntegerArguments() {
-    UniformReal unif = new UniformReal();
-    unif.setParams(new Object[] { 1, 3 });
-    testUniform1(unif);
-  }
-
-  @Test
-  public void testGetProbIntegerArguments() {
-    UniformReal unif = new UniformReal();
-    unif.setParams(new Object[] { 1, 3 });
-    assertEquals(0.0, unif.getProb(new Integer(0)), ERROR);
-    assertEquals(Double.NEGATIVE_INFINITY, unif.getLogProb(new Integer(0)),
-        ERROR);
-    assertEquals(0.5, unif.getProb(new Integer(1)), ERROR);
-    assertEquals(Math.log(0.5), unif.getLogProb(new Integer(1)), ERROR);
-    assertEquals(0.5, unif.getProb(new Integer(2)), ERROR);
-    assertEquals(Math.log(0.5), unif.getLogProb(new Integer(2)), ERROR);
-  }
 }
