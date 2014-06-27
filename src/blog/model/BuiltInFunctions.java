@@ -392,7 +392,8 @@ public class BuiltInFunctions {
   public static FixedFunction SET_SUM;
 
   /**
-   * Take a Set x of Real values, and return the sum of its elements.
+   * Take a Set x of values (any type, including user declared type), and return
+   * the number of elements in the Set.
    */
   public static FixedFunction SET_SIZE;
 
