@@ -74,6 +74,7 @@ public class BuiltInFunctions {
   public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
   public static final String LT_NAME = "__LESSTHAN";
   public static final String LEQ_NAME = "__LESSTHANOREQUAL";
+  public static final String CASE_EXPR_NAME = "__CASEINEXPR";
 
   // can be called by user
   public static final String SUCC_NAME = "succ";
@@ -93,6 +94,7 @@ public class BuiltInFunctions {
   public static final String TAN_NAME = "tan";
   public static final String ATAN2_NAME = "atan2";
   public static final String SUM_NAME = "sum";
+  public static final String SIZE_NAME = "size";
   public static final String VSTACK_NAME = "vstack";
   public static final String HSTACK_NAME = "hstack";
   public static final String EYE_NAME = "eye";
@@ -392,6 +394,12 @@ public class BuiltInFunctions {
   public static FixedFunction SET_SUM;
 
   /**
+   * Take a Set x of values (any type, including user declared type), and return
+   * the number of elements in the Set.
+   */
+  public static FixedFunction SET_SIZE;
+
+  /**
    * Special case for VSTACK when arguments are all matrices
    */
   private static FunctionInterp VSTACK_MATRIX_INTERP;
@@ -486,6 +494,12 @@ public class BuiltInFunctions {
    */
   public static FixedFunction IOTA;
 
+  /**
+   * Interpret the case expression in fixed function, also used for if then else
+   * in fixed function
+   */
+  public static TemplateFunction CASE_IN_FIXED_FUNC;
+
   private BuiltInFunctions() {
     // prevent instantiation
   }
@@ -525,8 +539,7 @@ public class BuiltInFunctions {
    * given return type and denotes the given value. Creates the constant symbol
    * automatically if it hasn't been created yet.
    */
-  public static FixedFunction getLiteral(String name, Type type,
-      Object value) {
+  public static FixedFunction getLiteral(String name, Type type, Object value) {
     FixedFunction f = getFunction(new FunctionSignature(name));
     if (f == null) {
       List params = Collections.singletonList(value);
@@ -829,8 +842,7 @@ public class BuiltInFunctions {
         return Timestep.at(arg1.getValue() - arg2.intValue());
       }
     };
-    TSMINUS = new FixedFunction(MINUS_NAME, argTypes, retType,
-        tsminusInterp);
+    TSMINUS = new FixedFunction(MINUS_NAME, argTypes, retType, tsminusInterp);
     addFunction(TSMINUS);
 
     FunctionInterp tsmultInterp = new AbstractFunctionInterp() {
@@ -918,8 +930,7 @@ public class BuiltInFunctions {
         }
       }
     };
-    SUB_MAT = new FixedFunction(SUB_MAT_NAME, argTypes, retType,
-        subMatInterp);
+    SUB_MAT = new FixedFunction(SUB_MAT_NAME, argTypes, retType, subMatInterp);
     addFunction(SUB_MAT);
 
     // Array subscription (aka indexing)
@@ -970,8 +981,7 @@ public class BuiltInFunctions {
         return mat1.plus(mat2);
       }
     };
-    PLUS_MAT = new FixedFunction(PLUS_NAME, argTypes, retType,
-        matPlusInterp);
+    PLUS_MAT = new FixedFunction(PLUS_NAME, argTypes, retType, matPlusInterp);
     addFunction(PLUS_MAT);
 
     // matrix minus
@@ -982,8 +992,7 @@ public class BuiltInFunctions {
         return mat1.minus(mat2);
       }
     };
-    MINUS_MAT = new FixedFunction(MINUS_NAME, argTypes, retType,
-        matMinusInterp);
+    MINUS_MAT = new FixedFunction(MINUS_NAME, argTypes, retType, matMinusInterp);
     addFunction(MINUS_MAT);
 
     // matrix multiplication
@@ -994,8 +1003,7 @@ public class BuiltInFunctions {
         return mat1.timesMat(mat2);
       }
     };
-    TIMES_MAT = new FixedFunction(MULT_NAME, argTypes, retType,
-        matTimesInterp);
+    TIMES_MAT = new FixedFunction(MULT_NAME, argTypes, retType, matTimesInterp);
     addFunction(TIMES_MAT);
 
     // Add non-random functions from (RealMatrix x Real) to RealMatrix
@@ -1046,8 +1054,7 @@ public class BuiltInFunctions {
         return mat1.inverse();
       }
     };
-    INV_MAT = new FixedFunction(INV_NAME, argTypes, retType,
-        matInverseInterp);
+    INV_MAT = new FixedFunction(INV_NAME, argTypes, retType, matInverseInterp);
     addFunction(INV_MAT);
 
     // Add non-random functions from RealMatrix to Real
@@ -1148,8 +1155,7 @@ public class BuiltInFunctions {
         }
       }
     };
-    DIAG_REAL_MAT = new FixedFunction(DIAG_NAME, argTypes, retType,
-        diagInterp);
+    DIAG_REAL_MAT = new FixedFunction(DIAG_NAME, argTypes, retType, diagInterp);
     addFunction(DIAG_REAL_MAT);
 
     // Repmat function for Real matrices
@@ -1167,8 +1173,7 @@ public class BuiltInFunctions {
         return matrix.repmat(rowTimes, colTimes);
       }
     };
-    REPMAT_REAL = new FixedFunction(REPMAT_NAME, argTypes, retType,
-        repMatReal);
+    REPMAT_REAL = new FixedFunction(REPMAT_NAME, argTypes, retType, repMatReal);
     addFunction(REPMAT_REAL);
 
     // Transpose function for Real matrices
@@ -1183,8 +1188,8 @@ public class BuiltInFunctions {
       }
     };
 
-    TRANSPOSE_REAL_MAT = new FixedFunction(TRANSPOSE_NAME, argTypes,
-        retType, transposeInterp);
+    TRANSPOSE_REAL_MAT = new FixedFunction(TRANSPOSE_NAME, argTypes, retType,
+        transposeInterp);
     addFunction(TRANSPOSE_REAL_MAT);
 
     // Transpose function for Integer matrices (uses the same FunctionInterp
@@ -1194,8 +1199,8 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(BuiltInTypes.INTEGER_MATRIX);
     retType = BuiltInTypes.INTEGER_MATRIX;
-    TRANSPOSE_INT_MAT = new FixedFunction(TRANSPOSE_NAME, argTypes,
-        retType, transposeInterp);
+    TRANSPOSE_INT_MAT = new FixedFunction(TRANSPOSE_NAME, argTypes, retType,
+        transposeInterp);
     addFunction(TRANSPOSE_INT_MAT);
 
     // Trigonometric functions on scalars:
@@ -1271,6 +1276,21 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL;
     SET_SUM = new FixedFunction(SUM_NAME, argTypes, retType, setSumInterp);
     addFunction(SET_SUM);
+
+    /**
+     * defining size(set) function
+     */
+    FunctionInterp setSizeInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Collection<?> set = (Collection<?>) args.get(0);
+        return set.size();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.SET);
+    retType = BuiltInTypes.INTEGER;
+    SET_SIZE = new FixedFunction(SIZE_NAME, argTypes, retType, setSizeInterp);
+    addFunction(SET_SIZE);
 
     /**
      * return the element in a singleton set
@@ -1492,8 +1512,7 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(BuiltInTypes.BUILT_IN);
     retType = BuiltInTypes.REAL;
-    TO_REAL = new FixedFunction(TOREAL_NAME, argTypes, retType,
-        toRealInterp);
+    TO_REAL = new FixedFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
     addFunction(TO_REAL);
 
     /**
@@ -1571,6 +1590,54 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL_MATRIX;
     EXP_MAT = new FixedFunction(EXP_NAME, argTypes, retType, expMatInterp);
     addFunction(EXP_MAT);
+
+    /*
+     * Case expression in fixed function body
+     */
+    CASE_IN_FIXED_FUNC = new TemplateFunction(CASE_EXPR_NAME) {
+
+      @Override
+      public FixedFunction getConcreteFunction(Type[] argTypes) {
+        if (argTypes == null || argTypes.length < 3
+            || (argTypes.length % 2 != 1))
+          return null;
+
+        /*
+         * type checking
+         */
+        List<Type> args = new ArrayList<Type>();
+        Type test = argTypes[0];
+        Type fromTy = argTypes[1];
+        Type toTy = argTypes[2];
+        if (test != fromTy)
+          return null;
+        args.add(test);
+        for (int i = 1; i < argTypes.length; i += 2) {
+          if (argTypes[i] != fromTy)
+            return null;
+          if (argTypes[i + 1] != toTy)
+            return null;
+          args.add(argTypes[i]);
+          args.add(argTypes[i + 1]);
+        }
+
+        // interpreter
+        FunctionInterp CaseInterp = new AbstractFunctionInterp() {
+          public Object getValue(List args) {
+            Object test = args.get(0);
+            for (int i = 1; i < args.size(); i += 2)
+              if (test.equals(args.get(i)))
+                return args.get(i + 1);
+            return Model.NULL;
+          }
+        };
+
+        FixedFunction retFunc = new FixedFunction(CASE_EXPR_NAME, args, toTy,
+            CaseInterp);
+        return retFunc;
+      }
+    };
+    addTemplate(CASE_IN_FIXED_FUNC);
   };
 }
 
