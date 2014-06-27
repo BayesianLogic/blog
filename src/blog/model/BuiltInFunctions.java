@@ -1298,7 +1298,10 @@ public class BuiltInFunctions {
     FunctionInterp iotaInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         Collection<?> set = (Collection<?>) args.get(0);
-        return ((set.size() == 1) ? set.iterator().next() : Model.NULL);
+        if (set.size() != 1) {
+          throw new IllegalArgumentException("iota expects a singleton set");
+        }
+        return set.iterator().next();
       }
     };
     argTypes.clear();
