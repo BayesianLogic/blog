@@ -121,6 +121,7 @@ public class GenericProposer extends AbstractProposer {
     logProbBackward = 0;
 
     PickVarToSampleResult result = pickVarToSample(world);
+    chosenVar = result.varToSample;
 
     if (result.varToSample == null)
       return 1.0;
@@ -201,9 +202,11 @@ public class GenericProposer extends AbstractProposer {
     CondProbDistrib cpd = distrib.getCPD();
     cpd.setParams(distrib.getArgValues());
     Object oldValue = world.getValue(varToSample);
+    chosenVarOldValue = oldValue;
     logProbBackward += Math.log(cpd.getProb(oldValue));
 
     Object newValue = cpd.sampleVal();
+    chosenVarNewValue = newValue;
     world.setValue(varToSample, newValue);
     logProbForward += Math.log(cpd.getProb(newValue));
 
@@ -222,4 +225,32 @@ public class GenericProposer extends AbstractProposer {
 
     logProbForward += instantiator.getLogProbability();
   }
+
+  // The following are for debugger use only!
+
+  private VarWithDistrib chosenVar = null;
+  private Object chosenVarOldValue = null;
+  private Object chosenVarNewValue = null;
+
+  public VarWithDistrib latestChosenVar() {
+    return chosenVar;
+  }
+
+  public Object latestChosenVarOldValue() {
+    return chosenVarOldValue;
+  }
+
+  public Object latestChosenVarNewValue() {
+    return chosenVarNewValue;
+  }
+
+  public double latestLogProbBackward() {
+    return logProbBackward;
+  }
+
+  public double latestLogProbForward() {
+    return logProbForward;
+  }
+
+  // End of debugger-only members.
 }

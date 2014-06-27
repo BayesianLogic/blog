@@ -37,12 +37,11 @@ package blog.engine;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
 
 import blog.BLOGUtil;
 import blog.DBLOGUtil;
-import blog.common.Util;
 import blog.model.Evidence;
+import blog.model.Queries;
 import blog.model.Query;
 import blog.sample.Sampler;
 import blog.type.Timestep;
@@ -57,17 +56,10 @@ import blog.world.PartialWorld;
  */
 public class Particle {
 
-  /**
-   * Creates a new particle. <code>numTimeSlicesInMemory</code> indicates how
-   * many time slices need to be kept in memory. The properties table specifies
-   * configuration parameters.
-   */
-  public Particle(Set idTypes, int numTimeSlicesInMemory, Sampler sampler) {
+  public Particle(Sampler sampler, PartialWorld world) {
     this.sampler = sampler;
-    this.numTimeSlicesInMemory = numTimeSlicesInMemory;
-    this.idTypes = idTypes;
-    curWorld = new DefaultPartialWorld(idTypes);
-    logWeight = 1; // all particles are created equal.
+    this.curWorld = world;
+    logWeight = 1; // FIXME: shouldn't it be 0???
   }
 
   /**
@@ -75,7 +67,7 @@ public class Particle {
    * on it, and recalculates particle logWeight according to its probability.
    */
   public void take(Evidence evidence) {
-    sampler.initialize(evidence, Util.list());
+    sampler.initialize(evidence, new Queries(null));
     sampler.setBaseWorld(curWorld);
 
     // System.out.println("Particle taking evidence.");
@@ -118,10 +110,6 @@ public class Particle {
     DBLOGUtil.removeVarsAtDiffTimestep(timestep, curWorld);
   }
 
-  public void removeAllDerivedVars() {
-    BLOGUtil.removeAllDerivedVars(curWorld);
-  }
-
   public PartialWorld getLatestWorld() {
     if (curWorld == null) {
       throw new IllegalStateException("Particle has no latest sample.");
@@ -134,16 +122,11 @@ public class Particle {
   }
 
   public Particle copy() {
-    Particle copy = new Particle(idTypes, numTimeSlicesInMemory, sampler);
-    DefaultPartialWorld newWorld = (DefaultPartialWorld) ((DefaultPartialWorld) curWorld)
+    DefaultPartialWorld worldCopy = (DefaultPartialWorld) ((DefaultPartialWorld) curWorld)
         .clone();
-    copy.setWorld(newWorld);
+    Particle copy = new Particle(sampler, worldCopy);
     copy.logWeight = logWeight;
     return copy;
-  }
-
-  protected void setWorld(PartialWorld curWorld) {
-    this.curWorld = curWorld;
   }
 
   public void updateQueriesStats(Collection queries) {
@@ -163,9 +146,7 @@ public class Particle {
     return "(" + curWorld + "," + logWeight + ")";
   }
 
-  protected Set idTypes; // of Type
   public PartialWorld curWorld = null;
   protected double logWeight;
-  public int numTimeSlicesInMemory;
   private Sampler sampler;
 }

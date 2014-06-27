@@ -36,8 +36,6 @@
 package blog.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -50,23 +48,18 @@ import blog.common.Util;
 import blog.io.TableWriter;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Queries;
 import blog.model.Query;
 import blog.sample.AfterSamplingListener;
 import blog.sample.Sampler;
 import blog.type.Timestep;
+import blog.world.DefaultPartialWorld;
 
 /**
  * A Particle Filter. It works by keeping a set of {@link Particles}, each
  * representing a partial world, weighted by the
  * evidence. It uses the following properties: <code>numParticles</code> or
  * <code>numSamples</code>: number of particles (default is <code>1000</code>).
- * <code>useDecayedMCMC</code>: takes values <code>true</code> or
- * <code>false</code> (the default). Whether to use rejuvenation, presented by
- * W. R. Gilks and C. Berzuini.
- * "Following a moving target --- Monte Carlo inference for dynamic Bayesian models."
- * Journal of the Royal Statistical Society, Series B, 63:127--146, 2001.
- * <code>numMoves</code>: the number of moves used in specified by the property
- * given at construction time (default is <code>1</code>).
  * 
  * The ParticleFilter is an unusual {@link InferenceEngine} in that it takes
  * evidence and queries additional to the ones taken by
@@ -101,13 +94,6 @@ public class ParticleFilter extends InferenceEngine {
           + numParticlesStr); // do not dump stack.
     }
 
-    String numMovesStr = properties.getProperty("numMoves", "1");
-    try {
-      numMoves = Integer.parseInt(numMovesStr);
-    } catch (NumberFormatException e) {
-      Util.fatalErrorWithoutStack("Invalid number of moves: " + numMovesStr);
-    }
-
     String idTypesString = properties.getProperty("idTypes", "none");
     idTypes = model.getListedTypes(idTypesString);
     if (idTypes == null) {
@@ -138,33 +124,22 @@ public class ParticleFilter extends InferenceEngine {
       System.out.println("Query: " + queries);
     }
     System.out.println("Report every: " + queryReportInterval + " timesteps");
-    resetAndTakeInitialEvidence();
-    answer(queries);
-    System.out.println("Log likelihood of data: " + dataLogLik);
-  }
-
-  /**
-   * Prepares particle filter for a new sequence of evidence and queries by
-   * generating a new set of particles from scratch, which are consistent with
-   * evidence set by {@link #setEvidence(Evidence)} (if it has not been invoked,
-   * empty evidence is assumed), ensuring behavior consistent with other
-   * {@link InferenceEngine}s.
-   */
-  public void resetAndTakeInitialEvidence() {
     reset();
     takeEvidenceAndAnswerQuery();
+    System.out.println("Log likelihood of data: " + dataLogLik);
   }
 
   private void reset() {
     System.out.println("Using " + numParticles + " particles...");
-    int numTimeSlicesInMemory = 1;
-    if (evidence == null)
-      evidence = new Evidence();
-    if (queries == null)
-      queries = new LinkedList();
+    if (evidence == null) {
+      evidence = new Evidence(model);
+    }
+    if (queries == null) {
+      queries = new Queries(model);
+    }
     particles = new ArrayList();
     for (int i = 0; i < numParticles; i++) {
-      Particle newParticle = makeParticle(idTypes, numTimeSlicesInMemory);
+      Particle newParticle = makeParticle(idTypes);
       particles.add(newParticle);
     }
     needsToBeResampledBeforeFurtherSampling = false;
@@ -174,8 +149,8 @@ public class ParticleFilter extends InferenceEngine {
     // Split evidence and queries according to the timestep it occurs in.
     Map<Timestep, Evidence> slicedEvidence = DBLOGUtil
         .splitEvidenceInTime(evidence);
-    Map<Timestep, List<Query>> slicedQueries = DBLOGUtil
-        .splitQueriesInTime((List<Query>) queries);
+    Map<Timestep, Queries> slicedQueries = DBLOGUtil
+        .splitQueriesInTime(queries);
 
     // Process atemporal evidence (if any) before everything else.
     if (slicedEvidence.containsKey(null)) {
@@ -224,8 +199,9 @@ public class ParticleFilter extends InferenceEngine {
    * extensions using specialized particles (don't forget to specialize
    * {@link Particle#copy()} for it to return an object of its own class).
    */
-  protected Particle makeParticle(Set idTypes, int numTimeSlicesInMemory) {
-    return new Particle(idTypes, numTimeSlicesInMemory, particleSampler);
+  protected Particle makeParticle(Set idTypes) {
+    DefaultPartialWorld world = new DefaultPartialWorld(idTypes);
+    return new Particle(particleSampler, world);
   }
 
   /**
@@ -235,7 +211,6 @@ public class ParticleFilter extends InferenceEngine {
    *          Timestep before which the vars should be removed
    */
   public void removePriorTimeSlice(Timestep timestep) {
-    // For now we assume numTimeSlicesInMemory = 1.
     for (Particle p : particles) {
       p.removePriorTimeSlice(timestep);
     }
@@ -243,68 +218,46 @@ public class ParticleFilter extends InferenceEngine {
 
   /** Takes more evidence. */
   public void take(Evidence evidence) {
-    if (particles == null)
-      resetAndTakeInitialEvidence();
-
-    if (!evidence.isEmpty()) { // must be placed after check on particles ==
-                               // null because after this method the filter
-                               // should be ready to take queries.
-
-      if (needsToBeResampledBeforeFurtherSampling) {
-        resample();
-      }
-
-      if (beforeTakesEvidence != null)
-        beforeTakesEvidence.evaluate(evidence, this);
-
-      for (Particle p : particles) {
-        if (beforeParticleTakesEvidence != null)
-          beforeParticleTakesEvidence.evaluate(p, evidence, this);
-        p.take(evidence);
-        if (afterParticleTakesEvidence != null)
-          afterParticleTakesEvidence.evaluate(p, evidence, this);
-
-        // if (!useDecayedMCMC) {
-        // p.uninstantiatePreviousTimeslices();
-        // p.removeAllDerivedVars();
-        // }
-
-      }
-
-      double logSumWeights = Double.NEGATIVE_INFINITY;
-      ListIterator particleIt = particles.listIterator();
-      while (particleIt.hasNext()) {
-        Particle particle = (Particle) particleIt.next();
-        if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
-          particleIt.remove();
-        } else {
-          logSumWeights = Util.logSum(logSumWeights,
-              particle.getLatestLogWeight());
-        }
-      }
-
-      if (particles.size() == 0)
-        throw new IllegalArgumentException("All particles have zero weight");
-
-      dataLogLik += logSumWeights;
-
-      needsToBeResampledBeforeFurtherSampling = true;
-
-      if (afterTakesEvidence != null)
-        afterTakesEvidence.evaluate(evidence, this);
+    if (evidence.isEmpty()) {
+      return;
     }
-  }
 
-  /**
-   * Answer queries according to current distribution represented by filter.
-   */
-  public void answer(Collection queries) {
-    if (particles == null)
-      resetAndTakeInitialEvidence();
-  }
+    if (needsToBeResampledBeforeFurtherSampling) {
+      resample();
+    }
 
-  public void answer(Query query) {
-    answer(Util.list(query));
+    if (beforeTakesEvidence != null)
+      beforeTakesEvidence.evaluate(evidence, this);
+
+    for (Particle p : particles) {
+      if (beforeParticleTakesEvidence != null)
+        beforeParticleTakesEvidence.evaluate(p, evidence, this);
+      p.take(evidence);
+      if (afterParticleTakesEvidence != null)
+        afterParticleTakesEvidence.evaluate(p, evidence, this);
+    }
+
+    double logSumWeights = Double.NEGATIVE_INFINITY;
+    ListIterator particleIt = particles.listIterator();
+    while (particleIt.hasNext()) {
+      Particle particle = (Particle) particleIt.next();
+      if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
+        particleIt.remove();
+      } else {
+        logSumWeights = Util.logSum(logSumWeights,
+            particle.getLatestLogWeight());
+      }
+    }
+
+    if (particles.size() == 0)
+      throw new IllegalArgumentException("All particles have zero weight");
+
+    dataLogLik += logSumWeights;
+
+    needsToBeResampledBeforeFurtherSampling = true;
+
+    if (afterTakesEvidence != null)
+      afterTakesEvidence.evaluate(evidence, this);
   }
 
   protected void resample() {
@@ -338,14 +291,6 @@ public class ParticleFilter extends InferenceEngine {
     }
 
     particles = newParticles;
-  }
-
-  private void printLogWeights() {
-    for (int i = 0; i < particles.size(); i++) {
-      System.out.println(i + ":"
-          + ((Particle) particles.get(i)).getLatestLogWeight());
-    }
-    System.out.println();
   }
 
   // PARTICLE TAKES EVIDENCE EVENT HANDLING
@@ -407,7 +352,6 @@ public class ParticleFilter extends InferenceEngine {
 
   private int numParticles;
   public List<Particle> particles;
-  private int numMoves;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
   private Sampler particleSampler;
   private AfterSamplingListener afterSamplingListener;

@@ -9,6 +9,7 @@ import java.util.Map;
 import blog.bn.BasicVar;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
+import blog.model.Queries;
 import blog.model.Query;
 import blog.model.SymbolEvidenceStatement;
 import blog.model.ValueEvidenceStatement;
@@ -72,8 +73,8 @@ public class DBLOGUtil {
     // Then we convert each list of statements to an Evidence object.
     Map<Timestep, Evidence> result = new HashMap<Timestep, Evidence>();
     for (Map.Entry<Timestep, List<Object>> entry : table.entrySet()) {
-      result
-          .put(entry.getKey(), Evidence.constructAndCompile(entry.getValue()));
+      result.put(entry.getKey(),
+          Evidence.constructAndCompile(evidence.model, entry.getValue()));
     }
     return result;
   }
@@ -82,14 +83,13 @@ public class DBLOGUtil {
    * Split queries by the timestep they refer to.
    * Atemporal queries are assigned to timestep null.
    */
-  public static Map<Timestep, List<Query>> splitQueriesInTime(
-      List<Query> queries) {
-    Map<Timestep, List<Query>> table = new HashMap<Timestep, List<Query>>();
+  public static Map<Timestep, Queries> splitQueriesInTime(Queries queries) {
+    Map<Timestep, Queries> table = new HashMap<Timestep, Queries>();
     for (Query q : queries) {
       Timestep t = ((ArgSpecQuery) q).argSpec().maxTimestep();
-      List<Query> qs = table.get(t);
+      Queries qs = table.get(t);
       if (qs == null) {
-        qs = new LinkedList<Query>();
+        qs = new Queries(queries.model);
         table.put(t, qs);
       }
       qs.add(q);
