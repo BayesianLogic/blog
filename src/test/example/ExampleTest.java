@@ -12,6 +12,7 @@ import blog.Main;
 import blog.common.Histogram;
 import blog.common.Util;
 import blog.engine.InferenceEngine;
+import blog.io.TableWriter;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -117,24 +118,8 @@ public abstract class ExampleTest {
     engine.answerQueries();
 
     // Print query results
-    System.out.println("======== Query Results =========");
-    for (Iterator iter = queries.iterator(); iter.hasNext();) {
-      Query q = (Query) iter.next();
-      q.printResults(System.out);
-
-      //			if (!(q instanceof ArgSpecQuery)) {
-      //				throw new IllegalStateException("Query has no histogram (not ArgSpecQuery)");
-      //			}
-      //			
-      //			Histogram hist = ((ArgSpecQuery)q).getHistogram();			
-      //			Collection varVals = hist.elementSet();
-      //			for (Iterator keys = varVals.iterator(); keys.hasNext();) {
-      //				Object key = keys.next();
-      //				System.out.println(key + ":\t" + hist.getWeight(key) / hist.getTotalWeight());
-      //			}
-    }
-
-    System.out.println();
+    TableWriter tableWriter = new TableWriter(queries);
+    tableWriter.writeResults(System.out);
   }
 
   /**

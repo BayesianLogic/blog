@@ -35,44 +35,85 @@
 
 package blog.distrib;
 
-import java.util.*;
-
-import blog.model.Clause;
-
 /**
  * EqualsCPD class is a convenience hack to represent the situation when the
  * value of the right-hand side of a {@link Clause} depends on a function
  * application rather than on a CPD.
  */
-public class EqualsCPD extends DetCondProbDistrib {
-	/**
-	 * An instance of EqualsCPD.
-	 */
-	public static final EqualsCPD CPD = new EqualsCPD();
+public class EqualsCPD implements CondProbDistrib {
+  /**
+   * An instance of EqualsCPD.
+   */
+  public static final EqualsCPD CPD = new EqualsCPD();
 
-	/**
-	 * Creates a new EqualsCPD.
-	 */
-	public EqualsCPD() {
-	}
+  /**
+   * @param params
+   *          A single-element object array. If the first element is non-null,
+   *          set this element as the value that this deterministic distribution
+   *          takes on.
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   */
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 1) {
+      throw new IllegalArgumentException("expecting one parameter");
+    }
+    setParams(params[0]);
+  }
 
-	/**
-	 * Creates a new EqualsCPD. The parameters are ignored.
-	 */
-	public EqualsCPD(List params) {
-	}
+  /**
+   * @param value
+   *          If non-null, this is the value that this deterministic
+   *          distribution should take on.
+   */
+  public void setParams(Object value) {
+    if (value != null) {
+      this.value = value;
+      this.hasValue = true;
+    }
+  }
 
-	/**
-	 * Returns the first element of the given argument tuple.
-	 * 
-	 * @throws IllegalArgumentException
-	 *           if <code>args</code> is not of size 1
-	 */
-	public Object getChildValue(List args) {
-		if (args.size() != 1) {
-			throw new IllegalArgumentException("Invalid arguments to EqualsCPD: "
-					+ args);
-		}
-		return args.get(0);
-	}
+  private void checkHasParams() {
+    if (!this.hasValue) {
+      throw new IllegalArgumentException(
+          "have not provided value for EqualsCPD");
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    checkHasParams();
+    return value.equals(this.value) ? 1 : 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    checkHasParams();
+    return value.equals(this.value) ? 0 : Double.NEGATIVE_INFINITY;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  @Override
+  public Object sampleVal() {
+    checkHasParams();
+    return value;
+  }
+
+  private Object value;
+  private boolean hasValue;
 }

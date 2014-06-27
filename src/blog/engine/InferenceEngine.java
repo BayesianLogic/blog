@@ -61,114 +61,114 @@ import blog.model.Query;
  * be ignored if the engine has no such parameters.
  */
 public abstract class InferenceEngine {
-	/**
-	 * Returns a new InferenceEngine object for the given BLOG model, with
-	 * properties specified by the given Properties table. In particular, the
-	 * InferenceEngine subclass is specified by the <code>engineClass</code>
-	 * property (the default is blog.SamplingEngine).
-	 */
-	public static InferenceEngine constructEngine(Model model,
-			Properties properties) {
-		String className = properties.getProperty("engineClass",
-				"blog.engine.SamplingEngine");
-		System.out.println("Constructing inference engine of class " + className);
+  /**
+   * Returns a new InferenceEngine object for the given BLOG model, with
+   * properties specified by the given Properties table. In particular, the
+   * InferenceEngine subclass is specified by the <code>engineClass</code>
+   * property (the default is blog.engine.SamplingEngine).
+   */
+  public static InferenceEngine constructEngine(Model model,
+      Properties properties) {
+    String className = properties.getProperty("engineClass",
+        "blog.engine.SamplingEngine");
+    System.out.println("Constructing inference engine of class " + className);
 
-		try {
-			Class engineClass = Class.forName(className);
-			Class[] paramTypes = { Model.class, Properties.class };
-			Constructor constructor = engineClass.getConstructor(paramTypes);
+    try {
+      Class engineClass = Class.forName(className);
+      Class[] paramTypes = { Model.class, Properties.class };
+      Constructor constructor = engineClass.getConstructor(paramTypes);
 
-			Object[] args = { model, properties };
-			return (InferenceEngine) constructor.newInstance(args);
-		} catch (Exception e) {
-			Util.fatalError(e);
-		}
+      Object[] args = { model, properties };
+      return (InferenceEngine) constructor.newInstance(args);
+    } catch (Exception e) {
+      Util.fatalError(e);
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	/**
-	 * Returns an inference engine of the given class, for given model and
-	 * properties.
-	 */
-	public static InferenceEngine constructEngine(String engineClassName,
-			Model model, Properties properties) {
-		Properties constructionProperties = new Properties();
-		constructionProperties.putAll(properties);
-		constructionProperties.setProperty("engineClass", engineClassName);
-		return InferenceEngine.constructEngine(model, constructionProperties);
-	}
+  /**
+   * Returns an inference engine of the given class, for given model and
+   * properties.
+   */
+  public static InferenceEngine constructEngine(String engineClassName,
+      Model model, Properties properties) {
+    Properties constructionProperties = new Properties();
+    constructionProperties.putAll(properties);
+    constructionProperties.setProperty("engineClass", engineClassName);
+    return InferenceEngine.constructEngine(model, constructionProperties);
+  }
 
-	/**
-	 * Creates a new inference engine for the given BLOG model.
-	 */
-	public InferenceEngine(Model model) {
-		this.model = model;
-	}
+  /**
+   * Creates a new inference engine for the given BLOG model.
+   */
+  public InferenceEngine(Model model) {
+    this.model = model;
+  }
 
-	/** Answer queries in <code>meq</code> using its evidence. */
-	public void solve(ModelEvidenceQueries meq) {
-		solve(meq.queries, meq.evidence);
-	}
+  /** Answer queries in <code>meq</code> using its evidence. */
+  public void solve(ModelEvidenceQueries meq) {
+    solve(meq.queries, meq.evidence);
+  }
 
-	/** Answer query given evidence. */
-	public void solve(Query query, Evidence evidence) {
-		solve(Util.list(query), evidence);
-	}
+  /** Answer query given evidence. */
+  public void solve(Query query, Evidence evidence) {
+    solve(Util.list(query), evidence);
+  }
 
-	/** Answer query given no evidence. */
-	public void solve(Query query) {
-		solve(Util.list(query), new Evidence());
-	}
+  /** Answer query given no evidence. */
+  public void solve(Query query) {
+    solve(Util.list(query), new Evidence());
+  }
 
-	/** Answer queries given evidence. */
-	public void solve(List queries, Evidence evidence) {
-		setEvidence(evidence);
-		setQueries(queries);
-		answerQueries();
-	}
+  /** Answer queries given evidence. */
+  public void solve(List queries, Evidence evidence) {
+    setEvidence(evidence);
+    setQueries(queries);
+    answerQueries();
+  }
 
-	/**
-	 * Sets the evidence to be conditioned on in the next call to
-	 * <code>answerQueries</code>.
-	 */
-	public void setEvidence(Evidence evidence) {
-		this.evidence = evidence;
-	}
+  /**
+   * Sets the evidence to be conditioned on in the next call to
+   * <code>answerQueries</code>.
+   */
+  public void setEvidence(Evidence evidence) {
+    this.evidence = evidence;
+  }
 
-	/**
-	 * Sets the queries to be answered in the next call to
-	 * <code>answerQueries</code>.
-	 * 
-	 * @param queries
-	 *          List of Query objects
-	 */
-	public void setQueries(List queries) {
-		this.queries.clear();
-		this.queries.addAll(queries);
-	}
+  /**
+   * Sets the queries to be answered in the next call to
+   * <code>answerQueries</code>.
+   * 
+   * @param queries
+   *          List of Query objects
+   */
+  public void setQueries(List queries) {
+    this.queries.clear();
+    this.queries.addAll(queries);
+  }
 
-	/**
-	 * Computes the answers to the specified queries given the specified evidence.
-	 * Records the answers by calling the appropriate methods (e.g.,
-	 * <code>updateStats</code>) on the specified Query objects.
-	 */
-	public abstract void answerQueries();
+  /**
+   * Computes the answers to the specified queries given the specified evidence.
+   * Records the answers by calling the appropriate methods (e.g.,
+   * <code>updateStats</code>) on the specified Query objects.
+   */
+  public abstract void answerQueries();
 
-	/**
-	 * The BLOG model on which this engine performs inference.
-	 */
-	protected Model model;
+  /**
+   * The BLOG model on which this engine performs inference.
+   */
+  protected Model model;
 
-	/**
-	 * The evidence set by the last call to <code>setEvidence</code>, or
-	 * <code>null</code> if <code>setEvidence</code> has not been called.
-	 */
-	protected Evidence evidence = null;
+  /**
+   * The evidence set by the last call to <code>setEvidence</code>, or
+   * <code>null</code> if <code>setEvidence</code> has not been called.
+   */
+  protected Evidence evidence = null;
 
-	/**
-	 * List of Query objects specified by the last call to <code>setQueries</code>
-	 * . This list is empty if <code>setQueries</code> has not been called.
-	 */
-	protected List queries = new ArrayList();
+  /**
+   * List of Query objects specified by the last call to <code>setQueries</code>
+   * . This list is empty if <code>setQueries</code> has not been called.
+   */
+  protected List<Query> queries = new ArrayList<Query>();
 }

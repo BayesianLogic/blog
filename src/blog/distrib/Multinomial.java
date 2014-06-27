@@ -35,239 +35,246 @@
 
 package blog.distrib;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
-import blog.model.MatrixSpec;
-import blog.model.Type;
 
 /**
- * Multinomial distribution.
+ * The multinomial distribution accepts two parameters, an integer
+ * <code>N</code> representing the number of trials, and <code>P</code>, an
+ * unnormalized row vector representing the unnormalized probabilities for each
+ * of the categories.
  * 
  * See https://en.wikipedia.org/wiki/Multinomial_distribution
+ * 
+ * @author cgioia
+ * @since June 17, 2014
  */
-public class Multinomial extends AbstractCondProbDistrib {
+public class Multinomial implements CondProbDistrib {
 
-  private void init(int numTrials, double[] pi) {
-    this.numTrials = numTrials;
-    this.pi = (double[]) pi.clone();
-    double sum = 0;
-    for (int i = 0; i < pi.length; i++) {
-      if (pi[i] < 0) {
-        throw new IllegalArgumentException("Probability " + pi[i]
+  /**
+   * set parameters for multinomial distribution.
+   * 
+   * @param params
+   *          an array of the form [Integer, MatrixLib]
+   *          <ul>
+   *          <li>params[0]: <code>N</code>, number of trials (Integer)</li>
+   *          <li>params[1]: <code>P</code>, probability of success for each
+   *          category (MatrixLib)</li>
+   *          </ul>
+   * 
+   * @see blog.distrib.CondProbDistrib#setParams(java.util.List)
+   */
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 2) {
+      throw new IllegalArgumentException("expected two parameters");
+    }
+    setParams((Integer) params[0], (MatrixLib) params[1]);
+  }
+
+  /**
+   * If method parameter n is non-null, then attempt to set distribution
+   * parameter <code>N</code> to n if n is a nonnegative integer.
+   * If method parameter p is non-null, then set distribution parameter
+   * <code>P</code> to method parameter p.
+   * 
+   * @param n
+   *          distribution parameter <code>N</code>, representing the number of
+   *          categories. Must be nonnegative. Can be set multiple times.
+   * 
+   * @param p
+   *          distribution parameter <code>P</code>, representing the row vector
+   *          of unnormalized probabilities.
+   */
+  public void setParams(Integer n, MatrixLib p) {
+    if (n != null) {
+      if (n < 0) {
+        throw new IllegalArgumentException(
+            "The number of trials 'n' for a Multinomial Distribution must be nonnegative");
+      }
+      this.n = n;
+      this.hasN = true;
+    }
+    if (p != null) {
+      if (p.numRows() != 1 || p.numCols() == 0) {
+        throw new IllegalArgumentException(
+            "The vector p passed in is not a row vector");
+      }
+      initializeProbabilityVector(p);
+      this.hasP = true;
+    }
+  }
+
+  /**
+   * Precondition: p is a row vector
+   * 
+   * Sets instance variable p to a normalized array of probabilities
+   * Sets pCDF to the CDF of p
+   * 
+   * @param p
+   */
+  private void initializeProbabilityVector(MatrixLib p) {
+    double sum = 0.0;
+    for (int i = 0; i < p.numCols(); i++) {
+      double ele = p.elementAt(0, i);
+      if (ele < 0) {
+        throw new IllegalArgumentException("Probability " + ele
             + " for element " + i + " is negative.");
       }
-      sum += pi[i];
+      sum += ele;
     }
     if (sum < 1e-9) {
       throw new IllegalArgumentException("Probabilities sum to approx zero");
     }
-    for (int i = 0; i < pi.length; i++) {
-      this.pi[i] /= sum;
+    this.k = p.numCols();
+    this.p = new double[k];
+    this.pCDF = new double[k];
+    this.p[0] = p.elementAt(0, 0) / sum;
+    pCDF[0] = this.p[0];
+    for (int i = 1; i < p.numCols(); i++) {
+      this.p[i] = p.elementAt(0, i) / sum;
+      this.pCDF[i] = pCDF[i - 1] + this.p[i];
     }
   }
 
-  /**
-   * Creates a Multinomial object with probabilities specified by the given
-   * array.
+  private void checkHasParams() {
+    if (!this.hasN) {
+      throw new IllegalArgumentException("parameter N not provided");
+    }
+    if (!this.hasP) {
+      throw new IllegalArgumentException("parameter P not provided");
+    }
+  }
+
+  /*
+   * (non-Javadoc)
    * 
-   * @throws IllegalArgumentException
-   *           if pi does not define a probability distribution
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
    */
-  public Multinomial(int numTrials, double[] pi) {
-    init(numTrials, pi);
-  }
-
-  public Multinomial(List params) {
-    if (params.size() == 2) {
-      // if (params.size() != 2) {
-      // throw new IllegalArgumentException("expected numTrials and pi");
-      // }
-
-      if (!(params.get(0) instanceof Number)) {
-        throw new IllegalArgumentException(
-            "expected first arg to be number numTrials");
-      }
-      int numTrials = ((Number) params.get(0)).intValue();
-
-      Object objectPi = params.get(1);
-      double[] nativePi;
-      if (objectPi instanceof MatrixSpec) {
-        objectPi = ((MatrixSpec) objectPi).getValueIfNonRandom();
-      }
-      if (objectPi instanceof MatrixLib) {
-        MatrixLib pi = (MatrixLib) objectPi;
-        if (pi.colLen() != 1) {
-          throw new IllegalArgumentException(
-              "expected second arg to be column vector");
-        }
-        nativePi = new double[pi.rowLen()];
-        for (int i = 0; i < pi.rowLen(); i++) {
-          nativePi[i] = pi.elementAt(i, 0);
-        }
-      } else if (objectPi instanceof ArrayList) {
-        ArrayList arrayPi = (ArrayList) objectPi;
-        int size = arrayPi.size();
-        nativePi = new double[size];
-        for (int i = 0; i < size; i++)
-          nativePi[i] = (double) arrayPi.get(i);
-      } else {
-        throw new IllegalArgumentException(
-            "expected second arg to be array of reals; got " + objectPi
-                + " instead, which is of type " + objectPi.getClass().getName());
-      }
-      init(numTrials, nativePi);
-      expectTrialsAsArg = false;
-    } else if (params.size() == 1) { // numTrials is a random variable
-      Object objectPi = params.get(0);
-      if (objectPi instanceof MatrixSpec) {
-        objectPi = ((MatrixSpec) objectPi).getValueIfNonRandom();
-      }
-      if (!(objectPi instanceof MatrixLib)) {
-        throw new IllegalArgumentException(
-            "expected second arg to be array of reals; got " + objectPi
-                + " instead, which is of type " + objectPi.getClass().getName());
-      }
-      MatrixLib pi = (MatrixLib) objectPi;
-      if (pi.colLen() != 1) {
-        throw new IllegalArgumentException(
-            "expected second arg to be column vector");
-      }
-      double[] nativePi = new double[pi.rowLen()];
-      for (int i = 0; i < pi.rowLen(); i++) {
-        nativePi[i] = pi.elementAt(i, 0);
-      }
-
-      init(0, nativePi);
-      expectTrialsAsArg = true;
-
-    }
+  @Override
+  public double getProb(Object value) {
+    return getProb((MatrixLib) value);
   }
 
   /**
-   * Returns the probability of given vector.
+   * Returns the probability of value outcomes, where value is a row vector
+   * representing the number of times each category occurred.
+   * 
+   * @param value
    */
-  public double getProb(List args, Object value) {
-    if (!(value instanceof MatrixLib)) {
-      throw new IllegalArgumentException("expected vector value");
+  public double getProb(MatrixLib value) {
+    checkHasParams();
+    if (!inSupport(value)) {
+      return 0.0;
     }
-    final int numBuckets = pi.length;
-    MatrixLib valueVector = (MatrixLib) value;
-    if (valueVector.rowLen() != numBuckets || valueVector.colLen() != 1) {
-      throw new IllegalArgumentException("value has wrong dimension");
-    }
-    int sum = 0;
-    for (int i = 0; i < numBuckets; i++) {
-      sum += valueVector.elementAt(i, 0);
-    }
-    if (sum != numTrials) {
-      return 0;
-    }
-    double prob = Util.factorial(numTrials);
-    for (int i = 0; i < numBuckets; i++) {
-      prob *= Math.pow(pi[i], valueVector.elementAt(i, 0));
-      prob /= Util.factorial((int) Math.round(valueVector.elementAt(i, 0)));
-      // FIXME: It would be better if we could take the param as an array
-      // of ints, so we don't have to worry about rounding.
+    double prob = Util.factorial(n);
+    for (int i = 0; i < k; i++) {
+      prob *= Math.pow(p[i], value.elementAt(0, i));
+      prob /= Util.factorial((int) Math.round(value.elementAt(0, i)));
     }
     return prob;
   }
 
   /**
-   * Returns the log probability of given vector.
+   * Returns whether or not the row vector <code>value</code> is a possible
+   * combination of occurrences for this multinomial distribution. In other
+   * words, returns true iff <code>value</code> is in the support of this
+   * multinomial distribution. Refer to
+   * http://en.wikipedia.org/wiki/Multinomial_distribution.
+   * 
+   * @throws IllegalArgumentException
+   *           if value is not a row vector of the correct dimension (1 by k)
    */
-  public double getLogProb(List args, Object value) {
-    if (!(value instanceof MatrixLib)) {
-      throw new IllegalArgumentException("expected vector value");
+  private boolean inSupport(MatrixLib value) {
+    if (value.numRows() != 1 || value.numCols() != k) {
+      throw new IllegalArgumentException(
+          "The matrix provided is of the incorrect dimensions. Expecting a 1 by "
+              + this.k + " row vector but instead got a matrix of dimension "
+              + value.numRows() + " by " + value.numCols());
     }
-    MatrixLib valueVector = (MatrixLib) value;
-    if (valueVector.rowLen() != numTrials) {
-      throw new IllegalArgumentException("value has wrong dimension");
+    double sum = 0.0;
+    for (int i = 0; i < k; i++) {
+      double element = value.elementAt(0, i);
+      if (element < 0 || element % 1 != 0.0) {
+        return false; // Number of successes for a particular category is
+                      // negative
+        // or not an integer
+      }
+      sum += element;
     }
-    int sum = 0;
-    for (int i = 0; i < numTrials; i++) {
-      sum += valueVector.elementAt(i, 0);
+    if (sum != n) {
+      return false; // N != the sum of values
     }
-    if (sum != numTrials) {
-      return 0;
+    return true;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    return getLogProb((MatrixLib) value);
+  }
+
+  /**
+   * Returns the log probability of value outcomes, where value is a row vector
+   * representing the number of times each category occurred.
+   * 
+   * @param value
+   */
+  public double getLogProb(MatrixLib value) {
+    checkHasParams();
+    if (!inSupport(value)) {
+      return Double.NEGATIVE_INFINITY;
     }
-    double logProb = Util.logFactorial(numTrials);
-    for (int i = 0; i < numTrials; i++) {
-      logProb += valueVector.elementAt(i, 0) * Math.log(pi[i]);
-      logProb -= Util
-          .logFactorial((int) Math.round(valueVector.elementAt(i, 0)));
+    double logProb = Util.logFactorial(n);
+    for (int i = 0; i < k; i++) {
+      logProb += value.elementAt(0, i) * Math.log(p[i]);
+      logProb -= Util.logFactorial((int) Math.round(value.elementAt(0, i)));
     }
     return logProb;
   }
 
-  /**
-   * Returns a vector chosen at random according to this distribution.
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
    */
-  public MatrixLib sampleVal(List args, Type childType) {
-    ensureTrialsInited(args);
+  @Override
+  public Object sampleVal() {
+    return sample_value();
+  }
 
-    final int numBuckets = pi.length;
-    double[] cdf = new double[numBuckets];
-    cdf[0] = pi[0];
-    for (int i = 1; i < numBuckets; i++) {
-      cdf[i] = cdf[i - 1] + pi[i];
-    }
-
-    int[] result = new int[numBuckets];
-    for (int i = 0; i < numBuckets; i++) {
+  /** Samples a value from the multinomial. */
+  public MatrixLib sample_value() {
+    checkHasParams();
+    // result actually stores integers, but we declare it as double because we
+    // don't have support for int matrices
+    double[] result = new double[k];
+    for (int i = 0; i < k; i++) {
       result[i] = 0;
     }
 
-    Random rng = new java.util.Random();
-    for (int trial = 0; trial < numTrials; trial++) {
-      double val = rng.nextDouble();
+    for (int trial = 0; trial < n; trial++) {
+      double val = Util.random();
       int bucket;
-      for (bucket = 0; bucket < numBuckets; bucket++) {
-        if (val <= cdf[bucket]) {
+      for (bucket = 0; bucket < k; bucket++) {
+        if (val <= pCDF[bucket]) {
           break;
         }
       }
       result[bucket] += 1;
     }
-
-    // Convert to Jama (nasty).
-    double[][] doubleResult = new double[numBuckets][1];
-    for (int i = 0; i < numBuckets; i++) {
-      doubleResult[i][0] = result[i];
-    }
-    return MatrixFactory.fromArray(doubleResult);
+    return MatrixFactory.createRowVector(result);
   }
 
-  private void ensureTrialsInited(List args) {
-    if (expectTrialsAsArg) {
-      if (args.isEmpty() || args.size() > 1) {
-        throw new IllegalArgumentException(
-            "Arguments to Multinomial should consist of an "
-                + "integer only, since the number of trials were not "
-                + "specified as parameters.");
-      }
-
-      if (!(args.get(0) instanceof Number)) {
-        throw new IllegalArgumentException(
-            "expected first arg to be number numTrials");
-      }
-      int numTrials = ((Number) args.get(0)).intValue();
-      this.numTrials = numTrials;
-
-    } else if (args != null) {
-      if (!args.isEmpty()) {
-        throw new IllegalArgumentException(
-            "Multinomial expects no arguments (number of trials "
-                + "were specified as parameters).");
-      }
-    }
-  }
-
-  private int numTrials;
-  private double[] pi;
-  private boolean expectTrialsAsArg;
+  private int n; // the number of trials
+  private boolean hasN;
+  private double[] p; // probability vector
+  private double[] pCDF;
+  private boolean hasP;
+  private int k; // the number of categories; dimension of p
 }

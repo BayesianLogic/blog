@@ -35,417 +35,137 @@
 
 package blog.distrib;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import blog.common.Util;
-import blog.common.numerical.MatrixLib;
-import blog.model.ArgSpec;
-import blog.model.Model;
-import blog.model.Term;
-import blog.model.Type;
 
 /**
- * Distribution over a finite set of possible values numbered 0, ..., k-1,
- * or maybe guaranteed objects
- * parameterized by a vector of probabilities pi<sub>0</sub>, ...,
- * pi<sub>k-1</sub> that sum to one. The possible values can be the user-defined
- * guaranteed objects of some type, or a finite prefix of the natural numbers.
- * The probability vector can be specified when the distribution is constructed,
- * or as an argument to the getProb and sampleVal methods (in the form of a
- * column vector).
+ * Categorical Distribution takes a distribution parameter <code>map</code>,
+ * which is a map from objects to numbers. The number corresponding to each
+ * object represents the probability of that object occurring.
  */
-public class Categorical extends AbstractCondProbDistrib {
-  /**
-   * Value for constructor's <code>flag</code> argument indicating that all
-   * flags are false.
-   */
-  public static final int NO_FLAGS = 0;
+public class Categorical implements CondProbDistrib {
 
   /**
-   * Value that can be bitwise or'ed with a <code>flag</code> argument to
-   * indicate that the given weights are normalized (sum to 1).
-   */
-  public static final int NORMALIZED = 1 << 0;
-
-  /**
-   * Value that can be bitwise or'ed with a <code>flag</code> argument to
-   * indicate that the weights are given as (natural) logs.
-   */
-  public static final int LOG = 1 << 1;
-
-  /**
-   * Value that can be bitwise or'ed with a <code>flag</code> argument to
-   * indicate that the weights are sorted in non-increasing order (largest
-   * first). This allows log weights to be normalized slightly faster (the code
-   * divides each weight by the largest one before exponentiating, to avoid
-   * underflow).
-   */
-  public static final int SORTED = 1 << 2;
-
-  /**
-   * Creates a new Categorical distribution representing the uniform
-   * distribution over the given number of values.
-   */
-  public Categorical(int numValues) {
-    probs = new double[numValues];
-    Arrays.fill(probs, 1.0 / numValues);
-    expectProbsAsArg = false;
-  }
-
-  /**
-   * Creates a new Categorical distribution with the given probability vector.
-   * The number of values is the length of this vector.
-   */
-  public Categorical(double[] probs) {
-    this.probs = (double[]) probs.clone();
-    normalizeProb();
-    expectProbsAsArg = false;
-  }
-
-  /**
-   * Creates a new Categorical distribution with the given probability weights.
-   * The <code>flags</code> argument is treated as a bit vector indicating what
-   * assumptions can be made about the given weights. The possible flags are
-   * public static fields of the Categorical class.
-   */
-  public Categorical(double[] weights, int flags) {
-    this(weights); // sets probs to be a copy of weights
-
-    if ((flags & NORMALIZED) == 0) {
-      // have to normalize
-
-      if ((flags & LOG) != 0) {
-        // Normalize weights and take them out of the log domain.
-        // To avoid underflow when exponentiating, we subtract
-        // the maximum weight from each weight.
-        double maxWeight = (weights.length == 0) ? 1 : weights[0];
-        if ((flags & SORTED) == 0) {
-          for (int i = 1; i < weights.length; ++i) {
-            if (weights[i] > maxWeight) {
-              maxWeight = weights[i];
-            }
-          }
-        }
-
-        double scaledSum = 0; // scaledSum = sum / exp(maxWeight)
-        for (int i = 0; i < weights.length; ++i) {
-          scaledSum += Math.exp(weights[i] - maxWeight);
-        }
-
-        // sum = scaledSum * exp(maxWeight)
-        double logNormFactor = Math.log(scaledSum) + maxWeight;
-
-        for (int i = 0; i < weights.length; ++i) {
-          probs[i] = Math.exp(weights[i] - logNormFactor);
-        }
-      } else {
-        // Normalize weights, no logs.
-        double sum = 0;
-        for (int i = 0; i < probs.length; ++i) {
-          sum += probs[i];
-        }
-
-        for (int i = 0; i < probs.length; ++i) {
-          probs[i] /= sum;
-        }
-      }
-    } else {
-      // Weights are already normalized; just see if we have to
-      // take them out of log domain.
-      if ((flags & LOG) != 0) {
-        for (int i = 0; i < probs.length; ++i) {
-          probs[i] = Math.exp(probs[i]);
-        }
-      }
-    }
-  }
-
-  /**
-   * Creates a new Categorical distribution from the given parameter list.
-   * If the parameter list contains only one element of MapSpec,
-   * the map is used to initialize the categorical distribution (from value to
-   * probability)
-   * If the parameter list is empty, then the probability vector must be passed
-   * as
-   * an argument to this CPD. Otherwise, the parameter list should contain the
-   * probability vector as a sequence of Number objects.
-   */
-  public Categorical(List params) {
-    if (!params.isEmpty()) {
-      int sz = params.size();
-      if (sz == 1) {
-        Object obj = params.get(0);
-        if (obj instanceof Map) {
-          Map<ArgSpec, Term> map = (Map<ArgSpec, Term>) obj;
-          int entrysize = map.size();
-          probs = new double[entrysize];
-          values = new Object[entrysize];
-
-          int termIndex = 0;
-          for (ArgSpec as : map.keySet()) {
-            probs[termIndex] = map.get(as).asDouble();
-            values[termIndex] = as.getValueIfNonRandom();
-            termIndex++;
-          }
-          expectProbsAsArg = false;
-        } else if (obj instanceof MatrixLib) {
-          MatrixLib mapping = (MatrixLib) obj;
-          int numElements = mapping.colLen();
-
-          probs = new double[numElements];
-          values = new Object[numElements];
-          for (int i = 0; i < numElements; i++) {
-            probs[i] = mapping.elementAt(0, i);
-            values[i] = i;
-          }
-          expectProbsAsArg = false;
-        } else if (obj instanceof ArrayList) {
-          ArrayList mapping = (ArrayList) obj;
-          int numElements = mapping.size();
-
-          probs = new double[numElements];
-          values = new Object[numElements];
-          for (int i = 0; i < numElements; i++) {
-            probs[i] = (Double) mapping.get(i);
-            values[i] = i;
-          }
-        } else {
-          // TODO
-          Util.fatalError("Categorical with " + obj + " not supported yet");
-        }
-      } else {
-        probs = new double[params.size()];
-        for (int i = 0; i < params.size(); ++i) {
-          probs[i] = ((Number) params.get(i)).doubleValue();
-        }
-        expectProbsAsArg = false;
-      }
-    } else {
-      expectProbsAsArg = true;
-    }
-    normalizeProb();
-  }
-
-  /**
-   * Returns the number of values to which this distribution explicitly assigns
-   * a probability.
+   * set parameters for categorical distribution
    * 
-   * @throws IllegalStateException
-   *           if the probability vector was not specified when this
-   *           distribution was constructed
+   * @param params
+   *          An array of the form [Map<Object, Number>]
+   *          <ul>
+   *          <li>params[0]: <code>map</code> (Map<Object, Number[])
    */
-  public int getNumValues() {
-    if (expectProbsAsArg) {
-      throw new IllegalStateException(
-          "Categorical distribution was constructed without a "
-              + "probability vector.");
+  @Override
+  public void setParams(Object[] params) {
+    if (params.length != 1) {
+      throw new IllegalArgumentException("expecting one parameter");
     }
-
-    return probs.length;
+    setParams((Map<?, ?>) params[0]);
   }
 
   /**
-   * Returns the probability of the value with the given index under this
-   * distribution. If the given index is greater than the length of this
-   * distribution's probability vector, then the return value is zero.
-   * 
-   * @throws IllegalStateException
-   *           if the probability vector was not specified when this
-   *           distribution was constructed
-   * 
-   * @throws IllegalArgumentException
-   *           if <code>index</code> is negative
+   * If method parameter map is non-null, normalize the probabilities of the
+   * values for each object, and set the distribution parameter <code>map</code>
+   * to the method parameter map.
    */
-  public double getProb(int index) {
-    if (expectProbsAsArg) {
-      throw new IllegalStateException(
-          "Categorical distribution was constructed without a "
-              + "probability vector.");
-    }
-
-    if (index < 0) {
-      throw new IllegalArgumentException(
-          "Negative index passed to Categorical.getProb: " + index);
-    }
-    if (index >= probs.length) {
-      return 0.0;
-    }
-    return probs[index];
-  }
-
-  /**
-   * Returns the log probability of the value with the given index under this
-   * distribution. If the given index is greater than the length of this
-   * distribution's probability vector, then the return value is
-   * Double.NEGATIVE_INFINITY.
-   * 
-   * @throws IllegalStateException
-   *           if the probability vector was not specified when this
-   *           distribution was constructed
-   * 
-   * @throws IllegalArgumentException
-   *           if <code>index</code> is negative
-   */
-  public double getLogProb(int index) {
-    if (expectProbsAsArg) {
-      throw new IllegalStateException(
-          "Categorical distribution was constructed without a "
-              + "probability vector.");
-    }
-
-    if (index < 0) {
-      throw new IllegalArgumentException(
-          "Negative index passed to Categorical.getLogProb: " + index);
-    }
-    if (index >= probs.length) {
-      return Double.NEGATIVE_INFINITY;
-    }
-    return Math.log(probs[index]);
-  }
-
-  /**
-   * Returns the probability of the given child value conditioned on the given
-   * argument values. If this distribution was constructed with a probability
-   * vector, then no arguments are expected. Otherwise, there should be one
-   * argument, namely a column vector of probabilities.
-   * 
-   * @return the probability associated with <code>childValue</code>'s index, or
-   *         0 if <code>childValue</code> does not have an index or its index is
-   *         beyond the end of the probability vector
-   * 
-   * @throws IllegalArgumentException
-   *           if the probability vector was specified at construction and
-   *           <code>args</code> is non-empty, or if the probability vector was
-   *           not specified and <code>args</code> is empty
-   */
-  public double getProb(List args, Object childValue) {
-    ensureProbsInited(args);
-
-    for (int i = 0; i < values.length; i++) {
-      if (childValue == values[i])
-        return probs[i];
-    }
-    return 0;
-  }
-
-  /**
-   * make sure the probability vector is normalized to 1
-   */
-  private void normalizeProb() {
-    if (probs == null || values == null)
-      return;
-    double s = 0;
-    for (int i = 0; i < probs.length; ++i) {
-      s += probs[i];
-    }
-    for (int i = 0; i < probs.length; ++i) {
-      probs[i] /= s;
-    }
-    if (s <= 0) {
-      throw new IllegalArgumentException(
-          "Categorical distribution gets incorrect weights!");
-    }
-  }
-
-  /**
-   * Returns an index sampled from this distribution.
-   * 
-   * @throws IllegalStateException
-   *           if the probability vector was not specified when this
-   *           distribution was constructed
-   */
-  public int sampleVal() {
-    if (expectProbsAsArg) {
-      throw new IllegalStateException(
-          "Categorical distribution was constructed without a "
-              + "probability vector.");
-    }
-
-    return Util.sampleWithProbs(probs);
-  }
-
-  /**
-   * Returns a value sampled from the given child type according to this
-   * distribution. If this distribution was constructed with a probability
-   * vector, then no arguments are expected. Otherwise, there should be one
-   * argument, namely a column vector of probabilities.
-   * 
-   * @return a guaranteed object of the given type whose index is sampled
-   *         according to this distribution, or Model.NULL if the index sampled
-   *         is beyond the end of the guaranteed object list for the given type
-   * 
-   * @throws IllegalArgumentException
-   *           if the probability vector was specified at construction and
-   *           <code>args</code> is non-empty, or if the probability vector was
-   *           not specified and <code>args</code> is empty
-   */
-  public Object sampleVal(List args, Type childType) {
-    ensureProbsInited(args);
-
-    int index = Util.sampleWithProbs(probs);
-    Object value = values[index];
-
-    if (value == null) {
-      // make list so we can print the probabilities easily
-      List probList = new ArrayList();
-      for (int i = 0; i < probs.length; ++i) {
-        probList.add(new Double(probs[i]));
-      }
-      System.err.println("Warning: distribution does not sum to 1 over "
-          + "the guaranteed objects of type " + childType + ": " + probList);
-      value = Model.NULL;
-    }
-    return value;
-  }
-
-  private void ensureProbsInited(List args) {
-    if (expectProbsAsArg) {
-      if (args.isEmpty()) {
+  public void setParams(Map<?, ?> map) {
+    if (map != null) {
+      if (map.size() == 0) {
         throw new IllegalArgumentException(
-            "Arguments to Categorical CPD should consist of a "
-                + "probability vector, since the probabilities were not "
-                + "specified as CPD parameters.");
+            "no elements within map for categorical distribution");
       }
-
-      Object arg = args.get(0);
-      if (arg instanceof MatrixLib) {
-        MatrixLib m = (MatrixLib) args.get(0);
-        probs = new double[m.colLen()];
-        values = new Object[m.colLen()];
-        for (int i = 0; i < probs.length; ++i) {
-          probs[i] = m.elementAt(0, i);
-          values[i] = Integer.valueOf(i);
+      double sum = 0.0;
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
+        Object o = entry.getValue();
+        Number probNum = (Number) entry.getValue();
+        double prob = probNum.doubleValue();
+        if (prob < 0) {
+          throw new IllegalArgumentException("Probability " + prob
+              + " for key " + entry.getKey().toString() + " is negative");
         }
-      } else if (arg instanceof Map) {
-        Map<Object, Number> map = (Map<Object, Number>) arg;
-        int entrysize = map.size();
-        probs = new double[entrysize];
-        values = new Object[entrysize];
-        int termIndex = 0;
-        for (Map.Entry<Object, Number> entry : map.entrySet()) {
-          probs[termIndex] = entry.getValue().doubleValue();
-          values[termIndex] = entry.getKey();
-          termIndex++;
-        }
-      } else {
-        throw new IllegalArgumentException(
-            "Argument to Categorical CPD should be a row "
-                + "vector of probabilities, or a map not: " + args.get(0));
+        sum += prob;
       }
-      normalizeProb();
-    } else if (args != null) {
-      if (!args.isEmpty()) {
+      if (sum < 1e-9) {
         throw new IllegalArgumentException(
-            "Categorical CPD expects no arguments (probabilities "
-                + "were specified as CPD parameters).");
+            "probabilities sum to approximately zero");
       }
+      this.map = new HashMap<Object, Double>();
+      this.logMap = new HashMap<Object, Double>();
+      this.objects = new Object[map.size()];
+      this.cdfObjects = new double[map.size()];
+      int count = 0;
+      double cdf = 0.0;
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
+        Object key = entry.getKey();
+        Number num = (Number) entry.getValue();
+        double value = num.doubleValue();
+        this.objects[count] = key;
+        double prob = value / sum;
+        cdf += prob;
+        this.cdfObjects[count] = cdf;
+        this.map.put(key, prob);
+        this.logMap.put(key, Math.log(prob));
+        count += 1;
+      }
+      this.hasMap = true;
     }
   }
 
-  boolean expectProbsAsArg = false;
-  private double[] probs;
-  private Object[] values;
+  private void checkHasParams() {
+    if (!this.hasMap) {
+      throw new IllegalArgumentException("parameter map not provided");
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getProb(java.lang.Object)
+   */
+  @Override
+  public double getProb(Object value) {
+    checkHasParams();
+    Double prob = map.get(value);
+    return prob != null ? prob : 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#getLogProb(java.lang.Object)
+   */
+  @Override
+  public double getLogProb(Object value) {
+    checkHasParams();
+    Double logProb = logMap.get(value);
+    return logProb != null ? logProb : Double.NEGATIVE_INFINITY;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.distrib.CondProbDistrib#sampleVal()
+   */
+  @Override
+  public Object sampleVal() {
+    checkHasParams();
+    double val = Util.random();
+    for (int i = 0; i < cdfObjects.length; i++) {
+      if (val <= cdfObjects[i]) {
+        return objects[i];
+      }
+    }
+    return objects[objects.length - 1];
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getName();
+  }
+
+  private HashMap<Object, Double> map;
+  private HashMap<Object, Double> logMap;
+  private Object[] objects; // Ordered collection of objects
+  private double[] cdfObjects; // CDF corresponding to objects
+  private boolean hasMap;
 }

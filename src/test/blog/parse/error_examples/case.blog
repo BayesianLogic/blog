@@ -1,0 +1,8 @@
+random Integer f(Integer x) ~
+	case (x > 0) in { false => Gaussian(x, 1), true => Gaussian(x, 0) };
+
+random Integer f(Integer x) ~
+	case (x > 0) { false => Gaussian(x, 1), true => Gaussian(x, 0) };
+
+random Integer f(Integer x) ~
+	case (x > 0) { false -> Gaussian(x, 1), true -> Gaussian(x, 0) };

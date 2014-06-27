@@ -110,7 +110,7 @@ public class DerivedVar extends AbstractBayesNetVar {
 		// Note that 'determined' does not mean 'instantiated'.
 	}
 
-	public Timestep timestep() {
+	public Timestep maxTimestep() {
 		return null;
 	}
 
