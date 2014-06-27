@@ -14,6 +14,15 @@ import blog.`type`.Timestep
 import blog.world.DefaultPartialWorld
 
 /**
+ * Particle filter.
+ *
+ * Currently used only from the interactive shell.
+ * In the future this will be unified with the java ParticleFilter code.
+ *
+ * You can run the ParticleFilter in batch mode using OfflineFilterFeeder.
+ * If you want to run the ParticleFilter online, you have to write your own
+ * FilterFeeder to provide evidence and queries at each timestep.
+ *
  * @author cberzan
  * @since Jun 23, 2014
  */
