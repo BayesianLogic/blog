@@ -1,3 +1,17 @@
-fixed RealMatrix a = loadRealMatrix("a.txt");
+// This example shows how to read a matrix from a space-separated text file.
 
+
+// This matrix was generated from Python with:
+// a = np.eye(3)
+// savetxt("matrix-from-numpy.txt", a)
+
+fixed RealMatrix a = loadRealMatrix("example/matrix-from-numpy.txt");
 query a;
+
+
+// This matrix was generated from Matlab with:
+// a = eye(4)
+// save('matrix-from-matlab.txt', 'a', '-ascii')
+
+fixed RealMatrix b = loadRealMatrix("example/matrix-from-matlab.txt");
+query b;
