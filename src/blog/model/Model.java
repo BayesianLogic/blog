@@ -35,6 +35,7 @@
 
 package blog.model;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -416,8 +417,10 @@ public class Model {
     return constant;
   }
 
-  /** Prints this model to the given stream. */
-  public void print(PrintStream s) {
+  public String toString() {
+    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+    PrintStream s = new PrintStream(byteStream);
+
     // Print guaranteed objects
     for (Iterator iter = types.iterator(); iter.hasNext();) {
       Type type = (Type) iter.next();
@@ -448,6 +451,8 @@ public class Model {
         ((RandomFunction) f).printDepStatement(s);
       }
     }
+
+    return byteStream.toString();
   }
 
   /**
