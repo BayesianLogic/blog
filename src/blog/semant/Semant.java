@@ -537,7 +537,7 @@ public class Semant {
     if (body instanceof Term || body instanceof Formula
         || body instanceof TupleSetSpec) {
       cl.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-          .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) body)));
+          .singletonList((ArgSpec) body)));
     } else if (body instanceof Clause) {
       cl.add((Clause) body);
     } else if (e instanceof IfExpr) {
@@ -858,7 +858,7 @@ public class Semant {
     } else {
       // should be ArgSpec
       clauses.add(new Clause(test, EqualsCPD.class, Collections
-          .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
+          .singletonList((ArgSpec) value)));
     }
   }
 
@@ -892,7 +892,7 @@ public class Semant {
     } else {
       // should be ArgSpec
       clauses.add(new Clause(TrueFormula.TRUE, EqualsCPD.class, Collections
-          .<ArgSpec> emptyList(), Collections.singletonList((ArgSpec) value)));
+          .singletonList((ArgSpec) value)));
     }
   }
 

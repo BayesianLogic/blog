@@ -38,8 +38,6 @@ package blog.model;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -62,68 +60,19 @@ import blog.sample.EvalContext;
 public class Clause {
 
   /**
-   * Creates a new clause.
-   * 
-   * @param cond
-   *          the condition under which this clause applies
-   * @param cpdClass
-   *          the class of the conditional probability distribution used in this
-   *          clause
-   * @param cpdParams
-   *          List of ArgSpec objects representing CPD parameters. These must be
-   *          non-random and must contain no free variables.
-   * @param cpdArgs
-   *          List of ArgSpec objects whose denotations will be passed to the
-   *          CPD each time it is invoked
-   */
-  public Clause(Formula cond, Class<? extends CondProbDistrib> cpdClass,
-      List<ArgSpec> cpdParams, List<ArgSpec> cpdArgs) {
-    this.cond = cond;
-    this.cpdClass = cpdClass;
-    this.cpdParams = cpdParams;
-    this.cpd = null;
-    this.cpdArgs = cpdArgs;
-    this.cpdArgsAndParams = null;
-  }
-
-  /**
-   * Create a new clause where it is not yet known which fields are
-   * parameters and which are arguments.
+   * Create a new clause.
    * 
    * @param cond
    *          the condition under which this clause applies
    * @param cpdCLass
    *          the class of the conditional probability distribution used.
-   * @param cpdArgsAndParams
-   *          A mixed list of arguments and parameters.
+   * @param cpdArgs
+   *          A list of arguments (may be fixed or non-fixed).
    */
-  public Clause(Formula cond, Class<? extends CondProbDistrib> cpdClass,
-      List<ArgSpec> cpdArgsAndParams) {
+  public Clause(Formula cond, Class cpdClass, List<ArgSpec> cpdArgs) {
     this.cond = cond;
     this.cpdClass = cpdClass;
-    this.cpdParams = null;
-    this.cpdArgs = null;
-    this.cpdArgsAndParams = cpdArgsAndParams;
-  }
-
-  /**
-   * Creates a new clause using the given CondProbDistrib object.
-   * 
-   * @param cond
-   *          the condition under which this clause applies
-   * @param cpd
-   *          conditional probability distribution for this clause
-   * @param cpdArgs
-   *          List of ArgSpec objects whose denotations will be passed to the
-   *          CPD each time it is invoked
-   */
-  public Clause(Formula cond, CondProbDistrib cpd, List<ArgSpec> cpdArgs) {
-    this.cond = cond;
-    this.cpdClass = cpd.getClass();
-    this.cpdParams = Collections.emptyList();
-    this.cpd = cpd;
     this.cpdArgs = cpdArgs;
-    this.cpdArgsAndParams = null;
   }
 
   public void setCond(Formula cond) {
@@ -135,18 +84,11 @@ public class Clause {
   }
 
   public CondProbDistrib getCPD() {
-
     return cpd;
-
   }
 
-  /**
-   * @return List of ArgSpec objects
-   */
-  public List getArgs() {
-
+  public List<ArgSpec> getArgs() {
     return cpdArgs;
-
   }
 
   /**
@@ -156,15 +98,20 @@ public class Clause {
    */
   public DependencyModel.Distrib getDistrib(EvalContext context) {
     context.pushEvaluee(this);
-    List argValues = new ArrayList();
+    List<Object> argValues = new ArrayList<Object>();
 
-    for (Iterator iter = cpdArgs.iterator(); iter.hasNext();) {
-      ArgSpec argSpec = (ArgSpec) iter.next();
-      Object argValue = argSpec.evaluate(context);
-      if (argValue == null) {
-        break; // CPD arg not determined
+    for (ArgSpec spec : cpdArgs) {
+      if (spec.containsRandomSymbol()) {
+        // This is a random argument that needs to be evaluated.
+        Object argValue = spec.evaluate(context);
+        if (argValue == null) {
+          break; // CPD arg not determined
+        }
+        argValues.add(argValue);
+      } else {
+        // This is a fixed argument that was given at CPD construction time.
+        argValues.add(null);
       }
-      argValues.add(argValue);
     }
 
     context.popEvaluee();
@@ -183,7 +130,7 @@ public class Clause {
    */
   public BasicVar getEqualParent(EvalContext context) {
     if (cpd instanceof EqualsCPD) {
-      ArgSpec arg = (ArgSpec) cpdArgs.get(0);
+      ArgSpec arg = cpdArgs.get(0);
       if (arg instanceof FuncAppTerm) {
         FuncAppTerm t = (FuncAppTerm) arg;
         if (t.getFunction() instanceof RandomFunction) {
@@ -208,46 +155,10 @@ public class Clause {
     if (!cond.checkTypesAndScope(model, scope)) {
       correct = false;
     }
-
-    if (cpdArgsAndParams == null) {
-      for (Iterator iter = cpdArgs.iterator(); iter.hasNext();) {
-        if (!((ArgSpec) iter.next()).checkTypesAndScope(model, scope)) {
-          correct = false;
-        }
+    for (ArgSpec spec : cpdArgs) {
+      if (!spec.checkTypesAndScope(model, scope)) {
+        correct = false;
       }
-      for (Iterator iter = cpdParams.iterator(); iter.hasNext();) {
-        if (!((ArgSpec) iter.next()).checkTypesAndScope(model, scope)) {
-          correct = false;
-        }
-      }
-    } else {
-      for (Iterator iter = cpdArgsAndParams.iterator(); iter.hasNext();) {
-        ArgSpec as = (ArgSpec) iter.next();
-        if (as instanceof MapSpec) {
-          MapSpec m = (MapSpec) as;
-          if (!m.checkTypesAndScope(model, scope, childType)) {
-            correct = false;
-          }
-        } else if (!as.checkTypesAndScope(model, scope)) {
-          correct = false;
-        }
-      }
-    }
-
-    if (this.cpdArgs == null && this.cpdParams == null) {
-      // random inputs to distribution need to go into args
-      this.cpdArgs = new ArrayList<ArgSpec>();
-      this.cpdParams = new ArrayList<ArgSpec>();
-      for (Iterator<ArgSpec> iter = this.cpdArgsAndParams.iterator(); iter
-          .hasNext();) {
-        ArgSpec spec = iter.next();
-        if (spec.containsRandomSymbol()) {
-          this.cpdArgs.add(spec);
-        } else {
-          this.cpdParams.add(spec);
-        }
-      }
-      this.cpdArgsAndParams = null;
     }
 
     // for EqualsCPD, we can do additional checking
@@ -257,7 +168,7 @@ public class Clause {
             + "EqualsCPD takes exactly one argument");
         correct = false;
       } else {
-        ArgSpec arg = (ArgSpec) cpdArgs.get(0);
+        ArgSpec arg = cpdArgs.get(0);
         Type argType = null;
         if (arg instanceof Term) {
           argType = ((Term) arg).getType();
@@ -282,16 +193,6 @@ public class Clause {
       }
     }
 
-    // Type-check the CPD parameters, making sure they contain no
-    // free variables
-    if (cpdParams != null) {
-      for (ArgSpec param : cpdParams) {
-        // if (!param.checkTypesAndScope(model, Collections.EMPTY_MAP)) {
-        if (!param.checkTypesAndScope(model, scope)) {
-          correct = false;
-        }
-      }
-    }
     return correct;
   }
 
@@ -311,8 +212,8 @@ public class Clause {
 
     errors += cond.compile(callStack);
 
-    for (Iterator iter = cpdArgs.iterator(); iter.hasNext();) {
-      errors += ((ArgSpec) iter.next()).compile(callStack);
+    for (ArgSpec spec : cpdArgs) {
+      errors += spec.compile(callStack);
     }
 
     if (cpd == null) {
@@ -326,19 +227,21 @@ public class Clause {
   private int initCPD(LinkedHashSet callStack) {
     int errors = 0;
 
-    List paramValues = new ArrayList();
-    for (ArgSpec param : cpdParams) {
-      int thisParamErrors = param.compile(callStack);
-      errors += thisParamErrors;
-      if (thisParamErrors == 0) {
-        Object val = param.getValueIfNonRandom();
-        if (val == null) {
-          System.err.println("Error initializing CPD at " + getLocation()
-              + ": parameter " + param + " is random.  Random "
-              + "parameters should be passed as arguments.");
-          ++errors;
-        } else {
-          paramValues.add(val);
+    List<Object> constructionArgValues = new ArrayList<Object>();
+    for (ArgSpec spec : cpdArgs) {
+      if (spec.containsRandomSymbol()) {
+        // This is a random argument that is not passed at construction time.
+        constructionArgValues.add(null);
+      } else {
+        // This is a fixed argument that is passed at construction time.
+        int thisParamErrors = spec.compile(callStack);
+        errors += thisParamErrors;
+        if (thisParamErrors == 0) {
+          Object val = spec.getValueIfNonRandom();
+          constructionArgValues.add(val);
+          if (val == null) {
+            throw new IllegalStateException("non-fixed arg in cpdArgsFixed");
+          }
         }
       }
     }
@@ -348,10 +251,9 @@ public class Clause {
     }
 
     try {
-      Class[] constrArgTypes = { List.class };
-      Constructor ct = cpdClass.getConstructor(constrArgTypes);
-      Object[] constrArgs = { paramValues };
-      cpd = (CondProbDistrib) ct.newInstance(constrArgs);
+      Constructor<? extends CondProbDistrib> ct = cpdClass.getConstructor();
+      cpd = (CondProbDistrib) ct.newInstance();
+      cpd.setParams(constructionArgValues.toArray());
     } catch (InvocationTargetException e) {
       e.printStackTrace();
       System.err.println("Error initializing CPD at " + getLocation() + ": "
@@ -361,8 +263,7 @@ public class Clause {
     } catch (NoSuchMethodException e) {
       e.printStackTrace();
       System.err.println("Error initializing CPD at " + getLocation() + ": "
-          + cpdClass + " does not have a "
-          + "constructor with a single argument of type " + "List.");
+          + cpdClass + " does not have a constructor with no arguments");
       ++errors;
     } catch (ClassCastException e) {
       e.printStackTrace();
@@ -405,15 +306,13 @@ public class Clause {
     buf.append(cpdClass.getName());
     buf.append("(");
 
-    if (cpdArgs != null) {
-      Iterator argsIter = cpdArgs.iterator();
-      if (argsIter.hasNext()) {
-        buf.append(argsIter.next());
-        while (argsIter.hasNext()) {
-          buf.append(", ");
-          buf.append(argsIter.next());
-        }
+    boolean first = true;
+    for (ArgSpec spec : cpdArgs) {
+      if (!first) {
+        buf.append(", ");
       }
+      buf.append(spec);
+      first = false;
     }
 
     buf.append(")");
@@ -426,8 +325,6 @@ public class Clause {
 
   private Formula cond;
   private Class<? extends CondProbDistrib> cpdClass;
-  private List<ArgSpec> cpdParams; // of ArgSpec;
   private CondProbDistrib cpd;
-  private List<ArgSpec> cpdArgs; // of ArgSpec
-  private List<ArgSpec> cpdArgsAndParams; // Only used before compilation.
+  private List<ArgSpec> cpdArgs;
 }
