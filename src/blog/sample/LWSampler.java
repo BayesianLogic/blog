@@ -36,7 +36,6 @@
 package blog.sample;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -85,10 +84,11 @@ public class LWSampler extends Sampler {
     }
   }
 
-  public void initialize(Evidence evidence, List queries) {
+  @Override
+  public void initialize(Evidence evidence, List<Query> queries) {
     super.initialize(evidence, queries);
-    for (Iterator iter = queries.iterator(); iter.hasNext();) {
-      queryVars.addAll(((Query) iter.next()).getVariables());
+    for (Query query : queries) {
+      queryVars.addAll(query.getVariables());
     }
 
     numSamplesThisTrial = 0;
@@ -99,16 +99,10 @@ public class LWSampler extends Sampler {
     latestSampleLogWeight = Double.NEGATIVE_INFINITY;
   }
 
-  /**
-   * set the base partial world
-   */
   public void setBaseWorld(PartialWorld world) {
     baseWorld = world;
   }
 
-  /**
-   * get the base partial world
-   */
   public PartialWorld getBaseWorld() {
     return baseWorld;
   }
@@ -117,12 +111,6 @@ public class LWSampler extends Sampler {
    * Generates the next partial world and computes its weight.
    */
   public void nextSample() {
-    double numerator;
-    double denominator;
-    int first_consistent = 0;
-    int total_consistent = 0;
-    boolean notYetConsistent = true;
-
     if (baseWorld != null)
       curWorld = baseWorld;
     else
@@ -131,11 +119,11 @@ public class LWSampler extends Sampler {
     latestSampleLogWeight = supportEvidenceAndCalculateLogWeight();
     BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
         afterSamplingListener);
-    //if (Util.verbose()) {
-    //	System.out.println("Generated world:");
-    //	curWorld.print(System.out);
-    //	System.out.println("Log weight: " + latestSampleLogWeight);
-    //}
+    // if (Util.verbose()) {
+    // System.out.println("Generated world:");
+    // curWorld.print(System.out);
+    // System.out.println("Log weight: " + latestSampleLogWeight);
+    // }
 
     ++totalNumSamples;
     ++numSamplesThisTrial;
@@ -143,7 +131,8 @@ public class LWSampler extends Sampler {
       ++totalNumConsistent;
       ++numConsistentThisTrial;
     }
-    logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial, latestSampleLogWeight);
+    logSumWeightsThisTrial = Util.logSum(logSumWeightsThisTrial,
+        latestSampleLogWeight);
   }
 
   protected double supportEvidenceAndCalculateLogWeight() {
@@ -175,11 +164,12 @@ public class LWSampler extends Sampler {
     System.out.println("======== " + samplerType + " LW Trial Stats =========");
 
     if (numSamplesThisTrial > 0) {
-      double logAvgWeight = logSumWeightsThisTrial - java.lang.Math.log(numSamplesThisTrial);
+      double logAvgWeight = logSumWeightsThisTrial
+          - java.lang.Math.log(numSamplesThisTrial);
       System.out.println("Log of average likelihood weight (this trial): "
-        + logAvgWeight);
+          + logAvgWeight);
       System.out.println("Average likelihood weight (this trial): "
-        + java.lang.Math.exp(logAvgWeight));
+          + java.lang.Math.exp(logAvgWeight));
       System.out.println("Fraction of consistent worlds (this trial): "
           + (numConsistentThisTrial / (double) numSamplesThisTrial));
     }

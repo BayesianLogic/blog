@@ -34,7 +34,8 @@
  */
 package blog.common.cmdline;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Option that can occur multiple times on the command line with a string
@@ -43,66 +44,66 @@ import java.util.*;
  * string list option is an empty list.
  */
 public class StringListOption extends AbstractOption {
-	/**
-	 * Creates a string list option and registers it with the Parser class.
-	 * 
-	 * @param shortForm
-	 *          single-character form of this option, or null for an option with
-	 *          no short form
-	 * 
-	 * @param longForm
-	 *          long form of this option, or null for an option with no long form.
-	 * 
-	 * @param docStr
-	 *          short (preferably less than 40 characters) string specifying what
-	 *          happens when this option is "&lt;s&gt;"
-	 */
-	public StringListOption(String shortForm, String longForm, String docStr) {
-		super(shortForm, longForm);
-		this.docStr = docStr;
+  /**
+   * Creates a string list option and registers it with the Parser class.
+   * 
+   * @param shortForm
+   *          single-character form of this option, or null for an option with
+   *          no short form
+   * 
+   * @param longForm
+   *          long form of this option, or null for an option with no long form.
+   * 
+   * @param docStr
+   *          short (preferably less than 40 characters) string specifying what
+   *          happens when this option is "&lt;s&gt;"
+   */
+  public StringListOption(String shortForm, String longForm, String docStr) {
+    super(shortForm, longForm);
+    this.docStr = docStr;
 
-		Parser.addOption(this);
-	}
+    Parser.addOption(this);
+  }
 
-	public boolean expectsValue() {
-		return true;
-	}
+  public boolean expectsValue() {
+    return true;
+  }
 
-	public void recordOccurrence(String form, String valueStr) {
-		values.add(valueStr);
-	}
+  public void recordOccurrence(String form, String valueStr) {
+    values.add(valueStr);
+  }
 
-	public String getUsageString() {
-		StringBuffer buf = new StringBuffer();
-		if (!shortForms.isEmpty()) {
-			buf.append("-" + shortForms.get(0) + " <s>");
-			if (!longForms.isEmpty()) {
-				buf.append(", ");
-			}
-		}
-		if (!longForms.isEmpty()) {
-			buf.append("--" + longForms.get(0) + " <s>");
-		}
+  public String getUsageString() {
+    StringBuffer buf = new StringBuffer();
+    if (!shortForms.isEmpty()) {
+      buf.append("-" + shortForms.get(0) + " <s>");
+      if (!longForms.isEmpty()) {
+        buf.append(", ");
+      }
+    }
+    if (!longForms.isEmpty()) {
+      buf.append("--" + longForms.get(0) + " <s>");
+    }
 
-		while (buf.length() < DOC_OFFSET) {
-			buf.append(" ");
-		}
-		buf.append(docStr);
+    while (buf.length() < DOC_OFFSET) {
+      buf.append(" ");
+    }
+    buf.append(docStr);
 
-		return buf.toString();
-	}
+    return buf.toString();
+  }
 
-	/**
-	 * Returns the values specified on the command line for this option, or an
-	 * empty list if the option did not occur.
-	 * 
-	 * @return List of String
-	 */
-	public List getValue() {
-		return values;
-	}
+  /**
+   * Returns the values specified on the command line for this option, or an
+   * empty list if the option did not occur.
+   * 
+   * @return List of String
+   */
+  public List<String> getValue() {
+    return values;
+  }
 
-	private String docStr;
+  private String docStr;
 
-	private List values = new ArrayList(); // of String
+  private List<String> values = new ArrayList<String>(); // of String
 }

@@ -2,7 +2,9 @@ package blog.common.numerical;
 
 import java.util.Arrays;
 
+import Jama.EigenvalueDecomposition;
 import Jama.Matrix;
+import blog.common.Util;
 
 /**
  * Matrix and linear algebra operations
@@ -40,12 +42,12 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
-  public int rowLen() {
+  public int numRows() {
     return values.getRowDimension();
   }
 
   @Override
-  public int colLen() {
+  public int numCols() {
     return values.getColumnDimension();
   }
 
@@ -96,8 +98,37 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
+  public double logDet() {
+    double logDet = 0.0;
+    for (double val : eigenvals()) {
+      logDet += Math.log(val);
+    }
+    return logDet;
+  }
+
+  @Override
   public MatrixLib transpose() {
     return new JamaMatrixLib(values.transpose());
+  }
+
+  @Override
+  public MatrixLib repmat(int rowTimes, int colTimes) {
+    if (rowTimes <= 0 || colTimes <= 0) {
+      throw new IllegalArgumentException(
+          "The number of blocks specified for repmat in each dimension must be strictly positive");
+    }
+    double[][] ary = values.getArrayCopy();
+    double[][] newAry = new double[rowTimes * ary.length][colTimes
+        * ary[0].length];
+    for (int i = 0; i < rowTimes; i++) {
+      for (int j = 0; j < colTimes; j++) {
+        for (int k = 0; k < ary.length; k++) {
+          System.arraycopy(ary[k], 0, newAry[i * ary.length + k], j
+              * ary[0].length, ary[0].length);
+        }
+      }
+    }
+    return MatrixFactory.fromArray(newAry);
   }
 
   @Override
@@ -112,14 +143,20 @@ public class JamaMatrixLib implements MatrixLib {
 
   @Override
   public MatrixLib columnSum() {
-    double[][] result = new double[1][colLen()];
-    for (int i = 0; i < colLen(); i++) {
+    double[][] result = new double[1][numCols()];
+    for (int i = 0; i < numCols(); i++) {
       result[0][i] = 0;
-      for (int j = 0; j < rowLen(); j++) {
+      for (int j = 0; j < numRows(); j++) {
         result[0][i] += elementAt(j, i);
       }
     }
     return new JamaMatrixLib(result);
+  }
+
+  @Override
+  public double[] eigenvals() {
+    EigenvalueDecomposition decomp = new EigenvalueDecomposition(values);
+    return decomp.getRealEigenvalues();
   }
 
   @Override
@@ -141,4 +178,56 @@ public class JamaMatrixLib implements MatrixLib {
   public int hashCode() {
     return Arrays.deepHashCode(values.getArray());
   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.common.numerical.MatrixLib#exp()
+   */
+  @Override
+  public MatrixLib exp() {
+    double[][] v = values.getArrayCopy();
+    for (int i = 0; i < numRows(); i++) {
+      for (int j = 0; j < numCols(); j++)
+        v[i][j] = Math.exp(v[i][j]);
+    }
+    return new JamaMatrixLib(v);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.common.numerical.MatrixLib#abs()
+   */
+  @Override
+  public MatrixLib abs() {
+    double[][] v = values.getArrayCopy();
+    for (int i = 0; i < numRows(); i++) {
+      for (int j = 0; j < numCols(); j++)
+        v[i][j] = Math.abs(v[i][j]);
+    }
+    return new JamaMatrixLib(v);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.common.numerical.MatrixLib#isSymmetric()
+   */
+  @Override
+  public boolean isSymmetric() {
+    if (numRows() == numCols()) {
+      int size = numRows();
+      for (int i = 0; i < size; i++) {
+        for (int j = i + 1; j < size; j++) {
+          double val = elementAt(i, j) - elementAt(j, i);
+          if (!Util.closeToZero(val)) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
 }

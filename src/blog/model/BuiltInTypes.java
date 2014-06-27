@@ -104,7 +104,7 @@ public class BuiltInTypes {
       }
 
       double value = ((Number) obj).doubleValue();
-      NonRandomFunction c = BuiltInFunctions.getLiteral(String.valueOf(value),
+      FixedFunction c = BuiltInFunctions.getLiteral(String.valueOf(value),
           this, new Double(value));
       return new FuncAppTerm(c);
     }
@@ -185,7 +185,7 @@ public class BuiltInTypes {
         throw new IllegalArgumentException("Object " + obj + " not of type "
             + this);
       }
-      NonRandomFunction c = BuiltInFunctions.getLiteral(obj.toString(), this,
+      FixedFunction c = BuiltInFunctions.getLiteral(obj.toString(), this,
           obj);
       return new FuncAppTerm(c);
     }
@@ -252,7 +252,7 @@ public class BuiltInTypes {
         throw new IllegalArgumentException("Object " + obj + " not of type "
             + this);
       }
-      NonRandomFunction c = BuiltInFunctions.getLiteral(String.valueOf(obj),
+      FixedFunction c = BuiltInFunctions.getLiteral(String.valueOf(obj),
           this, obj);
       return new FuncAppTerm(c);
     }
@@ -280,7 +280,7 @@ public class BuiltInTypes {
         throw new IllegalArgumentException("Object " + obj + " is not of type "
             + this);
       }
-      NonRandomFunction c = BuiltInFunctions.getLiteral(String.valueOf(obj),
+      FixedFunction c = BuiltInFunctions.getLiteral(String.valueOf(obj),
           this, obj);
       return new FuncAppTerm(c);
     }

@@ -35,21 +35,10 @@
 
 package blog.model;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
 
-import ve.Factor;
-import ve.Potential;
-import blog.Main;
-import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
 import blog.common.Histogram;
 import blog.common.UnaryFunction;
@@ -67,11 +56,6 @@ public class ArgSpecQuery extends AbstractQuery {
 
   public ArgSpecQuery(ArgSpec argSpec) {
     this.argSpec = argSpec;
-
-    if (Main.histOut() != null) {
-      outputFile = Main.filePrintStream(Main.histOut() + "-trial" + +trialNum
-          + ".data");
-    }
   }
 
   public ArgSpecQuery(ArgSpecQuery another) {
@@ -84,50 +68,6 @@ public class ArgSpecQuery extends AbstractQuery {
 
   public ArgSpec argSpec() {
     return getArgSpec();
-  }
-
-  public void printResults(PrintStream s) {
-    s.println("Distribution of values for " + getArgSpec());
-    List entries = new ArrayList(histogram.entrySet());
-
-    if (getArgSpec().isNumeric())
-      Collections.sort(entries, NUMERIC_COMPARATOR);
-    else
-      Collections.sort(entries, WEIGHT_COMPARATOR);
-
-    for (Iterator iter = entries.iterator(); iter.hasNext();) {
-      Histogram.Entry entry = (Histogram.Entry) iter.next();
-      double prob = histogram.getProb(entry.getElement());
-      s.println("\t" + prob + "\t" + entry.getElement());
-    }
-  }
-
-  public void logResults(int numSamples) {
-    final List entries = new ArrayList(histogram.entrySet());
-    for (Iterator iter = entries.iterator(); iter.hasNext();) {
-      Histogram.Entry entry = (Histogram.Entry) iter.next();
-      double prob = histogram.getProb(entry.getElement());
-      PrintStream s = getOutputFile(entry.getElement());
-      s.println("\t" + numSamples + "\t" + prob);
-    }
-
-    if ((numSamples == Main.numSamples()) && (Main.histOut() != null)) {
-      Comparator c = new Comparator() {
-        public int compare(Object o1, Object o2) {
-          Integer i1 = new Integer(((Histogram.Entry) o1).getElement()
-              .toString());
-          Integer i2 = new Integer(((Histogram.Entry) o2).getElement()
-              .toString());
-          return i1.compareTo(i2);
-        }
-      };
-      Collections.sort(entries, c);
-      for (Iterator iter = entries.iterator(); iter.hasNext();) {
-        Histogram.Entry entry = (Histogram.Entry) iter.next();
-        double prob = histogram.getProb(entry.getElement());
-        outputFile.println("\t" + entry.getElement() + "\t" + prob);
-      }
-    }
   }
 
   public Collection<? extends BayesNetVar> getVariables() {
@@ -169,60 +109,13 @@ public class ArgSpecQuery extends AbstractQuery {
     return errors;
   }
 
+  /**
+   * 
+   */
+  @Override
   public void updateStats(PartialWorld world, double logWeight) {
     Object value = getArgSpec().evaluate(world);
     histogram.increaseWeight(value, logWeight);
-  }
-
-  public void setPosterior(Factor posterior) {
-    if (!posterior.getRandomVars().contains((BasicVar) variable)) {
-      throw new IllegalArgumentException("Query variable " + variable
-          + " not covered by factor on " + posterior.getRandomVars());
-    }
-    if (posterior.getRandomVars().size() > 1) {
-      throw new IllegalArgumentException("Answer to query on " + variable
-          + " should be factor on " + "that variable alone, not "
-          + posterior.getRandomVars());
-    }
-
-    Potential pot = posterior.getPotential();
-    Type type = pot.getDims().get(0);
-    histogram.clear();
-    for (Object o : type.getGuaranteedObjects()) {
-      histogram.increaseWeight(o, pot.getValue(Collections.singletonList(o)));
-    }
-  }
-
-  public void zeroOut() {
-    trialNum++;
-    if ((outputFile != null) && (trialNum != Main.numTrials())) {
-      outputFile = Main.filePrintStream(Main.histOut() + "-trial" + trialNum
-          + ".data");
-    }
-    outputFiles = new HashMap();
-
-    histogram.clear();
-
-    // We don't record across-run statistics
-  }
-
-  public void printVarianceResults(PrintStream s) {
-    s.println("\tVariance of " + getArgSpec() + " results is not computed.");
-    // printVarStats(s);
-  }
-
-  /**
-   * Every object should have an output file. If it does not yet exist, create
-   * one; otherwise return it.
-   */
-  private PrintStream getOutputFile(Object o) {
-    PrintStream s = (PrintStream) outputFiles.get(o);
-    if (s == null) {
-      s = Main.filePrintStream(Main.outputPath() + "-trial" + trialNum + "."
-          + o.toString() + ".data");
-      outputFiles.put(o, s);
-    }
-    return s;
   }
 
   public Histogram getHistogram() {
@@ -280,42 +173,7 @@ public class ArgSpecQuery extends AbstractQuery {
     return argSpec;
   }
 
-  private static Comparator WEIGHT_COMPARATOR = new Comparator() {
-    public int compare(Object o1, Object o2) {
-      double diff = (((Histogram.Entry) o1).getLogWeight() - ((Histogram.Entry) o2)
-          .getLogWeight());
-      if (diff < 0) {
-        return 1;
-      } else if (diff > 0) {
-        return -1;
-      }
-      return 0;
-    }
-  };
-  private static final Comparator NUMERIC_COMPARATOR = new Comparator() {
-    public int compare(Object o1, Object o2) {
-      Object e1 = ((Histogram.Entry) o1).getElement();
-      Object e2 = ((Histogram.Entry) o2).getElement();
-      if (e1 == Model.NULL) {
-        return -1;
-      } else if (e2 == Model.NULL) {
-        return 1;
-      }
-      double n1 = ((Number) e1).doubleValue();
-      double n2 = ((Number) e2).doubleValue();
-      if (n1 < n2) {
-        return -1;
-      } else if (n1 > n2) {
-        return 1;
-      }
-      return 0;
-    }
-  };
   protected ArgSpec argSpec;
   protected BayesNetVar variable;
   protected Histogram histogram = new Histogram();
-  protected int trialNum = 0;
-
-  protected Map outputFiles = new HashMap(); // of PrintStream
-  protected PrintStream outputFile = null;
 }

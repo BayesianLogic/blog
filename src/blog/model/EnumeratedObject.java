@@ -55,7 +55,7 @@ public class EnumeratedObject implements Comparable {
 	 * Creates a new EnumeratedObject of the given type that was introduced with
 	 * the given name.
 	 */
-	public EnumeratedObject(Type type, int index, NonRandomFunction constant) {
+	public EnumeratedObject(Type type, int index, FixedFunction constant) {
 		this.type = type;
 		this.index = index;
 		this.constant = constant;
@@ -64,7 +64,7 @@ public class EnumeratedObject implements Comparable {
 	/**
 	 * Returns the non-random constant that canonically stands for this object.
 	 */
-	public NonRandomFunction getConstant() {
+	public FixedFunction getConstant() {
 		return constant;
 	}
 
@@ -116,5 +116,5 @@ public class EnumeratedObject implements Comparable {
 
 	private Type type;
 	private int index;
-	private NonRandomFunction constant;
+	private FixedFunction constant;
 }

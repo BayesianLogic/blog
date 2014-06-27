@@ -20,29 +20,25 @@ origin Person Owner(Login);
 
 #Person ~ Poisson(10);
 
-#Login(Owner = x) {
-    if (Honest(x) == true) then = 1 
-    else ~ Geometric(0.8)
-};
+#Login(Owner = x) ~
+    if (Honest(x) == true) then 1 
+    else Geometric(0.8);
 
 random Boolean Honest(Person p) ~ BooleanDistrib(0.9);
 
-random Boolean Transaction(Login x, Login y) {
-    if (x != y) then {
-        if (Owner(x) == Owner(y)) then ~ BooleanDistrib(0.9)
-	else ~ TabularCPD({true -> ~ BooleanDistrib(0.6),
-	       		   false -> ~ BooleanDistrib(0.1)},
-			Honest(Owner(x)))
-    }
-};
+random Boolean Transaction(Login x, Login y) ~
+    if (x != y) then
+        if (Owner(x) == Owner(y)) then BooleanDistrib(0.9)
+	else TabularCPD({true -> BooleanDistrib(0.6),
+	       		   false -> BooleanDistrib(0.1)},
+			Honest(Owner(x)));
 
-random Boolean Recommends(Login x, Login y) {
-    if (x != y & Transaction(x,y) == true & Owner(x) == Owner(y)) then ~ BooleanDistrib(0.99)
-    else if (Transaction(x,y) == true & Owner(x) != Owner(y)) then {
-    	 if (Honest(Owner(x)) == true & Honest(Owner(y)) == true) then ~ BooleanDistrib(0.9)
-	 else ~ BooleanDistrib(0.1)
-    }
-};
+random Boolean Recommends(Login x, Login y) ~
+    if (x != y & Transaction(x,y) == true & Owner(x) == Owner(y)) then BooleanDistrib(0.99)
+    else if (Transaction(x,y) == true & Owner(x) != Owner(y)) then
+    	 if (Honest(Owner(x)) == true & Honest(Owner(y)) == true) 
+            then BooleanDistrib(0.9)
+    else BooleanDistrib(0.1);
 
 obs {Login l} = {Login1, Login2, Login3, Login4, Login5};
 
