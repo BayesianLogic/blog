@@ -11,7 +11,9 @@ MISC_FILE= compile.bat \
  parse.sh \
  test-ex.sh \
  ex_test_classes
- 
+
+CLASSPATH=lib/java-cup-11b.jar:lib/*
+
 TAGNAME=$(shell git describe --exact-match --abbrev=0 2> /dev/null)
 ifneq (${TAGNAME},)
 TARGETNAME=${TAGNAME}
@@ -38,17 +40,17 @@ help:
 
 compile: ${SRC_FILES}
 	mkdir -p bin
-	javac -cp "lib/*" -d bin/ ${SRC_FILES}
+	javac -cp ${CLASSPATH} -d bin/ ${SRC_FILES}
 
 debug: ${SRC_FILES}
 	mkdir -p bin
-	javac -g -cp "lib/*" -d bin/ ${SRC_FILES}
+	javac -g -cp ${CLASSPATH} -d bin/ ${SRC_FILES}
 
 release: release-compile html zip
 
 release-compile:
 	mkdir -p bin
-	javac -source 1.5 -target 1.5 -cp "lib/*" -d bin/ ${SRC_FILES}
+	javac -source 1.5 -target 1.5 -cp ${CLASSPATH} -d bin/ ${SRC_FILES}
 
 tar: zip
 
@@ -76,7 +78,7 @@ demo:
 	./blog example/poisson-ball.blog
 
 parser: src/blog/parse/BLOGLexer.flex src/blog/parse/BLOGParser.cup
-	java -cp lib/jflex-1.5.1.jar jflex.Main src/blog/parse/BLOGLexer.flex
+	java -cp jflex-1.6.0.jar jflex.Main src/blog/parse/BLOGLexer.flex
 	cd src/blog/parse; java -cp ../../../lib/java-cup-11b.jar java_cup.Main -locations -symbols BLOGTokenConstants -parser BLOGParser BLOGParser.cup
 
 sync:
