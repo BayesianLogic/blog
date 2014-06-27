@@ -94,6 +94,7 @@ public class BuiltInFunctions {
   public static final String TAN_NAME = "tan";
   public static final String ATAN2_NAME = "atan2";
   public static final String SUM_NAME = "sum";
+  public static final String SIZE_NAME = "size";
   public static final String VSTACK_NAME = "vstack";
   public static final String HSTACK_NAME = "hstack";
   public static final String EYE_NAME = "eye";
@@ -390,6 +391,12 @@ public class BuiltInFunctions {
    * Take a Set x of Real values, and return the sum of its elements.
    */
   public static FixedFunction SET_SUM;
+
+  /**
+   * Take a Set x of values (any type, including user declared type), and return
+   * the number of elements in the Set.
+   */
+  public static FixedFunction SET_SIZE;
 
   /**
    * Special case for VSTACK when arguments are all matrices
@@ -1263,6 +1270,21 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL;
     SET_SUM = new FixedFunction(SUM_NAME, argTypes, retType, setSumInterp);
     addFunction(SET_SUM);
+
+    /**
+     * defining size(set) function
+     */
+    FunctionInterp setSizeInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Collection<?> set = (Collection<?>) args.get(0);
+        return set.size();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.SET);
+    retType = BuiltInTypes.INTEGER;
+    SET_SIZE = new FixedFunction(SIZE_NAME, argTypes, retType, setSizeInterp);
+    addFunction(SET_SIZE);
 
     HSTACK_SCALAR_INTERP = new AbstractFunctionInterp() {
       public Object getValue(List args) {
