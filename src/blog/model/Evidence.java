@@ -35,7 +35,6 @@
 
 package blog.model;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,6 +52,9 @@ import blog.BLOGUtil;
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
 import blog.common.Util;
+import blog.msg.ErrorMsg;
+import blog.parse.Parse;
+import blog.semant.Semant;
 import blog.type.Timestep;
 import blog.world.PartialWorld;
 
@@ -79,22 +81,31 @@ import blog.world.PartialWorld;
  * @see blog.model.ValueEvidenceStatement
  */
 public class Evidence {
+  public Evidence(Model model) {
+    this.model = model;
+  }
 
-  /**
-   * Creates a new Evidence object with no evidence.
-   */
-  public Evidence() {
+  public void addFromFile(String path) {
+    addFromParse(Parse.parseFile(path));
+  }
 
+  public void addFromString(String string) {
+    addFromParse(Parse.parseString(string));
+  }
+
+  public void addFromParse(Parse parse) {
+    ErrorMsg dummyErr = new ErrorMsg("");
+    Queries dummyQueries = new Queries(model);
+    Semant sem = new Semant(model, this, dummyQueries, dummyErr);
+    sem.transProg(parse.getResult());
   }
 
   /**
    * Creates an Evidence object out of a collection of statements.
    */
-  public static Evidence constructAndCompile(Collection statements) {
-    Evidence result = new Evidence();
-    Iterator it;
-    for (it = statements.iterator(); it.hasNext();) {
-      Object statement = it.next();
+  public static Evidence constructAndCompile(Model model, Collection statements) {
+    Evidence result = new Evidence(model);
+    for (Object statement : statements) {
       if (statement instanceof ValueEvidenceStatement)
         result.addValueEvidence((ValueEvidenceStatement) statement);
       else
@@ -256,21 +267,6 @@ public class Evidence {
     return getValueEvidence().isEmpty() && getSymbolEvidence().isEmpty();
   }
 
-  /**
-   * Prints the evidence to the given stream.
-   */
-  public void print(PrintStream s) {
-    for (Iterator iter = symbolEvidence.iterator(); iter.hasNext();) {
-      SymbolEvidenceStatement stmt = (SymbolEvidenceStatement) iter.next();
-      System.out.println(stmt);
-    }
-
-    for (Iterator iter = valueEvidence.iterator(); iter.hasNext();) {
-      ValueEvidenceStatement stmt = (ValueEvidenceStatement) iter.next();
-      System.out.println(stmt);
-    }
-  }
-
   private void recordEvidence(BayesNetVar observedVar, Object observedValue,
       Object source) {
     if (observedValues.containsKey(observedVar)) {
@@ -412,7 +408,7 @@ public class Evidence {
       newValueEvidence.add(newVes);
     }
     if (replacement) {
-      Evidence newEvidence = new Evidence();
+      Evidence newEvidence = new Evidence(model);
       newEvidence.valueEvidence.addAll(newValueEvidence);
       newEvidence.symbolEvidence.addAll(newSymbolEvidence);
       if (compiled)
@@ -445,4 +441,7 @@ public class Evidence {
   private Map<BayesNetVar, Object> observedValues = new LinkedHashMap<BayesNetVar, Object>();
 
   private boolean compiled = false;
+
+  // The model that this evidence is for.
+  final public Model model;
 }

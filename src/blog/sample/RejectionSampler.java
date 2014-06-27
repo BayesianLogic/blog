@@ -35,9 +35,7 @@
 
 package blog.sample;
 
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import blog.bn.BayesNetVar;
@@ -47,6 +45,7 @@ import blog.distrib.CondProbDistrib;
 import blog.model.DependencyModel;
 import blog.model.Evidence;
 import blog.model.Model;
+import blog.model.Queries;
 import blog.model.Query;
 import blog.world.PartialWorld;
 import blog.world.UninstVarIterator;
@@ -127,7 +126,7 @@ public class RejectionSampler extends Sampler {
     }
   }
 
-  public void initialize(Evidence evidence, List queries) {
+  public void initialize(Evidence evidence, Queries queries) {
     super.initialize(evidence, queries);
     requireComplete = false;
 
@@ -143,7 +142,7 @@ public class RejectionSampler extends Sampler {
    * the bounds specified by the intBound and depthBound properties).
    */
   public void initializeCompleteSampling() {
-    super.initialize(new Evidence(), Collections.EMPTY_LIST);
+    super.initialize(new Evidence(model), new Queries(model));
     requireComplete = true;
 
     numSamplesThisTrial = 0;

@@ -1,44 +1,26 @@
-/**
- * 
- */
 package blog.model;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import blog.BLOGUtil;
-import blog.common.Util;
-
+/**
+ * A convenience container for a Model, Evidence, and Queries.
+ * 
+ * Invariant: The Evidence and Queries objects point to the Model.
+ * 
+ * @author cberzan
+ * @author unknown
+ */
 public class ModelEvidenceQueries {
-	public ModelEvidenceQueries() {
-		model = new Model();
-		evidence = new Evidence();
-		queries = new LinkedList<Query>();
-	}
+  public ModelEvidenceQueries(Model model, Evidence evidence, Queries queries) {
+    // Verify invariant.
+    assert (evidence.model == model);
+    assert (queries.model == model);
 
-	public ModelEvidenceQueries(Model model, Evidence evidence, List queries) {
-		this.model = model;
-		this.evidence = evidence;
-		this.queries = queries;
-	}
+    this.model = model;
+    this.evidence = evidence;
+    this.queries = queries;
+  }
 
-	@Deprecated
-	public ModelEvidenceQueries(String modelDescription, String evidenceString,
-			String queriesString) {
-		model = BLOGUtil.parseModel_NE(modelDescription);
-		evidence = BLOGUtil.parseEvidence_NE(evidenceString, model);
-		queries = Util.list(BLOGUtil.parseQuery_NE(queriesString, model));
-	}
-
-	/**
-	 * Convenience method assuming there is only one query, of class ArgSpecQuery,
-	 * and returning it.
-	 */
-	public ArgSpecQuery argSpecQuery() {
-		return (ArgSpecQuery) Util.getFirst(queries);
-	}
-
-	public Model model;
-	public Evidence evidence;
-	public List<Query> queries;
+  // These are final to avoid accidentally breaking the invariant.
+  final public Model model;
+  final public Evidence evidence;
+  final public Queries queries;
 }
