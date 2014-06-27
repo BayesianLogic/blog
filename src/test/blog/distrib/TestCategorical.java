@@ -99,4 +99,20 @@ public class TestCategorical implements TestDistributions {
     testCategorical1(cat);
   }
 
+  @Test
+  public void testSetParamsIntegerArguments() {
+    Categorical cat = new Categorical();
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("Albert", 15);
+    map.put("Bob", 6);
+    map.put("Craig", 9);
+    cat.setParams(new Object[] { map });
+    testCategorical1(cat);
+  }
+
+  @Test
+  public void testGetProbIntegerArguments() {
+    // not needed
+  }
+
 }

@@ -53,11 +53,11 @@ public class NegativeBinomial implements CondProbDistrib {
    * set parameters for Negative Binomial distribution.
    * 
    * @param params
-   *          array of the form [Integer, Double]
+   *          array of the form [Integer, Number]
    *          <ul>
    *          <li>params[0]: <code>r</code>, number of failures (Integer)</li>
    *          <li>params[1]: <code>p</code>, probability of succes at a given
-   *          trial (Double)</li>
+   *          trial (Number)</li>
    *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
@@ -67,7 +67,7 @@ public class NegativeBinomial implements CondProbDistrib {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected 2 parameters");
     }
-    setParams((Integer) params[0], (Double) params[1]);
+    setParams((Integer) params[0], (Number) params[1]);
   }
 
   /**
@@ -81,7 +81,7 @@ public class NegativeBinomial implements CondProbDistrib {
    * @param p
    *          success probability, 0 < p < 1
    */
-  public void setParams(Integer r, Double p) {
+  public void setParams(Integer r, Number p) {
     if (r != null) {
       if (r <= 0) {
         throw new IllegalArgumentException(
@@ -91,12 +91,13 @@ public class NegativeBinomial implements CondProbDistrib {
       this.r = r;
     }
     if (p != null) {
-      if (p <= 0 || p >= 1) {
+      double pDouble = p.doubleValue();
+      if (pDouble <= 0 || pDouble >= 1) {
         throw new IllegalArgumentException(
             "parameter p must be in the interval (0, 1) not " + p + ".");
       }
       this.hasP = true;
-      this.p = p;
+      this.p = pDouble;
     }
   }
 
