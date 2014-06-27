@@ -7,3 +7,5 @@ import blog.model.Evidence
 import blog.model.Model
 import blog.model.Queries
 import blog.world.PartialWorld
+
+import blog.NewMain._

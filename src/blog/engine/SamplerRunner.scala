@@ -13,23 +13,20 @@ import blog.sample.OldSampler
 import blog.BLOGUtil
 import blog.sample.Sample
 import blog.sample.Sampler
+import blog.io.JsonWriter
 
 /**
  * @author cberzan
  * @since Jun 26, 2014
  */
-class SamplerRunner(
-  val model: Model,
-  val evidence: Evidence,
-  val queries: Queries,
-  val sampler: Sampler[_ <: Sample]) {
+class SamplerRunner(val sampler: Sampler[_ <: Sample]) {
 
   /**
    * Get the next sample and update the queries.
    */
   def sampleOnce = {
     val sample = sampler.sample
-    queries.foreach(query => query.updateStats(sample.world, sample.logWeight))
+    sampler.queries.foreach(query => query.updateStats(sample.world, sample.logWeight))
   }
 
   /**
@@ -38,6 +35,31 @@ class SamplerRunner(
   def sampleTimes(n: Int) {
     for (i <- 1 to n) {
       sampleOnce
+    }
+  }
+
+  /**
+   * docs TODO
+   */
+  def runNonInteractive(numSamples: Int, outputPath: String = null): Unit = {
+    // Run inference.
+    Util.initRandom(false)
+    sampleTimes(numSamples)
+    // TODO progress report
+
+    // Print query results
+    val tableWriter = new TableWriter(sampler.queries)
+    tableWriter.setHeader("======== Query Results =========\n"
+      + "Number of samples: " + numSamples)
+    tableWriter.writeResults(System.out)
+    println("======== Done ========")
+
+    // Write query results to file, in JSON format.
+    if (outputPath != null) {
+      println("Writing query results to " + outputPath + "...")
+      val jsonWriter = new JsonWriter(sampler.queries)
+      jsonWriter.writeResults(outputPath)
+      println("Done.")
     }
   }
 
