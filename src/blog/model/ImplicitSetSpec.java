@@ -56,6 +56,8 @@ import blog.world.PartialWorld;
  * <code>set_elt</code>, and a formula <code>cond</code>. It evaluates to the
  * set of objects <i>o</i> of type <code>type</code> such that <code>cond</code>
  * is satisfied when <code>set_elt</code> is bound to <i>o</i>.
+ * 
+ * @deprecated
  */
 public class ImplicitSetSpec extends ArgSpec {
 
