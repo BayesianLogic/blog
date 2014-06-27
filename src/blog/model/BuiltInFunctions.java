@@ -93,6 +93,7 @@ public class BuiltInFunctions {
   public static final String TAN_NAME = "tan";
   public static final String ATAN2_NAME = "atan2";
   public static final String SUM_NAME = "sum";
+  public static final String SIZE_NAME = "size";
   public static final String VSTACK_NAME = "vstack";
   public static final String HSTACK_NAME = "hstack";
   public static final String EYE_NAME = "eye";
@@ -391,6 +392,11 @@ public class BuiltInFunctions {
   public static FixedFunction SET_SUM;
 
   /**
+   * Take a Set x of Real values, and return the sum of its elements.
+   */
+  public static FixedFunction SET_SIZE;
+
+  /**
    * Special case for VSTACK when arguments are all matrices
    */
   private static FunctionInterp VSTACK_MATRIX_INTERP;
@@ -519,8 +525,7 @@ public class BuiltInFunctions {
    * given return type and denotes the given value. Creates the constant symbol
    * automatically if it hasn't been created yet.
    */
-  public static FixedFunction getLiteral(String name, Type type,
-      Object value) {
+  public static FixedFunction getLiteral(String name, Type type, Object value) {
     FixedFunction f = getFunction(new FunctionSignature(name));
     if (f == null) {
       List params = Collections.singletonList(value);
@@ -823,8 +828,7 @@ public class BuiltInFunctions {
         return Timestep.at(arg1.getValue() - arg2.intValue());
       }
     };
-    TSMINUS = new FixedFunction(MINUS_NAME, argTypes, retType,
-        tsminusInterp);
+    TSMINUS = new FixedFunction(MINUS_NAME, argTypes, retType, tsminusInterp);
     addFunction(TSMINUS);
 
     FunctionInterp tsmultInterp = new AbstractFunctionInterp() {
@@ -912,8 +916,7 @@ public class BuiltInFunctions {
         }
       }
     };
-    SUB_MAT = new FixedFunction(SUB_MAT_NAME, argTypes, retType,
-        subMatInterp);
+    SUB_MAT = new FixedFunction(SUB_MAT_NAME, argTypes, retType, subMatInterp);
     addFunction(SUB_MAT);
 
     // Array subscription (aka indexing)
@@ -964,8 +967,7 @@ public class BuiltInFunctions {
         return mat1.plus(mat2);
       }
     };
-    PLUS_MAT = new FixedFunction(PLUS_NAME, argTypes, retType,
-        matPlusInterp);
+    PLUS_MAT = new FixedFunction(PLUS_NAME, argTypes, retType, matPlusInterp);
     addFunction(PLUS_MAT);
 
     // matrix minus
@@ -976,8 +978,7 @@ public class BuiltInFunctions {
         return mat1.minus(mat2);
       }
     };
-    MINUS_MAT = new FixedFunction(MINUS_NAME, argTypes, retType,
-        matMinusInterp);
+    MINUS_MAT = new FixedFunction(MINUS_NAME, argTypes, retType, matMinusInterp);
     addFunction(MINUS_MAT);
 
     // matrix multiplication
@@ -988,8 +989,7 @@ public class BuiltInFunctions {
         return mat1.timesMat(mat2);
       }
     };
-    TIMES_MAT = new FixedFunction(MULT_NAME, argTypes, retType,
-        matTimesInterp);
+    TIMES_MAT = new FixedFunction(MULT_NAME, argTypes, retType, matTimesInterp);
     addFunction(TIMES_MAT);
 
     // Add non-random functions from (RealMatrix x Real) to RealMatrix
@@ -1040,8 +1040,7 @@ public class BuiltInFunctions {
         return mat1.inverse();
       }
     };
-    INV_MAT = new FixedFunction(INV_NAME, argTypes, retType,
-        matInverseInterp);
+    INV_MAT = new FixedFunction(INV_NAME, argTypes, retType, matInverseInterp);
     addFunction(INV_MAT);
 
     // Add non-random functions from RealMatrix to Real
@@ -1142,8 +1141,7 @@ public class BuiltInFunctions {
         }
       }
     };
-    DIAG_REAL_MAT = new FixedFunction(DIAG_NAME, argTypes, retType,
-        diagInterp);
+    DIAG_REAL_MAT = new FixedFunction(DIAG_NAME, argTypes, retType, diagInterp);
     addFunction(DIAG_REAL_MAT);
 
     // Repmat function for Real matrices
@@ -1161,8 +1159,7 @@ public class BuiltInFunctions {
         return matrix.repmat(rowTimes, colTimes);
       }
     };
-    REPMAT_REAL = new FixedFunction(REPMAT_NAME, argTypes, retType,
-        repMatReal);
+    REPMAT_REAL = new FixedFunction(REPMAT_NAME, argTypes, retType, repMatReal);
     addFunction(REPMAT_REAL);
 
     // Transpose function for Real matrices
@@ -1177,8 +1174,8 @@ public class BuiltInFunctions {
       }
     };
 
-    TRANSPOSE_REAL_MAT = new FixedFunction(TRANSPOSE_NAME, argTypes,
-        retType, transposeInterp);
+    TRANSPOSE_REAL_MAT = new FixedFunction(TRANSPOSE_NAME, argTypes, retType,
+        transposeInterp);
     addFunction(TRANSPOSE_REAL_MAT);
 
     // Transpose function for Integer matrices (uses the same FunctionInterp
@@ -1188,8 +1185,8 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(BuiltInTypes.INTEGER_MATRIX);
     retType = BuiltInTypes.INTEGER_MATRIX;
-    TRANSPOSE_INT_MAT = new FixedFunction(TRANSPOSE_NAME, argTypes,
-        retType, transposeInterp);
+    TRANSPOSE_INT_MAT = new FixedFunction(TRANSPOSE_NAME, argTypes, retType,
+        transposeInterp);
     addFunction(TRANSPOSE_INT_MAT);
 
     // Trigonometric functions on scalars:
@@ -1265,6 +1262,21 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL;
     SET_SUM = new FixedFunction(SUM_NAME, argTypes, retType, setSumInterp);
     addFunction(SET_SUM);
+
+    /**
+     * defining size(set) function
+     */
+    FunctionInterp setSizeInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Collection<?> set = (Collection<?>) args.get(0);
+        return set.size();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.SET);
+    retType = BuiltInTypes.INTEGER;
+    SET_SIZE = new FixedFunction(SIZE_NAME, argTypes, retType, setSizeInterp);
+    addFunction(SET_SIZE);
 
     HSTACK_SCALAR_INTERP = new AbstractFunctionInterp() {
       public Object getValue(List args) {
@@ -1471,8 +1483,7 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(BuiltInTypes.BUILT_IN);
     retType = BuiltInTypes.REAL;
-    TO_REAL = new FixedFunction(TOREAL_NAME, argTypes, retType,
-        toRealInterp);
+    TO_REAL = new FixedFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
     addFunction(TO_REAL);
 
     /**
