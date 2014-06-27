@@ -102,6 +102,7 @@ public class BuiltInFunctions {
   public static final String TOREAL_NAME = "toReal";
   public static final String ABS_NAME = "abs";
   public static final String EXP_NAME = "exp";
+  public static final String IOTA_NAME = "iota";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -479,6 +480,11 @@ public class BuiltInFunctions {
    * Return the exponential value of every element in the matrix.
    */
   public static FixedFunction EXP_MAT;
+
+  /**
+   * Return the element from a singleton set.
+   */
+  public static FixedFunction IOTA;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -1265,6 +1271,21 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL;
     SET_SUM = new FixedFunction(SUM_NAME, argTypes, retType, setSumInterp);
     addFunction(SET_SUM);
+
+    /**
+     * return the element in a singleton set
+     */
+    FunctionInterp iotaInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Collection<?> set = (Collection<?>) args.get(0);
+        return ((set.size() == 1) ? set.iterator().next() : Model.NULL);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.SET);
+    retType = BuiltInTypes.ANY;
+    IOTA = new FixedFunction(IOTA_NAME, argTypes, retType, iotaInterp);
+    addFunction(IOTA);
 
     HSTACK_SCALAR_INTERP = new AbstractFunctionInterp() {
       public Object getValue(List args) {
