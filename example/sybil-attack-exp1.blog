@@ -32,7 +32,7 @@ random Boolean Transaction(Login x, Login y) ~
   if x!=y & Owner(x) == Owner(y) then BooleanDistrib(0.9)
   else if x!=y then 
       case Honest(Owner(x)) in {true -> Categorical({true -> 0.6, false -> 0.4}), 
-                 false -> Categorical({true -> 0.1, false -> 0.9})}, 
+                 false -> Categorical({true -> 0.1, false -> 0.9})}
                  ;
 
 random Boolean Recommends(Login x, Login y) ~

@@ -23,7 +23,7 @@ random Boolean Exercise(Person p)
                {[true, true] -> BooleanDistrib(0.5),
                 [true, false] -> BooleanDistrib(0.9),
                 [false, true] -> BooleanDistrib(0.1),
-                [false, false] -> BooleanDistrib(0.5)},
+                [false, false] -> BooleanDistrib(0.5)}
     ;
 random Boolean GoodDiet(Person p) 
   ~ case HealthConscious(p) in {true -> BooleanDistrib(0.7),
@@ -33,16 +33,16 @@ random Boolean NormalWeight(Person p)
                {[true, true] -> BooleanDistrib(0.8),
                 [true, false] -> BooleanDistrib(0.5),
                 [false, true] -> BooleanDistrib(0.5),
-                [false, false] -> BooleanDistrib(0.2)},
+                [false, false] -> BooleanDistrib(0.2)}
     ;
 random Boolean HighCholesterol(Person p) 
   ~ case GoodDiet(p) in 
                 {true -> BooleanDistrib(0.3),
-                 false -> BooleanDistrib(0.7)},
+                 false -> BooleanDistrib(0.7)}
     ;
 random Boolean TestedHighCholesterol(Person p) 
   ~ case HighCholesterol(p) in {true -> BooleanDistrib(0.9),
-               false -> BooleanDistrib(0.1)},
+               false -> BooleanDistrib(0.1)}
     ;
                                          
 /* Evidence */
