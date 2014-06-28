@@ -16,7 +16,7 @@ TAGNAME=$(shell git describe --exact-match --abbrev=0 2> /dev/null)
 ifneq (${TAGNAME},)
 TARGETNAME=${TAGNAME}
 else
-TARGETNAME=blog
+TARGETNAME=blog-$(shell git rev-parse --short HEAD)
 endif
 
 SRC_FILES=$(shell find src -name \*.java -print)
