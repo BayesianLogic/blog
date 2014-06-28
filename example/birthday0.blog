@@ -4,7 +4,7 @@ distinct Date Day[365];
 type Person;
 
 random Date Birthday(Person p) 
-  ~ UniformChoice({Date d});
+  ~ UniformChoice({d for Date d});
 
 #Person ~ 13;
 

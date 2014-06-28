@@ -31,9 +31,9 @@ random Real ApparentPos(Blip b) ~
         then UniformReal(-10, 10)
         else UnivarGaussian(Position(Time(b)), 1);
 
-obs {Blip b : Time(b) == @0} = {B1, B2, B3};
+obs {b for Blip b : Time(b) == @0} = {B1, B2, B3};
 obs ApparentPos(B1) = 0.3;
 obs ApparentPos(B2) = 1.2;
 obs ApparentPos(B1) = 5.0;
 
-query #{Aircraft a}; 
+query #{a for Aircraft a}; 

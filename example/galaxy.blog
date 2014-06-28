@@ -7,7 +7,7 @@ distinct Galaxy Galaxy[82];
 
 random Real ClusVelocity(Cluster c) ~ UniformReal(5000.0, 50000.0);
 
-random Cluster OrigCluster(Galaxy g) ~ UniformChoice({Cluster c});
+random Cluster OrigCluster(Galaxy g) ~ UniformChoice({c for Cluster c});
 
 random Real Velocity(Galaxy g) ~
   if (OrigCluster(g) != null) then UnivarGaussian(ClusVelocity(OrigCluster(g)), 10000);
@@ -105,7 +105,7 @@ query ClusVelocity(OrigCluster(Galaxy[50]));
 query ClusVelocity(OrigCluster(Galaxy[70]));
 query ClusVelocity(OrigCluster(Galaxy[80]));
 
-query #{Cluster c};
+query #{c for Cluster c};
 
 /* TESTBLOG: -n 1000 -b 100
 blogc *

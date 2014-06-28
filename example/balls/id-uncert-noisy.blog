@@ -17,7 +17,7 @@ type Color;
 
 random Color Color(Ball b) ~ Categorical({Black -> 0.3, White -> 0.7});
 
-random Ball BallDrawn(Draw d) ~ UniformChoice({Ball b});
+random Ball BallDrawn(Draw d) ~ UniformChoice({b for Ball b});
 
 random Color ObsColor(Draw d) ~
        if (BallDrawn(d) != null) then
