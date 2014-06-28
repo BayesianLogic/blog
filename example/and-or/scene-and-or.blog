@@ -86,12 +86,12 @@ random Boolean IsFarm(Scene s) ~
 /* Queries */
 //query #{World w};
 //query #{Scene s};
-query #{Scene s: IsStreet(s) == true};
-query #{Scene s: IsFarm(s) == true};
-query #{Cow c};
-query #{Person p};
+query #{s for Scene s: IsStreet(s) == true};
+query #{s for Scene s: IsFarm(s) == true};
+query #{c for Cow c};
+query #{p for Person p};
 //query #{PersonPose p};
 //query #{PersonPose p: IsFrontal(p) = true};
 //query #{PersonPose p: IsSideway(p) = true};
-query #{Bike b};
-query #{Cart c};
+query #{b for Bike b};
+query #{c for Cart c};
