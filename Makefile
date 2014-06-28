@@ -4,11 +4,15 @@ RUN_FILE=blog \
  blog.bat \
  dblog \
  README.md \
- path_sep.sh
+ path_sep.sh \
+ iblog \
+ iblog.scala 
+ 
 
 MISC_FILE= compile.bat \
  Makefile \
- parse.sh 
+ parse.sh \
+ parse.bat
 
 CLASSPATH=lib/java-cup-11b.jar:lib/*
 
