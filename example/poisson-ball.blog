@@ -17,9 +17,9 @@ random Ball BallDrawn(Draw d) ~ UniformChoice({b for Ball b});
 
 random Color ObsColor(Draw d) ~
     if (BallDrawn(d) != null)
-       then TabularCPD({Blue -> Categorical({Blue -> 0.8, Green -> 0.2}),
-       	    	          Green -> Categorical({Blue -> 0.2, Green -> 0.8})},
-	            TrueColor(BallDrawn(d)));
+       then case TrueColor(BallDrawn(d)) in {Blue -> Categorical({Blue -> 0.8, Green -> 0.2}),
+       	    	          Green -> Categorical({Blue -> 0.2, Green -> 0.8})}
+	        ;
 
 /* Evidence file asserting that the drawn balls appeared blue on half the 
  * draws and green on half the draws.
@@ -38,7 +38,7 @@ obs ObsColor(Draw[9]) = Green;
 
 /* Query file asking for the total number of balls in the urn.
  */
-query #{b for Ball b};
+query size({b for Ball b});
 
 
 /* Answers to some queries on this model, computed by exhaustive 

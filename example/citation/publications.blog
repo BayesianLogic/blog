@@ -6,8 +6,8 @@ type Researcher;
 random Boolean Thorough(Researcher r) ~ Bernoulli(0.2);
 
 random Boolean Productive(Researcher r) ~
-       TabularCPD({true -> Bernoulli(0.3),
-       	   	     false -> Bernoulli(0.5)}, Thorough(r))
+       case Thorough(r) in {true -> Bernoulli(0.3),
+       	   	     false -> Bernoulli(0.5)}
 ;
 
 type Publication;
@@ -35,7 +35,7 @@ random Publication Target(Citation c)
 distinct Researcher Einstein, Galileo;
 obs Productive(Einstein) = true;
 
-query #{p for Publication p : Author(p) == Einstein};
+query size({p for Publication p : Author(p) == Einstein});
 query (exists Citation c 
          Author(Source(c)) == Einstein &
          Author(Target(c)) == Galileo);
