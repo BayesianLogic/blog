@@ -7,10 +7,8 @@ RUN_FILE=blog \
  path_sep.sh
 
 MISC_FILE= compile.bat \
- makefile \
- parse.sh \
- test-ex.sh \
- ex_test_classes
+ Makefile \
+ parse.sh 
 
 CLASSPATH=lib/java-cup-11b.jar:lib/*
 
