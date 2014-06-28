@@ -28,6 +28,6 @@ random Boolean IsNodeActive(ParentNode p) ~
 obs IsNodeActive(pNode[0]) = true;
 
 query IsNodeActive(pNode[0]);
-query #{c for ChildNode1 c};
-query #{c for ChildNode2 c};
-query #{c for ChildNode3 c};
+query size({c for ChildNode1 c});
+query size({c for ChildNode2 c});
+query size({c for ChildNode3 c});

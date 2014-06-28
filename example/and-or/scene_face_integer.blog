@@ -220,9 +220,9 @@ obs Color2D(7, 9) = 30;
 
 // QUERY
 //query SceneType(S);
-query #{c for Car c};
-//query #{Cow c};
-//query #{Person p};
+query size({c for Car c});
+//query size({Cow c});
+//query size({Person p});
 //query Color2D(8, 8);
 //query {Integer i: i <= Zmax & i >= Zmin & (exists Car c (Z0(c) == i))};
 //query {Integer i: i <= Xmax & i >= Xmin & (exists Car c (X0(c) == i))};
@@ -230,8 +230,8 @@ query #{c for Car c};
 
 //query Z(11, 8);
 //query {Integer z: z >= 0 & z <= 20 & z == Z(8, 7)};
-//query #{Person p};
-//query #{Road r};
+//query size({Person p});
+//query size({Road r});
 //query {Integer i: i < 6 & i > 2 & (exists Road r (Height(r) == i))};
 //query {Integer i: i >= Xmin & i <= Xmax & exists Car p (X0(p) == i)}; 
 //query {Integer i: i >= Ymin & i <= Ymax & exists Car p (Y0(p) == i)}; 
@@ -249,7 +249,7 @@ query #{c for Car c};
 //query {Scene s: exists Road r (s == WhichScene(r))};
 //query {Integer i: i < 10 & (exists Road r (Height(r) == i))};
 //query {Integer i: i < 10 & (exists Car c (Y1(c) == i))};
-//query #{Car c};
-//query #{Road r};
-//query #{Grass g};
-//query #{Person p};
+//query size({Car c});
+//query size({Road r});
+//query size({Grass g});
+//query size({Person p});

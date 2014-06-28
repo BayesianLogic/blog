@@ -279,9 +279,9 @@ obs Color2D(7, 7) = 15;
 
 
 // QUERY
-query #{c for Car c};
-query #{c for Cow c};
-query #{p for Person p};
+query size({c for Car c});
+query size({c for Cow c});
+query size({p for Person p});
 query {i for Integer i: i >= Xmin & i <= Xmax & exists Person p (X0(p) == i)}; 
 query {i for Integer i: i >= Ymin & i <= Ymax & exists Person p (Y0(p) == i)}; 
 query {i for Integer i: i >= Zmin & i <= Zmax & exists Person p (Z0(p) == i)}; 
@@ -298,7 +298,7 @@ query {i for Integer i: i >= Zmin & i <= Zmax & exists Person p (Z0(p) == i)};
 //query {Scene s: exists Road r (s == WhichScene(r))};
 //query {Integer i: i < 10 & (exists Road r (Height(r) == i))};
 //query {Integer i: i < 10 & (exists Car c (Y1(c) == i))};
-//query #{Car c};
-//query #{Road r};
-//query #{Grass g};
-//query #{Person p};
+//query size({Car c});
+//query size({Road r});
+//query size({Grass g});
+//query size({Person p});

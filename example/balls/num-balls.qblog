@@ -1,4 +1,4 @@
 /* Query file asking for the total number of balls in the urn.
  */
 
-query #{b for Ball b};
+query size({b for Ball b});

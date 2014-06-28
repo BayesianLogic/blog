@@ -12,9 +12,9 @@ random Boolean V ~ BooleanDistrib(0.9);
 random Boolean W ~ BooleanDistrib(0.1);
 
 random Boolean X ~
-    if U then TabularCPD({true -> BooleanDistrib(0.8),
-       	      		    false -> BooleanDistrib(0.2)}, W)
-    else TabularCPD({true -> BooleanDistrib(0.8),
-    	   	       false -> BooleanDistrib(0.2)}, V)
+    if U then  case W in {true -> BooleanDistrib(0.8),
+       	      		    false -> BooleanDistrib(0.2)}
+    else case V in {true -> BooleanDistrib(0.8),
+    	   	       false -> BooleanDistrib(0.2)}
     ;
 query X;

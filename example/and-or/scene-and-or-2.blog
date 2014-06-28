@@ -136,15 +136,15 @@ obs {w for Wheel w}  = {W1, W2, W3, W4, W5, W6};
 /* Query file asking for the total number of balls in the urn.
  */
 
-//query #{World w};
-//query #{Scene s};
-query #{s for Scene s: IsStreet(s) == true};
-query #{s for Scene s: IsFarm(s) == true};
-query #{c for Cow c};
-query #{p for Person p};
-//query #{PersonPose p};
-//query #{PersonPose p: IsFrontal(p) = true};
-//query #{PersonPose p: IsSideway(p) = true};
-query #{b for Bike b};
-query #{c for Cart c};
-query #{w for Wheel w};
+//query size({World w});
+//query size({Scene s});
+query size({s for Scene s: IsStreet(s) == true});
+query size({s for Scene s: IsFarm(s) == true});
+query size({c for Cow c});
+query size({p for Person p});
+//query size({PersonPose p});
+//query size({PersonPose p: IsFrontal(p) = true});
+//query size({PersonPose p: IsSideway(p) = true});
+query size({b for Bike b});
+query size({c for Cart c});
+query size({w for Wheel w});

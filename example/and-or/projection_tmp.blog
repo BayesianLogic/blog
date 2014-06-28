@@ -41,5 +41,5 @@ random Boolean Occupied3D(Voxel v) ~ false;
 
 random Boolean Occupied2D(Pixel p) ~ true;
 
-query #{p for Pixel p: x(p) == 1 & y(p) == 1};
+query size({p for Pixel p: x(p) == 1 & y(p) == 1});
 query {Occupied2D(p) for Pixel p: x(p) == 1 & y(p) == 1};
