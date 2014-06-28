@@ -257,7 +257,7 @@ random Integer Zintercept(Cow o, Integer x, Integer y) ~
 
 random Integer Z(Integer x, Integer y) ~
     if ((x <= xMax) & (x >= xMin) & (y <= yMax) & (y >= yMin)) then
-        min({Integer Z: Z < Zmax & ((exists Person o (Zintercept(o, x, y) == Z)) | (exists Car o (Zintercept(o, x, y) == Z)) | (exists Cow o (Zintercept(o, x, y) == Z)))})
+        min({Z for Integer Z: Z < Zmax & ((exists Person o (Zintercept(o, x, y) == Z)) | (exists Car o (Zintercept(o, x, y) == Z)) | (exists Cow o (Zintercept(o, x, y) == Z)))})
     else
         0
 ;
@@ -279,12 +279,12 @@ obs Color2D(7, 7) = 15;
 
 
 // QUERY
-query #{Car c};
-query #{Cow c};
-query #{Person p};
-query {Integer i: i >= Xmin & i <= Xmax & exists Person p (X0(p) == i)}; 
-query {Integer i: i >= Ymin & i <= Ymax & exists Person p (Y0(p) == i)}; 
-query {Integer i: i >= Zmin & i <= Zmax & exists Person p (Z0(p) == i)}; 
+query #{c for Car c};
+query #{c for Cow c};
+query #{p for Person p};
+query {i for Integer i: i >= Xmin & i <= Xmax & exists Person p (X0(p) == i)}; 
+query {i for Integer i: i >= Ymin & i <= Ymax & exists Person p (Y0(p) == i)}; 
+query {i for Integer i: i >= Zmin & i <= Zmax & exists Person p (Z0(p) == i)}; 
 //query {Integer i: i >= Zmin & i <= Zmax & exists Person p (Zintercept(p, 8, 7) == i)}; 
 //query {Integer i: i == Color2D(8, 7) & (i == 5 | i ==10 | i == 15 | i == 20 | i == 25 | i == 30 | i == 40) };
 //query {Integer i: i == Color2D(8, 7) & (i == 10 | i== 15 | i == 20 | i == 25 | i == 30 | i == 40) };

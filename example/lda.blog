@@ -26,9 +26,9 @@ fixed RealMatrix vector = [0.2, 0.2, 0.2, 0.2, 0.2];
 random Real[] theta(Document d) ~ Dirichlet(vector);
 
 random Integer topic(Document d, Integer i) ~
-    if (i < doclen(d)) then Categorical(theta(d));
+    if (i < doclen(d)) then Discrete(theta(d));
 
-random Integer wordidx(Document d, Integer i) ~ Categorical(beta[topic(d, i)]);
+random Integer wordidx(Document d, Integer i) ~ Discrete(beta[topic(d, i)]);
 
 // define a dictionary mapping from index to word
 fixed String Dictionary(Integer i)
