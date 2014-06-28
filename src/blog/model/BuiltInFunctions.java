@@ -102,6 +102,7 @@ public class BuiltInFunctions {
   public static final String ONES_NAME = "ones";
   public static final String TOINT_NAME = "toInt";
   public static final String TOREAL_NAME = "toReal";
+  public static final String LOAD_REAL_MATRIX_NAME = "loadRealMatrix";
   public static final String ABS_NAME = "abs";
   public static final String EXP_NAME = "exp";
   public static final String IOTA_NAME = "iota";
@@ -499,6 +500,11 @@ public class BuiltInFunctions {
    * in fixed function
    */
   public static TemplateFunction CASE_IN_FIXED_FUNC;
+
+  /**
+   * Load RealMatrix from space-separeted text file.
+   */
+  public static FixedFunction LOAD_REAL_MATRIX;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -1517,6 +1523,19 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL;
     TO_REAL = new FixedFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
     addFunction(TO_REAL);
+
+    FunctionInterp loadRealMatrixInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        String filename = (String) args.get(0);
+        return MatrixFactory.fromTxt(filename);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.STRING);
+    retType = BuiltInTypes.REAL_MATRIX;
+    LOAD_REAL_MATRIX = new FixedFunction(LOAD_REAL_MATRIX_NAME, argTypes,
+        retType, loadRealMatrixInterp);
+    addFunction(LOAD_REAL_MATRIX);
 
     /**
      * absolute value for Real

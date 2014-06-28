@@ -1,5 +1,11 @@
 package blog.common.numerical;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+
 /**
  * Creates MatrixLib objects.
  * 
@@ -134,6 +140,56 @@ public class MatrixFactory {
         result[i][a.numCols() + j] = b.elementAt(i, j);
       }
     }
+    return fromArray(result);
+  }
+
+  /**
+   * Read matrix from space-separated text file.
+   * 
+   * To save in this format from numpy: savetxt('a.txt', a)
+   * To save in this format from matlab: save('a.txt', 'a', '-ascii')
+   */
+  static public MatrixLib fromTxt(String filename) {
+    ArrayList<ArrayList<Double>> rows = new ArrayList<ArrayList<Double>>();
+    try {
+      BufferedReader reader = new BufferedReader(new FileReader(filename));
+      while (true) {
+        String line = reader.readLine();
+        if (line == null) {
+          break;
+        }
+        ArrayList<Double> row = new ArrayList<Double>();
+        for (String word : line.trim().split(" +", -1)) {
+          row.add(Double.parseDouble(word));
+        }
+        rows.add(row);
+      }
+      reader.close();
+    } catch (FileNotFoundException e) {
+      throw new IllegalArgumentException("File " + filename + " not found");
+    } catch (IOException e) {
+      throw new IllegalArgumentException("Error reading " + filename);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("Could not parse matrix");
+    }
+
+    final int numRows = rows.size();
+    final int numCols = rows.get(0).size();
+    if (numRows == 0 || numCols == 0) {
+      throw new IllegalArgumentException("Tried to read an empty matrix");
+    }
+    double[][] result = new double[numRows][numCols];
+    for (int r = 0; r < numRows; r++) {
+      ArrayList<Double> row = rows.get(r);
+      if (row.size() != numCols) {
+        throw new IllegalArgumentException("Matrix rows have unequal lengths");
+      }
+      for (int c = 0; c < numCols; c++) {
+        result[r][c] = row.get(c);
+      }
+    }
+    System.out.println("Loaded " + result.length + "x" + result[0].length
+        + " matrix from " + filename);
     return fromArray(result);
   }
 }
