@@ -117,9 +117,16 @@ public class Semant {
   private Evidence evidence;
   private Queries queries;
   private boolean isFixedFuncBody;
+  /**
+   * keeping track of local logical variable symbols
+   * a map from symbol name to number of occurrence.
+   */
   private Map<String, Integer> symbolTable;
 
-  List<String> packages;
+  /**
+   * keeping track of default package search locations
+   */
+  private List<String> packages;
 
   public Semant(ErrorMsg msg) {
     model = new Model();
