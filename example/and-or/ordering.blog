@@ -8,12 +8,12 @@ random Integer Start(Integer n)
 
 random Boolean nooverlap ~
       (forall Integer i
-      	  (i < maxIntervals =>
-	      (forall Integer j
-	          (i != j & j < maxIntervals) =>
-		      ((Start(i) < maxVal & Start(j) < maxVal) &
-		       (Start(i) < Start(j) - 1 | Start(i) > Start(j) + 1))
-	      )
+          (i < maxIntervals =>
+        (forall Integer j
+            (i != j & j < maxIntervals) =>
+          ((Start(i) < maxVal & Start(j) < maxVal) &
+           (Start(i) < Start(j) - 1 | Start(i) > Start(j) + 1))
+        )
           )
       );
 

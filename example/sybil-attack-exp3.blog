@@ -31,8 +31,8 @@ random Boolean Transaction(Login x, Login y) ~
   if x!=y & Owner(x) == Owner(y) then BooleanDistrib(0.9)
   else if x!=y then 
     case Honest(Owner(x)) in {true -> BooleanDistrib(0.6),
-      		  false -> BooleanDistrib(0.1)}
-    		  ;
+            false -> BooleanDistrib(0.1)}
+          ;
 
 obs {l for Login l} = {Login1, Login2, Login3, Login4, Login5};  
 

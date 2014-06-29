@@ -7,7 +7,7 @@ random Boolean Thorough(Researcher r) ~ Bernoulli(0.2);
 
 random Boolean Productive(Researcher r) ~
        case Thorough(r) in {true -> Bernoulli(0.3),
-       	   	     false -> Bernoulli(0.5)}
+                   false -> Bernoulli(0.5)}
 ;
 
 type Publication;

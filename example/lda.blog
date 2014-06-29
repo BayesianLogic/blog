@@ -33,10 +33,10 @@ random Integer wordidx(Document d, Integer i) ~ Discrete(beta[topic(d, i)]);
 // define a dictionary mapping from index to word
 fixed String Dictionary(Integer i)
     = TabularInterp(1,
-	0, "AAA",
-	1, "BBB",
-	2, "CCC",
-	3, "DDD"
+  0, "AAA",
+  1, "BBB",
+  2, "CCC",
+  3, "DDD"
       );
 
 query wordidx(Document[1], 0);

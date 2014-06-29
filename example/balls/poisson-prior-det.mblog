@@ -12,7 +12,7 @@ random Ball BallDrawn(Draw d) ~ UniformChoice({b for Ball b});
 
 random Color ObsColor(Draw d) ~
        if (BallDrawn(d) != null) then
-       	  	Color(BallDrawn(d))
+             Color(BallDrawn(d))
 ;
 
 distinct Color Blue, Green;
