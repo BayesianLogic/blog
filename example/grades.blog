@@ -48,11 +48,11 @@ random Grade GradeObtained(Student s, Course c) ~
     then Categorical({A -> 0.85, B -> 0.1, C -> 0.03, D -> 0.01, F -> 0.01})
     else if Takes(s, c)
         then case [Intelligence(s), Difficulty(c)] in {[Weak, Easy] -> Categorical({A -> 0.2, B -> 0.4, C -> 0.3, D -> 0.07, F -> 0.03}),
-	       		   [Weak, Hard] -> Categorical({A -> 0.05, B -> 0.1, C -> 0.55, D -> 0.2, F -> 0.1}),
-			   [Average, Easy] -> Categorical({A -> 0.3, B -> 0.55, C -> 0.10, D -> 0.04, F -> 0.01}),
-			   [Average, Hard] -> Categorical({A -> 0.15, B -> 0.3, C -> 0.45, D -> 0.07, F -> 0.03}),
-			   [Smart, Easy] -> Categorical({A -> 0.85, B -> 0.1, C -> 0.03, D -> 0.01, F -> 0.01}),
-			   [Smart, Hard] -> Categorical({A -> 0.60, B -> 0.25, C -> 0.1, D -> 0.03, F -> 0.02})};
+                [Weak, Hard] -> Categorical({A -> 0.05, B -> 0.1, C -> 0.55, D -> 0.2, F -> 0.1}),
+         [Average, Easy] -> Categorical({A -> 0.3, B -> 0.55, C -> 0.10, D -> 0.04, F -> 0.01}),
+         [Average, Hard] -> Categorical({A -> 0.15, B -> 0.3, C -> 0.45, D -> 0.07, F -> 0.03}),
+         [Smart, Easy] -> Categorical({A -> 0.85, B -> 0.1, C -> 0.03, D -> 0.01, F -> 0.01}),
+         [Smart, Hard] -> Categorical({A -> 0.60, B -> 0.25, C -> 0.1, D -> 0.03, F -> 0.02})};
 
 
 /* Relational skeleton and evidence.

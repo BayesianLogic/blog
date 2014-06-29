@@ -21,8 +21,8 @@ type Component;
 distinct Component Road, Shadow, Vehicle;
 
 fixed Real[][] variance = [10000, 0, 0;
-      	       		   0, 10000, 0;
-			   0, 0, 10000];
+                      0, 10000, 0;
+         0, 0, 10000];
 
 // the prior posts uniform distribution over a box of 3D space.
 random Real[] Mean(Component c, Integer x, Integer y)
@@ -36,8 +36,8 @@ random Integer AssociatedComponent(Integer x, Integer y, Timestep t)
 
 fixed Component IntToComponent(Integer c)
     = TabularInterp(1, 0, Road,
-      		       1, Shadow,
-		       2, Vehicle);
+                 1, Shadow,
+           2, Vehicle);
 
 // the parameters can be set in Mean(Component)
 random Real[] Intensity(Integer x, Integer y, Timestep t)

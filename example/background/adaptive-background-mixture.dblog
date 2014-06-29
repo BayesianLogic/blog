@@ -25,14 +25,14 @@ type Component;
 random Real[] Weight ~ Dirichlet(#Component, 0.2);
 
 fixed Real[][] variance = [10000, 0, 0;
-      	       		   0, 10000, 0;
-			   0, 0, 10000];
+                      0, 10000, 0;
+         0, 0, 10000];
 
 // the prior posts uniform distribution over a box of 3D space.
 random Real[] Mean(Component c, Timestep t) ~
-	// UniformVector(x_lower, x_upper, y_lower, y_upper, z_lower, z_upper)
+  // UniformVector(x_lower, x_upper, y_lower, y_upper, z_lower, z_upper)
     if (t == @1) then UniformVector(0, 255, 0, 255, 0, 255)
-	// MultivarGaussian(dimension, mean, covariance)
+  // MultivarGaussian(dimension, mean, covariance)
     else MultivarGaussian(Mean(c, prev(t)), variance)
 ;
 

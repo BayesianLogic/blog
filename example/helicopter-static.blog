@@ -27,8 +27,8 @@ random Boolean BladeFlash(Blip b) ~
     if (Source(b) == null) then BooleanDistrib(0.01)
     else if (WingType(Source(b)) == Helicopter & RotorLength(Source(b)) != null) then
          case RotorLength(Source(b)) in 
-         	  {Long -> BooleanDistrib(0.9),
-	  	      Short -> BooleanDistrib(0.6)}
+             {Long -> BooleanDistrib(0.9),
+            Short -> BooleanDistrib(0.6)}
     else  BooleanDistrib(0.1);
 
 obs {b for Blip b} = {b1, b2, b3, b4, b5, b6};

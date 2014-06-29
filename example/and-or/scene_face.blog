@@ -113,36 +113,36 @@ random Integer Z0(Person p) ~ UniformInt(Zmin, Zmax);
 random Boolean NoOverlap_person2()
     ~ (forall Person p1
           (forall Person p2 ((p2 != p1) =>
-	      ((X1(p1) < X0(p2)) | (X0(p1) > X1(p2)) | (Y1(p1) < Y0(p2)) | (Y0(p1) > Y1(p2)) | (Z0(p1) != Z0(p2)))
-	  ))
+        ((X1(p1) < X0(p2)) | (X0(p1) > X1(p2)) | (Y1(p1) < Y0(p2)) | (Y0(p1) > Y1(p2)) | (Z0(p1) != Z0(p2)))
+    ))
       );
 
 random Boolean NoOverlap_car2()
     ~ (forall Car c1
           (forall Car c2 ((c2 != c1) =>
-	      ((X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z0(c1) != Z0(c2)))
-	  ))
+        ((X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z0(c1) != Z0(c2)))
+    ))
       );
 
 random Boolean NoOverlap_cow2()
     ~ (forall Cow c1
           (forall Cow c2 ((c2 != c1) =>
-	      ((X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z0(c1) != Z0(c2)))
-	  ))
+        ((X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z0(c1) != Z0(c2)))
+    ))
       );
 
 random Boolean NoOverlap_person_car()
     ~ (forall Person p1
           (forall Car c2
-	      ((X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z0(p1) != Z0(c2)))
-	  )
+        ((X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z0(p1) != Z0(c2)))
+    )
       );
 
 random Boolean NoOverlap_person_cow()
     ~ (forall Person p1
           (forall Cow c2
-	      ((X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z0(p1) != Z0(c2)))
-	  )
+        ((X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z0(p1) != Z0(c2)))
+    )
       );
 
 random Boolean NoOverlap() ~ (NoOverlap_person2() & NoOverlap_car2() & NoOverlap_cow2() & NoOverlap_person_car() & NoOverlap_person_cow());
@@ -191,16 +191,16 @@ random Boolean Zintercept(Cow o, Integer x, Integer y) ~
 random Integer Z(Integer x, Integer y) ~
     if ((x <= xMax) & (x >= xMin) & (y <= yMax) & (y >= yMin)) then
           min({z for Integer z: z >= 0 & z < Zmax &
-	             ((exists Person o (Zintercept(o, x, y) & (Z0(o) == z))) | 
-        	      (exists Car o (Zintercept(o, x, y) & (Z0(o) == z))) | 
-		      (exists Cow o (Zintercept(o, x, y) & (Z0(o) == z))) | 
-             	      ((Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x)) & (exists Road r (Height(r) == yc + z * (yc - y)))) | 
-             	      ((Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x)) & (exists Grass g (Height(g) == yc + z * (yc - y)))) | 
-             	      ((Xmin == xc + z * (xc - x)) & (Ymin <= yc + z * (yc - y)) & (Ymax >= yc + z * (yc - y))) |
-		      ((Xmax == xc + z * (xc - x)) & (Ymin <= yc + z * (yc - y)) & (Ymax >= yc + z * (yc - y))) |
-             	      ((Ymin == yc + z * (yc - y)) & (Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x))) |
-             	      ((Ymax == yc + z * (yc - y)) & (Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x))) |
-             	      ((z == Zmax) & (Ymin <= yc + z * (yc - y)) & (Ymax >= yc + z * (yc - y)) & (Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x))) ) })
+               ((exists Person o (Zintercept(o, x, y) & (Z0(o) == z))) | 
+                (exists Car o (Zintercept(o, x, y) & (Z0(o) == z))) | 
+          (exists Cow o (Zintercept(o, x, y) & (Z0(o) == z))) | 
+                     ((Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x)) & (exists Road r (Height(r) == yc + z * (yc - y)))) | 
+                     ((Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x)) & (exists Grass g (Height(g) == yc + z * (yc - y)))) | 
+                     ((Xmin == xc + z * (xc - x)) & (Ymin <= yc + z * (yc - y)) & (Ymax >= yc + z * (yc - y))) |
+          ((Xmax == xc + z * (xc - x)) & (Ymin <= yc + z * (yc - y)) & (Ymax >= yc + z * (yc - y))) |
+                     ((Ymin == yc + z * (yc - y)) & (Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x))) |
+                     ((Ymax == yc + z * (yc - y)) & (Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x))) |
+                     ((z == Zmax) & (Ymin <= yc + z * (yc - y)) & (Ymax >= yc + z * (yc - y)) & (Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x))) ) })
     else
         0
   ;
