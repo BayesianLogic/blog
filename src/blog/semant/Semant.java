@@ -5,8 +5,10 @@ package blog.semant;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import blog.absyn.Absyn;
 import blog.absyn.ArrayTy;
@@ -115,8 +117,16 @@ public class Semant {
   private Evidence evidence;
   private Queries queries;
   private boolean isFixedFuncBody;
+  /**
+   * keeping track of local logical variable symbols
+   * a map from symbol name to number of occurrence.
+   */
+  private Map<String, Integer> symbolTable;
 
-  List<String> packages;
+  /**
+   * keeping track of default package search locations
+   */
+  private List<String> packages;
 
   public Semant(ErrorMsg msg) {
     model = new Model();
@@ -135,11 +145,30 @@ public class Semant {
     errorMsg = msg;
     queries = qs;
     isFixedFuncBody = false;
+    symbolTable = new HashMap<String, Integer>();
     initialize();
   }
 
   void error(int line, int col, String msg) {
     errorMsg.error(line, col, msg);
+  }
+
+  void addSymbol(String sym) {
+    int cnt = 1;
+    if (symbolTable.containsKey(sym)) {
+      cnt = symbolTable.get(sym).intValue() + 1;
+    }
+    symbolTable.put(sym, cnt);
+  }
+
+  void removeSymbol(String sym) {
+    if (symbolTable.containsKey(sym))
+      return;
+    int cnt = symbolTable.get(sym);
+    if (cnt == 1)
+      symbolTable.remove(sym);
+    else
+      symbolTable.put(sym, cnt - 1);
   }
 
   /**
@@ -445,6 +474,8 @@ public class Semant {
     for (FieldList fl = e.params; fl != null; fl = fl.next) {
       Type ty = getType(fl.head.typ);
       argTy.add(ty);
+      // parameter variables are restricted
+      addSymbol(fl.head.var.toString());
     }
 
     String name = e.name.toString();
@@ -502,6 +533,9 @@ public class Semant {
       ((RandomFunction) fun).setDepModel(dm);
     }
 
+    for (FieldList fl = e.params; fl != null; fl = fl.next) {
+      removeSymbol(fl.head.var.toString());
+    }
   }
 
   /**
@@ -814,11 +848,15 @@ public class Semant {
     }
 
     if (e.args == null) {
+      if (symbolTable.containsKey(e.func.toString())) {
+        return new SymbolTerm(e.func.toString());
+      }
+
       // this might be just logical variable
       Function f = getFunction(e.func.toString(),
           Collections.<Type> emptyList());
       if (f == null) {
-        // must be reference to logical var
+        error(e.line, e.col, "No reference found for symbol <" + e.func + ">");
         return new SymbolTerm(e.func.toString());
       }
     }
@@ -857,7 +895,10 @@ public class Semant {
   }
 
   Formula transExpr(QuantifiedFormulaExpr e) {
+    addSymbol(e.var.toString());
     Object quantExpr = transExpr(e.formula);
+    removeSymbol(e.var.toString());
+
     if (!(quantExpr instanceof Formula)) {
       return null;
     }
@@ -1044,6 +1085,10 @@ public class Semant {
       e.enumVars = e.enumVars.next;
     }
 
+    // add restricted symbols
+    for (String var : varNames)
+      addSymbol(var);
+
     if (e.cond != null) {
       Object c = transExpr(e.cond);
       if (c instanceof Formula) {
@@ -1055,6 +1100,11 @@ public class Semant {
             "Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
       }
     }
+
+    // remove restricted symbols
+    for (String var : varNames)
+      removeSymbol(var);
+
     return new TupleSetSpec(tupleTerms, varTypes, varNames, cond);
   }
 
