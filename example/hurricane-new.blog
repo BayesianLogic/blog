@@ -15,14 +15,14 @@ random City First ~ UniformChoice({c for City c});
 random PrepLevel Prep(City c) ~
   if (First == c) then Categorical({High -> 0.5, Low -> 0.5})
   else case Damage(First) in {
-  	Severe -> Categorical({High -> 0.9, Low -> 0.1}),
+    Severe -> Categorical({High -> 0.9, Low -> 0.1}),
     Mild -> Categorical({High -> 0.1, Low -> 0.9})
   };
 
 random DamageLevel Damage(City c) ~
   case Prep(c) in {
-  	High -> Categorical({Severe -> 0.2, Mild -> 0.8}),
-	Low -> Categorical({Severe -> 0.8, Mild -> 0.2})
+    High -> Categorical({Severe -> 0.2, Mild -> 0.8}),
+  Low -> Categorical({Severe -> 0.8, Mild -> 0.2})
   };
 
 distinct City A, B;

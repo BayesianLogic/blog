@@ -1056,6 +1056,22 @@ public class Semant {
     List<String> varNames = new ArrayList<String>();
     Formula cond = TrueFormula.TRUE;
 
+    while (e.enumVars != null) {
+      Object varType = this.getType(e.enumVars.head.typ);
+      String varName = e.enumVars.head.var.toString();
+      if (varType != null && (!varName.isEmpty())) {
+        varTypes.add((Type) varType);
+        varNames.add((String) varName);
+        addSymbol(varName);
+      } else {
+        error(
+            e.cond.line,
+            e.cond.col,
+            "Invalid expression as logical variable in implicit set: logical variable expected");
+      }
+      e.enumVars = e.enumVars.next;
+    }
+
     while (e.setTuple != null) {
       Object tuple = transExpr(e.setTuple.head);
       if (tuple instanceof Term) {
@@ -1068,27 +1084,6 @@ public class Semant {
       }
       e.setTuple = e.setTuple.next;
     }
-
-    // TODO: TRANSLATE THE VARIABLE LIST AND TYPES
-    while (e.enumVars != null) {
-      Object varType = this.getType(e.enumVars.head.typ);
-      Object varName = e.enumVars.head.var.toString();
-      if (varType instanceof Type && varName instanceof String) {
-        varTypes.add((Type) varType);
-        varNames.add((String) varName);
-      } else {
-        error(
-            e.cond.line,
-            e.cond.col,
-            "Invalid expression as logical variable in implicit set: logical variable expected");
-      }
-      e.enumVars = e.enumVars.next;
-    }
-
-    // add restricted symbols
-    for (String var : varNames)
-      addSymbol(var);
-
     if (e.cond != null) {
       Object c = transExpr(e.cond);
       if (c instanceof Formula) {
@@ -1127,6 +1122,21 @@ public class Semant {
   ArgSpec transExpr(OpExpr e) {
     Object left = null, right = null;
     Term term;
+    if (e.oper == OpExpr.SUB) {
+      // need to specially handle sub when refering to distinct symbols
+      if ((e.left instanceof FuncCallExpr) && (e.right instanceof IntExpr)) {
+        // check if this is declared distinct symbol;
+        FuncCallExpr funcall = (FuncCallExpr) e.left;
+        int idx = ((IntExpr) e.right).value;
+        if (funcall.args == null) {
+          Function f = getFunction(funcall.func.toString() + "[" + idx + "]",
+              Collections.<Type> emptyList());
+          if (f != null)
+            return new FuncAppTerm(f);
+        }
+      }
+    }
+
     if (e.left != null) {
       left = transExpr(e.left);
     }
@@ -1204,17 +1214,6 @@ public class Semant {
       return new NegFormula((Formula) right);
     case OpExpr.SUB:
       Function func;
-      if ((e.left instanceof FuncCallExpr) && (e.right instanceof IntExpr)) {
-        // check if this is declared distinct symbol;
-        FuncCallExpr funcall = (FuncCallExpr) e.left;
-        int idx = ((IntExpr) e.right).value;
-        if (funcall.args == null) {
-          Function f = getFunction(funcall.func.toString() + "[" + idx + "]",
-              Collections.<Type> emptyList());
-          if (f != null)
-            return new FuncAppTerm(f);
-        }
-      }
       if (left instanceof SymbolTerm) {
         if (e.right instanceof IntExpr) {
           String objectname = ((SymbolTerm) left).getName() + '['

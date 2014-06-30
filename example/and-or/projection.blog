@@ -39,15 +39,15 @@ random Boolean Occupied2D(Integer x, Integer y) ~
         false
     else 
           (exists Integer Z
-	      ((Z >= Zmin & Z <= Zmax) &
-	       (exists Integer X
-	          (X >= Xmin & X <= Xmax & X == x * Z &
-		   (exists Integer Y
-		       (Y >= Ymin & Y <= Ymax & Y == y * Z & Occupied3D(X, Y, Z))
-	           )
-	          )
-	       )
-	      )
+        ((Z >= Zmin & Z <= Zmax) &
+         (exists Integer X
+            (X >= Xmin & X <= Xmax & X == x * Z &
+       (exists Integer Y
+           (Y >= Ymin & Y <= Ymax & Y == y * Z & Occupied3D(X, Y, Z))
+             )
+            )
+         )
+        )
           )
 ;
 

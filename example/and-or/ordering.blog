@@ -8,12 +8,12 @@ random Integer Start(Integer n)
 
 random Boolean nooverlap ~
       (forall Integer i
-      	  (i < maxIntervals =>
-	      (forall Integer j
-	          (i != j & j < maxIntervals) =>
-		      ((Start(i) < maxVal & Start(j) < maxVal) &
-		       (Start(i) < Start(j) - 1 | Start(i) > Start(j) + 1))
-	      )
+          (i < maxIntervals =>
+        (forall Integer j
+            (i != j & j < maxIntervals) =>
+          ((Start(i) < maxVal & Start(j) < maxVal) &
+           (Start(i) < Start(j) - 1 | Start(i) > Start(j) + 1))
+        )
           )
       );
 
@@ -30,6 +30,6 @@ query {Start(i) for Integer i: i < maxIntervals};
 //query {Start(i) for Interval i:Index(i)=0};
 //query {Start(i) for Interval i:Index(i)=1};
 
-//query #{Integer i: Index(i) == 0};
-//query #{Integer i: Index(i) < 10};
-query #{i for Integer i: i < 10};
+//query size({Integer i: Index(i) == 0});
+//query size({Integer i: Index(i) < 10});
+query size({i for Integer i: i < 10});

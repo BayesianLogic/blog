@@ -27,7 +27,7 @@ random Integer WhichChild(ParentNode p) ~
 
 //obs {ChildNode1 c} = {C1};
 
-query #{p for ParentNode p};
-query #{c for ChildNode1 c};
-query #{c for ChildNode2 c};
-query #{c for ChildNode3 c};
+query size({p for ParentNode p});
+query size({c for ChildNode1 c});
+query size({c for ChildNode2 c});
+query size({c for ChildNode3 c});
