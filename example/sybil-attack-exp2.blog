@@ -29,14 +29,14 @@ random Boolean Honest(Person p) ~ BooleanDistrib(0.9);
 random Boolean Transaction(Login x, Login y) ~
     if (x != y) then
         if (Owner(x) == Owner(y)) then BooleanDistrib(0.9)
-	else TabularCPD({true -> BooleanDistrib(0.6),
-	       		   false -> BooleanDistrib(0.1)},
-			Honest(Owner(x)));
+  else case Honest(Owner(x)) in {true -> BooleanDistrib(0.6),
+                false -> BooleanDistrib(0.1)}
+             ;
 
 random Boolean Recommends(Login x, Login y) ~
     if (x != y & Transaction(x,y) == true & Owner(x) == Owner(y)) then BooleanDistrib(0.99)
     else if (Transaction(x,y) == true & Owner(x) != Owner(y)) then
-    	 if (Honest(Owner(x)) == true & Honest(Owner(y)) == true) 
+       if (Honest(Owner(x)) == true & Honest(Owner(y)) == true) 
             then BooleanDistrib(0.9)
     else BooleanDistrib(0.1);
 

@@ -84,14 +84,14 @@ random Boolean IsFarm(Scene s) ~
 //obs {Person p}  = {P1, P2, P3, P4, P5, P6};
 
 /* Queries */
-//query #{World w};
-//query #{Scene s};
-query #{s for Scene s: IsStreet(s) == true};
-query #{s for Scene s: IsFarm(s) == true};
-query #{c for Cow c};
-query #{p for Person p};
-//query #{PersonPose p};
-//query #{PersonPose p: IsFrontal(p) = true};
-//query #{PersonPose p: IsSideway(p) = true};
-query #{b for Bike b};
-query #{c for Cart c};
+//query size({World w});
+//query size({Scene s});
+query size({s for Scene s: IsStreet(s) == true});
+query size({s for Scene s: IsFarm(s) == true});
+query size({c for Cow c});
+query size({p for Person p});
+//query size({PersonPose p});
+//query size({PersonPose p: IsFrontal(p) = true});
+//query size({PersonPose p: IsSideway(p) = true});
+query size({b for Bike b});
+query size({c for Cart c});

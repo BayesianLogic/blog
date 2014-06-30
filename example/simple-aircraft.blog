@@ -13,5 +13,5 @@ origin Aircraft Source(Blip);
 obs #Blip = 3;
 
 // Query
-query #{a for Aircraft a};
+query size({a for Aircraft a});
 

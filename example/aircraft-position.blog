@@ -23,5 +23,5 @@ obs ObsPos(B1) = 5.0;
 //obs ObsPos(B3) = 7.5;
 
 // Query
-query #{a for Aircraft a};
-//query #{Aircraft a: Position(a) > 5};
+query size({a for Aircraft a});
+//query size({Aircraft a: Position(a) > 5});

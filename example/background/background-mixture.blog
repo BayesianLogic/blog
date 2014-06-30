@@ -25,8 +25,8 @@ fixed Real[] mean_shadow = [10, 10, 10];
 fixed Real[] mean_road = [100, 100, 100];
 
 fixed Real[][] variance = [10000, 0, 0;
-      	       		   0, 10000, 0;
-			   0, 0, 10000];
+                      0, 10000, 0;
+         0, 0, 10000];
 
 random Component AssociatedComponent(Integer x, Integer y, Timestep t) 
   ~ Categorical({Road -> 0.7, 
@@ -41,7 +41,7 @@ random Real[] Intensity(Integer x, Integer y, Timestep t) ~
     else if AssociatedComponent(x, y, t) == Shadow then 
         MultivarGaussian(mean_shadow, variance)
     else if AssociatedComponent(x, y, t) == Road then 
-    	MultivarGaussian(mean_road, variance)
+      MultivarGaussian(mean_road, variance)
 ;
 
 obs Intensity(1, 1, @1) = [135, 85, 170];

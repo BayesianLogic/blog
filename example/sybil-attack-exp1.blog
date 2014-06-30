@@ -31,19 +31,19 @@ origin Person Owner(Login);
 random Boolean Transaction(Login x, Login y) ~
   if x!=y & Owner(x) == Owner(y) then BooleanDistrib(0.9)
   else if x!=y then 
-      TabularCPD({true -> Categorical({true -> 0.6, false -> 0.4}), 
-                 false -> Categorical({true -> 0.1, false -> 0.9})}, 
-                Honest(Owner(x)));
+      case Honest(Owner(x)) in {true -> Categorical({true -> 0.6, false -> 0.4}), 
+                 false -> Categorical({true -> 0.1, false -> 0.9})}
+                 ;
 
 random Boolean Recommends(Login x, Login y) ~
   if (x!=y) & Transaction(x,y) then
     if Owner(x) == Owner(y) then BooleanDistrib(0.99)
-    else TabularCPD(
+    else case [Honest(Owner(x)), Honest(Owner(y))] in
       {[true, true]   -> BooleanDistrib(0.9),
        [true, false]  -> BooleanDistrib(0.1), 
        [false, true]  -> BooleanDistrib(0.1),
-       [false, false] -> BooleanDistrib(0.1)},
-    [Honest(Owner(x)), Honest(Owner(y))]);
+       [false, false] -> BooleanDistrib(0.1)}
+    ;
 
 obs {p for Person p} = {Person1, Person2};
 

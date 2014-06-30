@@ -74,8 +74,8 @@ obs Z0(o2) = 10;
 */
 
 
-//query #{Object o};
-query #{o for Object o: X0(o) > 0};
+//query size({Object o});
+query size({o for Object o: X0(o) > 0});
 query {X for Integer X: X < Xmax & (exists Object o (X0(o) == X))};
 query {z for Integer z: z < Zmax & (exists Object o (z == Zintercept(o, 7, 7)))};
 query {z for Integer z: z < Zmax & z == Z(7, 7)};
