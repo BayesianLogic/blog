@@ -401,22 +401,6 @@ public class Semant {
       }
     }
 
-    // Handling to attach array type to list expression
-    // TODO need to remove this part.
-    // if (e.result instanceof ArrayTy) {
-    // if (e.body instanceof ListInitExpr) {
-    // ((ListInitExpr) e.body).type = e.result;
-    // } else if (e.body instanceof DistributionExpr) {
-    // // Nothing yet
-    // } else if (e.body instanceof SymbolExpr) {
-    // // Nothing yet
-    // } else if (e.body instanceof IfExpr) {
-    // // Nothing yet
-    // } else {
-    // error(e.line, e.col, "Cannot create array from non-list syntax!");
-    // }
-    // }
-
     String name = e.name.toString();
     Function fun = getFunction(name, argTy);
 
@@ -718,8 +702,15 @@ public class Semant {
       }
     }
 
+    for (OriginFieldList fl = e.params; fl != null; fl = fl.next) {
+      addSymbol(fl.var.toString());
+    }
     POP pop = new POP(typ, fs, transDependency(e.body,
         BuiltInTypes.NATURAL_NUM, new Integer(0)));
+    for (OriginFieldList fl = e.params; fl != null; fl = fl.next) {
+      removeSymbol(fl.var.toString());
+    }
+
     if (typ.getPOPWithOriginFuncs(pop.getOriginFuncSet()) != null) {
       error(e.line, e.col, "number statement #" + typ.getName()
           + " uses same origin functions as earlier number statement.");
