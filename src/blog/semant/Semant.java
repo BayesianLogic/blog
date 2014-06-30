@@ -43,7 +43,6 @@ import blog.absyn.ParameterDec;
 import blog.absyn.QuantifiedFormulaExpr;
 import blog.absyn.QueryStmt;
 import blog.absyn.RandomFuncDec;
-import blog.absyn.SetExpr;
 import blog.absyn.Stmt;
 import blog.absyn.StmtList;
 import blog.absyn.StringExpr;
@@ -609,16 +608,55 @@ public class Semant {
    * valid evidence format include (will be checked in semantic checking)
    * 
    * - general form: random expression = fixed expression
+   * - symbol_evidence: tuple_set = explicit_set
    * - number_evidence: # implicit_set = int constant
    * 
    * @param e
    */
   void transEvi(ValueEvidence e) {
-    if (e.left instanceof SetExpr) {
+    if (e.left instanceof TupleSetExpr) {
+      // Special case for symbol evidence.
+      // For now, we use the old ImplicitSetSpec for the left-hand side.
+      TupleSetExpr lhs = (TupleSetExpr) e.left;
+      if (lhs.enumVars.next != null) {
+        error(e.line, e.col,
+            "For symbol evidence, left-hand set has to be over a single variable");
+      }
+      Type typ = getType(lhs.enumVars.head.typ);
+      String varName = lhs.enumVars.head.var.toString();
+      Formula cond = TrueFormula.TRUE;
+      if (lhs.cond != null) {
+        Object c = transExpr(lhs.cond);
+        if (c instanceof Formula) {
+          cond = (Formula) c;
+        } else {
+          error(
+              lhs.cond.line,
+              lhs.cond.col,
+              "Invalid expression as condition in implicit set: formula(boolean valued expression) expected");
+        }
+      }
+      ImplicitSetSpec leftset = new ImplicitSetSpec(varName, typ, cond);
 
+      if (!(e.right instanceof ExplicitSetExpr)) {
+        error(
+            e.right.line,
+            e.right.col,
+            "Invalid expression on right side of symbol evidence: explicit set of symbols expected");
+      }
+      List<String> value = getSymbolList(((ExplicitSetExpr) e.right).values);
+      SymbolEvidenceStatement sevid = new SymbolEvidenceStatement(leftset,
+          value);
+      if (!evidence.addSymbolEvidence(sevid)) {
+        error(e.right.line, e.right.col, "Duplicate names in symbol evidence.");
+      }
+      for (SkolemConstant obj : sevid.getSkolemConstants()) {
+        model.addFunction(obj);
+      }
+      return;
     }
-    Object left = transExpr(e.left);
 
+    Object left = transExpr(e.left);
     if (left instanceof CardinalitySpec) {
       // number evidence
       // # implicit_set = int constant
@@ -645,48 +683,6 @@ public class Semant {
     } else {
       error(e.left.line, e.left.col,
           "Invalid expression on the left side of evidence.");
-    }
-  }
-
-  /**
-   * symbol_evidence format: implicit_set = explicit_set
-   * 
-   * @param e
-   */
-  void transSymbolEvidence(ValueEvidence e) {
-    Object left = transExpr(e.left);
-    if (left instanceof ImplicitSetSpec) {
-      // symbol evidence
-      // implicit set = set of ids
-      ImplicitSetSpec leftset = (ImplicitSetSpec) left;
-      List<String> value = null;
-      if (e.right instanceof ExplicitSetExpr) {
-        // ok
-        value = getSymbolList(((ExplicitSetExpr) e.right).values);
-      } else {
-        error(
-            e.right.line,
-            e.right.col,
-            "Invalid expression on right side of symbol evidence: explicit set of symbols expected");
-      }
-      SymbolEvidenceStatement sevid = new SymbolEvidenceStatement(leftset,
-          value);
-      if (!evidence.addSymbolEvidence(sevid)) {
-        error(e.right.line, e.right.col, "Duplicate names in symbol evidence.");
-      }
-      for (SkolemConstant obj : sevid.getSkolemConstants()) {
-        model.addFunction(obj);
-      }
-
-      // // add value evidence of this cardinality spec also!!!
-      // evidence.addValueEvidence(new ValueEvidenceStatement(new
-      // CardinalitySpec(
-      // leftset), createSpecFromInt(value.size())));
-    } else {
-      error(
-          e.left.line,
-          e.left.col,
-          "Invalid expression on left side of symbool evidence: implicit set of symbols expected");
     }
   }
 
