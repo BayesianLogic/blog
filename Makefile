@@ -14,7 +14,7 @@ MISC_FILE= compile.bat \
  parse.sh \
  parse.bat
 
-CLASSPATH=lib/java-cup-11b.jar:lib/*
+CLASSPATH=bin/:lib/java-cup-11b.jar:lib/*
 
 TAGNAME=$(shell git describe --exact-match --abbrev=0 2> /dev/null)
 ifneq (${TAGNAME},)
@@ -24,6 +24,7 @@ TARGETNAME=blog-$(shell git rev-parse --short HEAD)
 endif
 
 SRC_FILES=$(shell find src -name \*.java -print)
+SCALA_SRC_FILES=$(shell find src -name \*.scala -print)
 
 help:
 	@echo 'Makefile for BLOG                                                      '
@@ -43,6 +44,7 @@ help:
 compile: ${SRC_FILES}
 	mkdir -p bin
 	javac -cp ${CLASSPATH} -d bin/ ${SRC_FILES}
+	scalac -cp ${CLASSPATH} -d bin/ ${SCALA_SRC_FILES}
 
 debug: ${SRC_FILES}
 	mkdir -p bin
