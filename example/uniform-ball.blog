@@ -15,7 +15,7 @@ random Ball ballDrawn(Draw d) ~
   UniformChoice({b for Ball b});
 
 random Boolean obsBlue(Draw d) ~
-  if isBlue(BallDrawn(d)) then 
+  if isBlue(ballDrawn(d)) then 
     BooleanDistrib(0.8)
   else
     BooleanDistrib(0.2); 
