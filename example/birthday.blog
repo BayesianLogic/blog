@@ -3,11 +3,12 @@ distinct Date Day[365];
 
 type Person;
 
-random Date Birthday(Person p) 
-  ~ UniformChoice({d for Date d});
+random Date Birthday(Person p) ~ 
+  UniformChoice({d for Date d});
 
 #Person ~ Poisson(13);
 
-obs #Person = 23;
+// comment the following to try full open world model
+obs size({p for Person p}) = 23;
 query exists Person x exists Person y  
   ((x != y) & (Birthday(x) == Birthday(y)));

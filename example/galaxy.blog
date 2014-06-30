@@ -105,7 +105,7 @@ query ClusVelocity(OrigCluster(Galaxy[50]));
 query ClusVelocity(OrigCluster(Galaxy[70]));
 query ClusVelocity(OrigCluster(Galaxy[80]));
 
-query #{c for Cluster c};
+query size({c for Cluster c});
 
 /* TESTBLOG: -n 1000 -b 100
 blogc *

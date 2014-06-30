@@ -4,48 +4,46 @@
 
 type Ball;
 type Draw;
-type Color;
+distinct Draw Draw[8];
 
-distinct Color Blue, Green;
-distinct Draw Draw[10];
+#Ball ~ UniformInt(1, 4);
 
-#Ball ~ Poisson(6);
+random Boolean isBlue(Ball b) ~ 
+  BooleanDistrib(0.5);
 
-random Color TrueColor(Ball b) ~ Categorical({Blue -> 0.5, Green -> 0.5});
+random Ball ballDrawn(Draw d) ~ 
+  UniformChoice({b for Ball b});
 
-random Ball BallDrawn(Draw d) ~ UniformChoice({b for Ball b});
-
-random Color ObsColor(Draw d) ~
-  if (BallDrawn(d) != null) then 
-    case TrueColor(BallDrawn(d)) in {
-      Blue -> Categorical({Blue -> 0.8, Green -> 0.2}),
-      Green -> Categorical({Blue -> 0.2, Green -> 0.8})
-    };
+random Boolean obsBlue(Draw d) ~
+  if isBlue(BallDrawn(d)) then 
+    BooleanDistrib(0.8)
+  else
+    BooleanDistrib(0.2); 
 
 /* Evidence file asserting that the drawn balls appeared blue on half the 
  * draws and green on half the draws.
  */
 
-obs ObsColor(Draw[0]) = Blue;
-obs ObsColor(Draw[1]) = Green;
-obs ObsColor(Draw[2]) = Blue;
-obs ObsColor(Draw[3]) = Green;
-obs ObsColor(Draw[4]) = Blue;
-obs ObsColor(Draw[5]) = Green;
-obs ObsColor(Draw[6]) = Blue;
-obs ObsColor(Draw[7]) = Green;
-obs ObsColor(Draw[8]) = Blue;
-obs ObsColor(Draw[9]) = Green;
+obs obsBlue(Draw[0]) = true;
+obs obsBlue(Draw[1]) = false;
+obs obsBlue(Draw[2]) = true;
+obs obsBlue(Draw[3]) = false;
+obs obsBlue(Draw[4]) = true;
+obs obsBlue(Draw[5]) = false;
+obs obsBlue(Draw[6]) = true;
+obs obsBlue(Draw[7]) = false;
 
 /* Query file asking for the total number of balls in the urn.
  */
 query size({b for Ball b});
 
+query ballDrawn(Draw[0]) == ballDrawn(Draw[1]);
+
 
 /* Answers to some queries on this model, computed by exhaustive 
  * enumeration up to 170 balls:
  *
- *   Observe 10 draws, half with ObsColor blue, half with ObsColor green
+ *   Observe 10 draws, half with isBlue blue, half with isBlue green
  *   (half-half.eblog).
  *   Posterior over number of balls:
  *     1   0.002139745568962195 

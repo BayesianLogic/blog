@@ -36,4 +36,4 @@ obs ApparentPos(B1) = 0.3;
 obs ApparentPos(B2) = 1.2;
 obs ApparentPos(B1) = 5.0;
 
-query #{a for Aircraft a}; 
+query size({a for Aircraft a}); 

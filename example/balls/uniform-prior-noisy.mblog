@@ -11,9 +11,9 @@ random Color Color(Ball b) ~ Categorical({Blue -> 0.5, Green -> 0.5});
 random Ball BallDrawn(Draw d) ~ UniformChoice({b for Ball b});
 
 random Color ObsColor(Draw d) ~
-	if (BallDrawn(d) != null) then  
-		TabularCPD({Blue -> Categorical({Blue -> 0.8, Green -> 0.2}),
-		  	      Green -> Categorical({Green -> 0.8, Blue -> 0.2})}, Color(BallDrawn(d)))
+  if (BallDrawn(d) != null) then  
+      case Color(BallDrawn(d)) in {Blue -> Categorical({Blue -> 0.8, Green -> 0.2}),
+              Green -> Categorical({Green -> 0.8, Blue -> 0.2})}
 ;
 
 distinct Color Blue, Green;
