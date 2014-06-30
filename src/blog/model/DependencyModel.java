@@ -104,6 +104,7 @@ public class DependencyModel {
     }
     defaultClause = new DistribSpec(EqualsCPD.class,
         Collections.singletonList((ArgSpec) defaultTerm));
+    defaultClause.initCPD();
   }
 
   public ArgSpec getClause() {
