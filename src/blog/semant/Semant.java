@@ -1127,6 +1127,21 @@ public class Semant {
   ArgSpec transExpr(OpExpr e) {
     Object left = null, right = null;
     Term term;
+    if (e.oper == OpExpr.SUB) {
+      // need to specially handle sub when refering to distinct symbols
+      if ((e.left instanceof FuncCallExpr) && (e.right instanceof IntExpr)) {
+        // check if this is declared distinct symbol;
+        FuncCallExpr funcall = (FuncCallExpr) e.left;
+        int idx = ((IntExpr) e.right).value;
+        if (funcall.args == null) {
+          Function f = getFunction(funcall.func.toString() + "[" + idx + "]",
+              Collections.<Type> emptyList());
+          if (f != null)
+            return new FuncAppTerm(f);
+        }
+      }
+    }
+
     if (e.left != null) {
       left = transExpr(e.left);
     }
@@ -1204,17 +1219,6 @@ public class Semant {
       return new NegFormula((Formula) right);
     case OpExpr.SUB:
       Function func;
-      if ((e.left instanceof FuncCallExpr) && (e.right instanceof IntExpr)) {
-        // check if this is declared distinct symbol;
-        FuncCallExpr funcall = (FuncCallExpr) e.left;
-        int idx = ((IntExpr) e.right).value;
-        if (funcall.args == null) {
-          Function f = getFunction(funcall.func.toString() + "[" + idx + "]",
-              Collections.<Type> emptyList());
-          if (f != null)
-            return new FuncAppTerm(f);
-        }
-      }
       if (left instanceof SymbolTerm) {
         if (e.right instanceof IntExpr) {
           String objectname = ((SymbolTerm) left).getName() + '['
