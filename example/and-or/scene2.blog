@@ -119,36 +119,36 @@ random Integer Z1(Person p) ~ Z0(p) + Zsize(p);
 random Boolean NoOverlap_person2()
     ~ (forall Person p1
           (forall Person p2 ((p2 != p1) =>  
-	      ( (X1(p1) < X0(p2)) | (X0(p1) > X1(p2)) | (Y1(p1) < Y0(p2)) | (Y0(p1) > Y1(p2)) | (Z1(p1) < Z0(p2)) | (Z0(p1) > Z1(p2)) )
-	  ))
+        ( (X1(p1) < X0(p2)) | (X0(p1) > X1(p2)) | (Y1(p1) < Y0(p2)) | (Y0(p1) > Y1(p2)) | (Z1(p1) < Z0(p2)) | (Z0(p1) > Z1(p2)) )
+    ))
       );
 
 random Boolean NoOverlap_car2()
     ~ (forall Car c1
           (forall Car c2 ((c2 != c1) =>  
-	      ( (X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z1(c1) < Z0(c2)) | (Z0(c1) > Z1(c2)) )
-	  ))
+        ( (X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z1(c1) < Z0(c2)) | (Z0(c1) > Z1(c2)) )
+    ))
       );
 
 random Boolean NoOverlap_cow2()
     ~ (forall Cow c1
           (forall Cow c2 ((c2 != c1) =>  
-	      ( (X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z1(c1) < Z0(c2)) | (Z0(c1) > Z1(c2)) )
-	  ))
+        ( (X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z1(c1) < Z0(c2)) | (Z0(c1) > Z1(c2)) )
+    ))
       );
 
 random Boolean NoOverlap_person_car()
     ~ (forall Person p1
           (forall Car c2
-	      ( (X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z1(p1) < Z0(c2)) | (Z0(p1) > Z1(c2)) )
-	  )
+        ( (X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z1(p1) < Z0(c2)) | (Z0(p1) > Z1(c2)) )
+    )
       );
 
 random Boolean NoOverlap_person_cow()
     ~ (forall Person p1
           (forall Cow c2
-    	      ( (X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z1(p1) < Z0(c2)) | (Z0(p1) > Z1(c2)) )
-	  )
+            ( (X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z1(p1) < Z0(c2)) | (Z0(p1) > Z1(c2)) )
+    )
       );
 
 random Boolean NoOverlap() ~ (NoOverlap_person2() & NoOverlap_car2() & NoOverlap_cow2() & NoOverlap_person_car() & NoOverlap_person_cow());
@@ -162,17 +162,17 @@ random Integer Color3D(Integer X, Integer Y, Integer Z) ~
     else if (exists Car o ( ((Z == Z0(o)) & (X >= X0(o)) & (X <= X1(o)) & (Y >= Y0(o)) & (Y <= Y1(o))) |
                             ((Y == Y0(o)) & (X >= X0(o)) & (X <= X1(o)) & (Z >= Z0(o)) & (Z <= Z1(o))) |
                             ((X == X0(o)) & (Y >= Y0(o)) & (Y <= Y1(o)) & (Z >= Z0(o)) & (Z <= Z1(o))) )) then
-    	5
+      5
     
     else if (exists Cow o ( ((Z == Z0(o)) & (X >= X0(o)) & (X <= X1(o)) & (Y >= Y0(o)) & (Y <= Y1(o))) |
                             ((Y == Y0(o)) & (X >= X0(o)) & (X <= X1(o)) & (Z >= Z0(o)) & (Z <= Z1(o))) |
                             ((X == X0(o)) & (Y >= Y0(o)) & (Y <= Y1(o)) & (Z >= Z0(o)) & (Z <= Z1(o))) )) then
-    	10
+      10
     
     else if (exists Person o ( ((Z == Z0(o)) & (X >= X0(o)) & (X <= X1(o)) & (Y >= Y0(o)) & (Y <= Y1(o))) |
                                ((Y == Y0(o)) & (X >= X0(o)) & (X <= X1(o)) & (Z >= Z0(o)) & (Z <= Z1(o))) |
                                ((X == X0(o)) & (Y >= Y0(o)) & (Y <= Y1(o)) & (Z >= Z0(o)) & (Z <= Z1(o))) )) then
-    	15
+      15
     
     else if (exists Grass o (Y == Height(o))) then
         25
@@ -279,9 +279,9 @@ obs Color2D(7, 7) = 15;
 
 
 // QUERY
-query #{c for Car c};
-query #{c for Cow c};
-query #{p for Person p};
+query size({c for Car c});
+query size({c for Cow c});
+query size({p for Person p});
 query {i for Integer i: i >= Xmin & i <= Xmax & exists Person p (X0(p) == i)}; 
 query {i for Integer i: i >= Ymin & i <= Ymax & exists Person p (Y0(p) == i)}; 
 query {i for Integer i: i >= Zmin & i <= Zmax & exists Person p (Z0(p) == i)}; 
@@ -298,7 +298,7 @@ query {i for Integer i: i >= Zmin & i <= Zmax & exists Person p (Z0(p) == i)};
 //query {Scene s: exists Road r (s == WhichScene(r))};
 //query {Integer i: i < 10 & (exists Road r (Height(r) == i))};
 //query {Integer i: i < 10 & (exists Car c (Y1(c) == i))};
-//query #{Car c};
-//query #{Road r};
-//query #{Grass g};
-//query #{Person p};
+//query size({Car c});
+//query size({Road r});
+//query size({Grass g});
+//query size({Person p});
