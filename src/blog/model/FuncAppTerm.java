@@ -328,6 +328,10 @@ public class FuncAppTerm extends Term {
           args[i] = arg;
           argTypes[i] = BuiltInTypes.BOOLEAN;
         }
+      } else if (args[i] instanceof ExplicitSetSpec) {
+        argTypes[i] = BuiltInTypes.SET;
+        ExplicitSetSpec setDef = (ExplicitSetSpec) args[i];
+        correct = setDef.checkTypesAndScope(model, scope);
       } else if (args[i] instanceof ImplicitSetSpec) {
         argTypes[i] = BuiltInTypes.SET;
         ImplicitSetSpec setDef = (ImplicitSetSpec) args[i];
