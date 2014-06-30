@@ -76,6 +76,9 @@ public class DistribSpec extends ArgSpec {
   }
 
   public DependencyModel.Distrib getDistrib(EvalContext context) {
+    if (cpd == null) {
+      throw new IllegalStateException("CPD not initialized");
+    }
     context.pushEvaluee(this);
     List<Object> argValues = new ArrayList<Object>();
 
