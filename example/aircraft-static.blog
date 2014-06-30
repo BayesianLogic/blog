@@ -22,7 +22,7 @@ obs {b for Blip b} = {b1, b2, b3, b4};
 //obs BlipLocation(b3) = 158;
 //obs BlipLocation(b4) = 180;
 
-query #{a for Aircraft a};
+query size({a for Aircraft a});
 query Location(Source(b1));
 //query Location(Source(b2));
 //query Location(Source(b3));

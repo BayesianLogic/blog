@@ -113,36 +113,36 @@ random Integer Z0(Person p) ~ UniformInt(Zmin, Zmax);
 random Boolean NoOverlap_person2()
     ~ (forall Person p1
           (forall Person p2 ((p2 != p1) =>
-	      ((X1(p1) < X0(p2)) | (X0(p1) > X1(p2)) | (Y1(p1) < Y0(p2)) | (Y0(p1) > Y1(p2)) | (Z0(p1) != Z0(p2)))
-	  ))
+        ((X1(p1) < X0(p2)) | (X0(p1) > X1(p2)) | (Y1(p1) < Y0(p2)) | (Y0(p1) > Y1(p2)) | (Z0(p1) != Z0(p2)))
+    ))
       );
 
 random Boolean NoOverlap_car2()
     ~ (forall Car c1
           (forall Car c2 ((c2 != c1) =>  
-    	      ((X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z0(c1) != Z0(c2)))
-	  ))
+            ((X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z0(c1) != Z0(c2)))
+    ))
       );
 
 random Boolean NoOverlap_cow2()
     ~ (forall Cow c1
           (forall Cow c2 ((c2 != c1) =>
-	      ((X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z0(c1) != Z0(c2)))
-	  ))
+        ((X1(c1) < X0(c2)) | (X0(c1) > X1(c2)) | (Y1(c1) < Y0(c2)) | (Y0(c1) > Y1(c2)) | (Z0(c1) != Z0(c2)))
+    ))
       );
 
 random Boolean NoOverlap_person_car()
     ~ (forall Person p1
           (forall Car c2
-    	      ((X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z0(p1) != Z0(c2)))
-	  )
+            ((X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z0(p1) != Z0(c2)))
+    )
       );
 
 random Boolean NoOverlap_person_cow()
     ~ (forall Person p1
           (forall Cow c2
-    	      ((X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z0(p1) != Z0(c2)))
-	  )
+            ((X1(p1) < X0(c2)) | (X0(p1) > X1(c2)) | (Y1(p1) < Y0(c2)) | (Y0(p1) > Y1(c2)) | (Z0(p1) != Z0(c2)))
+    )
       );
 
 random Boolean NoOverlap() ~ (NoOverlap_person2() & NoOverlap_car2() & NoOverlap_cow2() & NoOverlap_person_car() & NoOverlap_person_cow());
@@ -192,11 +192,11 @@ random Boolean Zintercept(Cow o, Integer x, Integer y) ~
 random Integer Z(Integer x, Integer y) ~
     if ((x <= xMax) & (x >= xMin) & (y <= yMax) & (y >= yMin)) then
           min({z for Integer z: z >= 1 & z <= Zmax & 
-             	 ((exists Person o (Zintercept(o, x, y) & (Z0(o) == z))) |
-		  (exists Car o (Zintercept(o, x, y) & (Z0(o) == z))) |
-             	  (exists Cow o (Zintercept(o, x, y) & (Z0(o) == z))) | 
-             	  ((Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x)) & (exists Road r (Height(r) == yc + z * (yc - y)))) |
-		  ((Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x)) & (exists Grass g (Height(g) == yc + z * (yc - y))))
+                ((exists Person o (Zintercept(o, x, y) & (Z0(o) == z))) |
+      (exists Car o (Zintercept(o, x, y) & (Z0(o) == z))) |
+                 (exists Cow o (Zintercept(o, x, y) & (Z0(o) == z))) | 
+                 ((Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x)) & (exists Road r (Height(r) == yc + z * (yc - y)))) |
+      ((Xmin <= xc + z * (xc - x)) & (Xmax >= xc + z * (xc - x)) & (exists Grass g (Height(g) == yc + z * (yc - y))))
                  ) })
 ;
 
@@ -221,9 +221,9 @@ obs Color2D(8, 7) = 5;
 
 // QUERY
 //query SceneType(S);
-query #{c for Car c};
-//query #{Cow c};
-//query #{Person p};
+query size({c for Car c});
+//query size({Cow c});
+//query size({Person p});
 //query Color2D(8, 8);
 //query {Integer i: i <= Zmax & i >= Zmin & (exists Car c (Z0(c) == i))};
 //query {Integer i: i <= Xmax & i >= Xmin & (exists Car c (X0(c) == i))};
@@ -231,8 +231,8 @@ query #{c for Car c};
 
 //query Z(11, 8);
 //query {Integer z: z >= 0 & z <= 20 & z == Z(8, 7)};
-//query #{Person p};
-//query #{Road r};
+//query size({Person p});
+//query size({Road r});
 //query {Integer i: i < 6 & i > 2 & (exists Road r (Height(r) == i))};
 //query {Integer i: i >= Xmin & i <= Xmax & exists Car p (X0(p) == i)}; 
 //query {Integer i: i >= Ymin & i <= Ymax & exists Car p (Y0(p) == i)}; 
@@ -250,7 +250,7 @@ query #{c for Car c};
 //query {Scene s: exists Road r (s == WhichScene(r))};
 //query {Integer i: i < 10 & (exists Road r (Height(r) == i))};
 //query {Integer i: i < 10 & (exists Car c (Y1(c) == i))};
-//query #{Car c};
-//query #{Road r};
-//query #{Grass g};
-//query #{Person p};
+//query size({Car c});
+//query size({Road r});
+//query size({Grass g});
+//query size({Person p});

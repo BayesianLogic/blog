@@ -6,4 +6,4 @@ query b;
 random Real c ~ UnivarGaussian(0, 10);
 random Real d ~ abs(c);
 
-query d;
+query d;  
