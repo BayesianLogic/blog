@@ -39,7 +39,8 @@ public class TestDiscrete implements TestDistributions {
   @Test
   public void testProbabilityViaSetParams() {
     Discrete disc = new Discrete();
-    disc.setParams(new Object[] { MatrixFactory.createRowVector(0.2, 0.5, 0.3) });
+    disc.setParams(new Object[] { MatrixFactory.createColumnVector(0.2, 0.5,
+        0.3) });
     testDiscrete1(disc);
   }
 
@@ -53,14 +54,14 @@ public class TestDiscrete implements TestDistributions {
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments() {
     Discrete disc = new Discrete();
-    disc.setParams(new Object[] { MatrixFactory.createRowVector(1, -1, 2) });
+    disc.setParams(new Object[] { MatrixFactory.createColumnVector(1, -1, 2) });
     disc.sampleVal();
   }
 
   @Test
   public void testNormalization() {
     Discrete disc = new Discrete();
-    disc.setParams(new Object[] { MatrixFactory.createRowVector(4, 10, 6) });
+    disc.setParams(new Object[] { MatrixFactory.createColumnVector(4, 10, 6) });
     testDiscrete1(disc);
   }
 
@@ -68,9 +69,10 @@ public class TestDiscrete implements TestDistributions {
   public void testDoubleSet() {
     Discrete disc = new Discrete();
     disc.setParams(new Object[] { null });
-    disc.setParams(new Object[] { MatrixFactory.createRowVector(0.2, 0.5, 0.3) });
+    disc.setParams(new Object[] { MatrixFactory.createColumnVector(0.2, 0.5,
+        0.3) });
     testDiscrete1(disc);
-    disc.setParams(new Object[] { MatrixFactory.createRowVector(2, 5, 3) });
+    disc.setParams(new Object[] { MatrixFactory.createColumnVector(2, 5, 3) });
     testDiscrete1(disc);
   }
 
