@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Runs all examples and produces the following files:
+# Runs all examples and produces the following files in the testing/ dir.
 #
 # status.txt
 # - A CSV of all Blog Examples alongside their status
@@ -14,6 +14,8 @@
 # errors/*
 # - A list of files that threw a Java Exception (non-empty Standard Error)
 # - Each file as its content contains the Stack Trace
+
+mkdir -p testing
 
 # A list of all BLOG examples that throw exceptions
 errorFiles='testing/errorExamples.txt'

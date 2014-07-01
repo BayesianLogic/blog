@@ -10,8 +10,7 @@ origin Aircraft Source(Blip);
 #Blip(Source=a) ~ Poisson(4);
 
 // Evidence
-obs #Blip = 3;
+obs size({b for Blip b}) = 3;
 
 // Query
 query size({a for Aircraft a});
-

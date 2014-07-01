@@ -25,7 +25,7 @@ public class Discrete implements CondProbDistrib {
    * 
    * An array of the form [MatrixLib]
    * <ul>
-   * <li><code>P</code> (MatrixLib in the form of a row vector)
+   * <li><code>P</code> (MatrixLib in the form of a column vector)
    * </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
@@ -39,14 +39,15 @@ public class Discrete implements CondProbDistrib {
   }
 
   /**
-   * If the method parameter value is non-null and is a row vector, then set the
+   * If the method parameter value is non-null and is a column vector, then set
+   * the
    * distribution parameter <code>P</code> to value.
    */
   public void setParams(MatrixLib value) {
     if (value != null) {
-      if (value.numRows() != 1 || value.numCols() == 0) {
+      if (value.numCols() != 1 || value.numRows() == 0) {
         throw new IllegalArgumentException(
-            "The argument passed into setParams passed in is not a row vector");
+            "The argument passed into setParams is not a column vector");
       }
       initializeProbabilityVector(value);
       this.hasP = true;
@@ -54,7 +55,7 @@ public class Discrete implements CondProbDistrib {
   }
 
   /**
-   * Precondition: p is a row vector
+   * Precondition: p is a column vector
    * 
    * Sets instance variable p to a normalized array of probabilities
    * Sets pCDF to the CDF of p
@@ -62,23 +63,23 @@ public class Discrete implements CondProbDistrib {
    * @param p
    */
   private void initializeProbabilityVector(MatrixLib p) {
-    double[] pi = new double[p.numCols()];
-    this.logP = new double[p.numCols()];
+    double[] pi = new double[p.numRows()];
+    this.logP = new double[p.numRows()];
     double sum = 0.0;
-    for (int i = 0; i < p.numCols(); i++) {
-      double ele = p.elementAt(0, i);
+    for (int i = 0; i < p.numRows(); i++) {
+      double ele = p.elementAt(i, 0);
       if (ele < 0) {
         throw new IllegalArgumentException("Probability " + ele
             + " for element " + i + " is negative.");
       }
-      sum += p.elementAt(0, i);
+      sum += p.elementAt(i, 0);
     }
     if (Util.closeToZero(sum)) {
       throw new IllegalArgumentException("Probabilities sum to approx zero");
     }
     // normalization
-    for (int i = 0; i < p.numCols(); i++) {
-      pi[i] = p.elementAt(0, i) / sum;
+    for (int i = 0; i < p.numRows(); i++) {
+      pi[i] = p.elementAt(i, 0) / sum;
       this.logP[i] = Math.log(pi[i]);
     }
     this.p = pi;

@@ -63,7 +63,7 @@ public class Dirichlet implements CondProbDistrib {
    *          An array of the form [MatrixLib]
    *          <ul>
    *          <li>params[0]: <code>alpha</code> in the form of a MatrixLib
-   *          instance which takes on the shape of a row vector.</li>
+   *          instance which takes on the shape of a column vector.</li>
    *          </ul>
    * 
    * @see blog.distrib.CondProbDistrib#setParams(java.lang.Object[])
@@ -77,27 +77,28 @@ public class Dirichlet implements CondProbDistrib {
   }
 
   /**
-   * If matrix is non-null, row-vector of strictly positive reals, sets the
+   * If matrix is non-null, column vector of strictly positive reals, sets the
    * distribution parameter <code>alpha</code> to matrix.
    * 
    * @param matrix
-   *          A row vector representing the parameter vector <code>alpha</code>.
+   *          A column vector representing the parameter vector
+   *          <code>alpha</code>.
    */
   public void setParams(MatrixLib matrix) {
     if (matrix != null) {
-      if (matrix.numRows() != 1 || matrix.numCols() == 0) {
+      if (matrix.numCols() != 1 || matrix.numRows() == 0) {
         throw new IllegalArgumentException(
-            "Dirichlet distribution requires nonempty vector of numbers as argument.");
+            "Dirichlet distribution requires column vector as argument.");
       }
-      if (matrix.numCols() == 1) {
+      if (matrix.numRows() == 1) {
         throw new IllegalArgumentException(
             "The alpha vector must contain at least two elements");
       }
-      int cols = matrix.numCols();
-      this.alpha = new double[cols];
+      int rows = matrix.numRows();
+      this.alpha = new double[rows];
 
-      for (int i = 0; i < cols; i++) {
-        double elementValue = matrix.elementAt(0, i);
+      for (int i = 0; i < rows; i++) {
+        double elementValue = matrix.elementAt(i, 0);
         if (elementValue <= 0) {
           throw new IllegalArgumentException(
               "All elements in the alpha vector need to be strictly positive.");
@@ -126,8 +127,8 @@ public class Dirichlet implements CondProbDistrib {
   }
 
   /**
-   * check if the value is valid, i.e. it is 1 by n row vector, where n is the
-   * same as the length of alpha
+   * check if the value is valid, i.e. it is 1 by n column vector, where n is
+   * the same as the length of alpha
    * 
    * @param x
    * @return
@@ -136,21 +137,21 @@ public class Dirichlet implements CondProbDistrib {
     if (x == null) {
       throw new IllegalArgumentException("The random outcome vector is null");
     }
-    if (x.numRows() != 1 || x.numCols() != this.alpha.length) {
+    if (x.numCols() != 1 || x.numRows() != this.alpha.length) {
       throw new IllegalArgumentException(
-          "Incorrect dimensions given for row vector of Dirichlet. should be a 1 by "
-              + alpha.length + " matrix, but is a " + x.numRows() + " by "
+          "Incorrect dimensions given for column vector of Dirichlet. should be a "
+              + alpha.length + " by 1 matrix, but is a " + x.numRows() + " by "
               + x.numCols() + " matrix");
     }
     return true;
   }
 
   /**
-   * Returns the pdf of row vector x (of correct dimensions) in a Dirichlet
+   * Returns the pdf of column vector x (of correct dimensions) in a Dirichlet
    * distribution.
    * 
    * @param x
-   *          row vector
+   *          column vector
    */
   public double getProb(MatrixLib x) {
     checkHasParams();
@@ -159,24 +160,24 @@ public class Dirichlet implements CondProbDistrib {
       return 0.0;
     }
     double prob = 1.0;
-    for (int i = 0; i < x.numCols(); i++) {
-      double val = x.elementAt(0, i);
+    for (int i = 0; i < x.numRows(); i++) {
+      double val = x.elementAt(i, 0);
       prob *= Math.pow(val, alpha[i] - 1);
     }
     return (prob / normalizationConstant);
   }
 
   /**
-   * Returns whether all the elements in the row vector of x sum to 1
-   * Precondition: x is a row vector with # columns >= 1
+   * Returns whether all the elements in the column vector of x sum to 1
+   * Precondition: x is a column vector with # columns >= 1
    * 
    * @param x
-   *          row vector
+   *          column vector
    */
   private boolean checkSupport(MatrixLib x) {
     double sum = 0.0;
-    for (int i = 0; i < x.numCols(); i++) {
-      sum += x.elementAt(0, i);
+    for (int i = 0; i < x.numRows(); i++) {
+      sum += x.elementAt(i, 0);
     }
     return (sum <= (1 + TOLERANCE)) && (sum >= (1 - TOLERANCE));
   }
@@ -192,10 +193,10 @@ public class Dirichlet implements CondProbDistrib {
   }
 
   /**
-   * Returns the log pdf of row vector x in a Dirichlet distribution.
+   * Returns the log pdf of column vector x in a Dirichlet distribution.
    * 
    * @param x
-   *          row vector
+   *          column vector
    */
   public double getLogProb(MatrixLib x) {
     checkHasParams();
@@ -205,8 +206,8 @@ public class Dirichlet implements CondProbDistrib {
     }
 
     double prob = 0.0;
-    for (int i = 0; i < x.numCols(); i++) {
-      double value = x.elementAt(0, i);
+    for (int i = 0; i < x.numRows(); i++) {
+      double value = x.elementAt(i, 0);
       if (alpha[i] != 1) {
         prob += Math.log(value) * (alpha[i] - 1);
       }
@@ -233,15 +234,15 @@ public class Dirichlet implements CondProbDistrib {
     double sum = 0.0;
     int vec_size = alpha.length;
 
-    double[][] samples = new double[1][vec_size];
+    double[][] samples = new double[vec_size][1];
     for (int i = 0; i < vec_size; i++) {
       double sample = Gamma.sample_value(alpha[i], 1);
       sum += sample;
-      samples[0][i] = sample;
+      samples[i][0] = sample;
     }
 
     for (int i = 0; i < vec_size; i++) {
-      samples[0][i] /= sum;
+      samples[i][0] /= sum;
     }
     return MatrixFactory.fromArray(samples);
   }

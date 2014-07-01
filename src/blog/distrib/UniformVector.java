@@ -88,7 +88,9 @@ public class UniformVector implements CondProbDistrib {
       this.dimensionSet = new boolean[dim];
     }
     MatrixLib[] m = new MatrixLib[dim];
-    System.arraycopy(params, 0, m, 0, params.length);
+    for (int i = 0; i < params.length; i++) {
+      m[i] = (MatrixLib) params[i];
+    }
     setParams(m);
   }
 

@@ -39,10 +39,10 @@ import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
 /**
- * Multivariate Gaussian (normal) distribution over real vectors of some fixed
- * dimensionality <i>d</i> with parameters <code>mean</code> and
- * <code>covariance</code>. Mean is a row vector of dimension 1 by
- * <code>d</code>.
+ * Multivariate Gaussian (normal) distribution over real column vectors of some
+ * fixed dimensionality <i>d</i> with parameters <code>mean</code> and
+ * <code>covariance</code>. Mean is a column vector of dimension <code>d</code>
+ * by 1.
  * 
  * @since June 17, 2014
  */
@@ -55,7 +55,7 @@ public class MultivarGaussian implements CondProbDistrib {
    *          an array of the form [MatrixLib, MatrixLib]
    *          <ul>
    *          <li>params[0]: <code>mean</code>, as a MatrixLib that serves as a
-   *          row vector</li>
+   *          column vector</li>
    *          <li>params[1]: <code>covariance</code>, as a MatrixLib that serves
    *          as a covariance matrix</li>
    *          </ul>
@@ -85,9 +85,9 @@ public class MultivarGaussian implements CondProbDistrib {
    */
   public void setParams(MatrixLib mean, MatrixLib covariance) {
     if (mean != null) {
-      if (!(mean.numCols() > 0 && mean.numRows() == 1)) {
+      if (!(mean.numRows() > 0 && mean.numCols() == 1)) {
         throw new IllegalArgumentException(
-            "The mean given is not a valid row vector. It has dimensions "
+            "The mean given is not a valid column vector. It has dimensions "
                 + mean.numRows() + " by " + mean.numCols() + ".");
       }
       this.mean = mean;
@@ -102,7 +102,7 @@ public class MultivarGaussian implements CondProbDistrib {
       this.hasCovariance = true;
     }
     if (this.hasMean && this.hasCovariance) {
-      if (this.covariance.numRows() != this.mean.numCols()) {
+      if (this.covariance.numRows() != this.mean.numRows()) {
         throw new IllegalArgumentException(
             "Dimensions of the mean vector and the covariance matrix do not match: "
                 + "The covariance matrix is " + covariance.numCols() + " by "
@@ -119,7 +119,7 @@ public class MultivarGaussian implements CondProbDistrib {
    * assignment.
    */
   private void initializeConstants() {
-    this.d = mean.numCols();
+    this.d = mean.numRows();
     this.dimFactor = Math.pow(2 * Math.PI, d / 2.0);
     this.logDimFactor = Math.log(2 * Math.PI) * d / 2.0;
 
@@ -156,21 +156,21 @@ public class MultivarGaussian implements CondProbDistrib {
    * 1/sqrt((2*pi)^d*|sigma|)*exp{-0.5(x-mean)'*inverse(sigma)*(x-mean)}
    * 
    * @throws IllegalStateException
-   *           if the matrix <code>x</code> is not a d-dimensional row vector
+   *           if the matrix <code>x</code> is not a d-dimensional column vector
    * 
    * @param x
    *          row vector of dimension 1 by <code>d</code>
    */
   public double getProb(MatrixLib x) {
     checkHasParams();
-    if (x.numCols() == d && x.numRows() == 1) {
+    if (x.numRows() == d && x.numCols() == 1) {
       return Math.exp(-0.5
-          * x.minus(mean).timesMat(inverseCovariance)
-              .timesMat(x.minus(mean).transpose()).elementAt(0, 0))
+          * x.minus(mean).transpose().timesMat(inverseCovariance)
+              .timesMat(x.minus(mean)).elementAt(0, 0))
           / normConst;
     }
     throw new IllegalArgumentException("The matrix given is " + x.numRows()
-        + " by " + x.numCols() + " but should be a 1 by " + d + " vector.");
+        + " by " + x.numCols() + " but should be a " + d + " by 1 vector.");
   }
 
   /*
@@ -191,16 +191,12 @@ public class MultivarGaussian implements CondProbDistrib {
    */
   public double getLogProb(MatrixLib x) {
     checkHasParams();
-    if (x.numCols() == d && x.numRows() == 1) {
-      return getLogProbInternal(x);
+    if (x.numRows() == d && x.numCols() == 1) {
+      return ((-0.5 * x.minus(mean).transpose().timesMat(inverseCovariance)
+          .timesMat(x.minus(mean)).elementAt(0, 0)) - logNormConst);
     }
     throw new IllegalArgumentException("The matrix given is " + x.numRows()
-        + " by " + x.numCols() + " but should be a 1 by " + d + " vector.");
-  }
-
-  private double getLogProbInternal(MatrixLib x) {
-    return ((-0.5 * x.minus(mean).timesMat(inverseCovariance)
-        .timesMat(x.minus(mean).transpose()).elementAt(0, 0)) - logNormConst);
+        + " by " + x.numCols() + " but should be a " + d + " by 1 vector.");
   }
 
   /*
@@ -223,12 +219,12 @@ public class MultivarGaussian implements CondProbDistrib {
    */
   public MatrixLib sample_value() {
     checkHasParams();
-    double[][] mat = new double[1][d];
+    double[][] mat = new double[d][1];
     for (int i = 0; i < d; i++) {
-      mat[0][i] = UnivarGaussian.STANDARD.sample_value();
+      mat[i][0] = UnivarGaussian.STANDARD.sample_value();
     }
     MatrixLib temp = MatrixFactory.fromArray(mat);
-    return mean.plus(temp.timesMat(sqrtCovariance));
+    return mean.plus(sqrtCovariance.timesMat(temp));
 
   }
 

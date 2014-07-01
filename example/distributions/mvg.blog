@@ -1,4 +1,4 @@
-fixed RealMatrix mu = [1.0, 2.0];
+fixed RealMatrix mu = [1.0; 2.0];
 fixed RealMatrix cov = [1.0, 0.0; 0.0, 1.0];
 
 random RealMatrix x ~ MultivarGaussian(mu, cov);

@@ -19,26 +19,32 @@ type Component;
 
 distinct Component Road, Shadow, Vehicle;
 
-fixed Real[][] variance = [10000, 0, 0;
-                      0, 10000, 0;
-         0, 0, 10000];
+fixed RealMatrix variance = [10000, 0, 0;
+                             0, 10000, 0;
+                             0, 0, 10000];
 
-random Real[] Mean(Component c)
-    ~ UniformVector(0, 255, 0, 255, 0, 255);
+fixed RealMatrix rangeR = [0.0, 255.0];
+fixed RealMatrix rangeG = [0.0, 255.0];
+fixed RealMatrix rangeB = [0.0, 255.0];
+random RealMatrix Mean(Component c)
+    ~ UniformVector(rangeR, rangeG, rangeB);
 
-random Real[] Weight ~ Dirichlet(0.33, 0.33, 0.33);
+fixed RealMatrix WeightParams = [0.33; 0.33; 0.33];
+random RealMatrix Weight ~ Dirichlet(WeightParams);
 
 random Integer AssociatedComponent(Integer x, Integer y, Timestep t)
-    ~ Categorical(Weight);
+    ~ Discrete(Weight);
 
 fixed Component IntToComponent(Integer c)
     = TabularInterp(1, 0, Road,
-                 1, Shadow,
-           2, Vehicle);
+                    1, Shadow,
+                    2, Vehicle);
 
 // the parameters can be set in Mean(Component)
-random Real[] Intensity(Integer x, Integer y, Timestep t)
-    ~ MultivarGaussian(Mean(IntToComponent(AssociatedComponent(x, y, t))), variance);
+random RealMatrix Intensity(Integer x, Integer y, Timestep t)
+    ~ MultivarGaussian(
+        Mean(IntToComponent(AssociatedComponent(x, y, t))),
+        variance);
 
 obs Intensity(1, 1, @1) = [135; 85; 170];
 
