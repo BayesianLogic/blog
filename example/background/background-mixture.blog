@@ -20,18 +20,18 @@ type Component;
 
 distinct Component Road, Shadow, Vehicle;
 
-fixed Real[] mean_car = [240, 240, 240];
-fixed Real[] mean_shadow = [10, 10, 10];
-fixed Real[] mean_road = [100, 100, 100];
+fixed Real[] mean_car = [240; 240; 240];
+fixed Real[] mean_shadow = [10; 10; 10];
+fixed Real[] mean_road = [100; 100; 100];
 
 fixed Real[][] variance = [10000, 0, 0;
-                      0, 10000, 0;
-         0, 0, 10000];
+                           0, 10000, 0;
+                           0, 0, 10000];
 
 random Component AssociatedComponent(Integer x, Integer y, Timestep t) 
   ~ Categorical({Road -> 0.7, 
-                Shadow -> 0.1,
-                Vehicle -> 0.2});
+                 Shadow -> 0.1,
+                 Vehicle -> 0.2});
 
 /*Make a 10x10 grid, over 10 timesteps*/
 
@@ -44,6 +44,6 @@ random Real[] Intensity(Integer x, Integer y, Timestep t) ~
       MultivarGaussian(mean_road, variance)
 ;
 
-obs Intensity(1, 1, @1) = [135, 85, 170];
+obs Intensity(1, 1, @1) = [135; 85; 170];
 
 query AssociatedComponent(1, 1, @1);

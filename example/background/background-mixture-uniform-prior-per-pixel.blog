@@ -31,7 +31,7 @@ fixed RealMatrix rangeB = [0.0, 255.0];
 random RealMatrix Mean(Component c, Integer x, Integer y)
     ~ UniformVector(rangeR, rangeG, rangeB);
 
-fixed RealMatrix WeightParams = [0.33, 0.33, 0.33];
+fixed RealMatrix WeightParams = [0.33; 0.33; 0.33];
 random RealMatrix Weight(Integer x, Integer y) ~ Dirichlet(WeightParams);
 
 random Integer AssociatedComponent(Integer x, Integer y, Timestep t)
@@ -45,9 +45,9 @@ fixed Component IntToComponent(Integer c)
 // the parameters can be set in Mean(Component)
 random Real[] Intensity(Integer x, Integer y, Timestep t)
     ~ MultivarGaussian(
-        transpose(Mean(IntToComponent(AssociatedComponent(x, y, t)), x, y)),
+        Mean(IntToComponent(AssociatedComponent(x, y, t)), x, y),
         variance);
 
-obs Intensity(1, 1, @1) = [135, 85, 170];
+obs Intensity(1, 1, @1) = [135; 85; 170];
 
 query IntToComponent(AssociatedComponent(1, 1, @1));
