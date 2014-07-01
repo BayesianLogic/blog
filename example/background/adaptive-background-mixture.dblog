@@ -22,8 +22,7 @@ type Component;
 
 #Component ~ UniformInt(1, 15);
 
-// FIXME: this is broken in BLOG 0.9.
-random RealMatrix Weight ~ Dirichlet(size({c for Component c}), 0.2);
+random RealMatrix Weight ~ Dirichlet(0.2 * ones(size({c for Component c}), 1));
 
 fixed RealMatrix variance = [10000, 0, 0;
                              0, 10000, 0;
