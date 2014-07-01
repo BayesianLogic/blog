@@ -21,34 +21,34 @@ public class TestMultinomial implements TestDistributions {
 
   /** Multinomial. n = 3, p = [0.5, 0.25, 0.25]. */
   public void testMultinomial1(Multinomial mult) {
-    assertEquals(0.1875, mult.getProb(MatrixFactory.createRowVector(1, 1, 1)),
-        ERROR);
+    assertEquals(0.1875,
+        mult.getProb(MatrixFactory.createColumnVector(1, 1, 1)), ERROR);
     assertEquals(Math.log(0.1875),
-        mult.getLogProb(MatrixFactory.createRowVector(1, 1, 1)), ERROR);
-    assertEquals(0.1875, mult.getProb(MatrixFactory.createRowVector(2, 1, 0)),
-        ERROR);
+        mult.getLogProb(MatrixFactory.createColumnVector(1, 1, 1)), ERROR);
+    assertEquals(0.1875,
+        mult.getProb(MatrixFactory.createColumnVector(2, 1, 0)), ERROR);
     assertEquals(Math.log(0.1875),
-        mult.getLogProb(MatrixFactory.createRowVector(2, 1, 0)), ERROR);
+        mult.getLogProb(MatrixFactory.createColumnVector(2, 1, 0)), ERROR);
   }
 
   /** Multinomial. n = 4, p = [0.25, 0.25, 0.25, 0.25]. */
   public void testMultinomial2(Multinomial mult) {
     assertEquals(0.09375,
-        mult.getProb(MatrixFactory.createRowVector(1, 1, 1, 1)), ERROR);
+        mult.getProb(MatrixFactory.createColumnVector(1, 1, 1, 1)), ERROR);
     assertEquals(Math.log(0.09375),
-        mult.getLogProb(MatrixFactory.createRowVector(1, 1, 1, 1)), ERROR);
+        mult.getLogProb(MatrixFactory.createColumnVector(1, 1, 1, 1)), ERROR);
     assertEquals(3.90625e-3,
-        mult.getProb(MatrixFactory.createRowVector(4, 0, 0, 0)), ERROR);
+        mult.getProb(MatrixFactory.createColumnVector(4, 0, 0, 0)), ERROR);
     assertEquals(Math.log(3.90625e-3),
-        mult.getLogProb(MatrixFactory.createRowVector(4, 0, 0, 0)), ERROR);
-    assertEquals(0, mult.getProb(MatrixFactory.createRowVector(2, 1, 1, 1)),
+        mult.getLogProb(MatrixFactory.createColumnVector(4, 0, 0, 0)), ERROR);
+    assertEquals(0, mult.getProb(MatrixFactory.createColumnVector(2, 1, 1, 1)),
         ERROR);
     assertEquals(Double.NEGATIVE_INFINITY,
-        mult.getLogProb(MatrixFactory.createRowVector(2, 1, 1, 1)), ERROR);
-    assertEquals(0, mult.getProb(MatrixFactory.createRowVector(2, -1, 1, 2)),
-        ERROR);
+        mult.getLogProb(MatrixFactory.createColumnVector(2, 1, 1, 1)), ERROR);
+    assertEquals(0,
+        mult.getProb(MatrixFactory.createColumnVector(2, -1, 1, 2)), ERROR);
     assertEquals(Double.NEGATIVE_INFINITY,
-        mult.getLogProb(MatrixFactory.createRowVector(2, -1, 1, 2)), ERROR);
+        mult.getLogProb(MatrixFactory.createColumnVector(2, -1, 1, 2)), ERROR);
   }
 
   @Test
@@ -60,10 +60,10 @@ public class TestMultinomial implements TestDistributions {
   public void testProbabilityViaSetParams() {
     Multinomial mult = new Multinomial();
     mult.setParams(new Object[] { 3,
-        MatrixFactory.createRowVector(0.5, 0.25, 0.25) });
+        MatrixFactory.createColumnVector(0.5, 0.25, 0.25) });
     testMultinomial1(mult);
     mult.setParams(new Object[] { 4,
-        MatrixFactory.createRowVector(0.25, 0.25, 0.25, 0.25) });
+        MatrixFactory.createColumnVector(0.25, 0.25, 0.25, 0.25) });
     testMultinomial2(mult);
   }
 
@@ -71,7 +71,7 @@ public class TestMultinomial implements TestDistributions {
   public void testInsufficientArguments() {
     Multinomial mult = new Multinomial();
     mult.setParams(new Object[] { null,
-        MatrixFactory.createRowVector(0.5, 0.25, 0.25) });
+        MatrixFactory.createColumnVector(0.5, 0.25, 0.25) });
     mult.sampleVal();
   }
 
@@ -93,14 +93,15 @@ public class TestMultinomial implements TestDistributions {
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments2() {
     Multinomial mult = new Multinomial();
-    mult.setParams(new Object[] { -1, MatrixFactory.createRowVector(1, 1) });
+    mult.setParams(new Object[] { -1, MatrixFactory.createColumnVector(1, 1) });
     mult.sampleVal();
   }
 
   @Test
   public void testNormalization() {
     Multinomial mult = new Multinomial();
-    mult.setParams(new Object[] { 4, MatrixFactory.createRowVector(1, 1, 1, 1) });
+    mult.setParams(new Object[] { 4,
+        MatrixFactory.createColumnVector(1, 1, 1, 1) });
     testMultinomial2(mult);
   }
 
@@ -108,12 +109,13 @@ public class TestMultinomial implements TestDistributions {
   public void testDoubleSet() {
     Multinomial mult = new Multinomial();
     mult.setParams(new Object[] { null, null });
-    mult.setParams(new Object[] { null, MatrixFactory.createRowVector(2, 1, 1) });
+    mult.setParams(new Object[] { null,
+        MatrixFactory.createColumnVector(2, 1, 1) });
     mult.setParams(new Object[] { 3, null });
     testMultinomial1(mult);
     mult.setParams(new Object[] { 4, null });
     mult.setParams(new Object[] { null,
-        MatrixFactory.createRowVector(1, 1, 1, 1) });
+        MatrixFactory.createColumnVector(1, 1, 1, 1) });
     testMultinomial2(mult);
   }
 
