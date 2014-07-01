@@ -46,6 +46,22 @@ public class MatrixFactory {
   }
 
   /**
+   * Returns a MatrixLib column vector of dimension args.length by 1. args is
+   * interpreted as an array of doubles that comprise the first and only column
+   * for the returned MatrixLib instance.
+   * 
+   * @param args
+   * @return
+   */
+  static public MatrixLib createColumnVector(double... args) {
+    double[][] ary = new double[args.length][1];
+    for (int i = 0; i < args.length; i++) {
+      ary[i][0] = args[i];
+    }
+    return MatrixFactory.fromArray(ary);
+  }
+
+  /**
    * Returns a MatrixLib row vector of dimension 1 by args.length. args is
    * interpreted as an array of doubles that comprise the first and only row for
    * the returned MatrixLib instance.
