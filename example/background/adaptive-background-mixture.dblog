@@ -26,8 +26,8 @@ type Component;
 random RealMatrix Weight ~ Dirichlet(size({c for Component c}), 0.2);
 
 fixed RealMatrix variance = [10000, 0, 0;
-                           0, 10000, 0;
-                           0, 0, 10000];
+                             0, 10000, 0;
+                             0, 0, 10000];
 
 // the prior posts uniform distribution over a box of 3D space.
 fixed RealMatrix rangeR = [0.0, 255.0];
@@ -44,9 +44,9 @@ random Component AssociatedComponent(Integer x, Integer y, Timestep t)
 // the parameters can be set in Mean(Component)
 random RealMatrix Intensity(Integer x, Integer y, Timestep t) 
     ~ MultivarGaussian(
-        transpose(Mean(AssociatedComponent(x, y, t), t)),
+        Mean(AssociatedComponent(x, y, t), t),
         variance);
 
-obs Intensity(1, 1, @1) = [135, 85, 170];
+obs Intensity(1, 1, @1) = [135; 85; 170];
 
 query AssociatedComponent(1, 1, @1);
