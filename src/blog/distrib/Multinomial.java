@@ -269,7 +269,7 @@ public class Multinomial implements CondProbDistrib {
       }
       result[bucket] += 1;
     }
-    return MatrixFactory.createRowVector(result);
+    return MatrixFactory.createColumnVector(result);
   }
 
   private int n; // the number of trials
