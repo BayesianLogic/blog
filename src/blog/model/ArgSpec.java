@@ -192,8 +192,8 @@ public abstract class ArgSpec {
    * 
    * @return unmodifiable Collection of ArgSpec
    */
-  public Collection getSubExprs() {
-    return Collections.EMPTY_LIST;
+  public Collection<ArgSpec> getSubExprs() {
+    return Collections.<ArgSpec> emptyList();
   }
 
   /**
@@ -227,10 +227,17 @@ public abstract class ArgSpec {
   public abstract ArgSpec find(Term t);
 
   /**
-   * Applies a procedure to all terms in this ArgSpec which satisfy a given
-   * predicate to a given collection.
+   * Applies the given procedure to all sub-expressions in this ArgSpec.
+   * 
+   * The default implementation applies the procedure to all sub-expressions
+   * returned by getSubExprs().
    */
-  public abstract void applyToTerms(UnaryProcedure procedure);
+  public void applyToTerms(UnaryProcedure procedure) {
+    procedure.evaluate(this);
+    for (ArgSpec subExpr : getSubExprs()) {
+      subExpr.applyToTerms(procedure);
+    }
+  }
 
   /**
    * Returns an ArgSpec resulting from the replacement of all occurrences of a
