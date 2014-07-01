@@ -47,7 +47,7 @@ public class Discrete implements CondProbDistrib {
     if (value != null) {
       if (value.numCols() != 1 || value.numRows() == 0) {
         throw new IllegalArgumentException(
-            "The argument passed into setParams passed in is not a column vector");
+            "The argument passed into setParams is not a column vector");
       }
       initializeProbabilityVector(value);
       this.hasP = true;

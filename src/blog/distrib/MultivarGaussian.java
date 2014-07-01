@@ -170,7 +170,7 @@ public class MultivarGaussian implements CondProbDistrib {
           / normConst;
     }
     throw new IllegalArgumentException("The matrix given is " + x.numRows()
-        + " by " + x.numCols() + " but should be a 1 by " + d + " vector.");
+        + " by " + x.numCols() + " but should be a " + d + " by 1 vector.");
   }
 
   /*
@@ -196,7 +196,7 @@ public class MultivarGaussian implements CondProbDistrib {
           .timesMat(x.minus(mean)).elementAt(0, 0)) - logNormConst);
     }
     throw new IllegalArgumentException("The matrix given is " + x.numRows()
-        + " by " + x.numCols() + " but should be a 1 by " + d + " vector.");
+        + " by " + x.numCols() + " but should be a " + d + " by 1 vector.");
   }
 
   /*
