@@ -4,6 +4,8 @@ import NativePackagerKeys._
 
 assemblySettings
 
+packageArchetype.java_application
+
 name := "blog"
 
 version := "0.9"
@@ -20,7 +22,9 @@ artifactName := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
 
 mainClass in assembly := Some("blog.Main")
 
-mainClass in (Compile,run) := Some("blog.Main")
+mainClass in (Compile) := Some("blog.Main")
+
+sources in (Compile, doc) ~= (_ filter (_.getName endsWith ".___"))
 
 // this one is not required during compilation or running
 
@@ -39,8 +43,6 @@ libraryDependencies += "com.typesafe" % "config" % "1.2.0"
 EclipseKeys.eclipseOutput := Some("target/eclipse")
 
 EclipseKeys.withSource := true
-
-packageArchetype.java_application
 
 packageSummary in Linux := "blog"
 
