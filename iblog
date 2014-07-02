@@ -1,17 +1,18 @@
 #!/bin/bash
 
 BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-export BLOG_HOME
 
-J_PATH_SEP=`${BLOG_HOME}/path_sep.sh`
-
-if [ -d "${BLOG_HOME}/bin" ]; then
-  CPATH="${BLOG_HOME}/bin${J_PATH_SEP}${BLOG_HOME}/*"
-else
-  CPATH="${BLOG_HOME}/*"
+if [ ! -d "${BLOG_HOME}/src/" ]; then
+  BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../ && pwd )"	
 fi
 
-CPATH="${CPATH}${J_PATH_SEP}${BLOG_HOME}/lib/*${J_PATH_SEP}${CLASSPATH}${J_PATH_SEP}."
-echo $CPATH
+export BLOG_HOME
 
-JAVA_OPTS="-Xmx4096M" scala -cp ${CPATH} -i iblog.scala $@
+echo "Starting Interative Shell for BLOG"
+if [ -e "${BLOG_HOME}/bin/iblog.scala" ]; then
+  CPATH="${BLOG_HOME}/lib/java-cup-11b.jar:${BLOG_HOME}/lib/*:${CLASSPATH}"
+  JAVA_OPTS="-Xmx4096M" scala -cp ${CPATH} -i "${BLOG_HOME}/bin/iblog.scala" $@  
+else
+	CPATH="${BLOG_HOME}/target/universal/stage/lib/java-cup-11b.jar:${BLOG_HOME}/target/universal/stage/lib/*:${CLASSPATH}"
+  JAVA_OPTS="-Xmx4096M" scala -cp ${CPATH} -i "${BLOG_HOME}/src/main/scala/iblog.scala" $@  
+fi

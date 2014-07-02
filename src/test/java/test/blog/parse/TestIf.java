@@ -22,7 +22,7 @@ public class TestIf extends TestParse {
 
   @Test
   public void testSimpleDecl() {
-    String toParse = "random Color ObsColor(Draw d) ~ UniformChoice({Ball b});";
+    String toParse = "random Color ObsColor(Draw d) ~ UniformChoice({b for Ball b});";
     String parsed = parseToRepr(toParse);
     String generated = toRepr(Stmts(new RandomFuncDec(Symbol("ObsColor"),
         Fields(Field(Symbol("d"), Type(Symbol("Draw")))),

@@ -1,8 +1,12 @@
 .cache
+.classpath
+.project
 .refactorings
 /dist
 /build
 /nbproject
 /bin
-src/test/TestLocalExample.java
 example/local-example/*
+/project/project/target
+/project/target
+/target

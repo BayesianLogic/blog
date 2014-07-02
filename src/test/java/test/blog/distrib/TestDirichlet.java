@@ -156,13 +156,13 @@ public class TestDirichlet implements TestDistributions {
     d.sampleVal();
   }
 
-  // Not a row vector
+  // Not a column vector
   @Test(expected = IllegalArgumentException.class)
   public void testIncorrectArguments() {
     Dirichlet d = new Dirichlet();
-    double[][] ary = new double[2][1];
+    double[][] ary = new double[1][2];
     ary[0][0] = 2.0;
-    ary[1][0] = 2.0;
+    ary[0][1] = 2.0;
     MatrixLib l = MatrixFactory.fromArray(ary);
     d.setParams(new Object[] { l });
     Util.initRandom(false);
