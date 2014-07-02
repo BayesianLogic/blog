@@ -1,4 +1,6 @@
 .cache
+.classpath
+.project
 .refactorings
 /dist
 /build
