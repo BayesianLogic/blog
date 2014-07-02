@@ -10,7 +10,7 @@ endif
 " Keywords
 syn keyword blogKeywords type distinct random origin fixed param query obs
 syn keyword blogType Real Timestep Boolean Integer 
-syn keyword blogStatement if then else null true false forall exists for
+syn keyword blogStatement case in if then else null true false forall exists for
 syn keyword blogDistribution Bernoulli Beta Binomial BooleanDistrib Categorical Dirichlet Discrete EqualsCPD Exponential Gamma Gaussian Geometric Laplace Multinomial MultivarGaussian NegativeBinomial Poisson UniformChoice UniformInt UniformReal UniformVector UnivarGaussian
 " this one was used in old syntax
 syn keyword blogKeywords guaranteed nonrandom
