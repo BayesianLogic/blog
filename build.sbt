@@ -45,6 +45,10 @@ EclipseKeys.eclipseOutput := Some("target/eclipse")
 
 EclipseKeys.withSource := true
 
+lazy val html = taskKey[Unit]("Generate html documentation")
+
+html := { """pelican docs/content -o docs/output -s docs/pelicanconf.py""" ! }
+
 packageSummary in Linux := "blog"
 
 packageSummary in Windows := "blog"
@@ -55,4 +59,5 @@ maintainer in Windows := "UC Berkeley RUGS"
 
 maintainer in Debian := "UC Berkeley RUGS"
 
-mappings in Universal ++= directory("docs/output") 
+mappings in Universal ++= directory("docs/output") map {case (f, s) => (f, s.replaceFirst("output", "docs"))}
+
