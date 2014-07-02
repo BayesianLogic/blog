@@ -5,4 +5,6 @@
 /nbproject
 /bin
 example/local-example/*
+/project/project/target
+/project/target
 /target
