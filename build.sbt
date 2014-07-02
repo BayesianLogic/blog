@@ -34,5 +34,6 @@ libraryDependencies += "com.google.code.gson" % "gson" % "2.2.4"
 
 libraryDependencies += "org.apache.commons" % "commons-math3" % "3.0" % "test"
 
-//addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.11.2")
+EclipseKeys.eclipseOutput := Some("target/eclipse")
 
+EclipseKeys.withSource := true
