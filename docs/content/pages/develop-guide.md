@@ -38,7 +38,8 @@ Use [google java style](http://google-styleguide.googlecode.com/svn/trunk/javagu
 # Generating Lexer and Parser
 You only need to do this if you modified `BLOGLexer.flex` or `BLOGParser.cup`
 ```
-  make parser
+  sbt/sbt lexer
+  sbt/sbt parser
 ```
 
 # Compiling source
