@@ -4,9 +4,18 @@
 #
 # ./parse.sh  <model-file> 
 
-BLOG_HOME="."
+BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+if [ ! -d "${BLOG_HOME}/src/" ]; then
+  BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../ && pwd )"	
+fi
+
 export BLOG_HOME
 
-J_PATH_SEP=`${BLOG_HOME}/path_sep.sh`
+if [ -e "${BLOG_HOME}/bin/iblog.scala" ]; then
+  CPATH="${BLOG_HOME}/lib/java-cup-11b.jar:${BLOG_HOME}/lib/*:${CLASSPATH}"
+else
+	CPATH="${BLOG_HOME}/target/universal/stage/lib/java-cup-11b.jar:${BLOG_HOME}/target/universal/stage/lib/*:${CLASSPATH}"
+fi
 
-java -cp "${BLOG_HOME}/bin${J_PATH_SEP}${BLOG_HOME}/lib/java-cup-11b.jar${J_PATH_SEP}${BLOG_HOME}/lib/*" -Xmx2048M blog.parse.Parse $@
+java -cp ${CPATH} blog.parse.Parse $@

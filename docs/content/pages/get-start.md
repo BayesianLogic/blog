@@ -19,6 +19,7 @@ Alternatively, you may directly compile from source code by
 (you will need sbt installed, check [download page]({filename}develop-guide.md) for more details). 
 
     sbt/sbt compile
+    sbt/sbt stage
 
 <!-- *** Placeholder for installation *** -->
 
@@ -28,9 +29,9 @@ The BLOG includes a few examples.
 
 On Linux/Mac, the following command will run the Burglary example. 
 ```
-./blog example/burglary.blog
+bin/blog example/burglary.blog
 ```
-If you already installed BLOG, you may try without `./`
+If you already installed BLOG, you may try without `bin/`
 ```
 blog example/burglary.blog
 ```
@@ -42,7 +43,7 @@ blog.bat example/burglary.blog
 
 The general command is 
 ```
-./blog <filename_of_blog_model>
+blog <filename_of_blog_model>
 ```
 
 BLOG system accepts a list of commandline options, such as the number samples
@@ -50,13 +51,13 @@ used in its underlying sampling engine. The more samples, the more accurate
 result it can produce. Use the following to run Burglary example with 1 million 
 samples. 
 ```
-./blog -n 1000000 example/burglary.blog
+blog -n 1000000 example/burglary.blog
 ```
 
 The following will run a simple Hidden Markov Model for genetic sequences. 
 It uses particle filtering algorithm to make inference. 
 ```
-./dblog example/hmm.dblog
+dblog example/hmm.dblog
 ```
 
 The full list of commandline options are described in [BLOG User Manual]({filename}user-manual.md)

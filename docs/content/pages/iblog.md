@@ -9,6 +9,9 @@ sortorder: 15
 The BLOG interactive shell and debugger are alpha-grade features. They might
 contain bugs, and they might change drastically from version to version.
 
+# Requirement
+The BLOG interactive shell requires scala 2.10 or above. You may get it from 
+http://www.scala-lang.org/.
 
 # Introduction
 

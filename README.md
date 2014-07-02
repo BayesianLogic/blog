@@ -20,6 +20,7 @@ video. BLOG makes it easy and concise to represent:
 # Compiling
 ```
   sbt/sbt compile
+  sbt/sbt stage
 ```
 
 
@@ -53,7 +54,7 @@ video. BLOG makes it easy and concise to represent:
 ## Package and Release
 
 ```
-  sbt/sbt package
+  sbt/sbt universal:package-bin
 ```
 
 
@@ -63,4 +64,4 @@ All files for web engine are under web. It requires `python-webpy` package. See 
 To run the engine, please follow the instructions in `web/README.md`.
 
 
-Readme Updated: July 1, 2014
+Readme Updated: July 2, 2014

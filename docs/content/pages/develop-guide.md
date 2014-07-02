@@ -22,6 +22,11 @@ Use [google java style](http://google-styleguide.googlecode.com/svn/trunk/javagu
  * Please use \n for line terminator! 
 
 # Eclipse
+- Generate eclipse project definition file
+```
+  sbt/sbt eclipse
+```
+
 - Code style: Eclipse config file is provided. Please use the version already in git master branch.
 
 - Running a BLOG model:
@@ -39,14 +44,14 @@ You only need to do this if you modified `BLOGLexer.flex` or `BLOGParser.cup`
 # Compiling source
 ```
   sbt/sbt compile
+  sbt/sbt stage
 ```
-
+The second command is to ensure you can run `blog` and `iblog` in development environment.
 
 # Package
 To make a release
-### TODO
 ```
-  sbt/sbt 
+  sbt/sbt universal:package-bin
 ```
 
 # Git Basics
