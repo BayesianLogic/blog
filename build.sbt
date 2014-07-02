@@ -1,6 +1,7 @@
 import AssemblyKeys._ 
 import com.typesafe.sbt.SbtNativePackager._
 import NativePackagerKeys._
+import NativePackagerHelper._
 
 assemblySettings
 
@@ -53,3 +54,5 @@ packageDescription := "BLOG Probabilistic Programming Lanaguage"
 maintainer in Windows := "UC Berkeley RUGS"
 
 maintainer in Debian := "UC Berkeley RUGS"
+
+mappings in Universal ++= directory("docs/output") 
