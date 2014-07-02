@@ -4,5 +4,5 @@
 /build
 /nbproject
 /bin
-src/test/TestLocalExample.java
 example/local-example/*
+/target

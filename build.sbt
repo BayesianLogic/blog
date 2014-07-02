@@ -1,4 +1,4 @@
-import AssemblyKeys._ // put this at the top of the file
+import AssemblyKeys._ 
 import com.typesafe.sbt.SbtNativePackager._
 import NativePackagerKeys._
 
@@ -20,11 +20,11 @@ artifactName := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
 
 mainClass in assembly := Some("blog.Main")
 
-packageArchetype.java_application
+mainClass in (Compile,run) := Some("blog.Main")
 
 // this one is not required during compilation or running
 
-//libraryDependencies += "de.jflex" % "jflex" % "1.6.0"
+libraryDependencies += "de.jflex" % "jflex" % "1.6.0"
 
 libraryDependencies += "gov.nist.math" % "jama" % "1.0.3"
 
@@ -34,6 +34,12 @@ libraryDependencies += "com.google.code.gson" % "gson" % "2.2.4"
 
 libraryDependencies += "org.apache.commons" % "commons-math3" % "3.0" % "test"
 
+libraryDependencies += "com.typesafe" % "config" % "1.2.0"
+
 EclipseKeys.eclipseOutput := Some("target/eclipse")
 
 EclipseKeys.withSource := true
+
+packageArchetype.java_application
+
+packageDescription in Debian := "BLOG"
