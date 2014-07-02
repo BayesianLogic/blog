@@ -49,6 +49,24 @@ lazy val html = taskKey[Unit]("Generate html documentation")
 
 html := { """pelican docs/content -o docs/output -s docs/pelicanconf.py""" ! }
 
+
+lazy val parser = taskKey[Unit]("Generating parser files")
+
+lazy val lexer = taskKey[Unit]("Generating lexer files")
+
+parser := {
+  val cpfiles = (fullClasspath in Runtime).value.files
+  val cpString = cpfiles.map(_.getAbsolutePath).mkString(System.getProperty("path.separator"))
+  """java -cp "%s" java_cup.Main -locations -destdir src/main/java/blog/parse -symbols BLOGTokenConstants -parser BLOGParser src/parser/BLOGParser.cup""".format(cpString) !
+}
+
+lexer := {
+  val cpfiles = (fullClasspath in Runtime).value.files
+  val cpString = cpfiles.map(_.getAbsolutePath).mkString(System.getProperty("path.separator"))
+  """java -cp "%s" jflex.Main -d src/main/java/blog/parse src/parser/BLOGLexer.flex""".format(cpString) !                      
+}
+
+
 packageSummary in Linux := "blog"
 
 packageSummary in Windows := "blog"
