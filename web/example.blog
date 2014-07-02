@@ -1,56 +1,38 @@
-// Please construct your BLOG model, observation and query here.
-
-// This is an example of a hidden Markov model with four states
-
-/* A hidden Markov model with four states and four output symbols.
- * The parameters of this model are completely made-up.
- * DBLOG model
+/* The class burglary-earthquake network, as presented in "Artificial 
+ * Intelligence: A Modern Approach", 2nd ed., p. 494.  
  */
 
-type State;
-distinct State A, C, G, T;
+random Boolean Burglary ~ BooleanDistrib(0.001);
 
-type Output;
-distinct Output ResultA, ResultC, ResultG, ResultT;
+random Boolean Earthquake ~ BooleanDistrib(0.002);
 
-random State S(Timestep t) {
-    if t == @0 then ~ Categorical({A -> 0.3,
-                 C -> 0.2,
-                 G -> 0.1,
-                 T -> 0.4})
-    else ~ TabularCPD(
-      {A -> ~ Categorical({A -> 0.1, C -> 0.3, G -> 0.3, T -> 0.3}),
-       C -> ~ Categorical({A -> 0.3, C -> 0.1, G -> 0.3, T -> 0.3}),
-       G -> ~ Categorical({A -> 0.3, C -> 0.3, G -> 0.1, T -> 0.3}),
-       T -> ~ Categorical({A -> 0.3, C -> 0.3, G -> 0.3, T -> 0.1})},
-      S(prev(t)))
-};
+random Boolean Alarm ~
+  if Burglary then
+    if Earthquake then BooleanDistrib(0.95)
+    else  BooleanDistrib(0.94)
+  else
+    if Earthquake then BooleanDistrib(0.29)
+    else BooleanDistrib(0.001)
+  ;
 
-random Output O(Timestep t)
-   ~ TabularCPD(
-     {A -> ~ Categorical({ResultA -> 0.85, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.05}),
-      C -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.85, ResultG -> 0.05, ResultT -> 0.05}),
-      G -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.85, ResultT -> 0.05}),
-      T -> ~ Categorical({ResultA -> 0.05, ResultC -> 0.05, ResultG -> 0.05, ResultT -> 0.85})},
-     S(t));
+random Boolean JohnCalls ~
+  if Alarm then BooleanDistrib(0.9)
+  else BooleanDistrib(0.05);
 
-/* Evidence for the Hidden Markov Model.
+random Boolean MaryCalls ~
+  if Alarm then BooleanDistrib(0.7)
+  else BooleanDistrib(0.01);
+
+/* Evidence for the burglary model saying that both 
+ * John and Mary called.  Given this evidence, the posterior probability 
+ * of Burglary is 0.284 (see p. 505 of "AI: A Modern Approach", 2nd ed.).
  */
 
-obs O(@0) = ResultC;
-obs O(@1) = ResultA;
-obs O(@2) = ResultA;
-obs O(@3) = ResultA;
-obs O(@4) = ResultG;
+obs JohnCalls = true;
+obs MaryCalls = true;
 
-/* Queries for the Hiddem Markov Model, given the evidence.
- * Note that we can query S(5) even though our observations only
- * went up to time 4.
+/* Query for the burglary model asking whether Burglary 
+ * is true.
  */
 
-query S(@0);
-query S(@1);
-query S(@2);
-query S(@3);
-query S(@4);
-query S(@5);
+query Burglary;

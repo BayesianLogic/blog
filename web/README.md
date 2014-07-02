@@ -1,14 +1,13 @@
-Setting up Local Server 
-=====================
-1. `$ sudo apt-get install python-webpy`
-2. `$ git clone https://github.com/amatsukawa/dblog.git`
-3. `$ cd dblog`
-4. `$ make compile`
-5. `$ cd web`
-6. `$ ./start-server.sh`
+Install Requirement
+====================
+BLOG web server requires python-webpy, install using 
+```
+$ sudo apt-get install python-webpy
+```
 
 Start the BLOG Web Server
 =====================
+0. make sure the code is compiled. refer to document about how to compile.
 1. `$ ./start-server.sh`
 
 Testrun the BLOG Web Server
