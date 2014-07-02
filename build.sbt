@@ -42,4 +42,12 @@ EclipseKeys.withSource := true
 
 packageArchetype.java_application
 
-packageDescription in Debian := "BLOG"
+packageSummary in Linux := "blog"
+
+packageSummary in Windows := "blog"
+
+packageDescription := "BLOG Probabilistic Programming Lanaguage"
+
+maintainer in Windows := "UC Berkeley RUGS"
+
+maintainer in Debian := "UC Berkeley RUGS"
