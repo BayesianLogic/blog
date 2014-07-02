@@ -52,6 +52,8 @@ The second command is to ensure you can run `blog` and `iblog` in development en
 # Package
 To make a release
 ```
+  sbt/sbt compile
+  sbt/sbt html
   sbt/sbt universal:package-bin
 ```
 
