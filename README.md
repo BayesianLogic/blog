@@ -18,20 +18,14 @@ video. BLOG makes it easy and concise to represent:
 
 
 # Compiling
-- Under Linux/MAC OSX
 ```
-  make compile
-```
-- Under Windows
-```
-  compile.bat
+  sbt/sbt compile
 ```
 
 
 # Developer
 
 ## Please read first: [Developer's guide](docs/content/pages/develop-guide.md)
-
 
 ## Files
 - `blog` main execution file to run the engine
@@ -50,13 +44,16 @@ video. BLOG makes it easy and concise to represent:
 
 ## Working with Eclipse
 
-- Easy and automatic setup: from Eclipse, clone the git repo, import it. The git repo already contains eclipse setting files.
+- Generate eclipse project files
+```
+  sbt/sbt eclipse
+```
 
 
 ## Package and Release
 
 ```
-  make release
+  sbt/sbt package
 ```
 
 
@@ -66,4 +63,4 @@ All files for web engine are under web. It requires `python-webpy` package. See 
 To run the engine, please follow the instructions in `web/README.md`.
 
 
-Readme Updated: June 10, 2014
+Readme Updated: July 1, 2014

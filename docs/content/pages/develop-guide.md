@@ -1,6 +1,6 @@
 title: Developer's Guide
 status: hidden
-date: 2014-06-11 15:11
+date: 2014-07-01 15:11
 sortorder: 30
 
 The BLOG project is hosted on Github. Contributions in the form of GitHub pull requests. 
@@ -26,7 +26,7 @@ Use [google java style](http://google-styleguide.googlecode.com/svn/trunk/javagu
 
 - Running a BLOG model:
   1. Enter `Run Configurations`, create a new configuration
-  2. Set `project` to outbids
+  2. Set `project` to blog
   3. Set `Main class` to `blog.Main`
   4. In the `Arguments` tab, pass in the path to the BLOG model, and any parameters
 
@@ -37,19 +37,16 @@ You only need to do this if you modified `BLOGLexer.flex` or `BLOGParser.cup`
 ```
 
 # Compiling source
-- Under Linux/MAC OSX
 ```
-  make compile
+  sbt/sbt compile
 ```
-- Under Windows
-```
-  compile.bat
-```
+
 
 # Package
 To make a release
+### TODO
 ```
-  make zip
+  sbt/sbt 
 ```
 
 # Git Basics

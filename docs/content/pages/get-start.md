@@ -1,6 +1,6 @@
 title: Get-started
 status: hidden
-date: 2014-06-11 15:11
+date: 2014-07-01 15:11
 sortorder: 15
 
 # Downloading and Installing
@@ -15,9 +15,10 @@ Get the latest version of BLOG from the
 Running BLOG doesnot require install. However, you may use the following script to 
 install it on your system. It will be more convenient to run BLOG.
 
-Alternatively, you may directly compile from source code by. 
+Alternatively, you may directly compile from source code by 
+(you will need sbt installed, check [download page]({filename}develop-guide.md) for more details). 
 
-    make compile
+    sbt/sbt compile
 
 <!-- *** Placeholder for installation *** -->
 
