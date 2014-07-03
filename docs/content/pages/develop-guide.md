@@ -22,18 +22,33 @@ Use [google java style](http://google-styleguide.googlecode.com/svn/trunk/javagu
  * Please use \n for line terminator! 
 
 # Eclipse
-- Generate eclipse project definition file
-```
-  sbt/sbt eclipse
-```
 
-- Code style: Eclipse config file is provided. Please use the version already in git master branch.
+### To set up Eclipse for BLOG development:
 
-- Running a BLOG model:
-  1. Enter `Run Configurations`, create a new configuration
-  2. Set `project` to blog
-  3. Set `Main class` to `blog.Main`
-  4. In the `Arguments` tab, pass in the path to the BLOG model, and any parameters
+1. Download the [Scala IDE](http://scala-ide.org/). This is just Eclipse
+   bundled together with the Scala plugins.
+1. Generate the Eclipse project file using `sbt/sbt eclipse`.
+1. [Import the project into
+   Eclipse](http://help.eclipse.org/juno/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftasks-importproject.htm)
+
+### Code style:
+
+Eclipse config file is provided. Please use the version already in git master branch.
+
+### To run a BLOG model from within Eclipse:
+
+1. Enter `Run Configurations`, create a new configuration
+1. Set `project` to blog
+1. Set `Main class` to `blog.Main`
+1. In the `Arguments` tab, pass in the path to the BLOG model, and any parameters
+
+### Troubleshooting:
+
+Some things to try if you run into trouble:
+
+1. In the Eclipse menu, click Project > Clean
+1. Right click on the project, click Scala > Add Scala Library to Build Path
+
 
 # Generating Lexer and Parser
 You only need to do this if you modified `BLOGLexer.flex` or `BLOGParser.cup`
