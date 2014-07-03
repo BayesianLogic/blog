@@ -68,30 +68,30 @@ By running the model, we expect to obtain the probability of burglary event.
 
 Use the following command to run the model.
 
-    ./blog example/burglary.blog
-
-If you already installed, you may run it with
-
     blog example/burglary.blog
+
+If you do not have blog, you may run it with (after unzip universal package)
+
+    bin/blog example/burglary.blog
 
 
 By default, BLOG uses Likelihood-weighting algorithm to infer the posterior probability.
 It will draw 50,000 samples and output a probability.
 One can request 1 million samples by issuing the following command.
 
-    ./blog -n 1000000 example/burglary.blog
+    blog -n 1000000 example/burglary.blog
 
 
 One can request to use the Metropolis-Hasting algorithm (as described in Milch et al 2006).
 
-    ./blog -s blog.sample.MHSampler example/burglary.blog
+    blog -s blog.sample.MHSampler example/burglary.blog
 
 
 # Commandline options
 
 The general form of blog command is
 
-    ./blog [options] <blog file1> [<blog file2> <blog file3> ...]
+    blog [options] <blog file1> [<blog file2> <blog file3> ...]
 
 
 The `[options]` are optional. The orders of these options do not matter. If no option is provided, it will use LWSampler (parental likelihood-weighting algorithm), with 50,000 samples.
@@ -103,7 +103,7 @@ The following options are provided. For every option, there is a short form and 
   Initialize the random seed based on the clock time. If this flag is not given, the program uses a fixed random seed so its behavior is reproducible. Default: false.  
   For example:
 ```
-./blog -r example/burglary.blog
+blog -r example/burglary.blog
 ```
 
 - Use Inference engine.   
@@ -115,7 +115,7 @@ The following options are provided. For every option, there is a short form and 
     `-e blog.engine.LiuWestFilter`  
   For example, the following command uses particle filter to run a Hidden Markov Model.
 ```
-./blog -e blog.engine.ParticleFilter example/hmm.dblog
+blog -e blog.engine.ParticleFilter example/hmm.dblog
 ```
 
 - Run the sampling engine for a given number of samples.   
@@ -123,7 +123,7 @@ The following options are provided. For every option, there is a short form and 
   It is used to control the accuracy of the inference. Default, 10,000.   
   For example, to run the burglary model with 1 million samples.
 ```
-./blog -n 1000000 example/burglary.blog
+blog -n 1000000 example/burglary.blog
 ```
 
 - Choose a sampling algorithm.  
@@ -184,7 +184,7 @@ CLASSPATH=userdir blog example/burglary.blog
 For dynamic models (models with `Timestep`), one can use bootstrap particle filter. 
 Bootstrap particle filter is an approximate algorithm for making inference about dynamic probabilistic model with general distributions. The following command runs a particle filter for a hidden Markov model.
 
-    ./blog -e blog.engine.ParticleFilter example/hmm.dblog
+    blog -e blog.engine.ParticleFilter example/hmm.dblog
 
 
 The hidden Markov model describes the generative process of genetic sequences.
@@ -252,7 +252,7 @@ For example, `query S(@2)` will be answered after all evidence at `Timestep` 2. 
 
 To specify the number of particles, use `-n`. By default, BLOG uses 50,000 particles. The following command runs a particle filter with 100,000 particles.
 
-    ./blog -e blog.engine.ParticleFilter -n 100000 example/hmm.dblog
+    blog -e blog.engine.ParticleFilter -n 100000 example/hmm.dblog
 
 
 ## Tuning Liu-West fitler
@@ -263,6 +263,6 @@ BLOG requires a parameter `rho` for the degree of pertubation. Defaut is 0.95. I
 
 The following command runs Liu-West filter on a simple auto-regressive model. 
 
-    ./blog -e LiuWestFilter -P rho=0.98 example/ar1.dblog
+    blog -e LiuWestFilter -P rho=0.98 example/ar1.dblog
 
 Please refer to `example/ar1.dblog` for the full model. 
