@@ -89,3 +89,6 @@ mappings in Universal += file("bloglint") -> "bin/bloglint"
 mappings in Universal += file("bloglint.bat") -> "bin/bloglint.bat"
 
 mappings in Universal += file("src/main/scala/iblog.scala") -> "bin/iblog.scala"
+
+// junit
+libraryDependencies += "com.novocode" % "junit-interface" % "0.10" % "test" 

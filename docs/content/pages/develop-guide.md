@@ -13,7 +13,7 @@ The BLOG project is hosted on Github. Contributions in the form of GitHub pull r
 - Follow the Code Style Guide. Before sending in your pull request, run sbt/sbt scalastyle to validate the style.
 - Large files (e.g. data files > 10MB, any output file, generated pdf etc) should not be added to git repo.
 - Update the documentation (in the docs folder) if you add a new feature or commandline option.
- 
+- test your code before submit pull request. 
 
 # Code style
 Use [google java style](http://google-styleguide.googlecode.com/svn/trunk/javaguide.html)
@@ -63,6 +63,11 @@ You only need to do this if you modified `BLOGLexer.flex` or `BLOGParser.cup`
   sbt/sbt stage
 ```
 The second command is to ensure you can run `blog` and `iblog` in development environment.
+
+# Unit Test
+```
+  sbt/sbt test
+```
 
 # Package
 To make a release
