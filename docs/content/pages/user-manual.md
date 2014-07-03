@@ -179,6 +179,19 @@ blog -n 1000000 example/burglary.blog
 CLASSPATH=userdir blog example/burglary.blog
 ```
 
+# Checking and validating BLOG syntax
+Sometimes one might make a small typo in the BLOG program. 
+`bloglint` is a tool provided in the package to validate the syntax of a BLOG program. 
+It will point out syntax errors, and output an abstract syntax tree for the portion it can understand. 
+
+    bloglint <blog file>
+
+For example, the following command will check the syntax of `example/burglary.blog`.
+
+    bloglint example/burglary.blog
+
+
+
 # Running dynamic models 
 
 For dynamic models (models with `Timestep`), one can use bootstrap particle filter. 
