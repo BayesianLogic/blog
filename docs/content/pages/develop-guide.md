@@ -57,6 +57,18 @@ To make a release
   sbt/sbt universal:package-bin
 ```
 
+## Generate Debian installation package
+```
+  sbt/sbt debian:package-bin
+```
+
+## Generate Windows Installation package
+You must have WIX installed. Obtain it from http://wixtoolset.org/.
+
+```
+  sbt/sbt windows:package-bin
+```
+
 # Git Basics
 You may also be interested in some Git basics: 
 
