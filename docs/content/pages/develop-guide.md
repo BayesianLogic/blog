@@ -21,6 +21,10 @@ Use [google java style](http://google-styleguide.googlecode.com/svn/trunk/javagu
  * no long lines
  * Please use \n for line terminator! 
 
+# Build Tool
+BLOG uses [sbt](http://www.scala-sbt.org/) for building and releasing packages. 
+The minimal requirement is sbt version 0.13.
+
 # Eclipse
 
 ### To set up Eclipse for BLOG development:
