@@ -51,6 +51,10 @@ lazy val html = taskKey[Unit]("Generate html documentation")
 
 html := { """pelican docs/content -o target/pelican -s docs/pelicanconf.py""" ! }
 
+lazy val ghpages = taskKey[Unit]("Push updated html docs to github pages")
+
+ghpages := { """docs/update_ghpages.sh""" ! }
+
 lazy val parser = taskKey[Unit]("Generating parser files")
 
 lazy val lexer = taskKey[Unit]("Generating lexer files")
