@@ -1,17 +1,12 @@
-import AssemblyKeys._ 
 import com.typesafe.sbt.SbtNativePackager._
 import NativePackagerKeys._
 import NativePackagerHelper._
-
-assemblySettings
-
-packageArchetype.java_application
 
 name := "blog"
 
 version := "0.9"
 
-javacOptions ++= Seq("-source", "1.5")
+javacOptions ++= Seq("-source", "1.6")
 
 //scalaVersion := "2.10.3"
 
@@ -20,8 +15,6 @@ compileOrder := CompileOrder.JavaThenScala
 artifactName := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
   artifact.name + "-" + module.revision + "." + artifact.extension
 }
-
-mainClass in assembly := Some("blog.Main")
 
 mainClass in (Compile) := Some("blog.Main")
 
@@ -49,11 +42,19 @@ EclipseKeys.withSource := true
 
 lazy val html = taskKey[Unit]("Generate html documentation")
 
-html := { """pelican docs/content -o target/pelican -s docs/pelicanconf.py""" ! }
+html := { 
+  val s: TaskStreams = streams.value
+  s.log.info("Generating html documentation")
+  """pelican docs/content -o target/pelican -s docs/pelicanconf.py""" ! 
+}
 
 lazy val ghpages = taskKey[Unit]("Push updated html docs to github pages")
 
-ghpages := { """docs/update_ghpages.sh""" ! }
+ghpages := { 
+  html.value
+  (packageBin in Universal).value
+  """docs/update_ghpages.sh""" ! 
+}
 
 lazy val parser = taskKey[Unit]("Generating parser files")
 
@@ -70,15 +71,22 @@ parser := {
   """java -cp %s java_cup.Main -locations -destdir src/main/java/blog/parse -symbols BLOGTokenConstants -parser BLOGParser src/parser/BLOGParser.cup""".format(cpString) !
 } 
 
-packageSummary in Linux := "blog"
+// the following are packaging settings
+packageArchetype.java_application // native package
 
-packageSummary in Windows := "blog"
+packageSummary in Linux := "BLOG Probabilistic Programming Language Inference Engine and Tools"
 
-packageDescription := "BLOG Probabilistic Programming Lanaguage"
+packageSummary in Windows := "BLOG Probabilistic Programming Language Inference Engine and Tools"
+
+packageDescription := "BLOG Probabilistic Programming Language"
 
 maintainer in Windows := "UC Berkeley RUGS"
 
 maintainer in Debian := "UC Berkeley RUGS"
+
+debianPackageDependencies in Debian ++= Seq("java2-runtime", "bash (>= 2.05a-11)")
+
+debianPackageRecommends in Debian += "scala"
 
 mappings in Universal ++= directory("example")
 

@@ -10,6 +10,9 @@ TIMEZONE = 'America/Los_Angeles'
 
 DEFAULT_LANG = u'en'
 
+# these directories will be copied automatically
+STATIC_PATHS = ['images', 'download']
+
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
 CATEGORY_FEED_ATOM = None

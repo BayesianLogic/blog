@@ -13,11 +13,11 @@ $ easy_install pelican
 ```
 
 The documentation consists of a set of pages located in `content/pages`.
-When you type `make html`, Pelican will generate HTML in the `output` dir.
+When you type `../sbt/sbt html`, Pelican will generate HTML in the `target/pelican` dir.
 (This dir is deliberately not stored in git.) You can then take the content in
-`output` and host it anywhere.
+`target/pelican` and host it anywhere.
 
-When writing documentation, you don't want to type `make html` all the time.
+When writing documentation, you don't want to type `sbt html` all the time.
 Instead, learn how to use Pelican's [development
 server](http://docs.getpelican.com/en/3.3.0/getting_started.html#make).
 
