@@ -25,7 +25,7 @@ mainClass in assembly := Some("blog.Main")
 
 mainClass in (Compile) := Some("blog.Main")
 
-sources in (Compile, doc) ~= (_ filter (_.getName endsWith ".___")) // do not generate java doc, since it creates problem
+sources in (Compile, doc) ~= (_ filter (_.getName endsWith ".___")) // do not generate java doc, since it creates problem // TODO in the future, remove this line and fix documentation issue 
 
 // this one is not required during compilation or running
 
@@ -76,12 +76,16 @@ maintainer in Windows := "UC Berkeley RUGS"
 
 maintainer in Debian := "UC Berkeley RUGS"
 
+mappings in Universal ++= directory("example")
+
 mappings in Universal ++= directory("target/pelican") map {case (f, s) => (f, s.replaceFirst("pelican", "docs"))}
 
 mappings in Universal += file("iblog") -> "bin/iblog"
 
 mappings in Universal += file("dblog") -> "bin/dblog"
 
-mappings in Universal += file("parse.sh") -> "bin/parse.sh"
+mappings in Universal += file("bloglint") -> "bin/bloglint"
+
+mappings in Universal += file("bloglint.bat") -> "bin/bloglint.bat"
 
 mappings in Universal += file("src/main/scala/iblog.scala") -> "bin/iblog.scala"
