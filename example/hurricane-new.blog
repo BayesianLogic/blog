@@ -10,8 +10,6 @@ type DamageLevel;
 
 random City First ~ UniformChoice({c for City c});
 
-/*
-
 random PrepLevel Prep(City c) ~
   if (First == c) then Categorical({High -> 0.5, Low -> 0.5})
   else case Damage(First) in {
@@ -34,4 +32,3 @@ obs Damage(First) = Severe;
 query First;
 query Damage(A);
 query Damage(B);
-*/
