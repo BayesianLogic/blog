@@ -28,13 +28,18 @@ libraryDependencies += jflex
 
 libraryDependencies += "gov.nist.math" % "jama" % "1.0.3"
 
-libraryDependencies += "junit" % "junit" % "4.11" % "test"
-
 libraryDependencies += "com.google.code.gson" % "gson" % "2.2.4"
 
 libraryDependencies += "org.apache.commons" % "commons-math3" % "3.0" % "test"
 
-libraryDependencies += "com.typesafe" % "config" % "1.2.0"
+libraryDependencies += "junit" % "junit" % "4.11" % "test"
+
+parallelExecution in Test := false // disable parallel test
+
+// junit
+libraryDependencies += "com.novocode" % "junit-interface" % "0.10" % "test" 
+
+//libraryDependencies += "com.typesafe" % "config" % "1.2.0"
 
 EclipseKeys.eclipseOutput := Some("target/eclipse")
 
@@ -103,5 +108,4 @@ mappings in Universal += file("bloglint.bat") -> "bin/bloglint.bat"
 
 mappings in Universal += file("src/main/scala/iblog.scala") -> "bin/iblog.scala"
 
-// junit
-libraryDependencies += "com.novocode" % "junit-interface" % "0.10" % "test" 
+
