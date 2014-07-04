@@ -26,18 +26,10 @@ import blog.model.Query;
  * <code>
  * ======== Query Results =========
  * Iteration: 10
- * Distribution of values for First
- *   0.49999999999999994 A
- *   0.49999999999999994 B
- * Distribution of values for Damage(A)
- *   0.6666666666666666  Severe
- *   0.33333333333333337 Mild
- * Distribution of values for Damage(B)
- *   0.49999999999999994 Mild
- *   0.49999999999999994 Severe
- * Distribution of values for Damage(NotFirst)
- *   0.8333333333333333  Mild
- *   0.16666666666666669 Severe
+ * Distribution of values for Burglary
+ *  false 0.7233733088174801
+ *  true  0.2766266911825274
+ * 
  * ======== Done ========
  * </code>
  * 
@@ -64,7 +56,7 @@ public class TableWriter extends ResultWriter {
         ArgSpec spec = query.getArgSpec();
         Histogram histogram = query.getHistogram();
         stream.println("Distribution of values for " + spec);
-        List entries = new ArrayList(histogram.entrySet());
+        List<?> entries = new ArrayList(histogram.entrySet());
 
         if (spec.isNumeric())
           Collections.sort(entries, NUMERIC_COMPARATOR);
@@ -74,14 +66,16 @@ public class TableWriter extends ResultWriter {
         for (Iterator iter = entries.iterator(); iter.hasNext();) {
           Histogram.Entry entry = (Histogram.Entry) iter.next();
           double prob = histogram.getProb(entry.getElement());
-          stream.println("\t" + prob + "\t" + entry.getElement());
+          stream.print("\t");
+          stream.print(entry.getElement());
+          stream.print("\t");
+          stream.println(prob);
         }
       } else {
         Util.fatalError("Don't know how to print Query of type "
             + abstractQuery.getClass());
       }
     }
-    stream.println();
   }
 
   private static Comparator WEIGHT_COMPARATOR = new Comparator() {

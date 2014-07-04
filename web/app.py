@@ -69,19 +69,19 @@ class blog_web_ui:
 
 def parse_query_results(s):
     results = []
-    regex = re.compile(r'======== Query Results ========\n(([^=].*\n)*)======== Done ========')
+    regex = re.compile(r'Query Results\s*=*\n(([^=].*\n)*)\s*=*\s*Done\s*=*')
     for match in regex.finditer(s):
         lines = match.groups()[0].split('\n')
-        match = re.match('Iteration (\d+):', lines[0])
+        match = re.match('Number of samples: (\d+)', lines[0])
         if match:
-            iteration = match.group(1)
+            samples = match.group(1)
             results.append({
-                'iteration': iteration,
+                'samples': samples,
                 'queries': []
             })
         for line in lines[1:]:
             query_match = re.match('Distribution of values for (.*)', line)
-            result_match = re.match(r'\s*([0-9]*\.?[0-9]+[eE]?[-+]?[0-9]*)\s*(\S*)', line)
+            result_match = re.match(r'\s*(\S*)\s+([0-9]*\.?[0-9]+[eE]?[-+]?[0-9]*)', line)
             if query_match:
                 query = query_match.group(1)
                 results[-1]['queries'].append({
@@ -89,7 +89,7 @@ def parse_query_results(s):
                     'distribution': []
                 })
             elif result_match:
-                probability, value = result_match.groups()
+                value, probability = result_match.groups()
                 results[-1]['queries'][-1]['distribution'].append({
                     'value': value,
                     'probability': 100 * float(probability)

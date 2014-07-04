@@ -20,15 +20,12 @@ mainClass in (Compile) := Some("blog.Main")
 
 sources in (Compile, doc) ~= (_ filter (_.getName endsWith ".___")) // do not generate java doc, since it creates problem // TODO in the future, remove this line and fix documentation issue 
 
-// this one is not required during compilation or running
-
-lazy val jflex = "de.jflex" % "jflex" % "1.6.0"
-
-libraryDependencies += jflex
-
 libraryDependencies += "gov.nist.math" % "jama" % "1.0.3"
 
 libraryDependencies += "com.google.code.gson" % "gson" % "2.2.4"
+
+// this one is not required during compilation or running
+libraryDependencies += "de.jflex" % "jflex" % "1.6.0" 
 
 libraryDependencies += "org.apache.commons" % "commons-math3" % "3.0" % "test"
 
@@ -36,10 +33,8 @@ libraryDependencies += "junit" % "junit" % "4.11" % "test"
 
 parallelExecution in Test := false // disable parallel test
 
-// junit
+// enable sbt to use junit 
 libraryDependencies += "com.novocode" % "junit-interface" % "0.10" % "test" 
-
-//libraryDependencies += "com.typesafe" % "config" % "1.2.0"
 
 EclipseKeys.eclipseOutput := Some("target/eclipse")
 
@@ -64,10 +59,11 @@ ghpages := {
 
 lazy val parser = taskKey[Unit]("Generating parser files")
 
-lazy val lexer = taskKey[Unit]("Generating lexer files")
+lazy val lexer = taskKey[Unit]("Generating lexer files") 
 
 lexer := {
-  val cpfiles = (fullClasspath in Runtime).value.files
+  val cpfiles = (fullClasspath in Test).value.files
+  println(cpfiles)
   val cpString = cpfiles.map(_.getAbsolutePath).mkString(System.getProperty("path.separator"))
   """java -cp "%s" jflex.Main -d src/main/java/blog/parse src/parser/BLOGLexer.flex""".format(cpString) !                      
 }
