@@ -28,7 +28,7 @@ libraryDependencies += jflex
 
 libraryDependencies += "gov.nist.math" % "jama" % "1.0.3"
 
-libraryDependencies += "junit" % "junit" % "4.10"
+libraryDependencies += "junit" % "junit" % "4.11" % "test"
 
 libraryDependencies += "com.google.code.gson" % "gson" % "2.2.4"
 
