@@ -9,10 +9,10 @@ GHPAGES_DIR=../bayesianlogic.github.io
 set -e
 
 COMMITHASH=$(git rev-parse HEAD)
-rm -r $GHPAGES_DIR/*
+# rm -r $GHPAGES_DIR/*
 mkdir -p target/pelican/download
 cp target/universal/*.zip target/pelican/download/
-cp target/universal/*.deb target/pelican/download/
+cp target/*.deb target/pelican/download/
 cp -r target/pelican/* $GHPAGES_DIR/
 cd $GHPAGES_DIR
 git add --all

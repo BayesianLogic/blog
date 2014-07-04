@@ -53,6 +53,7 @@ lazy val ghpages = taskKey[Unit]("Push updated html docs to github pages")
 ghpages := { 
   html.value
   (packageBin in Universal).value
+  (packageBin in Debian).value
   """docs/update_ghpages.sh""" ! 
 }
 
