@@ -1,9 +1,10 @@
 ;;; blog-mode.el --- major mode for editing BLOG code
 ;;; Language: blog
 ;;; Maintainer: Wei WANG
+;;; Maintainer: Lei LI
 ;;; Created: July 31, 2013
-;;; Last revised: August 1, 2013
-;;; Latest Revision: blog 0.6
+;;; Last revised: July 4, 2014
+;;; Latest Revision: blog 0.9
 
 ;;;add the following lines in .emacs to activate blog-mode
 ;;;(require 'blog-mode)
@@ -14,13 +15,13 @@
 ;; define several class of keywords
 (setq blogKeys (regexp-opt '("type" "distinct" "random" "origin" "fixed" "param" "query" "obs" "guaranteed"
 			     ) 'words))
-(setq blogTypes (regexp-opt '("Real" "R3Vector" "Timestep" "Boolean" "Integer" "String"
+(setq blogTypes (regexp-opt '("Real" "RealMatrix" "Timestep" "Boolean" "Integer" "String"
 			      ) 'words))
 (setq blogDistributions (regexp-opt '("TabularCPD" "Dirichlet" "UniformVector" "UniformReal" "MultivarGaussian"
 				      "Poisson" "UnivarGaussian" "Gaussian" "Categorical" "UniformChoice"
 				      "Bernoulli" "Geometric"
 				      ) 'words))
-(setq blogBasicStatements (regexp-opt '("if" "then" "else" "null" "true" "false" "forall" "exists" "for"
+(setq blogBasicStatements (regexp-opt '("if" "then" "else" "case" "in" "null" "true" "false" "forall" "exists" "for"
 				  ) 'words))
 
 (setq blogNumberStatement "#[^\s\]*") ; #TypeName
