@@ -16,5 +16,6 @@ Testrun the BLOG Web Server
 
 Setting Remote Server to start at system boot time
 =====================
-1. add the following line to /etc/rc.local
-  `cd /home/local/dblog-server/dblog/web/ && ./start-server.sh`
+1. put blog directory under `/home/local/blog-server/`
+2. add the following line to /etc/rc.local
+  `cd /home/local/blog-server/blog/web/ && ./start-server.sh`
