@@ -3,15 +3,20 @@ date: 2014-06-11 15:11
 sortorder: 25
 
 BLOG can run on all operating systems that support Java.
-The minimal requirement is Java 1.6 or higher.
+The minimal requirement is Java 1.6 or higher. 
+BLOG interactive shell and debugger require scala 2.10.4 or above.
 
-- Binary
-Download the [latest version](https://sites.google.com/site/bloginference/download/blog-0.8-bin.zip).
-
-- Source
-Download the [source code](https://sites.google.com/site/bloginference/download/blog-0.8.zip).
+# Stable Release
+- [Universal zip](../download/blog-0.9.zip)
+- [Linux debian/ubuntu pre-build package](../download/blog-0.9.deb)
+- [Windows installation package](../download/blog.msi)
 
 [Release notes]({filename}release-note.md).
+
+# Latest Development Version
+You may download the latest development [Zip File](https://github.com/BayesianLogic/blog/zipball/master)
+
+You may also view the latest development from [Github](https://github.com/BayesianLogic/blog)
 
 # Tools
 - [BLOG Pygment lexer](https://sites.google.com/site/bloginference/tools/blog_py_lexer-0.8.zip)
@@ -19,6 +24,7 @@ Download the [source code](https://sites.google.com/site/bloginference/download/
 - [BLOG syntax highlighting for sublime](https://sites.google.com/site/bloginference/tools/blog_sublime.zip)
 - [BLOG syntax highlighting for VIM](https://sites.google.com/site/bloginference/tools/blog.vim): blog.vim (created by Bharath Ramsundar)
 - [BLOG syntax highlighting for Emacs (0.6)](https://sites.google.com/site/bloginference/tools/blog.el): blog.el (created by: Wei Wang)
+
 
 # License
 
@@ -52,5 +58,5 @@ Redistribution and use in source and binary forms, with or without modification,
     the names of its contributors may be used to endorse or promote 
     products derived from this software without specific prior written permission.
 
-The BLOG system also includes several pieces of third-party software: A modified version of the [CUP](http://www2.cs.tum.edu/projects/cup/) v0.10k parser generator; a modified version of the [JFLex 1.4.3](http://jflex.de/) lexical analyzer generator; the [JAMA](http://math.nist.gov/javanumerics/jama/) 1.0.1 matrix package; the [JUnit](http://junit.org/) 4.10 unit testing framework; and [Google Json library](http://code.google.com/p/google-gson/). These third-party packages have their own open-source licenses.
+The BLOG system also includes several pieces of third-party software: A modified version of the [CUP](http://www2.cs.tum.edu/projects/cup/) v0.11b parser generator; a modified version of the [JFLex 1.6.0](http://jflex.de/) lexical analyzer generator; the [JAMA](http://math.nist.gov/javanumerics/jama/) 1.0.3 matrix package; the [JUnit](http://junit.org/) 4.10 unit testing framework; and [Google Json library](http://code.google.com/p/google-gson/). These third-party packages have their own open-source licenses.
 
