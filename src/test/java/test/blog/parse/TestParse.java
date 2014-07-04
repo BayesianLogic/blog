@@ -33,35 +33,6 @@ import blog.symbol.Symbol;
 public class TestParse {
 
   /**
-   * Rather than allocating new printing objects all the time, this class
-   * holds on to a PrettyPrinter and its wrapped ByteArrayOutputStream.
-   * <p>
-   * This makes running tests more efficient, but more fragile; the internal
-   * state of these fields must be carefully reset between tests.
-   */
-  protected TestParse() {
-  }
-
-  public static ByteArrayOutputStream out = new ByteArrayOutputStream();
-  public static PrettyPrinter pr = new PrettyPrinter(out);
-  {
-    pr.printSourceLocations = false;
-  }
-
-  /**
-   * The first call to this method will be a no-op, of course.
-   * That is not something that needs to be worried about;
-   * much of the point of this class is to save some allocation/deallocation
-   * overhead
-   * over a great many test cases. Supposing that motivation is valid,
-   * then the single wasted first call to reset() is not important.
-   */
-  public static void reset() {
-    out.reset();
-    pr.reset();
-  }
-
-  /**
    * Takes a string holding a blog model, parses it, and spits it back out
    * in fully-parenthesized form.
    * 
@@ -71,12 +42,11 @@ public class TestParse {
    * 
    */
   public static String parseToRepr(String s) {
-    // the fullproof way to guarantee that mutable state is reset:
-    // reset it now!
-    reset();
-
     Parse tester = Parse.parseString(s);
     Absyn parsedTree = tester.getResult();
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    PrettyPrinter pr = new PrettyPrinter(out);
+    pr.printSourceLocations = false;
     pr.printSyntax(parsedTree);
     return out.toString();
   }
@@ -101,9 +71,9 @@ public class TestParse {
    * @return its string representation
    */
   public static String toRepr(Absyn x) {
-    // the fullproof way to guarantee that mutable state is reset:
-    // reset it now!
-    reset();
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    PrettyPrinter pr = new PrettyPrinter(out);
+    pr.printSourceLocations = false;
     pr.printSyntax(x);
     return out.toString();
   }
