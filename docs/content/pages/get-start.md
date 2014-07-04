@@ -12,8 +12,8 @@ Get the latest version of BLOG from the
 - all operating systems. (Windows XP/7/8, MacOSX, Linux)
 
 ## Installing
-Running BLOG doesnot require install. However, you may use the following script to 
-install it on your system. It will be more convenient to run BLOG.
+You may choose to install the pre-built version for your operating system. 
+You may also running BLOG from the universal package, which doesnot require install. 
 
 Alternatively, you may directly compile from source code by 
 (you will need sbt installed, check [download page]({filename}develop-guide.md) for more details). 
