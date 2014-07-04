@@ -13,6 +13,12 @@ COMMITHASH=$(git rev-parse HEAD)
 mkdir -p target/pelican/download
 cp target/universal/*.zip target/pelican/download/
 cp target/*.deb target/pelican/download/
+cp tools/blog.el target/pelican/download/
+cp tools/blog.vim target/pelican/download/
+(cd tools ; zip -r blog-for-sublime blog-for-sublime)
+mv tools/blog-for-sublime.zip target/pelican/download/
+(cd tools ; zip -r blog_py_lexer blog_py_lexer)
+mv tools/blog_py_lexer.zip target/pelican/download/
 cp -r target/pelican/* $GHPAGES_DIR/
 cd $GHPAGES_DIR
 git add --all

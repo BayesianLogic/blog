@@ -13,18 +13,34 @@ BLOG interactive shell and debugger require scala 2.10.4 or above.
 
 [Release notes]({filename}release-note.md).
 
-# Latest Development Version
+## Previous Versions
+- BLOG 0.8 ([binary](../download/blog-0.8-bin.zip)) and BLOG 0.8 ([source](../download/blog-0.8.zip)) (13 June 2014).
+- BLOG 0.7 ([binary](../download/blog-0.7-bin.zip)) and BLOG 0.7 ([source](../download/blog-0.7.zip)) (27 December 2013).
+- BLOG 0.6 ([binary](../download/blog-0.6-bin.zip)) and BLOG 0.6 ([source](../download/blog-0.6.zip)) (5 April 2013), [The BLOG Language Reference for version 0.6](http://www.eecs.berkeley.edu/Pubs/TechRpts/2013/EECS-2013-51.pdf)
+- BLOG 0.5 ([universal](../download/blog-0.5.zip)) (23 December 2012)
+- BLOG 0.4 ([universal](../download/blog-0.4.zip)) (3 September 2012)
+- BLOG 0.3.5 ([universal](../download/blog-0.3.5.zip)) (enhanced version of 0.3)
+- BLOG 0.3 ([universal](../download/blog-0.3.zip)) (14 August 2008)
+- BLOG 0.2 ([universal](../download/blog-0.2.zip)) (14 December 2007)
+- BLOG 0.1.6 (16 March 2007)
+- BLOG 0.1.5 (13 January 2006)
+- BLOG 0.1.4 (21 December 2005)
+- BLOG 0.1.3 (6 November 2005)
+- BLOG 0.1.2 (27 September 2005)
+- BLOG 0.1.1 (21 September 2005)
+- BLOG 0.1 ([universal](../download/blog-0.1.zip)) (10 September 2005)
+
+## Latest Development Snapshot
 You may download the latest development [Zip File](https://github.com/BayesianLogic/blog/zipball/master)
 
 You may also view the latest development from [Github](https://github.com/BayesianLogic/blog)
 
 # Tools
-- [BLOG Pygment lexer](https://sites.google.com/site/bloginference/tools/blog_py_lexer-0.8.zip)
+- [BLOG Pygment lexer](../download/blog_py_lexer.zip)
   A syntax highlight package for Latex and Markdown. (created by: Sharad Vikram and Lei Li)
-- [BLOG syntax highlighting for sublime](https://sites.google.com/site/bloginference/tools/blog_sublime.zip)
-- [BLOG syntax highlighting for VIM](https://sites.google.com/site/bloginference/tools/blog.vim): blog.vim (created by Bharath Ramsundar)
-- [BLOG syntax highlighting for Emacs (0.6)](https://sites.google.com/site/bloginference/tools/blog.el): blog.el (created by: Wei Wang)
-
+- [BLOG syntax highlighting for sublime](../download/blog-for-sublime.zip) (created by: Lei Li)
+- [BLOG syntax highlighting for VIM](../download/blog.vim): blog.vim (created by Bharath Ramsundar)
+- [BLOG syntax highlighting for Emacs](../download/blog.el): blog.el (created by: Wei Wang)
 
 # License
 
