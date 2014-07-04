@@ -3,6 +3,40 @@ status: hidden
 date: 2014-06-11 15:11
 sortorder: 50
 
+BLOG 0.9 (July 4, 2014)
+-------------------
+* Introduce an interactive shell and debugger
+* Syntax revise using single = or ~ for fixed function and random function respectively
+* Add case-in expression
+    - removed TabularCPD
+* Support general expression in both fixed function and random function
+    - any expression do not contain random/origin symbol or distribution call
+    - added support for if-then-else in fixed function
+    - case-in in fixed function
+* Unified set expression
+    - removed implicitset, all use tuple set of explicit set
+    - changed UniformChoice to expect a set
+    - removed '#' for number expression, use size() instead
+    - removed Iota distribution, add iota builtin function
+* Robust parsing of BLOG files
+    - added handling of error syntax and print detailed syntax errors
+    - correctly identify line/column number information 
+    - use jflex 1.6 and java_cup 0.11b
+* Support loadMatrix from csvfile to fixed function
+* Redesigned distribution interface
+    - all distributions implement blog.distrib.CondProbDistrib interface
+    - now every distribution automatically support random/fixed parameters, no extra handling inside distribution
+    - changed major distribution implementaions accordingly
+* Switch to sbt as the build platform, it supports compile, run, native package (into universal zip, debian files, windows installation msi), generate html doc
+* added support to automatic publish to bayesianlogic.github.io  
+* Internal changes
+    - removed blog.model.Clause, use blog.model.DistributionSpec instead
+    - use Queries for query container instead of List<Query>
+    - ParticleFIlter and LiuWestFiler improves by removing unused DecayedMC
+    - removed obsolete code
+    - fixed function call symbol resolution problem
+
+
 BLOG 0.8 (June 13, 2014)
 -------------------
 * Implemented a correct version of PF with sliding window, uninstantiating the previous timestep. The memory issue with PF is solved. PF used to consume memory linear to time step, now it is increasing slightly only due to accumulation of query result.
