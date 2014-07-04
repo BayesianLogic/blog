@@ -7,7 +7,7 @@ $ sudo apt-get install python-webpy
 
 Start the BLOG Web Server
 =====================
-0. make sure the code is compiled. refer to document about how to compile.
+0. make sure the code is compiled. refer to document about how to compile. (under sbt, pls run `sbt/sbt stage`)
 1. `$ ./start-server.sh`
 
 Testrun the BLOG Web Server
