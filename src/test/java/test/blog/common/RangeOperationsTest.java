@@ -1,7 +1,10 @@
-package blog.common;
+package test.blog.common;
 
 import static blog.common.RangeOperations.*;
-
+import blog.common.DAEFunction;
+import blog.common.DependencyAwareEnvironment;
+import blog.common.RangeOperations;
+import blog.common.Util;
 import junit.framework.TestCase;
 
 /** Tests for {@link RangeOperations}. */
