@@ -2,7 +2,7 @@ title: Contributors
 date: 2014-06-11 15:11
 sortorder: 50
 
-On-going development is done in [Prof. Russel's group](http://www.cs.berkeley.edu/~russell) at UC Berkeley. We are currently supported by DARPA through PPAML program.
+On-going development is done in [Prof. Russell's group](http://www.cs.berkeley.edu/~russell) at UC Berkeley. We are currently supported by DARPA through PPAML program.
 
 # Current Contributors
 
