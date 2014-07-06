@@ -24,10 +24,11 @@ patterns:
   match: (\-\>|\<|\>|\=|\=\=|\>\=|\<\=|\!|~|:|\+|\-|\*|\/|\%|\=\>|\&|\||\[|\])
 - name: storage.modifer.blog
   match: \b(obs|query)\b
-- match: \b(fixed|random|origin)\b\s+\b(Integer|Real|Boolean|NaturalNum|Timestep|RealMatrix|IntegerMatrix|\w+)((\[\])*)\s+
+- match: \b(fixed|random|origin)\b\s+\b(Integer|Real|Boolean|NaturalNum|Timestep|RealMatrix|IntegerMatrix|\w+)\s+(\w+)\b
   captures:
     '1': {name: storage.modifier.blog}
     '2': {name: storage.type.primitive.blog}
+    '3': {name: entity.name.function.blog}
 #distinct symbol declaration
 - match: \b(distinct)\s+(\w+)\b
   captures:
