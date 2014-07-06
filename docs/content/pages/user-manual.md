@@ -25,41 +25,34 @@ The model file is `example/burglary.blog`, the same as below.
 
     random Boolean Earthquake ~ BooleanDistrib(0.002);
 
-    random Boolean Alarm {
+    random Boolean Alarm ~
       if Burglary then
-        if Earthquake then
-          ~ BooleanDistrib(0.95)
-        else
-          ~ BooleanDistrib(0.94)
+        if Earthquake then BooleanDistrib(0.95)
+        else  BooleanDistrib(0.94)
       else
-        if Earthquake then
-          ~ BooleanDistrib(0.29)
-        else
-          ~ BooleanDistrib(0.001)  
-    };
+        if Earthquake then BooleanDistrib(0.29)
+        else BooleanDistrib(0.001);
 
-    random Boolean JohnCalls 
-      if Alarm then 
-        ~ BooleanDistrib(0.9)
-      else 
-        ~ BooleanDistrib(0.05);
+    random Boolean JohnCalls ~
+      if Alarm then BooleanDistrib(0.9)
+      else BooleanDistrib(0.05);
 
-    random Boolean MaryCalls
-      if Alarm then
-        ~ BooleanDistrib(0.7)
-      else
-        ~ BooleanDistrib(0.01);
+    random Boolean MaryCalls ~
+      if Alarm then BooleanDistrib(0.7)
+      else BooleanDistrib(0.01);
 
-    /* Evidence for the burglary model saying that both
-     * John and Mary called.  Given this evidence, the posterior probability
+    /* Evidence for the burglary model saying that both 
+     * John and Mary called.  Given this evidence, the posterior probability 
      * of Burglary is 0.284 (see p. 505 of "AI: A Modern Approach", 2nd ed.).
      */
+
     obs JohnCalls = true;
     obs MaryCalls = true;
 
-    /* Query for the burglary model asking whether Burglary
+    /* Query for the burglary model asking whether Burglary 
      * is true.
      */
+
     query Burglary;
 
 
@@ -76,13 +69,45 @@ If you do not have blog, you may run it with (after unzip universal package)
 
 
 By default, BLOG uses Likelihood-weighting algorithm to infer the posterior probability.
-It will draw 50,000 samples and output a probability.
-One can request 1 million samples by issuing the following command.
+It will draw 10,000 samples and output a probability. The following is a typical output. 
+
+    Running BLOG
+    Using fixed random seed for repeatability.
+    ............................................
+    Constructing inference engine of class blog.engine.SamplingEngine
+    Constructing sampler of class blog.sample.LWSampler
+    Evidence: [JohnCalls = true, MaryCalls = true]
+    Query: [Burglary]
+    Running for 10000 samples...
+    Query Reporting interval is 10000
+    Samples done: 1000.    Time elapsed: 0.437 s.
+    Samples done: 2000.    Time elapsed: 0.625 s.
+    Samples done: 3000.    Time elapsed: 0.707 s.
+    Samples done: 4000.    Time elapsed: 0.775 s.
+    Samples done: 5000.    Time elapsed: 0.825 s.
+    Samples done: 6000.    Time elapsed: 0.887 s.
+    Samples done: 7000.    Time elapsed: 0.957 s.
+    Samples done: 8000.    Time elapsed: 0.997 s.
+    Samples done: 9000.    Time elapsed: 1.024 s.
+    Samples done: 10000.    Time elapsed: 1.05 s.
+    ========  LW Trial Stats =========
+    Log of average likelihood weight (this trial): -6.307847922891953
+    Average likelihood weight (this trial): 0.0018219499999999767
+    Fraction of consistent worlds (this trial): 1.0
+    Fraction of consistent worlds (running avg, all trials): 1.0
+    ======== Query Results =========
+    Number of samples: 10000
+    Distribution of values for Burglary
+      false  0.7233733088174801
+      true  0.2766266911825274
+    ======== Done ========
+
+
+It is possible to request 1 million samples by issuing the following command.
 
     blog -n 1000000 example/burglary.blog
 
-
-One can request to use the Metropolis-Hasting algorithm (as described in Milch et al 2006).
+Alternative algorithms are available. To use the Metropolis-Hasting algorithm (as described in Milch et al 2006):
 
     blog -s blog.sample.MHSampler example/burglary.blog
 
@@ -260,7 +285,7 @@ The hidden Markov model describes the generative process of genetic sequences.
 Note when using particle filtering or Liu-West filter, BLOG is answering the query at the query time.
 For example, `query S(@2)` will be answered after all evidence at `Timestep` 2. It is expected to give probability of the state at 2nd `Timestep` given all evidence at `Timestep` 0, 1, and 2.
 
-To specify the number of particles, use `-n`. By default, BLOG uses 50,000 particles. The following command runs a particle filter with 100,000 particles.
+To specify the number of particles, use `-n`. By default, BLOG uses 10,000 particles. The following command runs a particle filter with 100,000 particles.
 
     blog -e blog.engine.ParticleFilter -n 100000 example/hmm.dblog
 

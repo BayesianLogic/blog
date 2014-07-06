@@ -64,8 +64,8 @@ The full list of commandline options are described in [BLOG User Manual]({filena
 
 # Where to go from here
 - [User manual]({filename}user-manual.md): a manual for BLOG system, including setting and tuning all options. 
-- [BLOG language reference](xxxxx): a reference for BLOG language, including its syntax and semantics. 
-- [Probabilistic modelling using BLOG](xxx): a tutorial textbook for modelling using BLOG. It includes introduction to BLOG language, and how to use it to solve real application problems. 
+- [BLOG language reference](https://sites.google.com/site/bloginference/download/blog-lang-0.8.pdf): (new version forth-coming) a reference for BLOG language, including its syntax and semantics. 
+- [Probabilistic modelling using BLOG](xxx): (forth-coming) a tutorial textbook for modelling using BLOG. It includes introduction to BLOG language, and how to use it to solve real application problems. 
 - [Developer guide]({filename}develop-guide.md): how to contribute to the BLOG project. 
 
 # Community

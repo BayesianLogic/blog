@@ -12,8 +12,7 @@ random Boolean Alarm ~
     else  BooleanDistrib(0.94)
   else
     if Earthquake then BooleanDistrib(0.29)
-    else BooleanDistrib(0.001)
-  ;
+    else BooleanDistrib(0.001);
 
 random Boolean JohnCalls ~
   if Alarm then BooleanDistrib(0.9)
