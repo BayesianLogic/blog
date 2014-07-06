@@ -1,0 +1,20 @@
+type House;
+
+distinct House Maryhouse, Johnhouse, Cathyhouse, Rogerhouse;
+
+random Boolean Burglary(House h) ~ BooleanDistrib(0.003);
+random Boolean Earthquake ~ BooleanDistrib(0.002);
+random Boolean Alarm(House h) ~ 
+  case [Burglary(h), Earthquake] in {
+    [false, false] -> BooleanDistrib(0.01),
+    [false, true]  -> BooleanDistrib(0.40),
+    [true, false]  -> BooleanDistrib(0.80),
+    [true, true ]  -> BooleanDistrib(0.90)
+  };
+
+obs Alarm(Maryhouse) = true;
+obs Alarm(Johnhouse) = true;
+obs Alarm(Cathyhouse) = true;
+obs Alarm(Rogerhouse) = false;
+
+query Earthquake;
