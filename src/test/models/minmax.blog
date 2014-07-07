@@ -1,0 +1,10 @@
+type Thing;
+
+distinct Thing a, b, c;
+
+random Real value(Thing thing) ~ UniformReal(1.0, 10.0);
+
+query max({1.0, 2.0, 3.0});
+query max({value(t) for Thing t});
+query min({1.0, 2.0, 3.0});
+query min({value(t) for Thing t});

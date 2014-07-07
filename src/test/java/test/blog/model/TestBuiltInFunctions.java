@@ -9,6 +9,7 @@ import org.junit.runners.JUnit4;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 import blog.model.BuiltInFunctions;
+import blog.model.Model;
 import blog.sample.DefaultEvalContext;
 import blog.world.PartialWorld;
 
@@ -34,5 +35,10 @@ public class TestBuiltInFunctions {
     double result = (Double) BuiltInFunctions.SUB_REAL_ARRAY.getValueInContext(
         args, new DefaultEvalContext(PartialWorld.EMPTY_INST), false);
     assertEquals(result, 0.0, 1e-10);
+  }
+
+  @Test
+  public void testMinMax() {
+    Model.fromFile("src/test/models/minmax.blog");
   }
 }
