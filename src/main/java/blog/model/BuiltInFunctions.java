@@ -129,6 +129,11 @@ public class BuiltInFunctions {
   public static final FixedFunction EPOCH;
 
   /**
+   * Constant that denotes E.
+   */
+  public static final FixedFunction E;
+
+  /**
    * Constant that denotes PI.
    */
   public static final FixedFunction PI;
@@ -590,6 +595,7 @@ public class BuiltInFunctions {
     NULL = getLiteral("null", BuiltInTypes.NULL, Model.NULL);
     ZERO = getLiteral("0", BuiltInTypes.INTEGER, new Integer(0));
     EPOCH = getLiteral("@0", BuiltInTypes.TIMESTEP, Timestep.at(0));
+    E = getLiteral("e", BuiltInTypes.REAL, new Double(Math.E));
     PI = getLiteral("pi", BuiltInTypes.REAL, new Double(Math.PI));
 
     // Add non-random functions from (real x real) to Boolean
