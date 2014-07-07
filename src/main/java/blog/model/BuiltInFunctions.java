@@ -121,14 +121,6 @@ public class BuiltInFunctions {
   public static final FixedFunction ZERO;
 
   /**
-   * Constant that denotes the natural number 1. The parser creates
-   * NonRandomConstant objects as needed to represent numeric constants that it
-   * actually encounters in a file, but some internal compilation code may need
-   * to use this constant even if it doesn't occur in a file.
-   */
-  public static final FixedFunction ONE;
-
-  /**
    * Constant that denotes the timestep 0. The parser creates NonRandomConstant
    * objects as needed to represent timestep constants that it actually
    * encounters in a file, but some internal compilation code may need to use
@@ -597,7 +589,6 @@ public class BuiltInFunctions {
     // Add non-random constants
     NULL = getLiteral("null", BuiltInTypes.NULL, Model.NULL);
     ZERO = getLiteral("0", BuiltInTypes.INTEGER, new Integer(0));
-    ONE = getLiteral("1", BuiltInTypes.INTEGER, new Integer(1));
     EPOCH = getLiteral("@0", BuiltInTypes.TIMESTEP, Timestep.at(0));
     PI = getLiteral("pi", BuiltInTypes.REAL, new Double(Math.PI));
 
