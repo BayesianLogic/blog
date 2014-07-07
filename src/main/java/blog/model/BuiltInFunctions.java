@@ -46,7 +46,6 @@ import java.util.Map;
 
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
-import blog.objgen.ObjectSet;
 import blog.type.Timestep;
 
 /**
@@ -1076,51 +1075,27 @@ public class BuiltInFunctions {
         matDeterminantInterp);
     addFunction(DET_MAT);
 
-    // now adding support for min of set
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.SET);
-    retType = BuiltInTypes.INTEGER;
+    // Min of a set.
     FunctionInterp minInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        // TODO
-        ObjectSet s = (ObjectSet) args.get(0);
-        Iterator oi = s.iterator();
-        if (!oi.hasNext())
-          return Model.NULL;
-
-        Comparable o = (Comparable) oi.next();
-        while (oi.hasNext()) {
-          Comparable no = (Comparable) oi.next();
-          if (no.compareTo(o) < 0)
-            o = no;
-        }
-
-        return o;
+        return Collections.min((Collection<? extends Comparable>) args.get(0));
       }
     };
-
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.SET);
+    retType = BuiltInTypes.ANY;
     MIN = new FixedFunction(MIN_NAME, argTypes, retType, minInterp);
     addFunction(MIN);
 
+    // Max of a set.
     FunctionInterp maxInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        // TODO
-        ObjectSet s = (ObjectSet) args.get(0);
-        Iterator oi = s.iterator();
-        if (!oi.hasNext())
-          return Model.NULL;
-
-        Comparable o = (Comparable) oi.next();
-        while (oi.hasNext()) {
-          Comparable no = (Comparable) oi.next();
-          if (no.compareTo(o) > 0)
-            o = no;
-        }
-
-        return o;
+        return Collections.max((Collection<? extends Comparable>) args.get(0));
       }
     };
-
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.SET);
+    retType = BuiltInTypes.ANY;
     MAX = new FixedFunction(MAX_NAME, argTypes, retType, maxInterp);
     addFunction(MAX);
 
