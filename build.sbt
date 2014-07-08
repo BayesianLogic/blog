@@ -4,7 +4,7 @@ import NativePackagerHelper._
 
 name := "blog"
 
-version := "0.9"
+version := "0.9.1"
 
 javacOptions ++= Seq("-source", "1.5", "-target", "1.5")
 
