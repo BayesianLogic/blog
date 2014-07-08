@@ -104,6 +104,7 @@ public class BuiltInFunctions {
   public static final String LOAD_REAL_MATRIX_NAME = "loadRealMatrix";
   public static final String ABS_NAME = "abs";
   public static final String EXP_NAME = "exp";
+  public static final String LOG_NAME = "log";
   public static final String IOTA_NAME = "iota";
 
   /**
@@ -485,6 +486,21 @@ public class BuiltInFunctions {
    * Return the exponential value of every element in the matrix.
    */
   public static FixedFunction EXP_MAT;
+
+  /**
+   * Return the natural logarithm value of a Real value.
+   */
+  public static FixedFunction LOG;
+
+  /**
+   * Return the natural logarithm value of a Integer value.
+   */
+  public static FixedFunction LOG_INT;
+
+  /**
+   * Return the natural logarithm value of every element in the matrix.
+   */
+  public static FixedFunction LOG_MAT;
 
   /**
    * Return the element from a singleton set.
@@ -1584,6 +1600,44 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL_MATRIX;
     EXP_MAT = new FixedFunction(EXP_NAME, argTypes, retType, expMatInterp);
     addFunction(EXP_MAT);
+
+    /**
+     * natural logarithm function for real argument
+     */
+    FunctionInterp logInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        double val = ((Number) args.get(0)).doubleValue();
+        return Math.log(val);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+    LOG = new FixedFunction(LOG_NAME, argTypes, retType, logInterp);
+    addFunction(LOG);
+
+    /**
+     * natural logarithm function for integer argument
+     */
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL;
+    LOG_INT = new FixedFunction(LOG_NAME, argTypes, retType, logInterp);
+    addFunction(LOG_INT);
+
+    /**
+     * natural logarithm function for real matrix argument
+     */
+    FunctionInterp logMatInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        return ((MatrixLib) args.get(0)).log();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+    LOG_MAT = new FixedFunction(LOG_NAME, argTypes, retType, logMatInterp);
+    addFunction(LOG_MAT);
 
     /*
      * Case expression in fixed function body
