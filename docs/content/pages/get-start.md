@@ -15,6 +15,11 @@ Get the latest version of BLOG from the
 You may choose to install the pre-built version for your operating system. 
 You may also running BLOG from the universal package, which doesnot require install. 
 
+On linux/Mac, after unzip the universal package, please open terminal and run the following commands.
+
+    chmod +x bin/*
+
+
 Alternatively, you may directly compile from source code by 
 (you will need sbt installed, check [download page]({filename}develop-guide.md) for more details). 
 
@@ -64,7 +69,7 @@ The full list of commandline options are described in [BLOG User Manual]({filena
 
 # Where to go from here
 - [User manual]({filename}user-manual.md): a manual for BLOG system, including setting and tuning all options. 
-- [BLOG language reference](https://sites.google.com/site/bloginference/download/blog-lang-0.8.pdf): (new version forth-coming) a reference for BLOG language, including its syntax and semantics. 
+- [BLOG language reference](../download/blog-langref.pdf): a reference for BLOG language, including its syntax and semantics. 
 - [Probabilistic modelling using BLOG](xxx): (forth-coming) a tutorial textbook for modelling using BLOG. It includes introduction to BLOG language, and how to use it to solve real application problems. 
 - [Developer guide]({filename}develop-guide.md): how to contribute to the BLOG project. 
 

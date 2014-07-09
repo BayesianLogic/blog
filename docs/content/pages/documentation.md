@@ -15,7 +15,7 @@ sortorder: 11
 # [Trying BLOG from browser](http://patmos.banatao.berkeley.edu:8080/)
   Without installing BLOG system, you may try small BLOG models on our server.
 
-# [BLOG Language Reference](blog-lang-0.8.pdf) 
+# [BLOG Language Reference](../download/blog-langref.pdf) 
   A reference for BLOG language, including its syntax and semantics. 
 
 # [Probabilistic Modelling Using BLOG](xxx) (Coming soon)
