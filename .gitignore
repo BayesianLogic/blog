@@ -10,3 +10,4 @@ example/local-example/*
 /project/project/target
 /project/target
 /target
+src/test/java/test/blog/TestLocalExample.java

@@ -1,0 +1,20 @@
+random Boolean X ~ BooleanDistrib(0.5);
+random Integer Y ~ UniformInt(0,3);
+random Integer Z(Integer y) ~ case X in {
+ true-> if y <= 1 then 
+ 			if y == 0 then UniformInt(10,11)
+ 			else UniformInt(12,13)
+ 		else 
+ 			case y in {
+ 			  2 -> UniformInt(14,15),
+ 			  3 -> UniformInt(16,17)
+ 			},
+ false-> case y in {
+ 			0 -> Poisson(5),
+ 			1 -> UniformInt(20,21),
+ 			2 -> UniformInt(22,23),
+ 			3 -> UniformInt(24,25)
+ 		}
+};
+
+query Z(Y);
