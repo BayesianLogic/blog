@@ -1231,7 +1231,9 @@ public class Semant {
    * @param e
    */
   void transQuery(QueryStmt e) {
+    isFixedFuncBody = true;
     Object as = transExpr(e.query);
+    isFixedFuncBody = false;
     Query q;
     if (as != null && as instanceof ArgSpec) {
       q = new ArgSpecQuery((ArgSpec) as);

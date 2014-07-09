@@ -85,9 +85,9 @@ public class CaseSpec extends ArgSpec {
 
     if (isInFixedFuncBody) {
       if (this.containsRandomSymbol()) {
-        System.err
-            .println("Case Expression in Fixed Function CANNOT contain random elements!");
-        errors++;
+        // System.err
+        // .println("Case Expression in Fixed Function CANNOT contain random elements!");
+        // errors++;
       }
     } else
       // make sure every branch will return a distribution spec
