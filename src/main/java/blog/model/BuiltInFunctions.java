@@ -75,8 +75,6 @@ public class BuiltInFunctions {
   public static final String LEQ_NAME = "__LESSTHANOREQUAL";
 
   // can be called by user
-  public static final String SUCC_NAME = "succ";
-  public static final String PRED_NAME = "pred";
   public static final String PREV_NAME = "prev";
   public static final String INV_NAME = "inv";
   public static final String DET_NAME = "det";
@@ -156,18 +154,6 @@ public class BuiltInFunctions {
    * The GreaterThanOrEqual relation on type Real (and its subtypes).
    */
   public static FixedFunction GEQ;
-
-  /**
-   * The successor function on natural numbers. Given a number n, it returns
-   * n+1.
-   */
-  public static FixedFunction SUCC;
-
-  /**
-   * The predecessor function on natural numbers. Given a positive number n, it
-   * returns n-1. Given the number 0, it returns Model.NULL.
-   */
-  public static FixedFunction PRED;
 
   /**
    * A function from integers to natural numbers that yields the non-negative
@@ -656,27 +642,6 @@ public class BuiltInFunctions {
     argTypes.clear();
     argTypes.add(BuiltInTypes.NATURAL_NUM);
     retType = BuiltInTypes.NATURAL_NUM;
-
-    FunctionInterp succInterp = new AbstractFunctionInterp() {
-      public Object getValue(List args) {
-        Integer arg = (Integer) args.get(0);
-        return new Integer(arg.intValue() + 1);
-      }
-    };
-    SUCC = new FixedFunction(SUCC_NAME, argTypes, retType, succInterp);
-    addFunction(SUCC);
-
-    FunctionInterp predInterp = new AbstractFunctionInterp() {
-      public Object getValue(List args) {
-        Integer arg = (Integer) args.get(0);
-        if (arg.intValue() <= 0) {
-          return Model.NULL;
-        }
-        return new Integer(arg.intValue() - 1);
-      }
-    };
-    PRED = new FixedFunction(PRED_NAME, argTypes, retType, predInterp);
-    addFunction(PRED);
 
     // Add non-random functions from integer to natural number
     argTypes.clear();
