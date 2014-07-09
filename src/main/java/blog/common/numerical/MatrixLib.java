@@ -92,6 +92,12 @@ public interface MatrixLib {
   public MatrixLib exp();
 
   /**
+   * Returns the natural logarithm function applied to every element of this
+   * matrix
+   */
+  public MatrixLib log();
+
+  /**
    * Returns the log of the determinant of this matrix
    */
   public double logDet();

@@ -46,7 +46,6 @@ import java.util.Map;
 
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
-import blog.objgen.ObjectSet;
 import blog.type.Timestep;
 
 /**
@@ -105,6 +104,7 @@ public class BuiltInFunctions {
   public static final String LOAD_REAL_MATRIX_NAME = "loadRealMatrix";
   public static final String ABS_NAME = "abs";
   public static final String EXP_NAME = "exp";
+  public static final String LOG_NAME = "log";
   public static final String IOTA_NAME = "iota";
 
   /**
@@ -121,20 +121,17 @@ public class BuiltInFunctions {
   public static final FixedFunction ZERO;
 
   /**
-   * Constant that denotes the natural number 1. The parser creates
-   * NonRandomConstant objects as needed to represent numeric constants that it
-   * actually encounters in a file, but some internal compilation code may need
-   * to use this constant even if it doesn't occur in a file.
-   */
-  public static final FixedFunction ONE;
-
-  /**
    * Constant that denotes the timestep 0. The parser creates NonRandomConstant
    * objects as needed to represent timestep constants that it actually
    * encounters in a file, but some internal compilation code may need to use
    * this constant even if it doesn't occur in a file.
    */
   public static final FixedFunction EPOCH;
+
+  /**
+   * Constant that denotes E.
+   */
+  public static final FixedFunction E;
 
   /**
    * Constant that denotes PI.
@@ -491,6 +488,21 @@ public class BuiltInFunctions {
   public static FixedFunction EXP_MAT;
 
   /**
+   * Return the natural logarithm value of a Real value.
+   */
+  public static FixedFunction LOG;
+
+  /**
+   * Return the natural logarithm value of a Integer value.
+   */
+  public static FixedFunction LOG_INT;
+
+  /**
+   * Return the natural logarithm value of every element in the matrix.
+   */
+  public static FixedFunction LOG_MAT;
+
+  /**
    * Return the element from a singleton set.
    */
   public static FixedFunction IOTA;
@@ -597,8 +609,8 @@ public class BuiltInFunctions {
     // Add non-random constants
     NULL = getLiteral("null", BuiltInTypes.NULL, Model.NULL);
     ZERO = getLiteral("0", BuiltInTypes.INTEGER, new Integer(0));
-    ONE = getLiteral("1", BuiltInTypes.INTEGER, new Integer(1));
     EPOCH = getLiteral("@0", BuiltInTypes.TIMESTEP, Timestep.at(0));
+    E = getLiteral("e", BuiltInTypes.REAL, new Double(Math.E));
     PI = getLiteral("pi", BuiltInTypes.REAL, new Double(Math.PI));
 
     // Add non-random functions from (real x real) to Boolean
@@ -1079,51 +1091,27 @@ public class BuiltInFunctions {
         matDeterminantInterp);
     addFunction(DET_MAT);
 
-    // now adding support for min of set
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.SET);
-    retType = BuiltInTypes.INTEGER;
+    // Min of a set.
     FunctionInterp minInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        // TODO
-        ObjectSet s = (ObjectSet) args.get(0);
-        Iterator oi = s.iterator();
-        if (!oi.hasNext())
-          return Model.NULL;
-
-        Comparable o = (Comparable) oi.next();
-        while (oi.hasNext()) {
-          Comparable no = (Comparable) oi.next();
-          if (no.compareTo(o) < 0)
-            o = no;
-        }
-
-        return o;
+        return Collections.min((Collection<? extends Comparable>) args.get(0));
       }
     };
-
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.SET);
+    retType = BuiltInTypes.ANY;
     MIN = new FixedFunction(MIN_NAME, argTypes, retType, minInterp);
     addFunction(MIN);
 
+    // Max of a set.
     FunctionInterp maxInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        // TODO
-        ObjectSet s = (ObjectSet) args.get(0);
-        Iterator oi = s.iterator();
-        if (!oi.hasNext())
-          return Model.NULL;
-
-        Comparable o = (Comparable) oi.next();
-        while (oi.hasNext()) {
-          Comparable no = (Comparable) oi.next();
-          if (no.compareTo(o) > 0)
-            o = no;
-        }
-
-        return o;
+        return Collections.max((Collection<? extends Comparable>) args.get(0));
       }
     };
-
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.SET);
+    retType = BuiltInTypes.ANY;
     MAX = new FixedFunction(MAX_NAME, argTypes, retType, maxInterp);
     addFunction(MAX);
 
@@ -1612,6 +1600,44 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL_MATRIX;
     EXP_MAT = new FixedFunction(EXP_NAME, argTypes, retType, expMatInterp);
     addFunction(EXP_MAT);
+
+    /**
+     * natural logarithm function for real argument
+     */
+    FunctionInterp logInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        double val = ((Number) args.get(0)).doubleValue();
+        return Math.log(val);
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+    LOG = new FixedFunction(LOG_NAME, argTypes, retType, logInterp);
+    addFunction(LOG);
+
+    /**
+     * natural logarithm function for integer argument
+     */
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL;
+    LOG_INT = new FixedFunction(LOG_NAME, argTypes, retType, logInterp);
+    addFunction(LOG_INT);
+
+    /**
+     * natural logarithm function for real matrix argument
+     */
+    FunctionInterp logMatInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        return ((MatrixLib) args.get(0)).log();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.REAL_MATRIX;
+    LOG_MAT = new FixedFunction(LOG_NAME, argTypes, retType, logMatInterp);
+    addFunction(LOG_MAT);
 
     /*
      * Case expression in fixed function body
