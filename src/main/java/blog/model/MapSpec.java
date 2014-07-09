@@ -29,6 +29,13 @@ public class MapSpec extends ArgSpec {
   List<ArgSpec> keys;
   List<Object> values;
 
+  // if this flag is true, the values will not be evaluated
+  boolean lazyEval = false;
+
+  public void setLazyEval(boolean flag) {
+    lazyEval = flag;
+  }
+
   /**
    * Create empty ArgSpec,
    * Add Elements to it later on.
@@ -102,9 +109,8 @@ public class MapSpec extends ArgSpec {
     for (Map.Entry<ArgSpec, Object> entry : map.entrySet()) {
       Object k = entry.getKey().evaluate(context);
       Object v = entry.getValue();
-      if ((v instanceof Term) || (v instanceof Formula)
-          || (v instanceof TupleSetSpec)) {
-        if (!((ArgSpec) v).containsRandomSymbol())
+      if (!lazyEval) { // not lazy evaluate, we need evaluate all that we can do
+        if (v instanceof ArgSpec)
           v = ((ArgSpec) v).evaluate(context); // We only evaluate fixed value
       }
       newmap.put(k, v);
