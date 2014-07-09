@@ -654,10 +654,10 @@ public class Semant {
       }
       evidence.addValueEvidence(new ValueEvidenceStatement(
           (CardinalitySpec) left, value));
-    } else if (left instanceof ArgSpec) {
+    } else if (left instanceof ArgSpec && !(left instanceof CaseSpec)) {
       // general value expression
       Object value = transExpr(e.right);
-      if (value instanceof ArgSpec) {
+      if (value instanceof ArgSpec && !(value instanceof CaseSpec)) {
         evidence.addValueEvidence(new ValueEvidenceStatement((ArgSpec) left,
             (ArgSpec) value));
       } else {
@@ -1231,11 +1231,9 @@ public class Semant {
    * @param e
    */
   void transQuery(QueryStmt e) {
-    isFixedFuncBody = true;
     Object as = transExpr(e.query);
-    isFixedFuncBody = false;
     Query q;
-    if (as != null && as instanceof ArgSpec) {
+    if (as != null && !(as instanceof CaseSpec) && as instanceof ArgSpec) {
       q = new ArgSpecQuery((ArgSpec) as);
       queries.add(q);
     }
