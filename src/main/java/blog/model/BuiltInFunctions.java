@@ -73,7 +73,6 @@ public class BuiltInFunctions {
   public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
   public static final String LT_NAME = "__LESSTHAN";
   public static final String LEQ_NAME = "__LESSTHANOREQUAL";
-  public static final String CASE_EXPR_NAME = "__CASEINEXPR";
 
   // can be called by user
   public static final String SUCC_NAME = "succ";
@@ -506,12 +505,6 @@ public class BuiltInFunctions {
    * Return the element from a singleton set.
    */
   public static FixedFunction IOTA;
-
-  /**
-   * Interpret the case expression in fixed function, also used for if then else
-   * in fixed function
-   */
-  public static TemplateFunction CASE_IN_FIXED_FUNC;
 
   /**
    * Load RealMatrix from space-separeted text file.
@@ -1638,54 +1631,6 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL_MATRIX;
     LOG_MAT = new FixedFunction(LOG_NAME, argTypes, retType, logMatInterp);
     addFunction(LOG_MAT);
-
-    /*
-     * Case expression in fixed function body
-     */
-    CASE_IN_FIXED_FUNC = new TemplateFunction(CASE_EXPR_NAME) {
-
-      @Override
-      public FixedFunction getConcreteFunction(Type[] argTypes) {
-        if (argTypes == null || argTypes.length < 3
-            || (argTypes.length % 2 != 1))
-          return null;
-
-        /*
-         * type checking
-         */
-        List<Type> args = new ArrayList<Type>();
-        Type test = argTypes[0];
-        Type fromTy = argTypes[1];
-        Type toTy = argTypes[2];
-        if (test != fromTy)
-          return null;
-        args.add(test);
-        for (int i = 1; i < argTypes.length; i += 2) {
-          if (argTypes[i] != fromTy)
-            return null;
-          if (argTypes[i + 1] != toTy)
-            return null;
-          args.add(argTypes[i]);
-          args.add(argTypes[i + 1]);
-        }
-
-        // interpreter
-        FunctionInterp CaseInterp = new AbstractFunctionInterp() {
-          public Object getValue(List args) {
-            Object test = args.get(0);
-            for (int i = 1; i < args.size(); i += 2)
-              if (test.equals(args.get(i)))
-                return args.get(i + 1);
-            return Model.NULL;
-          }
-        };
-
-        FixedFunction retFunc = new FixedFunction(CASE_EXPR_NAME, args, toTy,
-            CaseInterp);
-        return retFunc;
-      }
-    };
-    addTemplate(CASE_IN_FIXED_FUNC);
   };
 }
 

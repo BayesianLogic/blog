@@ -763,12 +763,16 @@ public class Semant {
       mapExprs = mapExprs.next;
     }
     MapSpec m = new MapSpec(probKeys, probs);
+    m.setLazyEval(true);
+
     Object t = transExpr(e.test);
     if (!(t instanceof ArgSpec)) {
       error(e.line, e.col, "Expression expected! but we get " + t.toString());
       t = null;
     }
-    return new CaseSpec((ArgSpec) t, m);
+    CaseSpec ret = new CaseSpec((ArgSpec) t, m);
+    ret.setInFixedFuncBody(isFixedFuncBody);
+    return ret;
   }
 
   ArgSpec transExpr(DoubleExpr e) {
@@ -798,12 +802,8 @@ public class Semant {
     } else if (e instanceof TupleSetExpr) {
       return transExpr((TupleSetExpr) e);
     } else if (e instanceof IfExpr) {
-      if (isFixedFuncBody)
-        return transFixedIfExpr((IfExpr) e);
       return transExpr((IfExpr) e);
     } else if (e instanceof CaseExpr) {
-      if (isFixedFuncBody)
-        return transFixedCaseExpr((CaseExpr) e);
       return transExpr((CaseExpr) e);
     } else if (e instanceof OpExpr) {
       return transExpr((OpExpr) e);
@@ -918,6 +918,7 @@ public class Semant {
       probs.add(transExpr(e.elseclause));
     }
     MapSpec m = new MapSpec(probKeys, probs);
+    m.setLazyEval(true);
 
     // TODO: write a test for the SymbolTerm case to exclude non-Boolean
     // variables/functions
@@ -932,70 +933,9 @@ public class Semant {
           "Cannot use non-Boolean value as predicate for if clause");
       System.exit(1);
     }
-    return new CaseSpec(t, m);
-  }
-
-  FuncAppTerm transFixedIfExpr(IfExpr e) {
-    List<ArgSpec> args = new ArrayList<ArgSpec>();
-    ArgSpec test = (ArgSpec) transExpr(e.test);
-    if (test == null) {
-      error(e.test.line, e.test.col,
-          "Cannot use non-Boolean value as predicate for if expression");
-      System.exit(1);
-    }
-    args.add(test);
-    args.add(BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
-    ArgSpec sub = (ArgSpec) transExpr(e.thenclause);
-    if (sub == null) {
-      error(e.thenclause.line, e.thenclause.col,
-          "Then clause for if expression in fixed funcion body must be an expression!");
-      System.exit(1);
-    }
-    args.add(sub);
-    if (e.elseclause != null) {
-      args.add(BuiltInTypes.BOOLEAN.getCanonicalTerm(false));
-      sub = (ArgSpec) transExpr(e.elseclause);
-      if (sub == null) {
-        error(e.elseclause.line, e.elseclause.col,
-            "Else clause for if expression in fixed funcion body must be an expression!");
-        System.exit(1);
-      }
-      args.add(sub);
-    }
-    FuncAppTerm t = new FuncAppTerm(BuiltInFunctions.CASE_EXPR_NAME,
-        args.toArray(new ArgSpec[args.size()]));
-    t.setLocation(e.line);
-    return t;
-  }
-
-  FuncAppTerm transFixedCaseExpr(CaseExpr e) {
-    List<ArgSpec> args = new ArrayList<ArgSpec>();
-    ArgSpec test = (ArgSpec) transExpr(e.test);
-    if (test == null) {
-      error(e.test.line, e.test.col,
-          "Cannot use non-Boolean value as predicate for case expression");
-      System.exit(1);
-    }
-    args.add(test);
-    ExprTupleList ptr = e.clauses;
-    while (ptr != null) {
-      ArgSpec from = (ArgSpec) transExpr(ptr.from);
-      ArgSpec to = (ArgSpec) transExpr(ptr.to);
-      if (from == null || to == null) {
-        error(
-            ptr.from.line,
-            ptr.from.col,
-            "The clause of case expression in the body of fixed function must be a pair of expressions");
-        System.exit(1);
-      }
-      args.add(from);
-      args.add(to);
-      ptr = ptr.next;
-    }
-    FuncAppTerm t = new FuncAppTerm(BuiltInFunctions.CASE_EXPR_NAME,
-        args.toArray(new ArgSpec[args.size()]));
-    t.setLocation(e.line);
-    return t;
+    CaseSpec ret = new CaseSpec(t, m);
+    ret.setInFixedFuncBody(isFixedFuncBody);
+    return ret;
   }
 
   ArgSpec transExpr(BooleanExpr e) {
