@@ -30,6 +30,6 @@ sortorder: 11
 # [Contributors]({filename}contributor.md) to the BLOG project.
 
 # Community
-You may subscribe to the [Mailing list for BLOG users](xxx).
+You may subscribe to the [Mailing list for BLOG users](https://groups.google.com/d/forum/blog-user).
 If you want to contribute to BLOG, please refer to [Developer guide]({filename}develop-guide.md).
 

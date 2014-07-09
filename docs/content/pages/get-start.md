@@ -73,6 +73,3 @@ The full list of commandline options are described in [BLOG User Manual]({filena
 - [Probabilistic modelling using BLOG](xxx): (forth-coming) a tutorial textbook for modelling using BLOG. It includes introduction to BLOG language, and how to use it to solve real application problems. 
 - [Developer guide]({filename}develop-guide.md): how to contribute to the BLOG project. 
 
-# Community
-You may subscribe to the [Mailing list for BLOG users](xxx).
-If you want to contribute to BLOG, please refer to [Developer guide]({filename}develop-guide.md).
