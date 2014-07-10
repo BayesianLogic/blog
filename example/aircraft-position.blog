@@ -7,7 +7,7 @@ origin Aircraft Source(Blip);
 
 // Number Declarations
 #Aircraft ~ Poisson(5);
-#Blip(Source=a) ~ Poisson(4);
+#Blip(Source=a) ~ Bernoulli(0.9);
 
 random Real Position(Aircraft a)
     ~ UnivarGaussian(0, 10);
@@ -15,10 +15,14 @@ random Real Position(Aircraft a)
 random Real ObsPos(Blip b)
     ~ UnivarGaussian(Position(Source(b)), 1);
 
+fixed Boolean inRange(Real x, Real y, Real epsilon) =
+  (x > y - epsilon) & (x < y + epsilon);
+
 // Evidence
 obs {b for Blip b} = {B1, B2, B3};
 
-obs ObsPos(B1) = 5.0;
+fixed Real epsilon = 0.05;
+obs inRange(ObsPos(B1), 5.0, epsilon) = true;
 //obs ObsPos(B2) = 6.1;
 //obs ObsPos(B3) = 7.5;
 
