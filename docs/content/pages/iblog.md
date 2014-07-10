@@ -33,7 +33,7 @@ d: blog.debug.LWDebugger = blog.debug.LWDebugger@767dfcb6
 Investigate the model, evidence, and queries:
 
 ```text
-scala> d.model.print(System.out)
+scala> d.model
 random Boolean Burglary
     if true then ~ blog.distrib.BooleanDistrib()
 random Boolean Earthquake
