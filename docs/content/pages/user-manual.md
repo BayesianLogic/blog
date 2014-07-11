@@ -63,7 +63,7 @@ Use the following command to run the model.
 
     blog example/burglary.blog
 
-If you do not have blog, you may run it with (after unzip universal package)
+If you do not have blog installed, you may run it with (after unzip universal package). 
 
     bin/blog example/burglary.blog
 
@@ -157,16 +157,16 @@ blog -n 1000000 example/burglary.blog
     * rejection sampling
       `-s blog.sample.RejectionSampler`
     * (default) likelihood-weighting  
-      '-s blog.sample.LWSampler'
+      `-s blog.sample.LWSampler`
     * Metropolis-Hasting algorithm (Milch et al 2006)  
       `-s blog.sample.MHSampler`
 
 - Skip the first few number of samples  
-  `-b num` or `--burn_in=num`  
+  `-b num` or `--burn_in=num`
   Treat first num samples as burn-in period (don't use them to compute query results). Default: 0. 
 
 - Use a customized proposal for the Metropolis-Hastings sampler.  
-  `-p classname` or `--proposer=classname`  
+  `-p classname` or `--proposer=classname`
   It should be used together with `-e blog.sample.MHSampler`. Default: `blog.GenericProposer` (samples each var given its parents). The proposer should be implemented in Java and extends `blog.sample.AbstractProposer`.
 
 - Output  
@@ -298,6 +298,6 @@ BLOG requires a parameter `rho` for the degree of pertubation. Defaut is 0.95. I
 
 The following command runs Liu-West filter on a simple auto-regressive model. 
 
-    blog -e LiuWestFilter -P rho=0.98 example/ar1.dblog
+    blog -e blog.engine.LiuWestFilter -P rho=0.98 example/ar1.dblog
 
 Please refer to `example/ar1.dblog` for the full model. 
