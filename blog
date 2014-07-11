@@ -11,21 +11,8 @@
 
 BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-if [ ! -d "${BLOG_HOME}/src/" ]; then
-  BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../ && pwd )"	
+if [ ! -d "${BLOG_HOME}/target/universal/stage/" ]; then
+  sbt/sbt stage
 fi
 
-export BLOG_HOME
-
-echo "Running BLOG"
-if [ -e "${BLOG_HOME}/bin/iblog.scala" ]; then
-  CPATH="${BLOG_HOME}/lib/java-cup-11b.jar:${BLOG_HOME}/lib/*:${CLASSPATH}"
-else
-  if [ ! -d "${BLOG_HOME}/target/universal/stage/" ]; then
-    sbt/sbt stage
-  fi
-  CPATH="${BLOG_HOME}/target/universal/stage/lib/java-cup-11b.jar:${BLOG_HOME}/target/universal/stage/lib/*:${CLASSPATH}"
-fi
-
-java -cp ${CPATH} -Xmx4096M blog.Main $@
-
+${BLOG_HOME}/target/universal/stage/bin/blog $@

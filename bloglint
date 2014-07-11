@@ -4,15 +4,48 @@
 #
 # ./parse.sh  <model-file> 
 
-BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+realpath () {
+(
+  TARGET_FILE="$1"
+  CHECK_CYGWIN="$2"
+
+  cd $(dirname "$TARGET_FILE")
+  TARGET_FILE=$(basename "$TARGET_FILE")
+
+  COUNT=0
+  while [ -L "$TARGET_FILE" -a $COUNT -lt 100 ]
+  do
+      TARGET_FILE=$(readlink "$TARGET_FILE")
+      cd $(dirname "$TARGET_FILE")
+      TARGET_FILE=$(basename "$TARGET_FILE")
+      COUNT=$(($COUNT + 1))
+  done
+
+  if [ "$TARGET_FILE" == "." -o "$TARGET_FILE" == ".." ]; then
+    cd "$TARGET_FILE"
+    TARGET_FILEPATH=
+  else
+    TARGET_FILEPATH=/$TARGET_FILE
+  fi
+
+  # make sure we grab the actual windows path, instead of cygwin's path.
+  if [[ "x$CHECK_CYGWIN" == "x" ]]; then
+    echo "$(pwd -P)/$TARGET_FILE"
+  else
+    echo $(cygwinpath "$(pwd -P)/$TARGET_FILE")
+  fi
+)
+}
+
+BLOG_HOME="$(realpath "$0")"
 
 if [ ! -d "${BLOG_HOME}/src/" ]; then
-  BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../ && pwd )"	
+  BLOG_HOME=${BLOG_HOME}/../	
 fi
 
 export BLOG_HOME
 
-if [ -e "${BLOG_HOME}/bin/iblog.scala" ]; then
+if [ -e "${BLOG_HOME}/bin/" ]; then
   CPATH="${BLOG_HOME}/lib/java-cup-11b.jar:${BLOG_HOME}/lib/*:${CLASSPATH}"
 else
 	CPATH="${BLOG_HOME}/target/universal/stage/lib/java-cup-11b.jar:${BLOG_HOME}/target/universal/stage/lib/*:${CLASSPATH}"

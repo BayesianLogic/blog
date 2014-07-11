@@ -204,6 +204,13 @@ blog -n 1000000 example/burglary.blog
 CLASSPATH=userdir blog example/burglary.blog
 ```
 
+- Setting extra memory
+  You may set additional options for java through JAVA_OPTS="...". For example, to setup 4096MB memory, 
+```
+JAVA_OPTS="-Xmx4096M" blog example/burglary.blog
+```
+  You may replace 4096 with other Integers to request memory in MB.
+
 # Checking and validating BLOG syntax
 Sometimes one might make a small typo in the BLOG program. 
 `bloglint` is a tool provided in the package to validate the syntax of a BLOG program. 
