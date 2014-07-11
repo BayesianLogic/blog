@@ -171,7 +171,7 @@ blog -n 1000000 example/burglary.blog
 
 - Output  
   `-o file` or `--output=file`  
-  Output query results in JSON format to this file. 
+  Output query results in JSON format to this file. This is a machine-readable output format. For every query, the file contains a list of (value, log_probability) pairs.
 
 - Print detailed information during inference.  
   `-v` or `--verbose`  
