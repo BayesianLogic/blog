@@ -62,9 +62,15 @@ You only need to do this if you modified `BLOGLexer.flex` or `BLOGParser.cup`
 ```
 
 # Compiling source
+- For Linux/Mac:
 ```
   sbt/sbt compile
   sbt/sbt stage
+```
+- For Windows:
+```
+  sbt\sbt compile
+  sbt\sbt stage
 ```
 The second command is to ensure you can run `blog` and `iblog` in development environment.
 
