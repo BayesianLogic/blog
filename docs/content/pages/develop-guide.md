@@ -10,7 +10,7 @@ The BLOG project is hosted on Github. Contributions in the form of GitHub pull r
 - Create an issue if you discover some bug or propose a new feature. Put as much label as possible.
 - Do not push commit directly to master. Instead, submit the patch as a GitHub pull request. For a tutorial, see the GitHub guides on forking a repo and sending a pull request. 
 - When creating a pull request, please link to an issue if it already exists. 
-- Follow the Code Style Guide. Before sending in your pull request, run sbt/sbt (for Linux/Mac) or sbt\sbt (for Windows) scalastyle to validate the style. In the following part of this guide, for anything concerns the sbt file, we will only write it as sbt/sbt. For Windows users, please use sbt\sbt instead.
+- Follow the Code Style Guide. Before sending in your pull request, run `sbt/sbt` (for Linux/Mac) or `sbt\sbt` (for Windows) scalastyle to validate the style. In the following part of this guide, for anything concerns the sbt file, we will only write it as `sbt/sbt`. For Windows users, please use `sbt\sbt` instead.
 - Large files (e.g. data files > 10MB, any output file, generated pdf etc) should not be added to git repo.
 - Update the documentation (in the docs folder) if you add a new feature or commandline option.
 - test your code before submit pull request. 
