@@ -7,8 +7,6 @@
 # Please refer to BLOG user manual for the full list of options
 #
 
-#!/bin/bash
-
 BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [ ! -d "${BLOG_HOME}/target/universal/stage/" ]; then
