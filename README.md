@@ -18,11 +18,17 @@ video. BLOG makes it easy and concise to represent:
 
 
 # Compiling
+
+- For Linux/Mac:
 ```
   sbt/sbt compile
   sbt/sbt stage
 ```
-
+- For Windows:
+```
+  sbt\sbt compile
+  sbt\sbt stage
+```
 
 # Developer
 

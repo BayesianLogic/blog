@@ -1,0 +1,20 @@
+/**
+ * Gaussian mixture model with infinite number of components
+ *
+ * @author leili
+ * @date 2014-07-10
+ */
+type Component;
+#Component ~ Poisson(2);
+random Component z(Integer i) ~ 
+  UniformChoice({c for Component c}); 
+random Real mean(Component c) ~ 
+  UniformReal(-1, 1); 
+random Real x(Integer i) ~ 
+  if z(i) != null then 
+    Gaussian(mean(z(i)), 1.0); 
+obs x(0) = 0.2; 
+obs x(1) = 1.2;
+obs x(2) = 0.5; 
+obs x(3) = 0.6; 
+query size({c for Component c}); 
