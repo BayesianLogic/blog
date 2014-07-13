@@ -5,8 +5,8 @@ set BLOG_HOME=%~dp0..
 echo Starting Interative Shell for BLOG
 if exist "%BLOG_HOME%\bin\iblog.scala" (
   set CPATH="%BLOG_HOME%\lib\java-cup-11b.jar;%BLOG_HOME%\lib\*"
-  scala -cp %CPATH% -i "%BLOG_HOME%\bin\iblog.scala" -J%JAVA_OPTS% -J%*
+  scala -cp %CPATH% -i "%BLOG_HOME%\bin\iblog.scala" -J%JAVA_OPTS% %*
 ) else (
-	set CPATH="%BLOG_HOME%\blog\lib\java-cup-11b.jar;%BLOG_HOME%\blog\lib\*"
-  scala -cp %CPATH% -i "%BLOG_HOME%\blog\src\main\scala\iblog.scala" -J%JAVA_OPTS% -J%*  
+	set CPATH="%BLOG_HOME%\lib\java-cup-11b.jar;%BLOG_HOME%\lib\*"
+  scala -cp %CPATH% -i "%BLOG_HOME%\src\main\scala\iblog.scala" -J%JAVA_OPTS% %*  
 )
