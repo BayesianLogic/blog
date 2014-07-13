@@ -43,9 +43,14 @@ export BLOG_HOME
 
 echo "Starting Interative Shell for BLOG"
 if [ -e "${BLOG_HOME}/bin/iblog.scala" ]; then
+  # in execution environment
   CPATH="${BLOG_HOME}/lib/java-cup-11b.jar:${BLOG_HOME}/lib/*:${CLASSPATH}"
   scala -cp ${CPATH} -i "${BLOG_HOME}/bin/iblog.scala" $@  
 else
-	CPATH="${BLOG_HOME}/target/universal/stage/lib/java-cup-11b.jar:${BLOG_HOME}/target/universal/stage/lib/*:${CLASSPATH}"
+  # in development environment
+  if [ ! -d "${BLOG_HOME}/target/universal/stage/" ]; then
+    sbt/sbt stage
+  fi
+  CPATH="${BLOG_HOME}/target/universal/stage/lib/java-cup-11b.jar:${BLOG_HOME}/target/universal/stage/lib/*:${CLASSPATH}"
   scala -cp ${CPATH} -i "${BLOG_HOME}/src/main/scala/iblog.scala" $@  
 fi
