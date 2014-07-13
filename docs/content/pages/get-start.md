@@ -20,11 +20,18 @@ On linux/Mac, after unzip the universal package, please open terminal and run th
     chmod +x bin/*
 
 
-Alternatively, you may directly compile from source code by 
+Alternatively, you may directly compile from source code.
 (you will need sbt installed, check [download page]({filename}develop-guide.md) for more details). 
+
+For Linux/Mac:
 
     sbt/sbt compile
     sbt/sbt stage
+
+For Windows:
+
+    sbt\sbt compile
+    sbt\sbt stage
 
 <!-- *** Placeholder for installation *** -->
 

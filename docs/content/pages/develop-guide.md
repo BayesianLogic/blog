@@ -4,13 +4,14 @@ date: 2014-07-01 15:11
 sortorder: 30
 
 The BLOG project is hosted on Github. Contributions in the form of GitHub pull requests. 
+In the following part of this guide, for anything concerns the sbt file, we will only write it as `sbt/sbt`. For Windows users, please use `sbt\sbt` instead.
 
 # General guideline
 - Break your work into small, single-purpose patches if possible. It’s much harder to merge in a large change with a lot of disjoint features. Make your branch **small** enough that only contains one single feature change, multiple features should be completed in seperate branch and pull request.
 - Create an issue if you discover some bug or propose a new feature. Put as much label as possible.
 - Do not push commit directly to master. Instead, submit the patch as a GitHub pull request. For a tutorial, see the GitHub guides on forking a repo and sending a pull request. 
 - When creating a pull request, please link to an issue if it already exists. 
-- Follow the Code Style Guide. Before sending in your pull request, run sbt/sbt scalastyle to validate the style.
+- Follow the Code Style Guide. 
 - Large files (e.g. data files > 10MB, any output file, generated pdf etc) should not be added to git repo.
 - Update the documentation (in the docs folder) if you add a new feature or commandline option.
 - test your code before submit pull request. 
