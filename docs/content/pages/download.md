@@ -14,7 +14,8 @@ BLOG interactive shell and debugger require scala 2.10.4 or above.
 [Release notes]({filename}release-note.md).
 
 ## Previous Versions
-- BLOG 0.9 [Universal zip](../download/blog-0.9.zip), [Linux debian/ubuntu pre-build package](../download/blog-0.9.deb) (4 July 2014)
+- BLOG 0.9.1 [Universal zip](../download/blog-0.9.1.zip), [debian/ubuntu package](../download/blog-0.9.1.deb) (9 July 2014)
+- BLOG 0.9 [Universal zip](../download/blog-0.9.zip), [debian/ubuntu package](../download/blog-0.9.deb) (4 July 2014)
 - BLOG 0.8 ([binary](../download/blog-0.8-bin.zip)) and BLOG 0.8 ([source](../download/blog-0.8.zip)) (13 June 2014).
 - BLOG 0.7 ([binary](../download/blog-0.7-bin.zip)) and BLOG 0.7 ([source](../download/blog-0.7.zip)) (27 December 2013).
 - BLOG 0.6 ([binary](../download/blog-0.6-bin.zip)) and BLOG 0.6 ([source](../download/blog-0.6.zip)) (5 April 2013), [The BLOG Language Reference for version 0.6](http://www.eecs.berkeley.edu/Pubs/TechRpts/2013/EECS-2013-51.pdf)
