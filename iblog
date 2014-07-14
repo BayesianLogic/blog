@@ -33,7 +33,9 @@ realpath () {
 )
 }
 
-BLOG_HOME="$(realpath "$0")"
+CUR_SCRIPT="$(realpath "$0")"
+
+BLOG_HOME="$(dirname "$CUR_SCRIPT")"
 
 if [ ! -d "${BLOG_HOME}/src/" ]; then
   BLOG_HOME=${BLOG_HOME}/../	

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Script for running the BLOG inference engine.  Typical usage:
 #
@@ -40,10 +40,14 @@ realpath () {
 )
 }
 
-BLOG_HOME="$(realpath "$0")"
+CUR_SCRIPT="$(realpath "$0")"
 
-if [ ! -d "${BLOG_HOME}/target/universal/stage/" ]; then
+BLOG_HOME="$(dirname "$CUR_SCRIPT")"
+
+BLOG_SCRIPT="${BLOG_HOME}/target/universal/stage/bin/blog"
+
+if [ ! -e "${BLOG_SCRIPT}" ]; then
   sbt/sbt stage
 fi
 
-${BLOG_HOME}/target/universal/stage/bin/blog $@
+"${BLOG_SCRIPT}" $@
