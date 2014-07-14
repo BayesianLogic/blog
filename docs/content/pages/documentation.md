@@ -9,6 +9,9 @@ sortorder: 11
 # [User's Manual]({filename}user-manual.md)
   A manual for BLOG system, including setting and tuning all options. 
 
+# [Tutorial on BLOG](../download/BLOG-tutorial-2014.pdf)
+  A comprehensive tutorial about BLOG motivation, syntax, semantics, and examples. 
+
 # [Interactive Shell and Debugging BLOG models]({filename}iblog.md)
   Using the interactive shell to debug BLOG models.
 
