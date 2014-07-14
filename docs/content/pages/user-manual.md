@@ -123,6 +123,9 @@ The `[options]` are optional. The orders of these options do not matter. If no o
 
 The following options are provided. For every option, there is a short form and a long form. Either is acceptable.
 
+- Print out help message:
+  `--help`
+
 - Setting random seed.   
   `-r` or `--randomize`  
   Initialize the random seed based on the clock time. If this flag is not given, the program uses a fixed random seed so its behavior is reproducible. Default: false.  
