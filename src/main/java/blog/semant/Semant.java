@@ -115,7 +115,11 @@ public class Semant {
   private Model model;
   private Evidence evidence;
   private Queries queries;
-  private boolean isFixedFuncBody;
+
+  // Indicate whether an expression locates in a fixed/random function
+  private boolean isFixedFuncBody = false;
+  private boolean isRandomFuncBody = true;
+
   /**
    * keeping track of local logical variable symbols
    * a map from symbol name to number of occurrence.
@@ -144,6 +148,7 @@ public class Semant {
     errorMsg = msg;
     queries = qs;
     isFixedFuncBody = false;
+    isRandomFuncBody = true;
     symbolTable = new HashMap<String, Integer>();
     initialize();
   }
@@ -465,6 +470,8 @@ public class Semant {
     Function fun = getFunction(name, argTy);
 
     if (e instanceof FixedFuncDec) {
+      isFixedFuncBody = true;
+      isRandomFuncBody = false;
       if (e.body == null) {
         error(e.line, e.col, "empty fixed function body");
       } else if (argTy.size() > 0) {
@@ -491,9 +498,7 @@ public class Semant {
           ((FixedFunction) fun).setInterpretation(constant);
         } else {
           // general expression as function body
-          isFixedFuncBody = true;
           Object funcBody = transExpr(e.body);
-          isFixedFuncBody = false;
           if (funcBody instanceof ArgSpec) {
             ArgSpec funcValue = (ArgSpec) funcBody;
             ((FixedFunction) fun).setBody(funcValue);
@@ -510,10 +515,14 @@ public class Semant {
             blog.model.ConstantInterp.class,
             Collections.singletonList(funcValue));
       }
+      isFixedFuncBody = false;
+      isRandomFuncBody = true;
     } else if (e instanceof RandomFuncDec) {
+      isRandomFuncBody = true;
       DependencyModel dm = transDependency(e.body, fun.getRetType(),
           fun.getDefaultValue());
       ((RandomFunction) fun).setDepModel(dm);
+      isRandomFuncBody = false;
     }
 
     for (FieldList fl = e.params; fl != null; fl = fl.next) {
@@ -582,7 +591,9 @@ public class Semant {
    */
   void transEvi(EvidenceStmt e) {
     if (e instanceof ValueEvidence) {
+      isRandomFuncBody = false;
       transEvi((ValueEvidence) e);
+      isRandomFuncBody = true;
     } else {
       error(e.line, e.col, "Unsupported Evidence type: " + e);
     }
@@ -772,6 +783,7 @@ public class Semant {
     }
     CaseSpec ret = new CaseSpec((ArgSpec) t, m);
     ret.setInFixedFuncBody(isFixedFuncBody);
+    ret.setInRandomFuncBody(isRandomFuncBody);
     return ret;
   }
 
@@ -935,6 +947,7 @@ public class Semant {
     }
     CaseSpec ret = new CaseSpec(t, m);
     ret.setInFixedFuncBody(isFixedFuncBody);
+    ret.setInRandomFuncBody(isRandomFuncBody);
     return ret;
   }
 
@@ -1231,7 +1244,9 @@ public class Semant {
    * @param e
    */
   void transQuery(QueryStmt e) {
+    isRandomFuncBody = false;
     Object as = transExpr(e.query);
+    isRandomFuncBody = true;
     Query q;
     if (as != null && as instanceof ArgSpec) {
       q = new ArgSpecQuery((ArgSpec) as);

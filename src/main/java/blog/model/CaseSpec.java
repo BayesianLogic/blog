@@ -25,9 +25,18 @@ public class CaseSpec extends ArgSpec {
    * otherwise, the return value must be DistribSpec
    */
   boolean isInFixedFuncBody = false;
+  /*
+   * if this flag is true, we make sure that the return value
+   * of this CaseSpec will be a DistribSpec
+   */
+  boolean isInRandomFuncBody = true;
 
   public void setInFixedFuncBody(boolean flag) {
     isInFixedFuncBody = flag;
+  }
+
+  public void setInRandomFuncBody(boolean flag) {
+    isInRandomFuncBody = flag;
   }
 
   public CaseSpec(ArgSpec test, MapSpec clause) {
@@ -83,13 +92,14 @@ public class CaseSpec extends ArgSpec {
     int errors = test.compile(callStack) + clause.compile(callStack);
     compiled = true;
 
-    if (isInFixedFuncBody) {
-      if (this.containsRandomSymbol()) {
+    if (!isInRandomFuncBody) {
+      if (isInFixedFuncBody && this.containsRandomSymbol()) {
         System.err
             .println("Case Expression in Fixed Function CANNOT contain random elements!");
         errors++;
       }
     } else
+      // in Random Function Body
       // make sure every branch will return a distribution spec
       // namely: for each branch of Term, generate a EqualsCPD distribution spec
       errors += clause.enforceDistribSpec();
