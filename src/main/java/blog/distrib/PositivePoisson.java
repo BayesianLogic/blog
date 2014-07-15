@@ -35,8 +35,6 @@
 
 package blog.distrib;
 
-import blog.common.Util;
-
 /**
  * A Poisson distribution with mean lambda and variance (lambda - 1). This is a
  * distribution over positive integers. The probability of n is exp(-(lambda -
@@ -45,73 +43,17 @@ import blog.common.Util;
  * @since July 14, 2014
  */
 public class PositivePoisson implements CondProbDistrib {
+
+  public PositivePoisson() {
+    poiss = new Poisson();
+  }
+
   /**
    * Computes the log probability of <code>n</code> for a Poisson with parameter
    * <code>lambda</code>.
    */
   public static double computeLogProb(double lambda, int n) {
-    if (lambda == 1) {
-      return n == 1 ? 0 : Double.NEGATIVE_INFINITY;
-    }
-    return (-(lambda - 1) + ((n - 1) * Math.log(lambda - 1)) - Util
-        .logFactorial(n - 1));
-  }
-
-  /**
-   * sample from Positive Poisson distribution when the parameter lambda is
-   * small (< 16)
-   * 
-   * @param lambda
-   * @return
-   */
-  private static int sampleSmall(double lambda) {
-    int n = 0;
-    double probOfN = Math.exp(-(lambda - 1)); // start with prob of 0
-    double cumProb = probOfN;
-
-    double u = Util.random();
-
-    while (cumProb < u) {
-      n++;
-      // ratio between P(n) and P(n-1) is (lambda - 1) / n
-      probOfN *= ((lambda - 1) / n);
-      cumProb += probOfN;
-    }
-
-    return (n + 1);
-  }
-
-  private double[] cdf_table = null;
-
-  private static double[] ensureSize(int n, double[] table) {
-    double[] tb = table;
-    if (table == null)
-      tb = new double[n + 1];
-    else if (n >= table.length) {
-      tb = new double[n + 1];
-      System.arraycopy(table, 0, tb, 0, table.length);
-    }
-    return tb;
-  }
-
-  private void ensureCDFTable(int n) {
-    int oldn = 0;
-    double w;
-    if (cdf_table != null) {
-      oldn = cdf_table.length;
-    }
-    if ((cdf_table == null) || (n >= cdf_table.length)) {
-      cdf_table = ensureSize(n, cdf_table);
-    }
-    if (oldn > 0)
-      w = cdf_table[oldn - 1];
-    else
-      w = 0;
-    for (; oldn < cdf_table.length; oldn++) {
-      if (oldn > 0)
-        w += Math.exp(computeLogProb(lambda, oldn));
-      cdf_table[oldn] = w;
-    }
+    return Poisson.computeLogProb(lambda - 1, n - 1);
   }
 
   /**
@@ -124,21 +66,11 @@ public class PositivePoisson implements CondProbDistrib {
    * @return
    */
   public double cdf(int a, int b) {
-    ensureCDFTable(b);
-
-    if (a <= 0)
-      return cdf_table[b];
-    else
-      return cdf_table[b] - cdf_table[a - 1];
+    return poiss.cdf(a - 1, b - 1);
   }
 
   public static double cdf(double lambda, int a, int b) {
-    double w = 0;
-    for (int i = a; i <= b; i++) {
-      if (i > 0)
-        w += Math.exp(computeLogProb(lambda, i));
-    }
-    return w;
+    return Poisson.cdf(lambda - 1, a - 1, b - 1);
   }
 
   /**
@@ -171,13 +103,7 @@ public class PositivePoisson implements CondProbDistrib {
             "parameter lambda must be a nonnegative real");
       }
       this.lambda = lambda.doubleValue();
-      this.hasLambda = true;
-    }
-  }
-
-  private void checkHasParams() {
-    if (!this.hasLambda) {
-      throw new IllegalArgumentException("parameter lambda not provided");
+      poiss.setParams((Number) (this.lambda - 1));
     }
   }
 
@@ -199,7 +125,7 @@ public class PositivePoisson implements CondProbDistrib {
    *          # occurrences
    */
   public double getProb(int k) {
-    return Math.exp(getLogProb(k));
+    return poiss.getProb(k - 1);
   }
 
   /*
@@ -220,12 +146,7 @@ public class PositivePoisson implements CondProbDistrib {
    *          # occurrences
    */
   public double getLogProb(int k) {
-    checkHasParams();
-    if (lambda == 1) {
-      return k == 1 ? 0 : Double.NEGATIVE_INFINITY;
-    }
-    return (-(lambda - 1) + ((k - 1) * Math.log(lambda - 1)) - Util
-        .logFactorial(k - 1));
+    return poiss.getLogProb(k - 1);
   }
 
   /*
@@ -240,8 +161,7 @@ public class PositivePoisson implements CondProbDistrib {
 
   /** Samples from the Poisson distribution. */
   public int sample_value() {
-    checkHasParams();
-    return sample_value(lambda);
+    return (poiss.sample_value() + 1);
   }
 
   /**
@@ -250,18 +170,7 @@ public class PositivePoisson implements CondProbDistrib {
    * returned.
    */
   public static int sample_value(double lambda) {
-    if (lambda < 16)
-      return sampleSmall(lambda);
-    double alpha = 7.0 / 8.0;
-    int m = (int) Math.floor(alpha * (lambda - 1));
-    double x = Gamma.sample_value(m, 1);
-    int r;
-    if (x < lambda - 1) {
-      r = m + Poisson.sample_value(lambda - 1 - x);
-    } else {
-      r = Binomial.sample_value(m - 1, (lambda - 1) / x);
-    }
-    return r + 1;
+    return Poisson.sample_value(lambda - 1) + 1;
   }
 
   @Override
@@ -269,6 +178,6 @@ public class PositivePoisson implements CondProbDistrib {
     return "PositivePoisson(" + lambda + ")";
   }
 
+  private Poisson poiss;
   private double lambda;
-  private boolean hasLambda;
 }
