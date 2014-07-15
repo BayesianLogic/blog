@@ -78,6 +78,7 @@ public class BuiltInFunctions {
   public static final String PREV_NAME = "prev";
   public static final String INV_NAME = "inv";
   public static final String DET_NAME = "det";
+  public static final String TRACE_NAME = "trace";
   public static final String IS_EMPTY_NAME = "isEmptyString";
   public static final String MIN_NAME = "min";
   public static final String MAX_NAME = "max";
@@ -275,6 +276,11 @@ public class BuiltInFunctions {
    * det(RealMatrix) returns Real (matrix determinant)
    */
   public static FixedFunction DET_MAT;
+
+  /**
+   * trace(RealMatrix) returns Real (matrix trace)
+   */
+  public static FixedFunction TRACE_MAT;
 
   /**
    * The predecessor function on timesteps. Given a positive timestep n, it
@@ -1048,6 +1054,16 @@ public class BuiltInFunctions {
     DET_MAT = new FixedFunction(DET_NAME, argTypes, retType,
         matDeterminantInterp);
     addFunction(DET_MAT);
+
+    // matrix trace
+    FunctionInterp matTraceInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        MatrixLib mat1 = (MatrixLib) args.get(0);
+        return mat1.trace();
+      }
+    };
+    TRACE_MAT = new FixedFunction(TRACE_NAME, argTypes, retType, matTraceInterp);
+    addFunction(TRACE_MAT);
 
     // Min of a set.
     FunctionInterp minInterp = new AbstractFunctionInterp() {
