@@ -96,6 +96,8 @@ mappings in Universal ++= directory("target/pelican") map {case (f, s) => (f, s.
 
 mappings in Universal += file("iblog") -> "bin/iblog"
 
+mappings in Universal += file("iblog.bat") -> "bin/iblog.bat"
+
 mappings in Universal += file("dblog") -> "bin/dblog"
 
 mappings in Universal += file("bloglint") -> "bin/bloglint"
