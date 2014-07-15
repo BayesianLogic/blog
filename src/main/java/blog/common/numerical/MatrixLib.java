@@ -82,6 +82,11 @@ public interface MatrixLib {
   public double det();
 
   /**
+   * Returns the trace of this matrix
+   */
+  public double trace();
+
+  /**
    * Returns the absolute value for every element of this matrix
    */
   public MatrixLib abs();

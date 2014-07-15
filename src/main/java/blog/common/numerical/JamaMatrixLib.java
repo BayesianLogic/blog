@@ -98,6 +98,11 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
+  public double trace() {
+    return values.trace();
+  }
+
+  @Override
   public double logDet() {
     double logDet = 0.0;
     for (double val : eigenvals()) {
