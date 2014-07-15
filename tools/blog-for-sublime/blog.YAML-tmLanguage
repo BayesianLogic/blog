@@ -45,7 +45,7 @@ patterns:
   match: \b(if|then|else|case|in|forall|exists|for)\b
 # builtin functions
 - name: support.function.blog
-  match: \b(abs|round|inv|transpose|det|repmat|diag|vstack|hstack|eye|zeros|ones|exp|toReal|toInt|isEmptyString|prev|min|max|sum)\b
+  match: \b(abs|round|inv|transpose|det|trace|repmat|diag|vstack|hstack|eye|zeros|ones|exp|toReal|toInt|isEmptyString|prev|min|max|sum)\b
 # distributions
 - name: support.class.blog
   match: \b(TabularCPD|Distribution|Gaussian|UniformChoice|MultivarGaussian|Poisson|Bernoulli|BooleanDistrib|Binomial|Beta|BoundedGenometric|Categorical|Dirichlet|EqualsCPD|Gamma|Geometric|Iota|LinearGaussian|MixtureDistrib|NegativeBinamial|RoundedLogNormal|TabularInterp|UniformVector|UnivarGaussian|Exponential|UniformInt|UniformReal|Multinomial|Laplace)\b
