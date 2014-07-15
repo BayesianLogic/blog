@@ -49,8 +49,8 @@ public class PositivePoisson implements CondProbDistrib {
   }
 
   /**
-   * Computes the log probability of <code>n</code> for a Poisson with parameter
-   * <code>lambda</code>.
+   * Computes the log probability of <code>n</code> for a Positive Poisson with
+   * parameter <code>lambda</code>.
    */
   public static double computeLogProb(double lambda, int n) {
     return Poisson.computeLogProb(lambda - 1, n - 1);
@@ -93,12 +93,13 @@ public class PositivePoisson implements CondProbDistrib {
   }
 
   /**
-   * If the method parameter lambda is non-null and non-negative, set the
-   * distribution parameter <code>lambda</code> to the method parameter lambda.
+   * If the method parameter lambda is non-null and greater than or equal to 1,
+   * set the distribution parameter <code>lambda</code> to the method parameter
+   * lambda.
    */
   public void setParams(Number lambda) {
     if (lambda != null) {
-      if (lambda.doubleValue() < 0) {
+      if (lambda.doubleValue() < 1) {
         throw new IllegalArgumentException(
             "parameter lambda must be a nonnegative real");
       }
@@ -159,13 +160,14 @@ public class PositivePoisson implements CondProbDistrib {
     return sample_value();
   }
 
-  /** Samples from the Poisson distribution. */
+  /** Samples from the Positive Poisson distribution. */
   public int sample_value() {
     return (poiss.sample_value() + 1);
   }
 
   /**
-   * Returns an integer sampled according to the Poisson distribution. This
+   * Returns an integer sampled according to the Positive Poisson distribution.
+   * This
    * implementation takes time proportional to the magnitude of the integer
    * returned.
    */
