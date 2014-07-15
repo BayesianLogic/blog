@@ -11,7 +11,7 @@ import blog.distrib.PositivePoisson;
 
 public class TestPositivePoisson {
 
-  private final double ERROR = 10e-5, ERROR2 = 10e-2;
+  private final double ERROR = 10e-5;
 
   public void testDistributionRun(PositivePoisson poiss) {
     poiss.getProb(-1);
