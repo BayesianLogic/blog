@@ -12,6 +12,7 @@ import blog.common.numerical.MatrixLib;
  * is unknown. It has two parameters: A p by p square matrix illustrates the
  * scale and a integer mu > p - 1 illustrates the degrees of freedom.
  * 
+ * @author Da Tang
  * @since July 14, 2014
  */
 public class InverseWishart implements CondProbDistrib {
@@ -98,7 +99,7 @@ public class InverseWishart implements CondProbDistrib {
     return Math.exp(lgmultivariategamma(p, x));
   }
 
-  public static double lgmultivariategamma(int p, double x) {
+  private static double lgmultivariategamma(int p, double x) {
     double ret = Math.log(Math.PI) * p * (p - 1) * 0.25;
     for (int i = 1; i <= p; i++) {
       ret += Gamma.lgamma(x + (1 - i) * 0.5);
