@@ -95,7 +95,7 @@ public class InverseWishart implements CondProbDistrib {
     this.logNormConst = 0.5 * scale.logDet() * this.freeDeg + logDimFactor;
   }
 
-  public static double multivariategamma(int p, double x) {
+  private static double multivariategamma(int p, double x) {
     return Math.exp(lgmultivariategamma(p, x));
   }
 
