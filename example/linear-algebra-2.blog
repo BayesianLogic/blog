@@ -7,10 +7,10 @@ query b;
 
 fixed RealMatrix c = vstack(a, b);
 fixed RealMatrix d = [-1, -2, -3; -4, -5, -6];
-fixed RealMatrix e = vstack(a, d);
+fixed RealMatrix f = vstack(a, d);
 
 query c;
-query e;
+query f;
 
 
 fixed RealMatrix test_identity = eye(3);

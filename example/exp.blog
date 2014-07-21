@@ -10,9 +10,9 @@ random Real d ~ exp(c);
 query d;
 
 // exponential of a random Integer value
-random Integer e ~ UniformInt(0, 10);
-random Real f ~ exp(e);
-query f;
+random Integer f ~ UniformInt(0, 10);
+random Real g ~ exp(f);
+query g;
 
 // exponential of a matrix
 fixed RealMatrix mu = [0; 0];

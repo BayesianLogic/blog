@@ -15,8 +15,8 @@ random RealMatrix z ~ c * 3.0 + 4.0 * d - c;
 
 random RealMatrix u ~ a * c;
 
-fixed RealMatrix e = [10; 20];
-random RealMatrix v ~ c * e;
+fixed RealMatrix f = [10; 20];
+random RealMatrix v ~ c * f;
 
 random RealMatrix s ~ inv(c);
 random Real t ~ det(c);
