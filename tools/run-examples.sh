@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Runs all examples and produces the following files in the testing/ dir.
+# Assume that this script is called via bash from within the root directory
 #
 # status.txt
 # - A CSV of all Blog Examples alongside their status
@@ -14,9 +15,6 @@
 # errors/*
 # - A list of files that threw a Java Exception (non-empty Standard Error)
 # - Each file as its content contains the Stack Trace
-
-# Go up a directory so blog script is in the current directory
-cd ..
 
 # Location of the directory where all testing output goes
 testDir='tools/testing'
