@@ -15,9 +15,14 @@ http://www.scala-lang.org/.
 
 # Introduction
 
-Start the BLOG interactive shell using the `iblog` command. In the examples
-below, lines prefixed with `scala>` are what you type into the shell. Lines
-without that prefix are output printed by the shell.
+Start the BLOG interactive shell using the `iblog` command. You could change the maximum Java heap size by typing iblog `-J-Xmx<The maximum Java heap size you want>`. For example, if you type
+
+```text
+iblog -J-Xmx1024M
+```
+
+Then the maximum Java heap size will be set to 1024M.
+In the examples below, lines prefixed with `scala>` are what you type into the shell. Lines without that prefix are output printed by the shell.
 
 
 # Example: Debugging Likelihood Weighting
