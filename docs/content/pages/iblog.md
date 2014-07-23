@@ -15,7 +15,7 @@ http://www.scala-lang.org/.
 
 # Introduction
 
-Start the BLOG interactive shell using the `iblog` command. You could change the maximum Java heap size by typing iblog `-J-Xmx<The maximum Java heap size you want>`. For example, if you type
+Start the BLOG interactive shell using the `iblog` command. You could change the maximum Java heap size by typing `iblog -J-Xmx<The maximum Java heap size you want>`. For example, if you type
 
 ```text
 iblog -J-Xmx1024M
