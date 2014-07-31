@@ -23,12 +23,12 @@ public class TestGEM {
   private final double ERROR = 10e-5;
 
   public TestGEM() {
-    // Create a InverseWishart with a scale matrix and a degree of freedom
+    // Create a GEM with a parameter lambda and a stop point parameter
     lambda = 2.0;
     truncation = 3;
     truncation2 = 100;
 
-    // Used Scipy to compute the pdf of this IW at particular points
+    // Compute the pdf of this GEM at particular points
     probVals = new HashMap<MatrixLib, Double>();
     probVals.put(
         MatrixFactory.fromArray(new double[][] { { 0.4 }, { 0.3 }, { 0.3 } }),
@@ -47,7 +47,7 @@ public class TestGEM {
   }
 
   /*
-   * PDF test: scale = [1, 0.5; 0.5, 2], freeDeg = 10;
+   * PDF test: lambda = 2.0, truncation = 3;
    */
   @Test
   public void testPDF1() {
@@ -70,6 +70,9 @@ public class TestGEM {
     gem.sampleVal();
   }
 
+  /*
+   * Generate 10 samples with lambda = 2.0 and truncation = 100.
+   */
   @Test
   public void testSample() {
     Util.initRandom(false);
