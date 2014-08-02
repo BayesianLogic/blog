@@ -1,0 +1,54 @@
+\documentclass[11pt]{article}
+\usepackage{listings}
+\usepackage{pst-plot}
+\usepackage{enumerate}
+\usepackage{array}
+\usepackage{mytemplate}
+\def\title{Continuous Integration Testing}
+\setlength\extrarowheight{10pt}
+\begin{document}
+\maketitle
+
+The idea behind continuous integration in this context is that everytime a user pushes a commit to github, tests should be ran to verify that nothing has been broken. If anything has been broken by this commit, then there should be a clear indication of a failed build on the relevant commit on github.
+
+\section{Compilation}
+\textbf{Purpose:} Check that compilation of \texttt{BLOG} works correctly.
+
+\textbf{Procedure:} I run the following: \texttt{sbt/sbt compile} \\
+and use the Unix exit code for determining success.
+
+\section{JUnit Tests}
+\textbf{Purpose:} All JUnit tests located in the \texttt{src/test/java} directory pass.
+
+\textbf{Procedure:} Yet to be determined. My goal is to be able to run all the JUnit tests within \texttt{src/test/java} on the command line. Options include:
+\begin{enumerate}
+	\item Writing a JUnit test suite that lists explicitly all the JUnit files within the directory. This is dispreferred because it would require manual labor and would be difficult to maintain.
+	\item Dynamically add all the JUnit files to a test suit. Need to explore the Junit add-ons, specifically \texttt{DirectorySuiteBuilder}.
+\end{enumerate} 
+
+\section{BLOG Examples}
+
+\textbf{Purpose:} All the code examples in \texttt{/example} run and return a successful exit code.
+
+\textbf{Procedure:} All the code examples in \texttt{/example} are ran using either the shell script \texttt{blog} or \texttt{dblog}, depending upon the file extension. If  any of the examples fail (as indicated by a non-zero exit code), then this section fails. This section only provides a sanity check that all examples run, not that they produce correct output.
+
+\section{Incorrect Examples}
+
+\textbf{Purpose:} Verify that blog errors are caught and result in non-zero return code.
+
+\textbf{Procedure:} All the files within the directory \texttt{tools/error-examples} are BLOG files that should produce a nonzero exit code.
+
+\section{Correctness of Examples}
+
+\textbf{Purpose:} A single example (e.g. Burglary) with fixed seed produces consistent output that is consistent with the analytic result.
+
+\textbf{Procedure:} Yet to be determined.	
+
+\section{Integration with Github}
+
+\textbf{Purpose:} If any of the tests in sections 1-5 fail, then the current commit should reflect a failed build on github.
+
+\textbf{Procedure:} The \texttt{.travis.yml} in the top-level directory of the BLOG project describes the procedure for running the integration code. There is a script, \texttt{tools/integration-test.sh} that it calls. If the script returns an exit code of \texttt{0}, then the travis build is successful. Otherwise, the travis build fails.
+
+
+\end{document}

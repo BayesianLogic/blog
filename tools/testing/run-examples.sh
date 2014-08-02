@@ -17,7 +17,7 @@
 # - Each file as its content contains the Stack Trace
 
 # Location of the directory where all testing output goes
-testDir='tools/testing'
+testDir='tools/testing/output'
 mkdir -p $testDir
 
 # A list of all BLOG examples that throw exceptions
@@ -38,8 +38,8 @@ echo "FileName,Status" > $statusFiles
 
 for f in $(find example -name '*.blog'); do
     echo "Running $f"
-    ./blog -n 100 $f 2> tools/testing/errors > tools/testing/output
-    errors=`cat tools/testing/errors | wc -l`
+    ./blog -n 100 $f 2> "$testDir/errors" > "$testDir/output"
+    errors=`cat tools/testing/output/errors | wc -l`
     if [ "$errors" == "0" ]; then
         echo "$f,Pass" >> $statusFiles
         echo "$f" >> $successFiles
@@ -47,16 +47,16 @@ for f in $(find example -name '*.blog'); do
         echo "$f,Fail" >> $statusFiles
         echo "$f" >> $errorFiles
         echo "$f" >> $fileErrors
-        echo $(cat tools/testing/errors) >> $fileErrors
+        echo $(cat tools/testing/output/errors) >> $fileErrors
         echo "" >> $fileErrors
     fi
 done
-rm tools/testing/errors tools/testing/output 
+rm "$testDir/errors" "$testDir/output"
 
 for f in $(find example -name '*.dblog'); do
     echo "Running $f"
-    ./dblog -n 100 $f 2> tools/testing/errors > tools/testing/output
-    errors=`cat tools/testing/errors | wc -l`
+    ./dblog -n 100 $f 2> "$testDir/errors" > "$testDir/output"
+    errors=`cat tools/testing/output/errors | wc -l`
     if [ "$errors" == "0" ]; then
         echo "$f,Pass" >> $statusFiles
         echo "$f" >> $successFiles
@@ -64,8 +64,8 @@ for f in $(find example -name '*.dblog'); do
         echo "$f,Fail" >> $statusFiles
         echo "$f" >> $errorFiles
         echo "$f" >> $fileErrors
-        echo $(cat tools/testing/errors) >> $fileErrors
+        echo $(cat tools/testing/output/errors) >> $fileErrors
         echo "" >> $fileErrors
     fi
 done
-rm tools/testing/errors tools/testing/output 
+rm "$testDir/errors" "$testDir/output"

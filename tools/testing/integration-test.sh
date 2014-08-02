@@ -11,11 +11,11 @@ fi
 
 
 # Step 3 --- All examples pass
-tools/run-examples.sh
-errorLines=`cat tools/testing/errorExamples.txt | wc -l`;
+tools/testing/run-examples.sh > /dev/null
+errorLines=`cat tools/testing/output/errorExamples.txt | wc -l`;
 
 if [ "$errorLines" != "1" ]; then
-    cat 'tools/testing/errorExamples.txt'
+    cat 'tools/testing/output/errorExamples.txt'
 fi	
 
 # Step 4 --- Verify that blog errors are caught

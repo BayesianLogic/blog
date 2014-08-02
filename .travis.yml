@@ -1,2 +1,2 @@
 language: java
-script: tools/integration-test.sh
+script: tools/testing/integration-test.sh
