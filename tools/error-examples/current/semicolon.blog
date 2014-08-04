@@ -1,0 +1,2 @@
+// Missing semicolon
+random Boolean x ~ BooleanDistrib(0.5)
