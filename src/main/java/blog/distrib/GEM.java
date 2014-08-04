@@ -44,6 +44,15 @@ import blog.common.numerical.MatrixLib;
  * breaking process (with parameter <code>lambda</code>) stopped after the first
  * <code>truncation</code> steps.
  * 
+ * The way we generating random variables for GEM distribution with parameter
+ * <code>lambda</code> and <code>truncation</code> is as follows: First, we
+ * generate truncation many different random variables v_1, ...,
+ * v_{truncation - 1} such that v_i ~ Beat(1, lambda), i\in\{1,...,truncation -
+ * 1\}, independently. Then we calculate \pi_i=v_i\prod\limits_{j=1}{i-1}(1-v_j)
+ * for i < truncation and
+ * \pi_{truncation}=1-\sum\limits_{i=1}^{truncation-1}\pi_i. Finally we return
+ * the vector (\pi_1,...,\pi_{truncation})^T.
+ * 
  * @author Da Tang
  * @since July 29, 2014
  */
@@ -55,7 +64,7 @@ public class GEM implements CondProbDistrib {
    * set parameters for GEM distribution
    * 
    * @param params
-   *          An array of the form [MatrixLib]
+   *          An array of one double and one integer.
    *          <ul>
    *          <li>params[0]: <code>lambda</code> A Double parameter.</li>
    *          <li>params[1]: <code>truncation</code> An integer parameter.</li>
@@ -68,7 +77,7 @@ public class GEM implements CondProbDistrib {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected two parameters");
     }
-    setParams((Double) params[0], (Integer) params[1]);
+    setParams((Number) params[0], (Number) params[1]);
   }
 
   /**
@@ -83,22 +92,22 @@ public class GEM implements CondProbDistrib {
    *          A positive integer represents the stop point of the stick-breaking
    *          process <code>truncation</code>.
    */
-  public void setParams(Double lambda, Integer truncation) {
+  public void setParams(Number lambda, Number truncation) {
     if (lambda != null) {
-      if (lambda <= 0) {
+      if (lambda.doubleValue() <= 0) {
         throw new IllegalArgumentException(
             "GEM distribution requires a positive real number as the lambda argument.");
       }
       this.hasLambda = true;
-      this.lambda = lambda;
+      this.lambda = lambda.doubleValue();
     }
     if (truncation != null) {
-      if (truncation <= 0) {
+      if (truncation.intValue() <= 0) {
         throw new IllegalArgumentException(
             "GEM distribution requires a positive integer as the truncation argument.");
       }
       this.hasTruncation = true;
-      this.truncation = truncation;
+      this.truncation = truncation.intValue();
     }
   }
 
