@@ -1,0 +1,3 @@
+// The function foo is missing the method signature indicating it is a fixed symbol
+Real foo(Integer x) = x + 2;
+query foo(2);
