@@ -23,11 +23,3 @@ if [ "$errorLines" != "1" ]; then
     cat 'tools/testing/output/errorExamples.txt'
     exit 1
 fi	
-
-# Step 4 -- Verify that blog errors are caught
-#errorLines=$(cat tools/testing/output_incorrect/incorrect_examples.txt)
-#
-#if [ "$errorLines" != "1"]; then
-#    echo "Not all incorrect BLOG examples return a nonzero exit code"
-#    exit 1
-#fi
