@@ -35,6 +35,7 @@
 
 package blog.distrib;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -200,7 +201,7 @@ public class Binomial implements CondProbDistrib {
   @Override
   public Set getFiniteSupport() {
     checkHasParams();
-    return finiteSupport;
+    return Collections.unmodifiableSet(finiteSupport);
   }
 
   private int n;

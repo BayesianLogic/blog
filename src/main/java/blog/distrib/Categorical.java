@@ -35,6 +35,7 @@
 
 package blog.distrib;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -170,7 +171,7 @@ public class Categorical implements CondProbDistrib {
   @Override
   public Set getFiniteSupport() {
     checkHasParams();
-    return finiteSupport;
+    return Collections.unmodifiableSet(finiteSupport);
   }
 
   private HashMap<Object, Double> map;

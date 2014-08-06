@@ -35,6 +35,7 @@
 
 package blog.distrib;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -121,7 +122,7 @@ public class Bernoulli implements CondProbDistrib {
   @Override
   public Set getFiniteSupport() {
     booldist.getFiniteSupport();
-    return finiteSupport;
+    return Collections.unmodifiableSet(finiteSupport);
   }
 
   /**
