@@ -1,6 +1,6 @@
 package blog.distrib;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Common interface for all probability distributions.
@@ -78,5 +78,5 @@ public interface CondProbDistrib {
    * @return An unmodifiable set represents the finite support, null if the
    *         support is infinite.
    */
-  public Set getFiniteSupport();
+  public List getFiniteSupport();
 }

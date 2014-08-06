@@ -35,9 +35,9 @@
 
 package blog.distrib;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
@@ -283,9 +283,9 @@ public class Multinomial implements CondProbDistrib {
   }
 
   @Override
-  public Set getFiniteSupport() {
+  public List getFiniteSupport() {
     checkHasParams();
-    return Collections.unmodifiableSet(finiteSupport);
+    return Collections.unmodifiableList(finiteSupport);
   }
 
   private int n; // the number of trials
@@ -294,5 +294,5 @@ public class Multinomial implements CondProbDistrib {
   private double[] pCDF;
   private boolean hasP;
   private int k; // the number of categories; dimension of p
-  private Set finiteSupport = new HashSet();
+  private List finiteSupport = new ArrayList();
 }

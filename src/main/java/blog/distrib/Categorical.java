@@ -35,11 +35,11 @@
 
 package blog.distrib;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import blog.common.Util;
 
@@ -169,9 +169,9 @@ public class Categorical implements CondProbDistrib {
   }
 
   @Override
-  public Set getFiniteSupport() {
+  public List getFiniteSupport() {
     checkHasParams();
-    return Collections.unmodifiableSet(finiteSupport);
+    return Collections.unmodifiableList(finiteSupport);
   }
 
   private HashMap<Object, Double> map;
@@ -179,5 +179,5 @@ public class Categorical implements CondProbDistrib {
   private Object[] objects; // Ordered collection of objects
   private double[] cdfObjects; // CDF corresponding to objects
   private boolean hasMap;
-  private Set finiteSupport = new HashSet();
+  private List finiteSupport = new ArrayList();
 }

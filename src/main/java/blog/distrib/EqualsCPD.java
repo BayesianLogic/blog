@@ -35,9 +35,9 @@
 
 package blog.distrib;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import blog.model.Clause;
 
@@ -123,12 +123,12 @@ public class EqualsCPD implements CondProbDistrib {
   }
 
   @Override
-  public Set getFiniteSupport() {
+  public List getFiniteSupport() {
     checkHasParams();
-    return Collections.unmodifiableSet(finiteSupport);
+    return Collections.unmodifiableList(finiteSupport);
   }
 
   private Object value;
   private boolean hasValue;
-  private Set finiteSupport = new HashSet();
+  private List finiteSupport = new ArrayList();
 }

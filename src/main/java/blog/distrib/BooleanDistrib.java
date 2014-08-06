@@ -35,9 +35,9 @@
 
 package blog.distrib;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import blog.common.Util;
 
@@ -157,9 +157,9 @@ public class BooleanDistrib implements CondProbDistrib {
   }
 
   @Override
-  public Set getFiniteSupport() {
+  public List getFiniteSupport() {
     checkHasParams();
-    return Collections.unmodifiableSet(finiteSupport);
+    return Collections.unmodifiableList(finiteSupport);
   }
 
   private double p;
@@ -170,5 +170,5 @@ public class BooleanDistrib implements CondProbDistrib {
 
   private boolean hasP;
 
-  private Set finiteSupport = new HashSet();
+  private List finiteSupport = new ArrayList();
 }

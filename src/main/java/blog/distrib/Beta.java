@@ -35,7 +35,7 @@
 
 package blog.distrib;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * A Beta distribution with shape parameters <code>a</code> and <code>b</code>,
@@ -187,7 +187,7 @@ public class Beta implements CondProbDistrib {
   }
 
   @Override
-  public Set getFiniteSupport() {
+  public List getFiniteSupport() {
     checkHasParams();
     return null;
   }

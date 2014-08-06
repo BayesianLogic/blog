@@ -35,9 +35,9 @@
 
 package blog.distrib;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import blog.common.Util;
 
@@ -176,9 +176,9 @@ public class UniformInt implements CondProbDistrib {
   }
 
   @Override
-  public Set getFiniteSupport() {
+  public List getFiniteSupport() {
     checkHasParams();
-    return Collections.unmodifiableSet(finiteSupport);
+    return Collections.unmodifiableList(finiteSupport);
   }
 
   /** Parameter <code>lower</code>. */
@@ -199,5 +199,5 @@ public class UniformInt implements CondProbDistrib {
    * <code>upper</code> inclusive.
    */
   private double logProb;
-  private Set finiteSupport = new HashSet();
+  private List finiteSupport = new ArrayList();
 }

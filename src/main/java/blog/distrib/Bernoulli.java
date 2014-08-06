@@ -35,9 +35,9 @@
 
 package blog.distrib;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * A distribution over {0,1}. It takes one parameter <code>p</code>, which is
@@ -120,14 +120,14 @@ public class Bernoulli implements CondProbDistrib {
   }
 
   @Override
-  public Set getFiniteSupport() {
+  public List getFiniteSupport() {
     booldist.getFiniteSupport();
-    return Collections.unmodifiableSet(finiteSupport);
+    return Collections.unmodifiableList(finiteSupport);
   }
 
   /**
    * Actual holder of underlying boolean distribution.
    */
   private BooleanDistrib booldist;
-  private Set finiteSupport = new HashSet();
+  private List finiteSupport = new ArrayList();
 }
