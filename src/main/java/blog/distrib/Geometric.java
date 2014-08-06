@@ -35,6 +35,8 @@
 
 package blog.distrib;
 
+import java.util.Set;
+
 import blog.common.Util;
 
 /**
@@ -177,6 +179,12 @@ public class Geometric implements CondProbDistrib {
   private void computeLogParams() {
     logAlpha = Math.log(alpha);
     logOneMinusAlpha = Math.log(1 - alpha);
+  }
+
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return null;
   }
 
   private double alpha;

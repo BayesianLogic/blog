@@ -1,5 +1,7 @@
 package blog.distrib;
 
+import java.util.Set;
+
 import blog.common.Util;
 
 /**
@@ -117,6 +119,12 @@ public class UniformReal implements CondProbDistrib {
   @Override
   public String toString() {
     return getClass().getName();
+  }
+
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return null;
   }
 
   private boolean hasLower;

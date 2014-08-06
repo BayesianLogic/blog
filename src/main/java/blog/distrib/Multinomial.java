@@ -35,6 +35,9 @@
 
 package blog.distrib;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
@@ -103,6 +106,12 @@ public class Multinomial implements CondProbDistrib {
       }
       initializeProbabilityVector(p);
       this.hasP = true;
+    }
+    if (n != null && p != null) {
+      finiteSupport.clear();
+      for (int i = 0; i <= n; i++) {
+        finiteSupport.add(i);
+      }
     }
   }
 
@@ -272,10 +281,17 @@ public class Multinomial implements CondProbDistrib {
     return MatrixFactory.createColumnVector(result);
   }
 
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return finiteSupport;
+  }
+
   private int n; // the number of trials
   private boolean hasN;
   private double[] p; // probability vector
   private double[] pCDF;
   private boolean hasP;
   private int k; // the number of categories; dimension of p
+  private Set finiteSupport = new HashSet();
 }

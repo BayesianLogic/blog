@@ -35,6 +35,8 @@
 
 package blog.distrib;
 
+import java.util.Set;
+
 import blog.common.Util;
 
 /**
@@ -236,6 +238,12 @@ public class Gamma implements CondProbDistrib {
   @Override
   public String toString() {
     return "Gamma(" + lambda + ", " + k + ")";
+  }
+
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return null;
   }
 
   private double lambda;

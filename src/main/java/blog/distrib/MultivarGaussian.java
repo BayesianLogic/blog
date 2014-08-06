@@ -35,6 +35,8 @@
 
 package blog.distrib;
 
+import java.util.Set;
+
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
@@ -226,6 +228,12 @@ public class MultivarGaussian implements CondProbDistrib {
     MatrixLib temp = MatrixFactory.fromArray(mat);
     return mean.plus(sqrtCovariance.timesMat(temp));
 
+  }
+
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return null;
   }
 
   private MatrixLib mean;

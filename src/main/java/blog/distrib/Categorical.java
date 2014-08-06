@@ -36,7 +36,9 @@
 package blog.distrib;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import blog.common.Util;
 
@@ -93,6 +95,7 @@ public class Categorical implements CondProbDistrib {
       this.logMap = new HashMap<Object, Double>();
       this.objects = new Object[map.size()];
       this.cdfObjects = new double[map.size()];
+      this.finiteSupport.clear();
       int count = 0;
       double cdf = 0.0;
       for (Map.Entry<?, ?> entry : map.entrySet()) {
@@ -106,6 +109,7 @@ public class Categorical implements CondProbDistrib {
         this.map.put(key, prob);
         this.logMap.put(key, Math.log(prob));
         count += 1;
+        this.finiteSupport.add(key);
       }
       this.hasMap = true;
     }
@@ -163,9 +167,16 @@ public class Categorical implements CondProbDistrib {
     return getClass().getName();
   }
 
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return finiteSupport;
+  }
+
   private HashMap<Object, Double> map;
   private HashMap<Object, Double> logMap;
   private Object[] objects; // Ordered collection of objects
   private double[] cdfObjects; // CDF corresponding to objects
   private boolean hasMap;
+  private Set finiteSupport = new HashSet();
 }

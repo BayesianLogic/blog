@@ -36,6 +36,8 @@
 package blog.distrib;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import blog.common.Util;
 import blog.model.Model;
@@ -79,6 +81,10 @@ public class UniformChoice implements CondProbDistrib {
       this.hasS = true;
       prob = set.isEmpty() ? 1 : 1.0 / set.size();
       logprob = set.isEmpty() ? 0 : (-Math.log(set.size()));
+      finiteSupport.clear();
+      for (int i = 0; i < set.size(); i++) {
+        finiteSupport.add(elements[i]);
+      }
     }
   }
 
@@ -150,9 +156,16 @@ public class UniformChoice implements CondProbDistrib {
     return builder.toString();
   }
 
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return finiteSupport;
+  }
+
   private Object[] elements; // the elements to be sampled from
   private Collection<?> set; // original collect of elements
   private double prob; // pre-calculated probability
   private double logprob; // pre-calculated log of probability
   private boolean hasS;
+  private Set finiteSupport = new HashSet();
 }

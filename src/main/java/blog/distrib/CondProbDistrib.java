@@ -1,5 +1,7 @@
 package blog.distrib;
 
+import java.util.Set;
+
 /**
  * Common interface for all probability distributions.
  * 
@@ -69,4 +71,11 @@ public interface CondProbDistrib {
    * @return The sample value.
    */
   public Object sampleVal();
+
+  /**
+   * Calculate the finite support of this CPD.
+   * 
+   * @return The finite support, null if the support is infinite.
+   */
+  public Set getFiniteSupport();
 }

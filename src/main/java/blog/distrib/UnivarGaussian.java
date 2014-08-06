@@ -2,6 +2,7 @@ package blog.distrib;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 
 import blog.common.Util;
 
@@ -169,6 +170,12 @@ public class UnivarGaussian implements CondProbDistrib {
   @Override
   public String toString() {
     return "UnivarGaussian(" + mean + ", " + variance + ")";
+  }
+
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return null;
   }
 
   /** The Standard Gaussian (mean = 0, variance = 1). */

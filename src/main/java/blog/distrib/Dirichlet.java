@@ -35,6 +35,8 @@
 
 package blog.distrib;
 
+import java.util.Set;
+
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
@@ -271,6 +273,12 @@ public class Dirichlet implements CondProbDistrib {
   @Override
   public String toString() {
     return getClass().getName();
+  }
+
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return null;
   }
 
   private double[] alpha;

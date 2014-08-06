@@ -35,6 +35,8 @@
 
 package blog.distrib;
 
+import java.util.Set;
+
 import blog.common.Util;
 
 /**
@@ -175,6 +177,12 @@ public class Laplace implements CondProbDistrib {
       throw new IllegalArgumentException("mean of Laplace not provided");
     if (!hasDiversity)
       throw new IllegalArgumentException("diversity of Laplace not provided");
+  }
+
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return null;
   }
 
   // parameters

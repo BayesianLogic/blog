@@ -3,6 +3,8 @@
  */
 package blog.distrib;
 
+import java.util.Set;
+
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
@@ -204,6 +206,12 @@ public class InverseWishart implements CondProbDistrib {
       temp = temp.plus(tmpmat.timesMat(tmpmat.transpose()));
     }
     return temp.inverse();
+  }
+
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return null;
   }
 
   private MatrixLib scale;

@@ -3,6 +3,9 @@
  */
 package blog.distrib;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import blog.common.Util;
 import blog.common.numerical.MatrixLib;
 
@@ -51,6 +54,12 @@ public class Discrete implements CondProbDistrib {
       }
       initializeProbabilityVector(value);
       this.hasP = true;
+      this.finiteSupport.clear();
+      for (int i = 0; i < k; i++) {
+        if (!Util.closeToZero(this.p[i])) {
+          finiteSupport.add(i);
+        }
+      }
     }
   }
 
@@ -170,10 +179,16 @@ public class Discrete implements CondProbDistrib {
     return k;
   }
 
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return finiteSupport;
+  }
+
   private double[] p;
   private double[] logP;
   private double[] pCDF;
   private boolean hasP;
   private int k; // the number of categories; dimension of p
-
+  private Set finiteSupport = new HashSet();
 }

@@ -35,6 +35,9 @@
 
 package blog.distrib;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * A distribution over {0,1}. It takes one parameter <code>p</code>, which is
  * the probability
@@ -105,6 +108,9 @@ public class Bernoulli implements CondProbDistrib {
   @Override
   public void setParams(Object[] params) {
     booldist.setParams(params);
+    finiteSupport.clear();
+    finiteSupport.add(1);
+    finiteSupport.add(0);
   }
 
   @Override
@@ -112,9 +118,15 @@ public class Bernoulli implements CondProbDistrib {
     return getClass().getName();
   }
 
+  @Override
+  public Set getFiniteSupport() {
+    booldist.getFiniteSupport();
+    return finiteSupport;
+  }
+
   /**
    * Actual holder of underlying boolean distribution.
    */
   private BooleanDistrib booldist;
-
+  private Set finiteSupport = new HashSet();
 }

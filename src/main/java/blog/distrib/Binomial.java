@@ -35,6 +35,9 @@
 
 package blog.distrib;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import blog.common.Util;
 
 /**
@@ -96,6 +99,12 @@ public class Binomial implements CondProbDistrib {
       }
       this.p = pDouble;
       this.hasP = true;
+    }
+    if (n != null && p != null) {
+      finiteSupport.clear();
+      for (int i = 0; i <= n; i++) {
+        finiteSupport.add(i);
+      }
     }
   }
 
@@ -188,8 +197,15 @@ public class Binomial implements CondProbDistrib {
     return "Binomial(" + n + ", " + p + ")";
   }
 
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return finiteSupport;
+  }
+
   private int n;
   private boolean hasN;
   private double p;
   private boolean hasP;
+  private Set finiteSupport = new HashSet();
 }

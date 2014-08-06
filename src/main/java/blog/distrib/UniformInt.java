@@ -35,6 +35,9 @@
 
 package blog.distrib;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import blog.common.Util;
 
 /**
@@ -96,6 +99,10 @@ public class UniformInt implements CondProbDistrib {
       }
       this.prob = 1.0 / (this.upper - this.lower + 1);
       this.logProb = Math.log(this.prob);
+      this.finiteSupport.clear();
+      for (int i = lower; i <= upper; i++) {
+        finiteSupport.add(i);
+      }
     }
   }
 
@@ -167,6 +174,12 @@ public class UniformInt implements CondProbDistrib {
     return getClass().getName();
   }
 
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return finiteSupport;
+  }
+
   /** Parameter <code>lower</code>. */
   private int lower;
   /** Flag indicating whether <code>lower</code> has been set. */
@@ -185,4 +198,5 @@ public class UniformInt implements CondProbDistrib {
    * <code>upper</code> inclusive.
    */
   private double logProb;
+  private Set finiteSupport = new HashSet();
 }

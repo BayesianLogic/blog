@@ -35,6 +35,8 @@
 
 package blog.distrib;
 
+import java.util.Set;
+
 import blog.common.Util;
 
 /**
@@ -156,6 +158,12 @@ public class Exponential implements CondProbDistrib {
   @Override
   public String toString() {
     return "Exponential(" + lambda + ")";
+  }
+
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return null;
   }
 
   private boolean hasLambda;

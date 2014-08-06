@@ -35,6 +35,8 @@
 
 package blog.distrib;
 
+import java.util.Set;
+
 import blog.common.Util;
 
 /**
@@ -263,6 +265,12 @@ public class Poisson implements CondProbDistrib {
   @Override
   public String toString() {
     return "Poisson(" + lambda + ")";
+  }
+
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return null;
   }
 
   private double lambda;

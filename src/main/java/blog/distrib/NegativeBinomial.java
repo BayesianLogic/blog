@@ -35,6 +35,8 @@
 
 package blog.distrib;
 
+import java.util.Set;
+
 import blog.common.Util;
 
 /**
@@ -178,6 +180,12 @@ public class NegativeBinomial implements CondProbDistrib {
   @Override
   public String toString() {
     return "NegativeBinomial(" + r + ", " + p + ")";
+  }
+
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return null;
   }
 
   private int r;

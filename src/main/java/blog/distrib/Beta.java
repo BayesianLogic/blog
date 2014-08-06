@@ -35,6 +35,8 @@
 
 package blog.distrib;
 
+import java.util.Set;
+
 /**
  * A Beta distribution with shape parameters <code>a</code> and <code>b</code>,
  * defined by f(x) =(x^(a-1)
@@ -182,6 +184,12 @@ public class Beta implements CondProbDistrib {
   @Override
   public String toString() {
     return "Beta(" + a + "," + b + ")";
+  }
+
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return null;
   }
 
   /** Gamma(a, 1). Used for sampling. */

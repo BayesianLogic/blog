@@ -35,6 +35,11 @@
 
 package blog.distrib;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import blog.model.Clause;
+
 /**
  * EqualsCPD class is a convenience hack to represent the situation when the
  * value of the right-hand side of a {@link Clause} depends on a function
@@ -71,6 +76,8 @@ public class EqualsCPD implements CondProbDistrib {
     if (value != null) {
       this.value = value;
       this.hasValue = true;
+      this.finiteSupport.clear();
+      this.finiteSupport.add(value);
     }
   }
 
@@ -114,6 +121,13 @@ public class EqualsCPD implements CondProbDistrib {
     return value;
   }
 
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return finiteSupport;
+  }
+
   private Object value;
   private boolean hasValue;
+  private Set finiteSupport = new HashSet();
 }

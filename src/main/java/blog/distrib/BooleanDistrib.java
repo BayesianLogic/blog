@@ -35,6 +35,9 @@
 
 package blog.distrib;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import blog.common.Util;
 
 /**
@@ -125,6 +128,9 @@ public class BooleanDistrib implements CondProbDistrib {
       this.log1_P = Math.log(1 - pDouble);
       this.hasP = true;
     }
+    finiteSupport.clear();
+    finiteSupport.add(true);
+    finiteSupport.add(false);
   }
 
   /**
@@ -149,6 +155,12 @@ public class BooleanDistrib implements CondProbDistrib {
     return "BooleanDistrib(" + p + ")";
   }
 
+  @Override
+  public Set getFiniteSupport() {
+    checkHasParams();
+    return finiteSupport;
+  }
+
   private double p;
 
   private double logP; // log p
@@ -157,4 +169,5 @@ public class BooleanDistrib implements CondProbDistrib {
 
   private boolean hasP;
 
+  private Set finiteSupport = new HashSet();
 }
