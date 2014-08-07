@@ -16,6 +16,13 @@
 # - A list of files that threw a Java Exception (non-empty Standard Error)
 # - Each file as its content contains the Stack Trace
 
+# Command-line args
+numTrials=$1
+if [ -z $numTrials ]; then
+    echo "Usage: run-examples.sh numTrials"
+    exit 1
+fi
+
 # Location of the directory where all testing output goes
 testDir='tools/testing/output'
 mkdir -p $testDir
@@ -38,7 +45,7 @@ echo "FileName,Status" > $statusFiles
 
 for f in $(find example -name '*.blog'); do
     echo "Running $f"
-    ./blog -n 100 $f 2> "$testDir/errors" > "$testDir/output"
+    ./blog -n $numTrials $f 2> "$testDir/errors" > "$testDir/output"
     errors=`cat tools/testing/output/errors | wc -l`
     if [ "$errors" == "0" ]; then
         echo "$f,Pass" >> $statusFiles
@@ -55,7 +62,7 @@ rm "$testDir/errors" "$testDir/output"
 
 for f in $(find example -name '*.dblog'); do
     echo "Running $f"
-    ./dblog -n 100 $f 2> "$testDir/errors" > "$testDir/output"
+    ./dblog -n $numTrials $f 2> "$testDir/errors" > "$testDir/output"
     errors=`cat tools/testing/output/errors | wc -l`
     if [ "$errors" == "0" ]; then
         echo "$f,Pass" >> $statusFiles
