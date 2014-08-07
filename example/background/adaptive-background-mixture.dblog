@@ -20,7 +20,7 @@
 
 type Component;
 
-#Component ~ UniformInt(1, 15);
+#Component ~ UniformInt(2, 15);
 
 random RealMatrix Weight ~ Dirichlet(0.2 * ones(size({c for Component c}), 1));
 
