@@ -35,6 +35,7 @@
 
 package blog.distrib;
 
+import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
@@ -57,8 +58,6 @@ import blog.common.numerical.MatrixLib;
  * @since July 29, 2014
  */
 public class GEM implements CondProbDistrib {
-
-  private final double TOLERANCE = 10e-3;
 
   /**
    * set parameters for GEM distribution
@@ -173,7 +172,7 @@ public class GEM implements CondProbDistrib {
     for (int i = 0; i < x.numRows(); i++) {
       sum += x.elementAt(i, 0);
     }
-    return (sum <= (1 + TOLERANCE)) && (sum >= (1 - TOLERANCE));
+    return (sum <= (1 + Util.TOLERANCE)) && (sum >= (1 - Util.TOLERANCE));
   }
 
   /*
