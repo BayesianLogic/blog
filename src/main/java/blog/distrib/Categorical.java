@@ -169,7 +169,7 @@ public class Categorical implements CondProbDistrib {
   }
 
   @Override
-  public List getFiniteSupport() {
+  public List<Object> getFiniteSupport() {
     checkHasParams();
     return Collections.unmodifiableList(finiteSupport);
   }
@@ -179,5 +179,5 @@ public class Categorical implements CondProbDistrib {
   private Object[] objects; // Ordered collection of objects
   private double[] cdfObjects; // CDF corresponding to objects
   private boolean hasMap;
-  private List finiteSupport = new ArrayList();
+  private List<Object> finiteSupport = new ArrayList<Object>();
 }

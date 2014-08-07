@@ -187,7 +187,7 @@ public class Beta implements CondProbDistrib {
   }
 
   @Override
-  public List getFiniteSupport() {
+  public List<Object> getFiniteSupport() {
     checkHasParams();
     return null;
   }

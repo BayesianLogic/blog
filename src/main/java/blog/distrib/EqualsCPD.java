@@ -123,12 +123,12 @@ public class EqualsCPD implements CondProbDistrib {
   }
 
   @Override
-  public List getFiniteSupport() {
+  public List<Object> getFiniteSupport() {
     checkHasParams();
     return Collections.unmodifiableList(finiteSupport);
   }
 
   private Object value;
   private boolean hasValue;
-  private List finiteSupport = new ArrayList();
+  private List<Object> finiteSupport = new ArrayList<Object>();
 }

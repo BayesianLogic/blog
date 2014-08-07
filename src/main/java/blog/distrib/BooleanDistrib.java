@@ -157,7 +157,7 @@ public class BooleanDistrib implements CondProbDistrib {
   }
 
   @Override
-  public List getFiniteSupport() {
+  public List<Boolean> getFiniteSupport() {
     checkHasParams();
     return Collections.unmodifiableList(finiteSupport);
   }
@@ -170,5 +170,5 @@ public class BooleanDistrib implements CondProbDistrib {
 
   private boolean hasP;
 
-  private List finiteSupport = new ArrayList();
+  private List<Boolean> finiteSupport = new ArrayList<Boolean>();
 }

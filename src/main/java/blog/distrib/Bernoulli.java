@@ -120,7 +120,7 @@ public class Bernoulli implements CondProbDistrib {
   }
 
   @Override
-  public List getFiniteSupport() {
+  public List<Integer> getFiniteSupport() {
     booldist.getFiniteSupport();
     return Collections.unmodifiableList(finiteSupport);
   }
@@ -129,5 +129,5 @@ public class Bernoulli implements CondProbDistrib {
    * Actual holder of underlying boolean distribution.
    */
   private BooleanDistrib booldist;
-  private List finiteSupport = new ArrayList();
+  private List<Integer> finiteSupport = new ArrayList<Integer>();
 }

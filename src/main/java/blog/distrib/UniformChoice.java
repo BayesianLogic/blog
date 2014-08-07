@@ -158,7 +158,7 @@ public class UniformChoice implements CondProbDistrib {
   }
 
   @Override
-  public List getFiniteSupport() {
+  public List<Object> getFiniteSupport() {
     checkHasParams();
     return Collections.unmodifiableList(finiteSupport);
   }
@@ -168,5 +168,5 @@ public class UniformChoice implements CondProbDistrib {
   private double prob; // pre-calculated probability
   private double logprob; // pre-calculated log of probability
   private boolean hasS;
-  private List finiteSupport = new ArrayList();
+  private List<Object> finiteSupport = new ArrayList<Object>();
 }

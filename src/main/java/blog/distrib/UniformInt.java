@@ -176,7 +176,7 @@ public class UniformInt implements CondProbDistrib {
   }
 
   @Override
-  public List getFiniteSupport() {
+  public List<Integer> getFiniteSupport() {
     checkHasParams();
     return Collections.unmodifiableList(finiteSupport);
   }
@@ -199,5 +199,5 @@ public class UniformInt implements CondProbDistrib {
    * <code>upper</code> inclusive.
    */
   private double logProb;
-  private List finiteSupport = new ArrayList();
+  private List<Integer> finiteSupport = new ArrayList<Integer>();
 }

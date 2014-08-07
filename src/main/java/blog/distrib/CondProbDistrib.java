@@ -75,8 +75,8 @@ public interface CondProbDistrib {
   /**
    * Calculate the finite support of this CPD.
    * 
-   * @return An unmodifiable set represents the finite support, null if the
+   * @return An unmodifiable list represents the finite support, null if the
    *         support is infinite.
    */
-  public List getFiniteSupport();
+  public List<?> getFiniteSupport();
 }

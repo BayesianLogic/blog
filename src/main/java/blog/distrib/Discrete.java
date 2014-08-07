@@ -181,7 +181,7 @@ public class Discrete implements CondProbDistrib {
   }
 
   @Override
-  public List getFiniteSupport() {
+  public List<Integer> getFiniteSupport() {
     checkHasParams();
     return Collections.unmodifiableList(finiteSupport);
   }
@@ -191,5 +191,5 @@ public class Discrete implements CondProbDistrib {
   private double[] pCDF;
   private boolean hasP;
   private int k; // the number of categories; dimension of p
-  private List finiteSupport = new ArrayList();
+  private List<Integer> finiteSupport = new ArrayList<Integer>();
 }

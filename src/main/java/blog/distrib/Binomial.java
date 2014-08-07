@@ -199,7 +199,7 @@ public class Binomial implements CondProbDistrib {
   }
 
   @Override
-  public List getFiniteSupport() {
+  public List<Integer> getFiniteSupport() {
     checkHasParams();
     return Collections.unmodifiableList(finiteSupport);
   }
@@ -208,5 +208,5 @@ public class Binomial implements CondProbDistrib {
   private boolean hasN;
   private double p;
   private boolean hasP;
-  private List finiteSupport = new ArrayList();
+  private List<Integer> finiteSupport = new ArrayList<Integer>();
 }
