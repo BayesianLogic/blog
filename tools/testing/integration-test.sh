@@ -8,8 +8,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # Step 2 --- Run JUnit Tests
-sbt/sbt test 2> /dev/null 1> /dev/null
+sbt/sbt test 2> /dev/null 1> tools/testing/output/tmp
 if [ $? -ne 0 ]; then
+   cat 'tools/testing/output/tmp'
    echo "Unit tests have failed"
    exit 1
 fi
