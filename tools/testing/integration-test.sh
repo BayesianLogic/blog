@@ -1,17 +1,18 @@
 #   This script performs continuous integration.
+TMP=tools/testing/output/tmp
 
 # Step 1 --- Compilations succeeds
-sbt/sbt compile
+sbt/sbt compile 1> $TMP 2>> $TMP 
 if [ $? -ne 0 ]; then
    echo "Compilation failed"
    exit 1
 fi
 
 # Step 2 --- Run JUnit Tests
-sbt/sbt test 2> /dev/null 1> tools/testing/output/tmp
+sbt/sbt test 1> $TMP 2>> $TMP
 if [ $? -ne 0 ]; then
-   cat 'tools/testing/output/tmp'
    echo "Unit tests have failed"
+   cat $TMP
    exit 1
 fi
 
