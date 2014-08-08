@@ -17,7 +17,7 @@ import blog.sample.EvalContext;
  */
 public class CaseSpec extends ArgSpec {
   ArgSpec test;
-  MapSpec clause;
+  MapSpec clause; // map from any value to ArgSpec
   boolean compiled = false;
 
   /*
