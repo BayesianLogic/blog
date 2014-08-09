@@ -290,13 +290,15 @@ public class Multinomial implements CondProbDistrib {
     if (depth == n)
       finiteSupport.add(mat);
     else if (depth == n - 1) {
-      if (remain == 0)
+      if (remain == 0) {
+        mat.setElement(depth, 0, 0);
         calculateFiniteSupport(finiteSupport, mat, depth + 1, 0);
-      else if (!Util.closeToZero(p[depth])) {
+      } else if (!Util.closeToZero(p[depth])) {
         mat.setElement(depth, 0, remain);
         calculateFiniteSupport(finiteSupport, mat, depth + 1, 0);
       }
     } else {
+      mat.setElement(depth, 0, 0);
       calculateFiniteSupport(finiteSupport, mat, depth + 1, remain);
       if (!Util.closeToZero(p[depth])) {
         for (int i = 1; i <= remain; i++) {
