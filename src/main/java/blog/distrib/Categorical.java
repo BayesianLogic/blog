@@ -110,7 +110,8 @@ public class Categorical implements CondProbDistrib {
         this.map.put(key, prob);
         this.logMap.put(key, Math.log(prob));
         count += 1;
-        this.finiteSupport.add(key);
+        if (!Util.closeToZero(prob))
+          this.finiteSupport.add(key);
       }
       this.hasMap = true;
     }
