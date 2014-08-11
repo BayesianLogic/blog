@@ -4,6 +4,10 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Test;
 
@@ -111,6 +115,19 @@ public class TestUniformInt implements TestDistributions {
   @Test
   public void testGetProbIntegerArguments() {
     // not needed
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    UniformInt unif = new UniformInt();
+    unif.setParams(15, 17);
+    List<Integer> list = unif.getFiniteSupport();
+    assertEquals(3, list.size());
+    assertFalse(list.contains(14));
+    assertTrue(list.contains(15));
+    assertTrue(list.contains(16));
+    assertTrue(list.contains(17));
+    assertFalse(list.contains(18));
   }
 
 }

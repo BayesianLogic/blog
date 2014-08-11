@@ -4,6 +4,7 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -108,6 +109,15 @@ public class TestBooleanDistrib implements TestDistributions {
   @Test
   public void testGetProbIntegerArguments() {
     // not needed
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    BooleanDistrib b = new BooleanDistrib();
+    b.setParams(0.1);
+    assertEquals(2, b.getFiniteSupport().size());
+    assertTrue(b.getFiniteSupport().contains(true));
+    assertTrue(b.getFiniteSupport().contains(false));
   }
 
 }

@@ -137,4 +137,11 @@ public class TestExponential implements TestDistributions {
     assertEquals(-2, exp.getLogProb(new Integer(2)), ERROR);
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    Exponential exp = new Exponential();
+    exp.setParams(2);
+    assertEquals(null, exp.getFiniteSupport());
+  }
+
 }

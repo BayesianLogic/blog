@@ -170,4 +170,11 @@ public class TestNegativeBinomial implements TestDistributions {
     // not needed
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    NegativeBinomial nb = new NegativeBinomial();
+    nb.setParams(5, 0.2);
+    assertEquals(null, nb.getFiniteSupport());
+  }
+
 }

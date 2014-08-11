@@ -127,4 +127,11 @@ public class TestGeometric implements TestDistributions {
     // not needed
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    Geometric geom = new Geometric();
+    geom.setParams(0.5);
+    assertEquals(null, geom.getFiniteSupport());
+  }
+
 }

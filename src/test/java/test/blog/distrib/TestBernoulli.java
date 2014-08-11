@@ -4,6 +4,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Test;
 
@@ -83,6 +86,16 @@ public class TestBernoulli implements TestDistributions {
   @Test
   public void testGetProbIntegerArguments() {
     // already tested
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    Bernoulli b = new Bernoulli();
+    b.setParams(new Object[] { 0.6 });
+    List<Integer> s = b.getFiniteSupport();
+    assertEquals(2, s.size());
+    assertTrue(s.contains(0));
+    assertTrue(s.contains(1));
   }
 
 }

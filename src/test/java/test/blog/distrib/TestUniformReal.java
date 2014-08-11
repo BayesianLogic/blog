@@ -90,4 +90,11 @@ public class TestUniformReal implements TestDistributions {
     assertEquals(0.5, unif.getProb(new Integer(2)), ERROR);
     assertEquals(Math.log(0.5), unif.getLogProb(new Integer(2)), ERROR);
   }
+
+  @Test
+  public void testGetFiniteSupport() {
+    UniformReal unif = new UniformReal();
+    unif.setParams(1.0, 2.5);
+    assertEquals(null, unif.getFiniteSupport());
+  }
 }

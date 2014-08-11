@@ -176,4 +176,11 @@ public class TestBeta implements TestDistributions {
     assertEquals(0, beta.getLogProb(0), ERROR);
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    Beta beta = new Beta();
+    beta.setParams(new Object[] { 1, 1 });
+    assertEquals(null, beta.getFiniteSupport());
+  }
+
 }

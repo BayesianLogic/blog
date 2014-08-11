@@ -141,7 +141,6 @@ public class TestMultivarGaussian implements TestDistributions {
   @Test
   public void testDoubleSet() {
     // TODO Auto-generated method stub
-
   }
 
   @Test
@@ -160,5 +159,12 @@ public class TestMultivarGaussian implements TestDistributions {
   @Test
   public void testGetProbIntegerArguments() {
     // not needed
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    MultivarGaussian gauss = new MultivarGaussian();
+    gauss.setParams(mean, variance);
+    assertEquals(null, gauss.getFiniteSupport());
   }
 }

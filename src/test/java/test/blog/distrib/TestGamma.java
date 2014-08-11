@@ -140,4 +140,11 @@ public class TestGamma implements TestDistributions {
         ERROR);
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    Gamma gamma = new Gamma();
+    gamma.setParams(2.0, 1.0);
+    assertEquals(null, gamma.getFiniteSupport());
+  }
+
 }

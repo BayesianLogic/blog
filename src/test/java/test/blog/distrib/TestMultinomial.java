@@ -4,6 +4,7 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -127,5 +128,11 @@ public class TestMultinomial implements TestDistributions {
   @Test
   public void testGetProbIntegerArguments() {
     // not needed
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    // TODO Auto-generated method stub
+    fail("to be implemented");
   }
 }

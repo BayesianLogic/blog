@@ -162,4 +162,12 @@ public class TestUniformVector implements TestDistributions {
     // not needed
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    UniformVector unif = new UniformVector();
+    unif.setParams(new Object[] { MatrixFactory.createRowVector(0, 1),
+        MatrixFactory.createRowVector(0, 1) });
+    assertEquals(null, unif.getFiniteSupport());
+  }
+
 }

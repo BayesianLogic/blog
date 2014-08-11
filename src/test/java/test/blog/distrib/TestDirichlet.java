@@ -252,4 +252,11 @@ public class TestDirichlet implements TestDistributions {
   public void testGetProbIntegerArguments() {
     // not needed
   }
+
+  @Test
+  public void testGetFiniteSupport() {
+    Dirichlet d = new Dirichlet();
+    d.setParams(new Object[] { MatrixFactory.createColumnVector(1, 1) });
+    assertEquals(null, d.getFiniteSupport());
+  }
 }
