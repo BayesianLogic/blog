@@ -4,7 +4,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Test;
 
@@ -132,7 +134,35 @@ public class TestMultinomial implements TestDistributions {
 
   @Test
   public void testGetFiniteSupport() {
-    // TODO Auto-generated method stub
-    fail("to be implemented");
+    Multinomial mult = new Multinomial();
+    mult.setParams(2, MatrixFactory.createColumnVector(0.3, 0.3, 0.6));
+    List<MatrixLib> list = mult.getFiniteSupport();
+    assertEquals(6, list.size());
+    assertTrue(list.contains(MatrixFactory.createColumnVector(0, 0, 2)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(0, 1, 1)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(0, 2, 0)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(1, 0, 1)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(1, 1, 0)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(2, 0, 0)));
+
+    mult = new Multinomial();
+    mult.setParams(3, MatrixFactory.createColumnVector(0.3, 0.3, 0.6));
+    list = mult.getFiniteSupport();
+    assertEquals(10, list.size());
+    MatrixLib lib1 = MatrixFactory.createColumnVector(1.0, 1.0);
+    MatrixLib lib2 = MatrixFactory.createColumnVector(1.0, 1.00001);
+    // assertEquals(lib1, lib2);
+
+    System.out.println(list);
+    assertTrue(list.contains(MatrixFactory.createColumnVector(0.0, 0.0, 3.0)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(0, 1, 2)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(0, 2, 1)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(0, 3, 0)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(1, 0, 2)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(1, 1, 1)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(1, 2, 0)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(2, 0, 1)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(2, 1, 0)));
+    assertTrue(list.contains(MatrixFactory.createColumnVector(3, 0, 0)));
   }
 }

@@ -282,29 +282,32 @@ public class Multinomial implements CondProbDistrib {
       return Collections.unmodifiableList(finiteSupport);
     checkHasParams();
     finiteSupport = new ArrayList<MatrixLib>();
-    MatrixLib mat = MatrixFactory.zeros(n, 1);
-    calculateFiniteSupport(mat, 0, n);
+    double[][] currentMat = new double[k][1];
+    // MatrixLib mat = MatrixFactory.zeros(n, 1);
+    calculateFiniteSupport(currentMat, 0, n);
     return Collections.unmodifiableList(finiteSupport);
   }
 
-  private void calculateFiniteSupport(MatrixLib mat, int depth, int remain) {
-    if (depth == n)
-      finiteSupport.add(mat);
-    else if (depth == n - 1) {
+  private void calculateFiniteSupport(double[][] mat, int depth, int remain) {
+    if (depth == k)
+      finiteSupport.add(MatrixFactory.fromArray(mat));
+    else if (depth == k - 1) {
       if (remain == 0) {
-        mat.setElement(depth, 0, 0);
+        mat[depth][0] = 0;
         calculateFiniteSupport(mat, depth + 1, 0);
       } else if (!Util.closeToZero(p[depth])) {
-        mat.setElement(depth, 0, remain);
+        mat[depth][0] = remain;
         calculateFiniteSupport(mat, depth + 1, 0);
       }
     } else {
-      mat.setElement(depth, 0, 0);
+      mat[depth][0] = 0;
+      double[][] tempMat = Util.copy2DArray(mat);
       calculateFiniteSupport(mat, depth + 1, remain);
       if (!Util.closeToZero(p[depth])) {
         for (int i = 1; i <= remain; i++) {
-          mat.setElement(depth, 0, i);
-          calculateFiniteSupport(mat, depth + 1, remain - i);
+          double[][] newMat = Util.copy2DArray(tempMat);
+          newMat[depth][0] = i;
+          calculateFiniteSupport(newMat, depth + 1, remain - i);
         }
       }
     }
