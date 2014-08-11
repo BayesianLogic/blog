@@ -1,5 +1,6 @@
 #   This script performs continuous integration.
 TMP=tools/testing/output/tmp
+mkdir -p tools/testing/output
 
 # Step 1 --- Compilations succeeds
 sbt/sbt compile 1> $TMP 2>> $TMP 
