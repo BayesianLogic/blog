@@ -101,7 +101,7 @@ public class UniformInt implements CondProbDistrib {
       this.prob = 1.0 / (this.upper - this.lower + 1);
       this.logProb = Math.log(this.prob);
       this.finiteSupport.clear();
-      for (int i = lower; i <= upper; i++) {
+      for (int i = this.lower; i <= this.upper; i++) {
         finiteSupport.add(i);
       }
     }
