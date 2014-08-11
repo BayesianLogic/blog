@@ -278,32 +278,33 @@ public class Multinomial implements CondProbDistrib {
 
   @Override
   public List<MatrixLib> getFiniteSupport() {
+    if (finiteSupport != null)
+      return Collections.unmodifiableList(finiteSupport);
     checkHasParams();
-    List<MatrixLib> finiteSupport = new ArrayList<MatrixLib>();
+    finiteSupport = new ArrayList<MatrixLib>();
     MatrixLib mat = MatrixFactory.zeros(n, 1);
-    calculateFiniteSupport(finiteSupport, mat, 0, n);
+    calculateFiniteSupport(mat, 0, n);
     return Collections.unmodifiableList(finiteSupport);
   }
 
-  private void calculateFiniteSupport(List<MatrixLib> finiteSupport,
-      MatrixLib mat, int depth, int remain) {
+  private void calculateFiniteSupport(MatrixLib mat, int depth, int remain) {
     if (depth == n)
       finiteSupport.add(mat);
     else if (depth == n - 1) {
       if (remain == 0) {
         mat.setElement(depth, 0, 0);
-        calculateFiniteSupport(finiteSupport, mat, depth + 1, 0);
+        calculateFiniteSupport(mat, depth + 1, 0);
       } else if (!Util.closeToZero(p[depth])) {
         mat.setElement(depth, 0, remain);
-        calculateFiniteSupport(finiteSupport, mat, depth + 1, 0);
+        calculateFiniteSupport(mat, depth + 1, 0);
       }
     } else {
       mat.setElement(depth, 0, 0);
-      calculateFiniteSupport(finiteSupport, mat, depth + 1, remain);
+      calculateFiniteSupport(mat, depth + 1, remain);
       if (!Util.closeToZero(p[depth])) {
         for (int i = 1; i <= remain; i++) {
           mat.setElement(depth, 0, i);
-          calculateFiniteSupport(finiteSupport, mat, depth + 1, remain - i);
+          calculateFiniteSupport(mat, depth + 1, remain - i);
         }
       }
     }
@@ -314,5 +315,6 @@ public class Multinomial implements CondProbDistrib {
   private double[] p; // probability vector
   private double[] pCDF;
   private boolean hasP;
-  private int k; // the number of categories; dimension of p
+  private int k; // the number of categories; dimension of pix
+  List<MatrixLib> finiteSupport;
 }
