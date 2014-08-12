@@ -198,5 +198,5 @@ public class Discrete implements CondProbDistrib {
   private double[] pCDF;
   private boolean hasP;
   private int k; // the number of categories; dimension of p
-  private Object[] finiteSupport;
+  private Object[] finiteSupport = null;
 }

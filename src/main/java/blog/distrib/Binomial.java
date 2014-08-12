@@ -205,5 +205,5 @@ public class Binomial implements CondProbDistrib {
   private boolean hasN;
   private double p;
   private boolean hasP;
-  private Object[] finiteSupport;
+  private Object[] finiteSupport = null;
 }

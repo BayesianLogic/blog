@@ -129,5 +129,5 @@ public class EqualsCPD implements CondProbDistrib {
 
   private Object value;
   private boolean hasValue;
-  private Object[] finiteSupport;
+  private Object[] finiteSupport = null;
 }

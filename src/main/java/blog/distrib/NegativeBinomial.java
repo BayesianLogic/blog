@@ -199,5 +199,5 @@ public class NegativeBinomial implements CondProbDistrib {
   private boolean hasR;
   private double p;
   private boolean hasP;
-  private Object[] finiteSupport;
+  private Object[] finiteSupport = null;
 }

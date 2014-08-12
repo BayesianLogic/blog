@@ -282,5 +282,5 @@ public class Poisson implements CondProbDistrib {
 
   private double lambda;
   private boolean hasLambda;
-  private Object[] finiteSupport;
+  private Object[] finiteSupport = null;
 }

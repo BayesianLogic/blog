@@ -169,5 +169,5 @@ public class BooleanDistrib implements CondProbDistrib {
 
   private boolean hasP;
 
-  private Object[] finiteSupport;
+  private Object[] finiteSupport = null;
 }

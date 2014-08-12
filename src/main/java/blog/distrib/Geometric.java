@@ -198,5 +198,5 @@ public class Geometric implements CondProbDistrib {
   private boolean hasAlpha;
   private double logAlpha;
   private double logOneMinusAlpha;
-  private Object[] finiteSupport;
+  private Object[] finiteSupport = null;
 }

@@ -198,5 +198,5 @@ public class UniformInt implements CondProbDistrib {
    * <code>upper</code> inclusive.
    */
   private double logProb;
-  private Object[] finiteSupport;
+  private Object[] finiteSupport = null;
 }

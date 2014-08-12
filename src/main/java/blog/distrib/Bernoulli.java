@@ -128,5 +128,5 @@ public class Bernoulli implements CondProbDistrib {
    * Actual holder of underlying boolean distribution.
    */
   private BooleanDistrib booldist;
-  private Object[] finiteSupport;
+  private Object[] finiteSupport = null;
 }

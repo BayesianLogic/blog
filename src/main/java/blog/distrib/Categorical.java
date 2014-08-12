@@ -194,5 +194,5 @@ public class Categorical implements CondProbDistrib {
   private Object[] objects; // Ordered collection of objects
   private double[] cdfObjects; // CDF corresponding to objects
   private boolean hasMap;
-  private Object[] finiteSupport;
+  private Object[] finiteSupport = null;
 }
