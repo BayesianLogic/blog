@@ -1,0 +1,2 @@
+// The return type should be an integer, but we are given a string
+fixed Integer x = "Random";
