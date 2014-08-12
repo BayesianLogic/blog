@@ -96,10 +96,7 @@ public class UniformInt implements CondProbDistrib {
       }
       this.prob = 1.0 / (this.upper - this.lower + 1);
       this.logProb = Math.log(this.prob);
-      this.finiteSupport = new Object[this.upper - this.lower + 1];
-      for (int i = this.lower; i <= this.upper; i++) {
-        finiteSupport[i - this.lower] = i;
-      }
+      this.finiteSupport = null;
     }
   }
 
@@ -173,7 +170,13 @@ public class UniformInt implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
+    if (finiteSupport == null) {
+      checkHasParams();
+      finiteSupport = new Object[upper - lower + 1];
+      for (int i = lower; i <= upper; i++) {
+        finiteSupport[i - lower] = i;
+      }
+    }
     return finiteSupport;
   }
 

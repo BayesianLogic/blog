@@ -104,6 +104,7 @@ public class Multinomial implements CondProbDistrib {
       initializeProbabilityVector(p);
       this.hasP = true;
     }
+    this.finiteSupport = null;
   }
 
   /**
@@ -280,14 +281,13 @@ public class Multinomial implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    if (finiteSupport != null)
-      return finiteSupport;
-    checkHasParams();
-    finiteSupport = new Object[Util.multichoose(kPos, n)];
-    double[][] currentMat = new double[k][1];
-    // MatrixLib mat = MatrixFactory.zeros(n, 1);
-    supportNum = 0;
-    calculateFiniteSupport(currentMat, 0, n);
+    if (finiteSupport == null) {
+      checkHasParams();
+      finiteSupport = new Object[Util.multichoose(kPos, n)];
+      double[][] currentMat = new double[k][1];
+      supportNum = 0;
+      calculateFiniteSupport(currentMat, 0, n);
+    }
     return finiteSupport;
   }
 

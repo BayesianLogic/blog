@@ -105,9 +105,7 @@ public class Bernoulli implements CondProbDistrib {
   @Override
   public void setParams(Object[] params) {
     booldist.setParams(params);
-    finiteSupport = new Object[2];
-    finiteSupport[0] = 0;
-    finiteSupport[1] = 1;
+    finiteSupport = null;
   }
 
   @Override
@@ -117,7 +115,12 @@ public class Bernoulli implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    booldist.getFiniteSupport();
+    if (finiteSupport == null) {
+      booldist.getFiniteSupport();
+      finiteSupport = new Object[2];
+      finiteSupport[0] = 0;
+      finiteSupport[1] = 1;
+    }
     return finiteSupport;
   }
 

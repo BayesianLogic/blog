@@ -73,8 +73,7 @@ public class EqualsCPD implements CondProbDistrib {
     if (value != null) {
       this.value = value;
       this.hasValue = true;
-      this.finiteSupport = new Object[1];
-      this.finiteSupport[0] = value;
+      this.finiteSupport = null;
     }
   }
 
@@ -120,7 +119,11 @@ public class EqualsCPD implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
+    if (finiteSupport == null) {
+      checkHasParams();
+      finiteSupport = new Object[1];
+      finiteSupport[0] = value;
+    }
     return finiteSupport;
   }
 

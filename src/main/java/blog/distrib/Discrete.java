@@ -51,20 +51,7 @@ public class Discrete implements CondProbDistrib {
       }
       initializeProbabilityVector(value);
       this.hasP = true;
-      int supportSize = 0;
-      for (int i = 0; i < k; i++) {
-        if (!Util.closeToZero(this.p[i])) {
-          supportSize++;
-        }
-      }
-      this.finiteSupport = new Object[supportSize];
-      int curSupportIndex = 0;
-      for (int i = 0; i < k; i++) {
-        if (!Util.closeToZero(this.p[i])) {
-          this.finiteSupport[curSupportIndex] = i;
-          curSupportIndex++;
-        }
-      }
+      this.finiteSupport = null;
     }
   }
 
@@ -186,7 +173,23 @@ public class Discrete implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
+    if (finiteSupport == null) {
+      checkHasParams();
+      int supportSize = 0;
+      for (int i = 0; i < k; i++) {
+        if (!Util.closeToZero(this.p[i])) {
+          supportSize++;
+        }
+      }
+      finiteSupport = new Object[supportSize];
+      int curSupportIndex = 0;
+      for (int i = 0; i < k; i++) {
+        if (!Util.closeToZero(this.p[i])) {
+          finiteSupport[curSupportIndex] = i;
+          curSupportIndex++;
+        }
+      }
+    }
     return finiteSupport;
   }
 

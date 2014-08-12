@@ -92,7 +92,6 @@ public class Categorical implements CondProbDistrib {
       this.logMap = new HashMap<Object, Double>();
       this.objects = new Object[map.size()];
       this.cdfObjects = new double[map.size()];
-      int supportSize = 0;
       int count = 0;
       double cdf = 0.0;
       for (Map.Entry<?, ?> entry : map.entrySet()) {
@@ -106,22 +105,9 @@ public class Categorical implements CondProbDistrib {
         this.map.put(key, prob);
         this.logMap.put(key, Math.log(prob));
         count += 1;
-        if (!Util.closeToZero(prob))
-          supportSize++;
-      }
-      int curSupportIndex = 0;
-      this.finiteSupport = new Object[supportSize];
-      for (Map.Entry<?, ?> entry : map.entrySet()) {
-        Object key = entry.getKey();
-        Number num = (Number) entry.getValue();
-        double value = num.doubleValue();
-        double prob = value / sum;
-        if (!Util.closeToZero(prob)) {
-          this.finiteSupport[curSupportIndex] = key;
-          curSupportIndex++;
-        }
       }
       this.hasMap = true;
+      this.finiteSupport = null;
     }
   }
 
@@ -179,7 +165,27 @@ public class Categorical implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
+    if (finiteSupport == null) {
+      checkHasParams();
+      int supportSize = 0;
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
+        Number num = (Number) entry.getValue();
+        double prob = num.doubleValue();
+        if (!Util.closeToZero(prob))
+          supportSize++;
+      }
+      int curSupportIndex = 0;
+      finiteSupport = new Object[supportSize];
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
+        Object key = entry.getKey();
+        Number num = (Number) entry.getValue();
+        double prob = num.doubleValue();
+        if (!Util.closeToZero(prob)) {
+          finiteSupport[curSupportIndex] = key;
+          curSupportIndex++;
+        }
+      }
+    }
     return finiteSupport;
   }
 

@@ -79,7 +79,6 @@ public class UniformChoice implements CondProbDistrib {
       this.hasS = true;
       prob = set.isEmpty() ? 1 : 1.0 / set.size();
       logprob = set.isEmpty() ? 0 : (-Math.log(set.size()));
-      finiteSupport = elements.clone();
     }
   }
 
@@ -154,7 +153,7 @@ public class UniformChoice implements CondProbDistrib {
   @Override
   public Object[] getFiniteSupport() {
     checkHasParams();
-    return finiteSupport;
+    return elements.clone();
   }
 
   private Object[] elements; // the elements to be sampled from
@@ -162,5 +161,4 @@ public class UniformChoice implements CondProbDistrib {
   private double prob; // pre-calculated probability
   private double logprob; // pre-calculated log of probability
   private boolean hasS;
-  private Object[] finiteSupport;
 }
