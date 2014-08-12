@@ -325,5 +325,5 @@ public class Multinomial implements CondProbDistrib {
   private int k; // the number of categories; dimension of p
   private int kPos; // the number of categories with non-zero probability
   private int supportNum;
-  Object[] finiteSupport;
+  private Object[] finiteSupport;
 }
