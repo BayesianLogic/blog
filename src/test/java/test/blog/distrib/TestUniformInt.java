@@ -4,7 +4,6 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -120,9 +119,9 @@ public class TestUniformInt implements TestDistributions {
     unif.setParams(15, 17);
     Object[] list = unif.getFiniteSupport();
     assertEquals(3, list.length);
-    assertTrue(list[0] == (Object) 15);
-    assertTrue(list[1] == (Object) 16);
-    assertTrue(list[2] == (Object) 17);
+    assertEquals(list[0], 15);
+    assertEquals(list[1], 16);
+    assertEquals(list[2], 17);
   }
 
 }

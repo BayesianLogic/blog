@@ -4,7 +4,6 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -92,8 +91,8 @@ public class TestBernoulli implements TestDistributions {
     b.setParams(new Object[] { 0.6 });
     Object[] s = b.getFiniteSupport();
     assertEquals(2, s.length);
-    assertTrue(s[0] == (Object) 0);
-    assertTrue(s[1] == (Object) 1);
+    assertEquals(s[0], 0);
+    assertEquals(s[1], 1);
   }
 
 }

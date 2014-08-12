@@ -4,7 +4,6 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -193,7 +192,7 @@ public class TestBinomial implements TestDistributions {
     b.setParams(10, 0.5);
     assertEquals(11, b.getFiniteSupport().length);
     for (int i = 0; i <= 10; i++) {
-      assertTrue(b.getFiniteSupport()[i] == (Object) i);
+      assertEquals(b.getFiniteSupport()[i], i);
     }
   }
 

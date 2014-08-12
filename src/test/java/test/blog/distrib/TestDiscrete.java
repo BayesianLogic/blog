@@ -1,7 +1,6 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -95,9 +94,9 @@ public class TestDiscrete implements TestDistributions {
         0.0, 0.8) });
     Object[] list = disc.getFiniteSupport();
     assertEquals(3, list.length);
-    assertTrue(list[0] == (Object) 0);
-    assertTrue(list[1] == (Object) 1);
-    assertTrue(list[2] == (Object) 3);
+    assertEquals(list[0], 0);
+    assertEquals(list[1], 1);
+    assertEquals(list[2], 3);
   }
 
 }
