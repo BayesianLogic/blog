@@ -6,14 +6,17 @@
 # This script runs all the files in $ERROR_EX_DIR with blog and asserts
 # a non-zero exit code. All files that do not report a non-zero exit code
 # are placed in tools/testing/output_incorrect/incorrect_examples.txt
-ERROR_EX_DIR=tools/error-examples
+ERROR_EX_DIR=tools/error-examples/current
 INCORRECT_EX=tools/testing/output_incorrect/incorrect_examples.txt
 
 rm -f $INCORRECT_EX
 for f in $(find $ERROR_EX_DIR -name '*.blog'); do
-   echo $f
    ./blog -n 100 $f 2> /dev/null 1> /dev/null
    if [ $? -eq 0 ]; then
        echo $f >> $INCORRECT_EX 
    fi
 done	
+
+if [ -e $INCORRECT_EX ]; then
+   exit 1
+fi
