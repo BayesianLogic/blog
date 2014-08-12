@@ -1,7 +1,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.junit.Test;
@@ -145,12 +147,11 @@ public class TestUnivariateGaussian {
     testGaussian(gaussian);
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     UnivarGaussian gaussian = new UnivarGaussian();
     gaussian.setParams(MEAN, VARIANCE);
-    assertEquals(null, gaussian.getFiniteSupport());
+    assertTrue(Arrays.equals(null, gaussian.getFiniteSupport()));
   }
 
 }

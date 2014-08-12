@@ -4,6 +4,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -140,12 +143,11 @@ public class TestGamma implements TestDistributions {
         ERROR);
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     Gamma gamma = new Gamma();
     gamma.setParams(2.0, 1.0);
-    assertEquals(null, gamma.getFiniteSupport());
+    assertTrue(Arrays.equals(null, gamma.getFiniteSupport()));
   }
 
 }

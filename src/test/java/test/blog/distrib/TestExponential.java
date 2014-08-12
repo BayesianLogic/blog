@@ -4,6 +4,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -137,12 +140,11 @@ public class TestExponential implements TestDistributions {
     assertEquals(-2, exp.getLogProb(new Integer(2)), ERROR);
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     Exponential exp = new Exponential();
     exp.setParams(2);
-    assertEquals(null, exp.getFiniteSupport());
+    assertTrue(Arrays.equals(null, exp.getFiniteSupport()));
   }
 
 }

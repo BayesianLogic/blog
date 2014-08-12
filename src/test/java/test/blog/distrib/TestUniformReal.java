@@ -4,6 +4,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -90,11 +93,10 @@ public class TestUniformReal implements TestDistributions {
     assertEquals(Math.log(0.5), unif.getLogProb(new Integer(2)), ERROR);
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     UniformReal unif = new UniformReal();
     unif.setParams(1.0, 2.5);
-    assertEquals(null, unif.getFiniteSupport());
+    assertTrue(Arrays.equals(null, unif.getFiniteSupport()));
   }
 }

@@ -1,7 +1,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -161,11 +163,10 @@ public class TestMultivarGaussian implements TestDistributions {
     // not needed
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     MultivarGaussian gauss = new MultivarGaussian();
     gauss.setParams(mean, variance);
-    assertEquals(null, gauss.getFiniteSupport());
+    assertTrue(Arrays.equals(null, gauss.getFiniteSupport()));
   }
 }

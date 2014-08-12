@@ -4,7 +4,10 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -253,11 +256,10 @@ public class TestDirichlet implements TestDistributions {
     // not needed
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     Dirichlet d = new Dirichlet();
     d.setParams(new Object[] { MatrixFactory.createColumnVector(1, 1) });
-    assertEquals(null, d.getFiniteSupport());
+    assertTrue(Arrays.equals(null, d.getFiniteSupport()));
   }
 }
