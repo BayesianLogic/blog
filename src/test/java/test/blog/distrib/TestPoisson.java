@@ -109,12 +109,11 @@ public class TestPoisson implements TestDistributions {
     // not needed
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     Poisson poiss = new Poisson();
-    poiss.setParams(2);
-    assertEquals(null, poiss.getFiniteSupport());
+    poiss.setParams(1);
+    assertEquals(21, poiss.getFiniteSupport().length);
   }
 
 }

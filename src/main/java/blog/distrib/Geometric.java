@@ -89,6 +89,7 @@ public class Geometric implements CondProbDistrib {
       this.alpha = alphaDouble;
       this.hasAlpha = true;
       computeLogParams();
+      this.finiteSupport = null;
     }
   }
 
@@ -181,12 +182,21 @@ public class Geometric implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
-    return null;
+    if (finiteSupport == null) {
+      checkHasParams();
+      int supportSize = 0;
+      while (!Util.closeToZero(getProb(supportSize)))
+        supportSize++;
+      finiteSupport = new Object[supportSize];
+      for (int i = 0; i < supportSize; i++)
+        finiteSupport[i] = i;
+    }
+    return finiteSupport;
   }
 
   private double alpha;
   private boolean hasAlpha;
   private double logAlpha;
   private double logOneMinusAlpha;
+  private Object[] finiteSupport;
 }

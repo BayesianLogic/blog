@@ -99,6 +99,7 @@ public class NegativeBinomial implements CondProbDistrib {
       this.hasP = true;
       this.p = pDouble;
     }
+    this.finiteSupport = null;
   }
 
   private void checkHasParams() {
@@ -182,12 +183,21 @@ public class NegativeBinomial implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
-    return null;
+    if (finiteSupport == null) {
+      checkHasParams();
+      int supportSize = 0;
+      while (!Util.closeToZero(getProb(supportSize)))
+        supportSize++;
+      finiteSupport = new Object[supportSize];
+      for (int i = 0; i < supportSize; i++)
+        finiteSupport[i] = i;
+    }
+    return finiteSupport;
   }
 
   private int r;
   private boolean hasR;
   private double p;
   private boolean hasP;
+  private Object[] finiteSupport;
 }

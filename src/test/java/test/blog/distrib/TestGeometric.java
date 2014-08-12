@@ -127,12 +127,11 @@ public class TestGeometric implements TestDistributions {
     // not needed
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     Geometric geom = new Geometric();
     geom.setParams(0.5);
-    assertEquals(null, geom.getFiniteSupport());
+    assertEquals(66, geom.getFiniteSupport().length);
   }
 
 }
