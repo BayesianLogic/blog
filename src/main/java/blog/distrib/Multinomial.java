@@ -133,15 +133,9 @@ public class Multinomial implements CondProbDistrib {
     this.pCDF = new double[k];
     this.p[0] = p.elementAt(0, 0) / sum;
     this.pCDF[0] = this.p[0];
-    this.kPos = 0;
     for (int i = 1; i < p.numRows(); i++) {
       this.p[i] = p.elementAt(i, 0) / sum;
       this.pCDF[i] = pCDF[i - 1] + this.p[i];
-    }
-    for (int i = 0; i < p.numRows(); i++) {
-      if (!Util.closeToZero(this.p[i])) {
-        this.kPos++;
-      }
     }
   }
 
@@ -283,6 +277,12 @@ public class Multinomial implements CondProbDistrib {
   public Object[] getFiniteSupport() {
     if (finiteSupport == null) {
       checkHasParams();
+      int kPos = 0;
+      for (int i = 0; i < p.length; i++) {
+        if (!Util.closeToZero(this.p[i])) {
+          kPos++;
+        }
+      }
       finiteSupport = new Object[Util.multichoose(kPos, n)];
       double[][] currentMat = new double[k][1];
       supportNum = 0;
@@ -323,7 +323,6 @@ public class Multinomial implements CondProbDistrib {
   private double[] pCDF;
   private boolean hasP;
   private int k; // the number of categories; dimension of p
-  private int kPos; // the number of categories with non-zero probability
   private int supportNum;
   private Object[] finiteSupport = null;
 }
