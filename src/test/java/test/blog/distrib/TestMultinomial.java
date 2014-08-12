@@ -133,15 +133,12 @@ public class TestMultinomial implements TestDistributions {
   @Test
   public void testGetFiniteSupport() {
     Multinomial mult = new Multinomial();
-    mult.setParams(2, MatrixFactory.createColumnVector(0.3, 0.3, 0.6));
+    mult.setParams(2, MatrixFactory.createColumnVector(0.3, 0, 0.7));
     Object[] list = mult.getFiniteSupport();
-    assertEquals(6, list.length);
+    assertEquals(3, list.length);
     assertTrue(list[0].equals(MatrixFactory.createColumnVector(0, 0, 2)));
-    assertTrue(list[1].equals(MatrixFactory.createColumnVector(0, 1, 1)));
-    assertTrue(list[2].equals(MatrixFactory.createColumnVector(0, 2, 0)));
-    assertTrue(list[3].equals(MatrixFactory.createColumnVector(1, 0, 1)));
-    assertTrue(list[4].equals(MatrixFactory.createColumnVector(1, 1, 0)));
-    assertTrue(list[5].equals(MatrixFactory.createColumnVector(2, 0, 0)));
+    assertTrue(list[1].equals(MatrixFactory.createColumnVector(1, 0, 1)));
+    assertTrue(list[2].equals(MatrixFactory.createColumnVector(2, 0, 0)));
 
     mult = new Multinomial();
     mult.setParams(3, MatrixFactory.createColumnVector(0.3, 0.3, 0.6));
