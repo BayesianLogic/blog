@@ -35,11 +35,10 @@
 
 package blog.distrib;
 
-import blog.model.Clause;
 
 /**
  * EqualsCPD class is a convenience hack to represent the situation when the
- * value of the right-hand side of a {@link Clause} depends on a function
+ * value of the right-hand side of a Clause depends on a function
  * application rather than on a CPD.
  */
 public class EqualsCPD implements CondProbDistrib {
