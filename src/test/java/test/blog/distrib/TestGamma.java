@@ -140,6 +140,7 @@ public class TestGamma implements TestDistributions {
         ERROR);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     Gamma gamma = new Gamma();

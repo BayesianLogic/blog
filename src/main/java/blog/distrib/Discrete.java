@@ -3,10 +3,6 @@
  */
 package blog.distrib;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import blog.common.Util;
 import blog.common.numerical.MatrixLib;
 
@@ -55,10 +51,18 @@ public class Discrete implements CondProbDistrib {
       }
       initializeProbabilityVector(value);
       this.hasP = true;
-      this.finiteSupport.clear();
+      int supportSize = 0;
       for (int i = 0; i < k; i++) {
         if (!Util.closeToZero(this.p[i])) {
-          finiteSupport.add(i);
+          supportSize++;
+        }
+      }
+      this.finiteSupport = new Object[supportSize];
+      int curSupportIndex = 0;
+      for (int i = 0; i < k; i++) {
+        if (!Util.closeToZero(this.p[i])) {
+          this.finiteSupport[curSupportIndex] = i;
+          curSupportIndex++;
         }
       }
     }
@@ -181,9 +185,9 @@ public class Discrete implements CondProbDistrib {
   }
 
   @Override
-  public List<Integer> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
-    return Collections.unmodifiableList(finiteSupport);
+    return finiteSupport;
   }
 
   private double[] p;
@@ -191,5 +195,5 @@ public class Discrete implements CondProbDistrib {
   private double[] pCDF;
   private boolean hasP;
   private int k; // the number of categories; dimension of p
-  private List<Integer> finiteSupport = new ArrayList<Integer>();
+  private Object[] finiteSupport;
 }

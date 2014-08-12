@@ -3,8 +3,6 @@
  */
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
@@ -200,7 +198,7 @@ public class InverseWishart implements CondProbDistrib {
     checkHasParams();
     MatrixLib temp = MatrixFactory.zeros(d, d);
     MultivarGaussian tmp = new MultivarGaussian();
-    tmp.setParams(new MatrixFactory().zeros(d, 1), scale);
+    tmp.setParams(MatrixFactory.zeros(d, 1), scale);
     for (int i = 0; i < freeDeg; i++) {
       MatrixLib tmpmat = tmp.sample_value();
       temp = temp.plus(tmpmat.timesMat(tmpmat.transpose()));
@@ -209,7 +207,7 @@ public class InverseWishart implements CondProbDistrib {
   }
 
   @Override
-  public List<Object> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
     return null;
   }

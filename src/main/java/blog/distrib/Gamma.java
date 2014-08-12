@@ -35,8 +35,6 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
 
 /**
@@ -223,7 +221,7 @@ public class Gamma implements CondProbDistrib {
   public static double lgamma(double x) {
     double[] cof = { 76.18009172947146, -86.50532032941677, 24.01409824083091,
         -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5 };
-    double y, z, ser, tmp;
+    double y, ser, tmp;
     y = x;
     tmp = x + 5.5;
     tmp -= ((x + 0.5) * Math.log(tmp));
@@ -241,7 +239,7 @@ public class Gamma implements CondProbDistrib {
   }
 
   @Override
-  public List<Object> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
     return null;
   }

@@ -127,6 +127,7 @@ public class TestGeometric implements TestDistributions {
     // not needed
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     Geometric geom = new Geometric();

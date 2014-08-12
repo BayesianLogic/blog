@@ -6,8 +6,6 @@ package test.blog.distrib;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
 import org.junit.Test;
 
 import blog.common.numerical.MatrixFactory;
@@ -136,33 +134,29 @@ public class TestMultinomial implements TestDistributions {
   public void testGetFiniteSupport() {
     Multinomial mult = new Multinomial();
     mult.setParams(2, MatrixFactory.createColumnVector(0.3, 0.3, 0.6));
-    List<MatrixLib> list = mult.getFiniteSupport();
-    assertEquals(6, list.size());
-    assertTrue(list.contains(MatrixFactory.createColumnVector(0, 0, 2)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(0, 1, 1)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(0, 2, 0)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(1, 0, 1)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(1, 1, 0)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(2, 0, 0)));
+    Object[] list = mult.getFiniteSupport();
+    assertEquals(6, list.length);
+    assertTrue(list[0].equals(MatrixFactory.createColumnVector(0, 0, 2)));
+    assertTrue(list[1].equals(MatrixFactory.createColumnVector(0, 1, 1)));
+    assertTrue(list[2].equals(MatrixFactory.createColumnVector(0, 2, 0)));
+    assertTrue(list[3].equals(MatrixFactory.createColumnVector(1, 0, 1)));
+    assertTrue(list[4].equals(MatrixFactory.createColumnVector(1, 1, 0)));
+    assertTrue(list[5].equals(MatrixFactory.createColumnVector(2, 0, 0)));
 
     mult = new Multinomial();
     mult.setParams(3, MatrixFactory.createColumnVector(0.3, 0.3, 0.6));
     list = mult.getFiniteSupport();
-    assertEquals(10, list.size());
-    MatrixLib lib1 = MatrixFactory.createColumnVector(1.0, 1.0);
-    MatrixLib lib2 = MatrixFactory.createColumnVector(1.0, 1.00001);
-    // assertEquals(lib1, lib2);
+    assertEquals(10, list.length);
 
-    System.out.println(list);
-    assertTrue(list.contains(MatrixFactory.createColumnVector(0.0, 0.0, 3.0)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(0, 1, 2)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(0, 2, 1)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(0, 3, 0)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(1, 0, 2)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(1, 1, 1)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(1, 2, 0)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(2, 0, 1)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(2, 1, 0)));
-    assertTrue(list.contains(MatrixFactory.createColumnVector(3, 0, 0)));
+    assertTrue(list[0].equals(MatrixFactory.createColumnVector(0, 0, 3)));
+    assertTrue(list[1].equals(MatrixFactory.createColumnVector(0, 1, 2)));
+    assertTrue(list[2].equals(MatrixFactory.createColumnVector(0, 2, 1)));
+    assertTrue(list[3].equals(MatrixFactory.createColumnVector(0, 3, 0)));
+    assertTrue(list[4].equals(MatrixFactory.createColumnVector(1, 0, 2)));
+    assertTrue(list[5].equals(MatrixFactory.createColumnVector(1, 1, 1)));
+    assertTrue(list[6].equals(MatrixFactory.createColumnVector(1, 2, 0)));
+    assertTrue(list[7].equals(MatrixFactory.createColumnVector(2, 0, 1)));
+    assertTrue(list[8].equals(MatrixFactory.createColumnVector(2, 1, 0)));
+    assertTrue(list[9].equals(MatrixFactory.createColumnVector(3, 0, 0)));
   }
 }

@@ -35,10 +35,6 @@
 
 package blog.distrib;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
@@ -135,10 +131,16 @@ public class Multinomial implements CondProbDistrib {
     this.p = new double[k];
     this.pCDF = new double[k];
     this.p[0] = p.elementAt(0, 0) / sum;
-    pCDF[0] = this.p[0];
+    this.pCDF[0] = this.p[0];
+    this.kPos = 0;
     for (int i = 1; i < p.numRows(); i++) {
       this.p[i] = p.elementAt(i, 0) / sum;
       this.pCDF[i] = pCDF[i - 1] + this.p[i];
+    }
+    for (int i = 0; i < p.numRows(); i++) {
+      if (!Util.closeToZero(this.p[i])) {
+        this.kPos++;
+      }
     }
   }
 
@@ -277,21 +279,23 @@ public class Multinomial implements CondProbDistrib {
   }
 
   @Override
-  public List<MatrixLib> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     if (finiteSupport != null)
-      return Collections.unmodifiableList(finiteSupport);
+      return finiteSupport;
     checkHasParams();
-    finiteSupport = new ArrayList<MatrixLib>();
+    finiteSupport = new Object[Util.multichoose(kPos, n)];
     double[][] currentMat = new double[k][1];
     // MatrixLib mat = MatrixFactory.zeros(n, 1);
+    supportNum = 0;
     calculateFiniteSupport(currentMat, 0, n);
-    return Collections.unmodifiableList(finiteSupport);
+    return finiteSupport;
   }
 
   private void calculateFiniteSupport(double[][] mat, int depth, int remain) {
-    if (depth == k)
-      finiteSupport.add(MatrixFactory.fromArray(mat));
-    else if (depth == k - 1) {
+    if (depth == k) {
+      finiteSupport[supportNum] = MatrixFactory.fromArray(mat);
+      supportNum++;
+    } else if (depth == k - 1) {
       if (remain == 0) {
         mat[depth][0] = 0;
         calculateFiniteSupport(mat, depth + 1, 0);
@@ -319,5 +323,7 @@ public class Multinomial implements CondProbDistrib {
   private double[] pCDF;
   private boolean hasP;
   private int k; // the number of categories; dimension of pix
-  List<MatrixLib> finiteSupport;
+  private int kPos; // the number of categories with non-zero probability
+  private int supportNum;
+  Object[] finiteSupport;
 }

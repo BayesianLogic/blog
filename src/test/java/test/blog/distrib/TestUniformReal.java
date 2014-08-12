@@ -14,7 +14,6 @@ import blog.distrib.UniformReal;
  */
 public class TestUniformReal implements TestDistributions {
   private final double ERROR = 1e-10;
-  private final double EPSILON = 1e-2;
 
   /** Uniform Distribution, lower = 1.0, upper = 3.0 . */
   public void testUniform1(UniformReal unif) {
@@ -91,6 +90,7 @@ public class TestUniformReal implements TestDistributions {
     assertEquals(Math.log(0.5), unif.getLogProb(new Integer(2)), ERROR);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     UniformReal unif = new UniformReal();

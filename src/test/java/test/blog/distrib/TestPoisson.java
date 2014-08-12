@@ -109,6 +109,7 @@ public class TestPoisson implements TestDistributions {
     // not needed
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     Poisson poiss = new Poisson();

@@ -137,6 +137,7 @@ public class TestExponential implements TestDistributions {
     assertEquals(-2, exp.getLogProb(new Integer(2)), ERROR);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     Exponential exp = new Exponential();

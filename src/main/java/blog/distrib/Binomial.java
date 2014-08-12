@@ -35,10 +35,6 @@
 
 package blog.distrib;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import blog.common.Util;
 
 /**
@@ -102,9 +98,9 @@ public class Binomial implements CondProbDistrib {
       this.hasP = true;
     }
     if (n != null && p != null) {
-      finiteSupport.clear();
+      this.finiteSupport = new Object[n + 1];
       for (int i = 0; i <= n; i++) {
-        finiteSupport.add(i);
+        this.finiteSupport[i] = i;
       }
     }
   }
@@ -199,14 +195,14 @@ public class Binomial implements CondProbDistrib {
   }
 
   @Override
-  public List<Integer> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
-    return Collections.unmodifiableList(finiteSupport);
+    return finiteSupport;
   }
 
   private int n;
   private boolean hasN;
   private double p;
   private boolean hasP;
-  private List<Integer> finiteSupport = new ArrayList<Integer>();
+  private Object[] finiteSupport;
 }

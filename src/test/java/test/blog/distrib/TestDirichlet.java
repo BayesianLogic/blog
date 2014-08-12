@@ -253,6 +253,7 @@ public class TestDirichlet implements TestDistributions {
     // not needed
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     Dirichlet d = new Dirichlet();

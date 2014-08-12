@@ -35,10 +35,7 @@
 
 package blog.distrib;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import blog.common.Util;
 import blog.model.Model;
@@ -82,10 +79,7 @@ public class UniformChoice implements CondProbDistrib {
       this.hasS = true;
       prob = set.isEmpty() ? 1 : 1.0 / set.size();
       logprob = set.isEmpty() ? 0 : (-Math.log(set.size()));
-      finiteSupport.clear();
-      for (int i = 0; i < set.size(); i++) {
-        finiteSupport.add(elements[i]);
-      }
+      finiteSupport = elements.clone();
     }
   }
 
@@ -158,9 +152,9 @@ public class UniformChoice implements CondProbDistrib {
   }
 
   @Override
-  public List<Object> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
-    return Collections.unmodifiableList(finiteSupport);
+    return finiteSupport;
   }
 
   private Object[] elements; // the elements to be sampled from
@@ -168,5 +162,5 @@ public class UniformChoice implements CondProbDistrib {
   private double prob; // pre-calculated probability
   private double logprob; // pre-calculated log of probability
   private boolean hasS;
-  private List<Object> finiteSupport = new ArrayList<Object>();
+  private Object[] finiteSupport;
 }

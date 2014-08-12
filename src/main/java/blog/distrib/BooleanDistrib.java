@@ -35,10 +35,6 @@
 
 package blog.distrib;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import blog.common.Util;
 
 /**
@@ -129,9 +125,9 @@ public class BooleanDistrib implements CondProbDistrib {
       this.log1_P = Math.log(1 - pDouble);
       this.hasP = true;
     }
-    finiteSupport.clear();
-    finiteSupport.add(true);
-    finiteSupport.add(false);
+    this.finiteSupport = new Object[2];
+    this.finiteSupport[0] = true;
+    this.finiteSupport[1] = false;
   }
 
   /**
@@ -157,9 +153,9 @@ public class BooleanDistrib implements CondProbDistrib {
   }
 
   @Override
-  public List<Boolean> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
-    return Collections.unmodifiableList(finiteSupport);
+    return finiteSupport;
   }
 
   private double p;
@@ -170,5 +166,5 @@ public class BooleanDistrib implements CondProbDistrib {
 
   private boolean hasP;
 
-  private List<Boolean> finiteSupport = new ArrayList<Boolean>();
+  private Object[] finiteSupport;
 }

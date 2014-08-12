@@ -2,7 +2,6 @@ package blog.distrib;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import blog.common.Util;
 
@@ -173,7 +172,7 @@ public class UnivarGaussian implements CondProbDistrib {
   }
 
   @Override
-  public List<Object> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
     return null;
   }

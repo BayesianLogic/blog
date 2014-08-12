@@ -35,8 +35,6 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
 
 /**
@@ -161,7 +159,7 @@ public class Exponential implements CondProbDistrib {
   }
 
   @Override
-  public List<Object> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
     return null;
   }

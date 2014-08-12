@@ -87,4 +87,12 @@ public class TestInverseWishart {
     System.out.println(iwish.sample_value().timesScale(freeDeg - 2 - 1)
         .toString());
   }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void testGetFiniteSupport() {
+    InverseWishart iwish = new InverseWishart();
+    iwish.setParams(scale, freeDeg);
+    assertEquals(null, iwish.getFiniteSupport());
+  }
 }

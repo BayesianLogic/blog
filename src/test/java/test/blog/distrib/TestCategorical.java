@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -127,13 +126,11 @@ public class TestCategorical implements TestDistributions {
     map.put("Andy", 0.0);
     cat.setParams(new Object[] { map });
 
-    List<Object> list = cat.getFiniteSupport();
-    assertEquals(3, list.size());
-    assertTrue(list.contains("Bob"));
-    assertTrue(list.contains("Craig"));
-    assertTrue(list.contains("Albert"));
-    // Andy should not exist because its probability is zero
-    assertTrue(!list.contains("Andy"));
+    Object[] list = cat.getFiniteSupport();
+    assertEquals(3, list.length);
+    assertTrue(list[1].equals("Bob"));
+    assertTrue(list[0].equals("Craig"));
+    assertTrue(list[2].equals("Albert"));
   }
 
 }

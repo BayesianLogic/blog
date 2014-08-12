@@ -161,6 +161,7 @@ public class TestMultivarGaussian implements TestDistributions {
     // not needed
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     MultivarGaussian gauss = new MultivarGaussian();

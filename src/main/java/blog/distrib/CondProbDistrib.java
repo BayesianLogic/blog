@@ -1,7 +1,5 @@
 package blog.distrib;
 
-import java.util.List;
-
 /**
  * Common interface for all probability distributions.
  * 
@@ -75,8 +73,8 @@ public interface CondProbDistrib {
   /**
    * Calculate the finite support of this CPD.
    * 
-   * @return An unmodifiable list represents the finite support, null if the
+   * @return An array of type Object represents the finite support, null if the
    *         support is infinite.
    */
-  public List<?> getFiniteSupport();
+  public Object[] getFiniteSupport();
 }

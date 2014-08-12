@@ -35,10 +35,7 @@
 
 package blog.distrib;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import blog.common.Util;
@@ -79,7 +76,6 @@ public class Categorical implements CondProbDistrib {
       }
       double sum = 0.0;
       for (Map.Entry<?, ?> entry : map.entrySet()) {
-        Object o = entry.getValue();
         Number probNum = (Number) entry.getValue();
         double prob = probNum.doubleValue();
         if (prob < 0) {
@@ -96,7 +92,7 @@ public class Categorical implements CondProbDistrib {
       this.logMap = new HashMap<Object, Double>();
       this.objects = new Object[map.size()];
       this.cdfObjects = new double[map.size()];
-      this.finiteSupport.clear();
+      int supportSize = 0;
       int count = 0;
       double cdf = 0.0;
       for (Map.Entry<?, ?> entry : map.entrySet()) {
@@ -111,7 +107,19 @@ public class Categorical implements CondProbDistrib {
         this.logMap.put(key, Math.log(prob));
         count += 1;
         if (!Util.closeToZero(prob))
-          this.finiteSupport.add(key);
+          supportSize++;
+      }
+      int curSupportIndex = 0;
+      this.finiteSupport = new Object[supportSize];
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
+        Object key = entry.getKey();
+        Number num = (Number) entry.getValue();
+        double value = num.doubleValue();
+        double prob = value / sum;
+        if (!Util.closeToZero(prob)) {
+          this.finiteSupport[curSupportIndex] = key;
+          curSupportIndex++;
+        }
       }
       this.hasMap = true;
     }
@@ -170,9 +178,9 @@ public class Categorical implements CondProbDistrib {
   }
 
   @Override
-  public List<Object> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
-    return Collections.unmodifiableList(finiteSupport);
+    return finiteSupport;
   }
 
   private HashMap<Object, Double> map;
@@ -180,5 +188,5 @@ public class Categorical implements CondProbDistrib {
   private Object[] objects; // Ordered collection of objects
   private double[] cdfObjects; // CDF corresponding to objects
   private boolean hasMap;
-  private List<Object> finiteSupport = new ArrayList<Object>();
+  private Object[] finiteSupport;
 }

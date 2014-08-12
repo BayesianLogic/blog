@@ -35,8 +35,6 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
@@ -225,7 +223,7 @@ public class UniformVector implements CondProbDistrib {
   }
 
   @Override
-  public List<Object> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
     return null;
   }

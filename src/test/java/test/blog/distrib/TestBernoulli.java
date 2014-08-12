@@ -6,8 +6,6 @@ package test.blog.distrib;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
 import org.junit.Test;
 
 import blog.distrib.Bernoulli;
@@ -92,10 +90,10 @@ public class TestBernoulli implements TestDistributions {
   public void testGetFiniteSupport() {
     Bernoulli b = new Bernoulli();
     b.setParams(new Object[] { 0.6 });
-    List<Integer> s = b.getFiniteSupport();
-    assertEquals(2, s.size());
-    assertTrue(s.contains(0));
-    assertTrue(s.contains(1));
+    Object[] s = b.getFiniteSupport();
+    assertEquals(2, s.length);
+    assertTrue(s[0] == (Object) 0);
+    assertTrue(s[1] == (Object) 1);
   }
 
 }

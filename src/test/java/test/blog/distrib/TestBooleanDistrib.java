@@ -115,9 +115,9 @@ public class TestBooleanDistrib implements TestDistributions {
   public void testGetFiniteSupport() {
     BooleanDistrib b = new BooleanDistrib();
     b.setParams(0.1);
-    assertEquals(2, b.getFiniteSupport().size());
-    assertTrue(b.getFiniteSupport().contains(true));
-    assertTrue(b.getFiniteSupport().contains(false));
+    assertEquals(2, b.getFiniteSupport().length);
+    assertTrue(b.getFiniteSupport()[0] == (Object) true);
+    assertTrue(b.getFiniteSupport()[1] == (Object) false);
   }
 
 }

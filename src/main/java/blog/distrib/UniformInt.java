@@ -35,14 +35,10 @@
 
 package blog.distrib;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import blog.common.Util;
 
 /**
- * Uniform distribution over a range of integers. This distribution has two
+ * This distribution has two
  * parameters: <code>lower</code>, which indicates the lower end of the range
  * and <code>upper</code>, which indicates upper end of the range. The
  * range is inclusive (it includes the upper and lower ends).
@@ -100,9 +96,9 @@ public class UniformInt implements CondProbDistrib {
       }
       this.prob = 1.0 / (this.upper - this.lower + 1);
       this.logProb = Math.log(this.prob);
-      this.finiteSupport.clear();
+      this.finiteSupport = new Object[this.upper - this.lower + 1];
       for (int i = this.lower; i <= this.upper; i++) {
-        finiteSupport.add(i);
+        finiteSupport[i - this.lower] = i;
       }
     }
   }
@@ -176,9 +172,9 @@ public class UniformInt implements CondProbDistrib {
   }
 
   @Override
-  public List<Integer> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
-    return Collections.unmodifiableList(finiteSupport);
+    return finiteSupport;
   }
 
   /** Parameter <code>lower</code>. */
@@ -199,5 +195,5 @@ public class UniformInt implements CondProbDistrib {
    * <code>upper</code> inclusive.
    */
   private double logProb;
-  private List<Integer> finiteSupport = new ArrayList<Integer>();
+  private Object[] finiteSupport;
 }

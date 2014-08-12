@@ -191,9 +191,9 @@ public class TestBinomial implements TestDistributions {
   public void testGetFiniteSupport() {
     Binomial b = new Binomial();
     b.setParams(10, 0.5);
-    assertEquals(11, b.getFiniteSupport().size());
+    assertEquals(11, b.getFiniteSupport().length);
     for (int i = 0; i <= 10; i++) {
-      assertTrue(b.getFiniteSupport().contains(i));
+      assertTrue(b.getFiniteSupport()[i] == (Object) i);
     }
   }
 

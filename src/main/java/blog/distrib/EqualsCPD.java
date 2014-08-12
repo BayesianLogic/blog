@@ -35,9 +35,7 @@
 
 package blog.distrib;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import blog.model.Clause;
 
 /**
  * EqualsCPD class is a convenience hack to represent the situation when the
@@ -75,8 +73,8 @@ public class EqualsCPD implements CondProbDistrib {
     if (value != null) {
       this.value = value;
       this.hasValue = true;
-      this.finiteSupport.clear();
-      this.finiteSupport.add(value);
+      this.finiteSupport = new Object[1];
+      this.finiteSupport[0] = value;
     }
   }
 
@@ -121,12 +119,12 @@ public class EqualsCPD implements CondProbDistrib {
   }
 
   @Override
-  public List<Object> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
-    return Collections.unmodifiableList(finiteSupport);
+    return finiteSupport;
   }
 
   private Object value;
   private boolean hasValue;
-  private List<Object> finiteSupport = new ArrayList<Object>();
+  private Object[] finiteSupport;
 }

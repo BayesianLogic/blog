@@ -35,8 +35,6 @@
 
 package blog.distrib;
 
-import java.util.List;
-
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
@@ -276,7 +274,7 @@ public class Dirichlet implements CondProbDistrib {
   }
 
   @Override
-  public List<Object> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     checkHasParams();
     return null;
   }

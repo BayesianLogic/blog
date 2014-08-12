@@ -35,10 +35,6 @@
 
 package blog.distrib;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * A distribution over {0,1}. It takes one parameter <code>p</code>, which is
  * the probability
@@ -109,9 +105,9 @@ public class Bernoulli implements CondProbDistrib {
   @Override
   public void setParams(Object[] params) {
     booldist.setParams(params);
-    finiteSupport.clear();
-    finiteSupport.add(1);
-    finiteSupport.add(0);
+    finiteSupport = new Object[2];
+    finiteSupport[0] = 0;
+    finiteSupport[1] = 1;
   }
 
   @Override
@@ -120,14 +116,14 @@ public class Bernoulli implements CondProbDistrib {
   }
 
   @Override
-  public List<Integer> getFiniteSupport() {
+  public Object[] getFiniteSupport() {
     booldist.getFiniteSupport();
-    return Collections.unmodifiableList(finiteSupport);
+    return finiteSupport;
   }
 
   /**
    * Actual holder of underlying boolean distribution.
    */
   private BooleanDistrib booldist;
-  private List<Integer> finiteSupport = new ArrayList<Integer>();
+  private Object[] finiteSupport;
 }

@@ -162,6 +162,7 @@ public class TestUniformVector implements TestDistributions {
     // not needed
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     UniformVector unif = new UniformVector();

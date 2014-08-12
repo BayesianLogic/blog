@@ -1,10 +1,7 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import java.util.List;
 
 import org.junit.Test;
 
@@ -96,12 +93,11 @@ public class TestDiscrete implements TestDistributions {
     Discrete disc = new Discrete();
     disc.setParams(new Object[] { MatrixFactory.createColumnVector(0.1, 0.1,
         0.0, 0.8) });
-    List<Integer> list = disc.getFiniteSupport();
-    assertEquals(3, list.size());
-    assertTrue(list.contains(0));
-    assertTrue(list.contains(1));
-    assertFalse(list.contains(2));
-    assertTrue(list.contains(3));
+    Object[] list = disc.getFiniteSupport();
+    assertEquals(3, list.length);
+    assertTrue(list[0] == (Object) 0);
+    assertTrue(list[1] == (Object) 1);
+    assertTrue(list[2] == (Object) 3);
   }
 
 }

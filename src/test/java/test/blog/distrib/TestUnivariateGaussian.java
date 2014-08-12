@@ -145,4 +145,12 @@ public class TestUnivariateGaussian {
     testGaussian(gaussian);
   }
 
+  @SuppressWarnings("deprecation")
+  @Test
+  public void testGetFiniteSupport() {
+    UnivarGaussian gaussian = new UnivarGaussian();
+    gaussian.setParams(MEAN, VARIANCE);
+    assertEquals(null, gaussian.getFiniteSupport());
+  }
+
 }

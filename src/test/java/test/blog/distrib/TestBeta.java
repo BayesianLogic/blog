@@ -176,6 +176,7 @@ public class TestBeta implements TestDistributions {
     assertEquals(0, beta.getLogProb(0), ERROR);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testGetFiniteSupport() {
     Beta beta = new Beta();
