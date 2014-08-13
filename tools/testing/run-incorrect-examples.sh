@@ -7,7 +7,10 @@
 # a non-zero exit code. All files that do not report a non-zero exit code
 # are placed in tools/testing/output_incorrect/incorrect_examples.txt
 ERROR_EX_DIR=tools/error-examples/current
-INCORRECT_EX=tools/testing/output_incorrect/incorrect_examples.txt
+OUTPUT_DIR=tools/testing/output_incorrect/
+INCORRECT_EX=$OUTPUT_DIR/incorrect_examples.txt
+mkdir -p $OUTPUT_DIR
+
 
 rm -f $INCORRECT_EX
 for f in $(find $ERROR_EX_DIR -name '*.blog'); do
@@ -36,10 +39,10 @@ if [ $? -eq 0 ]; then
 fi
 
 # Randomized output producing identical results
-./blog -rn 20000 example/burglary.blog > tools/testing/output_incorrect/ex1
-./blog -rn 20000 example/burglary.blog > tools/testing/output_incorrect/ex2
+./blog -rn 20000 example/burglary.blog > $OUTPUT_DIR/ex1
+./blog -rn 20000 example/burglary.blog > $OUTPUT_DIR/ex2
 
-diff tools/testing/output_incorrect/ex1 tools/testing/output_incorrect/ex2 &> /dev/null
+diff $OUTPUT_DIR/ex1 $OUTPUT_DIR/ex2 &> /dev/null
 
 if [ $? -eq 0 ]; then
     echo "Two randomized runs of burglary should most likely produce different results"
