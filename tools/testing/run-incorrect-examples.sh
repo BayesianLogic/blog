@@ -20,3 +20,28 @@ done
 if [ -e $INCORRECT_EX ]; then
    exit 1
 fi
+
+# --- Invalid Command Line Arguments ---
+./blog &> /dev/null
+if [ $? -eq 0 ]; then
+    echo "No BLOG input file specified"
+    exit 1
+fi
+
+# Nonexistent inference engine provided
+./blog -e FooInference example/burglary.blog &> /dev/null
+if [ $? -eq 0 ]; then
+    echo "Running './blog -e FooInference example/burglary.blog' returns successfully" 
+    exit 1
+fi
+
+# Randomized output producing identical results
+./blog -rn 20000 example/burglary.blog > tools/testing/output_incorrect/ex1
+./blog -rn 20000 example/burglary.blog > tools/testing/output_incorrect/ex2
+
+diff tools/testing/output_incorrect/ex1 tools/testing/output_incorrect/ex2 &> /dev/null
+
+if [ $? -eq 0 ]; then
+    echo "Two randomized runs of burglary should most likely produce different results"
+    exit 1
+fi
