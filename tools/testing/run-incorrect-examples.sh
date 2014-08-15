@@ -27,14 +27,14 @@ fi
 # --- Invalid Command Line Arguments ---
 ./blog &> /dev/null
 if [ $? -eq 0 ]; then
-    echo "No BLOG input file specified"
+    echo "BLOG returned 0 even though no input file specified."
     exit 1
 fi
 
 # Nonexistent inference engine provided
 ./blog -e FooInference example/burglary.blog &> /dev/null
 if [ $? -eq 0 ]; then
-    echo "Running './blog -e FooInference example/burglary.blog' returns successfully" 
+    echo "BLOG returned 0 even though nonexistent inference engine provided." 
     exit 1
 fi
 
