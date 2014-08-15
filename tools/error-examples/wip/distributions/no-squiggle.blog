@@ -1,0 +1,2 @@
+// Using = instead of ~ to refer to a distribution
+random Real x = Exponential(0.5);

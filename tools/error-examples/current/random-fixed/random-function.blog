@@ -1,0 +1,3 @@
+// Semantically, spread is a random function but its type signature indicates its a fixed function
+random fixed spread(Integer x) ~ Gaussian(x, 4);
+query spread(5);

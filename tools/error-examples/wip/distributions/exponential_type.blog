@@ -1,0 +1,3 @@
+// Exponential should return a Real Number, not an Integer
+random Integer x ~ Exponential(2);
+query x;

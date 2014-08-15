@@ -149,8 +149,11 @@ public class Main {
     fromString = false;
     init(args);
     List<Object[]> readersAndOrigins = makeReaders(filenames);
-    if (setup(model, evidence, queries, readersAndOrigins, Util.verbose(), true))
+    if (setup(model, evidence, queries, readersAndOrigins, Util.verbose(), true)) {
       run();
+    } else {
+      System.exit(1);
+    }
   }
 
   public static void runFromString(String modelstring, String[] args) {

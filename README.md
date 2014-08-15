@@ -1,5 +1,7 @@
 # BLOG overview
 
+[![Build Status](https://api.travis-ci.org/BayesianLogic/blog.svg?branch=master)](https://travis-ci.org/BayesianLogic/blog)
+
 **Bayesian Logic** (BLOG) is a probabilistic modeling language.
 It is designed for representing relations and uncertainties among
 real-world objects. For instance, tracking multiple targets in a
