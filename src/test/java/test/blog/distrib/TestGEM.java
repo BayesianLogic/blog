@@ -4,7 +4,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -80,5 +82,12 @@ public class TestGEM {
     gem.setParams(lambda, truncation2);
     for (int i = 0; i < 10; i++)
       System.out.println(gem.sample_value());
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    GEM gem = new GEM();
+    gem.setParams(lambda, truncation);
+    assertTrue(Arrays.equals(null, gem.getFiniteSupport()));
   }
 }
