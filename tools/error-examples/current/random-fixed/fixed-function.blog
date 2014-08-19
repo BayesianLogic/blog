@@ -1,0 +1,3 @@
+// Semantically, foo is a fixed function buts its return type indicates it is a random function
+random Real foo(Integer x) = (x + 2);
+query foo(2); 

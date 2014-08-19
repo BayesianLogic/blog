@@ -37,6 +37,10 @@ fixed RealMatrix o = repmat(n, 3, 2);
 fixed RealMatrix p = [1, 2; 3, 4];
 fixed Real q = trace(p);
 
+fixed RealMatrix r = [1, 2; 3, 4; 5, 6];
+fixed Integer rows = numRows(r);
+fixed Integer cols = numCols(r);
+
 query x;
 query y;
 query z;
@@ -51,3 +55,5 @@ query j;
 query m;
 query o;
 query q;
+query rows;
+query cols;

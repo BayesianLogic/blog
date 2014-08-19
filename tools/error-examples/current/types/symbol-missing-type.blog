@@ -1,0 +1,2 @@
+// The symbol x is missing the return type.
+fixed x = exp(3);

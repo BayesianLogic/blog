@@ -796,7 +796,7 @@ public class Semant {
     return t;
   }
 
-  Object transExpr(Expr e) {
+  ArgSpec transExpr(Expr e) {
     if (e instanceof BooleanExpr) {
       return transExpr((BooleanExpr) e);
     } else if (e instanceof DoubleExpr) {
@@ -839,7 +839,7 @@ public class Semant {
     return t;
   }
 
-  Object transExpr(FuncCallExpr e) {
+  ArgSpec transExpr(FuncCallExpr e) {
     // now checking whether it is a distribution
     DistribSpec cl = transToDistribution(e);
     if (cl != null) {
@@ -912,14 +912,6 @@ public class Semant {
     }
   }
 
-  private Formula createConjunction(Formula c1, Formula c2) {
-    if (c2 == TrueFormula.TRUE)
-      return c1;
-    if (c1 == TrueFormula.TRUE)
-      return c2;
-    return new ConjFormula(c1, c2);
-  }
-
   CaseSpec transExpr(IfExpr e) {
     List<ArgSpec> probKeys = new ArrayList<ArgSpec>();
     List<Object> probs = new ArrayList<Object>();
@@ -983,11 +975,11 @@ public class Semant {
     return new ExplicitSetSpec(terms);
   }
 
-  Object transExpr(ListComprehension e) {
+  ListSpec transExpr(ListComprehension e) {
     // TODO lei to chris: pls add
     // see example in TupleSet, may reuse code there.
     // please change return type as well
-    return e;
+    return null;
   }
 
   TupleSetSpec transExpr(TupleSetExpr e) {

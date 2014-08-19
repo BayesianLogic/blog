@@ -1,0 +1,4 @@
+// The return type of a multinomial is a RealMatrix, not an Integer
+fixed RealMatrix b = [1; 2; 3];
+random Integer a ~ Multinomial(3, b); 
+query a;

@@ -11,4 +11,8 @@ example/local-example/*
 /project/target
 /target
 src/test/java/test/blog/TestLocalExample.java
-/tools/testing
+/tools/testing/output
+/tools/testing/output_incorrect
+*.aux
+*.log
+*.gz

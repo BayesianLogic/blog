@@ -1,0 +1,3 @@
+// Using incorrect return type for Bernoulli
+// Bernoulli returns an Integer, not a Boolean value
+random Boolean x ~ Bernoulli(0.5);

@@ -104,6 +104,8 @@ public class BuiltInFunctions {
   public static final String EXP_NAME = "exp";
   public static final String LOG_NAME = "log";
   public static final String IOTA_NAME = "iota";
+  public static final String NUMROWS_NAME = "numRows";
+  public static final String NUMCOLS_NAME = "numCols";
 
   /**
    * Constant that always denotes Model.NULL.
@@ -502,6 +504,16 @@ public class BuiltInFunctions {
    * Load RealMatrix from space-separeted text file.
    */
   public static FixedFunction LOAD_REAL_MATRIX;
+
+  /**
+   * Number of rows for a given real matrix.
+   */
+  public static FixedFunction NUM_ROWS;
+
+  /**
+   * Number of columns for a given real matrix.
+   */
+  public static FixedFunction NUM_COLS;
 
   private BuiltInFunctions() {
     // prevent instantiation
@@ -1612,6 +1624,28 @@ public class BuiltInFunctions {
     retType = BuiltInTypes.REAL_MATRIX;
     LOG_MAT = new FixedFunction(LOG_NAME, argTypes, retType, logMatInterp);
     addFunction(LOG_MAT);
+
+    FunctionInterp RowsInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        return ((MatrixLib) args.get(0)).numRows();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.INTEGER;
+    NUM_ROWS = new FixedFunction(NUMROWS_NAME, argTypes, retType, RowsInterp);
+    addFunction(NUM_ROWS);
+
+    FunctionInterp ColsInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        return ((MatrixLib) args.get(0)).numCols();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    retType = BuiltInTypes.INTEGER;
+    NUM_COLS = new FixedFunction(NUMCOLS_NAME, argTypes, retType, ColsInterp);
+    addFunction(NUM_COLS);
   };
 }
 
