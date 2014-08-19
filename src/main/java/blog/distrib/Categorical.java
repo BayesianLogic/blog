@@ -76,7 +76,6 @@ public class Categorical implements CondProbDistrib {
       }
       double sum = 0.0;
       for (Map.Entry<?, ?> entry : map.entrySet()) {
-        Object o = entry.getValue();
         Number probNum = (Number) entry.getValue();
         double prob = probNum.doubleValue();
         if (prob < 0) {
