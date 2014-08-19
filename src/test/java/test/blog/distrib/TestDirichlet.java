@@ -4,7 +4,10 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -251,5 +254,12 @@ public class TestDirichlet implements TestDistributions {
   @Test
   public void testGetProbIntegerArguments() {
     // not needed
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    Dirichlet d = new Dirichlet();
+    d.setParams(new Object[] { MatrixFactory.createColumnVector(1, 1) });
+    assertTrue(Arrays.equals(null, d.getFiniteSupport()));
   }
 }

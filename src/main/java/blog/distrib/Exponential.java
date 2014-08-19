@@ -158,6 +158,11 @@ public class Exponential implements CondProbDistrib {
     return "Exponential(" + lambda + ")";
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    return null;
+  }
+
   private boolean hasLambda;
   private double lambda;
   private double logLambda;

@@ -235,6 +235,11 @@ public class GEM implements CondProbDistrib {
   }
 
   @Override
+  public Object[] getFiniteSupport() {
+    return null;
+  }
+
+  @Override
   public String toString() {
     return "GEM(" + lambda + ", " + truncation + ")";
   }

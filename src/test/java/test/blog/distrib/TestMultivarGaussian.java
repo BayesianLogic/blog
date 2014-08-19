@@ -1,7 +1,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -141,7 +143,6 @@ public class TestMultivarGaussian implements TestDistributions {
   @Test
   public void testDoubleSet() {
     // TODO Auto-generated method stub
-
   }
 
   @Test
@@ -160,5 +161,12 @@ public class TestMultivarGaussian implements TestDistributions {
   @Test
   public void testGetProbIntegerArguments() {
     // not needed
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    MultivarGaussian gauss = new MultivarGaussian();
+    gauss.setParams(mean, variance);
+    assertTrue(Arrays.equals(null, gauss.getFiniteSupport()));
   }
 }

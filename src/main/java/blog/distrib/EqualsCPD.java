@@ -35,9 +35,10 @@
 
 package blog.distrib;
 
+
 /**
  * EqualsCPD class is a convenience hack to represent the situation when the
- * value of the right-hand side of a {@link Clause} depends on a function
+ * value of the right-hand side of a Clause depends on a function
  * application rather than on a CPD.
  */
 public class EqualsCPD implements CondProbDistrib {
@@ -71,6 +72,7 @@ public class EqualsCPD implements CondProbDistrib {
     if (value != null) {
       this.value = value;
       this.hasValue = true;
+      this.finiteSupport = null;
     }
   }
 
@@ -114,6 +116,17 @@ public class EqualsCPD implements CondProbDistrib {
     return value;
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    if (finiteSupport == null) {
+      checkHasParams();
+      finiteSupport = new Object[1];
+      finiteSupport[0] = value;
+    }
+    return finiteSupport;
+  }
+
   private Object value;
   private boolean hasValue;
+  private Object[] finiteSupport = null;
 }

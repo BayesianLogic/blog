@@ -184,6 +184,11 @@ public class Beta implements CondProbDistrib {
     return "Beta(" + a + "," + b + ")";
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    return null;
+  }
+
   /** Gamma(a, 1). Used for sampling. */
   private Gamma gammaA = new Gamma();
   /** Gamma(b, 1). Used for sampling. */

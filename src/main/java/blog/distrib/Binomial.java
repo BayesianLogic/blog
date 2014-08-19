@@ -97,6 +97,7 @@ public class Binomial implements CondProbDistrib {
       this.p = pDouble;
       this.hasP = true;
     }
+    this.finiteSupport = null;
   }
 
   private void checkHasParams() {
@@ -188,8 +189,21 @@ public class Binomial implements CondProbDistrib {
     return "Binomial(" + n + ", " + p + ")";
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    if (finiteSupport == null) {
+      checkHasParams();
+      finiteSupport = new Object[n + 1];
+      for (int i = 0; i <= n; i++) {
+        finiteSupport[i] = i;
+      }
+    }
+    return finiteSupport;
+  }
+
   private int n;
   private boolean hasN;
   private double p;
   private boolean hasP;
+  private Object[] finiteSupport = null;
 }

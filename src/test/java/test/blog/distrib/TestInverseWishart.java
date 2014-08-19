@@ -4,7 +4,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -86,5 +88,12 @@ public class TestInverseWishart {
     iwish.setParams(scale, freeDeg);
     System.out.println(iwish.sample_value().timesScale(freeDeg - 2 - 1)
         .toString());
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    InverseWishart iwish = new InverseWishart();
+    iwish.setParams(scale, freeDeg);
+    assertTrue(Arrays.equals(null, iwish.getFiniteSupport()));
   }
 }

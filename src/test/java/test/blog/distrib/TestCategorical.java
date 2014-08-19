@@ -115,4 +115,21 @@ public class TestCategorical implements TestDistributions {
     // not needed
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    Categorical cat = new Categorical();
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("Bob", 0.2);
+    map.put("Craig", 0.3);
+    map.put("Albert", 0.5);
+    map.put("Andy", 0.0);
+    cat.setParams(new Object[] { map });
+
+    Object[] list = cat.getFiniteSupport();
+    assertEquals(3, list.length);
+    assertEquals(list[1], "Bob");
+    assertEquals(list[0], "Craig");
+    assertEquals(list[2], "Albert");
+  }
+
 }

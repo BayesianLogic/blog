@@ -1271,7 +1271,7 @@ public class Util {
     Object result = null;
     Iterator it = c.iterator();
     do { // we use 'do' to ensure next() is called at least once, throwing
-         // exception if c is empty.
+      // exception if c is empty.
       result = it.next();
     } while (it.hasNext());
     return result;
@@ -2036,6 +2036,17 @@ public class Util {
      */
     final double APPROXIMATE_ZERO = 1e-20;
     return (number < APPROXIMATE_ZERO) && (number > -1 * APPROXIMATE_ZERO);
+  }
+
+  /**
+   * Copies a two-dimensional array with fixed length
+   */
+  public static double[][] copy2DArray(double[][] array) {
+    double[][] newAry = new double[array.length][array[0].length];
+    for (int i = 0; i < newAry.length; i++) {
+      System.arraycopy(array[i], 0, newAry[i], 0, array[i].length);
+    }
+    return newAry;
   }
 
   private static Random rand;

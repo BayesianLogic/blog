@@ -104,6 +104,7 @@ public class Multinomial implements CondProbDistrib {
       initializeProbabilityVector(p);
       this.hasP = true;
     }
+    this.finiteSupport = null;
   }
 
   /**
@@ -131,7 +132,7 @@ public class Multinomial implements CondProbDistrib {
     this.p = new double[k];
     this.pCDF = new double[k];
     this.p[0] = p.elementAt(0, 0) / sum;
-    pCDF[0] = this.p[0];
+    this.pCDF[0] = this.p[0];
     for (int i = 1; i < p.numRows(); i++) {
       this.p[i] = p.elementAt(i, 0) / sum;
       this.pCDF[i] = pCDF[i - 1] + this.p[i];
@@ -272,10 +273,56 @@ public class Multinomial implements CondProbDistrib {
     return MatrixFactory.createColumnVector(result);
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    if (finiteSupport == null) {
+      checkHasParams();
+      int kPos = 0;
+      for (int i = 0; i < p.length; i++) {
+        if (!Util.closeToZero(this.p[i])) {
+          kPos++;
+        }
+      }
+      finiteSupport = new Object[Util.multichoose(kPos, n)];
+      double[][] currentMat = new double[k][1];
+      supportNum = 0;
+      calculateFiniteSupport(currentMat, 0, n);
+    }
+    return finiteSupport;
+  }
+
+  private void calculateFiniteSupport(double[][] mat, int depth, int remain) {
+    if (depth == k) {
+      finiteSupport[supportNum] = MatrixFactory.fromArray(mat);
+      supportNum++;
+    } else if (depth == k - 1) {
+      if (remain == 0) {
+        mat[depth][0] = 0;
+        calculateFiniteSupport(mat, depth + 1, 0);
+      } else if (!Util.closeToZero(p[depth])) {
+        mat[depth][0] = remain;
+        calculateFiniteSupport(mat, depth + 1, 0);
+      }
+    } else {
+      mat[depth][0] = 0;
+      double[][] tempMat = Util.copy2DArray(mat);
+      calculateFiniteSupport(mat, depth + 1, remain);
+      if (!Util.closeToZero(p[depth])) {
+        for (int i = 1; i <= remain; i++) {
+          double[][] newMat = Util.copy2DArray(tempMat);
+          newMat[depth][0] = i;
+          calculateFiniteSupport(newMat, depth + 1, remain - i);
+        }
+      }
+    }
+  }
+
   private int n; // the number of trials
   private boolean hasN;
   private double[] p; // probability vector
   private double[] pCDF;
   private boolean hasP;
   private int k; // the number of categories; dimension of p
+  private int supportNum;
+  private Object[] finiteSupport = null;
 }

@@ -109,4 +109,11 @@ public class TestPoisson implements TestDistributions {
     // not needed
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    Poisson poiss = new Poisson();
+    poiss.setParams(1);
+    assertEquals(21, poiss.getFiniteSupport().length);
+  }
+
 }

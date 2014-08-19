@@ -177,6 +177,11 @@ public class Laplace implements CondProbDistrib {
       throw new IllegalArgumentException("diversity of Laplace not provided");
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    return null;
+  }
+
   // parameters
   private boolean hasMean = false;
   private boolean hasDiversity = false;

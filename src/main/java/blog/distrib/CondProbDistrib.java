@@ -69,4 +69,12 @@ public interface CondProbDistrib {
    * @return The sample value.
    */
   public Object sampleVal();
+
+  /**
+   * Calculate the finite support of this CPD.
+   * 
+   * @return An array of type Object represents the finite support, null if the
+   *         support is infinite.
+   */
+  public Object[] getFiniteSupport();
 }

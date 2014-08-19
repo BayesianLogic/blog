@@ -128,4 +128,31 @@ public class TestMultinomial implements TestDistributions {
   public void testGetProbIntegerArguments() {
     // not needed
   }
+
+  @Test
+  public void testGetFiniteSupport() {
+    Multinomial mult = new Multinomial();
+    mult.setParams(2, MatrixFactory.createColumnVector(0.3, 0, 0.7));
+    Object[] list = mult.getFiniteSupport();
+    assertEquals(3, list.length);
+    assertEquals(list[0], MatrixFactory.createColumnVector(0, 0, 2));
+    assertEquals(list[1], MatrixFactory.createColumnVector(1, 0, 1));
+    assertEquals(list[2], MatrixFactory.createColumnVector(2, 0, 0));
+
+    mult = new Multinomial();
+    mult.setParams(3, MatrixFactory.createColumnVector(0.3, 0.3, 0.6));
+    list = mult.getFiniteSupport();
+    assertEquals(10, list.length);
+
+    assertEquals(list[0], MatrixFactory.createColumnVector(0, 0, 3));
+    assertEquals(list[1], MatrixFactory.createColumnVector(0, 1, 2));
+    assertEquals(list[2], MatrixFactory.createColumnVector(0, 2, 1));
+    assertEquals(list[3], MatrixFactory.createColumnVector(0, 3, 0));
+    assertEquals(list[4], MatrixFactory.createColumnVector(1, 0, 2));
+    assertEquals(list[5], MatrixFactory.createColumnVector(1, 1, 1));
+    assertEquals(list[6], MatrixFactory.createColumnVector(1, 2, 0));
+    assertEquals(list[7], MatrixFactory.createColumnVector(2, 0, 1));
+    assertEquals(list[8], MatrixFactory.createColumnVector(2, 1, 0));
+    assertEquals(list[9], MatrixFactory.createColumnVector(3, 0, 0));
+  }
 }

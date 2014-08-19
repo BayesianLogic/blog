@@ -169,6 +169,7 @@ public class Poisson implements CondProbDistrib {
       }
       this.lambda = lambda.doubleValue();
       this.hasLambda = true;
+      this.finiteSupport = null;
     }
   }
 
@@ -265,6 +266,21 @@ public class Poisson implements CondProbDistrib {
     return "Poisson(" + lambda + ")";
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    if (finiteSupport == null) {
+      checkHasParams();
+      int supportSize = 0;
+      while (!Util.closeToZero(getProb(supportSize)))
+        supportSize++;
+      finiteSupport = new Object[supportSize];
+      for (int i = 0; i < supportSize; i++)
+        finiteSupport[i] = i;
+    }
+    return finiteSupport;
+  }
+
   private double lambda;
   private boolean hasLambda;
+  private Object[] finiteSupport = null;
 }

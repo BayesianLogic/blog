@@ -76,7 +76,6 @@ public class Categorical implements CondProbDistrib {
       }
       double sum = 0.0;
       for (Map.Entry<?, ?> entry : map.entrySet()) {
-        Object o = entry.getValue();
         Number probNum = (Number) entry.getValue();
         double prob = probNum.doubleValue();
         if (prob < 0) {
@@ -108,6 +107,7 @@ public class Categorical implements CondProbDistrib {
         count += 1;
       }
       this.hasMap = true;
+      this.finiteSupport = null;
     }
   }
 
@@ -163,9 +163,36 @@ public class Categorical implements CondProbDistrib {
     return getClass().getName();
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    if (finiteSupport == null) {
+      checkHasParams();
+      int supportSize = 0;
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
+        Number num = (Number) entry.getValue();
+        double prob = num.doubleValue();
+        if (!Util.closeToZero(prob))
+          supportSize++;
+      }
+      int curSupportIndex = 0;
+      finiteSupport = new Object[supportSize];
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
+        Object key = entry.getKey();
+        Number num = (Number) entry.getValue();
+        double prob = num.doubleValue();
+        if (!Util.closeToZero(prob)) {
+          finiteSupport[curSupportIndex] = key;
+          curSupportIndex++;
+        }
+      }
+    }
+    return finiteSupport;
+  }
+
   private HashMap<Object, Double> map;
   private HashMap<Object, Double> logMap;
   private Object[] objects; // Ordered collection of objects
   private double[] cdfObjects; // CDF corresponding to objects
   private boolean hasMap;
+  private Object[] finiteSupport = null;
 }

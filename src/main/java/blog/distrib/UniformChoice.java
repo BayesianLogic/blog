@@ -150,6 +150,12 @@ public class UniformChoice implements CondProbDistrib {
     return builder.toString();
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    checkHasParams();
+    return elements.clone();
+  }
+
   private Object[] elements; // the elements to be sampled from
   private Collection<?> set; // original collect of elements
   private double prob; // pre-calculated probability

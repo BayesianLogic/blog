@@ -85,4 +85,14 @@ public class TestBernoulli implements TestDistributions {
     // already tested
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    Bernoulli b = new Bernoulli();
+    b.setParams(new Object[] { 0.6 });
+    Object[] s = b.getFiniteSupport();
+    assertEquals(2, s.length);
+    assertEquals(s[0], 0);
+    assertEquals(s[1], 1);
+  }
+
 }

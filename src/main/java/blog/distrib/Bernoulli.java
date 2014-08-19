@@ -112,9 +112,14 @@ public class Bernoulli implements CondProbDistrib {
     return getClass().getName();
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    return finiteSupport;
+  }
+
   /**
    * Actual holder of underlying boolean distribution.
    */
   private BooleanDistrib booldist;
-
+  private static final Object[] finiteSupport = { 0, 1 };
 }

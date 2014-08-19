@@ -273,6 +273,11 @@ public class Dirichlet implements CondProbDistrib {
     return getClass().getName();
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    return null;
+  }
+
   private double[] alpha;
   private boolean hasAlpha;
   private double normalizationConstant;
