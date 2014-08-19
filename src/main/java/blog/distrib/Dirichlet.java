@@ -275,7 +275,6 @@ public class Dirichlet implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
     return null;
   }
 

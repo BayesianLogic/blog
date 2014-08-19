@@ -240,7 +240,6 @@ public class Gamma implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
     return null;
   }
 

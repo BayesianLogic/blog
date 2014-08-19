@@ -173,7 +173,6 @@ public class UnivarGaussian implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
     return null;
   }
 

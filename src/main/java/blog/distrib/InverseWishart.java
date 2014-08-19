@@ -208,7 +208,6 @@ public class InverseWishart implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
     return null;
   }
 

@@ -124,7 +124,6 @@ public class BooleanDistrib implements CondProbDistrib {
       this.logP = Math.log(pDouble);
       this.log1_P = Math.log(1 - pDouble);
       this.hasP = true;
-      this.finiteSupport = null;
     }
   }
 
@@ -152,12 +151,6 @@ public class BooleanDistrib implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    if (finiteSupport == null) {
-      checkHasParams();
-      finiteSupport = new Object[2];
-      finiteSupport[0] = true;
-      finiteSupport[1] = false;
-    }
     return finiteSupport;
   }
 
@@ -169,5 +162,5 @@ public class BooleanDistrib implements CondProbDistrib {
 
   private boolean hasP;
 
-  private Object[] finiteSupport = null;
+  private static final Object[] finiteSupport = { true, false };
 }

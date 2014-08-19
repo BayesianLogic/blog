@@ -230,7 +230,6 @@ public class MultivarGaussian implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
     return null;
   }
 

@@ -35,7 +35,6 @@
 
 package blog.distrib;
 
-
 /**
  * A Beta distribution with shape parameters <code>a</code> and <code>b</code>,
  * defined by f(x) =(x^(a-1)
@@ -187,7 +186,6 @@ public class Beta implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
     return null;
   }
 

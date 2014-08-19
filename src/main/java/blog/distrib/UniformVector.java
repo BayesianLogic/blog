@@ -224,7 +224,6 @@ public class UniformVector implements CondProbDistrib {
 
   @Override
   public Object[] getFiniteSupport() {
-    checkHasParams();
     return null;
   }
 
