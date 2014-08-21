@@ -299,8 +299,8 @@ public abstract class Formula extends ArgSpec {
    * are literals or unnegated quantified formulas.
    */
   public boolean isElementary() {
-    for (Iterator iter = getSubformulas().iterator(); iter.hasNext();) {
-      Formula sub = (Formula) iter.next();
+    for (Iterator<Formula> iter = getSubformulas().iterator(); iter.hasNext();) {
+      Formula sub = iter.next();
       if (!(sub.isLiteral() || sub.isQuantified())) {
         return false;
       }

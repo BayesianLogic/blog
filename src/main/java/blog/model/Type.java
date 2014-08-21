@@ -171,7 +171,7 @@ public class Type {
    * 
    * @return unmodifiable list of Object
    */
-  public List getGuaranteedObjects() {
+  public List<EnumeratedObject> getGuaranteedObjects() {
     return Collections.unmodifiableList(userDefGuarObjs);
   }
 
@@ -435,7 +435,8 @@ public class Type {
   private List<POP> pops = new ArrayList<POP>(); // of POP
   private List<OriginFunction> originFuncs = new ArrayList<OriginFunction>(); // of
   // OriginFunction
-  private List userDefGuarObjs = new ArrayList(); // of EnumeratedObject
+  private List<EnumeratedObject> userDefGuarObjs = new ArrayList<EnumeratedObject>(); // of
+                                                                                      // EnumeratedObject
   private boolean infiniteGuaranteed = false;
 
   private Map originFuncsToPOP = new HashMap(); // from BitSet to POP

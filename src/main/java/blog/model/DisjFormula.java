@@ -85,12 +85,12 @@ public class DisjFormula extends Formula {
    * Returns a List of Formula objects representing the disjuncts in this
    * disjunction formula.
    */
-  public List getDisjuncts() {
+  public List<Formula> getDisjuncts() {
     return Collections.unmodifiableList(disjuncts);
   }
 
   public Object evaluate(EvalContext context) {
-    for (Iterator iter = disjuncts.iterator(); iter.hasNext();) {
+    for (Iterator<Formula> iter = disjuncts.iterator(); iter.hasNext();) {
       Formula disj = (Formula) iter.next();
       Boolean disjValue = (Boolean) disj.evaluate(context);
       if (disjValue == null) {
@@ -161,7 +161,7 @@ public class DisjFormula extends Formula {
       return new ConjFormula(this);
     }
 
-    List conjunctLists = new ArrayList();
+    List<List<Formula>> conjunctLists = new ArrayList<List<Formula>>();
     for (Formula disj : disjuncts) {
       conjunctLists.add(disj.getPropCNF().getConjuncts());
     }

@@ -87,8 +87,8 @@ public class ConjFormula extends Formula {
   }
 
   public Object evaluate(EvalContext context) {
-    for (Iterator iter = conjuncts.iterator(); iter.hasNext();) {
-      Formula conj = (Formula) iter.next();
+    for (Iterator<Formula> iter = conjuncts.iterator(); iter.hasNext();) {
+      Formula conj = iter.next();
       Boolean conjValue = (Boolean) conj.evaluate(context);
       if (conjValue == null) {
         return null;
@@ -109,8 +109,8 @@ public class ConjFormula extends Formula {
    * standard forms of its conjuncts.
    */
   public Formula getStandardForm() {
-    List stdConjuncts = new ArrayList();
-    for (Iterator iter = conjuncts.iterator(); iter.hasNext();) {
+    List<Formula> stdConjuncts = new ArrayList<Formula>();
+    for (Iterator<Formula> iter = conjuncts.iterator(); iter.hasNext();) {
       Formula conj = (Formula) iter.next();
       stdConjuncts.add(conj.getStandardForm());
     }
@@ -121,16 +121,16 @@ public class ConjFormula extends Formula {
    * The formula equivalent to the negation of psi_1 & ... & psi_N is !psi_1 |
    * ... | !psi_N (this is one of De Morgan's laws).
    */
-  protected Formula getEquivToNegationInternal() {
-    List negs = new ArrayList();
-    for (Iterator iter = conjuncts.iterator(); iter.hasNext();) {
-      Formula conj = (Formula) iter.next();
+  protected DisjFormula getEquivToNegationInternal() {
+    List<Formula> negs = new ArrayList<Formula>();
+    for (Iterator<Formula> iter = conjuncts.iterator(); iter.hasNext();) {
+      Formula conj = iter.next();
       negs.add(new NegFormula(conj));
     }
     return new DisjFormula(negs);
   }
 
-  public List getSubformulas() {
+  public List<Formula> getSubformulas() {
     return Collections.unmodifiableList(conjuncts);
   }
 
@@ -140,8 +140,8 @@ public class ConjFormula extends Formula {
    * in a big conjunction.
    */
   public ConjFormula getPropCNF() {
-    List outputConjuncts = new ArrayList();
-    for (Iterator iter = conjuncts.iterator(); iter.hasNext();) {
+    List<Formula> outputConjuncts = new ArrayList<Formula>();
+    for (Iterator<Formula> iter = conjuncts.iterator(); iter.hasNext();) {
       Formula conj = (Formula) iter.next();
       ConjFormula cnfForm = conj.getPropCNF();
       outputConjuncts.addAll(cnfForm.getConjuncts());

@@ -16,7 +16,6 @@ import blog.common.Util;
 public class JamaMatrixLib implements MatrixLib {
 
   private Matrix values;
-  private static double ZERO_THRESHOLD = 1e-20;
 
   public JamaMatrixLib(double[][] contents) {
     values = new Matrix(contents);
