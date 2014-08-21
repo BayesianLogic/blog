@@ -37,11 +37,12 @@ package blog.sample;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Set;
 
+import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
+import blog.bn.DerivedVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
@@ -147,44 +148,126 @@ public class GenericProposer extends AbstractProposer {
       System.out.println(world);
     }
 
-    // Remove barren variables
-    LinkedList newlyBarren = new LinkedList(world.getNewlyBarrenVars());
-    while (!newlyBarren.isEmpty()) {
-      BayesNetVar var = (BayesNetVar) newlyBarren.removeFirst();
-      if (!evidenceVars.contains(var) && !queryVars.contains(var)) {
+    // Remove unnecessary variables
 
-        // Remember its parents.
-        Set parentSet = world.getCBN().getParents(var);
-
-        if (var instanceof VarWithDistrib) {
-          // Multiply in the probability of sampling this
-          // variable again. Since the parent value may have
-          // changed, must use the old world.
-          logProbBackward += world.getSaved().getLogProbOfValue(var);
-
-          // Uninstantiate
-          world.setValue((VarWithDistrib) var, null);
-        }
-
-        // Check to see if its parents are now barren.
-        for (Iterator parentIter = parentSet.iterator(); parentIter.hasNext();) {
-
-          // If parent is barren, add to the end of this
-          // linked list. Note that if a parent has two
-          // barren children, it will only be added to the
-          // end of the list once, when the last child is
-          // considered.
-          BayesNetVar parent = (BayesNetVar) parentIter.next();
-          if (world.getCBN().getChildren(parent).isEmpty())
-            newlyBarren.addLast(parent);
+    Set evidenceAndQueries = new HashSet();
+    for (Iterator iter = evidenceVars.iterator(); iter.hasNext();) {
+      BayesNetVar var = (BayesNetVar) iter.next();
+      if (var instanceof BasicVar) {
+        evidenceAndQueries.add(var);
+      } else if (var instanceof DerivedVar) {
+        TraceParentRecEvalContext context = new TraceParentRecEvalContext(
+            new PartialWorldDiff(world));
+        var.ensureDetAndSupported(context);
+        if (context.getCorrespondingVar() != null) {
+          evidenceAndQueries.add(context.getCorrespondingVar());
         }
       }
     }
+    for (Iterator iter = queryVars.iterator(); iter.hasNext();) {
+      BayesNetVar var = (BayesNetVar) iter.next();
+      if (var instanceof BasicVar) {
+        evidenceAndQueries.add(var);
+      } else if (var instanceof DerivedVar) {
+        TraceParentRecEvalContext context = new TraceParentRecEvalContext(
+            new PartialWorldDiff(world));
+        var.ensureDetAndSupported(context);
+        if (context.getCorrespondingVar() != null) {
+          evidenceAndQueries.add(context.getCorrespondingVar());
+        }
+      }
+    }
+    boolean OK;
+    do {
+      OK = true;
+      for (Iterator iter = world.getInstantiatedVars().iterator(); iter
+          .hasNext();) {
+        BasicVar var = (BasicVar) iter.next();
+        Object value = world.getValue(var);
+        world.setValue(var, null);
+        if (!evidenceAndQueriesSupported(evidenceAndQueries, world)) {
+          world.setValue(var, value);
+        } else {
+          OK = false;
+          logProbBackward += world.getSaved().getLogProbOfValue(var);
+        }
+      }
+    } while (!OK);
 
+    /*
+     * // Remove barren variables
+     * LinkedList newlyBarren = new LinkedList(world.getNewlyBarrenVars());
+     * while (!newlyBarren.isEmpty()) {
+     * BayesNetVar var = (BayesNetVar) newlyBarren.removeFirst();
+     * if (!evidenceVars.contains(var) && !queryVars.contains(var)) {
+     * 
+     * // Remember its parents.
+     * Set parentSet = world.getCBN().getParents(var);
+     * 
+     * if (var instanceof VarWithDistrib) {
+     * // Multiply in the probability of sampling this
+     * // variable again. Since the parent value may have
+     * // changed, must use the old world.
+     * logProbBackward += world.getSaved().getLogProbOfValue(var);
+     * 
+     * // Uninstantiate
+     * world.setValue((VarWithDistrib) var, null);
+     * }
+     * 
+     * // Check to see if its parents are now barren.
+     * for (Iterator parentIter = parentSet.iterator(); parentIter.hasNext();) {
+     * 
+     * // If parent is barren, add to the end of this
+     * // linked list. Note that if a parent has two
+     * // barren children, it will only be added to the
+     * // end of the list once, when the last child is
+     * // considered.
+     * BayesNetVar parent = (BayesNetVar) parentIter.next();
+     * if (world.getCBN().getChildren(parent).isEmpty())
+     * newlyBarren.addLast(parent);
+     * }
+     * }
+     * }
+     */
     // Uniform sampling from new world.
     logProbBackward += (-Math.log(world.getInstantiatedVars().size()
         - numBasicEvidenceVars));
     return (logProbBackward - logProbForward);
+  }
+
+  protected boolean evidenceAndQueriesSupported(Set evidenceAndQueries,
+      PartialWorld world) {
+    PartialWorldDiff tmpWorld = new PartialWorldDiff(world);
+    for (Iterator iter = evidenceAndQueries.iterator(); iter.hasNext();) {
+      BasicVar var = (BasicVar) iter.next();
+      if (!tmpWorld.isInstantiated(var)) {
+        return false;
+      }
+      TraceParentRecEvalContext context = new TraceParentRecEvalContext(
+          tmpWorld);
+      if (var instanceof VarWithDistrib) {
+        ((VarWithDistrib) var).getDistrib(context);
+        if (context.getNumCalculateNewVars() > 0) {
+          return false;
+        }
+      }
+    }
+    for (Iterator iter = tmpWorld.getInstantiatedVars().iterator(); iter
+        .hasNext();) {
+      BasicVar var = (BasicVar) iter.next();
+      if (!tmpWorld.isInstantiated(var)) {
+        return false;
+      }
+      TraceParentRecEvalContext context = new TraceParentRecEvalContext(
+          tmpWorld);
+      if (var instanceof VarWithDistrib) {
+        ((VarWithDistrib) var).getDistrib(context);
+        if (context.getNumCalculateNewVars() > 0) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   // Samples a new value for the given variable (which must be
@@ -251,6 +334,5 @@ public class GenericProposer extends AbstractProposer {
   public double latestLogProbForward() {
     return logProbForward;
   }
-
   // End of debugger-only members.
 }
