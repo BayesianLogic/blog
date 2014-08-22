@@ -22,8 +22,12 @@ import blog.model.NonGuaranteedObject;
 import blog.world.PartialWorld;
 
 /**
- * @author Da Tang
+ * A Evaluation Context class that could store the trace of visiting BasicVars.
+ * This class could also store the case levels in order to get the CBN decision
+ * tree structure (useful for the Open Universe Gibbs Sampling).
  * 
+ * @author Da Tang
+ * @since August 21, 2014
  */
 public class TraceParentRecEvalContext extends ClassicInstantiatingEvalContext {
 
@@ -64,7 +68,7 @@ public class TraceParentRecEvalContext extends ClassicInstantiatingEvalContext {
         caseLevelTrace.addLast(caseLevel);
       }
     }
-    correspondingVar.add(var);
+    dependentVar.add(var);
     return value;
   }
 
@@ -170,8 +174,8 @@ public class TraceParentRecEvalContext extends ClassicInstantiatingEvalContext {
     return numCalculateNewVars;
   }
 
-  public Set getCorrespondingVar() {
-    return Collections.unmodifiableSet(correspondingVar);
+  public Set getDependentVar() {
+    return Collections.unmodifiableSet(dependentVar);
   }
 
   private LinkedList parentTrace = new LinkedList();
@@ -179,5 +183,5 @@ public class TraceParentRecEvalContext extends ClassicInstantiatingEvalContext {
   private int caseLevel = 0;
   private HashMapWithPreimages assignment;
   private int numCalculateNewVars = 0;
-  private Set correspondingVar = new HashSet();
+  private Set dependentVar = new HashSet();
 }
