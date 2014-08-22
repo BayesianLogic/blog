@@ -4,9 +4,11 @@
 package blog.sample;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import blog.ObjectIdentifier;
 import blog.bn.BasicVar;
@@ -62,7 +64,7 @@ public class TraceParentRecEvalContext extends ClassicInstantiatingEvalContext {
         caseLevelTrace.addLast(caseLevel);
       }
     }
-    correspondingVar = var;
+    correspondingVar.add(var);
     return value;
   }
 
@@ -168,8 +170,8 @@ public class TraceParentRecEvalContext extends ClassicInstantiatingEvalContext {
     return numCalculateNewVars;
   }
 
-  public BasicVar getCorrespondingVar() {
-    return correspondingVar;
+  public Set getCorrespondingVar() {
+    return Collections.unmodifiableSet(correspondingVar);
   }
 
   private LinkedList parentTrace = new LinkedList();
@@ -177,5 +179,5 @@ public class TraceParentRecEvalContext extends ClassicInstantiatingEvalContext {
   private int caseLevel = 0;
   private HashMapWithPreimages assignment;
   private int numCalculateNewVars = 0;
-  private BasicVar correspondingVar = null;
+  private Set correspondingVar = new HashSet();
 }

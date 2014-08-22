@@ -160,7 +160,7 @@ public class GenericProposer extends AbstractProposer {
             new PartialWorldDiff(world));
         var.ensureDetAndSupported(context);
         if (context.getCorrespondingVar() != null) {
-          evidenceAndQueries.add(context.getCorrespondingVar());
+          evidenceAndQueries.addAll(context.getCorrespondingVar());
         }
       }
     }
@@ -173,7 +173,7 @@ public class GenericProposer extends AbstractProposer {
             new PartialWorldDiff(world));
         var.ensureDetAndSupported(context);
         if (context.getCorrespondingVar() != null) {
-          evidenceAndQueries.add(context.getCorrespondingVar());
+          evidenceAndQueries.addAll(context.getCorrespondingVar());
         }
       }
     }
@@ -193,43 +193,6 @@ public class GenericProposer extends AbstractProposer {
         }
       }
     } while (!OK);
-
-    /*
-     * // Remove barren variables
-     * LinkedList newlyBarren = new LinkedList(world.getNewlyBarrenVars());
-     * while (!newlyBarren.isEmpty()) {
-     * BayesNetVar var = (BayesNetVar) newlyBarren.removeFirst();
-     * if (!evidenceVars.contains(var) && !queryVars.contains(var)) {
-     * 
-     * // Remember its parents.
-     * Set parentSet = world.getCBN().getParents(var);
-     * 
-     * if (var instanceof VarWithDistrib) {
-     * // Multiply in the probability of sampling this
-     * // variable again. Since the parent value may have
-     * // changed, must use the old world.
-     * logProbBackward += world.getSaved().getLogProbOfValue(var);
-     * 
-     * // Uninstantiate
-     * world.setValue((VarWithDistrib) var, null);
-     * }
-     * 
-     * // Check to see if its parents are now barren.
-     * for (Iterator parentIter = parentSet.iterator(); parentIter.hasNext();) {
-     * 
-     * // If parent is barren, add to the end of this
-     * // linked list. Note that if a parent has two
-     * // barren children, it will only be added to the
-     * // end of the list once, when the last child is
-     * // considered.
-     * BayesNetVar parent = (BayesNetVar) parentIter.next();
-     * if (world.getCBN().getChildren(parent).isEmpty())
-     * newlyBarren.addLast(parent);
-     * }
-     * }
-     * }
-     */
-    // Uniform sampling from new world.
     logProbBackward += (-Math.log(world.getInstantiatedVars().size()
         - numBasicEvidenceVars));
     return (logProbBackward - logProbForward);
