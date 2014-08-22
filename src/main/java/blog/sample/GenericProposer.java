@@ -159,8 +159,8 @@ public class GenericProposer extends AbstractProposer {
         TraceParentRecEvalContext context = new TraceParentRecEvalContext(
             new PartialWorldDiff(world));
         var.ensureDetAndSupported(context);
-        if (context.getCorrespondingVar() != null) {
-          evidenceAndQueries.addAll(context.getCorrespondingVar());
+        if (context.getDependentVar() != null) {
+          evidenceAndQueries.addAll(context.getDependentVar());
         }
       }
     }
@@ -172,8 +172,8 @@ public class GenericProposer extends AbstractProposer {
         TraceParentRecEvalContext context = new TraceParentRecEvalContext(
             new PartialWorldDiff(world));
         var.ensureDetAndSupported(context);
-        if (context.getCorrespondingVar() != null) {
-          evidenceAndQueries.addAll(context.getCorrespondingVar());
+        if (context.getDependentVar() != null) {
+          evidenceAndQueries.addAll(context.getDependentVar());
         }
       }
     }
