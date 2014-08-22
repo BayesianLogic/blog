@@ -22,7 +22,9 @@ import blog.model.NonGuaranteedObject;
 import blog.world.PartialWorld;
 
 /**
- * A Evaluation Context class that could store the trace of visiting BasicVars.
+ * A Evaluation Context class that could store the trace of visited BasicVars
+ * (when you try to get the distributions or values for some Basic or Derived
+ * variables).
  * This class could also store the case levels in order to get the CBN decision
  * tree structure (useful for the Open Universe Gibbs Sampling).
  * 
