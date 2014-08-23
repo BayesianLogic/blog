@@ -9,6 +9,7 @@ id=$5
 
 echo "File: $blogfile_fullpath"
 
+mkdir -p tools/testing/output
 LW=tools/testing/output/tmpLW$id
 MH=tools/testing/output/tmpMH$id
 rm -f $LW
