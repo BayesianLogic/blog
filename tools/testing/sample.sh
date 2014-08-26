@@ -7,6 +7,12 @@ trials=$3
 output=$4
 id=$5
 
+if [ "$1" = "-h" ]; then
+    echo "Usage of sample.sh"
+    echo "sample.sh <samples> <input-file> <trials> <output-file> <id>"
+    exit 0
+fi
+
 echo "File: $blogfile_fullpath"
 
 mkdir -p tools/testing/output

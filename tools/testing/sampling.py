@@ -52,7 +52,7 @@ def getDistribution(lines, startIndex):
     while (lines[count] != "======== Done ========\n" 
             and lines[count][:12] != "Distribution"):
         line = lines[count]
-        p = re.compile(r'\s+(\w+)\s+([0-9.]+)')
+        p = re.compile(r'\s+([a-zA-Z0-9_.]+)\s+([0-9.]+)')
         probs = p.match(line)
         if probs:
             distrib.add(probs.group(1), float(probs.group(2)))
@@ -126,6 +126,15 @@ print("%-25s %-10s %-10s %-10s %-10s" % ("Random Variable", "LW", "MH", "Log-LW"
 for name in distribution_estimates:
     KL_LW = getAverageKL(dsnsLW[name], distribution_estimates[name])
     KL_MH = getAverageKL(dsnsMH[name], distribution_estimates[name])
-    KL_LW_DER = -1.0 / math.log(KL_LW)
-    KL_MH_DER = -1.0 / math.log(KL_MH)
+    #KL_LW_DER = -1.0 / math.log(KL_LW)
+    #KL_MH_DER = -1.0 / math.log(KL_MH)
+    if KL_MH == 0.0:
+        KL_MH_DER = float("inf")
+    else:
+        KL_MH_DER = -1 * math.log(KL_MH)
+
+    if KL_LW == 0.0:
+        KL_LW_DER = float("inf")
+    else:
+        KL_LW_DER = -1 * math.log(KL_LW)
     print("%-25s %-10.6f %-10.6f %-10.3f %-10.3f" % (name, KL_LW, KL_MH, KL_LW_DER, KL_MH_DER))
