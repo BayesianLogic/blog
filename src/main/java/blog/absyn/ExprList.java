@@ -10,7 +10,7 @@ public class ExprList extends Absyn implements Iterable<Expr> {
   public ExprList next;
 
   public ExprList(Expr h, ExprList t) {
-    super();
+    super(0, 0);
     if (h != null) {
       this.head = h;
       this.line = h.line;

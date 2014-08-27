@@ -32,14 +32,6 @@ abstract public class Absyn {
   }
 
   /**
-   * @deprecated
-   */
-  public Absyn() {
-    line = 0;
-    col = 0;
-  }
-
-  /**
    * @param p
    */
   public Absyn(int p) {

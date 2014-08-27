@@ -94,15 +94,15 @@ public class TestParse {
     SymbolArray[] ys = new SymbolArray[xs.length];
     for (int i = 0; i < xs.length; ++i)
       ys[i] = new SymbolArray(xs[i]);
-    return SymbolArrayList.SymbolArrayList(ys);
+    return SymbolArrayList.getSymbolArrayList(ys);
   }
 
   public static StmtList Stmts(Stmt... xs) {
-    return StmtList.StmtList(xs);
+    return StmtList.getStmtList(xs);
   }
 
   public static FieldList Fields(Field... xs) {
-    return FieldList.FieldList(xs);
+    return FieldList.getFieldList(xs);
   }
 
   public static ExprList Exprs(Expr... xs) {

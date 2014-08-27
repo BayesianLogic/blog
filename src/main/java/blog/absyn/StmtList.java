@@ -84,7 +84,7 @@ public class StmtList extends Absyn implements Iterable<Stmt> {
    *          array of statements
    * @return list of statements
    */
-  public static StmtList StmtList(Stmt... xs) {
+  public static StmtList getStmtList(Stmt... xs) {
     StmtList head = null;
     for (int i = xs.length - 1; i > -1; --i)
       head = new StmtList(xs[i], head);

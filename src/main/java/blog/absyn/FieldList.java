@@ -70,7 +70,7 @@ public class FieldList extends Absyn implements Iterable<Field> {
   /**
    * @see StmtList#StmtList(Stmt...)
    */
-  public static FieldList FieldList(Field... xs) {
+  public static FieldList getFieldList(Field... xs) {
     FieldList head = null;
     for (int i = xs.length - 1; i > -1; --i) {
       head = new FieldList(xs[i], head);
