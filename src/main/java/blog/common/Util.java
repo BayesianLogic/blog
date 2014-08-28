@@ -1902,24 +1902,6 @@ public class Util {
   }
 
   /**
-   * Given an array a, returns a {@link HashMapWithGetWithDefault} object
-   * mapping each String s in position i of a to the object in position i+1 of
-   * array, ignoring its remaining elements.
-   */
-  public static HashMapWithGetWithDefault getMapWithStringKeys(Object[] args) {
-    HashMapWithGetWithDefault map = new HashMapWithGetWithDefault();
-    for (int i = 0; i < args.length; i++) {
-      Object arg = args[i];
-      if (arg instanceof String) {
-        String variable = (String) arg;
-        Object value = args[++i];
-        map.put(variable, value);
-      }
-    }
-    return map;
-  }
-
-  /**
    * A simpler substitute for
    * <code>Pattern.compile(pattern).matcher(value)</code>.
    */
