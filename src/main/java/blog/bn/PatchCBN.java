@@ -35,23 +35,81 @@
 
 package blog.bn;
 
-import blog.common.ParentUpdateDGraph;
+import java.util.LinkedList;
+
 import blog.common.DGraph;
+import blog.common.ParentUpdateDGraph;
+import blog.common.Util;
+import blog.sample.TraceParentRecEvalContext;
+import blog.world.PartialWorld;
 
 /**
  * A patch data structure to an underlying CBN that represents changes to
- * the set of nodes and to the parent sets of existing nodes. Currently is a 
+ * the set of nodes and to the parent sets of existing nodes. Currently is a
  * thin wrapper over ParentUpdateDGraph.
- *
+ * 
  * @author rbharath
  * @date August 12, 2012
  */
 public class PatchCBN extends ParentUpdateDGraph implements CBN {
-	/**
-	 * Creates a new ParentUpdateDGraph that represents no changes to the given
-	 * underlying graph.
-	 */
-	public PatchCBN(CBN underlying) {
-        super((DGraph) underlying);
-	}
+  /**
+   * Creates a new ParentUpdateDGraph that represents no changes to the given
+   * underlying graph.
+   */
+  public PatchCBN(CBN underlying) {
+    super((DGraph) underlying);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see blog.bn.CBN#isContingentOn(blog.world.PartialWorld,
+   * blog.bn.BayesNetVar, blog.bn.BayesNetVar, blog.bn.BayesNetVar)
+   */
+  @Override
+  public boolean isContingentOn(PartialWorld world, BayesNetVar X,
+      BayesNetVar Y, BayesNetVar Z) {
+    if (!world.isInstantiated(X) || !world.isInstantiated(Y)
+        || !world.isInstantiated(Z)) {
+      return true;
+    }
+    if (!(X instanceof VarWithDistrib) || !(Y instanceof VarWithDistrib)) {
+      return true;
+    }
+    TraceParentRecEvalContext context = new TraceParentRecEvalContext(world);
+    if (Z instanceof VarWithDistrib) {
+      ((VarWithDistrib) Z).getDistrib(context);
+    } else if (Z instanceof DerivedVar) {
+      ((DerivedVar) Z).getValue(context);
+    } else {
+      return true;
+    }
+    LinkedList parentTrace = new LinkedList();
+    parentTrace.addAll(context.getParentTrace());
+    int x = parentTrace.indexOf(X), y = parentTrace.indexOf(Y);
+    if (x < 0 || y < 0) {
+      return false;
+    }
+    if (X instanceof NumberVar) {
+      if (x < y && world.getCBN().getAncestors(Y).contains(X)) {
+        if (Util.verbose()) {
+          System.out.println("\t Contingent relations type 1: " + X.toString()
+              + " " + Y.toString() + " " + Z.toString());
+        }
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (x < y) {
+        if (Util.verbose()) {
+          System.out.println("\t Contingent relations type 2: " + X.toString()
+              + " " + Y.toString() + " " + Z.toString());
+        }
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
 }

@@ -35,180 +35,191 @@
 
 package blog.sample;
 
-import java.util.*;
+import java.lang.reflect.Constructor;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
 
 import blog.bn.BayesNetVar;
 import blog.bn.VarWithDistrib;
-import blog.bn.NumberVar;
-import blog.bn.RandFuncAppVar;
-import blog.model.Type;
 import blog.common.Util;
 import blog.model.Model;
-import blog.model.Evidence;
-import blog.world.PartialWorld;
 import blog.world.PartialWorldDiff;
-import blog.model.Query;
-import java.util.List;
-import java.util.Properties;
 
 /**
- * An implementation of the open universe Gibbs Sampler described by 
- * Arora et. al. This sampler differs from a standard Gibbs sampler 
+ * An implementation of the open universe Gibbs Sampler described by
+ * Arora et. al. This sampler differs from a standard Gibbs sampler
  * in the fact that it shrinks and expands the CBN during sampling steps
  * to account for the changes in CBN structure as the values of random
  * variables change.
- *
+ * 
  * This implementation is built as a modification of the MH sampler since
  * many of the CBN manipulations are the same for Gibbs as for MH and since this
  * Gibbs sampler reverts to MH sampling for variables of infinite domain.
- *
- * TODO: Although the structure of this class is correct, a number of the 
+ * 
+ * TODO: Although the structure of this class is correct, a number of the
  * called methods are only stubs. These will be filled in over the next few
  * commits. This class will probably have MHSampler as superclass in the next
  * iteration since both classes share significant amounts of structure.
- *
+ * 
  * @author rbharath
  * @date Aug 10, 2012
  */
 
 public class GibbsSampler extends MHSampler {
 
-    /**
-     *  Creates a new Gibbs Sampler for a given BLOG model.
-     */
-    public GibbsSampler(Model model, Properties properties) {
-        super(model);
-        // For now, only the generic proposer is allowed
-        properties.setProperty("proposerClass", "blog.GenericProposer");
-        constructProposer(properties);
+  /**
+   * Creates a new Gibbs Sampler for a given BLOG model.
+   */
+  public GibbsSampler(Model model) {
+    super(model);
+  }
+
+  /**
+   * Creates a new Gibbs Sampler for a given BLOG model.
+   */
+  public GibbsSampler(Model model, Properties properties) {
+    super(model);
+    // For now, only the generic proposer is allowed
+    // properties.setProperty("proposerClass", "blog.VariableGibbsProposer");
+    constructProposer(properties);
+  }
+
+  /** Method responsible for initializing the proposer field. */
+  protected void constructProposer(Properties properties) {
+    String proposerClassName = properties.getProperty("proposerClass",
+        "blog.sample.GenericProposer");
+    System.out.println("Constructing Gibbs Sampling proposer of class "
+        + proposerClassName);
+
+    try {
+      Class proposerClass = Class.forName(proposerClassName);
+      Class[] paramTypes = { Model.class, Properties.class };
+      Constructor constructor = proposerClass.getConstructor(paramTypes);
+
+      Object[] args = { model, properties };
+      proposer = (Proposer) constructor.newInstance(args);
+    } catch (Exception e) {
+      Util.fatalError(e);
     }
+  }
 
-    /**
-     * Generates the next partial world by Gibbs sampling: Randomly selects a
-     * non-evidence variable X. Reduces the current instantiation
-     * to its core, and resamples X from this core. Ensures that the resulting
-     * world is minimal and self supported.
-     */
-    public void nextSample() {
-        // Find Nonevidence Variables in Current World
-		Set eligibleVars = new HashSet(curWorld.getInstantiatedVars());
-		eligibleVars.removeAll(evidenceVars);
-		++totalNumSamples;
-		++numSamplesThisTrial;
+  /**
+   * Generates the next partial world by Gibbs sampling: Randomly selects a
+   * non-evidence variable X. Reduces the current instantiation
+   * to its core, and resamples X from this core. Ensures that the resulting
+   * world is minimal and self supported.
+   */
+  public void nextSample() {
+    // Find Nonevidence Variables in Current World
+    Set eligibleVars = new HashSet(curWorld.getInstantiatedVars());
+    eligibleVars.removeAll(evidence.getEvidenceVars());
+    ++totalNumSamples;
+    ++numSamplesThisTrial;
 
-        // Return if no vars to sample
-        if (eligibleVars.isEmpty())
-            return;
+    // Return if no vars to sample
+    if (eligibleVars.isEmpty())
+      return;
 
-        // Find Variable to Sample
-        VarWithDistrib varToSample = 
-                (VarWithDistrib) Util.uniformSample(eligibleVars);
+    // Find Variable to Sample
+    VarWithDistrib varToSample = (VarWithDistrib) Util
+        .uniformSample(eligibleVars);
 
-		if (Util.verbose())
-			System.out.println("Sampling " + varToSample);
+    if (Util.verbose())
+      System.out.println("Sampling " + varToSample);
 
-        int domSize = 0;
+    Object[] finiteSupport = varToSample
+        .getDistrib(new DefaultEvalContext(curWorld)).getCPD()
+        .getFiniteSupport();
 
-        // Find the domain size of this variable
-        if (varToSample instanceof NumberVar) {
-            // Number Variables have infinite domain
-            // TODO: If evidence restricts this number var, does it still
-            //       have infinite domain?
-            domSize = -1;
+    // If domain size is finite
+    if (finiteSupport != null) {
+      // Calculate possible transitions and their weights
+      curWorld.save();
+      int supportSize = finiteSupport.length;
+      double[] weights = new double[supportSize];
+      PartialWorldDiff[] diffs = new PartialWorldDiff[supportSize];
+
+      PartialWorldDiff reducedWorld = proposer.reduceToCore(curWorld,
+          varToSample);
+
+      for (int i = 0; i < supportSize; i++) {
+        // Set varToSample to i-th value in domain
+        // Ensure Minimal Self-Supported Instantiation
+        PartialWorldDiff proposedWorld;
+        if (finiteSupport[i].equals(curWorld.getValue(varToSample))) {
+          proposedWorld = new PartialWorldDiff(curWorld);
         } else {
-            RandFuncAppVar randFunc = (RandFuncAppVar) varToSample;
-            Type retType = randFunc.getType();
-            if (!retType.hasFiniteGuaranteed()) {
-                domSize = -1;
-            } else {
-                domSize = retType.range().size();
-            }
+          proposedWorld = new PartialWorldDiff(reducedWorld);
         }
-
-        // If domain size is finite
-        if (domSize >= 0) {
-            // Calculate possible transitions and their weights
-            double[] weights = new double[domSize];
-            PartialWorldDiff[] diffs = new PartialWorldDiff[domSize];
-
-            for (int i = 0; i < domSize; i++) {
-                PartialWorldDiff reducedWorld = 
-                    proposer.reduceToCore(curWorld, varToSample);
-                // Set varToSample to i-th value in domain
-                // Ensure Minimal Self-Supported Instantiation
-                double logProposalRatio = 
-                        proposer.proposeNextState(reducedWorld, varToSample, i);
-                double weight = evidence.getEvidenceProb(curWorld);
-                weights[i] = weight;
-                diffs[i] = reducedWorld;
-            }
-
-            int idx = Util.sampleWithProbs(weights);
-            PartialWorldDiff selected = diffs[idx];
-
-            // Save the selected world
-            selected.save();
-        } else { 
-            // Infinite Domain Size so we fall back to MH Sampling
-            curWorld.save(); // make sure we start with saved world.
-            double logProposalRatio = 
-                proposer.proposeNextState(curWorld, varToSample);
-
-            if (Util.verbose()) {
-                System.out.println();
-                System.out.println("\tlog proposal ratio: " + logProposalRatio);
-            }
-
-            double logProbRatio = 
-                computeLogProbRatio(curWorld.getSaved(), curWorld);
-            if (Util.verbose()) {
-                System.out.println("\tlog probability ratio: " + logProbRatio);
-            }
-            double logAcceptRatio = logProbRatio + logProposalRatio;
-            if (Util.verbose()) {
-                System.out.println("\tlog acceptance ratio: " + logAcceptRatio);
-            }
-
-            // Accept or reject proposal
-            if ((logAcceptRatio >= 0) || 
-                    (Util.random() < Math.exp(logAcceptRatio))) {
-                curWorld.save();
-                if (Util.verbose()) {
-                    System.out.println("\taccepted");
-                }
-                ++totalNumAccepted;
-                ++numAcceptedThisTrial;
-                proposer.updateStats(true);
-            } else {
-			curWorld.revert(); // clean slate for next proposal
-			if (Util.verbose()) {
-				System.out.println("\trejected");
-			}
-			proposer.updateStats(false);
-		}
-
+        double logProposalRatio = proposer.proposeNextState(proposedWorld,
+            varToSample, finiteSupport[i]);
+        // double weight = evidence.getEvidenceProb(curWorld);
+        for (Iterator iter = reducedWorld.getInstantiatedVars().iterator(); iter
+            .hasNext();) {
+          BayesNetVar curVar = (BayesNetVar) iter.next();
+          if (curVar.getParents(proposedWorld).contains(varToSample)) {
+            logProposalRatio += proposedWorld.getLogProbOfValue(curVar);
+          }
         }
+        weights[i] = Math.exp(logProposalRatio);
+        diffs[i] = proposedWorld;
+      }
+
+      int idx = Util.sampleWithProbs(Util.normalize(weights));
+      PartialWorldDiff selected = diffs[idx];
+
+      // Save the selected world
+      if (evidence.isTrue(selected)) {
+        selected.save();
+        curWorld = selected;
+        // curWorld = new PartialWorldDiff(selected);
+        // curWorld = (PartialWorldDiff) selected.getSaved();
+      }
+    } else {
+      // Infinite Domain Size so we fall back to MH Sampling
+      curWorld.save(); // make sure we start with saved world.
+      double logProposalRatio = proposer
+          .proposeNextState(curWorld, varToSample);
+
+      if (Util.verbose()) {
+        System.out.println();
+        System.out.println("\tlog proposal ratio: " + logProposalRatio);
+      }
+
+      double logProbRatio = computeLogProbRatio(curWorld.getSaved(), curWorld);
+      if (Util.verbose()) {
+        System.out.println("\tlog probability ratio: " + logProbRatio);
+      }
+      double logAcceptRatio = logProbRatio + logProposalRatio;
+      if (Util.verbose()) {
+        System.out.println("\tlog acceptance ratio: " + logAcceptRatio);
+      }
+
+      // Accept or reject proposal
+      if ((logAcceptRatio >= 0) || (Util.random() < Math.exp(logAcceptRatio))) {
+        curWorld.save();
+        if (Util.verbose()) {
+          System.out.println("\taccepted");
+        }
+        ++totalNumAccepted;
+        ++numAcceptedThisTrial;
+        proposer.updateStats(true);
+      } else {
+        curWorld.revert(); // clean slate for next proposal
+        if (Util.verbose()) {
+          System.out.println("\trejected");
+        }
+        proposer.updateStats(false);
+      }
+
     }
+  }
 
-    // Num Samples Drawn Thus Far
-    protected int totalNumSamples = 0;
-    protected int totalNumAccepted = 0;
-	protected int numSamplesThisTrial = 0;
-	protected int numAcceptedThisTrial = 0;
-
-    // Generic Proposer to Handle State Transitions
-	protected GenericProposer proposer;
-
-    // Properties
-    protected Properties properties;
-
-    // Types of Identifiers
-	protected Set<Type> idTypes; 
-    // The set of query variables
-    protected List<BayesNetVar> queryVars = new ArrayList<BayesNetVar>();
-    protected Set evidenceVars = new HashSet();
-
-    // Generic Proposer to Handle the
-
-    protected PartialWorldDiff curWorld = null;
+  // Num Samples Drawn Thus Far
+  protected int totalNumSamples = 0;
+  protected int totalNumAccepted = 0;
+  protected int numSamplesThisTrial = 0;
+  protected int numAcceptedThisTrial = 0;
 }

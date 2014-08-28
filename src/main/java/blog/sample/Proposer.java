@@ -35,12 +35,12 @@
 
 package blog.sample;
 
-import java.util.*;
+import java.util.List;
 
-import blog.model.Evidence;
-import blog.world.PartialWorldDiff;
-import blog.world.PartialWorld;
 import blog.bn.BayesNetVar;
+import blog.model.Evidence;
+import blog.world.PartialWorld;
+import blog.world.PartialWorldDiff;
 
 /**
  * Interface for Metropolis-Hastings and Gibbs proposal distributions.
@@ -48,7 +48,7 @@ import blog.bn.BayesNetVar;
  * chain, and propose a new state x' given any state x. It must also be able to
  * compute the proposal ratio q(x | x') / q(x' | x), where q is the proposal
  * distribution.
- *
+ * 
  * <p>
  * Implementations of the Proposer interface should have a constructor with two
  * arguments: a blog.Model object defining the prior distribution, and a
@@ -62,7 +62,7 @@ public interface Proposer {
    * enough to answer the given queries. Furthermore, the proposer stores the
    * given evidence and queries so that <code>proposeNextState</code> can also
    * maintain these properties.
-   *
+   * 
    * @param queries
    *          List of Query objects
    */
@@ -74,16 +74,16 @@ public interface Proposer {
    * modify to create the proposal; the saved version that underlies this
    * PartialWorldDiff is the state before the proposal. Returns the log proposal
    * ratio: log (q(x | x') / q(x' | x))
-   *
+   * 
    * <p>
    * The proposed world satisfies the evidence and is complete enough to answer
    * the queries specified in the last call to <code>initialize</code>.
-   *
+   * 
    * Note that if this proposal distribution is a mixture or cycle of more
    * elementary proposal distributions, the proposal probabilities q(x | x') and
    * q(x' | x) may be specific to the elementary distribution used for this
    * proposal.
-   *
+   * 
    * @throws IllegalStateException
    *           if <code>initialize</code> has not been called
    */
@@ -115,21 +115,24 @@ public interface Proposer {
    * X to the proposed value i. The proposed world satisfies the evidence
    * and is complete enough to answer the queries specified in the last
    * call to <code>initialize</code>.
-   *
-   * <p> Note that this function is only used within the Gibbs Sampler. No
-   * need to implement the function if Gibbs Sampler is not used.
+   * 
+   * <p>
+   * Note that this function is only used within the Gibbs Sampler. No need to
+   * implement the function if Gibbs Sampler is not used.
    */
-  double proposeNextState(PartialWorldDiff proposedWorld,
-                          BayesNetVar var, int i);
+  double proposeNextState(PartialWorldDiff proposedWorld, BayesNetVar var,
+      Object value);
 
   /**
-   * Propose a next state for the Markov Chain which resamples the given variable
+   * Propose a next state for the Markov Chain which resamples the given
+   * variable
    * X The proposed world satisfies the evidence
    * and is complete enough to answer the queries specified in the last
    * call to <code>initialize</code>.
-   *
-   * <p> Note that this function is only used within the Gibbs Sampler. No
-   * need to implement the function if Gibbs Sampler is not used.
+   * 
+   * <p>
+   * Note that this function is only used within the Gibbs Sampler. No need to
+   * implement the function if Gibbs Sampler is not used.
    */
   double proposeNextState(PartialWorldDiff proposedWorld, BayesNetVar var);
 

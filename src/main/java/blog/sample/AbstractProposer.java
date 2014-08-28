@@ -123,7 +123,7 @@ public abstract class AbstractProposer implements Proposer {
   }
 
   public double proposeNextState(PartialWorldDiff proposedWorld,
-      BayesNetVar var, int i) {
+      BayesNetVar var, Object value) {
     return 0;
   }
 
