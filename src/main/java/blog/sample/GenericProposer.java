@@ -241,7 +241,10 @@ public class GenericProposer extends AbstractProposer {
   // updates the logProbForward and logProbBackward variables.
   protected void sampleValue(VarWithDistrib varToSample, PartialWorld world) {
     // Save child set before graph becomes out of date
-    Set children = world.getCBN().getChildren(varToSample);
+    Set children = new HashSet();
+    children.addAll(world.getCBN().getChildren(varToSample));
+    children.addAll(evidenceVars);
+    children.addAll(queryVars);
 
     DependencyModel.Distrib distrib = varToSample
         .getDistrib(new DefaultEvalContext(world, true));
@@ -263,9 +266,10 @@ public class GenericProposer extends AbstractProposer {
 
     for (Iterator childrenIter = children.iterator(); childrenIter.hasNext();) {
       BayesNetVar child = (BayesNetVar) childrenIter.next();
-      if (!world.isInstantiated(child)) // NOT SURE YET THIS IS THE RIGHT THING
-                                        // TO DO! CHECKING WITH BRIAN.
-        continue;
+      // if (!world.isInstantiated(child)) // NOT SURE YET THIS IS THE RIGHT
+      // THING
+      // TO DO! CHECKING WITH BRIAN.
+      // continue;
       child.ensureDetAndSupported(instantiator);
     }
 
