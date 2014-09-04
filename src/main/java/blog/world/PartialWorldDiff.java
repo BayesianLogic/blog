@@ -94,9 +94,10 @@ public class PartialWorldDiff extends AbstractPartialWorld {
    * <code>toCopy</code>.
    */
   public PartialWorldDiff(PartialWorld underlying, PartialWorld toCopy) {
+    this(toCopy);
+    savedWorld = underlying;
+
     /*
-     * this(underlying);
-     * 
      * for (Iterator iter = toCopy.getAssertedIdentifiers().iterator(); iter
      * .hasNext();) {
      * ObjectIdentifier id = (ObjectIdentifier) iter.next();
@@ -114,10 +115,6 @@ public class PartialWorldDiff extends AbstractPartialWorld {
      * addDerivedVar((DerivedVar) iter.next());
      * }
      */
-
-    // Mark;
-    this(toCopy);
-    savedWorld = underlying;
   }
 
   /**
@@ -159,7 +156,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
     savedWorld.updateCBN(cbn, varToUninstParent, varToLogProb,
         derivedVarToValue);
 
-    clearChanges(); // since underlying is now updated
+    changeUnderlying();
 
     for (Iterator iter = diffListeners.iterator(); iter.hasNext();) {
       WorldDiffListener listener = (WorldDiffListener) iter.next();
@@ -374,6 +371,19 @@ public class PartialWorldDiff extends AbstractPartialWorld {
    */
   public void removeDiffListener(WorldDiffListener listener) {
     diffListeners.remove(listener);
+  }
+
+  private void changeUnderlying() {
+    ((MapDiff) basicVarToValue).changeUnderlying();
+    ((MultiMapDiff) objToUsesAsValue).changeUnderlying();
+    ((MultiMapDiff) objToUsesAsArg).changeUnderlying();
+    ((MapDiff) assertedIdToPOPApp).changeUnderlying();
+    ((MultiMapDiff) popAppToAssertedIds).changeUnderlying();
+    ((PatchCBN) cbn).changeUnderlying();
+    ((MapDiff) varToLogProb).changeUnderlying();
+    ((MapDiff) derivedVarToValue).changeUnderlying();
+
+    dirtyVars.clear();
   }
 
   private void clearChanges() {
