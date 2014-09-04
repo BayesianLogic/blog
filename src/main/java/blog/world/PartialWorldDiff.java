@@ -94,27 +94,50 @@ public class PartialWorldDiff extends AbstractPartialWorld {
    * <code>toCopy</code>.
    */
   public PartialWorldDiff(PartialWorld underlying, PartialWorld toCopy) {
-    this(toCopy);
-    savedWorld = underlying;
+    this(underlying);
 
-    /*
-     * for (Iterator iter = toCopy.getAssertedIdentifiers().iterator(); iter
-     * .hasNext();) {
-     * ObjectIdentifier id = (ObjectIdentifier) iter.next();
-     * assertIdentifier(id, toCopy.getPOPAppSatisfied(id));
-     * }
-     * 
-     * for (Iterator iter = toCopy.getInstantiatedVars().iterator(); iter
-     * .hasNext();) {
-     * BasicVar var = (BasicVar) iter.next();
-     * setValue(var, toCopy.getValue(var));
-     * }
-     * 
-     * for (Iterator iter = toCopy.getDerivedVars().iterator(); iter.hasNext();)
-     * {
-     * addDerivedVar((DerivedVar) iter.next());
-     * }
-     */
+    for (Iterator iter = toCopy.getAssertedIdentifiers().iterator(); iter
+        .hasNext();) {
+      ObjectIdentifier id = (ObjectIdentifier) iter.next();
+      assertIdentifier(id, toCopy.getPOPAppSatisfied(id));
+    }
+
+    Set toRemoveAssertedIndentifiers = new HashSet();
+    toRemoveAssertedIndentifiers.addAll(underlying.getAssertedIdentifiers());
+    toRemoveAssertedIndentifiers.removeAll(toCopy.getAssertedIdentifiers());
+    for (Iterator iter = toRemoveAssertedIndentifiers.iterator(); iter
+        .hasNext();) {
+      ObjectIdentifier id = (ObjectIdentifier) iter.next();
+      removeIdentifier(id);
+    }
+
+    for (Iterator iter = toCopy.getInstantiatedVars().iterator(); iter
+        .hasNext();) {
+      BasicVar var = (BasicVar) iter.next();
+      setValue(var, toCopy.getValue(var));
+    }
+
+    Set toRemoveBasicVars = new HashSet();
+    toRemoveBasicVars.addAll(underlying.getInstantiatedVars());
+    toRemoveBasicVars.removeAll(toCopy.getInstantiatedVars());
+    for (Iterator iter = toRemoveBasicVars.iterator(); iter.hasNext();) {
+      BasicVar var = (BasicVar) iter.next();
+      setValue(var, null);
+    }
+
+    for (Iterator iter = toCopy.getDerivedVars().iterator(); iter.hasNext();) {
+      addDerivedVar((DerivedVar) iter.next());
+    }
+
+    Set toRemoveDerivedVars = new HashSet();
+    toRemoveDerivedVars.addAll(underlying.getDerivedVars());
+    toRemoveDerivedVars.removeAll(toCopy.getDerivedVars());
+    for (Iterator iter = toRemoveDerivedVars.iterator(); iter.hasNext();) {
+      removeDerivedVar((DerivedVar) iter.next());
+    }
+
+    updateParentsAndProbs();
+    updateCBN(cbn, varToUninstParent, varToLogProb, derivedVarToValue);
   }
 
   /**
