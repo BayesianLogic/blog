@@ -75,13 +75,15 @@ public class DefaultCBN extends DefaultDGraph implements CBN {
   @Override
   public boolean isContingentOn(PartialWorld world, BayesNetVar X,
       BayesNetVar Y, BayesNetVar Z) {
-    if (!world.isInstantiated(X) || !world.isInstantiated(Y)
-        || !world.isInstantiated(Z)) {
-      return true;
-    }
-    if (!(X instanceof VarWithDistrib) || !(Y instanceof VarWithDistrib)) {
-      return true;
-    }
+    /*
+     * if (!world.isInstantiated(X) || !world.isInstantiated(Y)
+     * || (!world.isInstantiated(Z) && !world.getDerivedVars().contains(Z))) {
+     * return true;
+     * }
+     * if (!(X instanceof VarWithDistrib) || !(Y instanceof VarWithDistrib)) {
+     * return true;
+     * }
+     */
     TraceParentRecEvalContext context = new TraceParentRecEvalContext(world);
     if (Z instanceof VarWithDistrib) {
       ((VarWithDistrib) Z).getDistrib(context);

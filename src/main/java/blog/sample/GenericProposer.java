@@ -242,11 +242,10 @@ public class GenericProposer extends AbstractProposer {
       for (Iterator iter = world.getInstantiatedVars().iterator(); iter
           .hasNext();) {
         BasicVar curVar = (BasicVar) iter.next();
-        Object curValue = world.getValue(curVar);
-        world.setValue(curVar, null);
-        if (!evidenceAndQueriesSupported(evidenceAndQueryVars, world)) {
-          world.setValue(curVar, curValue);
-        } else {
+        PartialWorldDiff tmpWorld = new PartialWorldDiff(world);
+        tmpWorld.setValue(curVar, null);
+        if (evidenceAndQueriesSupported(evidenceAndQueryVars, tmpWorld)) {
+          world.setValue(curVar, null);
           OK = false;
           logProbBackward += world.getSaved().getLogProbOfValue(curVar);
         }
@@ -302,8 +301,10 @@ public class GenericProposer extends AbstractProposer {
   // updates the logProbForward and logProbBackward variables.
   protected void sampleValue(VarWithDistrib varToSample, PartialWorld world) {
     // Save child set before graph becomes out of date
-    Set children = world.getCBN().getChildren(varToSample);
-
+    Set children = new HashSet();
+    children.addAll(world.getCBN().getChildren(varToSample));
+    children.addAll(evidenceVars);
+    children.addAll(queryVars);
     DependencyModel.Distrib distrib = varToSample
         .getDistrib(new DefaultEvalContext(world, true));
     CondProbDistrib cpd = distrib.getCPD();
@@ -324,8 +325,19 @@ public class GenericProposer extends AbstractProposer {
 
     for (Iterator childrenIter = children.iterator(); childrenIter.hasNext();) {
       BayesNetVar child = (BayesNetVar) childrenIter.next();
-      if (!world.isInstantiated(child)) // NOT SURE YET THIS IS THE RIGHT THING
-                                        // TO DO! CHECKING WITH BRIAN.
+      if (!world.isInstantiated(child) && !(child instanceof DerivedVar)) // NOT
+                                                                          // SURE
+                                                                          // YET
+                                                                          // THIS
+                                                                          // IS
+                                                                          // THE
+                                                                          // RIGHT
+                                                                          // THING
+                                                                          // TO
+                                                                          // DO!
+                                                                          // CHECKING
+                                                                          // WITH
+                                                                          // BRIAN.
         continue;
       child.ensureDetAndSupported(instantiator);
     }
@@ -336,7 +348,10 @@ public class GenericProposer extends AbstractProposer {
   protected void sampleValue(VarWithDistrib varToSample, Object value,
       PartialWorld world) {
     // Save child set before graph becomes out of date
-    Set children = world.getCBN().getChildren(varToSample);
+    Set children = new HashSet();
+    children.addAll(world.getCBN().getChildren(varToSample));
+    children.addAll(evidenceVars);
+    children.addAll(queryVars);
     world.setValue(varToSample, value);
     logProbGibbs += varToSample.getDistrib(new DefaultEvalContext(world, true))
         .getCPD().getLogProb(value);
@@ -348,9 +363,22 @@ public class GenericProposer extends AbstractProposer {
 
     for (Iterator childrenIter = children.iterator(); childrenIter.hasNext();) {
       BayesNetVar child = (BayesNetVar) childrenIter.next();
-      if (!world.isInstantiated(child)) // NOT SURE YET THIS IS THE RIGHT THING
-                                        // TO DO! CHECKING WITH BRIAN.
+
+      if (!world.isInstantiated(child) && !(child instanceof DerivedVar)) // NOT
+                                                                          // SURE
+                                                                          // YET
+                                                                          // THIS
+                                                                          // IS
+                                                                          // THE
+                                                                          // RIGHT
+                                                                          // THING
+                                                                          // TO
+                                                                          // DO!
+                                                                          // CHECKING
+                                                                          // WITH
+                                                                          // BRIAN.
         continue;
+
       child.ensureDetAndSupported(instantiator);
     }
 
@@ -394,6 +422,7 @@ public class GenericProposer extends AbstractProposer {
     Set varsToUninstantiate = new HashSet();
     varsToUninstantiate.addAll(curWorld.getInstantiatedVars());
     varsToUninstantiate.removeAll(core);
+    varsToUninstantiate.remove(var);
     PartialWorldDiff newWorld = new PartialWorldDiff(curWorld);
     for (Iterator iter = varsToUninstantiate.iterator(); iter.hasNext();) {
       BasicVar curVar = (BasicVar) iter.next();
