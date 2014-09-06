@@ -163,6 +163,9 @@ public class GibbsSampler extends MHSampler {
             logProposalRatio += proposedWorld.getLogProbOfValue(curVar);
           }
         }
+        if (!proposedWorld.getVarsWithValue(Model.NULL).isEmpty()
+            || !evidence.isTrue(proposedWorld))
+          logProposalRatio = Double.NEGATIVE_INFINITY;
         weights[i] = Math.exp(logProposalRatio);
         diffs[i] = proposedWorld;
       }
@@ -171,13 +174,7 @@ public class GibbsSampler extends MHSampler {
       PartialWorldDiff selected = diffs[idx];
 
       // Save the selected world
-      if (evidence.isTrue(selected)) {
-        selected.save();
-        // curWorld = selected;
-        // curWorld = new PartialWorldDiff(selected);
-        // curWorld = (PartialWorldDiff) selected.getSaved();
-        // System.out.println(curWorld.toString());
-      }
+      selected.save();
     } else {
       // Infinite Domain Size so we fall back to MH Sampling
       curWorld.save(); // make sure we start with saved world.
