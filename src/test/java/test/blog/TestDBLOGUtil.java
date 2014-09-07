@@ -2,6 +2,7 @@ package test.blog;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.Test;
@@ -9,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import blog.DBLOGUtil;
-import blog.common.Util;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Queries;
@@ -53,8 +53,10 @@ public class TestDBLOGUtil {
     Map<Timestep, Queries> splitQueries = DBLOGUtil.splitQueriesInTime(queries);
     // System.out.println(splitQueries);
     assertEquals(3, splitQueries.size());
-    assertEquals(Util.list(queries.get(0)), splitQueries.get(null));
-    assertEquals(Util.list(queries.get(1)), splitQueries.get(Timestep.at(3)));
-    assertEquals(Util.list(queries.get(2)), splitQueries.get(Timestep.at(13)));
+    assertEquals(Arrays.asList(queries.get(0)), splitQueries.get(null));
+    assertEquals(Arrays.asList(queries.get(1)),
+        splitQueries.get(Timestep.at(3)));
+    assertEquals(Arrays.asList(queries.get(2)),
+        splitQueries.get(Timestep.at(13)));
   }
 }

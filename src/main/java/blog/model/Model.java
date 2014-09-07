@@ -103,7 +103,8 @@ public class Model {
 
   /** Reads a model from a file and returns it. */
   public static Model fromFile(String filename) {
-    List readersAndOrigins = Main.makeReaders(Util.list(filename));
+    List readersAndOrigins = Main.makeReaders(Collections
+        .singletonList(filename));
     Model model = new Model();
     model.augmentFromReadersAndOrigins(readersAndOrigins);
     return model;
@@ -135,7 +136,7 @@ public class Model {
    * Augments a model with the contents parsed from a string.
    */
   public void augmentFromString(String modelString) {
-    List readersAndOrigins = Util.list(new Object[] {
+    List<Object[]> readersAndOrigins = Collections.singletonList(new Object[] {
         new StringReader(modelString), modelString }); // description of string
                                                        // is self.
     augmentFromReadersAndOrigins(readersAndOrigins);

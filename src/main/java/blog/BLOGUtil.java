@@ -1,12 +1,12 @@
 package blog;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
-import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
@@ -50,7 +50,7 @@ public class BLOGUtil {
    * applied to a single variable.
    */
   public static void ensureDetAndSupported(BayesNetVar var, PartialWorld world) {
-    ensureDetAndSupported(Util.list(var), world);
+    ensureDetAndSupported(Arrays.asList(var), world);
   }
 
   /**

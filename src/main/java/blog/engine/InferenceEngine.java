@@ -36,6 +36,7 @@
 package blog.engine;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -115,12 +116,12 @@ public abstract class InferenceEngine {
 
   /** Answer query given evidence. */
   public void solve(Query query, Evidence evidence) {
-    solve(Util.list(query), evidence);
+    solve(Arrays.asList(query), evidence);
   }
 
   /** Answer query given no evidence. */
   public void solve(Query query) {
-    solve(Util.list(query), new Evidence(model));
+    solve(Arrays.asList(query), new Evidence(model));
   }
 
   /** Answer queries given evidence. */
