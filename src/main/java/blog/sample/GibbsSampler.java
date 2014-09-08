@@ -174,8 +174,8 @@ public class GibbsSampler extends MHSampler {
     } else {
       // Infinite Domain Size so we fall back to MH Sampling
       curWorld.save(); // make sure we start with saved world.
-      double logProposalRatio = proposer
-          .proposeNextState(curWorld, varToSample);
+      double logProposalRatio = ((GenericProposer) proposer).proposeNextState(
+          curWorld, varToSample);
 
       if (Util.verbose()) {
         System.out.println();

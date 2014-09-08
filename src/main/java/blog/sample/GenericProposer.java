@@ -190,6 +190,90 @@ public class GenericProposer extends AbstractProposer {
   }
 
   /**
+   * Proposes a next state for the Markov chain given the current state. The
+   * proposedWorld argument is a PartialWorldDiff that the proposer can modify
+   * to create the proposal; the saved version of this PartialWorldDiff is the
+   * state before the proposal. Returns the log proposal ratio: log (q(x | x') /
+   * q(x' | x))
+   */
+  public double proposeNextState(PartialWorldDiff world,
+      VarWithDistrib varToSample) {
+    if (evidence == null) {
+      throw new IllegalStateException(
+          "initialize() has not been called on proposer.");
+    }
+
+    logProbForward = 0;
+    logProbBackward = 0;
+
+    PickVarToSampleResult result = pickVarToSample(world);
+    chosenVar = varToSample;
+
+    if (result.varToSample == null)
+      return 1.0;
+
+    if (Util.verbose())
+      System.out.println("  sampling " + varToSample);
+
+    // Multiply in the probability of this uniform sample.
+    logProbForward += (-Math.log(result.numberOfChoices));
+
+    if (Util.verbose()) {
+      System.out.println("GenericProposer: world right before sampling"
+          + " new value for " + varToSample + ".\n");
+      System.out.println(world);
+    }
+
+    // Sample value for variable and update forward and backward probs
+    sampleValue(varToSample, world);
+
+    if (Util.verbose()) {
+      System.out.println("GenericProposer: world right before getting"
+          + " newly barren vars.\n");
+      System.out.println(world);
+    }
+
+    // Remove barren variables
+    Set evidenceAndQueryVars = new HashSet();
+    for (Iterator iter = evidenceVars.iterator(); iter.hasNext();) {
+      BayesNetVar curVar = (BayesNetVar) iter.next();
+      if (curVar instanceof BasicVar) {
+        evidenceAndQueryVars.add(curVar);
+      } else if (curVar instanceof DerivedVar) {
+        evidenceAndQueryVars.addAll(curVar.getParents(world));
+      }
+    }
+    for (Iterator iter = queryVars.iterator(); iter.hasNext();) {
+      BayesNetVar curVar = (BayesNetVar) iter.next();
+      if (curVar instanceof BasicVar) {
+        evidenceAndQueryVars.add(curVar);
+      } else if (curVar instanceof DerivedVar) {
+        evidenceAndQueryVars.addAll(curVar.getParents(world));
+      }
+    }
+    boolean OK;
+    do {
+      OK = true;
+      for (Iterator iter = world.getInstantiatedVars().iterator(); iter
+          .hasNext();) {
+        BasicVar curVar = (BasicVar) iter.next();
+        PartialWorldDiff tmpWorld = new PartialWorldDiff(world);
+        tmpWorld.setValue(curVar, null);
+        if (evidenceAndQueriesAreSupported(evidenceAndQueryVars, tmpWorld)) {
+          world.setValue(curVar, null);
+          OK = false;
+          logProbBackward += world.getSaved().getLogProbOfValue(curVar);
+        }
+      }
+    } while (!OK);
+
+    // Uniform sampling from new world.
+    logProbBackward += (-Math.log(world.getInstantiatedVars().size()
+        - numBasicEvidenceVars));
+    return (logProbBackward - logProbForward);
+  }
+
+  /**
    * Proposes a next state for the Markov chain given the current state and the
    * current value. This method is written for Gibbs Sampler and therefore we
    * need to pass the objective value for the sampled variable. The method
