@@ -45,10 +45,8 @@ import blog.world.PartialWorld;
  * on some subset of V. Each leaf of T_X is a probability distribution
  * parametrized by a subset of V. (Summarized from Arora et. al, UAI-10)
  * 
- * TODO: As the requirements for CBNs become clearer, add actual methods here
- * 
- * @author rbharath
- * @date Aug 11, 2012
+ * @author Da Tang
+ * @since Sep 07, 2014
  */
 
 public interface CBN extends DGraph {
@@ -57,6 +55,11 @@ public interface CBN extends DGraph {
    */
   static final CBN EMPTY_CBN = new DefaultCBN();
 
+  /**
+   * Calculating whether an edge Y -> Z is contignet on variable X or not in the
+   * PartialWorld or not.
+   * 
+   */
   boolean isContingentOn(PartialWorld world, BayesNetVar X, BayesNetVar Y,
       BayesNetVar Z);
 }

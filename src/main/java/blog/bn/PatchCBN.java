@@ -60,24 +60,9 @@ public class PatchCBN extends ParentUpdateDGraph implements CBN {
     super((DGraph) underlying);
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.bn.CBN#isContingentOn(blog.world.PartialWorld,
-   * blog.bn.BayesNetVar, blog.bn.BayesNetVar, blog.bn.BayesNetVar)
-   */
   @Override
   public boolean isContingentOn(PartialWorld world, BayesNetVar X,
       BayesNetVar Y, BayesNetVar Z) {
-    /*
-     * if (!world.isInstantiated(X) || !world.isInstantiated(Y)
-     * || (!world.isInstantiated(Z) && !world.getDerivedVars().contains(Z))) {
-     * return true;
-     * }
-     * if (!(X instanceof VarWithDistrib) || !(Y instanceof VarWithDistrib)) {
-     * return true;
-     * }
-     */
     TraceParentRecEvalContext context = new TraceParentRecEvalContext(world);
     if (Z instanceof VarWithDistrib) {
       ((VarWithDistrib) Z).getDistrib(context);

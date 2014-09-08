@@ -150,38 +150,38 @@ public class GenericProposer extends AbstractProposer {
     }
 
     // Remove barren variables
-    LinkedList newlyBarren = new LinkedList(world.getNewlyBarrenVars());
-    while (!newlyBarren.isEmpty()) {
-      BayesNetVar var = (BayesNetVar) newlyBarren.removeFirst();
-      if (!evidenceVars.contains(var) && !queryVars.contains(var)) {
-
-        // Remember its parents.
-        Set parentSet = world.getCBN().getParents(var);
-
-        if (var instanceof VarWithDistrib) {
-          // Multiply in the probability of sampling this
-          // variable again. Since the parent value may have
-          // changed, must use the old world.
-          logProbBackward += world.getSaved().getLogProbOfValue(var);
-
-          // Uninstantiate
-          world.setValue((VarWithDistrib) var, null);
-        }
-
-        // Check to see if its parents are now barren.
-        for (Iterator parentIter = parentSet.iterator(); parentIter.hasNext();) {
-
-          // If parent is barren, add to the end of this
-          // linked list. Note that if a parent has two
-          // barren children, it will only be added to the
-          // end of the list once, when the last child is
-          // considered.
-          BayesNetVar parent = (BayesNetVar) parentIter.next();
-          if (world.getCBN().getChildren(parent).isEmpty())
-            newlyBarren.addLast(parent);
-        }
+    Set evidenceAndQueryVars = new HashSet();
+    for (Iterator iter = evidenceVars.iterator(); iter.hasNext();) {
+      BayesNetVar curVar = (BayesNetVar) iter.next();
+      if (curVar instanceof BasicVar) {
+        evidenceAndQueryVars.add(curVar);
+      } else if (curVar instanceof DerivedVar) {
+        evidenceAndQueryVars.addAll(curVar.getParents(world));
       }
     }
+    for (Iterator iter = queryVars.iterator(); iter.hasNext();) {
+      BayesNetVar curVar = (BayesNetVar) iter.next();
+      if (curVar instanceof BasicVar) {
+        evidenceAndQueryVars.add(curVar);
+      } else if (curVar instanceof DerivedVar) {
+        evidenceAndQueryVars.addAll(curVar.getParents(world));
+      }
+    }
+    boolean OK;
+    do {
+      OK = true;
+      for (Iterator iter = world.getInstantiatedVars().iterator(); iter
+          .hasNext();) {
+        BasicVar curVar = (BasicVar) iter.next();
+        PartialWorldDiff tmpWorld = new PartialWorldDiff(world);
+        tmpWorld.setValue(curVar, null);
+        if (evidenceAndQueriesAreSupported(evidenceAndQueryVars, tmpWorld)) {
+          world.setValue(curVar, null);
+          OK = false;
+          logProbBackward += world.getSaved().getLogProbOfValue(curVar);
+        }
+      }
+    } while (!OK);
 
     // Uniform sampling from new world.
     logProbBackward += (-Math.log(world.getInstantiatedVars().size()
@@ -190,11 +190,14 @@ public class GenericProposer extends AbstractProposer {
   }
 
   /**
-   * Proposes a next state for the Markov chain given the current state. The
-   * proposedWorld argument is a PartialWorldDiff that the proposer can modify
-   * to create the proposal; the saved version of this PartialWorldDiff is the
-   * state before the proposal. Returns the log proposal ratio: log (q(x | x') /
-   * q(x' | x))
+   * Proposes a next state for the Markov chain given the current state and the
+   * current value. This method is written for Gibbs Sampler and therefore we
+   * need to pass the objective value for the sampled variable. The method
+   * returns the log probability of \log\frac{\Pr[var|\mathcal
+   * \sigma_{T_{var}^{var=value}]}}{|V(var)|}, which is the part of Gibbs weight
+   * no related to the core variable set. The other part will be computed in the
+   * Gibbs Sampler itself.
+   * 
    */
   public double proposeNextState(PartialWorldDiff world, BayesNetVar var,
       Object value) {
@@ -244,7 +247,7 @@ public class GenericProposer extends AbstractProposer {
         BasicVar curVar = (BasicVar) iter.next();
         PartialWorldDiff tmpWorld = new PartialWorldDiff(world);
         tmpWorld.setValue(curVar, null);
-        if (evidenceAndQueriesSupported(evidenceAndQueryVars, tmpWorld)) {
+        if (evidenceAndQueriesAreSupported(evidenceAndQueryVars, tmpWorld)) {
           world.setValue(curVar, null);
           OK = false;
           logProbBackward += world.getSaved().getLogProbOfValue(curVar);
@@ -258,7 +261,14 @@ public class GenericProposer extends AbstractProposer {
     return logProbGibbs;
   }
 
-  protected boolean evidenceAndQueriesSupported(Set evidenceAndQueries,
+  /**
+   * Check whether the set of evidence and queries are all supported or not in
+   * the given partial world. Also check whether the world is self-supported or
+   * not. Returns true if all the evidence and queries are supported and also
+   * the world is self-supported.
+   * 
+   */
+  protected boolean evidenceAndQueriesAreSupported(Set evidenceAndQueries,
       PartialWorld world) {
     PartialWorldDiff tmpWorld = new PartialWorldDiff(world);
     for (Iterator iter = evidenceAndQueries.iterator(); iter.hasNext();) {
@@ -325,19 +335,7 @@ public class GenericProposer extends AbstractProposer {
 
     for (Iterator childrenIter = children.iterator(); childrenIter.hasNext();) {
       BayesNetVar child = (BayesNetVar) childrenIter.next();
-      if (!world.isInstantiated(child) && !(child instanceof DerivedVar)) // NOT
-                                                                          // SURE
-                                                                          // YET
-                                                                          // THIS
-                                                                          // IS
-                                                                          // THE
-                                                                          // RIGHT
-                                                                          // THING
-                                                                          // TO
-                                                                          // DO!
-                                                                          // CHECKING
-                                                                          // WITH
-                                                                          // BRIAN.
+      if (!world.isInstantiated(child) && !(child instanceof DerivedVar))
         continue;
       child.ensureDetAndSupported(instantiator);
     }
@@ -364,27 +362,18 @@ public class GenericProposer extends AbstractProposer {
     for (Iterator childrenIter = children.iterator(); childrenIter.hasNext();) {
       BayesNetVar child = (BayesNetVar) childrenIter.next();
 
-      if (!world.isInstantiated(child) && !(child instanceof DerivedVar)) // NOT
-                                                                          // SURE
-                                                                          // YET
-                                                                          // THIS
-                                                                          // IS
-                                                                          // THE
-                                                                          // RIGHT
-                                                                          // THING
-                                                                          // TO
-                                                                          // DO!
-                                                                          // CHECKING
-                                                                          // WITH
-                                                                          // BRIAN.
+      if (!world.isInstantiated(child) && !(child instanceof DerivedVar))
         continue;
 
       child.ensureDetAndSupported(instantiator);
     }
-
-    // logProbGibbs += instantiator.getLogProbability();
   }
 
+  /**
+   * Reduce the current partial world to the core. That is, only leave the core
+   * variables and the sampled variable instantiated and uninstantiate the other
+   * variables.
+   */
   public PartialWorldDiff reduceToCore(PartialWorld curWorld, BayesNetVar var) {
     if (!(var instanceof BasicVar) || !curWorld.isInstantiated(var)) {
       throw new IllegalStateException(

@@ -46,9 +46,10 @@ import blog.sample.TraceParentRecEvalContext;
 import blog.world.PartialWorld;
 
 /**
- * This class provides a default implementation of CBNs. Over the next few
- * weeks,
- * all inference algorithms will be modified to use CBNs.
+ * This class provides a default implementation of CBNs.
+ * 
+ * @author Da Tang
+ * @since Sep 7, 2014
  */
 
 public class DefaultCBN extends DefaultDGraph implements CBN {
@@ -66,24 +67,9 @@ public class DefaultCBN extends DefaultDGraph implements CBN {
     return clone;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.bn.CBN#isContingentOn(blog.world.PartialWorld,
-   * blog.bn.BayesNetVar, blog.bn.BayesNetVar, blog.bn.BayesNetVar)
-   */
   @Override
   public boolean isContingentOn(PartialWorld world, BayesNetVar X,
       BayesNetVar Y, BayesNetVar Z) {
-    /*
-     * if (!world.isInstantiated(X) || !world.isInstantiated(Y)
-     * || (!world.isInstantiated(Z) && !world.getDerivedVars().contains(Z))) {
-     * return true;
-     * }
-     * if (!(X instanceof VarWithDistrib) || !(Y instanceof VarWithDistrib)) {
-     * return true;
-     * }
-     */
     TraceParentRecEvalContext context = new TraceParentRecEvalContext(world);
     if (Z instanceof VarWithDistrib) {
       ((VarWithDistrib) Z).getDistrib(context);

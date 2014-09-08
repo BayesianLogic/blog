@@ -58,13 +58,9 @@ import blog.world.PartialWorldDiff;
  * many of the CBN manipulations are the same for Gibbs as for MH and since this
  * Gibbs sampler reverts to MH sampling for variables of infinite domain.
  * 
- * TODO: Although the structure of this class is correct, a number of the
- * called methods are only stubs. These will be filled in over the next few
- * commits. This class will probably have MHSampler as superclass in the next
- * iteration since both classes share significant amounts of structure.
  * 
- * @author rbharath
- * @date Aug 10, 2012
+ * @author Da Tang
+ * @date Sep 7, 2014
  */
 
 public class GibbsSampler extends MHSampler {
