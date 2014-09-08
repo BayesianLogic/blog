@@ -167,6 +167,11 @@ public class GenericProposer extends AbstractProposer {
         evidenceAndQueryVars.addAll(curVar.getParents(world));
       }
     }
+    for (Iterator iter = world.getVarsWithValue(Model.NULL).iterator(); iter
+        .hasNext();) {
+      BasicVar curVar = (BasicVar) iter.next();
+      world.setValue(curVar, null);
+    }
     boolean OK;
     do {
       OK = true;
@@ -251,6 +256,11 @@ public class GenericProposer extends AbstractProposer {
         evidenceAndQueryVars.addAll(curVar.getParents(world));
       }
     }
+    for (Iterator iter = world.getVarsWithValue(Model.NULL).iterator(); iter
+        .hasNext();) {
+      BasicVar curVar = (BasicVar) iter.next();
+      world.setValue(curVar, null);
+    }
     boolean OK;
     do {
       OK = true;
@@ -322,6 +332,11 @@ public class GenericProposer extends AbstractProposer {
       } else if (curVar instanceof DerivedVar) {
         evidenceAndQueryVars.addAll(curVar.getParents(world));
       }
+    }
+    for (Iterator iter = world.getVarsWithValue(Model.NULL).iterator(); iter
+        .hasNext();) {
+      BasicVar curVar = (BasicVar) iter.next();
+      world.setValue(curVar, null);
     }
     boolean OK;
     do {
