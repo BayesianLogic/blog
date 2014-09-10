@@ -162,11 +162,16 @@ public class GibbsSampler extends MHSampler {
         if (!proposedWorld.getVarsWithValue(Model.NULL).isEmpty()
             || !evidence.isTrue(proposedWorld))
           logProposalRatio = Double.NEGATIVE_INFINITY;
-        weights[i] = Math.exp(logProposalRatio);
+        weights[i] = Math.exp(logProposalRatio
+            + computeLogMultRatio(curWorld, proposedWorld));
         diffs[i] = proposedWorld;
       }
 
       int idx = Util.sampleWithProbs(Util.normalize(weights));
+      if (idx < 0) {
+        int mt = 250;
+        mt = mt + mt;
+      }
       PartialWorldDiff selected = diffs[idx];
 
       // Save the selected world
