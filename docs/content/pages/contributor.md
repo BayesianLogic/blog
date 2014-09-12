@@ -8,7 +8,7 @@ On-going development is done in [Prof. Russell's group](http://www.cs.berkeley.e
 
 - [Lei Li](http://www.cs.cmu.edu/~leili) (project lead)
 - [Constantin Berzan](http://thirld.com/)
-- Yi Wu
+- [Yi Wu](http://jxwuyi.weebly.com/)
 - Tejas Srinivasan (robust parsing)
 - [William Cushing](https://sites.google.com/site/williamcushing/)
 - Yusuf Erol (Application and model development)
