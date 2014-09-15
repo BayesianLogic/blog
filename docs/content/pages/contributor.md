@@ -11,9 +11,9 @@ On-going development is done in [Prof. Russell's group](http://www.cs.berkeley.e
 - [Yi Wu](http://jxwuyi.weebly.com/)
 - Tejas Srinivasan (robust parsing)
 - [William Cushing](https://sites.google.com/site/williamcushing/)
-- Yusuf Erol (Application and model development)
-- Christopher Gioia
+- [Yusuf Erol](http://www.eecs.berkeley.edu/~yberol/) (Application and model development)
 - Christopher Xie (improving MCMC)
+- Da Tang
 
 # Previous Contributors
 
@@ -37,3 +37,4 @@ BLOG was initially developed by Prof. Stuart Russel's research group at UC Berke
 - Dan Wang (added bar plot in web UI) 
 - Aaron Wong (contributing to 0.4 - 0.6 releases)
 - [Gerald Fong](http://www.geraldfong.com/)
+- Christopher Gioia
