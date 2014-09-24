@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Creates MatrixLib objects.
@@ -166,6 +167,10 @@ public class MatrixFactory {
    * To save in this format from matlab: save('a.txt', 'a', '-ascii')
    */
   static public MatrixLib fromTxt(String filename) {
+    // Do Caching for matrix loading from Disk
+    if (MatCache.containsKey(filename))
+      return MatCache.get(filename);
+
     ArrayList<ArrayList<Double>> rows = new ArrayList<ArrayList<Double>>();
     try {
       BufferedReader reader = new BufferedReader(new FileReader(filename));
@@ -206,6 +211,10 @@ public class MatrixFactory {
     }
     System.out.println("Loaded " + result.length + "x" + result[0].length
         + " matrix from " + filename);
-    return fromArray(result);
+    MatrixLib mat = fromArray(result);
+    MatCache.put(filename, mat);
+    return mat;
   }
+
+  private static final HashMap<String, MatrixLib> MatCache = new HashMap<String, MatrixLib>();
 }

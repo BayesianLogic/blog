@@ -57,6 +57,48 @@ public interface MatrixLib {
   public MatrixLib sliceRow(int i);
 
   /**
+   * Returns rows of the matrix from i to j as specified
+   * 
+   * @param i
+   *          the index of the starting row
+   * @param j
+   *          the index of the ending row
+   */
+  public MatrixLib sliceRows(int i, int j);
+
+  /**
+   * Returns a column of the matrix as specified
+   * 
+   * @param i
+   *          the index of the column
+   */
+  public MatrixLib sliceCol(int i);
+
+  /**
+   * Returns columns of the matrix from i to j as specified
+   * 
+   * @param i
+   *          the index of the starting column
+   * @param j
+   *          the index of the ending column
+   */
+  public MatrixLib sliceCols(int i, int j);
+
+  /**
+   * Returns sub-matrix of the matrix in the range of [x1..x2,y1..y2]
+   * 
+   * @param x1
+   *          the index of the starting row
+   * @param x2
+   *          the index of the ending row
+   * @param y1
+   *          the index of the starting column
+   * @param y2
+   *          the index of the ending column
+   */
+  public MatrixLib subMat(int x1, int x2, int y1, int y2);
+
+  /**
    * Returns the sum of this matrix with the one provided
    */
   public MatrixLib plus(MatrixLib otherMat);

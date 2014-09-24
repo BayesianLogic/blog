@@ -58,6 +58,29 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
+  public MatrixLib sliceRows(int i, int j) {
+    return new JamaMatrixLib(values.getMatrix(i, j, 0,
+        values.getColumnDimension() - 1));
+  }
+
+  @Override
+  public MatrixLib sliceCol(int i) {
+    return new JamaMatrixLib(values.getMatrix(0, values.getRowDimension() - 1,
+        i, i));
+  }
+
+  @Override
+  public MatrixLib sliceCols(int i, int j) {
+    return new JamaMatrixLib(values.getMatrix(0, values.getRowDimension() - 1,
+        i, j));
+  }
+
+  @Override
+  public MatrixLib subMat(int x1, int x2, int y1, int y2) {
+    return new JamaMatrixLib(values.getMatrix(x1, x2, y1, y2));
+  }
+
+  @Override
   public MatrixLib plus(MatrixLib otherMat) {
     if (otherMat instanceof JamaMatrixLib) {
       JamaMatrixLib newMat = (JamaMatrixLib) otherMat;

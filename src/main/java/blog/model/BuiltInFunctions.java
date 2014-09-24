@@ -99,6 +99,7 @@ public class BuiltInFunctions {
   public static final String ONES_NAME = "ones";
   public static final String TOINT_NAME = "toInt";
   public static final String TOREAL_NAME = "toReal";
+  public static final String TOSTRING_NAME = "toString";
   public static final String LOAD_REAL_MATRIX_NAME = "loadRealMatrix";
   public static final String ABS_NAME = "abs";
   public static final String EXP_NAME = "exp";
@@ -438,6 +439,12 @@ public class BuiltInFunctions {
    * Return a matrix of ones.
    */
   public static FixedFunction ONES;
+
+  /**
+   * The function takes an arbitrary Object,
+   * and converts it to an String
+   */
+  public static FixedFunction TO_STRING;
 
   /**
    * The function takes an Integer, an Real or a MatrixLib with single element,
@@ -1454,6 +1461,19 @@ public class BuiltInFunctions {
     ONES = new FixedFunction(ONES_NAME, argTypes, retType, onesInterp);
     addFunction(ONES);
 
+    FunctionInterp toStringInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Object obj = args.get(0);
+        return obj.toString();
+      }
+    };
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.BUILT_IN);
+    retType = BuiltInTypes.STRING;
+    TO_STRING = new FixedFunction(TOSTRING_NAME, argTypes, retType,
+        toStringInterp);
+    addFunction(TO_STRING);
+
     FunctionInterp toIntInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         Object obj = args.get(0);
@@ -1463,10 +1483,20 @@ public class BuiltInFunctions {
           return ((Boolean) obj).booleanValue() ? 1 : 0;
         } else if (obj instanceof MatrixLib) {
           return (int) ((MatrixLib) obj).elementAt(0, 0);
+        } else if (obj instanceof Timestep) {
+          return ((Timestep) obj).getValue();
+        } else if (obj instanceof EnumeratedObject) {
+          return ((EnumeratedObject) obj).getIndex();
         } else {
-          System.err.println(obj.toString()
-              + " cannot be converted to Integer ");
-          return 0;
+          int val = 0;
+          try {
+            val = Integer.parseInt(obj.toString());
+          } catch (NumberFormatException e) {
+            System.err.println(obj.toString()
+                + " cannot be converted to Integer ");
+            val = 0;
+          }
+          return val;
         }
       }
     };
@@ -1485,9 +1515,19 @@ public class BuiltInFunctions {
           return ((Boolean) obj).booleanValue() ? 1 : 0;
         } else if (obj instanceof MatrixLib) {
           return ((MatrixLib) obj).elementAt(0, 0);
+        } else if (obj instanceof Timestep) {
+          return ((Timestep) obj).getValue();
+        } else if (obj instanceof EnumeratedObject) {
+          return ((EnumeratedObject) obj).getIndex();
         } else {
-          System.err.println(obj.toString() + " cannot be converted to Real");
-          return 0;
+          double val = 0;
+          try {
+            val = Double.parseDouble(obj.toString());
+          } catch (NumberFormatException e) {
+            System.err.println(obj.toString() + " cannot be converted to Real");
+            val = 0;
+          }
+          return val;
         }
       }
     };
@@ -1501,7 +1541,28 @@ public class BuiltInFunctions {
     FunctionInterp loadRealMatrixInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         String filename = (String) args.get(0);
-        return MatrixFactory.fromTxt(filename);
+        MatrixLib mat = MatrixFactory.fromTxt(filename);
+        if (args.size() == 1)
+          return mat;
+        // return a specific row
+        if (args.size() == 2) {
+          Integer row = (Integer) args.get(1);
+          return mat.sliceRow(row.intValue());
+        }
+        // return consecutive rows
+        if (args.size() <= 4) {
+          Integer lo = (Integer) args.get(1);
+          Integer hi = (Integer) args.get(2);
+          return mat.sliceCols(lo.intValue(), hi.intValue());
+        } else {
+          // return submatrix
+          Integer x1 = (Integer) args.get(1);
+          Integer x2 = (Integer) args.get(2);
+          Integer y1 = (Integer) args.get(3);
+          Integer y2 = (Integer) args.get(4);
+          return mat.subMat(x1.intValue(), x2.intValue(), y1.intValue(),
+              y2.intValue());
+        }
       }
     };
     argTypes.clear();
