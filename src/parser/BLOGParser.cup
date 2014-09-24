@@ -39,6 +39,7 @@
  * @author bramsundar
  * @author tejas
  * @date 2014-06
+ * @date 2014-09
  */
 
 package blog.parse;
@@ -190,7 +191,7 @@ init with {:
  */
 terminal ELSE, IF, THEN, CASE, IN;
 terminal TYPE, RANDOM, FIXED, ORIGIN, DISTINCT,
-        QUERY, OBS, PARAM, LIST, MAP, DISTRIBUTION;
+        QUERY, OBS, PARAM, LIST, MAP, DISTRIBUTION, EXTERN;
 terminal EXISTS, FORALL;
 terminal FOR;
 terminal NULL;
@@ -214,7 +215,7 @@ nonterminal program;
 nonterminal StmtList opt_statement_lst, statement_lst;
 nonterminal Stmt statement, declaration_stmt, type_decl, fixed_func_decl,
   rand_func_decl, number_stmt, origin_func_decl,
-  distinct_decl, distribution_decl, parameter_decl,
+  distinct_decl, distribution_decl, extern_decl, parameter_decl,
   evidence_stmt, query_stmt;
 nonterminal Stmt evidence, value_evidence;
 nonterminal Expr expression, literal,
@@ -317,6 +318,7 @@ declaration_stmt ::=
   | distinct_decl : e {: RESULT = e; :}
   | parameter_decl : e {: RESULT = e; :}
   | distribution_decl :e {: RESULT = e; :}
+  | extern_decl :e {: RESULT = e; :}  
 /*  | parfactor : e {: RESULT = e; :}  */ // not supporting parfactor now
   ;
 
@@ -542,11 +544,20 @@ id_or_subid ::= ID:id
  * declaration of a distribution
  */
 distribution_decl ::=
-    DISTRIBUTION:d ID:id EQ refer_name:name
-    LPAREN opt_expression_list:e RPAREN 
+    DISTRIBUTION:d type:ret_type ID:id opt_parenthesized_type_var_lst:otl
     {: RESULT = new DistributionDec(dxleft.getLine(), dxleft.getColumn(), sym(id),
-      sym(name), e); :}
+      otl, ret_type); :}
   ;
+
+/**
+ * declaration of an externally defined fixed function
+ */
+extern_decl ::=
+    EXTERN:d type:ret_type ID:id opt_parenthesized_type_var_lst:otl
+    {: RESULT = new FixedFuncDec(dxleft.getLine(), dxleft.getColumn(), sym(id),
+      otl, ret_type, null); :}
+  ;
+
 
 /* reference to function name or Java class */
 refer_name ::= ID:id {: RESULT = id; :}

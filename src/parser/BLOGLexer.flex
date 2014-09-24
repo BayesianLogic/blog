@@ -36,6 +36,7 @@
 /**
  * Using JFlex-1.5.1
  * @author leili
+ * @date 2014-09
  */ 
 package blog.parse;
 import java_cup.runtime.ComplexSymbolFactory;
@@ -191,6 +192,7 @@ Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 [Dd][Ii][Ss][Tt][Rr][Ii][Bb][Uu][Tt][Ii][Oo][Nn] { return symbol(BLOGTokenConstants.DISTRIBUTION); }
 [Cc][Aa][Ss][Ee] { return symbol(BLOGTokenConstants.CASE); }
 [Ii][Nn] { return symbol(BLOGTokenConstants.IN); }
+[Ee][Xx][Tt][Ee][Rr][Nn] {return symbol(BLOGTokenConstants.EXTERN); }
 
 
 /* literals */
