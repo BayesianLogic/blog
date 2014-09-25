@@ -202,7 +202,8 @@ public class Main {
           + "Number of samples: " + numSamples);
       tableWriter.writeResults(System.out);
       System.out.print("Total elapsed time: ");
-      System.out.println(timer.elapsedTime());
+      System.out.print(timer.elapsedTime());
+      System.out.println("s");
       System.out.println("======== Done ========");
 
       // Write query results to file, in JSON format.
