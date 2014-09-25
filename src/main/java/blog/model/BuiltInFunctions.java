@@ -479,18 +479,24 @@ public class BuiltInFunctions {
 
   /**
    * Return an identity matrix.
+   * EYE_k will take k integers as input arguments
    */
-  public static FixedFunction EYE;
+  public static FixedFunction EYE1;
+  public static FixedFunction EYE2;
 
   /**
    * Return a matrix of zeros.
+   * ZEROS_k will take k integers as input arguments
    */
-  public static FixedFunction ZEROS;
+  public static FixedFunction ZEROS1;
+  public static FixedFunction ZEROS2;
 
   /**
    * Return a matrix of ones.
+   * ONES_k will take k integers as input arguments
    */
-  public static FixedFunction ONES;
+  public static FixedFunction ONES1;
+  public static FixedFunction ONES2;
 
   /**
    * The function takes an arbitrary Object,
@@ -1572,61 +1578,74 @@ public class BuiltInFunctions {
     };
     addTemplate(VSTACK);
 
-    FunctionInterp eyeInterp = new AbstractFunctionInterp() {
+    FunctionInterp eye1Interp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        if (args.size() == 1) {
-          Integer size = (Integer) args.get(0);
-          return MatrixFactory.eye(size);
-        } else {
-          Integer row = (Integer) args.get(0);
-          Integer col = (Integer) args.get(0);
-          return MatrixFactory.eye(row, col);
-        }
+        Integer size = (Integer) args.get(0);
+        return MatrixFactory.eye(size);
       }
     };
     argTypes.clear();
     argTypes.add(BuiltInTypes.INTEGER);
     retType = BuiltInTypes.REAL_MATRIX;
-    EYE = new FixedFunction(EYE_NAME, argTypes, retType, eyeInterp);
-    addFunction(EYE);
+    EYE1 = new FixedFunction(EYE_NAME, argTypes, retType, eye1Interp);
+    addFunction(EYE1);
 
-    FunctionInterp zerosInterp = new AbstractFunctionInterp() {
+    FunctionInterp eye2Interp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        if (args.size() == 1) {
-          Integer size = (Integer) args.get(0);
-          return MatrixFactory.zeros(size);
-        } else {
-          Integer rows = (Integer) args.get(0);
-          Integer cols = (Integer) args.get(1);
-          return MatrixFactory.zeros(rows, cols);
-        }
+        Integer row = (Integer) args.get(0);
+        Integer col = (Integer) args.get(1);
+        return MatrixFactory.eye(row, col);
       }
     };
-    argTypes.clear();
     argTypes.add(BuiltInTypes.INTEGER);
-    argTypes.add(BuiltInTypes.INTEGER);
-    retType = BuiltInTypes.REAL_MATRIX;
-    ZEROS = new FixedFunction(ZEROS_NAME, argTypes, retType, zerosInterp);
-    addFunction(ZEROS);
+    EYE2 = new FixedFunction(EYE_NAME, argTypes, retType, eye2Interp);
+    addFunction(EYE2);
 
-    FunctionInterp onesInterp = new AbstractFunctionInterp() {
+    FunctionInterp zeros1Interp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        if (args.size() == 1) {
-          Integer size = (Integer) args.get(0);
-          return MatrixFactory.ones(size);
-        } else {
-          Integer rows = (Integer) args.get(0);
-          Integer cols = (Integer) args.get(1);
-          return MatrixFactory.ones(rows, cols);
-        }
+        Integer size = (Integer) args.get(0);
+        return MatrixFactory.zeros(size);
       }
     };
     argTypes.clear();
     argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    ZEROS1 = new FixedFunction(ZEROS_NAME, argTypes, retType, zeros1Interp);
+    addFunction(ZEROS1);
+
+    FunctionInterp zeros2Interp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Integer rows = (Integer) args.get(0);
+        Integer cols = (Integer) args.get(1);
+        return MatrixFactory.zeros(rows, cols);
+      }
+    };
+    argTypes.add(BuiltInTypes.INTEGER);
+    ZEROS2 = new FixedFunction(ZEROS_NAME, argTypes, retType, zeros2Interp);
+    addFunction(ZEROS2);
+
+    FunctionInterp ones1Interp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Integer size = (Integer) args.get(0);
+        return MatrixFactory.ones(size);
+      }
+    };
+    argTypes.clear();
     argTypes.add(BuiltInTypes.INTEGER);
     retType = BuiltInTypes.REAL_MATRIX;
-    ONES = new FixedFunction(ONES_NAME, argTypes, retType, onesInterp);
-    addFunction(ONES);
+    ONES1 = new FixedFunction(ONES_NAME, argTypes, retType, ones1Interp);
+    addFunction(ONES1);
+
+    FunctionInterp ones2Interp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Integer rows = (Integer) args.get(0);
+        Integer cols = (Integer) args.get(1);
+        return MatrixFactory.ones(rows, cols);
+      }
+    };
+    argTypes.add(BuiltInTypes.INTEGER);
+    ONES2 = new FixedFunction(ONES_NAME, argTypes, retType, ones2Interp);
+    addFunction(ONES2);
 
     FunctionInterp toStringInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
