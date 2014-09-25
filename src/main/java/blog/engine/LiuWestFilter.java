@@ -5,9 +5,9 @@ import java.util.Properties;
 
 import blog.common.Util;
 import blog.model.BuiltInTypes;
+import blog.model.FixedFunction;
 import blog.model.Function;
 import blog.model.Model;
-import blog.model.FixedFunction;
 import blog.world.PartialWorld;
 
 /**
@@ -113,8 +113,7 @@ public class LiuWestFilter extends ParticleFilter {
       }
       stdev = Math.sqrt(stdev / particles.size());
 
-      System.out
-          .println(funcName + " has mean " + mean + " and stdev " + stdev);
+      Util.debug(funcName, " has mean ", mean, " and stdev ", stdev);
 
       for (int i = 0; i < particles.size(); i++) {
         particle = (Particle) particles.get(i);
