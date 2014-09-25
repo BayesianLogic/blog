@@ -40,7 +40,6 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import blog.BLOGUtil;
-import blog.common.Timer;
 import blog.common.Util;
 import blog.io.TableWriter;
 import blog.model.Model;
@@ -160,8 +159,6 @@ public class SamplingEngine extends InferenceEngine {
     if (numBurnIn != 0) {
       System.out.println("(Burn-in samples: " + numBurnIn + ")");
     }
-    Timer timer = new Timer();
-    timer.start();
 
     for (int i = 0; i < numSamples; ++i) {
       Util.debug("\nIteration ", i, ":");
@@ -200,8 +197,7 @@ public class SamplingEngine extends InferenceEngine {
       }
 
       if (reportInterval != -1 && (i + 1) % reportInterval == 0) {
-        System.out.println("Samples done: " + (i + 1) + ".  \tTime elapsed: "
-            + timer.elapsedTime() + " s.");
+        System.out.println("Samples done: " + (i + 1) + ".");
       }
 
       if (Util.print() && logWeight > Sampler.NEGLIGIBLE_LOG_WEIGHT && !printed) {

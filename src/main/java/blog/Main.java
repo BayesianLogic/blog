@@ -186,17 +186,23 @@ public class Main {
       generateWorlds();
     } else {
       // Run inference.
+      Timer timer = new Timer();
+      timer.start();
       InferenceEngine engine = InferenceEngine.constructEngine(model,
           inferenceProps);
       engine.setEvidence(evidence);
       engine.setQueries(queries);
+
       engine.answerQueries();
+      timer.stop();
 
       // Print query results
       TableWriter tableWriter = new TableWriter(queries);
       tableWriter.setHeader("======== Query Results =========\n"
           + "Number of samples: " + numSamples);
       tableWriter.writeResults(System.out);
+      System.out.print("Total elapsed time: ");
+      System.out.println(timer.elapsedTime());
       System.out.println("======== Done ========");
 
       // Write query results to file, in JSON format.
@@ -208,7 +214,6 @@ public class Main {
       }
     }
 
-    Timer.printAllTimers();
   }
 
   public static List<Object[]> makeReaders(Collection<String> filenames) {
