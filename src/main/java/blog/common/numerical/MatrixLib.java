@@ -89,14 +89,14 @@ public interface MatrixLib {
    * 
    * @param x1
    *          the index of the starting row
-   * @param x2
-   *          the index of the ending row
    * @param y1
    *          the index of the starting column
+   * @param x2
+   *          the index of the ending row (inclusive)
    * @param y2
-   *          the index of the ending column
+   *          the index of the ending column (inclusive)
    */
-  public MatrixLib subMat(int x1, int x2, int y1, int y2);
+  public MatrixLib subMat(int x1, int y1, int x2, int y2);
 
   /**
    * Returns the sum of this matrix with the one provided
@@ -182,6 +182,16 @@ public interface MatrixLib {
    * Returns a row vector representing the column sum of the matrix.
    */
   public MatrixLib columnSum();
+
+  /**
+   * Returns a column vector representing the row sum of the matrix.
+   */
+  public MatrixLib rowSum();
+
+  /**
+   * Returns a double representing the sum of all entries in the matrix.
+   */
+  public double matSum();
 
   /**
    * Return the real parts of the eigenvalues of the matrix.

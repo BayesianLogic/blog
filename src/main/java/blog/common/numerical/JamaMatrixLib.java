@@ -76,7 +76,7 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
-  public MatrixLib subMat(int x1, int x2, int y1, int y2) {
+  public MatrixLib subMat(int x1, int y1, int x2, int y2) {
     return new JamaMatrixLib(values.getMatrix(x1, x2, y1, y2));
   }
 
@@ -179,6 +179,29 @@ public class JamaMatrixLib implements MatrixLib {
       }
     }
     return new JamaMatrixLib(result);
+  }
+
+  @Override
+  public MatrixLib rowSum() {
+    double[][] result = new double[numRows()][1];
+    for (int i = 0; i < numRows(); i++) {
+      result[i][0] = 0;
+      for (int j = 0; j < numCols(); j++) {
+        result[i][0] += elementAt(i, j);
+      }
+    }
+    return new JamaMatrixLib(result);
+  }
+
+  @Override
+  public double matSum() {
+    double result = 0;
+    for (int i = 0; i < numRows(); i++) {
+      for (int j = 0; j < numCols(); j++) {
+        result += elementAt(i, j);
+      }
+    }
+    return result;
   }
 
   @Override
