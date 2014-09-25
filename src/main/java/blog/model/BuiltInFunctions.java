@@ -1574,8 +1574,14 @@ public class BuiltInFunctions {
 
     FunctionInterp eyeInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        Integer size = (Integer) args.get(0);
-        return MatrixFactory.eye(size);
+        if (args.size() == 1) {
+          Integer size = (Integer) args.get(0);
+          return MatrixFactory.eye(size);
+        } else {
+          Integer row = (Integer) args.get(0);
+          Integer col = (Integer) args.get(0);
+          return MatrixFactory.eye(row, col);
+        }
       }
     };
     argTypes.clear();
@@ -1586,9 +1592,14 @@ public class BuiltInFunctions {
 
     FunctionInterp zerosInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        Integer rows = (Integer) args.get(0);
-        Integer cols = (Integer) args.get(1);
-        return MatrixFactory.zeros(rows, cols);
+        if (args.size() == 1) {
+          Integer size = (Integer) args.get(0);
+          return MatrixFactory.zeros(size);
+        } else {
+          Integer rows = (Integer) args.get(0);
+          Integer cols = (Integer) args.get(1);
+          return MatrixFactory.zeros(rows, cols);
+        }
       }
     };
     argTypes.clear();
@@ -1600,9 +1611,14 @@ public class BuiltInFunctions {
 
     FunctionInterp onesInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        Integer rows = (Integer) args.get(0);
-        Integer cols = (Integer) args.get(1);
-        return MatrixFactory.ones(rows, cols);
+        if (args.size() == 1) {
+          Integer size = (Integer) args.get(0);
+          return MatrixFactory.ones(size);
+        } else {
+          Integer rows = (Integer) args.get(0);
+          Integer cols = (Integer) args.get(1);
+          return MatrixFactory.ones(rows, cols);
+        }
       }
     };
     argTypes.clear();

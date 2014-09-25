@@ -47,6 +47,30 @@ public class MatrixFactory {
   }
 
   /**
+   * create identity matrix
+   * 
+   * @param row
+   *          number of rows
+   * @param col
+   *          number of cols
+   * @return
+   */
+  static public MatrixLib eye(int row, int col) {
+    double[][] result = new double[row][col];
+    int size = (row < col ? row : col);
+    for (int i = 0; i < size; i++) {
+      for (int j = 0; j < size; j++) {
+        if (i == j) {
+          result[i][j] = 1;
+        } else {
+          result[i][j] = 0;
+        }
+      }
+    }
+    return fromArray(result);
+  }
+
+  /**
    * Returns a MatrixLib column vector of dimension args.length by 1. args is
    * interpreted as an array of doubles that comprise the first and only column
    * for the returned MatrixLib instance.
@@ -94,6 +118,20 @@ public class MatrixFactory {
   }
 
   /**
+   * create a column vector with all 0's
+   * 
+   * @param size
+   * @return
+   */
+  static public MatrixLib zeros(int size) {
+    double[][] result = new double[size][1];
+    for (int i = 0; i < size; i++) {
+      result[i][0] = 0;
+    }
+    return fromArray(result);
+  }
+
+  /**
    * create a matrix with all 1's
    * 
    * @param rows
@@ -106,6 +144,20 @@ public class MatrixFactory {
       for (int j = 0; j < cols; j++) {
         result[i][j] = 1;
       }
+    }
+    return fromArray(result);
+  }
+
+  /**
+   * create a column with all 1's
+   * 
+   * @param size
+   * @return
+   */
+  static public MatrixLib ones(int size) {
+    double[][] result = new double[size][1];
+    for (int i = 0; i < size; i++) {
+      result[i][0] = 1;
     }
     return fromArray(result);
   }
