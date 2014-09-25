@@ -173,9 +173,10 @@ public class JamaMatrixLib implements MatrixLib {
     double[][] result = new double[1][numCols()];
     for (int i = 0; i < numCols(); i++) {
       result[0][i] = 0;
-      for (int j = 0; j < numRows(); j++) {
+    }
+    for (int j = 0; j < numRows(); j++) {
+      for (int i = 0; i < numCols(); ++i)
         result[0][i] += elementAt(j, i);
-      }
     }
     return new JamaMatrixLib(result);
   }
