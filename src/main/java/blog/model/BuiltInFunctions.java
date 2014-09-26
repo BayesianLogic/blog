@@ -175,6 +175,11 @@ public class BuiltInFunctions {
   public static FixedFunction MINUS;
 
   /**
+   * The unary function on integers <code>x<code> that returns - x.
+   */
+  public static FixedFunction UMINUS;
+
+  /**
    * The function on integers <code>x<code>, <code>y</code> that returns x * y.
    */
   public static FixedFunction MULT;
@@ -228,6 +233,11 @@ public class BuiltInFunctions {
    * The function on reals <code>x<code>, <code>y</code> that returns x - y.
    */
   public static FixedFunction RMINUS;
+
+  /**
+   * The unary function on a real <code>x<code> that returns - x.
+   */
+  public static FixedFunction RUMINUS;
 
   /**
    * The function on reals <code>x<code>, <code>y</code> that returns x * y.
@@ -735,6 +745,34 @@ public class BuiltInFunctions {
     };
     MOD = new FixedFunction(MOD_NAME, argTypes, retType, modInterp);
     addFunction(MOD);
+
+    // Add non-random functions from integer to integer
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.INTEGER;
+
+    FunctionInterp uminusInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Number arg1 = (Number) args.get(0);
+        return new Integer(-arg1.intValue());
+      }
+    };
+    UMINUS = new FixedFunction(MINUS_NAME, argTypes, retType, uminusInterp);
+    addFunction(UMINUS);
+
+    // Add non-random functions from integer to integer
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL);
+    retType = BuiltInTypes.REAL;
+
+    FunctionInterp ruminusInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Number arg1 = (Number) args.get(0);
+        return new Double(-arg1.intValue());
+      }
+    };
+    RUMINUS = new FixedFunction(MINUS_NAME, argTypes, retType, ruminusInterp);
+    addFunction(RUMINUS);
 
     // Add non-random functions from (real x real) to real
     argTypes.clear();
