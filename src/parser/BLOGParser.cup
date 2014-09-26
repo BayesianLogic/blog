@@ -647,14 +647,18 @@ operation_expr ::=
 
 unary_operation_expr ::=
     MINUS:m expression:e
-    {: RESULT = new OpExpr(mxleft.getLine(), mxleft.getColumn(), new IntExpr(exleft.getLine(), exleft.getColumn(), 0), OpExpr.MINUS, e); :}
+    {: RESULT = new OpExpr(mxleft.getLine(), mxleft.getColumn(), null, OpExpr.MINUS, e); :}
     %prec UMINUS
   | NOT:n expression:e
     {: RESULT = new OpExpr(nxleft.getLine(), nxleft.getColumn(), null, OpExpr.NOT, e); :}
   | AT:a expression:e
     {: RESULT = new OpExpr(axleft.getLine(), axleft.getColumn(), null, OpExpr.AT, e); :}
   | LPAREN expression:e RPAREN
-    {: RESULT = e; :}
+    {: 
+    if (e==null) {
+      error(exleft, "missing expression inside parenthesis");
+    }
+    RESULT = e; :}
   ;  
 
 quantified_formula ::= FORALL:f type:ty ID:id expression:e
