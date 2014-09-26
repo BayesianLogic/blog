@@ -71,8 +71,10 @@ public class PatchCBN extends ParentUpdateDGraph implements CBN {
     } else {
       return true;
     }
-    LinkedList parentTrace = new LinkedList();
+
+    LinkedList<BayesNetVar> parentTrace = new LinkedList<BayesNetVar>();
     parentTrace.addAll(context.getParentTrace());
+
     int x = parentTrace.indexOf(X), y = parentTrace.indexOf(Y);
     if (x < 0 || y < 0) {
       return false;

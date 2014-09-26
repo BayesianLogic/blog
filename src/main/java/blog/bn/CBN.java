@@ -56,7 +56,8 @@ public interface CBN extends DGraph {
   static final CBN EMPTY_CBN = new DefaultCBN();
 
   /**
-   * Calculating whether an edge Y -> Z is contignet on variable X or not in the
+   * Calculating whether an edge Y -> Z is contingent on variable X or not in
+   * the
    * PartialWorld or not.
    * 
    */

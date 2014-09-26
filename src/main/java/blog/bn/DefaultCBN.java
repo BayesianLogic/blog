@@ -47,6 +47,8 @@ import blog.world.PartialWorld;
 
 /**
  * This class provides a default implementation of CBNs.
+ * Uses a DefaultCBN rather than a DefaultDGraph, so as to avoid
+ * ClassCastExceptions.
  * 
  * @author Da Tang
  * @since Sep 7, 2014
@@ -54,8 +56,7 @@ import blog.world.PartialWorld;
 
 public class DefaultCBN extends DefaultDGraph implements CBN {
   /**
-   * Uses a DefaultCBN rather than a DefaultDGraph, so as to avoid
-   * ClassCastExceptions
+   * clone method for the class Default CBN.
    */
   public Object clone() {
     DefaultCBN clone = new DefaultCBN();
@@ -78,8 +79,10 @@ public class DefaultCBN extends DefaultDGraph implements CBN {
     } else {
       return true;
     }
-    LinkedList parentTrace = new LinkedList();
+
+    LinkedList<BayesNetVar> parentTrace = new LinkedList<BayesNetVar>();
     parentTrace.addAll(context.getParentTrace());
+
     int x = parentTrace.indexOf(X), y = parentTrace.indexOf(Y);
     if (x < 0 || y < 0) {
       return false;
