@@ -87,10 +87,10 @@ public class BuiltInFunctions {
   public static final String DIAG_NAME = "diag";
   public static final String REPMAT_NAME = "repmat";
   public static final String SUBMAT_NAME = "submat";
-  public static final String GET_ROW_VEC_NAME = "getrow";
-  public static final String GET_ROWS_NAME = "getrows";
-  public static final String GET_COL_VEC_NAME = "getcol";
-  public static final String GET_COLS_NAME = "getcols";
+  public static final String GET_ROW_VEC_NAME = "getRow";
+  public static final String GET_ROWS_NAME = "getRows";
+  public static final String GET_COL_VEC_NAME = "getCol";
+  public static final String GET_COLS_NAME = "getCols";
   public static final String TRANSPOSE_NAME = "transpose";
   public static final String SIN_NAME = "sin";
   public static final String COS_NAME = "cos";
@@ -1092,7 +1092,7 @@ public class BuiltInFunctions {
     // scalar matrix multiplication
     FunctionInterp scalarMatTimesInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        double val = (Double) args.get(0);
+        double val = ((Number) args.get(0)).doubleValue();
         MatrixLib mat2 = (MatrixLib) args.get(1);
         return mat2.timesScale(val);
       }
