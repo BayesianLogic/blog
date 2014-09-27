@@ -571,6 +571,23 @@ public class BuiltInFunctions {
   public static FixedFunction LOAD_REAL_MATRIX;
 
   /**
+   * Load i-th row of RealMatrix from space-separeted text file.
+   */
+  public static FixedFunction LOAD_REAL_MATRIX_ROW;
+
+  /**
+   * Load i-th to j-th rows (inclusive) RealMatrix from space-separeted text
+   * file.
+   */
+  public static FixedFunction LOAD_REAL_MATRIX_ROWS;
+
+  /**
+   * Load submatrix (inclusive) RealMatrix from space-separeted text
+   * file.
+   */
+  public static FixedFunction LOAD_REAL_MATRIX_SUB;
+
+  /**
    * Number of rows for a given real matrix.
    */
   public static FixedFunction NUM_ROWS;
@@ -1757,6 +1774,34 @@ public class BuiltInFunctions {
     LOAD_REAL_MATRIX = new FixedFunction(LOAD_REAL_MATRIX_NAME, argTypes,
         retType, loadRealMatrixInterp);
     addFunction(LOAD_REAL_MATRIX);
+
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.STRING);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    LOAD_REAL_MATRIX_ROW = new FixedFunction(LOAD_REAL_MATRIX_NAME, argTypes,
+        retType, loadRealMatrixInterp);
+    addFunction(LOAD_REAL_MATRIX_ROW);
+
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.STRING);
+    argTypes.add(BuiltInTypes.INTEGER);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    LOAD_REAL_MATRIX_ROWS = new FixedFunction(LOAD_REAL_MATRIX_NAME, argTypes,
+        retType, loadRealMatrixInterp);
+    addFunction(LOAD_REAL_MATRIX_ROWS);
+
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.STRING);
+    argTypes.add(BuiltInTypes.INTEGER);
+    argTypes.add(BuiltInTypes.INTEGER);
+    argTypes.add(BuiltInTypes.INTEGER);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL_MATRIX;
+    LOAD_REAL_MATRIX_SUB = new FixedFunction(LOAD_REAL_MATRIX_NAME, argTypes,
+        retType, loadRealMatrixInterp);
+    addFunction(LOAD_REAL_MATRIX_SUB);
 
     /**
      * absolute value for Real

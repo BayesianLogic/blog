@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import blog.common.Util;
+
 /**
  * Creates MatrixLib objects.
  * 
@@ -261,8 +263,8 @@ public class MatrixFactory {
         result[r][c] = row.get(c);
       }
     }
-    System.out.println("Loaded " + result.length + "x" + result[0].length
-        + " matrix from " + filename);
+    Util.debug("Loaded ", result.length, "x", result[0].length,
+        " matrix from ", filename);
     MatrixLib mat = fromArray(result);
     MatCache.put(filename, mat);
     return mat;
