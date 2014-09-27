@@ -57,3 +57,49 @@ query o;
 query q;
 query rows;
 query cols;
+
+
+fixed RealMatrix a2 = [1, 2, 3; 4, 5, 6; 7, 8, 9; 10, 11, 12];
+fixed RealMatrix b2 = colsum(a2);
+fixed RealMatrix c2 = rowsum(a2);
+
+query a2;
+query b2;
+query c2;
+query matsum(a2);
+
+
+fixed RealMatrix d2 = vstack(a2, b2);
+fixed RealMatrix e2 = [-1, -2, -3; -4, -5, -6];
+fixed RealMatrix f2 = vstack(a2, e2);
+
+query d2;
+query f2;
+
+fixed RealMatrix g2 = submat(f2, 0, 0, 3, 2);
+fixed RealMatrix u2 = getRow(f2, 2);
+fixed RealMatrix v2 = getCols(f2, 1, 2);
+
+query g2;
+query u2;
+query v2;
+query toReal(v2);
+
+
+fixed RealMatrix test_identity = eye(3);
+query test_identity;
+
+fixed RealMatrix test_identity2 = eye(3, 5);
+query test_identity2;
+
+fixed RealMatrix test_zeros = zeros(3, 4);
+query test_zeros;
+
+fixed RealMatrix test_zeros1 = zeros(3);
+query test_zeros1;
+
+fixed RealMatrix test_ones = ones(5, 2);
+query test_ones;
+
+fixed RealMatrix test_ones1 = 3 * ones(3);
+query test_ones1;
