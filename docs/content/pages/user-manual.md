@@ -304,7 +304,7 @@ To specify the number of particles, use `-n`. By default, BLOG uses 10,000 parti
 
 If your BLOG model contains static variables (random functions defined on types other than `Timestep`). You may consider using the Liu-West filter. The current implementation of Liu-West filter only work on scalar continuous static variables. To switch to Liu-West filter, use the option `-e LiuWestFilter`
 
-BLOG requires a parameter `rho` for the degree of pertubation. Defaut is 0.95. It can be set using `-P rho=[number]`. The number should be in (0, 1]. 1.0 means no pertubation, i.e. plain particle filtering. 
+BLOG requires a parameter `rho` for the degree of pertubation. Defaut is 0.97. It can be set using `-P rho=[number]`. The number should be in (0, 1]. 1.0 means no pertubation, i.e. plain particle filtering. 
 
 The following command runs Liu-West filter on a simple auto-regressive model. 
 
