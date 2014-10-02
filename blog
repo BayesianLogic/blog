@@ -47,7 +47,10 @@ BLOG_HOME="$(dirname "$CUR_SCRIPT")"
 BLOG_SCRIPT="${BLOG_HOME}/target/universal/stage/bin/blog"
 
 if [ ! -e "${BLOG_SCRIPT}" ]; then
-  "${BLOG_HOME}"/sbt/sbt stage
+  OLD_DIR="$(pwd)"
+  cd "${BLOG_HOME}"
+  sbt/sbt stage
+  cd ${OLD_DIR}
 fi
 
 "${BLOG_SCRIPT}" $@
