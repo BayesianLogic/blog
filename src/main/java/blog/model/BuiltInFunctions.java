@@ -1671,7 +1671,7 @@ public class BuiltInFunctions {
       }
     };
     argTypes.clear();
-    argTypes.add(BuiltInTypes.BUILT_IN);
+    argTypes.add(BuiltInTypes.ANY);
     retType = BuiltInTypes.STRING;
     TO_STRING = new FixedFunction(TOSTRING_NAME, argTypes, retType,
         toStringInterp);
@@ -1704,7 +1704,7 @@ public class BuiltInFunctions {
       }
     };
     argTypes.clear();
-    argTypes.add(BuiltInTypes.BUILT_IN);
+    argTypes.add(BuiltInTypes.ANY);
     retType = BuiltInTypes.INTEGER;
     TO_INT = new FixedFunction(TOINT_NAME, argTypes, retType, toIntInterp);
     addFunction(TO_INT);
@@ -1736,7 +1736,7 @@ public class BuiltInFunctions {
     };
 
     argTypes.clear();
-    argTypes.add(BuiltInTypes.BUILT_IN);
+    argTypes.add(BuiltInTypes.ANY);
     retType = BuiltInTypes.REAL;
     TO_REAL = new FixedFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
     addFunction(TO_REAL);
