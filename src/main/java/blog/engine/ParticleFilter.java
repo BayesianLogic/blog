@@ -139,7 +139,7 @@ public class ParticleFilter extends InferenceEngine {
     if (queries == null) {
       queries = new Queries(model);
     }
-    particles = new ArrayList();
+    particles = new ArrayList<Particle>();
     for (int i = 0; i < numParticles; i++) {
       Particle newParticle = makeParticle(idTypes);
       particles.add(newParticle);
@@ -269,7 +269,7 @@ public class ParticleFilter extends InferenceEngine {
     double sumWeights = 0;
     double[] normalizedWeights = new double[particles.size()];
     double[] sampleKeys = new double[particles.size()];
-    List newParticles = new ArrayList();
+    List<Particle> newParticles = new ArrayList<Particle>();
 
     /*
      * Modified on Oct. 2. 2014 by yiwu
@@ -279,7 +279,7 @@ public class ParticleFilter extends InferenceEngine {
      * Only computing the maximum will be enough.
      */
     for (int i = 0; i < particles.size(); i++) {
-      logWeights[i] = ((Particle) particles.get(i)).getLatestLogWeight();
+      logWeights[i] = particles.get(i).getLatestLogWeight();
       maxLogWeight = Math.max(maxLogWeight, logWeights[i]);
     }
 
@@ -314,7 +314,7 @@ public class ParticleFilter extends InferenceEngine {
         newParticles.add(particles.get(selection));
         alreadySampled[selection] = true;
       } else {
-        newParticles.add(((Particle) particles.get(selection)).copy());
+        newParticles.add(particles.get(selection).copy());
       }
     }
 
@@ -379,7 +379,7 @@ public class ParticleFilter extends InferenceEngine {
   private Set idTypes; // of Type
 
   private int numParticles;
-  public List<Particle> particles;
+  protected List<Particle> particles;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
   private Sampler particleSampler;
   private AfterSamplingListener afterSamplingListener;
