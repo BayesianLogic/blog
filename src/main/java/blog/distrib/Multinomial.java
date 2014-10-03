@@ -35,6 +35,8 @@
 
 package blog.distrib;
 
+import java.util.Arrays;
+
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
@@ -155,7 +157,7 @@ public class Multinomial implements CondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    return getProb((MatrixLib) value);
+    return getProb((Integer[]) value);
   }
 
   /**
@@ -164,15 +166,15 @@ public class Multinomial implements CondProbDistrib {
    * 
    * @param value
    */
-  public double getProb(MatrixLib value) {
+  public double getProb(Integer[] value) {
     checkHasParams();
     if (!inSupport(value)) {
       return 0.0;
     }
     double prob = Util.factorial(n);
     for (int i = 0; i < k; i++) {
-      prob *= Math.pow(p[i], value.elementAt(i, 0));
-      prob /= Util.factorial((int) Math.round(value.elementAt(i, 0)));
+      prob *= Math.pow(p[i], value[i]);
+      prob /= Util.factorial((int) Math.round(value[i]));
     }
     return prob;
   }
@@ -187,20 +189,18 @@ public class Multinomial implements CondProbDistrib {
    * @throws IllegalArgumentException
    *           if value is not a row vector of the correct dimension (1 by k)
    */
-  private boolean inSupport(MatrixLib value) {
-    if (value.numCols() != 1 || value.numRows() != k) {
+  private boolean inSupport(Integer[] value) {
+    if (value.length != k) {
       throw new IllegalArgumentException(
-          "The matrix provided is of the incorrect dimensions. Expecting a "
-              + this.k
-              + " by 1 column vector but instead got a matrix of dimension "
-              + value.numRows() + " by " + value.numCols());
+          "The value provided is of the incorrect dimensions. Expecting a "
+              + this.k + " Integer array but instead got a " + value.length
+              + " array ");
     }
-    double sum = 0.0;
+    int sum = 0;
     for (int i = 0; i < k; i++) {
-      double element = value.elementAt(i, 0);
-      if (element < 0 || element % 1 != 0.0) {
-        // Number of successes for a particular category is negative or not an
-        // integer.
+      int element = value[i];
+      if (element < 0) {
+        // Number of successes for a particular category is negative
         return false;
       }
       sum += element;
@@ -218,7 +218,7 @@ public class Multinomial implements CondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    return getLogProb((MatrixLib) value);
+    return getLogProb((Integer[]) value);
   }
 
   /**
@@ -227,15 +227,15 @@ public class Multinomial implements CondProbDistrib {
    * 
    * @param value
    */
-  public double getLogProb(MatrixLib value) {
+  public double getLogProb(Integer[] value) {
     checkHasParams();
     if (!inSupport(value)) {
       return Double.NEGATIVE_INFINITY;
     }
     double logProb = Util.logFactorial(n);
     for (int i = 0; i < k; i++) {
-      logProb += value.elementAt(i, 0) * Math.log(p[i]);
-      logProb -= Util.logFactorial((int) Math.round(value.elementAt(i, 0)));
+      logProb += value[i] * Math.log(p[i]);
+      logProb -= Util.logFactorial((int) Math.round(value[i]));
     }
     return logProb;
   }
@@ -251,26 +251,21 @@ public class Multinomial implements CondProbDistrib {
   }
 
   /** Samples a value from the multinomial. */
-  public MatrixLib sample_value() {
+  public Integer[] sample_value() {
     checkHasParams();
-    // result actually stores integers, but we declare it as double because we
-    // don't have support for int matrices
-    double[] result = new double[k];
+    Integer[] result = new Integer[k];
     for (int i = 0; i < k; i++) {
       result[i] = 0;
     }
 
     for (int trial = 0; trial < n; trial++) {
       double val = Util.random();
-      int bucket;
-      for (bucket = 0; bucket < k; bucket++) {
-        if (val <= pCDF[bucket]) {
-          break;
-        }
-      }
+      int bucket = Arrays.binarySearch(pCDF, val);
+      if (bucket < 0)
+        bucket = -bucket - 1;
       result[bucket] += 1;
     }
-    return MatrixFactory.createColumnVector(result);
+    return result;
   }
 
   @Override
@@ -291,6 +286,7 @@ public class Multinomial implements CondProbDistrib {
     return finiteSupport;
   }
 
+  // TODO FIXME, need to consider the value as integer[]
   private void calculateFiniteSupport(double[][] mat, int depth, int remain) {
     if (depth == k) {
       finiteSupport[supportNum] = MatrixFactory.fromArray(mat);

@@ -21,34 +21,28 @@ public class TestMultinomial implements TestDistributions {
 
   /** Multinomial. n = 3, p = [0.5, 0.25, 0.25]. */
   public void testMultinomial1(Multinomial mult) {
-    assertEquals(0.1875,
-        mult.getProb(MatrixFactory.createColumnVector(1, 1, 1)), ERROR);
-    assertEquals(Math.log(0.1875),
-        mult.getLogProb(MatrixFactory.createColumnVector(1, 1, 1)), ERROR);
-    assertEquals(0.1875,
-        mult.getProb(MatrixFactory.createColumnVector(2, 1, 0)), ERROR);
-    assertEquals(Math.log(0.1875),
-        mult.getLogProb(MatrixFactory.createColumnVector(2, 1, 0)), ERROR);
+    assertEquals(0.1875, mult.getProb(new Integer[] { 1, 1, 1 }), ERROR);
+    assertEquals(Math.log(0.1875), mult.getLogProb(new Integer[] { 1, 1, 1 }),
+        ERROR);
+    assertEquals(0.1875, mult.getProb(new Integer[] { 2, 1, 0 }), ERROR);
+    assertEquals(Math.log(0.1875), mult.getLogProb(new Integer[] { 2, 1, 0 }),
+        ERROR);
   }
 
   /** Multinomial. n = 4, p = [0.25, 0.25, 0.25, 0.25]. */
   public void testMultinomial2(Multinomial mult) {
-    assertEquals(0.09375,
-        mult.getProb(MatrixFactory.createColumnVector(1, 1, 1, 1)), ERROR);
+    assertEquals(0.09375, mult.getProb(new Integer[] { 1, 1, 1, 1 }), ERROR);
     assertEquals(Math.log(0.09375),
-        mult.getLogProb(MatrixFactory.createColumnVector(1, 1, 1, 1)), ERROR);
-    assertEquals(3.90625e-3,
-        mult.getProb(MatrixFactory.createColumnVector(4, 0, 0, 0)), ERROR);
+        mult.getLogProb(new Integer[] { 1, 1, 1, 1 }), ERROR);
+    assertEquals(3.90625e-3, mult.getProb(new Integer[] { 4, 0, 0, 0 }), ERROR);
     assertEquals(Math.log(3.90625e-3),
-        mult.getLogProb(MatrixFactory.createColumnVector(4, 0, 0, 0)), ERROR);
-    assertEquals(0, mult.getProb(MatrixFactory.createColumnVector(2, 1, 1, 1)),
-        ERROR);
+        mult.getLogProb(new Integer[] { 4, 0, 0, 0 }), ERROR);
+    assertEquals(0, mult.getProb(new Integer[] { 2, 1, 1, 1 }), ERROR);
     assertEquals(Double.NEGATIVE_INFINITY,
-        mult.getLogProb(MatrixFactory.createColumnVector(2, 1, 1, 1)), ERROR);
-    assertEquals(0,
-        mult.getProb(MatrixFactory.createColumnVector(2, -1, 1, 2)), ERROR);
+        mult.getLogProb(new Integer[] { 2, 1, 1, 1 }), ERROR);
+    assertEquals(0, mult.getProb(new Integer[] { 2, -1, 1, 2 }), ERROR);
     assertEquals(Double.NEGATIVE_INFINITY,
-        mult.getLogProb(MatrixFactory.createColumnVector(2, -1, 1, 2)), ERROR);
+        mult.getLogProb(new Integer[] { 2, -1, 1, 2 }), ERROR);
   }
 
   @Test
