@@ -1028,7 +1028,9 @@ public class BuiltInFunctions {
         if (mat.numRows() > 1) {
           return mat.sliceRow(i);
         } else {
-          return mat.elementAt(0, i);
+          // note: it should return an element, since the return type is
+          // REAL_MATRIX
+          return mat.sliceCol(i);
         }
       }
     };
