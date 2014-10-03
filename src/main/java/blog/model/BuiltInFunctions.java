@@ -508,13 +508,39 @@ public class BuiltInFunctions {
    * The function takes an Integer, an Real or a MatrixLib with single element,
    * and converts it to an Integer
    */
-  public static FixedFunction TO_INT;
+  public static TemplateFunction TO_INT;
+
+  /**
+   * from number to integer
+   */
+  private static FunctionInterp NUMTOINT_INTERP;
+
+  /**
+   * from boolean to integer
+   */
+  private static FunctionInterp BOOLTOINT_INTERP;
+
+  /**
+   * from timestep to integer
+   */
+  private static FunctionInterp TIMESTEPTOINT_INTERP;
+
+  /**
+   * from string to integer
+   */
+  private static FunctionInterp STRINGTOINT_INTERP;
+
+  /**
+   * from first element of matrix to integer
+   */
+  private static FunctionInterp MATRIXTOINT_INTERP;
 
   /**
    * The function takes a Real or a MatrixLib with single element,
    * and converts it to a Real
    */
   public static FixedFunction TO_REAL;
+
   /**
    * Return the absolute value of a Real value.
    */
@@ -1671,43 +1697,90 @@ public class BuiltInFunctions {
       }
     };
     argTypes.clear();
-    argTypes.add(BuiltInTypes.ANY);
+    argTypes.add(BuiltInTypes.BUILT_IN);
     retType = BuiltInTypes.STRING;
     TO_STRING = new FixedFunction(TOSTRING_NAME, argTypes, retType,
         toStringInterp);
     addFunction(TO_STRING);
 
-    FunctionInterp toIntInterp = new AbstractFunctionInterp() {
+    NUMTOINT_INTERP = new AbstractFunctionInterp() {
       public Object getValue(List args) {
         Object obj = args.get(0);
-        if (obj instanceof Number) {
-          return ((Number) obj).intValue();
-        } else if (obj instanceof Boolean) {
-          return ((Boolean) obj).booleanValue() ? 1 : 0;
-        } else if (obj instanceof MatrixLib) {
-          return (int) ((MatrixLib) obj).elementAt(0, 0);
-        } else if (obj instanceof Timestep) {
-          return ((Timestep) obj).getValue();
-        } else if (obj instanceof EnumeratedObject) {
-          return ((EnumeratedObject) obj).getIndex();
-        } else {
-          int val = 0;
-          try {
-            val = Integer.parseInt(obj.toString());
-          } catch (NumberFormatException e) {
-            System.err.println(obj.toString()
-                + " cannot be converted to Integer ");
-            val = 0;
-          }
-          return val;
-        }
+        return ((Number) obj).intValue();
       }
     };
-    argTypes.clear();
-    argTypes.add(BuiltInTypes.ANY);
-    retType = BuiltInTypes.INTEGER;
-    TO_INT = new FixedFunction(TOINT_NAME, argTypes, retType, toIntInterp);
-    addFunction(TO_INT);
+
+    BOOLTOINT_INTERP = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Object obj = args.get(0);
+        return ((Boolean) obj).booleanValue() ? 1 : 0;
+      }
+    };
+
+    MATRIXTOINT_INTERP = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Object obj = args.get(0);
+        return (int) ((MatrixLib) obj).elementAt(0, 0);
+      }
+    };
+
+    TIMESTEPTOINT_INTERP = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Object obj = args.get(0);
+        return ((Timestep) obj).getValue();
+      }
+    };
+
+    STRINGTOINT_INTERP = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        Object obj = args.get(0);
+        return Integer.parseInt((String) obj);
+      }
+    };
+
+    TO_INT = new TemplateFunction(TOINT_NAME) {
+      @Override
+      public FixedFunction getConcreteFunction(Type[] argTypes) {
+        if (argTypes.length != 1) {
+          return null;
+        }
+        FixedFunction func = null;
+        Type ty = argTypes[0];
+        if (ty.isSubtypeOf(BuiltInTypes.INTEGER)) {
+          func = new FixedFunction(TOINT_NAME,
+              Collections.singletonList(BuiltInTypes.INTEGER),
+              BuiltInTypes.INTEGER, NUMTOINT_INTERP);
+        } else if (ty.isSubtypeOf(BuiltInTypes.REAL)) {
+          func = new FixedFunction(TOINT_NAME,
+              Collections.singletonList(BuiltInTypes.REAL),
+              BuiltInTypes.INTEGER, NUMTOINT_INTERP);
+        } else if (ty.isSubtypeOf(BuiltInTypes.BOOLEAN)) {
+          func = new FixedFunction(TOINT_NAME,
+              Collections.singletonList(BuiltInTypes.BOOLEAN),
+              BuiltInTypes.INTEGER, BOOLTOINT_INTERP);
+        } else if (ty.isSubtypeOf(BuiltInTypes.STRING)) {
+          func = new FixedFunction(TOINT_NAME,
+              Collections.singletonList(BuiltInTypes.STRING),
+              BuiltInTypes.INTEGER, STRINGTOINT_INTERP);
+        } else if (ty.isSubtypeOf(BuiltInTypes.TIMESTEP)) {
+          func = new FixedFunction(TOINT_NAME,
+              Collections.singletonList(BuiltInTypes.TIMESTEP),
+              BuiltInTypes.INTEGER, TIMESTEPTOINT_INTERP);
+        } else if (!ty.isBuiltIn()) {
+          func = new FixedFunction(TOINT_NAME,
+              Collections.singletonList(BuiltInTypes.TIMESTEP),
+              BuiltInTypes.INTEGER, new AbstractFunctionInterp() {
+                @Override
+                public Object getValue(List args) {
+                  Object obj = args.get(0);
+                  return ((EnumeratedObject) obj).getIndex();
+                }
+              });
+        }
+        return func;
+      }
+    };
+    addTemplate(TO_INT);
 
     FunctionInterp toRealInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
@@ -1736,7 +1809,7 @@ public class BuiltInFunctions {
     };
 
     argTypes.clear();
-    argTypes.add(BuiltInTypes.ANY);
+    argTypes.add(BuiltInTypes.BUILT_IN);
     retType = BuiltInTypes.REAL;
     TO_REAL = new FixedFunction(TOREAL_NAME, argTypes, retType, toRealInterp);
     addFunction(TO_REAL);
