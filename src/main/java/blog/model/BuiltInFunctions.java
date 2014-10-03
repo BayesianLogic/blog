@@ -1766,6 +1766,10 @@ public class BuiltInFunctions {
           func = new FixedFunction(TOINT_NAME,
               Collections.singletonList(BuiltInTypes.TIMESTEP),
               BuiltInTypes.INTEGER, TIMESTEPTOINT_INTERP);
+        } else if (ty.isSubtypeOf(BuiltInTypes.REAL_MATRIX)) {
+          func = new FixedFunction(TOINT_NAME,
+              Collections.singletonList(BuiltInTypes.REAL_MATRIX),
+              BuiltInTypes.INTEGER, MATRIXTOINT_INTERP);
         } else if (!ty.isBuiltIn()) {
           func = new FixedFunction(TOINT_NAME,
               Collections.singletonList(BuiltInTypes.TIMESTEP),
