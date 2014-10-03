@@ -143,7 +143,8 @@ public class SymbolTerm extends Term {
 
 	public Type getType() {
 		checkCompiled();
-		return ((var != null) ? var.getType() : func.getRetType());
+		return ((var != null) ? var.getType() : 
+		        (func != null ? func.getRetType() : null));
 	}
 
 	public Object evaluate(EvalContext context) {

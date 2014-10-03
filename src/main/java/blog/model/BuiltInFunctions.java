@@ -1030,13 +1030,6 @@ public class BuiltInFunctions {
     // Return the i-th element of the matrix,
     FunctionInterp subMatInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-
-        if (!(args.get(0) instanceof MatrixLib)) {
-          System.out.println("Error!! SubMat First Element = "
-              + args.get(0).toString() + "  Second Element = "
-              + args.get(1).toString());
-        }
-
         MatrixLib mat = (MatrixLib) args.get(0);
         int i = (Integer) args.get(1);
         int n_row = mat.numRows();
