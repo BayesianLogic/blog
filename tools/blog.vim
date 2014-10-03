@@ -1,7 +1,7 @@
 " Vim Syntax File
 " Language: blog
 " Maintainer: Bharath Ramsundar, Lei Li
-" Latest Revision: blog 0.7
+" Latest Revision: blog 0.10
 
 if exists("b:current_syntax")
     finish
@@ -9,7 +9,7 @@ endif
 
 " Keywords
 syn keyword blogKeywords type distinct random origin fixed param query obs
-syn keyword blogType Real Timestep Boolean Integer 
+syn keyword blogType Real Timestep Boolean Integer String RealMatrix Integer[] Real[]
 syn keyword blogStatement case in if then else null true false forall exists for
 syn keyword blogDistribution Bernoulli Beta Binomial BooleanDistrib Categorical Dirichlet Discrete EqualsCPD Exponential Gamma Gaussian Geometric Laplace Multinomial MultivarGaussian NegativeBinomial Poisson UniformChoice UniformInt UniformReal UniformVector UnivarGaussian
 " this one was used in old syntax
