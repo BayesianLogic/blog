@@ -312,9 +312,17 @@ public class BuiltInFunctions {
   public static FixedFunction CONCAT;
 
   /**
-   * RealMatrix[Integer] returns RealMatrix (i-th row of matrix)
+   * RealMatrix[Integer] returns Real
+   * (i-th element of matrix, indexing is column-wise)
+   * i.e. A = [1,3;2,4]; Then A[0] = 1, A[1] = 2, A[2] = 3, A[4] = 4;
    */
   public static FixedFunction SUB_MAT;
+
+  /**
+   * RealMatrix[Integer][Integer] returns Real
+   * (element in i-th row and j-th column of matrix)
+   */
+  public static FixedFunction SUB_MAT2;
 
   /**
    * RealArray[Integer] returns Real (i-th element of array)
@@ -1013,29 +1021,50 @@ public class BuiltInFunctions {
         isEmptyStringInterp);
     addFunction(IS_EMPTY_STRING);
 
-    // Add non-random functions from (RealMatrix x int) to RealMatrix
+    // Add non-random functions from (RealMatrix x int) to Real
     argTypes.clear();
     argTypes.add(BuiltInTypes.REAL_MATRIX);
     argTypes.add(BuiltInTypes.INTEGER);
-    retType = BuiltInTypes.REAL_MATRIX;
+    retType = BuiltInTypes.REAL;
 
-    // Return the i-th row of the matrix,
-    // or if the matrix has a single row, return the i-th column.
+    // Return the i-th element of the matrix,
     FunctionInterp subMatInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
+
+        if (!(args.get(0) instanceof MatrixLib)) {
+          System.out.println("Error!! SubMat First Element = "
+              + args.get(0).toString() + "  Second Element = "
+              + args.get(1).toString());
+        }
+
         MatrixLib mat = (MatrixLib) args.get(0);
         int i = (Integer) args.get(1);
-        if (mat.numRows() > 1) {
-          return mat.sliceRow(i);
-        } else {
-          // note: it should return an element, since the return type is
-          // REAL_MATRIX
-          return mat.sliceCol(i);
-        }
+        int n_row = mat.numRows();
+        int x = i % n_row, y = i / n_row;
+        return mat.elementAt(x, y);
       }
     };
     SUB_MAT = new FixedFunction(SUB_MAT_NAME, argTypes, retType, subMatInterp);
     addFunction(SUB_MAT);
+
+    // Add non-random functions from (RealMatrix x int x int) to Real
+    argTypes.clear();
+    argTypes.add(BuiltInTypes.REAL_MATRIX);
+    argTypes.add(BuiltInTypes.INTEGER);
+    argTypes.add(BuiltInTypes.INTEGER);
+    retType = BuiltInTypes.REAL;
+
+    // Return the element in i-th row and j-th column of the matrix,
+    FunctionInterp subMat2Interp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        MatrixLib mat = (MatrixLib) args.get(0);
+        int i = (Integer) args.get(1);
+        int j = (Integer) args.get(2);
+        return mat.elementAt(i, j);
+      }
+    };
+    SUB_MAT2 = new FixedFunction(SUB_MAT_NAME, argTypes, retType, subMat2Interp);
+    addFunction(SUB_MAT2);
 
     // Array subscription (aka indexing)
     FunctionInterp subVecInterp = new AbstractFunctionInterp() {

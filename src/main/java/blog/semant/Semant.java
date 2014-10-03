@@ -868,13 +868,22 @@ public class Semant {
     List<ArgSpec> args = transExprList(e.args, true);
     List<Type> argTypes = new ArrayList<Type>();
     // TODO put type checking code here
+    // Currently it is a hack. It is NOT a complete implementation
+    // (hack by yiwu, Oct.3.2014)
     for (ArgSpec as : args) {
-      // argTypes.add(as.get)
-      // to add type for this argspec
+      if (as instanceof Term)
+        argTypes.add(((Term) as).getType());
+      else
+        argTypes.add(BuiltInTypes.NULL);
     }
 
-    FuncAppTerm t = new FuncAppTerm(e.func.toString(),
-        args.toArray(new ArgSpec[args.size()]));
+    Function f = getFunction(e.func.toString(), argTypes);
+    FuncAppTerm t = null;
+    if (f == null)
+      t = new FuncAppTerm(e.func.toString(), 
+          args.toArray(new ArgSpec[args.size()]));
+    else
+      t = new FuncAppTerm(f, args);
     t.setLocation(e.line);
     return t;
   }
@@ -1151,6 +1160,22 @@ public class Semant {
       return new NegFormula((Formula) right);
     case OpExpr.SUB:
       Function func;
+      /*
+       * Special Check for SUB_MAT2
+       * Modified by yiwu, Oct.3.2014
+       */
+      if ((left instanceof FuncAppTerm) && (right instanceof Term)
+          && left != null && right != null) {
+        FuncAppTerm lt = (FuncAppTerm) left;
+        Term rt = (Term) right;
+        if (lt.getFunction() == BuiltInFunctions.SUB_MAT
+            && lt.getArgs() != null && lt.getArgs().length == 2
+            && rt.getType() == BuiltInTypes.INTEGER) {
+          term = new FuncAppTerm(BuiltInFunctions.SUB_MAT2, lt.getArgs()[0],
+              lt.getArgs()[1], rt);
+          return term;
+        }
+      }
       if (left instanceof SymbolTerm) {
         if (e.right instanceof IntExpr) {
           String objectname = ((SymbolTerm) left).getName() + '['
