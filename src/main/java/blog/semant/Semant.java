@@ -475,13 +475,7 @@ public class Semant {
       if (e.body == null) {
         error(e.line, e.col, "empty fixed function body");
       } else if (argTy.size() > 0) {
-        if (e.body instanceof FuncCallExpr) {
-          FuncCallExpr fc = (FuncCallExpr) e.body;
-          List<ArgSpec> args = transExprList(fc.args, false);
-          Class<? extends FunctionInterp> cls = getFunctionInterpClass(fc.func
-              .toString());
-          ((FixedFunction) fun).setInterpretation(cls, args);
-        } else if (e.body instanceof DoubleExpr) {
+        if (e.body instanceof DoubleExpr) {
           List<Object> args = new ArrayList<Object>();
           args.add(((DoubleExpr) e.body).value);
           ConstantInterp constant = new ConstantInterp(args);
@@ -497,14 +491,25 @@ public class Semant {
           ConstantInterp constant = new ConstantInterp(args);
           ((FixedFunction) fun).setInterpretation(constant);
         } else {
-          // general expression as function body
-          Object funcBody = transExpr(e.body);
-          if (funcBody instanceof ArgSpec) {
-            ArgSpec funcValue = (ArgSpec) funcBody;
-            ((FixedFunction) fun).setBody(funcValue);
-          } else {
-            error(e.body.line, e.body.col,
-                "expression not supported in body of fixed function");
+          Class<? extends FunctionInterp> cls = null;
+          if (e.body instanceof FuncCallExpr) {
+            FuncCallExpr fc = (FuncCallExpr) e.body;
+            cls = getFunctionInterpClass(fc.func.toString());
+            if (cls != null) {
+              List<ArgSpec> args = transExprList(fc.args, false);
+              ((FixedFunction) fun).setInterpretation(cls, args);
+            }
+          }
+          if (cls == null) {
+            // general expression as function body
+            Object funcBody = transExpr(e.body);
+            if (funcBody instanceof ArgSpec) {
+              ArgSpec funcValue = (ArgSpec) funcBody;
+              ((FixedFunction) fun).setBody(funcValue);
+            } else {
+              error(e.body.line, e.body.col,
+                  "expression not supported in body of fixed function");
+            }
           }
         }
       } else {
