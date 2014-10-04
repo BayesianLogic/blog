@@ -278,6 +278,8 @@ public class FixedFunction extends Function {
             // nothing
           } else if (param instanceof ListSpec) {
             // nothing
+          } else if (param instanceof ArraySpec) {
+            // nothing
           } else if (param instanceof ExplicitSetSpec) {
             // nothing
           } else if (param instanceof Formula) {
@@ -290,11 +292,9 @@ public class FixedFunction extends Function {
           }
 
           Type expected = getRetType();
-          if ((expected.isSubtypeOf(BuiltInTypes.REAL_ARRAY) || expected
-              .isSubtypeOf(BuiltInTypes.REAL_MATRIX))
-              && (param instanceof ListSpec)) {
+          if (param instanceof ListSpec) {
             interpParams = Collections.singletonList(((ListSpec) param)
-                .transferToMatrix());
+                .transferToConcrete(expected));
           } else if ((paramType != null) && (expected != null)
               && !paramType.isSubtypeOf(expected)) {
             System.err.println(param.getLocation()

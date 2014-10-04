@@ -67,8 +67,7 @@ public class BuiltInFunctions {
   public static final String DIV_NAME = "__DIV";
   public static final String MOD_NAME = "__MOD";
   public static final String POWER_NAME = "__POWER";
-  public static final String SUB_MAT_NAME = "__SUB_MAT";
-  public static final String SUB_ARRAY_NAME = "__SUB_ARRAY";
+  public static final String ARRAY_MAT_ELEMENT_NAME = "__ARRAY_MAT_ELEMENT";
   public static final String GT_NAME = "__GREATERTHAN";
   public static final String GEQ_NAME = "__GREATERTHANOREQUAL";
   public static final String LT_NAME = "__LESSTHAN";
@@ -1037,7 +1036,8 @@ public class BuiltInFunctions {
         return mat.elementAt(x, y);
       }
     };
-    SUB_MAT = new FixedFunction(SUB_MAT_NAME, argTypes, retType, subMatInterp);
+    SUB_MAT = new FixedFunction(ARRAY_MAT_ELEMENT_NAME, argTypes, retType,
+        subMatInterp);
     addFunction(SUB_MAT);
 
     // Add non-random functions from (RealMatrix x int x int) to Real
@@ -1056,22 +1056,16 @@ public class BuiltInFunctions {
         return mat.elementAt(i, j);
       }
     };
-    SUB_MAT2 = new FixedFunction(SUB_MAT_NAME, argTypes, retType, subMat2Interp);
+    SUB_MAT2 = new FixedFunction(ARRAY_MAT_ELEMENT_NAME, argTypes, retType,
+        subMat2Interp);
     addFunction(SUB_MAT2);
 
     // Array subscription (aka indexing)
-    FunctionInterp subVecInterp = new AbstractFunctionInterp() {
+    FunctionInterp subDoubleInterp = new AbstractFunctionInterp() {
       public Object getValue(List args) {
-        MatrixLib mat = (MatrixLib) args.get(0);
+        ArrayList<?> array = (ArrayList<?>) args.get(0);
         int i = (Integer) args.get(1);
-        if (mat.numRows() == 1) {
-          return mat.elementAt(0, i);
-        } else if (mat.numCols() == 1) {
-          return mat.elementAt(i, 0);
-        } else {
-          throw new IllegalArgumentException(
-              "subVecInterp expected vector, but given 2D matrix");
-        }
+        return (Double) array.get(i);
       }
     };
 
@@ -1080,17 +1074,26 @@ public class BuiltInFunctions {
     argTypes.add(BuiltInTypes.REAL_ARRAY);
     argTypes.add(BuiltInTypes.INTEGER);
     retType = BuiltInTypes.REAL;
-    SUB_REAL_ARRAY = new FixedFunction(SUB_ARRAY_NAME, argTypes, retType,
-        subVecInterp);
+    SUB_REAL_ARRAY = new FixedFunction(ARRAY_MAT_ELEMENT_NAME, argTypes,
+        retType, subDoubleInterp);
     addFunction(SUB_REAL_ARRAY);
+
+    // Array subscription (aka indexing)
+    FunctionInterp subIntInterp = new AbstractFunctionInterp() {
+      public Object getValue(List args) {
+        ArrayList<?> array = (ArrayList<?>) args.get(0);
+        int i = (Integer) args.get(1);
+        return (Integer) array.get(i);
+      }
+    };
 
     // Array indexing for Integer arrays:
     argTypes.clear();
     argTypes.add(BuiltInTypes.INTEGER_ARRAY);
     argTypes.add(BuiltInTypes.INTEGER);
     retType = BuiltInTypes.INTEGER;
-    SUB_INT_ARRAY = new FixedFunction(SUB_ARRAY_NAME, argTypes, retType,
-        subVecInterp);
+    SUB_INT_ARRAY = new FixedFunction(ARRAY_MAT_ELEMENT_NAME, argTypes,
+        retType, subIntInterp);
     addFunction(SUB_INT_ARRAY);
 
     // Add non-random functions from (RealMatrix x RealMatrix) to RealMatrix

@@ -35,6 +35,7 @@
 
 package blog.distrib;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import blog.common.Util;
@@ -72,7 +73,7 @@ public class Multinomial implements CondProbDistrib {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected two parameters");
     }
-    setParams((Integer) params[0], (MatrixLib) params[1]);
+    setParams((Number) params[0], (MatrixLib) params[1]);
   }
 
   /**
@@ -89,13 +90,13 @@ public class Multinomial implements CondProbDistrib {
    *          distribution parameter <code>P</code>, representing the column
    *          vector of unnormalized probabilities.
    */
-  public void setParams(Integer n, MatrixLib p) {
+  public void setParams(Number n, MatrixLib p) {
     if (n != null) {
-      if (n < 0) {
+      if (n.intValue() < 0) {
         throw new IllegalArgumentException(
             "The number of trials 'n' for a Multinomial Distribution must be nonnegative");
       }
-      this.n = n;
+      this.n = n.intValue();
       this.hasN = true;
     }
     if (p != null) {
@@ -166,15 +167,15 @@ public class Multinomial implements CondProbDistrib {
    * 
    * @param value
    */
-  public double getProb(Integer[] value) {
+  public double getProb(ArrayList<Integer> value) {
     checkHasParams();
     if (!inSupport(value)) {
       return 0.0;
     }
     double prob = Util.factorial(n);
     for (int i = 0; i < k; i++) {
-      prob *= Math.pow(p[i], value[i]);
-      prob /= Util.factorial((int) Math.round(value[i]));
+      prob *= Math.pow(p[i], value.get(i));
+      prob /= Util.factorial((int) Math.round(value.get(i)));
     }
     return prob;
   }
@@ -189,16 +190,16 @@ public class Multinomial implements CondProbDistrib {
    * @throws IllegalArgumentException
    *           if value is not a row vector of the correct dimension (1 by k)
    */
-  private boolean inSupport(Integer[] value) {
-    if (value.length != k) {
+  private boolean inSupport(ArrayList<Integer> value) {
+    if (value.size() != k) {
       throw new IllegalArgumentException(
           "The value provided is of the incorrect dimensions. Expecting a "
-              + this.k + " Integer array but instead got a " + value.length
+              + this.k + " Integer array but instead got a " + value.size()
               + " array ");
     }
     int sum = 0;
     for (int i = 0; i < k; i++) {
-      int element = value[i];
+      int element = value.get(i);
       if (element < 0) {
         // Number of successes for a particular category is negative
         return false;
@@ -218,7 +219,7 @@ public class Multinomial implements CondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    return getLogProb((Integer[]) value);
+    return getLogProb((ArrayList<Integer>) value);
   }
 
   /**
@@ -227,15 +228,15 @@ public class Multinomial implements CondProbDistrib {
    * 
    * @param value
    */
-  public double getLogProb(Integer[] value) {
+  public double getLogProb(ArrayList<Integer> value) {
     checkHasParams();
     if (!inSupport(value)) {
       return Double.NEGATIVE_INFINITY;
     }
     double logProb = Util.logFactorial(n);
     for (int i = 0; i < k; i++) {
-      logProb += value[i] * Math.log(p[i]);
-      logProb -= Util.logFactorial((int) Math.round(value[i]));
+      logProb += value.get(i) * Math.log(p[i]);
+      logProb -= Util.logFactorial((int) Math.round(value.get(i)));
     }
     return logProb;
   }
@@ -251,11 +252,11 @@ public class Multinomial implements CondProbDistrib {
   }
 
   /** Samples a value from the multinomial. */
-  public Integer[] sample_value() {
+  public ArrayList<Integer> sample_value() {
     checkHasParams();
-    Integer[] result = new Integer[k];
+    ArrayList<Integer> result = new ArrayList<Integer>(k);
     for (int i = 0; i < k; i++) {
-      result[i] = 0;
+      result.add(0);
     }
 
     for (int trial = 0; trial < n; trial++) {
@@ -263,7 +264,7 @@ public class Multinomial implements CondProbDistrib {
       int bucket = Arrays.binarySearch(pCDF, val);
       if (bucket < 0)
         bucket = -bucket - 1;
-      result[bucket] += 1;
+      result.set(bucket, result.get(bucket) + 1);
     }
     return result;
   }
