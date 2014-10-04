@@ -475,13 +475,7 @@ public class Semant {
       if (e.body == null) {
         error(e.line, e.col, "empty fixed function body");
       } else if (argTy.size() > 0) {
-        if (e.body instanceof FuncCallExpr) {
-          FuncCallExpr fc = (FuncCallExpr) e.body;
-          List<ArgSpec> args = transExprList(fc.args, false);
-          Class<? extends FunctionInterp> cls = getFunctionInterpClass(fc.func
-              .toString());
-          ((FixedFunction) fun).setInterpretation(cls, args);
-        } else if (e.body instanceof DoubleExpr) {
+        if (e.body instanceof DoubleExpr) {
           List<Object> args = new ArrayList<Object>();
           args.add(((DoubleExpr) e.body).value);
           ConstantInterp constant = new ConstantInterp(args);
@@ -497,14 +491,25 @@ public class Semant {
           ConstantInterp constant = new ConstantInterp(args);
           ((FixedFunction) fun).setInterpretation(constant);
         } else {
-          // general expression as function body
-          Object funcBody = transExpr(e.body);
-          if (funcBody instanceof ArgSpec) {
-            ArgSpec funcValue = (ArgSpec) funcBody;
-            ((FixedFunction) fun).setBody(funcValue);
-          } else {
-            error(e.body.line, e.body.col,
-                "expression not supported in body of fixed function");
+          Class<? extends FunctionInterp> cls = null;
+          if (e.body instanceof FuncCallExpr) {
+            FuncCallExpr fc = (FuncCallExpr) e.body;
+            cls = getFunctionInterpClass(fc.func.toString());
+            if (cls != null) {
+              List<ArgSpec> args = transExprList(fc.args, false);
+              ((FixedFunction) fun).setInterpretation(cls, args);
+            }
+          }
+          if (cls == null) {
+            // general expression as function body
+            Object funcBody = transExpr(e.body);
+            if (funcBody instanceof ArgSpec) {
+              ArgSpec funcValue = (ArgSpec) funcBody;
+              ((FixedFunction) fun).setBody(funcValue);
+            } else {
+              error(e.body.line, e.body.col,
+                  "expression not supported in body of fixed function");
+            }
           }
         }
       } else {
@@ -863,13 +868,22 @@ public class Semant {
     List<ArgSpec> args = transExprList(e.args, true);
     List<Type> argTypes = new ArrayList<Type>();
     // TODO put type checking code here
+    // Currently it is a hack. It is NOT a complete implementation
+    // (hack by yiwu, Oct.3.2014)
     for (ArgSpec as : args) {
-      // argTypes.add(as.get)
-      // to add type for this argspec
+      if (as instanceof Term)
+        argTypes.add(((Term) as).getType());
+      else
+        argTypes.add(BuiltInTypes.NULL);
     }
 
-    FuncAppTerm t = new FuncAppTerm(e.func.toString(),
-        args.toArray(new ArgSpec[args.size()]));
+    Function f = getFunction(e.func.toString(), argTypes);
+    FuncAppTerm t = null;
+    if (f == null)
+      t = new FuncAppTerm(e.func.toString(), 
+          args.toArray(new ArgSpec[args.size()]));
+    else
+      t = new FuncAppTerm(f, args);
     t.setLocation(e.line);
     return t;
   }
@@ -1146,6 +1160,22 @@ public class Semant {
       return new NegFormula((Formula) right);
     case OpExpr.SUB:
       Function func;
+      /*
+       * Special Check for SUB_MAT2
+       * Modified by yiwu, Oct.3.2014
+       */
+      if ((left instanceof FuncAppTerm) && (right instanceof Term)
+          && left != null && right != null) {
+        FuncAppTerm lt = (FuncAppTerm) left;
+        Term rt = (Term) right;
+        if (lt.getFunction() == BuiltInFunctions.SUB_MAT
+            && lt.getArgs() != null && lt.getArgs().length == 2
+            && rt.getType() == BuiltInTypes.INTEGER) {
+          term = new FuncAppTerm(BuiltInFunctions.SUB_MAT2, lt.getArgs()[0],
+              lt.getArgs()[1], rt);
+          return term;
+        }
+      }
       if (left instanceof SymbolTerm) {
         if (e.right instanceof IntExpr) {
           String objectname = ((SymbolTerm) left).getName() + '['

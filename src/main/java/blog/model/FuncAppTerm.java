@@ -84,9 +84,26 @@ public class FuncAppTerm extends Term {
   public FuncAppTerm(Function f, ArgSpec arg1, ArgSpec arg2) {
     this.f = f;
     funcName = f.getName();
-    args = new Term[2];
+    /*
+     * Modified by yiwu. Oct.3.2014
+     * The old version here is : args = new Term[2], which is inconsistent
+     */
+    args = new ArgSpec[2];
     args[0] = arg1;
     args[1] = arg2;
+  }
+
+  /**
+   * Creates a new function application term with the given function and three
+   * given arguments.
+   */
+  public FuncAppTerm(Function f, ArgSpec arg1, ArgSpec arg2, ArgSpec arg3) {
+    this.f = f;
+    funcName = f.getName();
+    args = new ArgSpec[3];
+    args[0] = arg1;
+    args[1] = arg2;
+    args[2] = arg3;
   }
 
   /**
@@ -363,7 +380,15 @@ public class FuncAppTerm extends Term {
   }
 
   public Type getType() {
-    return f.getRetType();
+    /*
+     * Modified by yiwu. Oct.3.2014
+     * We should check whether f is null first!
+     * Otherwise it may lead to NullPointerException
+     */
+    if (f == null)
+      return null;
+    else
+      return f.getRetType();
   }
 
   public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {
