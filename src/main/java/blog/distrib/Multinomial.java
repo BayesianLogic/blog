@@ -158,7 +158,7 @@ public class Multinomial implements CondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    return getProb((ArrayList<?>) value);
+    return getProb((ArrayList<Integer>) value);
   }
 
   /**
@@ -219,7 +219,7 @@ public class Multinomial implements CondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    return getLogProb((ArrayList<?>) value);
+    return getLogProb((ArrayList<Integer>) value);
   }
 
   /**
