@@ -107,7 +107,9 @@ import blog.type.Timestep;
  * @author amatsukawa
  * @author rbharath
  * @author awong
+ * @author yiwu
  * @date 2014/2/11
+ * @date 2014/09/26
  */
 public class Semant {
 
@@ -1215,24 +1217,12 @@ public class Semant {
       return null;
     }
 
-    // TODO remove the following lines after testing. (leili)
-    // if (e.left != null)
-    // sig = new FunctionSignature(funcname, leftType, rightType);
-    // else
-    // sig = new FunctionSignature(funcname, rightType);
-    // NonRandomFunction func = BuiltInFunctions.getFunction(sig);
-    // if (func != null) {
     if (e.left != null)
       // term = new FuncAppTerm(func, (Term) left, (Term) right);
       term = new FuncAppTerm(funcname, (Term) left, (Term) right);
     else
       term = new FuncAppTerm(funcname, (Term) right);
     return term;
-    // } else {
-    // Util.fatalError("No operator " + funcname + " for operands of type "
-    // + leftType + "," + rightType + "!");
-    // throw new IllegalArgumentException("Cannot perform operation!");
-    // }
   }
 
   /**

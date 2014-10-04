@@ -30,5 +30,5 @@ distinct DamageLevel Severe, Mild;
 obs Damage(First) = Severe;
 
 query First;
-query Damage(A);
-query Damage(B);
+//query Damage(A);
+//query Damage(B);
