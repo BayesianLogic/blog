@@ -13,7 +13,7 @@ distinct Document Document[5];
 // Suppose we have five topics. 
 //fixed Integer k = 5;
 fixed Real alpha = 1.0;
-fixed RealMatrix beta =
+fixed RealMatrix b =
     [[0.1, 0.4, 0.4, 0.1],
      [0.1, 0.3, 0.5, 0.1],
      [0.4, 0.2, 0.3, 0.1],
@@ -28,7 +28,7 @@ random RealMatrix theta(Document d) ~ Dirichlet(vector);
 random Integer topic(Document d, Integer i) ~
     if (i < doclen(d)) then Discrete(theta(d));
 
-random Integer wordidx(Document d, Integer i) ~ Discrete(transpose(beta[topic(d, i)]));
+random Integer wordidx(Document d, Integer i) ~ Discrete(transpose(getRow(b,topic(d, i))));
 
 // define a dictionary mapping from index to word
 fixed String Dictionary(Integer i)

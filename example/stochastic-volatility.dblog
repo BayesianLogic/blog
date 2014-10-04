@@ -13,7 +13,7 @@ random RealMatrix state(Timestep t) ~
 fixed RealMatrix C = [1, 0];
 fixed RealMatrix R = Q;
 random Real price(Timestep t) 
-    ~ UnivarGaussian((C * state(t))[0], 1);
+    ~ UnivarGaussian(toReal(C * state(t)), 1);
 
 obs price(@4) = -5;
 obs price(@5) = 15;
