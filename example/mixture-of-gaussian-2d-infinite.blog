@@ -27,7 +27,7 @@ random Component Z(Integer n) ~ UniformChoice({c for Component c});
  * parameters, the dimension and the covariant argument. 
  * The random variable Theta(Z(n)) is interpreted as the mean.  
  */
-random Real[] X(Integer n) ~
+random RealMatrix X(Integer n) ~
   if Z(n) != null then MultivarGaussian(Theta(Z(n)), var_obs);
 
 /* Evidence for the Gaussian mixture model.  These are 
