@@ -1106,8 +1106,7 @@ public class Semant {
           && (left instanceof FuncAppTerm) && right != null) {
         FuncAppTerm lt = (FuncAppTerm) left;
         Term rt = (Term) right;
-        if (lt.getFunction() == BuiltInFunctions.SUB_MAT
-            && lt.getArgs() != null && lt.getArgs().length == 2) {
+        if (lt.getArgs() != null && lt.getArgs().length == 2) {
           term = new FuncAppTerm(BuiltInFunctions.ARRAY_MAT_ELEMENT_NAME,
               lt.getArgs()[0], lt.getArgs()[1], rt);
           return term;

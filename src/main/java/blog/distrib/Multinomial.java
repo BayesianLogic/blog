@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import blog.common.Util;
-import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
 /**
@@ -158,7 +157,7 @@ public class Multinomial implements CondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    return getProb((Integer[]) value);
+    return getProb((ArrayList<Integer>) value);
   }
 
   /**
@@ -280,35 +279,37 @@ public class Multinomial implements CondProbDistrib {
         }
       }
       finiteSupport = new Object[Util.multichoose(kPos, n)];
-      double[][] currentMat = new double[k][1];
+      ArrayList<Integer> currentList = new ArrayList<Integer>();
       supportNum = 0;
-      calculateFiniteSupport(currentMat, 0, n);
+      calculateFiniteSupport(currentList, 0, n);
     }
     return finiteSupport;
   }
 
-  // TODO FIXME, need to consider the value as integer[]
-  private void calculateFiniteSupport(double[][] mat, int depth, int remain) {
+  private void calculateFiniteSupport(ArrayList<Integer> currentList,
+      int depth, int remain) {
     if (depth == k) {
-      finiteSupport[supportNum] = MatrixFactory.fromArray(mat);
+      finiteSupport[supportNum] = currentList.clone();
       supportNum++;
     } else if (depth == k - 1) {
       if (remain == 0) {
-        mat[depth][0] = 0;
-        calculateFiniteSupport(mat, depth + 1, 0);
+        currentList.add(0);
+        calculateFiniteSupport(currentList, depth + 1, 0);
+        currentList.remove(depth);
       } else if (!Util.closeToZero(p[depth])) {
-        mat[depth][0] = remain;
-        calculateFiniteSupport(mat, depth + 1, 0);
+        currentList.add(remain);
+        calculateFiniteSupport(currentList, depth + 1, 0);
+        currentList.remove(depth);
       }
     } else {
-      mat[depth][0] = 0;
-      double[][] tempMat = Util.copy2DArray(mat);
-      calculateFiniteSupport(mat, depth + 1, remain);
+      currentList.add(0);
+      calculateFiniteSupport(currentList, depth + 1, remain);
+      currentList.remove(depth);
       if (!Util.closeToZero(p[depth])) {
         for (int i = 1; i <= remain; i++) {
-          double[][] newMat = Util.copy2DArray(tempMat);
-          newMat[depth][0] = i;
-          calculateFiniteSupport(newMat, depth + 1, remain - i);
+          currentList.add(i);
+          calculateFiniteSupport(currentList, depth + 1, remain - i);
+          currentList.remove(depth);
         }
       }
     }
