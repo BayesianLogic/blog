@@ -127,8 +127,8 @@ public class TestCategorical implements TestDistributions {
 
     Object[] list = cat.getFiniteSupport();
     assertEquals(3, list.length);
-    assertEquals(list[1], "Bob");
-    assertEquals(list[0], "Craig");
+    assertEquals(list[0], "Bob");
+    assertEquals(list[1], "Craig");
     assertEquals(list[2], "Albert");
   }
 
