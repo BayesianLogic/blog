@@ -4,8 +4,11 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.junit.Test;
 
@@ -126,10 +129,11 @@ public class TestCategorical implements TestDistributions {
     cat.setParams(new Object[] { map });
 
     Object[] list = cat.getFiniteSupport();
-    assertEquals(3, list.length);
-    assertEquals(list[1], "Bob");
-    assertEquals(list[0], "Craig");
-    assertEquals(list[2], "Albert");
+    HashSet<Object> values = new HashSet<Object>(Arrays.asList(list));
+    assertEquals(3, values.size());
+    assertTrue(values.contains("Bob"));
+    assertTrue(values.contains("Craig"));
+    assertTrue(values.contains("Albert"));
   }
 
 }
