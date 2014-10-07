@@ -35,127 +35,140 @@
 
 package blog.common;
 
-import java.util.*;
 import java.io.PrintStream;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Stack;
 
 /**
  * Abstract implementation of the DGraph interface.
  */
-public abstract class AbstractDGraph implements DGraph {
+public abstract class AbstractDGraph<T> implements DGraph<T> {
 
-	/**
-	 * Throws an UnsupportedOperationException.
-	 */
-	public boolean addNode(Object v) {
-		throw new UnsupportedOperationException(
-				"Tried to add node to unmodifiable graph.");
-	}
+  /**
+   * Throws an UnsupportedOperationException.
+   */
+  @Override
+  public boolean addNode(T v) {
+    throw new UnsupportedOperationException(
+        "Tried to add node to unmodifiable graph.");
+  }
 
-	/**
-	 * Throws an UnsupportedOperationException.
-	 */
-	public boolean removeNode(Object v) {
-		throw new UnsupportedOperationException(
-				"Tried to remove node from unmodifiable graph.");
-	}
+  /**
+   * Throws an UnsupportedOperationException.
+   */
+  @Override
+  public boolean removeNode(T v) {
+    throw new UnsupportedOperationException(
+        "Tried to remove node from unmodifiable graph.");
+  }
 
-	/**
-	 * Throws an UnsupportedOperationException.
-	 */
-	public void addEdge(Object parent, Object child) {
-		throw new UnsupportedOperationException(
-				"Tried to add edge to unmodifiable graph.");
-	}
+  /**
+   * Throws an UnsupportedOperationException.
+   */
+  @Override
+  public void addEdge(T parent, T child) {
+    throw new UnsupportedOperationException(
+        "Tried to add edge to unmodifiable graph.");
+  }
 
-	/**
-	 * Throws an UnsupportedOperationException.
-	 */
-	public void removeEdge(Object parent, Object child) {
-		throw new UnsupportedOperationException(
-				"Tried to remove edge from unmodifiable graph.");
-	}
+  /**
+   * Throws an UnsupportedOperationException.
+   */
+  @Override
+  public void removeEdge(T parent, T child) {
+    throw new UnsupportedOperationException(
+        "Tried to remove edge from unmodifiable graph.");
+  }
 
-	/**
-	 * Implements setParents in terms of addEdge and removeEdge.
-	 */
-	public void setParents(Object v, Set newParents) {
-		Set oldParents = getParents(v);
-		for (Iterator iter = oldParents.iterator(); iter.hasNext();) {
-			Object parent = iter.next();
-			if (!newParents.contains(parent)) {
-				removeEdge(parent, v);
-			}
-		}
-		for (Iterator iter = newParents.iterator(); iter.hasNext();) {
-			Object parent = iter.next();
-			if (!oldParents.contains(parent)) {
-				addEdge(parent, v);
-			}
-		}
-	}
+  /**
+   * Implements setParents in terms of addEdge and removeEdge.
+   */
+  @Override
+  public void setParents(T v, Set<T> newParents) {
+    Set<T> oldParents = getParents(v);
+    for (Iterator<T> iter = oldParents.iterator(); iter.hasNext();) {
+      T parent = iter.next();
+      if (!newParents.contains(parent)) {
+        removeEdge(parent, v);
+      }
+    }
+    for (Iterator<T> iter = newParents.iterator(); iter.hasNext();) {
+      T parent = iter.next();
+      if (!oldParents.contains(parent)) {
+        addEdge(parent, v);
+      }
+    }
+  }
 
-	public Set getRoots() {
-		Set roots = new HashSet();
-		for (Iterator iter = nodes().iterator(); iter.hasNext();) {
-			Object node = iter.next();
-			if (getParents(node).isEmpty()) {
-				roots.add(node);
-			}
-		}
-		return Collections.unmodifiableSet(roots);
-	}
+  @Override
+  public Set<T> getRoots() {
+    Set<T> roots = new HashSet<T>();
+    for (Iterator<T> iter = nodes().iterator(); iter.hasNext();) {
+      T node = iter.next();
+      if (getParents(node).isEmpty()) {
+        roots.add(node);
+      }
+    }
+    return Collections.unmodifiableSet(roots);
+  }
 
-	public Set getAncestors(Object v) {
-		Set ancestors = new HashSet();
+  @Override
+  public Set<T> getAncestors(T v) {
+    Set<T> ancestors = new HashSet<T>();
 
-		// Do depth-first search, adding each node to the ancestor set
-		// the first time it is seen.
-		Stack stack = new Stack();
-		stack.push(v);
-		while (!stack.empty()) {
-			Object u = stack.pop();
-			Set parents = getParents(u);
-			for (Iterator iter = parents.iterator(); iter.hasNext();) {
-				Object parent = iter.next();
-				if (ancestors.add(parent)) {
-					stack.push(parent);
-				}
-			}
-		}
-		return ancestors;
-	}
+    // Do depth-first search, adding each node to the ancestor set
+    // the first time it is seen.
+    Stack<T> stack = new Stack<T>();
+    stack.push(v);
+    while (!stack.empty()) {
+      T u = stack.pop();
+      Set<T> parents = getParents(u);
+      for (Iterator<T> iter = parents.iterator(); iter.hasNext();) {
+        T parent = iter.next();
+        if (ancestors.add(parent)) {
+          stack.push(parent);
+        }
+      }
+    }
+    return ancestors;
+  }
 
-	public Set getDescendants(Object v) {
-		Set descendants = new HashSet();
+  @Override
+  public Set<T> getDescendants(T v) {
+    Set<T> descendants = new HashSet<T>();
 
-		// Do depth-first search, adding each node to the descendant set
-		// the first time it is seen.
-		Stack stack = new Stack();
-		stack.push(v);
-		while (!stack.empty()) {
-			Object u = stack.pop();
-			Set children = getChildren(u);
-			for (Iterator iter = children.iterator(); iter.hasNext();) {
-				Object child = iter.next();
-				if (descendants.add(child)) {
-					stack.push(child);
-				}
-			}
-		}
-		return descendants;
-	}
+    // Do depth-first search, adding each node to the descendant set
+    // the first time it is seen.
+    Stack<T> stack = new Stack<T>();
+    stack.push(v);
+    while (!stack.empty()) {
+      T u = stack.pop();
+      Set<T> children = getChildren(u);
+      for (Iterator<T> iter = children.iterator(); iter.hasNext();) {
+        T child = iter.next();
+        if (descendants.add(child)) {
+          stack.push(child);
+        }
+      }
+    }
+    return descendants;
+  }
 
-	public void print(PrintStream s) {
-		for (Iterator nodeIter = nodes().iterator(); nodeIter.hasNext();) {
-			Object node = nodeIter.next();
-			s.println(node);
+  @Override
+  public void print(PrintStream s) {
+    for (Iterator<T> nodeIter = nodes().iterator(); nodeIter.hasNext();) {
+      T node = nodeIter.next();
+      s.println(node);
 
-			for (Iterator parentIter = getParents(node).iterator(); parentIter
-					.hasNext();) {
-				s.println("\t<- " + parentIter.next());
-			}
+      for (Iterator<T> parentIter = getParents(node).iterator(); parentIter
+          .hasNext();) {
+        s.println("\t<- " + parentIter.next());
+      }
 
-			s.println();
-		}
-	}
+      s.println();
+    }
+  }
 }

@@ -55,7 +55,7 @@ import blog.world.PartialWorld;
  * of arguments, or a POP and a tuple of generating objects.
  */
 public abstract class BasicVar extends AbstractBayesNetVar implements
-    Comparable, Cloneable {
+    Comparable<BasicVar>, Cloneable {
 
   /**
    * Creates a new BasicVar with the given tuple of arguments or generating
@@ -170,8 +170,8 @@ public abstract class BasicVar extends AbstractBayesNetVar implements
    * same dependency model, we use a lexicographic ordering based on the
    * arguments.
    */
-  public int compareTo(Object o) {
-    BasicVar other = (BasicVar) o;
+  @Override
+  public int compareTo(BasicVar other) {
     int indexDiff = getOrderingIndex() - other.getOrderingIndex();
     if (indexDiff != 0) {
       return indexDiff;

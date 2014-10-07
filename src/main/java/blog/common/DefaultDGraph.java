@@ -36,151 +36,169 @@
 
 package blog.common;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Default implementation of the DGraph interface. Represents both the parent
  * set and the child set for each node (even though this is redundant) so both
  * kinds of sets can be accessed quickly.
  */
-public class DefaultDGraph extends AbstractDGraph implements Cloneable {
-	/**
-	 * Creates a new, empty graph.
-	 */
-	public DefaultDGraph() {
-	}
+public class DefaultDGraph<T> extends AbstractDGraph<T> implements Cloneable {
+  /**
+   * Creates a new, empty graph.
+   */
+  public DefaultDGraph() {
+  }
 
-	/**
-	 * Returns an unmodifiable set consisting of the nodes in this graph.
-	 */
-	public Set nodes() {
-		return Collections.unmodifiableSet(nodeInfo.keySet());
-	}
+  /**
+   * Returns an unmodifiable set consisting of the nodes in this graph.
+   */
+  @Override
+  public Set<T> nodes() {
+    return Collections.unmodifiableSet(nodeInfo.keySet());
+  }
 
-	public boolean addNode(Object v) {
-		if (nodeInfo.containsKey(v)) {
-			return false;
-		}
-		nodeInfo.put(v, new NodeInfo());
-		return true;
-	}
+  @Override
+  public boolean addNode(T v) {
+    if (nodeInfo.containsKey(v)) {
+      return false;
+    }
+    nodeInfo.put(v, new NodeInfo<T>());
+    return true;
+  }
 
-	public boolean removeNode(Object v) {
-		NodeInfo info = (NodeInfo) nodeInfo.remove(v);
-		if (info == null) {
-			return false;
-		}
+  @Override
+  public boolean removeNode(Object v) {
+    NodeInfo<T> info = nodeInfo.remove(v);
+    if (info == null) {
+      return false;
+    }
 
-		for (Iterator iter = info.parents.iterator(); iter.hasNext();) {
-			Object parent = iter.next();
-			NodeInfo parentInfo = (NodeInfo) nodeInfo.get(parent);
-			if (parentInfo != null) {
-				parentInfo.children.remove(v);
-			}
-		}
-		for (Iterator iter = info.children.iterator(); iter.hasNext();) {
-			Object child = iter.next();
-			NodeInfo childInfo = (NodeInfo) nodeInfo.get(child);
-			if (childInfo != null) {
-				childInfo.parents.remove(v);
-			}
-		}
+    for (Iterator<T> iter = info.parents.iterator(); iter.hasNext();) {
+      T parent = iter.next();
+      NodeInfo<T> parentInfo = nodeInfo.get(parent);
+      if (parentInfo != null) {
+        parentInfo.children.remove(v);
+      }
+    }
+    for (Iterator<T> iter = info.children.iterator(); iter.hasNext();) {
+      Object child = iter.next();
+      NodeInfo<T> childInfo = nodeInfo.get(child);
+      if (childInfo != null) {
+        childInfo.parents.remove(v);
+      }
+    }
 
-		return true;
-	}
+    return true;
+  }
 
-	public void addEdge(Object parent, Object child) {
-		NodeInfo parentInfo = ensureNodePresent(parent);
-		parentInfo.children.add(child);
+  @Override
+  public void addEdge(T parent, T child) {
+    NodeInfo<T> parentInfo = ensureNodePresent(parent);
+    parentInfo.children.add(child);
 
-		NodeInfo childInfo = ensureNodePresent(child);
-		childInfo.parents.add(parent);
-	}
+    NodeInfo<T> childInfo = ensureNodePresent(child);
+    childInfo.parents.add(parent);
+  }
 
-	public void removeEdge(Object parent, Object child) {
-		NodeInfo parentInfo = (NodeInfo) nodeInfo.get(parent);
-		if (parentInfo != null) {
-			parentInfo.children.remove(child);
-		}
+  @Override
+  public void removeEdge(T parent, T child) {
+    NodeInfo<T> parentInfo = nodeInfo.get(parent);
+    if (parentInfo != null) {
+      parentInfo.children.remove(child);
+    }
 
-		NodeInfo childInfo = (NodeInfo) nodeInfo.get(child);
-		if (childInfo != null) {
-			childInfo.parents.remove(parent);
-		}
-	}
+    NodeInfo<T> childInfo = nodeInfo.get(child);
+    if (childInfo != null) {
+      childInfo.parents.remove(parent);
+    }
+  }
 
-	public Set getParents(Object v) {
-		NodeInfo info = (NodeInfo) nodeInfo.get(v);
-		if (info == null) {
-			return null;
-		}
-		return Collections.unmodifiableSet(info.parents);
-	}
+  public Set<T> getParents(Object v) {
+    NodeInfo<T> info = nodeInfo.get(v);
+    if (info == null) {
+      return null;
+    }
+    return Collections.unmodifiableSet(info.parents);
+  }
 
-	public void setParents(Object v, Set newParents) {
-		NodeInfo vInfo = ensureNodePresent(v);
-		Set oldParents = vInfo.parents;
-		vInfo.parents = new HashSet(newParents);
+  @Override
+  public void setParents(T v, Set<T> newParents) {
+    NodeInfo<T> vInfo = ensureNodePresent(v);
+    Set<T> oldParents = vInfo.parents;
+    vInfo.parents = new HashSet<T>(newParents);
 
-		// Remove v from child sets of old parents
-		for (Iterator iter = oldParents.iterator(); iter.hasNext();) {
-			Object parent = iter.next();
-			if (!newParents.contains(parent)) {
-				NodeInfo parentInfo = (NodeInfo) nodeInfo.get(parent);
-				if (parentInfo != null) {
-					parentInfo.children.remove(v);
-				}
-			}
-		}
+    // Remove v from child sets of old parents
+    for (Iterator<T> iter = oldParents.iterator(); iter.hasNext();) {
+      T parent = iter.next();
+      if (!newParents.contains(parent)) {
+        NodeInfo<T> parentInfo = nodeInfo.get(parent);
+        if (parentInfo != null) {
+          parentInfo.children.remove(v);
+        }
+      }
+    }
 
-		// Add v to child sets of new parents
-		for (Iterator iter = newParents.iterator(); iter.hasNext();) {
-			Object parent = iter.next();
-			if (!oldParents.contains(parent)) {
-				NodeInfo parentInfo = ensureNodePresent(parent);
-				parentInfo.children.add(v);
-			}
-		}
-	}
+    // Add v to child sets of new parents
+    for (Iterator<T> iter = newParents.iterator(); iter.hasNext();) {
+      T parent = iter.next();
+      if (!oldParents.contains(parent)) {
+        NodeInfo<T> parentInfo = ensureNodePresent(parent);
+        parentInfo.children.add(v);
+      }
+    }
+  }
 
-	public Set getChildren(Object v) {
-		NodeInfo info = (NodeInfo) nodeInfo.get(v);
-		if (info == null) {
-			return null;
-		}
-		return Collections.unmodifiableSet(info.children);
-	}
+  @Override
+  public Set<T> getChildren(Object v) {
+    NodeInfo<T> info = nodeInfo.get(v);
+    if (info == null) {
+      return null;
+    }
+    return Collections.unmodifiableSet(info.children);
+  }
 
-	public Object clone() {
-		DefaultDGraph clone = new DefaultDGraph();
-		clone.nodeInfo = (Map) ((HashMap) nodeInfo).clone();
-		for (Iterator iter = clone.nodeInfo.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry entry = (Map.Entry) iter.next();
-			entry.setValue(((NodeInfo) entry.getValue()).clone());
-		}
-		return clone;
-	}
+  @Override
+  public Object clone() {
+    DefaultDGraph<T> clone = new DefaultDGraph<T>();
+    clone.nodeInfo = (Map<T, NodeInfo<T>>) ((HashMap) nodeInfo).clone();
+    for (Iterator<Map.Entry<T, NodeInfo<T>>> iter = clone.nodeInfo.entrySet()
+        .iterator(); iter.hasNext();) {
+      Map.Entry<T, NodeInfo<T>> entry = iter.next();
+      entry.setValue((NodeInfo<T>) (entry.getValue()).clone());
+    }
+    return clone;
+  }
 
-	public static class NodeInfo implements Cloneable {
-		Set parents = new HashSet();
-		Set children = new HashSet();
+  public static class NodeInfo<T> implements Cloneable {
+    HashSet<T> parents = new HashSet<T>();
+    HashSet<T> children = new HashSet<T>();
 
-		public Object clone() {
-			NodeInfo clone = new NodeInfo();
-			clone.parents = (Set) ((HashSet) parents).clone();
-			clone.children = (Set) ((HashSet) children).clone();
-			return clone;
-		}
-	}
+    public Object clone() {
+      NodeInfo<T> clone = new NodeInfo<T>();
 
-	private NodeInfo ensureNodePresent(Object v) {
-		NodeInfo info = (NodeInfo) nodeInfo.get(v);
-		if (info == null) {
-			info = new NodeInfo();
-			nodeInfo.put(v, info);
-		}
-		return info;
-	}
+      clone.parents = (HashSet<T>) parents.clone();
+      clone.children = (HashSet<T>) children.clone();
+      return clone;
+    }
+  }
 
-	protected Map nodeInfo = new HashMap(); // from Object to NodeInfo
+  private NodeInfo<T> ensureNodePresent(T v) {
+    NodeInfo<T> info = nodeInfo.get(v);
+    if (info == null) {
+      info = new NodeInfo<T>();
+      nodeInfo.put(v, info);
+    }
+    return info;
+  }
+
+  protected Map<T, NodeInfo<T>> nodeInfo = new HashMap<T, NodeInfo<T>>(); // from
+                                                                          // Object
+                                                                          // to
+                                                                          // NodeInfo
 }

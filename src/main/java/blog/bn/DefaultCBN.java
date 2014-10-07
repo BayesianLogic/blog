@@ -40,24 +40,26 @@ import java.util.Iterator;
 import java.util.Map;
 
 import blog.common.DefaultDGraph;
-import blog.common.DefaultDGraph.NodeInfo;
 
 /**
- * This class provides a default implementation of CBNs. Over the next few weeks,
+ * This class provides a default implementation of CBNs. Over the next few
+ * weeks,
  * all inference algorithms will be modified to use CBNs.
  */
 
 public class DefaultCBN extends DefaultDGraph implements CBN {
-	/**
-	 * Uses a DefaultCBN rather than a DefaultDGraph, so as to avoid ClassCastExceptions
-	 */
-	public Object clone() {
-		DefaultCBN clone = new DefaultCBN();
-		clone.nodeInfo = (Map) ((HashMap) nodeInfo).clone();
-		for (Iterator iter = clone.nodeInfo.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry entry = (Map.Entry) iter.next();
-			entry.setValue(((NodeInfo) entry.getValue()).clone());
-		}
-		return clone;
-	}
+  /**
+   * Uses a DefaultCBN rather than a DefaultDGraph, so as to avoid
+   * ClassCastExceptions
+   */
+  @Override
+  public Object clone() {
+    DefaultCBN clone = new DefaultCBN();
+    clone.nodeInfo = (Map) ((HashMap) nodeInfo).clone();
+    for (Iterator iter = clone.nodeInfo.entrySet().iterator(); iter.hasNext();) {
+      Map.Entry entry = (Map.Entry) iter.next();
+      entry.setValue(((NodeInfo) entry.getValue()).clone());
+    }
+    return clone;
+  }
 }
