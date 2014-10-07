@@ -159,8 +159,6 @@ public abstract class Sampler {
    */
   protected Evidence evidence;
 
-  public AfterSamplingListener afterSamplingListener = null;
-
   /**
    * List of Query objects specified so far (usually by the last call to
    * <code>initialize</code>, but extending classes may have methods to increase

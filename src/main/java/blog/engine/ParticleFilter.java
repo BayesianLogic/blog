@@ -52,7 +52,6 @@ import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Queries;
 import blog.model.Query;
-import blog.sample.AfterSamplingListener;
 import blog.sample.Sampler;
 import blog.type.Timestep;
 import blog.world.DefaultPartialWorld;
@@ -364,25 +363,12 @@ public class ParticleFilter extends InferenceEngine {
    */
   public TakesEvidenceHandler afterTakesEvidence;
 
-  // END OF EVENT HANDLING
-
-  public AfterSamplingListener getAfterSamplingListener() {
-    return afterSamplingListener;
-  }
-
-  public void setAfterSamplingListener(
-      AfterSamplingListener afterSamplingListener) {
-    this.afterSamplingListener = afterSamplingListener;
-    particleSampler.afterSamplingListener = afterSamplingListener;
-  }
-
   private Set idTypes; // of Type
 
   private int numParticles;
   protected List<Particle> particles;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
   private Sampler particleSampler;
-  private AfterSamplingListener afterSamplingListener;
   private int queryReportInterval;
   private double dataLogLik; // log likelihood of the data
 }

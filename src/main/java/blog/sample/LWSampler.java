@@ -118,13 +118,7 @@ public class LWSampler extends Sampler {
       curWorld = new DefaultPartialWorld(idTypes);
 
     latestSampleLogWeight = supportEvidenceAndCalculateLogWeight();
-    BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
-        afterSamplingListener);
-    // if (Util.verbose()) {
-    // System.out.println("Generated world:");
-    // curWorld.print(System.out);
-    // System.out.println("Log weight: " + latestSampleLogWeight);
-    // }
+    BLOGUtil.ensureDetAndSupported(queryVars, curWorld);
 
     ++totalNumSamples;
     ++numSamplesThisTrial;
