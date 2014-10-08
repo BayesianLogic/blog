@@ -36,7 +36,6 @@
 package blog.engine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -268,7 +267,6 @@ public class ParticleFilter extends InferenceEngine {
     double maxLogWeight = Double.NEGATIVE_INFINITY;
     double sumWeights = 0;
     double[] normalizedWeights = new double[particles.size()];
-    double[] sampleKeys = new double[particles.size()];
     List<Particle> newParticles = new ArrayList<Particle>();
 
     /*
@@ -301,14 +299,17 @@ public class ParticleFilter extends InferenceEngine {
 
     sumWeights = normalizedWeights[particles.size() - 1];
 
-    for (int i = 0; i < numParticles; i++) {
-      sampleKeys[i] = Util.random() * sumWeights;
-    }
-
-    Arrays.sort(sampleKeys);
+    /*
+     * Modified by yiwu on Oct.8.2014
+     * Use systematic resample scheme
+     */
+    double ratio = sumWeights / numParticles;
+    double basis = 0, sampleKey;
     int selection = 0;
     for (int i = 0; i < numParticles; i++) {
-      while (normalizedWeights[selection] < sampleKeys[i])
+      sampleKey = basis + Util.random() * ratio;
+      basis += ratio;
+      while (normalizedWeights[selection] < sampleKey)
         ++selection;
       if (!alreadySampled[selection]) {
         newParticles.add(particles.get(selection));
