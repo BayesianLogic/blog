@@ -52,6 +52,8 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.commons.math3.util.ArithmeticUtils;
+
 /**
  * Provides common utilities to FOMIE programs.
  * Original created by
@@ -227,22 +229,17 @@ public class Util {
    * factors in the factorial of n.
    */
   public static double logPartialFactorial(int n, int m) {
-    double sum = 0;
-    for (int i = n; i > n - m; i--) {
-      sum += Math.log(i);
-    }
-    return sum;
+    // Modified by yiwu @ Oct.8.2014
+    return ArithmeticUtils.factorialLog(n)
+        - ArithmeticUtils.factorialLog(n - m);
   }
 
   /**
    * Returns the factorial of n.
    */
   public static int factorial(int n) {
-    int prod = 1;
-    for (int i = 2; i <= n; i++) {
-      prod *= i;
-    }
-    return prod;
+    // Modified by yiwu @ Oct.8.2014
+    return (int) ArithmeticUtils.factorial(n);
   }
 
   /**
@@ -250,18 +247,16 @@ public class Util {
    * Math.log(Util.factorial(n)).
    */
   public static double logFactorial(int n) {
-    return logPartialFactorial(n, n);
+    // Modified by yiwu @ Oct.8.2014
+    return ArithmeticUtils.factorialLog(n);
   }
 
   /**
    * Returns (n choose k) = n! / (n-k)! k!.
    */
   public static int choose(int n, int k) {
-    int prod = 1;
-    for (int i = n; i > n - k; --i) {
-      prod *= i;
-    }
-    return (prod / factorial(k));
+    // Modified by yiwu on Oct.8.2014
+    return (int) ArithmeticUtils.binomialCoefficient(n, k);
   }
 
   /**
