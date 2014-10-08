@@ -38,6 +38,8 @@ package blog.distrib;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.commons.math3.distribution.BinomialDistribution;
+
 import blog.common.Util;
 import blog.common.numerical.MatrixLib;
 
@@ -247,12 +249,16 @@ public class Multinomial implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
-    return sample_value();
+    // Modified by yiwu on Oct.8.2014.
+    checkHasParams();
+    if (n > 3 * k) // Currently it is a heuristic.
+      return sample_value_use_binomial();
+    else
+      return sample_value();
   }
 
   /** Samples a value from the multinomial. */
   public ArrayList<Integer> sample_value() {
-    checkHasParams();
     ArrayList<Integer> result = new ArrayList<Integer>(k);
     for (int i = 0; i < k; i++) {
       result.add(0);
@@ -265,6 +271,33 @@ public class Multinomial implements CondProbDistrib {
         bucket = -bucket - 1;
       result.set(bucket, result.get(bucket) + 1);
     }
+    return result;
+  }
+
+  /** Sample value from Multinomial Distribution using Binomial Distribution */
+  /*
+   * Authored by yiwu on Oct.8.2014
+   * reference:
+   * chapter 2.2 of
+   * http://www.sciencedirect.com/science/article/pii/016794739390115A
+   */
+  public ArrayList<Integer> sample_value_use_binomial() {
+    BinomialDistribution binom = null;
+    int cur = 0;
+    double cdf = 0;
+    ArrayList<Integer> result = new ArrayList<Integer>(k);
+    for (int i = 0; i < k - 1; i++) {
+      if (n == cur) {
+        result.add(0);
+        continue;
+      }
+      binom = new BinomialDistribution(n - cur, p[i] / (1.0 - cdf));
+      int x = binom.sample();
+      cur += x;
+      cdf += p[i];
+      result.add(x);
+    }
+    result.add(n - cur);
     return result;
   }
 
