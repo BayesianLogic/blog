@@ -57,36 +57,13 @@ import blog.sample.EvalContext;
  */
 public class FuncAppTerm extends Term {
   /**
-   * Creates a new function application term with the given function and no
-   * arguments.
+   * Creates a new function application term with the given function and any
+   * number of arguments.
    */
-  public FuncAppTerm(Function f) {
+  public FuncAppTerm(Function f, ArgSpec... args) {
     this.f = f;
     funcName = f.getName();
-    args = new ArgSpec[0];
-  }
-
-  /**
-   * Creates a new function application term with the given function and a
-   * single given argument.
-   */
-  public FuncAppTerm(Function f, ArgSpec arg) {
-    this.f = f;
-    funcName = f.getName();
-    args = new ArgSpec[1];
-    args[0] = arg;
-  }
-
-  /**
-   * Creates a new function application term with the given function and two
-   * given arguments.
-   */
-  public FuncAppTerm(Function f, ArgSpec arg1, ArgSpec arg2) {
-    this.f = f;
-    funcName = f.getName();
-    args = new Term[2];
-    args[0] = arg1;
-    args[1] = arg2;
+    this.args = args;
   }
 
   /**
@@ -117,14 +94,8 @@ public class FuncAppTerm extends Term {
    */
   public FuncAppTerm(String funcName, ArgSpec... args) {
     this.funcName = funcName;
-    if (funcName.equals("Position"))
-      position = this;
-    // this.args = new ArgSpec[args.length];
-    // argList.toArray(args);
     this.args = args;
   }
-
-  public static FuncAppTerm position;
 
   /**
    * Returns the function in this function application term.
@@ -363,7 +334,15 @@ public class FuncAppTerm extends Term {
   }
 
   public Type getType() {
-    return f.getRetType();
+    /*
+     * Modified by yiwu. Oct.3.2014
+     * We should check whether f is null first!
+     * Otherwise it may lead to NullPointerException
+     */
+    if (f == null)
+      return null;
+    else
+      return f.getRetType();
   }
 
   public ArgSpec getSubstResult(Substitution subst, Set<LogicalVar> boundVars) {

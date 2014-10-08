@@ -19,7 +19,7 @@ type Component;
 
 distinct Component Road, Shadow, Vehicle;
 
-fixed Real[][] variance = [10000, 0, 0;
+fixed RealMatrix variance = [10000, 0, 0;
                            0, 10000, 0;
                            0, 0, 10000];
 
@@ -44,7 +44,7 @@ fixed Component IntToComponent(Integer c)
                     2, Vehicle);
 
 // the parameters can be set in Mean(Component)
-random Real[] Intensity(Integer x, Integer y, Timestep t)
+random RealMatrix Intensity(Integer x, Integer y, Timestep t)
     ~ MultivarGaussian(
         Mean(IntToComponent(AssociatedComponent(x, y, t)), t),
         variance);

@@ -24,11 +24,12 @@ patterns:
   match: (\-\>|\<|\>|\=|\=\=|\>\=|\<\=|\!|~|:|\+|\-|\*|\/|\%|\=\>|\&|\||\[|\])
 - name: storage.modifer.blog
   match: \b(obs|query)\b
-- match: \b(fixed|random|origin)\b\s+\b(Integer|Real|Boolean|NaturalNum|Timestep|RealMatrix|IntegerMatrix|\w+)\s+(\w+)\b
+- match: \b(fixed|random|origin)\b\s+\b(Integer|Real|Boolean|NaturalNum|Timestep|RealMatrix|IntegerMatrix|\w+)(\[\])*\s+(\w+)\b
   captures:
     '1': {name: storage.modifier.blog}
     '2': {name: storage.type.primitive.blog}
-    '3': {name: entity.name.function.blog}
+    '3': {name: storage.type.primitive.blog}
+    '4': {name: entity.name.function.blog}
 #distinct symbol declaration
 - match: \b(distinct)\s+(\w+)\b
   captures:
@@ -45,7 +46,7 @@ patterns:
   match: \b(if|then|else|case|in|forall|exists|for)\b
 # builtin functions
 - name: support.function.blog
-  match: \b(abs|round|inv|transpose|det|trace|repmat|diag|vstack|hstack|eye|zeros|ones|exp|toReal|toInt|isEmptyString|prev|min|max|sum)\b
+  match: \b(abs|round|inv|transpose|det|trace|repmat|diag|vstack|hstack|eye|zeros|ones|exp|toReal|toInt|isEmptyString|prev|min|max|sum|getRow|getCol|getRows|getCols|rowsum|colsum|matsum|loadRealMatrix)\b
 # distributions
 - name: support.class.blog
   match: \b(TabularCPD|Distribution|Gaussian|UniformChoice|MultivarGaussian|Poisson|Bernoulli|BooleanDistrib|Binomial|Beta|BoundedGenometric|Categorical|Dirichlet|EqualsCPD|Gamma|Geometric|Iota|LinearGaussian|MixtureDistrib|NegativeBinamial|RoundedLogNormal|TabularInterp|UniformVector|UnivarGaussian|Exponential|UniformInt|UniformReal|Multinomial|Laplace)\b

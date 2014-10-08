@@ -475,13 +475,7 @@ public class Semant {
       if (e.body == null) {
         error(e.line, e.col, "empty fixed function body");
       } else if (argTy.size() > 0) {
-        if (e.body instanceof FuncCallExpr) {
-          FuncCallExpr fc = (FuncCallExpr) e.body;
-          List<ArgSpec> args = transExprList(fc.args, false);
-          Class<? extends FunctionInterp> cls = getFunctionInterpClass(fc.func
-              .toString());
-          ((FixedFunction) fun).setInterpretation(cls, args);
-        } else if (e.body instanceof DoubleExpr) {
+        if (e.body instanceof DoubleExpr) {
           List<Object> args = new ArrayList<Object>();
           args.add(((DoubleExpr) e.body).value);
           ConstantInterp constant = new ConstantInterp(args);
@@ -497,14 +491,25 @@ public class Semant {
           ConstantInterp constant = new ConstantInterp(args);
           ((FixedFunction) fun).setInterpretation(constant);
         } else {
-          // general expression as function body
-          Object funcBody = transExpr(e.body);
-          if (funcBody instanceof ArgSpec) {
-            ArgSpec funcValue = (ArgSpec) funcBody;
-            ((FixedFunction) fun).setBody(funcValue);
-          } else {
-            error(e.body.line, e.body.col,
-                "expression not supported in body of fixed function");
+          Class<? extends FunctionInterp> cls = null;
+          if (e.body instanceof FuncCallExpr) {
+            FuncCallExpr fc = (FuncCallExpr) e.body;
+            cls = getFunctionInterpClass(fc.func.toString());
+            if (cls != null) {
+              List<ArgSpec> args = transExprList(fc.args, false);
+              ((FixedFunction) fun).setInterpretation(cls, args);
+            }
+          }
+          if (cls == null) {
+            // general expression as function body
+            Object funcBody = transExpr(e.body);
+            if (funcBody instanceof ArgSpec) {
+              ArgSpec funcValue = (ArgSpec) funcBody;
+              ((FixedFunction) fun).setBody(funcValue);
+            } else {
+              error(e.body.line, e.body.col,
+                  "expression not supported in body of fixed function");
+            }
           }
         }
       } else {
@@ -556,13 +561,7 @@ public class Semant {
         return null;
       }
     } else if (value instanceof ListSpec) {
-      if (ty.isSubtypeOf(BuiltInTypes.REAL_MATRIX)) {
-        return ((ListSpec) value).transferToMatrix();
-      } else if (ty.isSubtypeOf(BuiltInTypes.REAL_ARRAY)) {
-        return ((ListSpec) value).transferToMatrix();
-      } else {
-        return null;
-      }
+      return ((ListSpec) value).transferToConcrete(ty);
     } else
       return null;
   }
@@ -790,8 +789,7 @@ public class Semant {
   ArgSpec transExpr(DoubleExpr e) {
     // TODO is there a better way than using function?
     Term t = new FuncAppTerm(BuiltInFunctions.getLiteral(
-        String.valueOf(e.value), BuiltInTypes.REAL, e.value),
-        Collections.EMPTY_LIST);
+        String.valueOf(e.value), BuiltInTypes.REAL, e.value), new ArgSpec[0]);
     t.setLocation(e.line);
     return t;
   }
@@ -834,7 +832,7 @@ public class Semant {
   }
 
   ArgSpec transExpr(NullExpr e) {
-    Term t = new FuncAppTerm(BuiltInFunctions.NULL, Collections.EMPTY_LIST);
+    Term t = new FuncAppTerm(BuiltInFunctions.NULL, new ArgSpec[0]);
     t.setLocation(e.line);
     return t;
   }
@@ -864,8 +862,7 @@ public class Semant {
     List<Type> argTypes = new ArrayList<Type>();
     // TODO put type checking code here
     for (ArgSpec as : args) {
-      // argTypes.add(as.get)
-      // to add type for this argspec
+      // TODO at type checking
     }
 
     FuncAppTerm t = new FuncAppTerm(e.func.toString(),
@@ -1096,6 +1093,27 @@ public class Semant {
     case OpExpr.POWER:
       funcname = BuiltInFunctions.POWER_NAME;
       break;
+    case OpExpr.SUB:
+      /*
+       * Special Check for SUB_MAT2
+       * Modified by yiwu, Oct.3.2014
+       */
+      /**
+       * modified by leili, 2014/10/04
+       */
+      if ((e.left != null) && (e.left instanceof OpExpr)
+          && (((OpExpr) e.left).oper == OpExpr.SUB)
+          && (left instanceof FuncAppTerm) && right != null) {
+        FuncAppTerm lt = (FuncAppTerm) left;
+        Term rt = (Term) right;
+        if (lt.getArgs() != null && lt.getArgs().length == 2) {
+          term = new FuncAppTerm(BuiltInFunctions.ARRAY_MAT_ELEMENT_NAME,
+              lt.getArgs()[0], lt.getArgs()[1], rt);
+          return term;
+        }
+      }
+      funcname = BuiltInFunctions.ARRAY_MAT_ELEMENT_NAME;
+      break;
     case OpExpr.EQ:
       return new EqualityFormula((Term) left, (Term) right);
     case OpExpr.NEQ:
@@ -1144,32 +1162,6 @@ public class Semant {
             BuiltInTypes.BOOLEAN.getCanonicalTerm(true));
       }
       return new NegFormula((Formula) right);
-    case OpExpr.SUB:
-      Function func;
-      if (left instanceof SymbolTerm) {
-        if (e.right instanceof IntExpr) {
-          String objectname = ((SymbolTerm) left).getName() + '['
-              + ((IntExpr) e.right).value + ']';
-          Function object = getFunction(objectname,
-              Collections.<Type> emptyList());
-          if (object != null)
-            return new FuncAppTerm(object);
-        }
-        Object symbolMapping = model
-            .getFuncsWithName(((SymbolTerm) left).getName()).iterator().next();
-        if (((Function) symbolMapping).getRetType() == BuiltInTypes.REAL_ARRAY) {
-          func = BuiltInFunctions.SUB_REAL_ARRAY;
-        } else if (((Function) symbolMapping).getRetType() == BuiltInTypes.INTEGER_ARRAY) {
-          func = BuiltInFunctions.SUB_INT_ARRAY;
-        } else {
-          func = BuiltInFunctions.SUB_MAT;
-        }
-      } else {
-        // a hack now, need to consider IntegerMatrix as well.
-        func = BuiltInFunctions.SUB_MAT;
-      }
-      term = new FuncAppTerm(func, (ArgSpec) left, (ArgSpec) right);
-      return term;
     case OpExpr.AT:
       if (e.left == null && e.right instanceof IntExpr) {
         Timestep t = Timestep.at(((IntExpr) e.right).value);
@@ -1185,24 +1177,12 @@ public class Semant {
       return null;
     }
 
-    // TODO remove the following lines after testing. (leili)
-    // if (e.left != null)
-    // sig = new FunctionSignature(funcname, leftType, rightType);
-    // else
-    // sig = new FunctionSignature(funcname, rightType);
-    // NonRandomFunction func = BuiltInFunctions.getFunction(sig);
-    // if (func != null) {
+    // TODO typechecking and get the correct function here
     if (e.left != null)
-      // term = new FuncAppTerm(func, (Term) left, (Term) right);
-      term = new FuncAppTerm(funcname, (Term) left, (Term) right);
+      term = new FuncAppTerm(funcname, (ArgSpec) left, (ArgSpec) right);
     else
-      term = new FuncAppTerm(funcname, (Term) right);
+      term = new FuncAppTerm(funcname, (ArgSpec) right);
     return term;
-    // } else {
-    // Util.fatalError("No operator " + funcname + " for operands of type "
-    // + leftType + "," + rightType + "!");
-    // throw new IllegalArgumentException("Cannot perform operation!");
-    // }
   }
 
   /**

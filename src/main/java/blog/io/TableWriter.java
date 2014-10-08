@@ -63,7 +63,7 @@ public class TableWriter extends ResultWriter {
         else
           Collections.sort(entries, WEIGHT_COMPARATOR);
 
-        for (Iterator iter = entries.iterator(); iter.hasNext();) {
+        for (Iterator<?> iter = entries.iterator(); iter.hasNext();) {
           Histogram.Entry entry = (Histogram.Entry) iter.next();
           double prob = histogram.getProb(entry.getElement());
           stream.print("\t");
