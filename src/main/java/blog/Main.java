@@ -201,6 +201,7 @@ public class Main {
         writer.setOutput(outputPath);
       } else {
         writer = new TableWriter();
+        writer.setOutput(System.out);
         writer.setHeader("======== Query Results =========\n"
             + "Number of samples: " + numSamples);
       }
