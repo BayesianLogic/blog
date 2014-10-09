@@ -24,10 +24,10 @@ libraryDependencies += "gov.nist.math" % "jama" % "1.0.3"
 
 libraryDependencies += "com.google.code.gson" % "gson" % "2.2.4"
 
+libraryDependencies += "org.apache.commons" % "commons-math3" % "3.0"
+
 // this one is not required during compilation or running
 libraryDependencies += "de.jflex" % "jflex" % "1.6.0" 
-
-libraryDependencies += "org.apache.commons" % "commons-math3" % "3.0" % "test"
 
 libraryDependencies += "junit" % "junit" % "4.11" % "test"
 

@@ -214,7 +214,6 @@ public class GEM implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
-    checkHasParams();
     return sample_value();
   }
 
@@ -222,6 +221,8 @@ public class GEM implements CondProbDistrib {
    * Samples a GEM distribution using the Stick-Breaking Construction.
    */
   public MatrixLib sample_value() {
+    checkHasParams();
+
     double[][] samples = new double[truncation][1];
     double remain = 1.0;
     Beta beta = new Beta();

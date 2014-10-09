@@ -155,11 +155,11 @@ public class Gamma implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
-    checkHasParams();
     return sample_value();
   }
 
   public double sample_value() {
+    checkHasParams();
     return sample_value(k, lambda);
   }
 
