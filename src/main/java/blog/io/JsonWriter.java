@@ -3,9 +3,7 @@
  */
 package blog.io;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import blog.common.Histogram;
 import blog.model.ArgSpecQuery;
@@ -37,41 +35,44 @@ import com.google.gson.Gson;
  * 
  * @author cberzan
  * @since Jun 9, 2014
+ *
+ * @author leili
+ * @date Oct 8, 2014
+ *       modified according to the new interface
  */
 public class JsonWriter extends ResultWriter {
-  public JsonWriter(final Collection<Query> queries) {
-    super(queries);
-  }
 
-  public JsonWriter(final Query query) {
-    super(query);
+  public JsonWriter() {
+    super();
+    allResults = new ArrayList<Object>();
   }
 
   @Override
-  public void writeResults(PrintStream stream) {
-    // Assemble results into one hierarchical object.
-    // Assumes queries are ArgSpecQuery or subclasses.
-    ArrayList<Object> allResults = new ArrayList<Object>();
-    for (Query query : queries) {
-      Histogram histogram = query.getHistogram();
-      ArrayList<Object> histogramEntries = new ArrayList<Object>();
-      for (Object entry_obj : histogram.entrySet()) {
-        Histogram.Entry entry = (Histogram.Entry) entry_obj;
-        ArrayList<Object> entryPair = new ArrayList<Object>();
-        entryPair.add(entry.getElement().toString());
-        entryPair.add(entry.getLogWeight());
-        histogramEntries.add(entryPair);
-      }
-
-      ArrayList<Object> results = new ArrayList<Object>();
-      results.add(((ArgSpecQuery) query).getArgSpec().toString());
-      results.add(histogramEntries);
-      allResults.add(results);
+  public void writeResult(Query query) {
+    Histogram histogram = query.getHistogram();
+    ArrayList<Object> histogramEntries = new ArrayList<Object>();
+    for (Object entry_obj : histogram.entrySet()) {
+      Histogram.Entry entry = (Histogram.Entry) entry_obj;
+      ArrayList<Object> entryPair = new ArrayList<Object>();
+      entryPair.add(entry.getElement().toString());
+      entryPair.add(entry.getLogWeight());
+      histogramEntries.add(entryPair);
     }
-
-    // Write results to file.
-    Gson gson = new Gson();
-    String json = gson.toJson(allResults);
-    stream.println(json);
+    ArrayList<Object> results = new ArrayList<Object>();
+    results.add(((ArgSpecQuery) query).getArgSpec().toString());
+    results.add(histogramEntries);
+    allResults.add(results);
   }
+
+  @Override
+  public void flush() {
+    if (!allResults.isEmpty()) {
+      Gson gson = new Gson();
+      String json = gson.toJson(allResults);
+      allResults.clear();
+      out.println(json);
+    }
+  }
+
+  protected ArrayList<Object> allResults;
 }

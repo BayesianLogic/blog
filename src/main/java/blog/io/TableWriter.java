@@ -1,15 +1,12 @@
 package blog.io;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
 import blog.common.Histogram;
-import blog.common.Util;
 import blog.model.ArgSpec;
 import blog.model.ArgSpecQuery;
 import blog.model.Model;
@@ -35,46 +32,36 @@ import blog.model.Query;
  * 
  * @author cberzan
  * @since Jun 9, 2014
+ * 
+ * @author leili
+ * @date Oct 8, 2014
+ *       modified according to the new interface
  */
 public class TableWriter extends ResultWriter {
-  public TableWriter(final Collection<Query> queries) {
-    super(queries);
-  }
 
-  public TableWriter(final Query query) {
-    super(query);
+  public TableWriter() {
   }
 
   @Override
-  public void writeResults(PrintStream stream) {
-    if (header != null) {
-      stream.println(header);
-    }
-    for (Query abstractQuery : queries) {
-      if (abstractQuery instanceof ArgSpecQuery) {
-        ArgSpecQuery query = (ArgSpecQuery) abstractQuery;
-        ArgSpec spec = query.getArgSpec();
-        Histogram histogram = query.getHistogram();
-        stream.println("Distribution of values for " + spec);
-        List<?> entries = new ArrayList(histogram.entrySet());
+  public void writeResult(Query query) {
+    ArgSpecQuery q = (ArgSpecQuery) query;
+    ArgSpec spec = q.getArgSpec();
+    Histogram histogram = query.getHistogram();
+    out.println("Distribution of values for " + spec);
+    List<?> entries = new ArrayList(histogram.entrySet());
 
-        if (spec.isNumeric())
-          Collections.sort(entries, NUMERIC_COMPARATOR);
-        else
-          Collections.sort(entries, WEIGHT_COMPARATOR);
+    if (spec.isNumeric())
+      Collections.sort(entries, NUMERIC_COMPARATOR);
+    else
+      Collections.sort(entries, WEIGHT_COMPARATOR);
 
-        for (Iterator<?> iter = entries.iterator(); iter.hasNext();) {
-          Histogram.Entry entry = (Histogram.Entry) iter.next();
-          double prob = histogram.getProb(entry.getElement());
-          stream.print("\t");
-          stream.print(entry.getElement());
-          stream.print("\t");
-          stream.println(prob);
-        }
-      } else {
-        Util.fatalError("Don't know how to print Query of type "
-            + abstractQuery.getClass());
-      }
+    for (Iterator<?> iter = entries.iterator(); iter.hasNext();) {
+      Histogram.Entry entry = (Histogram.Entry) iter.next();
+      double prob = histogram.getProb(entry.getElement());
+      out.print("\t");
+      out.print(entry.getElement());
+      out.print("\t");
+      out.println(prob);
     }
   }
 

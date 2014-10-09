@@ -12,7 +12,6 @@ import blog.model.ArgSpecQuery;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Queries;
-import blog.sample.AfterSamplingListener;
 import blog.sample.ClassicInstantiatingEvalContext;
 import blog.sample.InstantiatingEvalContext;
 import blog.world.PartialWorld;
@@ -51,19 +50,6 @@ public class BLOGUtil {
    */
   public static void ensureDetAndSupported(BayesNetVar var, PartialWorld world) {
     ensureDetAndSupported(Arrays.asList(var), world);
-  }
-
-  /**
-   * Same as {@link #ensureDetAndSupported(BayesNetVar, PartialWorld)}, which a
-   * variable sampling listener.
-   */
-  public static void ensureDetAndSupportedWithListener(Collection vars,
-      PartialWorld world, AfterSamplingListener afterSamplingListener) {
-    ClassicInstantiatingEvalContext context1 = new ClassicInstantiatingEvalContext(
-        world);
-    context1.afterSamplingListener = afterSamplingListener;
-    ClassicInstantiatingEvalContext context = context1;
-    ensureDetAndSupported(vars, context);
   }
 
   /**

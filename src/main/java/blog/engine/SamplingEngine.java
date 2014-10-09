@@ -36,7 +36,6 @@
 package blog.engine;
 
 import java.lang.reflect.Constructor;
-import java.util.Iterator;
 import java.util.Properties;
 
 import blog.BLOGUtil;
@@ -91,9 +90,9 @@ public class SamplingEngine extends InferenceEngine {
     System.out.println("Constructing sampler of class " + samplerClassName);
 
     try {
-      Class samplerClass = Class.forName(samplerClassName);
-      Class[] paramTypes = { Model.class, Properties.class };
-      Constructor constructor = samplerClass.getConstructor(paramTypes);
+      Class<?> samplerClass = Class.forName(samplerClassName);
+      Class<?>[] paramTypes = { Model.class, Properties.class };
+      Constructor<?> constructor = samplerClass.getConstructor(paramTypes);
 
       Object[] args = { model, properties };
       sampler = (Sampler) constructor.newInstance(args);
@@ -122,13 +121,6 @@ public class SamplingEngine extends InferenceEngine {
       numBurnIn = Integer.parseInt(burnInStr);
     } catch (NumberFormatException e) {
       Util.fatalError("Invalid number of burn-in samples: " + burnInStr, false);
-    }
-
-    String reportIntervalStr = properties.getProperty("reportInterval", "500");
-    try {
-      reportInterval = Integer.parseInt(reportIntervalStr);
-    } catch (NumberFormatException e) {
-      Util.fatalError("Invalid report interval: " + reportIntervalStr, false);
     }
   }
 
@@ -169,19 +161,10 @@ public class SamplingEngine extends InferenceEngine {
         printGeneratedWorld(sampler, logWeight);
       }
 
-      if (i != 0 && (i) % queryReportInterval == 0) {
-        // Print query results
-        TableWriter tableWriter = new TableWriter(queries);
-        tableWriter.setHeader("Iteration " + i + ":");
-        tableWriter.writeResults(System.out);
-      }
-
       if (i >= numBurnIn) {
         if (logWeight > Sampler.NEGLIGIBLE_LOG_WEIGHT) {
           // Update statistics to reflect this sample.
-          for (Iterator iter = queries.iterator(); iter.hasNext();) {
-            Query query = ((Query) iter.next());
-
+          for (Query query : queries) {
             // Make sure the new world supports the query variables
             BLOGUtil.ensureDetAndSupported(query.getVariables(),
             // this is not part of the sampler's
@@ -196,7 +179,12 @@ public class SamplingEngine extends InferenceEngine {
         }
       }
 
-      if (reportInterval != -1 && (i + 1) % reportInterval == 0) {
+      if ((i != 0) && (i % queryReportInterval == 0)) {
+        // Print query results
+        TableWriter tableWriter = new TableWriter();
+        tableWriter.setHeader("Iteration " + i + ":");
+        tableWriter.setOutput(System.out);
+        tableWriter.writeAllResults(queries);
         System.out.println("Samples done: " + (i + 1) + ".");
       }
 
@@ -207,11 +195,11 @@ public class SamplingEngine extends InferenceEngine {
     }
 
     sampler.printStats();
+    writer.writeAllResults(queries);
   }
 
   private Sampler sampler;
   private int numSamples;
-  private int reportInterval;
   private int queryReportInterval;
   private int numBurnIn;
 }

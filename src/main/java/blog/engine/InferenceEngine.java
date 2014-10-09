@@ -36,11 +36,11 @@
 package blog.engine;
 
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.Properties;
 
 import blog.common.Util;
+import blog.io.ResultWriter;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.ModelEvidenceQueries;
@@ -73,40 +73,38 @@ public abstract class InferenceEngine {
     String className = properties.getProperty("engineClass",
         "blog.engine.SamplingEngine");
     System.out.println("Constructing inference engine of class " + className);
-
     try {
-      Class engineClass = Class.forName(className);
-      Class[] paramTypes = { Model.class, Properties.class };
-      Constructor constructor = engineClass.getConstructor(paramTypes);
+      Class<?> engineClass = Class.forName(className);
+      Class<?>[] paramTypes = { Model.class, Properties.class };
+      Constructor<?> constructor = engineClass.getConstructor(paramTypes);
 
       Object[] args = { model, properties };
       return (InferenceEngine) constructor.newInstance(args);
     } catch (Exception e) {
       Util.fatalError(e);
     }
-
     return null;
   }
 
   /**
-   * Returns an inference engine of the given class, for given model and
-   * properties.
-   */
-  public static InferenceEngine constructEngine(String engineClassName,
-      Model model, Properties properties) {
-    Properties constructionProperties = new Properties();
-    constructionProperties.putAll(properties);
-    constructionProperties.setProperty("engineClass", engineClassName);
-    return InferenceEngine.constructEngine(model, constructionProperties);
-  }
-
-  /**
    * Creates a new inference engine for the given BLOG model.
+   * This constructor should not be called directly from outside package.
+   * Instead, the factory method {@link #constructEngine(Model, Properties)}
+   * should be used.
    */
-  public InferenceEngine(Model model) {
+  protected InferenceEngine(Model model) {
     this.model = model;
     this.evidence = new Evidence(model);
     this.queries = new Queries(model);
+  }
+
+  /**
+   * setup the resultWriter to print the result.
+   * 
+   * @param rw
+   */
+  public void setResultWriter(ResultWriter rw) {
+    this.writer = rw;
   }
 
   /** Answer queries in <code>meq</code> using its evidence. */
@@ -114,18 +112,15 @@ public abstract class InferenceEngine {
     solve(meq.queries, meq.evidence);
   }
 
-  /** Answer query given evidence. */
-  public void solve(Query query, Evidence evidence) {
-    solve(Arrays.asList(query), evidence);
-  }
-
   /** Answer query given no evidence. */
   public void solve(Query query) {
-    solve(Arrays.asList(query), new Evidence(model));
+    Queries qs = new Queries(model);
+    qs.add(query);
+    solve(qs, new Evidence(model));
   }
 
   /** Answer queries given evidence. */
-  public void solve(List queries, Evidence evidence) {
+  public void solve(Queries queries, Evidence evidence) {
     setEvidence(evidence);
     setQueries(queries);
     answerQueries();
@@ -146,7 +141,7 @@ public abstract class InferenceEngine {
    * @param queries
    *          List of Query objects
    */
-  public void setQueries(List queries) {
+  public void setQueries(Collection<? extends Query> queries) {
     this.queries.clear();
     this.queries.addAll(queries);
   }
@@ -174,4 +169,9 @@ public abstract class InferenceEngine {
    * . This list is empty if <code>setQueries</code> has not been called.
    */
   protected Queries queries = null;
+
+  /**
+   * to print out the results.
+   */
+  protected ResultWriter writer = null;
 }

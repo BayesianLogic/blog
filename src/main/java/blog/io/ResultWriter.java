@@ -3,7 +3,6 @@ package blog.io;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Collection;
-import java.util.Collections;
 
 import blog.common.Util;
 import blog.model.Query;
@@ -16,20 +15,39 @@ import blog.model.Query;
  * 
  * @author cberzan
  * @since Jun 9, 2014
+ * 
+ *        modifying original interfaces
+ * @author leili
+ * @date Oct 8, 2014
  */
 public abstract class ResultWriter {
-  /**
-   * Construct a ResultWriter for the given collection of queries.
-   */
-  public ResultWriter(final Collection<Query> queries) {
-    this.queries = queries;
+
+  public ResultWriter() {
   }
 
   /**
-   * Construct a ResultWriter for a single query.
+   * set output to the underlying PrintStream
+   * 
+   * @param out
    */
-  public ResultWriter(final Query query) {
-    this.queries = Collections.singletonList(query);
+  public void setOutput(PrintStream out) {
+    flush();
+    this.out = out;
+  }
+
+  /**
+   * set output to the underlying file
+   * 
+   * @param outputPath
+   */
+  public void setOutput(String outputPath) {
+    flush();
+    try {
+      out = new PrintStream(new FileOutputStream(outputPath));
+    } catch (Exception e) {
+      System.err.println("Could not write to file: " + outputPath);
+      Util.fatalError(e);
+    }
   }
 
   /**
@@ -40,26 +58,36 @@ public abstract class ResultWriter {
   }
 
   /**
-   * Write the query results to a file at the given path.
-   * 
-   * Overwrites any existing file.
+   * flush the underlying print stream.
+   * Only after flushing, the results are guaranteed written to the underlying
+   * file.
    */
-  public void writeResults(String outputPath) {
-    try {
-      PrintStream stream = new PrintStream(new FileOutputStream(outputPath));
-      writeResults(stream);
-      stream.close();
-    } catch (Exception e) {
-      System.err.println("Could not write to file: " + outputPath);
-      Util.fatalError(e);
-    }
+  public void flush() {
+    // default doing nothing
   }
 
   /**
-   * Write the query results to the given PrintStream.
+   * Write the query results. After writing, the {@link #flush()} method will be
+   * automatically invoked.
+   * 
    */
-  abstract public void writeResults(PrintStream stream);
+  public void writeAllResults(Collection<Query> queries) {
+    if (header != null) {
+      out.println(header);
+    }
+    for (Query q : queries) {
+      writeResult(q);
+    }
+    flush();
+  }
 
-  protected final Collection<Query> queries;
+  /**
+   * write/append single query result to the underlying output stream.
+   * 
+   * @param q
+   */
+  abstract public void writeResult(Query query);
+
+  protected PrintStream out;
   protected String header;
 }

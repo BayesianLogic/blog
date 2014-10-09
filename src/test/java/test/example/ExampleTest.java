@@ -119,8 +119,9 @@ public abstract class ExampleTest {
     engine.answerQueries();
 
     // Print query results
-    TableWriter tableWriter = new TableWriter(queries);
-    tableWriter.writeResults(System.out);
+    TableWriter tableWriter = new TableWriter();
+    tableWriter.setOutput(System.out);
+    tableWriter.writeAllResults(queries);
   }
 
   /**
