@@ -160,11 +160,11 @@ public class Binomial implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
-    checkHasParams();
     return sample_value();
   }
 
   public int sample_value() {
+    checkHasParams();
     return sample_value(n, p);
   }
 

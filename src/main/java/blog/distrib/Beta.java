@@ -165,6 +165,7 @@ public class Beta implements CondProbDistrib {
   }
 
   public double sample_value() {
+    checkHasParams();
     double y = gammaA.sample_value();
     double z = gammaB.sample_value();
     return y / (y + z);

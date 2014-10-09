@@ -250,12 +250,12 @@ public class Multinomial implements CondProbDistrib {
   @Override
   public Object sampleVal() {
     // Modified by yiwu on Oct.8.2014.
-    checkHasParams();
     return sample_value();
   }
 
   /** Samples a value from the multinomial. */
   public ArrayList<Integer> sample_value() {
+    checkHasParams();
     if (n > 3 * k) // Currently it is a heuristic.
       return sample_value_use_binomial();
     else
