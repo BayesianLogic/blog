@@ -48,7 +48,6 @@ public class BlockInstantiatingEvalContextImpl extends
     respVarsAndContexts.put(var, this);
     ClassicInstantiatingEvalContext spawn = new BlockInstantiatingEvalContextImpl(
         world, respVarsAndContexts);
-    spawn.afterSamplingListener = afterSamplingListener;
     DependencyModel.Distrib distrib = var.getDistrib(spawn);
     logProb += spawn.getLogProbability();
     respVarsAndContexts.remove(this);
@@ -74,12 +73,6 @@ public class BlockInstantiatingEvalContextImpl extends
 
     // Actually set value
     world.setValue(var, newValue);
-
-    if (afterSamplingListener != null)
-      afterSamplingListener.evaluate(var, newValue, probForThisValue);
-
-    if (staticAfterSamplingListener != null)
-      staticAfterSamplingListener.evaluate(var, newValue, probForThisValue);
 
     /*
      * if (Util.verbose()) { System.out.println("Instantiated: " + var); }

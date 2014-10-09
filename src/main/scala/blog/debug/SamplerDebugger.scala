@@ -67,8 +67,9 @@ abstract class SamplerDebugger[SampleType <: Sample](
 
   // Print query results so far.
   def printResults {
-    val writer = new blog.io.TableWriter(queries)
-    writer.writeResults(System.out)
+    val writer = new blog.io.TableWriter()
+    writer.setOutput(System.out);
+    writer.writeAllResults(queries);
   }
 
   // Turn verbosity on or off.

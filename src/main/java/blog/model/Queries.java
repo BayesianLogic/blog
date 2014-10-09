@@ -56,6 +56,15 @@ public class Queries extends ArrayList<Query> {
   }
 
   /**
+   * reset the underlying query results, setting to be empty.
+   */
+  public void reset() {
+    for (Query q : this) {
+      q.getHistogram().clear();
+    }
+  }
+
+  /**
    * @return Union of variables that are sufficient to answer the queries.
    */
   public Collection<? extends BayesNetVar> getVariables() {

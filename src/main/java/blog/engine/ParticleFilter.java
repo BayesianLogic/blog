@@ -46,12 +46,10 @@ import java.util.TreeSet;
 
 import blog.DBLOGUtil;
 import blog.common.Util;
-import blog.io.TableWriter;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Queries;
-import blog.model.Query;
-import blog.sample.AfterSamplingListener;
+import blog.model.Type;
 import blog.sample.Sampler;
 import blog.type.Timestep;
 import blog.world.DefaultPartialWorld;
@@ -166,21 +164,17 @@ public class ParticleFilter extends InferenceEngine {
     // We use a TreeSet to remove duplicates and to sort the timesteps.
     // (We can't construct a TreeSet directly because it doesn't accept nulls.)
     TreeSet<Timestep> sortedTimesteps = new TreeSet<Timestep>(nonNullTimesteps);
-    int querySlicesProcessed = 0;
     for (Timestep timestep : sortedTimesteps) {
       if (slicedEvidence.containsKey(timestep)) {
         take(slicedEvidence.get(timestep));
       }
       if (slicedQueries.containsKey(timestep)) {
-        List<Query> currentQueries = slicedQueries.get(timestep);
+        Queries currentQueries = slicedQueries.get(timestep);
         for (Particle particle : particles) {
           particle.answer(currentQueries);
         }
-        querySlicesProcessed++;
-        if (querySlicesProcessed % queryReportInterval == 0) {
-          TableWriter tableWriter = new TableWriter(currentQueries);
-          tableWriter.setHeader("After timestep " + timestep.intValue());
-          tableWriter.writeResults(System.out);
+        if (currentQueries != null) {
+          writer.writeAllResults(currentQueries);
         }
       }
       removePriorTimeSlice(timestep);
@@ -188,10 +182,12 @@ public class ParticleFilter extends InferenceEngine {
 
     // Process atemporal queries (if any) after all the evidence.
     if (slicedQueries.containsKey(null)) {
-      List<Query> currentQueries = slicedQueries.get(null);
+      Queries currentQueries = slicedQueries.get(null);
       for (Particle particle : particles) {
         particle.answer(currentQueries);
       }
+      writer.writeAllResults(currentQueries);
+      currentQueries.reset();
     }
   }
 
@@ -200,7 +196,7 @@ public class ParticleFilter extends InferenceEngine {
    * extensions using specialized particles (don't forget to specialize
    * {@link Particle#copy()} for it to return an object of its own class).
    */
-  protected Particle makeParticle(Set idTypes) {
+  protected Particle makeParticle(Set<? extends Type> idTypes) {
     DefaultPartialWorld world = new DefaultPartialWorld(idTypes);
     return new Particle(particleSampler, world);
   }
@@ -239,9 +235,9 @@ public class ParticleFilter extends InferenceEngine {
     }
 
     double logSumWeights = Double.NEGATIVE_INFINITY;
-    ListIterator particleIt = particles.listIterator();
+    ListIterator<Particle> particleIt = particles.listIterator();
     while (particleIt.hasNext()) {
-      Particle particle = (Particle) particleIt.next();
+      Particle particle = particleIt.next();
       if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
         particleIt.remove();
       } else {
@@ -365,25 +361,12 @@ public class ParticleFilter extends InferenceEngine {
    */
   public TakesEvidenceHandler afterTakesEvidence;
 
-  // END OF EVENT HANDLING
-
-  public AfterSamplingListener getAfterSamplingListener() {
-    return afterSamplingListener;
-  }
-
-  public void setAfterSamplingListener(
-      AfterSamplingListener afterSamplingListener) {
-    this.afterSamplingListener = afterSamplingListener;
-    particleSampler.afterSamplingListener = afterSamplingListener;
-  }
-
-  private Set idTypes; // of Type
+  private Set<Type> idTypes; // of Type
 
   private int numParticles;
   protected List<Particle> particles;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
   private Sampler particleSampler;
-  private AfterSamplingListener afterSamplingListener;
   private int queryReportInterval;
   private double dataLogLik; // log likelihood of the data
 }

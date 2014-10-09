@@ -134,18 +134,6 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
     return logProb;
   }
 
-  /**
-   * A listener of the type {@link AfterSamplingListener} invoked after each
-   * time a variable is instantiated (sampled).
-   */
-  public AfterSamplingListener afterSamplingListener;
-
-  /**
-   * A <b>static</b> listener of the type {@link AfterSamplingListener} invoked
-   * after each time a variable is instantiated (sampled).
-   */
-  public static AfterSamplingListener staticAfterSamplingListener;
-
   protected Object instantiate(VarWithDistrib var) {
     var.ensureStable();
 
@@ -163,7 +151,6 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
     respVarsAndContexts.put(var, this);
     ClassicInstantiatingEvalContext spawn = new ClassicInstantiatingEvalContext(
         world, respVarsAndContexts);
-    spawn.afterSamplingListener = afterSamplingListener;
     DependencyModel.Distrib distrib = var.getDistrib(spawn);
     logProb += spawn.getLogProbability();
     respVarsAndContexts.remove(var);
@@ -188,14 +175,6 @@ public class ClassicInstantiatingEvalContext extends ParentRecEvalContext
 
     // Actually set value
     world.setValue(var, newValue);
-
-    if (afterSamplingListener != null) {
-      afterSamplingListener.evaluate(var, newValue, logProbForThisValue);
-    }
-
-    if (staticAfterSamplingListener != null) {
-      staticAfterSamplingListener.evaluate(var, newValue, logProbForThisValue);
-    }
 
     /*
      * if (Util.verbose()) { System.out.println("Instantiated: " + var); }

@@ -94,14 +94,7 @@ public class ModularLWSampler extends LWSampler {
 
     if (!evidence.isTrue(curWorld))
       latestSampleLogWeight = Double.NEGATIVE_INFINITY;
-    BLOGUtil.ensureDetAndSupportedWithListener(queryVars, curWorld,
-        afterSamplingListener);
-
-    // if (Util.verbose()) {
-    // System.out.println("Generated world:");
-    // curWorld.print(System.out);
-    // System.out.println("Log weight: " + latestSampleLogWeight);
-    // }
+    BLOGUtil.ensureDetAndSupported(queryVars, curWorld);
 
     // FIXME: remove duplication with LWSampler
     ++totalNumSamples;
