@@ -72,6 +72,7 @@ import blog.model.Model;
 import blog.model.NonGuaranteedObject;
 import blog.model.POP;
 import blog.model.RandomFunction;
+import blog.model.Type;
 import blog.objgen.AbstractObjectSet;
 import blog.objgen.ObjectIterator;
 import blog.objgen.ObjectSet;
@@ -1126,5 +1127,5 @@ public abstract class AbstractPartialWorld implements PartialWorld {
 
   protected List listeners = new ArrayList(); // of WorldListener
 
-  protected Set idTypes;
+  protected Set<? extends Type> idTypes;
 }

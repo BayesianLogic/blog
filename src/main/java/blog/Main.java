@@ -59,6 +59,7 @@ import blog.common.cmdline.StringListOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.InferenceEngine;
 import blog.io.JsonWriter;
+import blog.io.ResultWriter;
 import blog.io.TableWriter;
 import blog.model.Evidence;
 import blog.model.Model;
@@ -193,26 +194,23 @@ public class Main {
       engine.setEvidence(evidence);
       engine.setQueries(queries);
 
+      ResultWriter writer = null;
+      // Write query results to file, in JSON format.
+      if (outputPath != null) {
+        writer = new JsonWriter();
+        writer.setOutput(outputPath);
+      } else {
+        writer = new TableWriter();
+        writer.setHeader("======== Query Results =========\n"
+            + "Number of samples: " + numSamples);
+      }
+      engine.setResultWriter(writer);
       engine.answerQueries();
       timer.stop();
-
-      // Print query results
-      TableWriter tableWriter = new TableWriter(queries);
-      tableWriter.setHeader("======== Query Results =========\n"
-          + "Number of samples: " + numSamples);
-      tableWriter.writeResults(System.out);
       System.out.print("Total elapsed time: ");
       System.out.print(timer.elapsedTime());
       System.out.println("s");
       System.out.println("======== Done ========");
-
-      // Write query results to file, in JSON format.
-      if (outputPath != null) {
-        System.out.println("Writing query results to " + outputPath + "...");
-        JsonWriter jsonWriter = new JsonWriter(queries);
-        jsonWriter.writeResults(outputPath);
-        System.out.println("Done.");
-      }
     }
 
   }
