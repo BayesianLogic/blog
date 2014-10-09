@@ -300,7 +300,8 @@ public class ParticleFilter extends InferenceEngine {
      * Use systematic resample scheme
      */
     double ratio = sumWeights / numParticles;
-    double basis = 0, sampleKey;
+    double basis = 0;
+    double sampleKey = 0;
     int selection = 0;
     for (int i = 0; i < numParticles; i++) {
       sampleKey = basis + Util.random() * ratio;

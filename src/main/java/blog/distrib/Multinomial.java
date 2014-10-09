@@ -251,14 +251,19 @@ public class Multinomial implements CondProbDistrib {
   public Object sampleVal() {
     // Modified by yiwu on Oct.8.2014.
     checkHasParams();
-    if (n > 3 * k) // Currently it is a heuristic.
-      return sample_value_use_binomial();
-    else
-      return sample_value();
+    return sample_value();
   }
 
   /** Samples a value from the multinomial. */
   public ArrayList<Integer> sample_value() {
+    if (n > 3 * k) // Currently it is a heuristic.
+      return sample_value_use_binomial();
+    else
+      return sample_value_use_bsearch();
+  }
+
+  /** Samples a value from the multinomial. */
+  private ArrayList<Integer> sample_value_use_bsearch() {
     ArrayList<Integer> result = new ArrayList<Integer>(k);
     for (int i = 0; i < k; i++) {
       result.add(0);
@@ -281,7 +286,7 @@ public class Multinomial implements CondProbDistrib {
    * chapter 2.2 of
    * http://www.sciencedirect.com/science/article/pii/016794739390115A
    */
-  public ArrayList<Integer> sample_value_use_binomial() {
+  private ArrayList<Integer> sample_value_use_binomial() {
     BinomialDistribution binom = null;
     int cur = 0;
     double cdf = 0;
