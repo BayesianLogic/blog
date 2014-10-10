@@ -175,6 +175,7 @@ public class ParticleFilter extends InferenceEngine {
         }
         if (currentQueries != null) {
           writer.writeAllResults(currentQueries);
+          currentQueries.reset();
         }
       }
       removePriorTimeSlice(timestep);
