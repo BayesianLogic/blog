@@ -102,7 +102,7 @@ public class Particle {
 
   /**
    * remove all the temporal variables in this particle (possible world) that
-   * are prior to the specified timestep
+   * are prior to the specified timestep (not including the current timestep)
    * 
    * @param timestep
    */

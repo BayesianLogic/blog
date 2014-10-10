@@ -39,7 +39,7 @@ public class DBLOGUtil {
     while (varIt.hasNext()) {
       BasicVar var = (BasicVar) varIt.next();
       Timestep timestep = var.maxTimestep();
-      if (timestep != null && timestep != largest) {
+      if (timestep != null && timestep.compareTo(largest) < 0) {
         world.setValue(var, null);
       }
     }
