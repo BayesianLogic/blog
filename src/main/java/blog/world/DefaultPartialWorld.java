@@ -35,60 +35,55 @@
 
 package blog.world;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Set;
 
-import blog.common.DGraph;
-import blog.common.DefaultDGraph;
+import blog.bn.BasicVar;
 import blog.common.HashMapWithPreimages;
 import blog.common.HashMultiMap;
 import blog.common.IndexedHashMultiMap;
-import blog.common.IndexedMultiMap;
-import blog.common.MultiMap;
-import blog.bn.BasicVar;
-import blog.bn.DefaultCBN;
-
 
 /**
  * Straightforward implementation of AbstractPartialWorld.
  */
 public class DefaultPartialWorld extends AbstractPartialWorld implements
-		Cloneable {
+    Cloneable {
 
-	/**
-	 * Creates a new DefaultPartialWorld with no instantiated variables. This
-	 * world will not use object identifiers for any types.
-	 */
-	public DefaultPartialWorld() {
-		this(Collections.EMPTY_SET);
-	}
+  /**
+   * Creates a new DefaultPartialWorld with no instantiated variables. This
+   * world will not use object identifiers for any types.
+   */
+  public DefaultPartialWorld() {
+    this(Collections.EMPTY_SET);
+  }
 
-	/**
-	 * Creates a new DefaultPartialWorld with no instantiated variables and no
-	 * identifiers.
-	 * 
-	 * @param idTypes
-	 *          Set of Type objects for types that will be represented with object
-	 *          identifiers
-	 */
-	public DefaultPartialWorld(Set idTypes) {
-		super(idTypes);
-		basicVarToValue = new HashMap();
+  /**
+   * Creates a new DefaultPartialWorld with no instantiated variables and no
+   * identifiers.
+   * 
+   * @param idTypes
+   *          Set of Type objects for types that will be represented with object
+   *          identifiers
+   */
+  public DefaultPartialWorld(Set idTypes) {
+    super(idTypes, null);
+    basicVarToValue = new HashMap();
     nameToBasicVar = new HashMap<String, BasicVar>();
-		objToUsesAsValue = new HashMultiMap();
-		objToUsesAsArg = new HashMultiMap();
-		assertedIdToPOPApp = new HashMap();
-		popAppToAssertedIds = new IndexedHashMultiMap();
-		commIdToPOPApp = new HashMap();
-		popAppToCommIds = new IndexedHashMultiMap();
-        cbn = new DefaultCBN();
-		varToUninstParent = new HashMapWithPreimages();
-		varToLogProb = new HashMap();
-		derivedVarToValue = new HashMap();
-	}
+    objToUsesAsValue = new HashMultiMap();
+    objToUsesAsArg = new HashMultiMap();
+    assertedIdToPOPApp = new HashMap();
+    popAppToAssertedIds = new IndexedHashMultiMap();
+    commIdToPOPApp = new HashMap();
+    popAppToCommIds = new IndexedHashMultiMap();
+    varToUninstParent = new HashMapWithPreimages();
+    varToLogProb = new HashMap();
+    derivedVarToValue = new HashMap();
+  }
 
-	public Object clone() {
-		DefaultPartialWorld newWorld = new DefaultPartialWorld();
-		cloneFields(newWorld);
-		return newWorld;
-	}
+  public Object clone() {
+    DefaultPartialWorld newWorld = new DefaultPartialWorld();
+    cloneFields(newWorld);
+    return newWorld;
+  }
 }

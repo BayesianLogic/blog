@@ -89,10 +89,12 @@ public abstract class AbstractPartialWorld implements PartialWorld {
    * 
    * @param idTypes
    *          Set of Type objects
+   * @param cbn
+   *          The underlying CBN class (can be null if no need to use CBN)
    */
-  public AbstractPartialWorld(Set idTypes) {
+  public AbstractPartialWorld(Set idTypes, CBN cbn) {
     this.idTypes = new HashSet(idTypes);
-    this.cbn = new DefaultCBN();
+    this.cbn = cbn;
   }
 
   public Set getInstantiatedVars() {
@@ -112,7 +114,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
       return commIdToPOPApp.get(((OriginVar) var).getIdentifier());
     }
     if (var instanceof DerivedVar) {
-      if (cbn.nodes().contains(var)) {
+      if (cbn != null && cbn.nodes().contains(var)) {
         updateParentsAndProbs();
         return derivedVarToValue.get(var);
       }
@@ -147,6 +149,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
       basicVarToValue.remove(var);
       varToUninstParent.remove(var);
       nameToBasicVar.remove(var.toString());
+      varToLogProb.remove(var);
     } else {
       // checkIdentifiers(var, value); // allow any identifiers
       basicVarToValue.put(var, value);
@@ -321,7 +324,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
     popAppToAssertedIds.add(newPOPApp, id);
 
     OriginVar originVar = new OriginVar(id);
-    if (cbn.nodes().contains(originVar)) {
+    if ((cbn != null) && cbn.nodes().contains(originVar)) {
       dirtyVars.add(originVar); // so children are updated
     }
 
@@ -404,7 +407,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
   }
 
   public boolean addDerivedVar(DerivedVar var) {
-    if (cbn.addNode(var)) {
+    if ((cbn != null) && cbn.addNode(var)) {
       derivedVarToValue.put(var, PartialWorld.UNDET);
       dirtyVars.add(var);
       return true;
@@ -413,7 +416,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
   }
 
   public boolean removeDerivedVar(DerivedVar var) {
-    if (cbn.removeNode(var)) {
+    if ((cbn != null) && cbn.removeNode(var)) {
       derivedVarToValue.remove(var);
       dirtyVars.remove(var);
       return true;
@@ -814,7 +817,9 @@ public abstract class AbstractPartialWorld implements PartialWorld {
             .put(var, (value == null) ? PartialWorld.UNDET : value);
       }
 
-      cbn.setParents(var, context.getParents());
+      if (cbn != null) {
+        cbn.setParents(var, context.getParents());
+      }
       if (context.getLatestUninstParent() == null) {
         varToUninstParent.remove(var);
       } else {
@@ -839,8 +844,9 @@ public abstract class AbstractPartialWorld implements PartialWorld {
         throw new IllegalArgumentException("Need parents for variable " + var
             + ", which is not in given Bayes net.");
       }
-      cbn.setParents(var, givenParents);
-
+      if (cbn != null) {
+        cbn.setParents(var, givenParents);
+      }
       BasicVar uninstParent = (BasicVar) givenVarUninstParents.get(var);
       if (uninstParent == null) {
         varToUninstParent.remove(var);
@@ -883,7 +889,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
     Set dirtyVarChildren = new LinkedHashSet();
     for (Iterator iter = dirtyVars.iterator(); iter.hasNext();) {
       BayesNetVar dirtyVar = (BayesNetVar) iter.next();
-      Set thisVarChildren = cbn.getChildren(dirtyVar);
+      Set thisVarChildren = cbn == null ? null : cbn.getChildren(dirtyVar);
       if (thisVarChildren != null) {
         dirtyVarChildren.addAll(thisVarChildren);
       }
@@ -895,12 +901,15 @@ public abstract class AbstractPartialWorld implements PartialWorld {
       BayesNetVar var = (BayesNetVar) iter.next();
       if ((var instanceof BasicVar) && (basicVarToValue.get(var) == null)) {
         // var has been uninstantiated
-        cbn.removeNode(var);
-        varToLogProb.remove(var);
+        if (cbn != null) {
+          cbn.removeNode(var);
+        }
       } else if ((var instanceof OriginVar)
           && (assertedIdToPOPApp.get(((OriginVar) var).getIdentifier()) == null)) {
         // identifier has been removed
-        cbn.removeNode(var);
+        if (cbn != null) {
+          cbn.removeNode(var);
+        }
       } else {
         // node still belongs in Bayes net
         updater.updateVarInfo(var);
@@ -1031,7 +1040,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
     newWorld.popAppToAssertedIds = new IndexedHashMultiMap(popAppToAssertedIds);
     newWorld.commIdToPOPApp = (Map) ((HashMap) commIdToPOPApp).clone();
     newWorld.popAppToCommIds = new IndexedHashMultiMap(popAppToCommIds);
-    newWorld.cbn = (CBN) ((DefaultCBN) cbn).clone();
+    newWorld.cbn = (cbn == null) ? null : (CBN) ((DefaultCBN) cbn).clone();
     newWorld.varToUninstParent = (MapWithPreimages) ((HashMapWithPreimages) varToUninstParent)
         .clone();
     newWorld.varToLogProb = (Map) ((HashMap) varToLogProb).clone();
