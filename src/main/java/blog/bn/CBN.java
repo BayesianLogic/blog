@@ -36,6 +36,7 @@
 package blog.bn;
 
 import blog.common.DGraph;
+import blog.world.PartialWorld;
 
 /**
  * A contingent bayes net (CBN) contains a set of random variables V. For each
@@ -43,16 +44,23 @@ import blog.common.DGraph;
  * tree T_X. The decision tree is a binary tree where each node is a predicate
  * on some subset of V. Each leaf of T_X is a probability distribution
  * parametrized by a subset of V. (Summarized from Arora et. al, UAI-10)
- *
- * TODO: As the requirements for CBNs become clearer, add actual methods here
- *
- * @author rbharath
- * @date Aug 11, 2012
+ * 
+ * @author Da Tang
+ * @since Sep 07, 2014
  */
 
-public interface CBN extends DGraph { 
-	/**
-	 * An empty CBN
-	 */
-	static final CBN EMPTY_CBN = new DefaultCBN();
+public interface CBN extends DGraph {
+  /**
+   * An empty CBN
+   */
+  static final CBN EMPTY_CBN = new DefaultCBN();
+
+  /**
+   * Calculating whether an edge Y -> Z is contingent on variable X or not in
+   * the
+   * PartialWorld or not.
+   * 
+   */
+  boolean isContingentOn(PartialWorld world, BayesNetVar X, BayesNetVar Y,
+      BayesNetVar Z);
 }

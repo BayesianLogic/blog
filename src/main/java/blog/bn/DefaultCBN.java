@@ -37,27 +37,76 @@ package blog.bn;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 import blog.common.DefaultDGraph;
-import blog.common.DefaultDGraph.NodeInfo;
+import blog.common.Util;
+import blog.sample.TraceParentRecEvalContext;
+import blog.world.PartialWorld;
 
 /**
- * This class provides a default implementation of CBNs. Over the next few weeks,
- * all inference algorithms will be modified to use CBNs.
+ * This class provides a default implementation of CBNs.
+ * Uses a DefaultCBN rather than a DefaultDGraph, so as to avoid
+ * ClassCastExceptions.
+ * 
+ * @author Da Tang
+ * @since Sep 7, 2014
  */
 
 public class DefaultCBN extends DefaultDGraph implements CBN {
-	/**
-	 * Uses a DefaultCBN rather than a DefaultDGraph, so as to avoid ClassCastExceptions
-	 */
-	public Object clone() {
-		DefaultCBN clone = new DefaultCBN();
-		clone.nodeInfo = (Map) ((HashMap) nodeInfo).clone();
-		for (Iterator iter = clone.nodeInfo.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry entry = (Map.Entry) iter.next();
-			entry.setValue(((NodeInfo) entry.getValue()).clone());
-		}
-		return clone;
-	}
+  /**
+   * clone method for the class Default CBN.
+   */
+  public Object clone() {
+    DefaultCBN clone = new DefaultCBN();
+    clone.nodeInfo = (Map) ((HashMap) nodeInfo).clone();
+    for (Iterator iter = clone.nodeInfo.entrySet().iterator(); iter.hasNext();) {
+      Map.Entry entry = (Map.Entry) iter.next();
+      entry.setValue(((NodeInfo) entry.getValue()).clone());
+    }
+    return clone;
+  }
+
+  @Override
+  public boolean isContingentOn(PartialWorld world, BayesNetVar X,
+      BayesNetVar Y, BayesNetVar Z) {
+    TraceParentRecEvalContext context = new TraceParentRecEvalContext(world);
+    if (Z instanceof VarWithDistrib) {
+      ((VarWithDistrib) Z).getDistrib(context);
+    } else if (Z instanceof DerivedVar) {
+      ((DerivedVar) Z).getValue(context);
+    } else {
+      return true;
+    }
+
+    LinkedList<BayesNetVar> parentTrace = new LinkedList<BayesNetVar>();
+    parentTrace.addAll(context.getParentTrace());
+
+    int x = parentTrace.indexOf(X), y = parentTrace.indexOf(Y);
+    if (x < 0 || y < 0) {
+      return false;
+    }
+    if (X instanceof NumberVar) {
+      if (x < y && world.getCBN().getAncestors(Y).contains(X)) {
+        if (Util.verbose()) {
+          System.out.println("\t Contingent relations type 1: " + X.toString()
+              + " " + Y.toString() + " " + Z.toString());
+        }
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (x < y) {
+        if (Util.verbose()) {
+          System.out.println("\t Contingent relations type 2: " + X.toString()
+              + " " + Y.toString() + " " + Z.toString());
+        }
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
 }

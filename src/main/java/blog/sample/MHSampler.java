@@ -307,7 +307,7 @@ public class MHSampler extends Sampler {
     return logProbRatio;
   }
 
-  private double computeLogMultRatio(PartialWorld savedWorld,
+  public double computeLogMultRatio(PartialWorld savedWorld,
       PartialWorldDiff proposedWorld) {
     double logMultRatio = 0;
 

@@ -41,7 +41,9 @@ import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Set;
 
+import blog.bn.BasicVar;
 import blog.bn.BayesNetVar;
+import blog.bn.DerivedVar;
 import blog.bn.VarWithDistrib;
 import blog.common.Util;
 import blog.distrib.CondProbDistrib;
@@ -148,43 +150,241 @@ public class GenericProposer extends AbstractProposer {
     }
 
     // Remove barren variables
-    LinkedList newlyBarren = new LinkedList(world.getNewlyBarrenVars());
-    while (!newlyBarren.isEmpty()) {
-      BayesNetVar var = (BayesNetVar) newlyBarren.removeFirst();
-      if (!evidenceVars.contains(var) && !queryVars.contains(var)) {
-
-        // Remember its parents.
-        Set parentSet = world.getCBN().getParents(var);
-
-        if (var instanceof VarWithDistrib) {
-          // Multiply in the probability of sampling this
-          // variable again. Since the parent value may have
-          // changed, must use the old world.
-          logProbBackward += world.getSaved().getLogProbOfValue(var);
-
-          // Uninstantiate
-          world.setValue((VarWithDistrib) var, null);
-        }
-
-        // Check to see if its parents are now barren.
-        for (Iterator parentIter = parentSet.iterator(); parentIter.hasNext();) {
-
-          // If parent is barren, add to the end of this
-          // linked list. Note that if a parent has two
-          // barren children, it will only be added to the
-          // end of the list once, when the last child is
-          // considered.
-          BayesNetVar parent = (BayesNetVar) parentIter.next();
-          if (world.getCBN().getChildren(parent).isEmpty())
-            newlyBarren.addLast(parent);
-        }
+    Set evidenceAndQueryVars = new HashSet();
+    for (Iterator iter = evidenceVars.iterator(); iter.hasNext();) {
+      BayesNetVar curVar = (BayesNetVar) iter.next();
+      if (curVar instanceof BasicVar) {
+        evidenceAndQueryVars.add(curVar);
+      } else if (curVar instanceof DerivedVar) {
+        evidenceAndQueryVars.addAll(curVar.getParents(world));
       }
     }
+    for (Iterator iter = queryVars.iterator(); iter.hasNext();) {
+      BayesNetVar curVar = (BayesNetVar) iter.next();
+      if (curVar instanceof BasicVar) {
+        evidenceAndQueryVars.add(curVar);
+      } else if (curVar instanceof DerivedVar) {
+        evidenceAndQueryVars.addAll(curVar.getParents(world));
+      }
+    }
+    boolean OK;
+    do {
+      OK = true;
+      for (Iterator iter = world.getInstantiatedVars().iterator(); iter
+          .hasNext();) {
+        BasicVar curVar = (BasicVar) iter.next();
+        PartialWorldDiff tmpWorld = new PartialWorldDiff(world);
+        tmpWorld.setValue(curVar, null);
+        if (evidenceAndQueriesAreSupported(evidenceAndQueryVars, tmpWorld)) {
+          world.setValue(curVar, null);
+          OK = false;
+          logProbBackward += world.getSaved().getLogProbOfValue(curVar);
+        }
+      }
+    } while (!OK);
 
     // Uniform sampling from new world.
     logProbBackward += (-Math.log(world.getInstantiatedVars().size()
         - numBasicEvidenceVars));
     return (logProbBackward - logProbForward);
+  }
+
+  /**
+   * Proposes a next state for the Markov chain given the current state. The
+   * proposedWorld argument is a PartialWorldDiff that the proposer can modify
+   * to create the proposal; the saved version of this PartialWorldDiff is the
+   * state before the proposal. Returns the log proposal ratio: log (q(x | x') /
+   * q(x' | x))
+   */
+  public double proposeNextState(PartialWorldDiff world,
+      VarWithDistrib varToSample) {
+    if (evidence == null) {
+      throw new IllegalStateException(
+          "initialize() has not been called on proposer.");
+    }
+
+    logProbForward = 0;
+    logProbBackward = 0;
+
+    PickVarToSampleResult result = pickVarToSample(world);
+    chosenVar = varToSample;
+
+    if (result.varToSample == null)
+      return 1.0;
+
+    if (Util.verbose())
+      System.out.println("  sampling " + varToSample);
+
+    // Multiply in the probability of this uniform sample.
+    logProbForward += (-Math.log(result.numberOfChoices));
+
+    if (Util.verbose()) {
+      System.out.println("GenericProposer: world right before sampling"
+          + " new value for " + varToSample + ".\n");
+      System.out.println(world);
+    }
+
+    // Sample value for variable and update forward and backward probs
+    sampleValue(varToSample, world);
+
+    if (Util.verbose()) {
+      System.out.println("GenericProposer: world right before getting"
+          + " newly barren vars.\n");
+      System.out.println(world);
+    }
+
+    // Remove barren variables
+    Set evidenceAndQueryVars = new HashSet();
+    for (Iterator iter = evidenceVars.iterator(); iter.hasNext();) {
+      BayesNetVar curVar = (BayesNetVar) iter.next();
+      if (curVar instanceof BasicVar) {
+        evidenceAndQueryVars.add(curVar);
+      } else if (curVar instanceof DerivedVar) {
+        evidenceAndQueryVars.addAll(curVar.getParents(world));
+      }
+    }
+    for (Iterator iter = queryVars.iterator(); iter.hasNext();) {
+      BayesNetVar curVar = (BayesNetVar) iter.next();
+      if (curVar instanceof BasicVar) {
+        evidenceAndQueryVars.add(curVar);
+      } else if (curVar instanceof DerivedVar) {
+        evidenceAndQueryVars.addAll(curVar.getParents(world));
+      }
+    }
+    boolean OK;
+    do {
+      OK = true;
+      for (Iterator iter = world.getInstantiatedVars().iterator(); iter
+          .hasNext();) {
+        BasicVar curVar = (BasicVar) iter.next();
+        PartialWorldDiff tmpWorld = new PartialWorldDiff(world);
+        tmpWorld.setValue(curVar, null);
+        if (evidenceAndQueriesAreSupported(evidenceAndQueryVars, tmpWorld)) {
+          world.setValue(curVar, null);
+          OK = false;
+          logProbBackward += world.getSaved().getLogProbOfValue(curVar);
+        }
+      }
+    } while (!OK);
+
+    // Uniform sampling from new world.
+    logProbBackward += (-Math.log(world.getInstantiatedVars().size()
+        - numBasicEvidenceVars));
+    return (logProbBackward - logProbForward);
+  }
+
+  /**
+   * Proposes a next state for the Markov chain given the current state and the
+   * current value. This method is written for Gibbs Sampler and therefore we
+   * need to pass the objective value for the sampled variable. The method
+   * returns the log probability of \log\frac{\Pr[var|\mathcal
+   * \sigma_{T_{var}^{var=value}]}}{|V(var)|}, which is the part of Gibbs weight
+   * no related to the core variable set. The other part will be computed in the
+   * Gibbs Sampler itself.
+   * 
+   */
+  public double proposeNextState(PartialWorldDiff world, BayesNetVar var,
+      Object value) {
+    if (evidence == null) {
+      throw new IllegalStateException(
+          "initialize() has not been called on proposer.");
+    }
+
+    logProbGibbs = 0;
+
+    if (!(var instanceof VarWithDistrib)) {
+      throw new IllegalStateException(
+          "Try to sample a non-distribution variable in Gibbs Sampling.");
+    }
+
+    // Sample value for variable and update forward and backward probs
+    sampleValue((VarWithDistrib) var, value, world);
+
+    if (Util.verbose()) {
+      System.out.println("GenericProposer: world right before getting"
+          + " newly barren vars.\n");
+      System.out.println(world);
+    }
+
+    Set evidenceAndQueryVars = new HashSet();
+    for (Iterator iter = evidenceVars.iterator(); iter.hasNext();) {
+      BayesNetVar curVar = (BayesNetVar) iter.next();
+      if (curVar instanceof BasicVar) {
+        evidenceAndQueryVars.add(curVar);
+      } else if (curVar instanceof DerivedVar) {
+        evidenceAndQueryVars.addAll(curVar.getParents(world));
+      }
+    }
+    for (Iterator iter = queryVars.iterator(); iter.hasNext();) {
+      BayesNetVar curVar = (BayesNetVar) iter.next();
+      if (curVar instanceof BasicVar) {
+        evidenceAndQueryVars.add(curVar);
+      } else if (curVar instanceof DerivedVar) {
+        evidenceAndQueryVars.addAll(curVar.getParents(world));
+      }
+    }
+    boolean OK;
+    do {
+      OK = true;
+      for (Iterator iter = world.getInstantiatedVars().iterator(); iter
+          .hasNext();) {
+        BasicVar curVar = (BasicVar) iter.next();
+        PartialWorldDiff tmpWorld = new PartialWorldDiff(world);
+        tmpWorld.setValue(curVar, null);
+        if (evidenceAndQueriesAreSupported(evidenceAndQueryVars, tmpWorld)) {
+          world.setValue(curVar, null);
+          OK = false;
+          logProbBackward += world.getSaved().getLogProbOfValue(curVar);
+        }
+      }
+    } while (!OK);
+
+    // Uniform sampling from new world.
+    logProbGibbs += (-Math.log(world.getInstantiatedVars().size()
+        - numBasicEvidenceVars));
+    return logProbGibbs;
+  }
+
+  /**
+   * Check whether the set of evidence and queries are all supported or not in
+   * the given partial world. Also check whether the world is self-supported or
+   * not. Returns true if all the evidence and queries are supported and also
+   * the world is self-supported.
+   * 
+   */
+  protected boolean evidenceAndQueriesAreSupported(Set evidenceAndQueries,
+      PartialWorld world) {
+    PartialWorldDiff tmpWorld = new PartialWorldDiff(world);
+    for (Iterator iter = evidenceAndQueries.iterator(); iter.hasNext();) {
+      BasicVar var = (BasicVar) iter.next();
+      if (!tmpWorld.isInstantiated(var)) {
+        return false;
+      }
+      TraceParentRecEvalContext context = new TraceParentRecEvalContext(
+          tmpWorld);
+      if (var instanceof VarWithDistrib) {
+        ((VarWithDistrib) var).getDistrib(context);
+        if (context.getNumCalculateNewVars() > 0) {
+          return false;
+        }
+      }
+    }
+    for (Iterator iter = tmpWorld.getInstantiatedVars().iterator(); iter
+        .hasNext();) {
+      BasicVar var = (BasicVar) iter.next();
+      if (!tmpWorld.isInstantiated(var)) {
+        return false;
+      }
+      TraceParentRecEvalContext context = new TraceParentRecEvalContext(
+          tmpWorld);
+      if (var instanceof VarWithDistrib) {
+        ((VarWithDistrib) var).getDistrib(context);
+        if (context.getNumCalculateNewVars() > 0) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   // Samples a new value for the given variable (which must be
@@ -195,8 +395,10 @@ public class GenericProposer extends AbstractProposer {
   // updates the logProbForward and logProbBackward variables.
   protected void sampleValue(VarWithDistrib varToSample, PartialWorld world) {
     // Save child set before graph becomes out of date
-    Set children = world.getCBN().getChildren(varToSample);
-
+    Set children = new HashSet();
+    children.addAll(world.getCBN().getChildren(varToSample));
+    children.addAll(evidenceVars);
+    children.addAll(queryVars);
     DependencyModel.Distrib distrib = varToSample
         .getDistrib(new DefaultEvalContext(world, true));
     CondProbDistrib cpd = distrib.getCPD();
@@ -217,14 +419,92 @@ public class GenericProposer extends AbstractProposer {
 
     for (Iterator childrenIter = children.iterator(); childrenIter.hasNext();) {
       BayesNetVar child = (BayesNetVar) childrenIter.next();
-      if (!world.isInstantiated(child)) // NOT SURE YET THIS IS THE RIGHT THING
-                                        // TO DO! CHECKING WITH BRIAN.
+      if (!world.isInstantiated(child) && !(child instanceof DerivedVar))
         continue;
       child.ensureDetAndSupported(instantiator);
     }
 
     logProbForward += instantiator.getLogProbability();
   }
+
+  protected void sampleValue(VarWithDistrib varToSample, Object value,
+      PartialWorld world) {
+    // Save child set before graph becomes out of date
+    Set children = new HashSet();
+    children.addAll(world.getCBN().getChildren(varToSample));
+    children.addAll(evidenceVars);
+    children.addAll(queryVars);
+    world.setValue(varToSample, value);
+    logProbGibbs += varToSample.getDistrib(new DefaultEvalContext(world, true))
+        .getCPD().getLogProb(value);
+
+    // Make the world self-supporting. The only variables whose active
+    // parent sets could have changed are the children of varToSample.
+    ClassicInstantiatingEvalContext instantiator = new ClassicInstantiatingEvalContext(
+        world);
+
+    for (Iterator childrenIter = children.iterator(); childrenIter.hasNext();) {
+      BayesNetVar child = (BayesNetVar) childrenIter.next();
+
+      if (!world.isInstantiated(child) && !(child instanceof DerivedVar))
+        continue;
+
+      child.ensureDetAndSupported(instantiator);
+    }
+  }
+
+  /**
+   * Reduce the current partial world to the core. That is, only leave the core
+   * variables and the sampled variable instantiated and uninstantiate the other
+   * variables.
+   */
+  public PartialWorldDiff reduceToCore(PartialWorld curWorld, BayesNetVar var) {
+    if (!(var instanceof BasicVar) || !curWorld.isInstantiated(var)) {
+      throw new IllegalStateException(
+          "Sampled variable is not an instantiated BasicVar.");
+    }
+    LinkedList coreBFS = new LinkedList();
+    Set core = new HashSet();
+    for (Iterator iter = evidenceVars.iterator(); iter.hasNext();) {
+      BayesNetVar curVar = (BayesNetVar) iter.next();
+      if (!coreBFS.contains(curVar))
+        coreBFS.addLast(curVar);
+    }
+    for (Iterator iter = queryVars.iterator(); iter.hasNext();) {
+      BayesNetVar curVar = (BayesNetVar) iter.next();
+      if (!coreBFS.contains(curVar))
+        coreBFS.addLast(curVar);
+    }
+    while (!coreBFS.isEmpty()) {
+      BayesNetVar curVar = (BayesNetVar) coreBFS.removeFirst();
+      if (curVar instanceof BasicVar) {
+        if (curWorld.isInstantiated(curVar)) {
+          core.add(curVar);
+        }
+      } else if (!(curVar instanceof DerivedVar)) {
+        continue;
+      }
+      Set parentVars = curVar.getParents(curWorld);
+      for (Iterator iter = parentVars.iterator(); iter.hasNext();) {
+        BayesNetVar parVar = (BayesNetVar) iter.next();
+        if (!curWorld.getCBN().isContingentOn(curWorld, var, parVar, curVar)) {
+          coreBFS.addLast(parVar);
+        }
+      }
+    }
+    Set varsToUninstantiate = new HashSet();
+    varsToUninstantiate.addAll(curWorld.getInstantiatedVars());
+    varsToUninstantiate.removeAll(core);
+    varsToUninstantiate.remove(var);
+    PartialWorldDiff newWorld = new PartialWorldDiff(curWorld);
+    for (Iterator iter = varsToUninstantiate.iterator(); iter.hasNext();) {
+      BasicVar curVar = (BasicVar) iter.next();
+      newWorld.setValue(curVar, null);
+    }
+    return newWorld;
+  }
+
+  private double logProbGibbs;
 
   // The following are for debugger use only!
 
