@@ -164,6 +164,14 @@ public abstract class AbstractPartialWorld implements PartialWorld {
       ((WorldListener) iter.next()).varChanged(var, oldValue, value);
     }
   }
+  
+  @Override
+  public void forceRemoveVar(BasicVar var) {
+    basicVarToValue.remove(var);
+    varToUninstParent.remove(var);
+    nameToBasicVar.remove(var.toString());
+    varToLogProb.remove(var);
+  }
 
   public BasicVar getBasicVarByName(String name) {
     return nameToBasicVar.get(name);

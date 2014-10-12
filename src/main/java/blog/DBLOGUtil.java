@@ -40,7 +40,7 @@ public class DBLOGUtil {
       BasicVar var = (BasicVar) varIt.next();
       Timestep timestep = var.maxTimestep();
       if (timestep != null && timestep.compareTo(largest) < 0) {
-        world.setValue(var, null);
+        world.forceRemoveVar(var);
       }
     }
   }
