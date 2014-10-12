@@ -68,7 +68,7 @@ public class PartialWorldDiff extends AbstractPartialWorld {
    * uses object identifiers for the same types as the underlying world does.
    */
   public PartialWorldDiff(PartialWorld underlying) {
-    super(underlying.getIdTypes(), new PatchCBN(underlying.getCBN()));
+    super(underlying.getIdTypes(), new PatchCBN(underlying.getCBN()), true);
     basicVarToValue = new HashMapDiff(underlying.basicVarToValueMap());
     nameToBasicVar = new HashMapDiff(underlying.nameToBasicVarMap());
     objToUsesAsValue = new HashMultiMapDiff(underlying.objToUsesAsValueMap());

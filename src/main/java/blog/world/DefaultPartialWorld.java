@@ -65,9 +65,12 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
    * @param idTypes
    *          Set of Type objects for types that will be represented with object
    *          identifiers
+   * @param recordUsage
+   *          whether to record the object usage as argument or value of
+   *          function application var
    */
-  public DefaultPartialWorld(Set idTypes) {
-    super(idTypes, null);
+  public DefaultPartialWorld(Set idTypes, boolean recordUsage) {
+    super(idTypes, null, recordUsage);
     basicVarToValue = new HashMap();
     nameToBasicVar = new HashMap<String, BasicVar>();
     objToUsesAsValue = new HashMultiMap();
@@ -79,6 +82,10 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
     varToUninstParent = new HashMapWithPreimages();
     varToLogProb = new HashMap();
     derivedVarToValue = new HashMap();
+  }
+
+  public DefaultPartialWorld(Set idTypes) {
+    this(idTypes, false);
   }
 
   public Object clone() {

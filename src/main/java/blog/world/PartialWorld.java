@@ -124,7 +124,7 @@ public interface PartialWorld {
 
   static class EmptyPartialWorld extends AbstractPartialWorld {
     EmptyPartialWorld() {
-      super(Collections.EMPTY_SET, CBN.EMPTY_CBN);
+      super(Collections.EMPTY_SET, CBN.EMPTY_CBN, false);
       basicVarToValue = Collections.EMPTY_MAP;
       objToUsesAsValue = MultiMap.EMPTY_MULTI_MAP;
       objToUsesAsArg = MultiMap.EMPTY_MULTI_MAP;

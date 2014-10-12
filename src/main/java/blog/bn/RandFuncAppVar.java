@@ -34,6 +34,11 @@
  */
 package blog.bn;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import blog.ObjectIdentifier;
 import blog.common.Util;
 import blog.model.DependencyModel;
@@ -44,10 +49,6 @@ import blog.model.RandomFunction;
 import blog.model.Term;
 import blog.model.Type;
 import blog.sample.EvalContext;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A random variable whose value is the value of a certain random function on a
@@ -110,11 +111,11 @@ public class RandFuncAppVar extends VarWithDistrib {
     DependencyModel depModel = f.getDepModel();
     if (depModel == null) {
       Util.fatalErrorWithoutStack("Can't get distribution for random variable because function "
-              + f.getSig() + " has no dependency statement.");
+          + f.getSig() + " has no dependency statement.");
     }
 
     DependencyModel.Distrib distrib = depModel.getDistribWithBinding(context,
-            f.getArgVars(), args(), Model.NULL);
+        f.getArgVars(), args(), Model.NULL);
     context.popEvaluee();
     return distrib;
   }
@@ -127,12 +128,12 @@ public class RandFuncAppVar extends VarWithDistrib {
       if (term == null) {
         if (arg instanceof ObjectIdentifier) {
           throw new IllegalArgumentException(
-                  "No logical variable specified for object identifier " + arg);
+              "No logical variable specified for object identifier " + arg);
         }
         term = f.getArgTypes()[i].getCanonicalTerm(arg);
         if (term == null) {
           throw new UnsupportedOperationException(
-                  "Can't get canonical term for object " + arg + " of type "
+              "Can't get canonical term for object " + arg + " of type "
                   + f.getArgTypes()[i]);
         }
       }
@@ -186,7 +187,7 @@ public class RandFuncAppVar extends VarWithDistrib {
       buf.append(args[i]);
     }
     buf.append(")");
-    str = buf.toString();
+    str = buf.toString().intern();
     return str;
   }
 

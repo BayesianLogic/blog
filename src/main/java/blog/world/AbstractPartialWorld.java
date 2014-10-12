@@ -92,9 +92,10 @@ public abstract class AbstractPartialWorld implements PartialWorld {
    * @param cbn
    *          The underlying CBN class (can be null if no need to use CBN)
    */
-  public AbstractPartialWorld(Set idTypes, CBN cbn) {
+  public AbstractPartialWorld(Set idTypes, CBN cbn, boolean recordUsage) {
     this.idTypes = new HashSet(idTypes);
     this.cbn = cbn;
+    this.recordObjectUsage = recordUsage;
   }
 
   public Set getInstantiatedVars() {
@@ -941,8 +942,11 @@ public abstract class AbstractPartialWorld implements PartialWorld {
     return id;
   }
 
-  private void updateUsageForChange(BasicVar var, Object oldValue,
+  protected void updateUsageForChange(BasicVar var, Object oldValue,
       Object newValue) {
+    if (!recordObjectUsage) {
+      return;
+    }
     // update usage of arguments
     Object[] args = var.args();
     if ((oldValue == null) && (newValue != null)) {
@@ -1137,4 +1141,7 @@ public abstract class AbstractPartialWorld implements PartialWorld {
   protected List listeners = new ArrayList(); // of WorldListener
 
   protected Set<? extends Type> idTypes;
+
+  protected final boolean recordObjectUsage; // record usage of objects
+                                             // as arguments and values
 }
