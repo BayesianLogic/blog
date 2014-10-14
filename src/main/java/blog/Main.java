@@ -40,6 +40,7 @@ import java.io.FileReader;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -58,9 +59,7 @@ import blog.common.cmdline.PropertiesOption;
 import blog.common.cmdline.StringListOption;
 import blog.common.cmdline.StringOption;
 import blog.engine.InferenceEngine;
-import blog.io.JsonWriter;
 import blog.io.ResultWriter;
-import blog.io.TableWriter;
 import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Queries;
@@ -131,6 +130,10 @@ import blog.semant.Semant;
  * <dt>-o <i>file</i>, --output=<i>file</i>
  * <dd>Output query results in JSON format to this file.
  * 
+ * <dt>--writer <i>writer class</i>
+ * <dd>Using the writer class to print query result (default is
+ * blog.io.TableWriter)
+ * 
  * <dt>--interval=<i>num</i>
  * <dd>Report query results to stdout every num queries.
  * 
@@ -195,15 +198,21 @@ public class Main {
       engine.setQueries(queries);
 
       ResultWriter writer = null;
-      // Write query results to file, in JSON format.
+      try {
+        Class<ResultWriter> writerClass = (Class<ResultWriter>) Class
+            .forName(writerName);
+        Constructor<ResultWriter> constructor = writerClass.getConstructor();
+        writer = constructor.newInstance(null);
+      } catch (Exception ex) {
+        ex.printStackTrace();
+        Util.fatalError("cannot find Query Writer class");
+      }
+      writer.setHeader("======== Query Results =========\n"
+          + "Number of samples: " + numSamples);
       if (outputPath != null) {
-        writer = new JsonWriter();
         writer.setOutput(outputPath);
       } else {
-        writer = new TableWriter();
         writer.setOutput(System.out);
-        writer.setHeader("======== Query Results =========\n"
-            + "Number of samples: " + numSamples);
       }
       engine.setResultWriter(writer);
       engine.answerQueries();
@@ -306,6 +315,8 @@ public class Main {
         "Print the CBN of the sampled world");
     BooleanOption optDebug = new BooleanOption(null, "debug", false,
         "Print model, evidence, and queries");
+    StringOption writerClsName = new StringOption(null, "writer",
+        "blog.io.TableWriter", "Writer class for queries");
     StringOption optOutput = new StringOption("o", "output", null,
         "Output query results to file");
     PropertiesOption optInferenceProps = new PropertiesOption("P", null, null,
@@ -328,6 +339,7 @@ public class Main {
     print = optPrint.getValue();
     debug = optDebug.getValue();
     outputPath = optOutput.getValue();
+    writerName = writerClsName.getValue();
 
     // Make sure properties that have special-purpose options weren't
     // specified with -P.
@@ -547,6 +559,7 @@ public class Main {
   private static Queries queries;
   private static boolean generate;
   private static List<String> packages = new LinkedList<String>();
+  private static String writerName;
   private static boolean verbose;
   private static boolean print;
   private static boolean debug;
