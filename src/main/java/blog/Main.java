@@ -202,7 +202,7 @@ public class Main {
         Class<ResultWriter> writerClass = (Class<ResultWriter>) Class
             .forName(writerName);
         Constructor<ResultWriter> constructor = writerClass.getConstructor();
-        writer = constructor.newInstance(null);
+        writer = constructor.newInstance();
       } catch (Exception ex) {
         ex.printStackTrace();
         Util.fatalError("cannot find Query Writer class");
