@@ -130,6 +130,10 @@ import blog.semant.Semant;
  * <dt>-o <i>file</i>, --output=<i>file</i>
  * <dd>Output query results in JSON format to this file.
  * 
+ * <dt>--writer <i>writer class</i>
+ * <dd>Using the writer class to print query result (default is
+ * blog.io.TableWriter)
+ * 
  * <dt>--interval=<i>num</i>
  * <dd>Report query results to stdout every num queries.
  * 
