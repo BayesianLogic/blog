@@ -124,7 +124,7 @@ public interface PartialWorld {
 
   static class EmptyPartialWorld extends AbstractPartialWorld {
     EmptyPartialWorld() {
-      super(Collections.EMPTY_SET);
+      super(Collections.EMPTY_SET, CBN.EMPTY_CBN, false);
       basicVarToValue = Collections.EMPTY_MAP;
       objToUsesAsValue = MultiMap.EMPTY_MULTI_MAP;
       objToUsesAsArg = MultiMap.EMPTY_MULTI_MAP;
@@ -132,8 +132,6 @@ public interface PartialWorld {
       popAppToAssertedIds = IndexedMultiMap.EMPTY_INDEXED_MULTI_MAP;
       commIdToPOPApp = Collections.EMPTY_MAP;
       popAppToCommIds = IndexedMultiMap.EMPTY_INDEXED_MULTI_MAP;
-      // cbn = DefaultCBN.EMPTY_GRAPH;
-      cbn = CBN.EMPTY_CBN;
       varToUninstParent = MapWithPreimages.EMPTY_MAP_WITH_PREIMAGES;
       varToLogProb = Collections.EMPTY_MAP;
       derivedVarToValue = Collections.EMPTY_MAP;
@@ -183,7 +181,15 @@ public interface PartialWorld {
    * know which identifiers to remove). We also don't do anything about
    * variables whose values no longer exist.
    */
-  void setValue(BasicVar var, Object value);
+  public void setValue(BasicVar var, Object value);
+
+  /**
+   * Forcefully remove a variable from the possible world. The resulting
+   * possible world might be non-supportive.
+   * 
+   * @param var
+   */
+  public void forceRemoveVar(BasicVar var);
 
   /**
    * Uninstantiates the variables for the values of <code>f</code> on all tuples

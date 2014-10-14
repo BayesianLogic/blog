@@ -104,7 +104,7 @@ public class WorldInProgress extends DefaultPartialWorld {
    */
   public WorldInProgress(Model model, Evidence evidence, int intBound,
       int depthBound, int timestepBound) {
-    super(Collections.EMPTY_SET);
+    super(Collections.EMPTY_SET, true);
     this.model = model;
     this.evidence = evidence;
     this.intBound = intBound;

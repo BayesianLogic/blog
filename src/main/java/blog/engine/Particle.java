@@ -70,24 +70,9 @@ public class Particle {
     sampler.initialize(evidence, new Queries(null));
     sampler.setBaseWorld(curWorld);
 
-    // System.out.println("Particle taking evidence.");
-    // System.out.println("Evidence: " + evidence);
-    // System.out.println("Previous world: " + curWorld);
-
     sampler.nextSample();
     logWeight = sampler.getLatestLogWeight();
-    // if (Double.isNaN(logWeight)) {
-    // System.out.println("Particle.take: logWeight set to " + logWeight);
-    // System.out.println("Evidence: " + evidence);
-    // System.out.println("Updated world: " + curWorld);
-    // System.exit(-1);
-    // }
-
-    // System.out.println("Particle.take: logWeight set to " + logWeight);
     curWorld = sampler.getLatestWorld();
-
-    // System.out.println("logWeight: " + logWeight);
-    // System.out.println("Updated world: " + curWorld);
   }
 
   /**
