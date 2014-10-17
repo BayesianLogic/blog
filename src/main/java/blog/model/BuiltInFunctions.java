@@ -86,10 +86,10 @@ public class BuiltInFunctions {
   public static final String DIAG_NAME = "diag";
   public static final String REPMAT_NAME = "repmat";
   public static final String SUBMAT_NAME = "submat";
-  public static final String GET_ROW_VEC_NAME = "getRow";
-  public static final String GET_ROWS_NAME = "getRows";
-  public static final String GET_COL_VEC_NAME = "getCol";
-  public static final String GET_COLS_NAME = "getCols";
+  public static final String GET_ROW_VEC_NAME = "getrow";
+  public static final String GET_ROWS_NAME = "getrows";
+  public static final String GET_COL_VEC_NAME = "getcol";
+  public static final String GET_COLS_NAME = "getcols";
   public static final String TRANSPOSE_NAME = "transpose";
   public static final String SIN_NAME = "sin";
   public static final String COS_NAME = "cos";
@@ -113,8 +113,8 @@ public class BuiltInFunctions {
   public static final String EXP_NAME = "exp";
   public static final String LOG_NAME = "log";
   public static final String IOTA_NAME = "iota";
-  public static final String NUMROWS_NAME = "numRows";
-  public static final String NUMCOLS_NAME = "numCols";
+  public static final String NUMROWS_NAME = "numrows";
+  public static final String NUMCOLS_NAME = "numcols";
 
   /**
    * Constant that always denotes Model.NULL.
