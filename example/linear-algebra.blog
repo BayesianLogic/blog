@@ -38,8 +38,8 @@ fixed RealMatrix p = [1, 2; 3, 4];
 fixed Real q = trace(p);
 
 fixed RealMatrix r = [1, 2; 3, 4; 5, 6];
-fixed Integer rows = numRows(r);
-fixed Integer cols = numCols(r);
+fixed Integer rows = numrows(r);
+fixed Integer cols = numcols(r);
 
 query x;
 query y;
@@ -77,8 +77,8 @@ query d2;
 query f2;
 
 fixed RealMatrix g2 = submat(f2, 0, 0, 3, 2);
-fixed RealMatrix u2 = getRow(f2, 2);
-fixed RealMatrix v2 = getCols(f2, 1, 2);
+fixed RealMatrix u2 = getrow(f2, 2);
+fixed RealMatrix v2 = getcols(f2, 1, 2);
 
 query g2;
 query u2;
