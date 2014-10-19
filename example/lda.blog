@@ -28,15 +28,15 @@ random RealMatrix theta(Document d) ~ Dirichlet(vector);
 random Integer topic(Document d, Integer i) ~
     if (i < doclen(d)) then Discrete(theta(d));
 
-random Integer wordidx(Document d, Integer i) ~ Discrete(transpose(getRow(b,topic(d, i))));
+random Integer wordidx(Document d, Integer i) ~ Discrete(transpose(getrow(b,topic(d, i))));
 
 // define a dictionary mapping from index to word
 fixed String Dictionary(Integer i)
     = TabularInterp(1,
-  0, "AAA",
-  1, "BBB",
-  2, "CCC",
-  3, "DDD"
+  0, "the",
+  1, "cat",
+  2, "catch",
+  3, "rat"
       );
 
 query wordidx(Document[1], 0);

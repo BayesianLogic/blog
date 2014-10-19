@@ -7,7 +7,7 @@
 type Aircraft;
 type Blip;
 
-#Aircraft ~ UniformInt(0, 10);
+#Aircraft ~ UniformInt(0, 5);
 
 random Real Position(Timestep t) ~
     if t == @0 then UniformReal(-10, 10)
@@ -23,7 +23,7 @@ origin Timestep Time(Blip);
         else 0;
 
 // num false alarms has Poisson distrib.
-#Blip(Time = t) ~ Poisson(2);
+#Blip(Time = t) ~ Poisson(1);
 
 random Real ApparentPos(Blip b) ~
     if (Source(b) == null)
@@ -31,9 +31,13 @@ random Real ApparentPos(Blip b) ~
         then UniformReal(-10, 10)
         else UnivarGaussian(Position(Time(b)), 1);
 
-obs {b for Blip b : Time(b) == @0} = {B1, B2, B3};
-obs ApparentPos(B1) = 0.3;
-obs ApparentPos(B2) = 1.2;
-obs ApparentPos(B1) = 5.0;
+//obs {b for Blip b : Time(b) == @0} = {B1, B2, B3};
+//obs {b for Blip b : Time(b) == @1} = {B21, B22, B23, B24};
+//obs {b for Blip b : Time(b) == @2} = {B31, B32, B33};
+//obs ApparentPos(B1) = 0.3;
+//obs ApparentPos(B2) = 1.2;
+//obs ApparentPos(B3) = 5.0;
 
 query size({a for Aircraft a}); 
+query size({b for Blip b : Time(b) == @3});
+query size({b for Blip b : Time(b) == @4});
