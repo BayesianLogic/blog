@@ -16,6 +16,15 @@ import java.util.Set;
 public class HashDynamicGraph extends AbstractDGraph implements DynamicGraph,
     Cloneable {
 
+  public HashDynamicGraph() {
+    nodeSet = new HashSet();
+    parents = new HashMultiMap();
+    children = new HashMultiMap();
+    edgesAppearOn = new HashMultiMap();
+    nodesRelatedTo = new HashMultiMap();
+    barrenNodeSet = new HashSet();
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -139,10 +148,10 @@ public class HashDynamicGraph extends AbstractDGraph implements DynamicGraph,
     return Collections.unmodifiableSet((Set) children.get(v));
   }
 
-  protected Set nodeSet = new HashSet();
-  protected MultiMap parents = new HashMultiMap();
-  protected MultiMap children = new HashMultiMap();
-  protected MultiMap edgesAppearOn = new HashMultiMap();
-  protected MultiMap nodesRelatedTo = new HashMultiMap();
-  protected Set barrenNodeSet = new HashSet();
+  protected Set nodeSet;
+  protected MultiMap parents;
+  protected MultiMap children;
+  protected MultiMap edgesAppearOn;
+  protected MultiMap nodesRelatedTo;
+  protected Set barrenNodeSet;
 }

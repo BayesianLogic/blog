@@ -49,6 +49,7 @@ import blog.bn.BayesNetVar;
 import blog.bn.DerivedVar;
 import blog.bn.RandFuncAppVar;
 import blog.sample.EvalContext;
+import blog.sample.TraceLabelEvalContext;
 
 /**
  * Represents a function invocation.
@@ -165,6 +166,9 @@ public class FuncAppTerm extends Term {
     // if (argValues == null) { // Not reusing anymore since this array was
     // being used for being argument arrays for RandFuncAppVars and had to be
     // cloned anyway.
+    if (context instanceof TraceLabelEvalContext) {
+      ((TraceLabelEvalContext) context).addRelatedClause(this);
+    }
     Object[] oldArgValues = argValues;
     argValues = new Object[args.length];
     // }
@@ -182,8 +186,14 @@ public class FuncAppTerm extends Term {
       }
     }
 
+    if (context instanceof TraceLabelEvalContext) {
+      ((TraceLabelEvalContext) context).setCurrentClause(this);
+    }
     Object result = f.getValueInContext(argValues, context, false);
     argValues = oldArgValues;
+    if (context instanceof TraceLabelEvalContext) {
+      ((TraceLabelEvalContext) context).removeRelatedClause(this);
+    }
     return result;
   }
 

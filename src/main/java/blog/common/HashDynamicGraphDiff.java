@@ -3,7 +3,6 @@
  */
 package blog.common;
 
-import blog.world.PartialWorld;
 
 /**
  * @author David T
@@ -12,10 +11,6 @@ import blog.world.PartialWorld;
  */
 public class HashDynamicGraphDiff extends HashDynamicGraph implements
     DynamicGraphDiff, Cloneable {
-
-  public HashDynamicGraphDiff(PartialWorld world) {
-
-  }
 
   public HashDynamicGraphDiff(DynamicGraph underlying) {
     this.underlying = underlying;
