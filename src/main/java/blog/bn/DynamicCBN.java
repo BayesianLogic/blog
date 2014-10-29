@@ -3,6 +3,8 @@
  */
 package blog.bn;
 
+import java.util.Iterator;
+
 import blog.common.HashDynamicGraph;
 
 /**
@@ -11,7 +13,17 @@ import blog.common.HashDynamicGraph;
  * 
  */
 public class DynamicCBN extends HashDynamicGraph implements CBN {
-  public DynamicCBN() {
-    super();
+  public DynamicCBN(CBN underlying) {
+    for (Iterator iter = underlying.nodes().iterator(); iter.hasNext();) {
+      BayesNetVar var = (BayesNetVar) iter.next();
+      Node curNode = new Node(var);
+      addNode(curNode);
+      for (Iterator iter2 = underlying.getParents(var).iterator(); iter2
+          .hasNext();) {
+        BayesNetVar par = (BayesNetVar) iter2.next();
+        Node parNode = new Node(par);
+        addEdge(new Edge(parNode, curNode));
+      }
+    }
   }
 }

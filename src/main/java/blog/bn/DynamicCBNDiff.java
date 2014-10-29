@@ -7,7 +7,7 @@ import blog.common.HashDynamicGraphDiff;
 
 /**
  * @author David T
- * @since 2014Äê10ÔÂ28ÈÕ
+ * @since Oct 28, 2014
  * 
  */
 public class DynamicCBNDiff extends HashDynamicGraphDiff implements CBN {
