@@ -134,15 +134,28 @@ class ParticleFilter(
 }
 
 object ParticleFilter {
-  def make(path: String, numParticles: Int): ParticleFilter = {
+  def make(modelPath: String, numParticles: Int): ParticleFilter = {
     Util.initRandom(false)
 
     val model = new Model()
     val evidence = new Evidence(model)
     val queries = new Queries(model)
-    Main.simpleSetupFromFiles(model, evidence, queries, path :: Nil)
+    Main.simpleSetupFromFiles(model, evidence, queries, modelPath :: Nil)
 
     val feeder = new OfflineFilterFeeder(evidence, queries)
+    new ParticleFilter(model, numParticles, feeder)
+  }
+
+  def make(modelPath: String, numParticles: Int, feeder: FilterFeeder): ParticleFilter = {
+    Util.initRandom(false)
+
+    val model = new Model()
+    val evidence = new Evidence(model)
+    val queries = new Queries(model)
+    Main.simpleSetupFromFiles(model, evidence, queries, modelPath :: Nil)
+
+    // Any evidence and queries from the model are ignored.
+    // All the evidence and queries come from the feeder.
     new ParticleFilter(model, numParticles, feeder)
   }
 }
