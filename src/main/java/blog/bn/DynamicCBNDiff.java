@@ -14,4 +14,8 @@ public class DynamicCBNDiff extends HashDynamicGraphDiff implements CBN {
   public DynamicCBNDiff(DynamicCBN underlying) {
     super(underlying);
   }
+
+  public DynamicCBN getUnderlying() {
+    return (DynamicCBN) underlying;
+  }
 }

@@ -9,5 +9,5 @@ package blog.common;
  * 
  */
 public interface DynamicGraphDiff extends DynamicGraph {
-
+  DynamicGraph getUnderlying();
 }

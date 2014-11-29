@@ -3,7 +3,6 @@
  */
 package blog.common;
 
-
 /**
  * @author David T
  * @since Sep 28, 2014
@@ -20,6 +19,10 @@ public class HashDynamicGraphDiff extends HashDynamicGraph implements
     this.edgesAppearOn = new HashMultiMapDiff(underlying.getEdgesAppearOnMap());
     this.nodesRelatedTo = new HashMultiMapDiff(
         underlying.getNodesRelatedToMap());
+  }
+
+  public DynamicGraph getUnderlying() {
+    return underlying;
   }
 
   protected DynamicGraph underlying;
