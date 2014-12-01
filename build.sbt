@@ -106,5 +106,10 @@ mappings in Universal += file("bloglint.bat") -> "bin/bloglint.bat"
 
 mappings in Universal += file("src/main/scala/iblog.scala") -> "bin/iblog.scala"
 
+// Include debugging symbols in the compiled classes.
+javacOptions += "-g"
+
+scalacOptions += "-g:vars"
+
 // Include the sources in the assembled jar.
 unmanagedResourceDirectories in Compile += { baseDirectory.value / "src" }
