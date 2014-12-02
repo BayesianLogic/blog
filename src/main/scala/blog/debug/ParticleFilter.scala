@@ -107,9 +107,29 @@ class ParticleFilter(
       } else {
         resample
       }
+
+      // Debug: dump first particle:
+      println("First particle before taking evidence:")
+      println(particles(0))
+
       takeEvidence(currentEvidence)
+
+      // Debug: dump first particle:
+      println("First particle after taking evidence:")
+      println(particles(0))
+
       answerQueries(currentQueries)
+
+      // Debug: dump first particle:
+      println("First particle after answering queries:")
+      println(particles(0))
+
       forgetPast
+
+      // Debug: dump first particle:
+      println("First particle after forgetting the past:")
+      println(particles(0))
+
       println(s"advance: processed timestep ${timestep}")
     }
   }
