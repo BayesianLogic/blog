@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import blog.DBLOGUtil;
 import blog.model.Evidence;
@@ -18,7 +16,6 @@ import blog.type.Timestep;
 /**
  * Unit tests for DBLOGUtil.
  */
-@RunWith(JUnit4.class)
 public class TestDBLOGUtil {
   @Test
   public void testSplitEvidenceInTime() {

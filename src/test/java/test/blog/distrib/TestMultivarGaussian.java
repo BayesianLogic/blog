@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
@@ -19,7 +17,6 @@ import blog.distrib.MultivarGaussian;
 /**
  * Unit tests for MultivarGaussian.
  */
-@RunWith(JUnit4.class)
 public class TestMultivarGaussian implements TestDistributions {
   private MatrixLib mean;
   private MatrixLib variance;

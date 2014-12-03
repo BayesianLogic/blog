@@ -3,8 +3,6 @@ package test.blog.model;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import blog.BLOGUtil;
 import blog.model.ArgSpec;
@@ -17,7 +15,6 @@ import blog.type.Timestep;
  * @author cberzan
  * @since Jun 4, 2014
  */
-@RunWith(JUnit4.class)
 public class TestArgSpec {
   @Test
   public void testMaxTimestep() {
