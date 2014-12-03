@@ -20,8 +20,8 @@ public class TestBuiltInFunctions {
   public void testIndexRowVector() {
     MatrixLib rowVec = MatrixFactory.zeros(1, 5);
     Object[] args = { rowVec, 3 };
-    double result = (Double) BuiltInFunctions.SUB_REAL_ARRAY.getValueInContext(
-        args, new DefaultEvalContext(PartialWorld.EMPTY_INST), false);
+    double result = (Double) BuiltInFunctions.SUB_MAT.getValueInContext(args,
+        new DefaultEvalContext(PartialWorld.EMPTY_INST), false);
     assertEquals(result, 0.0, 1e-10);
   }
 
@@ -29,8 +29,8 @@ public class TestBuiltInFunctions {
   public void testIndexColumnVector() {
     MatrixLib colVec = MatrixFactory.zeros(5, 1);
     Object[] args = { colVec, 3 };
-    double result = (Double) BuiltInFunctions.SUB_REAL_ARRAY.getValueInContext(
-        args, new DefaultEvalContext(PartialWorld.EMPTY_INST), false);
+    double result = (Double) BuiltInFunctions.SUB_MAT.getValueInContext(args,
+        new DefaultEvalContext(PartialWorld.EMPTY_INST), false);
     assertEquals(result, 0.0, 1e-10);
   }
 
