@@ -163,8 +163,8 @@ public class NegFormula extends Formula {
     return ("!" + neg);
   }
 
-  public boolean checkTypesAndScope(Model model, Map scope) {
-    return neg.checkTypesAndScope(model, scope);
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
+    return neg.checkTypesAndScope(model, scope, childType);
   }
 
   public ArgSpec replace(Term t, ArgSpec another) {

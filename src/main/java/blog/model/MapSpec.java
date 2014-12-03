@@ -179,14 +179,11 @@ public class MapSpec extends ArgSpec {
     return errors;
   }
 
-  public boolean checkTypesAndScope(Model model, Map scope) {
-    return checkTypesAndScope(model, scope, null);
-  }
-
+  @Override
   public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
     // Check typing of all symbols in the map
     for (ArgSpec obj : keys) {
-      if (!obj.checkTypesAndScope(model, scope)) {
+      if (!obj.checkTypesAndScope(model, scope, null)) {
         return false;
       }
     }
@@ -194,7 +191,7 @@ public class MapSpec extends ArgSpec {
     for (Object val : values) {
       if (val instanceof ArgSpec) {
         ArgSpec as = (ArgSpec) val;
-        if (!as.checkTypesAndScope(model, scope)) {
+        if (!as.checkTypesAndScope(model, scope, childType)) {
           return false;
         }
       }

@@ -277,7 +277,7 @@ public class FuncAppTerm extends Term {
   /**
    * Type checks this function application.
    */
-  public boolean checkTypesAndScope(Model model, Map scope) {
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
     boolean correct = true;
 
     Type[] argTypes = new Type[args.length];
@@ -293,7 +293,7 @@ public class FuncAppTerm extends Term {
         }
       } else if (args[i] instanceof Formula) {
         Formula arg = (Formula) args[i];
-        if (!arg.checkTypesAndScope(model, scope)) {
+        if (!arg.checkTypesAndScope(model, scope, childType)) {
           correct = false;
         } else {
           args[i] = arg;
@@ -302,15 +302,15 @@ public class FuncAppTerm extends Term {
       } else if (args[i] instanceof ExplicitSetSpec) {
         argTypes[i] = BuiltInTypes.SET;
         ExplicitSetSpec setDef = (ExplicitSetSpec) args[i];
-        correct = setDef.checkTypesAndScope(model, scope);
+        correct = setDef.checkTypesAndScope(model, scope, null);
       } else if (args[i] instanceof ImplicitSetSpec) {
         argTypes[i] = BuiltInTypes.SET;
         ImplicitSetSpec setDef = (ImplicitSetSpec) args[i];
-        correct = setDef.checkTypesAndScope(model, scope);
+        correct = setDef.checkTypesAndScope(model, scope, null);
       } else if (args[i] instanceof TupleSetSpec) {
         argTypes[i] = BuiltInTypes.SET;
         TupleSetSpec setDef = (TupleSetSpec) args[i];
-        correct = setDef.checkTypesAndScope(model, scope);
+        correct = setDef.checkTypesAndScope(model, scope, null);
       } else if (args[i] instanceof ListSpec) {
         argTypes[i] = BuiltInTypes.REAL_ARRAY;
       } else {

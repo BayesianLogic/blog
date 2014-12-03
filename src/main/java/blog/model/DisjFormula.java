@@ -269,12 +269,13 @@ public class DisjFormula extends Formula {
     return buf.toString();
   }
 
-  public boolean checkTypesAndScope(Model model, Map scope) {
+  @Override
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
     boolean result = true; // disjunction of no fomulas is true
     Iterator disjIter = disjuncts.iterator();
     while (disjIter.hasNext()) {
       Formula form = (Formula) disjIter.next();
-      if (!form.checkTypesAndScope(model, scope)) {
+      if (!form.checkTypesAndScope(model, scope, childType)) {
         return false;
       }
     }

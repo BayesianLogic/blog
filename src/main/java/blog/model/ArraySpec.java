@@ -62,7 +62,7 @@ public class ArraySpec<T> extends ArgSpec {
   }
 
   @Override
-  public boolean checkTypesAndScope(Model model, Map scope) {
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
     return true;
   }
 

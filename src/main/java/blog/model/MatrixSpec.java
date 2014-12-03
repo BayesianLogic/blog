@@ -127,7 +127,7 @@ public class MatrixSpec extends ArgSpec {
   }
 
   @Override
-  public boolean checkTypesAndScope(Model model, Map scope) {
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
     // TODO FIX FIX FIX
     return true;
   }

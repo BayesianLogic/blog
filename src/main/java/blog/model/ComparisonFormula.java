@@ -34,7 +34,6 @@
  */
 package blog.model;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +42,7 @@ import blog.sample.EvalContext;
 
 /**
  * @see BuiltInFunction.java
- *
+ * 
  *      A term consisting of two terms and a comparison between them.
  *      Comparison terms
  *      are inserted in the model by transExpr.
@@ -52,7 +51,7 @@ import blog.sample.EvalContext;
  * @date 2013/1/1
  */
 public class ComparisonFormula extends Formula {
-  
+
   public enum Operator {
     LT("<"), LEQ("<="), GT(">"), GEQ(">=");
     private final String name;
@@ -76,18 +75,18 @@ public class ComparisonFormula extends Formula {
     right = r;
     compator = t;
   }
-  
+
   protected Formula getEquivToNegationInternal() {
     Operator oppositeOp = null;
     switch (compator) {
-      case LT:
-        oppositeOp = Operator.GEQ;
-      case LEQ:
-        oppositeOp = Operator.GT;
-      case GT:
-        oppositeOp = Operator.LEQ;
-      case GEQ:
-        oppositeOp = Operator.LT;
+    case LT:
+      oppositeOp = Operator.GEQ;
+    case LEQ:
+      oppositeOp = Operator.GT;
+    case GT:
+      oppositeOp = Operator.LEQ;
+    case GEQ:
+      oppositeOp = Operator.LT;
     }
     return new ComparisonFormula(left, right, oppositeOp);
   }
@@ -124,58 +123,56 @@ public class ComparisonFormula extends Formula {
 
   public Set getSatisfiersIfExplicit(EvalContext context, LogicalVar subject,
       GenericObject genericObj) {
-    Term otherOperand = (Term)getCompareTerm(subject);
-    
+    Term otherOperand = (Term) getCompareTerm(subject);
+
     if (genericObj.getType().equals(BuiltInTypes.INTEGER)) {
       Set vals = new HashSet();
-      switch(compator) {
-        case LT:
-          for (int i = 1; i < (Integer)otherOperand.evaluate(context); i++) {
-            vals.add(i);
-          }
-          return vals;
-        case LEQ:
-          for (int i = 1; i <= (Integer)otherOperand.evaluate(context); i++) {
-            vals.add(i);
-          }
-          return vals;
-        default:
-          return Formula.NOT_EXPLICIT;
+      switch (compator) {
+      case LT:
+        for (int i = 1; i < (Integer) otherOperand.evaluate(context); i++) {
+          vals.add(i);
+        }
+        return vals;
+      case LEQ:
+        for (int i = 1; i <= (Integer) otherOperand.evaluate(context); i++) {
+          vals.add(i);
+        }
+        return vals;
+      default:
+        return Formula.NOT_EXPLICIT;
       }
-    }
-    else {
-      return Formula.NOT_EXPLICIT;
-    }
-  }
-  
-  @Override
-  public Set getNonSatisfiersIfExplicit(EvalContext context, LogicalVar subject,
-  			GenericObject genericObj) {
-   Term otherOperand = (Term)getCompareTerm(subject);
-    
-    if (genericObj.getType().equals(BuiltInTypes.INTEGER)) {
-      Set vals = new HashSet();
-      switch(compator) {
-        case GT:
-          for (int i = 1; i <= (Integer)otherOperand.evaluate(context); i++) {
-            vals.add(i);
-          }
-          return vals;
-        case GEQ:
-          for (int i = 1; i < (Integer)otherOperand.evaluate(context); i++) {
-            vals.add(i);
-          }
-          return vals;
-        default:
-          return Formula.NOT_EXPLICIT;
-      }
-    }
-    else {
+    } else {
       return Formula.NOT_EXPLICIT;
     }
   }
 
-  public boolean checkTypesAndScope(Model model, Map scope) {
+  @Override
+  public Set getNonSatisfiersIfExplicit(EvalContext context,
+      LogicalVar subject, GenericObject genericObj) {
+    Term otherOperand = (Term) getCompareTerm(subject);
+
+    if (genericObj.getType().equals(BuiltInTypes.INTEGER)) {
+      Set vals = new HashSet();
+      switch (compator) {
+      case GT:
+        for (int i = 1; i <= (Integer) otherOperand.evaluate(context); i++) {
+          vals.add(i);
+        }
+        return vals;
+      case GEQ:
+        for (int i = 1; i < (Integer) otherOperand.evaluate(context); i++) {
+          vals.add(i);
+        }
+        return vals;
+      default:
+        return Formula.NOT_EXPLICIT;
+      }
+    } else {
+      return Formula.NOT_EXPLICIT;
+    }
+  }
+
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
     if ((left == null) || (right == null)) {
       return false;
     }
@@ -233,11 +230,11 @@ public class ComparisonFormula extends Formula {
     }
     return null;
   }
-  
+
   public ComparisonFormula.Operator getCompareOp() {
     return compator;
   }
-  
+
   public boolean isSubjectFirst(Term subject) {
     return left.equals(subject);
   }
