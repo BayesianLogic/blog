@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
@@ -17,7 +15,6 @@ import blog.distrib.IsotropicMultivarGaussian;
 /**
  * Unit tests for IsotropicMultivarGaussian.
  */
-@RunWith(JUnit4.class)
 public class TestIsotropicMultivarGaussian {
   private MatrixLib mean;
   private double covarScale;
