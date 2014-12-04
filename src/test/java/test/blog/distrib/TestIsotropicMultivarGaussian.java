@@ -39,6 +39,15 @@ public class TestIsotropicMultivarGaussian {
     IsotropicMultivarGaussian gauss = new IsotropicMultivarGaussian();
     gauss.setParams(mean, covarScale);
     gauss.sampleVal();
+
+    /*-
+    // Output some samples that we can manually check against python.
+    for (int i = 0; i < 10000; i++) {
+      MatrixLib sample = gauss.sample_value();
+      System.out.println("    [" + sample.elementAt(0, 0) + ", "
+          + sample.elementAt(1, 0) + "],");
+    }
+     */
   }
 
   @Test
@@ -46,5 +55,14 @@ public class TestIsotropicMultivarGaussian {
     IsotropicMultivarGaussian gauss = new IsotropicMultivarGaussian();
     gauss.setParams(mean, covarScale);
     assertTrue(Arrays.equals(null, gauss.getFiniteSupport()));
+  }
+
+  @Test
+  public void testHighDimensions() {
+    IsotropicMultivarGaussian gauss = new IsotropicMultivarGaussian();
+    final int d = 400;
+    gauss.setParams(MatrixFactory.ones(d), 5.0);
+    assertEquals(-689.86299576868907,
+        gauss.getLogProb(MatrixFactory.ones(d).timesScale(0.9)), 1e-10);
   }
 }
