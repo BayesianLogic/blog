@@ -174,6 +174,7 @@ public class InverseWishart implements CondProbDistrib {
     }
     throw new IllegalArgumentException(
         "The matrix given should be a symmetric one. But it isn't.");
+
   }
 
   /*
