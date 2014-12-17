@@ -1088,7 +1088,7 @@ public class Util {
      * note a single precision can represent up to 1E-38
      * double precision 1E-308
      */
-    final double APPROXIMATE_ZERO = 1e-20;
+    final double APPROXIMATE_ZERO = 1e-12;
     return (number < APPROXIMATE_ZERO) && (number > -1 * APPROXIMATE_ZERO);
   }
 
