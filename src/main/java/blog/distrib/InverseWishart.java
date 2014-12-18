@@ -198,7 +198,7 @@ public class InverseWishart implements CondProbDistrib {
     checkHasParams();
     MatrixLib temp = MatrixFactory.zeros(d, d);
     MultivarGaussian tmp = new MultivarGaussian();
-    tmp.setParams(MatrixFactory.zeros(d, 1), scale);
+    tmp.setParams(MatrixFactory.zeros(d, 1), scale.inverse());
     for (int i = 0; i < freeDeg; i++) {
       MatrixLib tmpmat = tmp.sample_value();
       temp = temp.plus(tmpmat.timesMat(tmpmat.transpose()));
