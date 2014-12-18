@@ -190,9 +190,9 @@ public class InverseWishart implements CondProbDistrib {
    * <i>freeDeg</i> independent samples X_i's from Multivariate Gaussian with
    * zero means and scale as the covariance matrix. Then
    * \sum\limits_{i=1}^{freeDeg}X_i*X_i^T follows the Wishart distribution with
-   * scale and freeDeg as the parameters. And its inverse matrix follows our
-   * request (internal calls are ok if the private method
-   * <code>initParams</code> is called first)..
+   * scale's inverse and freeDeg as the parameters. And its inverse matrix
+   * follows our request (internal calls are ok if the private method
+   * <code>initParams</code> is called first).
    */
   public MatrixLib sample_value() {
     checkHasParams();
