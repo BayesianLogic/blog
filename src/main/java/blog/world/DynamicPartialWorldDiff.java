@@ -21,7 +21,7 @@ public class DynamicPartialWorldDiff extends PartialWorldDiff {
    */
   public DynamicPartialWorldDiff(PartialWorld underlying) {
     super(underlying);
-    cbn = new DynamicCBNDiff(new DynamicCBN(underlying.getCBN()));
+    cbn = new DynamicCBNDiff(new DynamicCBN(underlying.getCBN(), underlying));
   }
 
   /**

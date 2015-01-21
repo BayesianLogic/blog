@@ -166,9 +166,7 @@ public class FuncAppTerm extends Term {
     // if (argValues == null) { // Not reusing anymore since this array was
     // being used for being argument arrays for RandFuncAppVars and had to be
     // cloned anyway.
-    if (context instanceof TraceLabelEvalContext) {
-      ((TraceLabelEvalContext) context).addRelatedClause(this);
-    }
+
     Object[] oldArgValues = argValues;
     argValues = new Object[args.length];
     // }
@@ -186,6 +184,9 @@ public class FuncAppTerm extends Term {
       }
     }
 
+    if (context instanceof TraceLabelEvalContext) {
+      ((TraceLabelEvalContext) context).addRelatedClause(this);
+    }
     if (context instanceof TraceLabelEvalContext) {
       ((TraceLabelEvalContext) context).setCurrentClause(this);
     }
