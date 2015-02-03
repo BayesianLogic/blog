@@ -2,14 +2,16 @@ package ppaml_slam
 
 import java.io.File
 import scala.collection.JavaConversions._
-
 import blog.debug.FilterFeeder
 import blog.model.Evidence
 import blog.model.Queries
 import blog.model.Model
 import com.github.tototoshi.csv._
+import scala.collection.mutable.ListBuffer
 
 class SlamFeeder(model: Model, inputDirPath: String, maxTimesteps: Int) extends FilterFeeder {
+
+  val rpc = new RPC
 
   // Read properties file.
   val propertiesReader = CSVReader.open(new File(
@@ -41,6 +43,7 @@ class SlamFeeder(model: Model, inputDirPath: String, maxTimesteps: Int) extends 
   var prevVelocity = 0.0
   var prevSteering = 0.0
   var prevTimestepWasGPS = false
+  var nextBlipNumber = 1
 
   def hasNext: Boolean = {
     if (timestep >= maxTimesteps) {
@@ -81,18 +84,43 @@ class SlamFeeder(model: Model, inputDirPath: String, maxTimesteps: Int) extends 
       // TODO: query landmarks
       if (sensor == 'gps) {
         prevTimestepWasGPS = true
+        evidence.addFromString(s"obs is_laser_timestep(@$timestep) = false;")
       } else if (sensor == 'control) {
         val controlLine = controlReader.next
         val controlTime = controlLine(0).toDouble
         prevVelocity = controlLine(1).toDouble
         prevSteering = controlLine(2).toDouble
         assert(Math.abs(controlTime - time) < 1e-2)
+        evidence.addFromString(s"obs is_laser_timestep(@$timestep) = false;")
       } else if (sensor == 'laser) {
         val laserLine = laserReader.next
         val laserTime = laserLine(0).toDouble
         val laserVals = laserLineToLaserVals(laserLine)
         assert(Math.abs(laserTime - time) < 1e-2)
-        // TODO: extract landmarks and provide Blip observations.
+        val obstacles = rpc.extractObstacles(laserVals)
+        println(obstacles)
+        evidence.addFromString(s"obs is_laser_timestep(@$timestep) = true;")
+
+        // Observe something like: obs {b for Blip b : time(b) == @0} = {B1, B2, B3};
+        val blips = new ListBuffer[String]
+        for (obstacle <- obstacles) {
+          blips.add(s"B$nextBlipNumber")
+          nextBlipNumber += 1
+        }
+        val blipsStr = blips.mkString(", ");
+        val blipsEvidence = s"obs {b for Blip b : time(b) == @$timestep} = {$blipsStr};"
+        println(s"blipsEvidence: $blipsEvidence")
+        evidence.addFromString(blipsEvidence)
+
+        // Observe obs_x and obs_y for each Blip.
+        for ((obstacle, blip) <- obstacles zip blips) {
+          val xEvidence = s"obs obs_x($blip) = ${obstacle.x};"
+          val yEvidence = s"obs obs_y($blip) = ${obstacle.y};"
+          println(s"xEvidence: $xEvidence")
+          println(s"yEvidence: $yEvidence")
+          evidence.addFromString(xEvidence)
+          evidence.addFromString(yEvidence)
+        }
       }
     }
     evidence.compile // FIXME: clumsy interface
@@ -118,10 +146,10 @@ class SlamFeeder(model: Model, inputDirPath: String, maxTimesteps: Int) extends 
     "[\n    " + seqSeq.map(seqToBlogRowVec).mkString(",\n    ") + "\n]"
   }
 
-  def laserLineToLaserVals(laserCSVLine: Seq[String]): Seq[Double] = {
+  def laserLineToLaserVals(laserCSVLine: Seq[String]): Array[Double] = {
     // In the data, the laser readings are clockwise.
     // Make them counter-clockwise (trigonometric order).
-    laserCSVLine.drop(1).take(361).reverse.map((s) => s.toDouble)
+    laserCSVLine.drop(1).take(361).reverse.map((s) => s.toDouble).toArray
   }
 }
 

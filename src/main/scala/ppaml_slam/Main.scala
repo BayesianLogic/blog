@@ -18,8 +18,6 @@ object Main {
       throw new RuntimeException("Usage: Main param_file input_dir output_dir")
     }
 
-    val rpc = new RPC
-
     // Parameter file has two lines: numParticles and maxTimesteps.
     val paramReader = Source.fromFile(args(0)).getLines
     val numParticles = paramReader.next.toInt

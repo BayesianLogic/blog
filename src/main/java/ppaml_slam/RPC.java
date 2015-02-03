@@ -44,6 +44,7 @@ public class RPC {
     return laserAngles;
   }
 
+  // Return relative coords of obstacles.
   public ArrayList<Obstacle> extractObstacles(double[] obs_lasers) {
     // Construct and send message.
     byte[] request = new byte[1 + 8 * obs_lasers.length];

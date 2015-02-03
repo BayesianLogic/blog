@@ -82,13 +82,16 @@ random Real rel_y(Landmark o, Timestep t) ~
     -sin(laser_theta(t)) * abs_x(o) + cos(laser_theta(t)) * abs_y(o)
     + laser_x(t) * sin(laser_theta(t)) - laser_y(t) * cos(laser_theta(t));
 
-// Each landmark generates zero or one blips.
+// At every laser timestep, each visible landmark generates zero or one blips.
+// (We do not model false positives for now.)
 type Blip;
 origin Landmark source(Blip);
 origin Timestep time(Blip);
 #Blip(source=o, time=t) ~
-    if within_range(o, t) then Bernoulli(0.95)
+    if is_laser_timestep(t) & within_range(o, t) then Bernoulli(0.95)
     else 0;
+
+random Boolean is_laser_timestep(Timestep t) ~ DontCare();
 
 // Return true iff landmark is visible laser range at the given timestep.
 random Boolean within_range(Landmark o, Timestep t) ~
