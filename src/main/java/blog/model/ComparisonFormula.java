@@ -212,7 +212,7 @@ public class ComparisonFormula extends Formula {
   }
 
   public boolean containsRandomSymbol() {
-    return false;
+    return left.containsRandomSymbol() || right.containsRandomSymbol();
   }
 
   /**
