@@ -23,15 +23,15 @@ random Real delta_t(Timestep t) ~ time(t) - time(t - 1);
 // Car pose:
 random Real car_x(Timestep t) ~
     if t == @0 then init_x
-    else MultivarGaussian(car_x(t - 1) + delta_t(t) * car_xdot(t), 0.00001);
+    else UnivarGaussian(car_x(t - 1) + delta_t(t) * car_xdot(t), 0.00001);
 random Real car_y(Timestep t) ~
     if t == @0 then init_y
-    else MultivarGaussian(car_y(t - 1) + delta_t(t) * car_ydot(t), 0.00001);
+    else UnivarGaussian(car_y(t - 1) + delta_t(t) * car_ydot(t), 0.00001);
 random Real car_theta(Timestep t) ~
     if t == @0 then init_theta
     else normalize_radians(car_theta_unnorm(t));
 random Real car_theta_unnorm(Timestep t) ~
-    MultivarGaussian(car_theta(t - 1) + delta_t(t) * car_thetadot(t), 0.00001);
+    UnivarGaussian(car_theta(t - 1) + delta_t(t) * car_thetadot(t), 0.00001);
 random Real car_xdot(Timestep t) ~
     velocity(t) * cos(car_theta(t)) -
     (velocity(t) / car_L) * tan(steering(t)) *
@@ -54,7 +54,7 @@ random Real laser_theta(Timestep t) ~ car_theta(t);
 
 // Convert angle to the range [-pi, pi).
 // Currently works only for angles that are at most 2*pi off.
-fixed Real normalize_radians(Real theta) =
+random Real normalize_radians(Real theta) ~
     if theta < -pi then theta + 2 * pi
     else if theta >= pi then theta - 2 * pi
     else theta;
@@ -92,7 +92,7 @@ random Boolean within_range(Landmark o, Timestep t) ~
     rel_angle(o, t) >= -pi/2 &
     rel_angle(o, t) <= pi/2;
 random Real rel_distance(Landmark o, Timestep t) ~
-    sqrt(rel_x(o, t)^2 + rel_y(o, t)^2);
+    (rel_x(o, t)^2 + rel_y(o, t)^2)^0.5;
 random Real rel_angle(Landmark o, Timestep t) ~
     atan2(rel_y(o, t), rel_x(o, t));
 
