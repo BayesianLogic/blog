@@ -49,7 +49,7 @@ object Main {
 
         // Extract pose from the most likely particle.
         // FIXME: horrible interface.
-        assert(queries(1).toString().startsWith("stateWithoutNoise"))
+        assert(queries(1).toString().startsWith("car_pose"))
         var bestPose: MatrixLib = null
         var bestLogLik = Double.NegativeInfinity
         queries(1).getHistogram().entrySet().foreach(rawEntry => {

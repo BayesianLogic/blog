@@ -43,6 +43,10 @@ random Real car_ydot(Timestep t) ~
 random Real car_thetadot(Timestep t) ~
     (velocity(t) / car_L) * tan(steering(t));
 
+// Car pose as a matrix, for querying.
+// (Otherwise we get marginals on x, y, theta, instead of the joint.)
+random RealMatrix car_pose(Timestep t) ~ vstack(car_x(t), car_y(t), car_theta(t));
+
 // Laser pose:
 random Real laser_x(Timestep t) ~
     car_x(t) + car_a * cos(car_theta(t)) +

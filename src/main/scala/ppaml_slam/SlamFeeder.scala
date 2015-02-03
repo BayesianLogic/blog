@@ -80,9 +80,7 @@ class SlamFeeder(model: Model, inputDirPath: String, maxTimesteps: Int) extends 
       evidence.addFromString(s"obs velocity(@$timestep) = $prevVelocity;")
       evidence.addFromString(s"obs steering(@$timestep) = $prevSteering;")
       queries.addFromString(s"query time(@$timestep);")
-      queries.addFromString(s"query car_x(@$timestep);")
-      queries.addFromString(s"query car_y(@$timestep);")
-      queries.addFromString(s"query car_theta(@$timestep);")
+      queries.addFromString(s"query car_pose(@$timestep);")
       // TODO: query landmarks
       if (sensor == 'gps) {
         prevTimestepWasGPS = true
