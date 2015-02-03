@@ -37,9 +37,6 @@ class SlamFeeder(model: Model, inputDirPath: String, maxTimesteps: Int) extends 
     inputDirPath + "/input_laser.csv")).iterator
   val laserHeader = laserReader.next
 
-  // For now, extract the obstacles from the first laser reading.
-  val obstacles = extractObstaclesFromFirstLaserReading
-
   var timestep = -1
   var prevVelocity = 0.0
   var prevSteering = 0.0
@@ -125,20 +122,6 @@ class SlamFeeder(model: Model, inputDirPath: String, maxTimesteps: Int) extends 
     // In the data, the laser readings are clockwise.
     // Make them counter-clockwise (trigonometric order).
     laserCSVLine.drop(1).take(361).reverse.map((s) => s.toDouble)
-  }
-
-  def extractObstaclesFromFirstLaserReading: Seq[Seq[Double]] = {
-    val laserReader = CSVReader.open(new File(
-      inputDirPath + "/input_laser.csv")).iterator
-    val laserHeader = laserReader.next
-    val laserVals = laserLineToLaserVals(laserReader.next).toArray
-    val (laserX, laserY, laserTheta) = SlamFeeder.carLocToLaserLoc(initX, initY, initTheta, paramA, paramB)
-    val laserAngles = LaserLogic.defaultLaserAngles
-    val laserMaxRange = LaserLogic.defaultLaserMaxRange
-    val obstacles = LaserLogic.extractObstacles(laserX, laserY, laserTheta, laserAngles, laserMaxRange, laserVals)
-    println("Have " + obstacles.size + " obstacles:");
-    println(obstacles)
-    obstacles.map(obstacle => Seq(obstacle.x, obstacle.y, obstacle.r))
   }
 }
 

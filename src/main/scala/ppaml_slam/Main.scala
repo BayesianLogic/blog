@@ -18,6 +18,8 @@ object Main {
       throw new RuntimeException("Usage: Main param_file input_dir output_dir")
     }
 
+    val rpc = new RPC
+
     // Parameter file has two lines: numParticles and maxTimesteps.
     val paramReader = Source.fromFile(args(0)).getLines
     val numParticles = paramReader.next.toInt
@@ -72,9 +74,7 @@ object Main {
 
     val outputMapWriter = new PrintWriter(new File(outputDirPath + "/slam_out_landmarks.csv"));
     outputMapWriter.println("GPSLon,GPSLat")
-    feeder.obstacles.foreach(obstacle => {
-      outputMapWriter.println(obstacle(0) + "," + obstacle(1))
-    })
+    // TODO: write obstacles
     outputMapWriter.close
   }
 }
