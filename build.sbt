@@ -113,3 +113,12 @@ scalacOptions += "-g:vars"
 
 // Include the sources in the assembled jar.
 unmanagedResourceDirectories in Compile += { baseDirectory.value / "src" }
+
+// Stuff below if for ppaml-slam:
+libraryDependencies += "com.github.tototoshi" %% "scala-csv" % "1.1.1"
+
+// This makes Eclipse see the stuff in src/main/resources properly:
+EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
+
+// When adding new libraryDependencies, Eclipse will complain about not finding
+// them. Run "sbt eclipse" to fix this.
