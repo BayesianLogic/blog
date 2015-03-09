@@ -189,17 +189,17 @@ public class InverseWishart implements CondProbDistrib {
   /**
    * Samples a value from this Inverse Wishart distribution by generating
    * <i>freeDeg</i> independent samples X_i's from Multivariate Gaussian with
-   * zero means and scale as the covariance matrix. Then
+   * zero means and scale's inverse as the covariance matrix. Then
    * \sum\limits_{i=1}^{freeDeg}X_i*X_i^T follows the Wishart distribution with
-   * scale and freeDeg as the parameters. And its inverse matrix follows our
-   * request (internal calls are ok if the private method
-   * <code>initParams</code> is called first)..
+   * scale's inverse and freeDeg as the parameters. And its inverse matrix
+   * follows our request (internal calls are ok if the private method
+   * <code>initParams</code> is called first).
    */
   public MatrixLib sample_value() {
     checkHasParams();
     MatrixLib temp = MatrixFactory.zeros(d, d);
     MultivarGaussian tmp = new MultivarGaussian();
-    tmp.setParams(MatrixFactory.zeros(d, 1), scale);
+    tmp.setParams(MatrixFactory.zeros(d, 1), scale.inverse());
     for (int i = 0; i < freeDeg; i++) {
       MatrixLib tmpmat = tmp.sample_value();
       temp = temp.plus(tmpmat.timesMat(tmpmat.transpose()));
