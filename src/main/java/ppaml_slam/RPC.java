@@ -70,6 +70,7 @@ public class RPC {
 
   public RPC() {
     // Connect to socket and check that server is running.
+    System.out.println("Connecting to RPC server...");
     context = ZMQ.context(1);
     socket = context.socket(ZMQ.REQ);
     socket.connect("tcp://localhost:6666");

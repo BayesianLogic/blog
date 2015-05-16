@@ -30,7 +30,7 @@ object Main {
     outputPathWriter.println("TimeGPS,GPSLat,GPSLon")
 
     Util.initRandom(false)
-    val modelPath = getClass.getResource("slam.blog").getPath
+    val modelPath = getClass.getResource("v3.blog").getPath
     val model = new Model()
     val dummyEvidence = new Evidence(model)
     val dummyQueries = new Queries(model)
