@@ -15,6 +15,7 @@ import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Queries;
 import blog.model.Type;
+import blog.sample.AbstractProposer;
 import blog.sample.MHSampler;
 import blog.sample.Sampler;
 import blog.type.Timestep;
@@ -79,6 +80,9 @@ public class ResampleMovePF extends InferenceEngine {
 
     // TODO: make this a parameter
     numMHIters = 10;
+
+    mhSampler = new MHSampler(model, new Properties());
+    mhSampler.initialize(new Evidence(null), new Queries(null));
   }
 
   /** Answers the queries provided at construction time. */
@@ -199,6 +203,10 @@ public class ResampleMovePF extends InferenceEngine {
     dataLogLik += logSumWeights;
 
     needsToBeResampledBeforeFurtherSampling = true;
+
+    // Make the MHSampler aware of the new evidence.
+    AbstractProposer proposer = (AbstractProposer) mhSampler.getProposer();
+    proposer.add(evidence);
   }
 
   protected void resample() {
@@ -267,13 +275,11 @@ public class ResampleMovePF extends InferenceEngine {
     for (int i = 0; i < particles.size(); i++) {
       System.out.println("Moving particle " + i);
       Particle particle = particles.get(i);
-      MHSampler sampler = new MHSampler(model, new Properties());
-      sampler.initialize(new Evidence(null), new Queries(null));
-      sampler.setBaseWorld(particle.getLatestWorld());
+      mhSampler.setBaseWorld(particle.getLatestWorld());
       for (int j = 0; j < numMHIters; j++) {
-        sampler.nextSample();
+        mhSampler.nextSample();
       }
-      particle.curWorld = sampler.getLatestWorld();
+      particle.curWorld = mhSampler.getLatestWorld();
       particle.logWeight = 0.0;
     }
   }
@@ -282,6 +288,7 @@ public class ResampleMovePF extends InferenceEngine {
 
   private int numParticles;
   private int numMHIters;
+  private MHSampler mhSampler;
   protected List<Particle> particles;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
   private Sampler particleSampler;
