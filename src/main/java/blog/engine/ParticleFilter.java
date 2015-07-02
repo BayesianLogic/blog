@@ -198,7 +198,7 @@ public class ParticleFilter extends InferenceEngine {
    * {@link Particle#copy()} for it to return an object of its own class).
    */
   protected Particle makeParticle(Set<? extends Type> idTypes) {
-    DefaultPartialWorld world = new DefaultPartialWorld(idTypes, false);
+    DefaultPartialWorld world = new DefaultPartialWorld(idTypes, false, false);
     return new Particle(particleSampler, world);
   }
 
