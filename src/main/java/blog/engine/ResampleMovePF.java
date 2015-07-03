@@ -20,6 +20,7 @@ import blog.sample.MHSampler;
 import blog.sample.Sampler;
 import blog.type.Timestep;
 import blog.world.DefaultPartialWorld;
+import blog.world.PartialWorldDiff;
 
 /**
  * Resample-move particle filter with customizable proposal distribution for the
@@ -279,7 +280,8 @@ public class ResampleMovePF extends InferenceEngine {
       for (int j = 0; j < numMHIters; j++) {
         mhSampler.nextSample();
       }
-      particle.curWorld = mhSampler.getLatestWorld();
+      PartialWorldDiff world = (PartialWorldDiff) mhSampler.getLatestWorld();
+      particle.curWorld = world.getSaved();
       particle.logWeight = 0.0;
     }
   }
