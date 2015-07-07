@@ -178,9 +178,21 @@ public class ParticleFilter extends InferenceEngine {
           currentQueries.reset();
         }
       }
+
+      // HACK: Answer atemporal queries at every timestep:
+      if (slicedQueries.containsKey(null)) {
+        Queries currentQueries = slicedQueries.get(null);
+        for (Particle particle : particles) {
+          particle.answer(currentQueries);
+        }
+        writer.writeAllResults(currentQueries);
+        currentQueries.reset();
+      }
+
       removePriorTimeSlice(timestep);
     }
 
+    /*-
     // Process atemporal queries (if any) after all the evidence.
     if (slicedQueries.containsKey(null)) {
       Queries currentQueries = slicedQueries.get(null);
@@ -190,6 +202,7 @@ public class ParticleFilter extends InferenceEngine {
       writer.writeAllResults(currentQueries);
       currentQueries.reset();
     }
+     */
   }
 
   /**

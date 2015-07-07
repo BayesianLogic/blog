@@ -148,8 +148,19 @@ public class ResampleMovePF extends InferenceEngine {
           currentQueries.reset();
         }
       }
+
+      // HACK: Answer atemporal queries at every timestep:
+      if (slicedQueries.containsKey(null)) {
+        Queries currentQueries = slicedQueries.get(null);
+        for (Particle particle : particles) {
+          particle.answer(currentQueries);
+        }
+        writer.writeAllResults(currentQueries);
+        currentQueries.reset();
+      }
     }
 
+    /*-
     // Process atemporal queries (if any) after all the evidence.
     if (slicedQueries.containsKey(null)) {
       Queries currentQueries = slicedQueries.get(null);
@@ -159,6 +170,7 @@ public class ResampleMovePF extends InferenceEngine {
       writer.writeAllResults(currentQueries);
       currentQueries.reset();
     }
+     */
   }
 
   /**
