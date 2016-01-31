@@ -239,12 +239,13 @@ public class ParticleFilter extends InferenceEngine {
     ListIterator<Particle> particleIt = particles.listIterator();
     while (particleIt.hasNext()) {
       Particle particle = particleIt.next();
-      if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
-        particleIt.remove();
-      } else {
-        logSumWeights = Util.logSum(logSumWeights,
-            particle.getLatestLogWeight());
-      }
+      /*
+       * if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
+       * particleIt.remove();
+       * } else {
+       */
+      logSumWeights = Util.logSum(logSumWeights, particle.getLatestLogWeight());
+      // }
     }
 
     if (particles.size() == 0)
