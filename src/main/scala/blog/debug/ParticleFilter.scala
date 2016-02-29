@@ -93,9 +93,10 @@ class ParticleFilter(
   /**
    * Advance to the next timestep given by the feeder.
    */
-  def advance: Unit = {
+  def advance: Queries = {
     if (!feeder.hasNext) {
       println("advance: finished")
+      null
     } else {
       val (timestep, evidence, queries) = feeder.next
       assert(timestep >= currentTimestep)
@@ -111,6 +112,7 @@ class ParticleFilter(
       answerQueries(currentQueries)
       forgetPast
       println(s"advance: processed timestep ${timestep}")
+      currentQueries
     }
   }
 

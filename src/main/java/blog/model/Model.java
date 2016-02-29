@@ -524,16 +524,16 @@ public class Model {
     int errors = 0;
     LinkedHashSet callStack = new LinkedHashSet();
 
+    for (Iterator iter = functions.iterator(); iter.hasNext();) {
+      Function f = (Function) iter.next();
+      errors += f.compile(callStack);
+    }
+
     for (Iterator typeIter = types.iterator(); typeIter.hasNext();) {
       Type type = (Type) typeIter.next();
       for (Iterator popIter = type.getPOPs().iterator(); popIter.hasNext();) {
         errors += ((POP) popIter.next()).getDepModel().compile(callStack);
       }
-    }
-
-    for (Iterator iter = functions.iterator(); iter.hasNext();) {
-      Function f = (Function) iter.next();
-      errors += f.compile(callStack);
     }
 
     return errors;

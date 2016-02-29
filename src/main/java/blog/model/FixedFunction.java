@@ -240,7 +240,7 @@ public class FixedFunction extends Function {
       for (int i = 0; argVars != null && i < argVars.length; ++i) {
         scope.put(argVars[i].getName(), argVars[i]);
       }
-      return body.checkTypesAndScope(model, scope);
+      return body.checkTypesAndScope(model, scope, null);
     }
 
     if (interpClass == null) {
@@ -257,7 +257,7 @@ public class FixedFunction extends Function {
       // contain no free variables
       for (Iterator iter = interpParams.iterator(); iter.hasNext();) {
         ArgSpec param = (ArgSpec) iter.next();
-        if (!param.checkTypesAndScope(model, scope)) {
+        if (!param.checkTypesAndScope(model, scope, null)) {
           correct = false;
         }
       }

@@ -272,12 +272,13 @@ public class ConjFormula extends Formula {
     return buf.toString();
   }
 
-  public boolean checkTypesAndScope(Model model, Map scope) {
+  @Override
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
     boolean result = true; // conjunction of no formulas is true
     Iterator conjIter = conjuncts.iterator();
     while (conjIter.hasNext()) {
       Formula form = (Formula) conjIter.next();
-      if (!form.checkTypesAndScope(model, scope)) {
+      if (!form.checkTypesAndScope(model, scope, childType)) {
         return false;
       }
     }

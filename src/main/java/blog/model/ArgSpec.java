@@ -137,10 +137,14 @@ public abstract class ArgSpec {
    * type or scope error, prints an appropriate message to standard error and
    * returns false.
    * 
+   * @param model
    * @param scope
    *          a Map from variable names (Strings) to LogicalVar objects
+   * @param childType
+   * @return
    */
-  public abstract boolean checkTypesAndScope(Model model, Map scope);
+  public abstract boolean checkTypesAndScope(Model model, Map scope,
+      Type childType);
 
   /**
    * Does compilation steps that can only be done correctly once the model is
@@ -301,7 +305,7 @@ public abstract class ArgSpec {
    *          a map from String to LogicalVar
    */
   public ArgSpec getArgSpecInScope(Model model, Map scope) {
-    return (checkTypesAndScope(model, scope) ? this : null);
+    return (checkTypesAndScope(model, scope, null) ? this : null);
   }
 
   /**

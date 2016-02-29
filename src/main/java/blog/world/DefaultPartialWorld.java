@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import blog.bn.BasicVar;
+import blog.bn.DefaultCBN;
 import blog.common.HashMapWithPreimages;
 import blog.common.HashMultiMap;
 import blog.common.IndexedHashMultiMap;
@@ -68,8 +69,10 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
    * @param recordUsage
    *          whether to record the object usage as argument or value of
    *          function application var
+   * @param useCBN
+   *          whether to initialize a CBN for this world
    */
-  public DefaultPartialWorld(Set idTypes, boolean recordUsage) {
+  public DefaultPartialWorld(Set idTypes, boolean recordUsage, boolean useCBN) {
     super(idTypes, null, recordUsage);
     basicVarToValue = new HashMap();
     nameToBasicVar = new HashMap<String, BasicVar>();
@@ -82,10 +85,13 @@ public class DefaultPartialWorld extends AbstractPartialWorld implements
     varToUninstParent = new HashMapWithPreimages();
     varToLogProb = new HashMap();
     derivedVarToValue = new HashMap();
+    if (useCBN) {
+      cbn = new DefaultCBN();
+    }
   }
 
   public DefaultPartialWorld(Set idTypes) {
-    this(idTypes, false);
+    this(idTypes, false, false);
   }
 
   public Object clone() {

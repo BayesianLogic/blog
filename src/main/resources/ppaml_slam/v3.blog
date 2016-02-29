@@ -1,0 +1,161 @@
+//////////////////////////////////////////////////////////////////////////////
+// Car model:
+
+// Car parameters:
+random Real car_a ~ DontCare();
+random Real car_b ~ DontCare();
+random Real car_h ~ DontCare();
+random Real car_L ~ DontCare();
+
+// Initial car pose:
+random Real init_x ~ DontCare();
+random Real init_y ~ DontCare();
+random Real init_theta ~ DontCare();
+
+// Controls:
+random Real Velocity(Timestep t) ~ DontCare();
+random Real Steering(Timestep t) ~ DontCare();
+
+// Time at every timestep:
+random Real Time(Timestep t) ~ DontCare();
+random Real DeltaT(Timestep t) ~ Time(t) - Time(t - 1);
+
+// Dynamics model parameters:
+fixed Real car_x_var = 0.00001;
+fixed Real car_y_var = 0.00001;
+fixed Real car_theta_var = 0.00001;
+
+// Car pose:
+random Real CarX(Timestep t) ~
+    if t == @0 then init_x
+    else UnivarGaussian(CarX(t - 1) + DeltaT(t) * CarXDot(t), car_x_var);
+random Real CarY(Timestep t) ~
+    if t == @0 then init_y
+    else UnivarGaussian(CarY(t - 1) + DeltaT(t) * CarYDot(t), car_y_var);
+random Real CarTheta(Timestep t) ~
+    if t == @0 then init_theta
+    else normalize_radians(CarThetaUnnorm(t));
+random Real CarThetaUnnorm(Timestep t) ~
+    UnivarGaussian(CarTheta(t - 1) + DeltaT(t) * CarThetaDot(t), car_theta_var);
+random Real CarXDot(Timestep t) ~
+    Velocity(t) * cos(CarTheta(t)) -
+    (Velocity(t) / car_L) * tan(Steering(t)) *
+    (car_a * sin(CarTheta(t)) + car_b * cos(CarTheta(t)));
+random Real CarYDot(Timestep t) ~
+    Velocity(t) * sin(CarTheta(t)) -
+    (Velocity(t) / car_L) * tan(Steering(t)) *
+    (car_a * cos(CarTheta(t)) - car_b * sin(CarTheta(t)));
+random Real CarThetaDot(Timestep t) ~
+    (Velocity(t) / car_L) * tan(Steering(t));
+
+// Car pose as a matrix, for querying.
+// (Otherwise we get marginals on x, y, theta, instead of the joint.)
+random RealMatrix CarPose(Timestep t) ~ vstack(CarX(t), CarY(t), CarTheta(t));
+
+// Laser rangefinder pose:
+random Real LaserX(Timestep t) ~
+    CarX(t) + car_a * cos(CarTheta(t)) +
+    car_b * cos(CarTheta(t) + pi / 2.0);
+random Real LaserY(Timestep t) ~
+    CarY(t) + car_a * sin(CarTheta(t)) +
+    car_b * sin(CarTheta(t) + pi / 2.0);
+random Real LaserTheta(Timestep t) ~ CarTheta(t);
+
+// Convert angle to the range [-pi, pi).
+// Currently works only for angles that are at most 2*pi off.
+random Real normalize_radians(Real theta) ~
+    if theta < -pi then theta + 2 * pi
+    else if theta >= pi then theta - 2 * pi
+    else theta;
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Map model:
+
+// World boundaries:
+fixed Real min_x = -7.0;
+fixed Real max_x = 7.0;
+fixed Real min_y = -7.0;
+fixed Real max_y = 7.0;
+
+// Rate of landmarks appearing at each timestep:
+fixed Real rate_landmarks_appear = 0.0016;
+
+// Number of landmarks generated at each timestep:
+type Landmark;
+origin Timestep AppearanceTime(Landmark);
+#Landmark(AppearanceTime = t) ~ Poisson(rate_landmarks_appear);
+
+// Absolute position of landmarks:
+random Real LandmarkX(Landmark lm) ~ UniformReal(min_x, max_x);
+random Real LandmarkY(Landmark lm) ~ UniformReal(min_y, max_y);
+
+// Cartesian landmark position w.r.t. the laser rangefinder.
+random Real LandmarkRelX(Landmark lm, Timestep t) ~
+    if t < AppearanceTime(lm) then null
+    else (
+        cos(LaserTheta(t)) * LandmarkX(lm) + sin(LaserTheta(t)) * LandmarkY(lm)
+        - LaserX(t) * cos(LaserTheta(t)) - LaserY(t) * sin(LaserTheta(t)));
+random Real LandmarkRelY(Landmark lm, Timestep t) ~
+    if t < AppearanceTime(lm) then null
+    else (
+        -sin(LaserTheta(t)) * LandmarkX(lm) + cos(LaserTheta(t)) * LandmarkY(lm)
+        + LaserX(t) * sin(LaserTheta(t)) - LaserY(t) * cos(LaserTheta(t)));
+
+/*
+// Polar landmark position w.r.t. the laser rangefinder.
+random Real LandmarkRange(Landmark lm, Timestep t) ~
+    if t < AppearanceTime(lm) then null
+    else (LandmarkRelX(lm, t)^2 + LandmarkRelY(lm, t)^2)^0.5;
+random Real LandmarkBearing(Landmark lm, Timestep t) ~
+    if t < AppearanceTime(lm) then null
+    else atan2(LandmarkRelY(lm, t), LandmarkRelX(lm, t));
+*/
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Observation model:
+
+// We only get observations at some timesteps.
+random Boolean IsLaserTimestep(Timestep t) ~ DontCare();
+
+// Fixed parameters:
+fixed Real prob_detection = 0.4;
+fixed Real rate_false_alarms = 0.012;
+
+// Number of blips generated at each timestep:
+type Blip;
+origin Timestep ObsTime(Blip);
+origin Landmark Source(Blip);
+#Blip(ObsTime = t, Source = lm) ~
+    if IsLaserTimestep(t) then Bernoulli(prob_detection)
+    else 0;
+#Blip(ObsTime = t) ~
+    if IsLaserTimestep(t) then Poisson(rate_false_alarms)
+    else 0;
+
+// Cartesian blip position w.r.t. the laser rangefinder:
+fixed Real blip_x_var = 0.01;
+fixed Real blip_y_var = 0.01;
+random Real BlipRelX(Blip b) ~
+    if Source(b) == null then UniformReal(min_x, max_x)
+    else UnivarGaussian(LandmarkX(Source(b), ObsTime(b)), blip_x_var);
+random Real BlipRelY(Blip b) ~
+    if Source(b) == null then UniformReal(min_y, max_y)
+    else UnivarGaussian(LandmarkY(Source(b), ObsTime(b)), blip_y_var);
+
+/*
+// Polar blip position w.r.t. the laser rangefinder:
+fixed Real min_range = 0.0;
+fixed Real max_range = 10.0;
+fixed Real min_bearing = -pi;
+fixed Real max_bearing = pi;
+fixed Real blip_range_var = 0.01;
+fixed Real blip_bearing_var = 0.01;
+random Real BlipRange(Blip b) ~
+    if Source(b) == null then UniformReal(min_range, max_range)
+    else UnivarGaussian(LandmarkRange(Source(b), ObsTime(b)), blip_range_var);
+random Real BlipBearing(Blip b) ~
+    if Source(b) == null then UniformReal(min_bearing, max_bearing)
+    else UnivarGaussian(LandmarkBearing(Source(b), ObsTime(b)), blip_bearing_var);
+*/

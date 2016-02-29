@@ -4,7 +4,7 @@ import NativePackagerHelper._
 
 name := "blog"
 
-version := "0.9.1"
+version := "0.10.alpha1"
 
 javacOptions ++= Seq("-source", "1.5", "-target", "1.5")
 
@@ -106,4 +106,19 @@ mappings in Universal += file("bloglint.bat") -> "bin/bloglint.bat"
 
 mappings in Universal += file("src/main/scala/iblog.scala") -> "bin/iblog.scala"
 
+// Include debugging symbols in the compiled classes.
+javacOptions += "-g"
 
+scalacOptions += "-g:vars"
+
+// Include the sources in the assembled jar.
+unmanagedResourceDirectories in Compile += { baseDirectory.value / "src" }
+
+// Stuff below if for ppaml-slam:
+libraryDependencies += "com.github.tototoshi" %% "scala-csv" % "1.1.1"
+
+// This makes Eclipse see the stuff in src/main/resources properly:
+EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
+
+// When adding new libraryDependencies, Eclipse will complain about not finding
+// them. Run "sbt eclipse" to fix this.

@@ -50,7 +50,7 @@ public class Queries extends ArrayList<Query> {
   public int compile() {
     int errors = 0;
     for (Query query : this) {
-      query.compile();
+      errors += query.compile();
     }
     return errors;
   }

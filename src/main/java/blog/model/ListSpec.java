@@ -85,10 +85,10 @@ public class ListSpec extends ArgSpec {
   }
 
   @Override
-  public boolean checkTypesAndScope(Model model, Map scope) {
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
     // Check typing of all symbols in the multiset
     for (ArgSpec obj : elements) {
-      if (!obj.checkTypesAndScope(model, scope)) {
+      if (!obj.checkTypesAndScope(model, scope, null)) {
         return false;
       }
     }

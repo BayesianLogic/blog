@@ -130,20 +130,11 @@ public class DistribSpec extends ArgSpec {
     return true;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.model.ArgSpec#checkTypesAndScope(blog.model.Model, java.util.Map)
-   */
   @Override
-  public boolean checkTypesAndScope(Model model, Map scope) {
-    return checkTypesAndScope(model, scope, null);
-  }
-
   public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
     boolean correct = true;
     for (ArgSpec spec : args) {
-      if (!spec.checkTypesAndScope(model, scope)) {
+      if (!spec.checkTypesAndScope(model, scope, null)) {
         correct = false;
       }
     }

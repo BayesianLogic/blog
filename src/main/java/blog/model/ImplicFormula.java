@@ -238,9 +238,9 @@ public class ImplicFormula extends Formula {
     return (antecedent + " -> " + consequent);
   }
 
-  public boolean checkTypesAndScope(Model model, Map scope) {
-    return (antecedent.checkTypesAndScope(model, scope) && consequent
-        .checkTypesAndScope(model, scope));
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
+    return (antecedent.checkTypesAndScope(model, scope, null) && consequent
+        .checkTypesAndScope(model, scope, null));
   }
 
   public ArgSpec replace(Term t, ArgSpec another) {
