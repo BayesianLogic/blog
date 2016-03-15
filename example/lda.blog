@@ -10,19 +10,19 @@ distinct Document Doc[5];
 fixed Integer K = 3;
 fixed Integer W = 10;
 
-fixed RealMatrix alpha = 1.0 * ones(W, 1);
-fixed RealMatrix beta = 1.0 * ones(K, 1);
+fixed RealMatrix a = 1.0 * ones(W, 1);
+fixed RealMatrix b = 1.0 * ones(K, 1);
 
-random RealMatrix TopicWord(Integer p) ~ Dirichlet(alpha);
-random RealMatrix DocTopic(Document d) ~ Dirichlet(beta);
-random RealMatrix WordTopic(Document d, Integer p) 
+random RealMatrix TopicWord(Integer p) ~ Dirichlet(a);
+random RealMatrix DocTopic(Document d) ~ Dirichlet(b);
+random Integer WordTopic(Document d, Integer p) 
   ~ Discrete(DocTopic(d));
-random RealMatrix DocWord(Document d, Integer p)
+random Integer DocWord(Document d, Integer p)
   ~ Discrete(TopicWord(WordTopic(d, p)));
 
-query DocTopic(Doc[0], 0);
-query DocTopic(Doc[0], 1);
-query DocTopic(Doc[0], 2);
+query DocTopic(Doc[0])[0];
+query DocTopic(Doc[0])[1];
+query DocTopic(Doc[0])[2];
 
 ///////// data ///////////
 /*
