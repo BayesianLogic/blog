@@ -10,8 +10,8 @@ distinct Document Doc[5];
 fixed Integer K = 3;
 fixed Integer W = 10;
 
-fixed Real alpha = 1.0 * ones(W, 1);
-fixed Real beta = 1.0 * ones(K, 1);
+fixed RealMatrix alpha = 1.0 * ones(W, 1);
+fixed RealMatrix beta = 1.0 * ones(K, 1);
 
 random RealMatrix TopicWord(Integer p) ~ Dirichlet(alpha);
 random RealMatrix DocTopic(Document d) ~ Dirichlet(beta);
