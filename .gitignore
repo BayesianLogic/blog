@@ -2,6 +2,7 @@
 .classpath
 .project
 .refactorings
+.settings/*
 /dist
 /build
 /nbproject
