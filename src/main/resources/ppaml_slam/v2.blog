@@ -1,0 +1,110 @@
+//////////////////////////////////////////////////////////////////////////////
+// Dynamics model:
+
+// Car parameters:
+random Real car_a ~ DontCare();
+random Real car_b ~ DontCare();
+random Real car_h ~ DontCare();
+random Real car_L ~ DontCare();
+
+// Initial car pose:
+random Real init_x ~ DontCare();
+random Real init_y ~ DontCare();
+random Real init_theta ~ DontCare();
+
+// Controls:
+random Real velocity(Timestep t) ~ DontCare();
+random Real steering(Timestep t) ~ DontCare();
+
+// Time at every timestep:
+random Real time(Timestep t) ~ DontCare();
+random Real delta_t(Timestep t) ~ time(t) - time(t - 1);
+
+// Car pose:
+random Real car_x(Timestep t) ~
+    if t == @0 then init_x
+    else UnivarGaussian(car_x(t - 1) + delta_t(t) * car_xdot(t), 0.00001);
+random Real car_y(Timestep t) ~
+    if t == @0 then init_y
+    else UnivarGaussian(car_y(t - 1) + delta_t(t) * car_ydot(t), 0.00001);
+random Real car_theta(Timestep t) ~
+    if t == @0 then init_theta
+    else normalize_radians(car_theta_unnorm(t));
+random Real car_theta_unnorm(Timestep t) ~
+    UnivarGaussian(car_theta(t - 1) + delta_t(t) * car_thetadot(t), 0.00001);
+random Real car_xdot(Timestep t) ~
+    velocity(t) * cos(car_theta(t)) -
+    (velocity(t) / car_L) * tan(steering(t)) *
+    (car_a * sin(car_theta(t)) + car_b * cos(car_theta(t)));
+random Real car_ydot(Timestep t) ~
+    velocity(t) * sin(car_theta(t)) -
+    (velocity(t) / car_L) * tan(steering(t)) *
+    (car_a * cos(car_theta(t)) - car_b * sin(car_theta(t)));
+random Real car_thetadot(Timestep t) ~
+    (velocity(t) / car_L) * tan(steering(t));
+
+// Car pose as a matrix, for querying.
+// (Otherwise we get marginals on x, y, theta, instead of the joint.)
+random RealMatrix car_pose(Timestep t) ~ vstack(car_x(t), car_y(t), car_theta(t));
+
+// Laser pose:
+random Real laser_x(Timestep t) ~
+    car_x(t) + car_a * cos(car_theta(t)) +
+    car_b * cos(car_theta(t) + pi / 2.0);
+random Real laser_y(Timestep t) ~
+    car_y(t) + car_a * sin(car_theta(t)) +
+    car_b * sin(car_theta(t) + pi / 2.0);
+random Real laser_theta(Timestep t) ~ car_theta(t);
+
+// Convert angle to the range [-pi, pi).
+// Currently works only for angles that are at most 2*pi off.
+random Real normalize_radians(Real theta) ~
+    if theta < -pi then theta + 2 * pi
+    else if theta >= pi then theta - 2 * pi
+    else theta;
+
+//////////////////////////////////////////////////////////////////////////////
+// Observation model:
+
+// There are some landmarks on the map.
+type Landmark;
+#Landmark ~ Poisson(6);
+
+// Absolute position of a landmark on the map.
+random Real abs_x(Landmark o) ~ UniformReal(-7.0, 7.0);
+random Real abs_y(Landmark o) ~ UniformReal(-7.0, 7.0);
+
+// Laser-relative position of a landmark.
+random Real rel_x(Landmark o, Timestep t) ~
+    cos(laser_theta(t)) * abs_x(o) + sin(laser_theta(t)) * abs_y(o)
+    - laser_x(t) * cos(laser_theta(t)) - laser_y(t) * sin(laser_theta(t));
+random Real rel_y(Landmark o, Timestep t) ~
+    -sin(laser_theta(t)) * abs_x(o) + cos(laser_theta(t)) * abs_y(o)
+    + laser_x(t) * sin(laser_theta(t)) - laser_y(t) * cos(laser_theta(t));
+
+// At every laser timestep, each visible landmark generates zero or one blips.
+// (We do not model false positives for now.)
+type Blip;
+origin Landmark source(Blip);
+origin Timestep time(Blip);
+#Blip(source=o, time=t) ~
+    if is_laser_timestep(t) & within_range(o, t) then Bernoulli(0.95)
+    else 0;
+
+random Boolean is_laser_timestep(Timestep t) ~ DontCare();
+
+// Return true iff landmark is visible laser range at the given timestep.
+random Boolean within_range(Landmark o, Timestep t) ~
+    rel_distance(o, t) <= 10.0 &
+    rel_angle(o, t) >= -pi/2 &
+    rel_angle(o, t) <= pi/2;
+random Real rel_distance(Landmark o, Timestep t) ~
+    (rel_x(o, t)^2 + rel_y(o, t)^2)^0.5;
+random Real rel_angle(Landmark o, Timestep t) ~
+    atan2(rel_y(o, t), rel_x(o, t));
+
+// Blip position.
+random Real obs_x(Blip b) ~
+    UnivarGaussian(rel_x(source(b), time(b)), 0.01);
+random Real obs_y(Blip b) ~
+    UnivarGaussian(rel_y(source(b), time(b)), 0.01);

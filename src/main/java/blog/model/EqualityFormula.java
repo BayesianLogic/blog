@@ -216,7 +216,7 @@ public class EqualityFormula extends Formula {
    * An equality formula is properly typed if the type of one term is a subtype
    * of the type of the other term.
    */
-  public boolean checkTypesAndScope(Model model, Map scope) {
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
 
     if ((eq1 == null) || (eq2 == null)) {
       return false;

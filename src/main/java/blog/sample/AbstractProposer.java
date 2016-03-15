@@ -51,6 +51,8 @@ public abstract class AbstractProposer implements Proposer {
   public void add(Evidence evidence) {
     this.evidence.addAll(evidence);
     evidenceVars.addAll(evidence.getEvidenceVars());
+    // Recompute numBasicEvidenceVars.
+    numBasicEvidenceVars = 0;
     for (Iterator iter = evidenceVars.iterator(); iter.hasNext();) {
       if (iter.next() instanceof BasicVar) {
         numBasicEvidenceVars++;

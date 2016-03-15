@@ -1,38 +1,3 @@
-/*
- * Copyright (c) 2005, Regents of the University of California
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
- *
- * * Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the
- *   distribution.  
- *
- * * Neither the name of the University of California, Berkeley nor
- *   the names of its contributors may be used to endorse or promote
- *   products derived from this software without specific prior 
- *   written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package blog.engine;
 
 import java.util.ArrayList;
@@ -50,38 +15,37 @@ import blog.model.Evidence;
 import blog.model.Model;
 import blog.model.Queries;
 import blog.model.Type;
+import blog.sample.AbstractProposer;
+import blog.sample.MHSampler;
 import blog.sample.Sampler;
 import blog.type.Timestep;
 import blog.world.DefaultPartialWorld;
+import blog.world.PartialWorldDiff;
 
 /**
- * A Particle Filter. It works by keeping a set of {@link Particles}, each
- * representing a partial world, weighted by the
- * evidence. It uses the following properties: <code>numParticles</code> or
- * <code>numSamples</code>: number of particles (default is <code>1000</code>).
+ * Resample-move particle filter with customizable proposal distribution for the
+ * move step.
  * 
- * The ParticleFilter is an unusual {@link InferenceEngine} in that it takes
- * evidence and queries additional to the ones taken by
- * {@link #setEvidence(Evidence)} and {@link #setQueries(List)}. The evidence
- * set by {@link #setEvidence(Evidence)} is used in the very beginning of
- * inference (thus keeping the general InferenceEngine semantics for it) and the
- * queries set by {@link #setQueries(List)} are used by {@link #answerQueries()}
- * only (again keeping the original InferenceEngine semantics).
+ * Does not forget past timesteps, since they are needed to compute the
+ * acceptance ratio in the move step.
+ * 
+ * @author cberzan
+ * @since May 26, 2015
  */
-public class ParticleFilter extends InferenceEngine {
+public class ResampleMovePF extends InferenceEngine {
 
   /**
    * Creates a new particle filter for the given BLOG model, with configuration
    * parameters specified by the given properties table.
    */
-  public ParticleFilter(Model model, Properties properties) {
+  public ResampleMovePF(Model model, Properties properties) {
     super(model);
 
     String numParticlesStr = properties.getProperty("numParticles");
     String numSamplesStr = properties.getProperty("numSamples");
     if (numParticlesStr != null && numSamplesStr != null
         && !numParticlesStr.equals(numSamplesStr))
-      Util.fatalError("ParticleFilter received both numParticles and numSamples properties with distinct values.");
+      Util.fatalError("ResampleMovePF received both numParticles and numSamples properties with distinct values.");
     if (numParticlesStr == null)
       numParticlesStr = numSamplesStr;
     if (numParticlesStr == null)
@@ -114,6 +78,12 @@ public class ParticleFilter extends InferenceEngine {
     }
 
     dataLogLik = 0;
+
+    // TODO: make this a parameter
+    numMHIters = 10;
+
+    mhSampler = new MHSampler(model, new Properties());
+    mhSampler.initialize(new Evidence(null), new Queries(null));
   }
 
   /** Answers the queries provided at construction time. */
@@ -188,8 +158,6 @@ public class ParticleFilter extends InferenceEngine {
         writer.writeAllResults(currentQueries);
         currentQueries.reset();
       }
-
-      removePriorTimeSlice(timestep);
     }
 
     /*-
@@ -211,20 +179,8 @@ public class ParticleFilter extends InferenceEngine {
    * {@link Particle#copy()} for it to return an object of its own class).
    */
   protected Particle makeParticle(Set<? extends Type> idTypes) {
-    DefaultPartialWorld world = new DefaultPartialWorld(idTypes, false, false);
+    DefaultPartialWorld world = new DefaultPartialWorld(idTypes, false, true);
     return new Particle(particleSampler, world);
-  }
-
-  /**
-   * remove all the temporal variables prior to the specified timestep
-   * 
-   * @param timestep
-   *          Timestep before which the vars should be removed
-   */
-  public void removePriorTimeSlice(Timestep timestep) {
-    for (Particle p : particles) {
-      p.removePriorTimeSlice(timestep);
-    }
   }
 
   /** Takes more evidence. */
@@ -235,30 +191,23 @@ public class ParticleFilter extends InferenceEngine {
 
     if (needsToBeResampledBeforeFurtherSampling) {
       resample();
+      move();
     }
 
-    if (beforeTakesEvidence != null)
-      beforeTakesEvidence.evaluate(evidence, this);
-
     for (Particle p : particles) {
-      if (beforeParticleTakesEvidence != null)
-        beforeParticleTakesEvidence.evaluate(p, evidence, this);
       p.take(evidence);
-      if (afterParticleTakesEvidence != null)
-        afterParticleTakesEvidence.evaluate(p, evidence, this);
     }
 
     double logSumWeights = Double.NEGATIVE_INFINITY;
     ListIterator<Particle> particleIt = particles.listIterator();
     while (particleIt.hasNext()) {
       Particle particle = particleIt.next();
-      /*
-       * if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
-       * particleIt.remove();
-       * } else {
-       */
-      logSumWeights = Util.logSum(logSumWeights, particle.getLatestLogWeight());
-      // }
+      if (particle.getLatestLogWeight() < Sampler.NEGLIGIBLE_LOG_WEIGHT) {
+        particleIt.remove();
+      } else {
+        logSumWeights = Util.logSum(logSumWeights,
+            particle.getLatestLogWeight());
+      }
     }
 
     if (particles.size() == 0)
@@ -268,8 +217,9 @@ public class ParticleFilter extends InferenceEngine {
 
     needsToBeResampledBeforeFurtherSampling = true;
 
-    if (afterTakesEvidence != null)
-      afterTakesEvidence.evaluate(evidence, this);
+    // Make the MHSampler aware of the new evidence.
+    AbstractProposer proposer = (AbstractProposer) mhSampler.getProposer();
+    proposer.add(evidence);
   }
 
   protected void resample() {
@@ -334,52 +284,25 @@ public class ParticleFilter extends InferenceEngine {
     particles = newParticles;
   }
 
-  // PARTICLE TAKES EVIDENCE EVENT HANDLING
-  /**
-   * An interface specifying handlers for before and after a particle takes
-   * evidence.
-   */
-  public static interface ParticleTakesEvidenceHandler {
-    public void evaluate(Particle particle, Evidence evidence,
-        ParticleFilter particleFilter);
+  protected void move() {
+    for (int i = 0; i < particles.size(); i++) {
+      System.out.println("Moving particle " + i);
+      Particle particle = particles.get(i);
+      mhSampler.setBaseWorld(particle.getLatestWorld());
+      for (int j = 0; j < numMHIters; j++) {
+        mhSampler.nextSample();
+      }
+      PartialWorldDiff world = (PartialWorldDiff) mhSampler.getLatestWorld();
+      particle.curWorld = world.getSaved();
+      particle.logWeight = 0.0;
+    }
   }
-
-  /**
-   * The {@link ParticleTakesEvidenceHandler} invoked right before a particle
-   * takes evidence.
-   */
-  public ParticleTakesEvidenceHandler beforeParticleTakesEvidence;
-
-  /**
-   * The {@link ParticleTakesEvidenceHandler} invoked right after a particle
-   * takes evidence.
-   */
-  public ParticleTakesEvidenceHandler afterParticleTakesEvidence;
-
-  // FILTER TAKES EVIDENCE EVENT HANDLING
-  /**
-   * An interface specifying handlers for before and after the particle filter
-   * takes evidence.
-   */
-  public static interface TakesEvidenceHandler {
-    public void evaluate(Evidence evidence, ParticleFilter particleFilter);
-  }
-
-  /**
-   * The {@link TakesEvidenceHandler} invoked right before a particle takes
-   * evidence.
-   */
-  public TakesEvidenceHandler beforeTakesEvidence;
-
-  /**
-   * The {@link TakesEvidenceHandler} invoked right after a particle takes
-   * evidence.
-   */
-  public TakesEvidenceHandler afterTakesEvidence;
 
   private Set<Type> idTypes; // of Type
 
   private int numParticles;
+  private int numMHIters;
+  private MHSampler mhSampler;
   protected List<Particle> particles;
   private boolean needsToBeResampledBeforeFurtherSampling = false;
   private Sampler particleSampler;

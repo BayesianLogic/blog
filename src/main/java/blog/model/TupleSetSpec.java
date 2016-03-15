@@ -35,7 +35,16 @@
 
 package blog.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import blog.bn.BayesNetVar;
 import blog.bn.RandFuncAppVar;
@@ -49,7 +58,6 @@ import blog.common.Util;
 import blog.objgen.ObjGenGraph;
 import blog.objgen.ObjectIterator;
 import blog.sample.EvalContext;
-
 
 /**
  * Represents an argument - set consisting of implicitly specified tuples. The
@@ -221,7 +229,7 @@ public class TupleSetSpec extends ArgSpec {
     return true; // the type symbol
   }
 
-  public boolean checkTypesAndScope(Model model, Map scope) {
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
     boolean correct = true;
     Map extendedScope = new HashMapDiff(scope);
     for (int i = 0; i < vars.length; ++i) {
@@ -243,7 +251,7 @@ public class TupleSetSpec extends ArgSpec {
       }
     }
 
-    correct = (correct && cond.checkTypesAndScope(model, extendedScope));
+    correct = (correct && cond.checkTypesAndScope(model, extendedScope, null));
 
     return correct;
   }

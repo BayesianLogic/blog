@@ -1,0 +1,71 @@
+//////////////////////////////////////////////////////////////////////////////
+// Conventions:
+// - carParams is a column vector [a; b; h; L].
+// - state is a column vector [x; y; theta].
+// - obstacles is a matrix where the rows are [x, y, r].
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Parameters:
+
+random RealMatrix carParams ~ DontCare();
+random RealMatrix initialState ~ DontCare();
+random RealMatrix obstacles ~ DontCare();
+
+random Real velocity(Timestep timestep) ~ DontCare();
+random Real steering(Timestep timestep) ~ DontCare();
+random Real time(Timestep timestep) ~ DontCare();
+
+fixed Real dynamicsCovScale = 0.00001;
+fixed Real laserCovScale = 30.0;
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Dynamics model:
+
+fixed RealMatrix dynamics(
+        RealMatrix carParams, RealMatrix old_state,
+        Real velocity, Real steering, Real deltaT)
+    = ppaml_slam.DynamicsInterp();
+
+random RealMatrix stateWithoutNoise(Timestep timestep) ~
+    if timestep == @0 then initialState
+    else dynamics(
+            carParams, state(timestep - 1),
+            velocity(timestep),
+            steering(timestep),
+            time(timestep) - time(timestep - 1));
+
+random RealMatrix state(Timestep timestep) ~
+    IsotropicMultivarGaussian(stateWithoutNoise(timestep), dynamicsCovScale);
+
+
+//////////////////////////////////////////////////////////////////////////////
+// Observation model:
+
+fixed RealMatrix renderLasers(
+        Real laserX, Real laserY, Real laserTheta, RealMatrix obstacles)
+    = ppaml_slam.LaserInterp();
+
+random Real laserX(Timestep timestep) ~
+    (toReal(state(timestep)[0]) +
+     toReal(carParams[0]) * cos(toReal(state(timestep)[2])) +
+     toReal(carParams[1]) * cos(toReal(state(timestep)[2]) + 0.5 * pi));
+
+random Real laserY(Timestep timestep) ~
+    (toReal(state(timestep)[1]) +
+     toReal(carParams[0]) * sin(toReal(state(timestep)[2])) +
+     toReal(carParams[1]) * sin(toReal(state(timestep)[2]) + 0.5 * pi));
+
+random Real laserTheta(Timestep timestep) ~
+    toReal(state(timestep)[2]);
+
+random RealMatrix laserReadingsWithoutNoise(Timestep timestep) ~
+    renderLasers(
+        laserX(timestep),
+        laserY(timestep),
+        laserTheta(timestep),
+        obstacles);
+
+random RealMatrix laserReadings(Timestep timestep) ~
+    IsotropicMultivarGaussian(laserReadingsWithoutNoise(timestep), laserCovScale);

@@ -76,15 +76,10 @@ public class CaseSpec extends ArgSpec {
     return test.containsRandomSymbol() || clause.containsRandomSymbol();
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.model.ArgSpec#checkTypesAndScope(blog.model.Model, java.util.Map)
-   */
   @Override
-  public boolean checkTypesAndScope(Model model, Map scope) {
-    return test.checkTypesAndScope(model, scope)
-        && clause.checkTypesAndScope(model, scope);
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
+    return test.checkTypesAndScope(model, scope, null)
+        && clause.checkTypesAndScope(model, scope, childType);
   }
 
   public int compile(LinkedHashSet callStack) {
