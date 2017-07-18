@@ -1,0 +1,18 @@
+#!/bin/bash
+
+samples=$1
+trials=$2
+output=$3
+
+if [ "$samples" = "-h" ]; then
+    echo "Usage of sample-all"
+    echo "sample_all.sh <samples> <trials> <output-file>"
+    exit 0
+fi
+
+rm -f $output
+
+for f in $(find example -name '*.blog'); do
+    echo "Running $f"
+    bash tools/testing/sample.sh $samples $f $trials $output 0
+done	

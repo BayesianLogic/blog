@@ -1,0 +1,31 @@
+--- Instructions for sample.sh on Ubuntu Machine ---
+
+sample.sh calculates the symmetric KL divergence for every queried set of distributions of a particular BLOG example.
+It estimates the true distribution of a queried variable by taking the expectation of the BLOG example ran with 
+the LW Sampler over a specified number of trials.
+It then computes the average symmetric KL divergence between the LW Sampler and the "true estimate", and 
+the average symmetric KL divergence between the MH Sampler and the "true estimate"
+
+1. Install GNU parallel
+>>> sudo apt-get install parallel
+
+2. checkout latest commit of fix-bug-MHSampler
+>>> git checkout fix-bug-MHSampler
+
+3. compile
+>>> sbt/sbt compile
+
+4. run script from top-level directory of blog
+>>> pwd
+~/blog
+>>> find example -name "*.blog" | parallel -k -j 4 --eta "bash ./tools/testing/sample.sh 10000 {} 10 tools/testing/output/KL.txt {#}"
+
+- uses 10,000 samples
+- runs 10 trials
+- outputs the result to tools/testing/output/KL.txt
+- uses 4 processes (you can adjust with "-j" option)
+- prints out information (--eta)
+- this script is buggy. 
+	- doesn't work for vectors (throws exception on regex matching, and even if I did get it working, the state space would be too large). 		- doesn't work on continuous random variables.
+	- the KL divergence is misleading (sometimes Infinity) for discrete distributions where there values in the support with near zero probability (e.g. Poisson). 
+	- the script crashes when the MH Sampler doesn't work. see "Blog Examples Status" spreadsheet for list of BLOG examples that are known to fail
