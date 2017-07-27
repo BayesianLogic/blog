@@ -1,13 +1,12 @@
  
-fixed RealMatrix beta = [0.2, 0.8];
+random Real beta2 = Gaussian(0.0, 1.0);
+random Real beta1 = Gaussian(0.0, 1.0);
+// fixed RealMatrix beta = [0.8, 0.2]; // currently Liu-West filter doesnot support matrix parameter. so we need a workaround
 fixed Real sigma = 0.1;
+random Real z(Timestep t) ~
+  if t == @0 then Gaussian(0.0, sigma)
+  else x(prev(t));
 random Real x(Timestep t) ~
-  if t == @0 then 0.0
-  else if t == @1 then Gaussian(0.0, sigma)
-  else Gaussian(toInt(beta[0]) * x(prev(prev(t))) + toInt(beta[1]) * x(prev(t)), sigma);
-
+  if t == @0 then Gaussian(0.0, sigma)
+  else Gaussian(z(prev(t)) * beta2 + x(prev(t)) * beta1, sigma);
 obs x(@1) = 1.0;
-
-query x(@2);
-query x(@3);
-
