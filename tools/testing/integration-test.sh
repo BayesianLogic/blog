@@ -27,7 +27,7 @@ errorLines=$(cat tools/testing/output/errorExamples.txt | wc -l);
 
 if [ "$errorLines" != "1" ]; then
     echo "Not all BLOG Examples compile"
-    cat 'tools/testing/output/errorExamples.txt'
+    cat 'tools/testing/output/errors.txt'
     exit 1
 fi	
 echo "BLOG Examples compile."
