@@ -1,2 +1,4 @@
 language: java
+jdk:
+  - oraclejdk7
 script: tools/testing/integration-test.sh
