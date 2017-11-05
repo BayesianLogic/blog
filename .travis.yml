@@ -1,4 +1,2 @@
 language: java
-jdk:
-  - openjdk7
 script: tools/testing/integration-test.sh
