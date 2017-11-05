@@ -48,3 +48,34 @@
 .bar .bar-text{
   opacity:0
 }
+h1 {
+    text-align: center;
+}
+.chartdiv {
+  text-align: center;
+	width		: 100%;
+	
+	font-size	: 10px;
+}
+body {
+  padding-top: 3.5rem;
+}
+#codecontrol{
+  padding-top: 30px;
+  padding-bottom: 30px;
+  text-align: center;
+}
+#slidecontainer{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+}
+table.center {
+  margin-left:auto;
+  margin-right:auto;
+}
+#btngroup{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+}

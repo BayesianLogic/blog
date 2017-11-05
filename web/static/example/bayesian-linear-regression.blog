@@ -1,0 +1,16 @@
+/** 
+ * A model for Bayesian linear regression
+ *
+ * @author yiwu
+ * @since 2015-07-02
+ */
+
+random Real m ~ Gaussian(0, 2);
+random Real b ~ Gaussian(0, 2);
+random Real sigma2 ~ Gamma(1, 1);
+random Real y(Real x) ~ Gaussian(m * x + b, sigma2);
+obs y(0) = 0;
+obs y(1) = 1;
+obs y(2) = 4;
+obs y(3) = 6;
+query round(y(4));

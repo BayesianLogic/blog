@@ -1,0 +1,21 @@
+{# This is the jinja2 template for generating our model. #}
+
+/*
+ * We get some samples from a UnivarGaussian with unknown parameters.
+ * The goal is to infer the mean and variance.
+ */
+
+random Real mean ~ UniformReal(-1, 1);
+random Real variance ~ UniformReal(0, 10);
+
+random Real value(Timestep t) ~ UnivarGaussian(mean, variance);
+
+{% for obs in observations %}
+obs value(@{{ obs.timestep }}) = {{ obs.value }};
+{%- endfor %}
+
+random Real rounded_mean = 0.1 * round(mean * 10);
+random Real rounded_variance = round(variance);
+
+query rounded_mean;
+query rounded_variance;
