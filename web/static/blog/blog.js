@@ -122,8 +122,8 @@ function drawChart(Chart, jsonData, title, samples) {
       vAxis: {minValue:0, maxValue:100},
       chartArea: {
 
-        height: "80%",
-        width: "90%"
+        height: 320,
+        width: 480
       },
       animation: {
         duration: delay,
