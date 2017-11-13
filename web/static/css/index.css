@@ -54,7 +54,7 @@ h1 {
 .chartdiv {
   text-align: center;
 	width		: 100%;
-	
+
 	font-size	: 10px;
 }
 body {
@@ -76,6 +76,20 @@ table.center {
 }
 #btngroup{
   padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+}
+.modal-dialog {
+    /* new custom width */
+    max-width: 630px;
+    width: 630px;
+}
+#chartdiv{
+  width: 600px;
+    height: 400px;
+}
+#charthead{
+  padding-top: 0px;
   padding-bottom: 10px;
   text-align: center;
 }

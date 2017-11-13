@@ -11,7 +11,7 @@ import time
 import os
 import subprocess
 import re
-
+from operator import itemgetter
 BLOG_EXTENSION = ".blog"
 USER_STORE = "static/user_query/"
 DEFAULT_GRAPH = "static/images/BerkeleyLogo.png"
@@ -96,21 +96,31 @@ def parse_query_results(s):
                 'queries': []
             })
             #print results
+        dist = []
         for line in lines[1:]:
             query_match = re.match('Distribution of values for (.*)', line)
             result_match = re.match(r'\s*(\S*)\s+([0-9]*\.?[0-9]+[eE]?[-+]?[0-9]*)', line)
             if query_match:
                 query = query_match.group(1)
+                if(len(dist)>0):
+                    dist=sorted(dist, key=itemgetter(0))
+                    results[-1]['queries'][-1]['distribution'].extend(dist)
+                    dist=[]
                 results[-1]['queries'].append({
                     'query': 'Distribution of values for '+query,
-                    'distribution': []
+                    'distribution': [['value','probability']]
                 })
             elif result_match:
                 value, probability = result_match.groups()
-                results[-1]['queries'][-1]['distribution'].append({
-                    'value': value,
-                    'probability': 100 * float(probability)
-                })
+                dist.append([
+                    value,
+                    100 * float(probability)
+                ])
+        if(len(dist)>0):
+            dist=sorted(dist, key=itemgetter(0))
+            results[-1]['queries'][-1]['distribution'].extend(dist)
+            dist=[]
+    #print results
     return results
 
 

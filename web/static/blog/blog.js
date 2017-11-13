@@ -28,7 +28,8 @@ $(function() {
     matchBrackets: true
   });
 
- num_res=0;
+ num=0;
+
 //editor.setOption("theme", "railscasts");
   $(".button").click(function() {
     var input_string = editor.getValue();
@@ -42,15 +43,19 @@ $(function() {
       alert(" ParticleFilter can only be used to dynamic models!");
       return false;
     }
+    /*
     var i;
-    for (i=1;i<=num_res;i++ ){
+    for (i=1;i<=num;i++ ){
       var chartname='#chardiv'+i.toString();
       $("#chartdiv"+i.toString()).css({"height"		: "0px"});
       //console.log(AmCharts.charts);
       for(key in AmCharts.charts)
         AmCharts.charts[key].clear();
-    }
-    num_res=0;
+    }*/
+    num=0;
+    glb_title = [];
+    glb_dist = [];
+    glb_samples = [];
     $.ajax({
       type: "POST",
       data: input_data,
@@ -62,7 +67,11 @@ $(function() {
           return false;
         }
         var real_data= eval(data);
-
+        glb_title = [];
+        glb_dist = [];
+        glb_samples = [];
+        num=0;
+        $("#choosedata").empty();
         //console.log(data);
         for (key1 in real_data)
           if(real_data.hasOwnProperty(key1)){
@@ -70,12 +79,17 @@ $(function() {
           var queries = real_data[key1]['queries']
           for(key in queries){
             if(queries.hasOwnProperty(key)){
+              num+=1;
               var title = queries[key]['query'];
               var dist = queries[key]['distribution'];
-              showchart(samples,title, dist);
+              glb_dist.push(dist);
+              glb_title.push(title);
+              glb_samples.push(samples);
+              $("#choosedata").append($("<option />").val(num-1).text(title));
             }
           }
         }
+        showchart(glb_samples[0],glb_title[0], glb_dist[0]);
         //$('#results').html($(data));
       },
     });
@@ -83,6 +97,42 @@ $(function() {
     return false;
   });
 });
+google.charts.load('44', {'packages':['corechart']});
+google.charts.setOnLoadCallback(showchart);
+
+var days;
+var report='activity';
+
+function getChart() {
+  return google.visualization.ColumnChart;
+}
+
+function drawChart(Chart, jsonData, title, samples) {
+  if (jsonData==null)
+    jsonData=[];
+  var dataTable = new google.visualization.arrayToDataTable(jsonData,false);
+
+  var e = document.getElementById("DelayDiv");
+  var delay = 1000;
+  var total = 0;
+
+  Chart.draw(dataTable, {
+      title: title+" w/ "+samples+" samples",
+      titleFontSize:15,
+      vAxis: {minValue:0, maxValue:100},
+      chartArea: {
+
+        height: "80%",
+        width: "90%"
+      },
+      animation: {
+        duration: delay,
+        easing: 'linear',
+        startup: true
+      },
+      legend: {position: 'none'}
+  });
+}
 function showhide() {
     var x = document.getElementById("usrtext");
     if (x.style.display === "none") {
@@ -109,50 +159,36 @@ function handlebase(myradio){
 var output = document.getElementById("demo");
 output.innerHTML = slider.value;
 }
-function noth(){
+var ChartC;
+function showchart(samples,title, dist){
+
+if ( ChartC == null ) {
+			gv = getChart();
+			ChartC = new gv(document.getElementById('chartdiv'));
+		}
+		drawChart(ChartC, dist, title,samples);
 
 }
-function showchart(samples,title, dist, num){
-  num_res=num_res+1;
-  var newchart='<div class="chartdiv" id="chardiv'+num_res.toString()+'"></div> ';
-//  $(".modal-body").append(newchart);
-$("#chartdiv"+num_res.toString()).css({"height"		: "300px"});
-//  console.log("chartdiv"+num_res.toString());
-var chart = AmCharts.makeChart("chartdiv"+num_res.toString(), {
-  "type": "serial",
-  "theme": "light",
-  "titles": [
-		{
-			"text": title+" w/ "+samples+" samples",
-			"size": 15
-		}
-	],
-  "dataProvider": dist,
-  "gridAboveGraphs": true,
-  "startDuration": 1,
-  "graphs": [ {
-    "balloonText": "[[category]]: <b>[[value]]</b>",
-    "fillAlphas": 0.8,
-    "lineAlpha": 0.2,
-    "type": "column",
-    "valueField": "probability"
-  } ],
-  "chartCursor": {
-    "categoryBalloonEnabled": false,
-    "cursorAlpha": 0,
-    "zoomable": false
-  },
-  "categoryField": "value",
-  "categoryAxis": {
-    "gridPosition": "start",
-    "gridAlpha": 0,
-    "tickPosition": "start",
-    "tickLength": 20
-  },
-  "export": {
-    "enabled": true
+function refresh(){
+  var e = document.getElementById("choosedata");
+	var chtid = e.options[e.selectedIndex].value;
+  showchart(glb_samples[chtid],glb_title[chtid],glb_dist[chtid])
+}
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
   }
-});
+}
+function movie(i){
+    if (i==0) return;
+    console.log(num-i);
+    $("#choosedata").val(num-i);
+    google.visualization.events.addOneTimeListener(ChartC, 'animationfinish',function(){movie(i-1)}
+          );
+    showchart(glb_samples[num-i],glb_title[num-i],glb_dist[num-i]);
 }
 var slider = document.getElementById("sampno");
 var output = document.getElementById("demo");
