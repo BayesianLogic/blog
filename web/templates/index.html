@@ -118,6 +118,19 @@ $def with (example_blog_code)
 <div id="btngroup">
 <button class="button btn  btn-primary " >Submit</button><br>
 <button class="btn btn-success " id="viewres"data-toggle="modal" data-target="#exampleModalLong">View Result</button>
+<button class="btn btn-success " id="viewlog"data-toggle="modal" data-target="#logmodal">View Log</button>
+<div id="computing"class="preloader-2">
+  <span class="line line-1"></span>
+  <span class="line line-2"></span>
+  <span class="line line-3"></span>
+  <span class="line line-4"></span>
+  <span class="line line-5"></span>
+  <span class="line line-6"></span>
+  <span class="line line-7"></span>
+  <span class="line line-8"></span>
+  <span class="line line-9"></span>
+  <div>computing</div>
+</div>
 </div>
     </div>
 
@@ -138,14 +151,14 @@ $def with (example_blog_code)
           </div>
           <div class="modal-body">
             <div id="charthead">
-            <select id="choosedata" onchange="refresh();">
+            <select style="width: 300px;"id="choosedata" onchange="refresh();">
 	</select>
 
-            <button onclick="movie(num);" id="moviebtn"class="btn btn-primary">Movie!</button>
+            <button onclick="movie(num);" id="moviebtn"class="btn btn-primary">Movie!</button></div>
             <div id="chartdiv" class="chartdiv">
 
           </div>
-        </div>
+
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
 
@@ -153,6 +166,30 @@ $def with (example_blog_code)
         </div>
       </div>
     </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="logmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logmodalTitle">Log</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <textarea id="logtext"rows="20" cols="80">
+
+</textarea>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
   </body>
   <script type="text/javascript" src="/static/popper.min.js"></script>
   <script type="text/javascript" src="/static/bootstrap.min.js"></script>

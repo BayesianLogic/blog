@@ -1,5 +1,8 @@
 $(function() {
-  document.getElementById('viewres').style.visibility='hidden';
+  //document.getElementById('viewres').style.visibility='hidden';
+document.getElementById('viewres').style.display='none';
+document.getElementById('viewlog').style.display='none';
+document.getElementById('computing').style.display='none';
   CodeMirror.defineMode("diff", function() {
     var keywords = wordRegexp(['extern','import','fixed','distinct','random','origin','param','type', 'obs', 'query', 'for', 'forall','exists', 'if', 'then', 'else', 'null']);
     var types = wordRegexp(['Integer', 'Real', 'Boolean', 'NaturalNum', 'String', 'List', 'Map', 'RealMatrix', 'IntMatrix', 'TabularCPD','Categorical']);
@@ -32,6 +35,9 @@ $(function() {
 
 //editor.setOption("theme", "railscasts");
   $(".button").click(function() {
+    document.getElementById('viewres').style.display='none';
+      document.getElementById('viewlog').style.display='none';
+    document.getElementById('computing').style.display='initial';
     var input_string = editor.getValue();
     var samp_base = $('input[name=samp_base]:checked').val();
     var samp_eng = $('input[name=samp_eng]:checked').val();
@@ -62,11 +68,14 @@ $(function() {
       success: function(data) {
         //console.log(data);
         //console.log(eval(data));
+        //console.log(eval(data));
         if (data=="error occurred"){
           alert(data);
           return false;
         }
         var real_data= eval(data);
+        $('#logtext').val(real_data[1]);
+        real_data=real_data[0];
         glb_title = [];
         glb_dist = [];
         glb_samples = [];
@@ -89,11 +98,16 @@ $(function() {
             }
           }
         }
+        google.visualization.events.addOneTimeListener(ChartC, 'ready',function(){
+          document.getElementById('viewres').style.display='initial';
+            document.getElementById('viewlog').style.display='initial';
+          document.getElementById('computing').style.display='none';}
+              );
         showchart(glb_samples[0],glb_title[0], glb_dist[0]);
         //$('#results').html($(data));
       },
     });
-    document.getElementById('viewres').style.visibility='visible';
+
     return false;
   });
 });
@@ -120,11 +134,8 @@ function drawChart(Chart, jsonData, title, samples) {
       title: title+" w/ "+samples+" samples",
       titleFontSize:15,
       vAxis: {minValue:0, maxValue:100},
-      chartArea: {
-
-        height: 320,
-        width: 480
-      },
+        height: 400,
+        width: 600,
       animation: {
         duration: delay,
         easing: 'linear',

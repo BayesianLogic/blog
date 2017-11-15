@@ -79,7 +79,7 @@ class blog_web_ui:
             print "error occurred"
             return "error occurred"
         #return render.data(raw_data, parsed_results)
-        return parsed_results
+        return [parsed_results,raw_data]
 
 def parse_query_results(s):
     results = []
