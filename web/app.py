@@ -119,10 +119,14 @@ def parse_query_results(s):
             elif result_match:
                 value, probability = result_match.groups()
                 if is_number(value):
-                    dist.append([
-                        float(value),
-                        100 * float(probability)
-                    ])
+                    if(len(dist)>0 and dist[-1][0]==round(float(value),2)):
+                        #print('!!')
+                        dist[-1][1]+=100 * float(probability)
+                    else:
+                        dist.append([
+                            round(float(value),2),
+                            100 * float(probability)
+                        ])
                 else:
                     dist.append([
                         value,
