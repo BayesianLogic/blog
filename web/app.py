@@ -80,7 +80,13 @@ class blog_web_ui:
             return "error occurred"
         #return render.data(raw_data, parsed_results)
         return [parsed_results,raw_data]
-
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass
+    return False
 def parse_query_results(s):
     results = []
     #print s
@@ -112,10 +118,16 @@ def parse_query_results(s):
                 })
             elif result_match:
                 value, probability = result_match.groups()
-                dist.append([
-                    value,
-                    100 * float(probability)
-                ])
+                if is_number(value):
+                    dist.append([
+                        float(value),
+                        100 * float(probability)
+                    ])
+                else:
+                    dist.append([
+                        value,
+                        100 * float(probability)
+                    ])
         if(len(dist)>0):
             dist=sorted(dist, key=itemgetter(0))
             results[-1]['queries'][-1]['distribution'].extend(dist)

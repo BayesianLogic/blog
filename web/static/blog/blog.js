@@ -116,21 +116,29 @@ google.charts.setOnLoadCallback(showchart);
 
 var days;
 var report='activity';
-
+movie_flag=false;
+num_flag=0;
 function getChart() {
   return google.visualization.ColumnChart;
 }
-
+function isNumber (value) {
+return typeof value === 'number' && isFinite(value);
+};
 function drawChart(Chart, jsonData, title, samples) {
   if (jsonData==null)
     jsonData=[];
+  //  console.log(jsonData[1][0]);
   var dataTable = new google.visualization.arrayToDataTable(jsonData,false);
 
   var e = document.getElementById("DelayDiv");
   var delay = 1000;
   var total = 0;
-
-  Chart.draw(dataTable, {
+  if(jsonData.length>1&&isNumber(jsonData[1][0])){
+    Chart.setChartType('LineChart');
+  }else
+  Chart.setChartType('ColumnChart');
+  Chart.setDataTable(dataTable);
+  Chart.setOptions({
       title: title+" w/ "+samples+" samples",
       titleFontSize:15,
       vAxis: {minValue:0, maxValue:100},
@@ -143,6 +151,12 @@ function drawChart(Chart, jsonData, title, samples) {
       },
       legend: {position: 'none'}
   });
+  if (movie_flag){
+    movie_flag=false;
+    //console.log('got here'+num_flag.toString());
+    google.visualization.events.addOneTimeListener(Chart.getChart(), 'animationfinish',function(){movie(num_flag);});}
+  Chart.draw();
+
 }
 function showhide() {
     var x = document.getElementById("usrtext");
@@ -174,8 +188,10 @@ var ChartC;
 function showchart(samples,title, dist){
 
 if ( ChartC == null ) {
-			gv = getChart();
-			ChartC = new gv(document.getElementById('chartdiv'));
+			//gv = getChart();
+			ChartC = new google.visualization.ChartWrapper({
+     containerId: 'chartdiv'
+ });
 		}
 		drawChart(ChartC, dist, title,samples);
 
@@ -197,8 +213,8 @@ function movie(i){
     if (i==0) return;
     console.log(num-i);
     $("#choosedata").val(num-i);
-    google.visualization.events.addOneTimeListener(ChartC, 'animationfinish',function(){movie(i-1)}
-          );
+    movie_flag=true;
+    num_flag=i-1;
     showchart(glb_samples[num-i],glb_title[num-i],glb_dist[num-i]);
 }
 var slider = document.getElementById("sampno");
