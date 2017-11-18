@@ -87,6 +87,21 @@ def is_number(s):
     except ValueError:
         pass
     return False
+
+def kdeit(dist):
+    import numpy as np
+    from pyqt_fit import kde
+    #print dist
+    samples,weights = zip(*dist)
+    samples = list(samples)
+    weights = list(weights)
+    est = kde.KDE1D(samples,weights = weights)
+    xmin = min(samples)
+    xmax = max(samples)
+    x = np.linspace(xmin,xmax, 200)
+    y = est(x)
+    return [list(i) for i in zip(x,y)]
+
 def parse_query_results(s):
     results = []
     #print s
@@ -103,6 +118,7 @@ def parse_query_results(s):
             })
             #print results
         dist = []
+        checkden = False
         for line in lines[1:]:
             query_match = re.match('Distribution of values for (.*)', line)
             result_match = re.match(r'\s*(\S*)\s+([0-9]*\.?[0-9]+[eE]?[-+]?[0-9]*)', line)
@@ -110,23 +126,25 @@ def parse_query_results(s):
                 query = query_match.group(1)
                 if(len(dist)>0):
                     dist=sorted(dist, key=itemgetter(0))
+                    if checkden:
+                        checkden = False
+                        dist = kdeit(dist)
                     results[-1]['queries'][-1]['distribution'].extend(dist)
                     dist=[]
                 results[-1]['queries'].append({
                     'query': 'Distribution of values for '+query,
                     'distribution': [['value','probability']]
                 })
+                checkden = False
             elif result_match:
                 value, probability = result_match.groups()
                 if is_number(value):
-                    if(len(dist)>0 and dist[-1][0]==round(float(value),2)):
-                        #print('!!')
-                        dist[-1][1]+=100 * float(probability)
-                    else:
-                        dist.append([
-                            round(float(value),2),
-                            100 * float(probability)
-                        ])
+                    if(value.count('.')==1):
+                        checkden = True
+                    dist.append([
+                        float(value),
+                        100 * float(probability)
+                    ])
                 else:
                     dist.append([
                         value,
@@ -134,6 +152,9 @@ def parse_query_results(s):
                     ])
         if(len(dist)>0):
             dist=sorted(dist, key=itemgetter(0))
+            if checkden:
+                checkden = False
+                dist = kdeit(dist)
             results[-1]['queries'][-1]['distribution'].extend(dist)
             dist=[]
     #print results
