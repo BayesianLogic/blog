@@ -1,8 +1,20 @@
 Install Requirement
 ====================
-BLOG web server requires python-webpy, install using 
+BLOG web server requires python-webpy, install using
 ```
 $ sudo apt-get install python-webpy
+```
+BLOG web server also requires python library pyqt-fit, install using
+```
+$ pip install pyqt_fit
+```
+If you meet this exception,
+```
+ImportError: cannot import name path
+```
+It is caused by a change in the path.py package. Reverting to an older version of path.py solves this :
+```
+pip install -I path.py==7.7.1
 ```
 
 Start the BLOG Web Server
