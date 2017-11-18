@@ -1,0 +1,105 @@
+// a simple example with linear algebra operators
+
+fixed RealMatrix a = [1, 2];
+fixed RealMatrix b = [4, 5];
+random RealMatrix x ~ a + b - a + a;
+
+random RealMatrix w ~ a * 10.0 + 20.0 * b;
+
+fixed RealMatrix c = [1, 2; 3, 4];
+fixed RealMatrix d = [4, 5; 6, 7];
+random RealMatrix y ~ c * d;
+
+random RealMatrix z ~ c * 3.0 + 4.0 * d - c;
+
+
+random RealMatrix u ~ a * c;
+
+fixed RealMatrix f = [10; 20];
+random RealMatrix v ~ c * f;
+
+random RealMatrix s ~ inv(c);
+random Real t ~ det(c);
+
+random Real h ~ a[0];
+
+random Real i ~ c[0][0];
+
+random Integer k ~ Categorical({0 -> 0.3, 1 -> 0.7});
+random Real j ~ c[0][k];
+
+fixed RealMatrix l = [1; 2; 3];
+fixed RealMatrix m = diag(l);
+
+fixed RealMatrix n = [5, 6; 3, 4];
+fixed RealMatrix o = repmat(n, 3, 2);
+
+fixed RealMatrix p = [1, 2; 3, 4];
+fixed Real q = trace(p);
+
+fixed RealMatrix r = [1, 2; 3, 4; 5, 6];
+fixed Integer rows = numrows(r);
+fixed Integer cols = numcols(r);
+
+query x;
+query y;
+query z;
+query w;
+query u;
+query v;
+query s;
+query t;
+query h;
+query i;
+query j;
+query m;
+query o;
+query q;
+query rows;
+query cols;
+
+
+fixed RealMatrix a2 = [1, 2, 3; 4, 5, 6; 7, 8, 9; 10, 11, 12];
+fixed RealMatrix b2 = colsum(a2);
+fixed RealMatrix c2 = rowsum(a2);
+
+query a2;
+query b2;
+query c2;
+query matsum(a2);
+
+
+fixed RealMatrix d2 = vstack(a2, b2);
+fixed RealMatrix e2 = [-1, -2, -3; -4, -5, -6];
+fixed RealMatrix f2 = vstack(a2, e2);
+
+query d2;
+query f2;
+
+fixed RealMatrix g2 = submat(f2, 0, 0, 3, 2);
+fixed RealMatrix u2 = getrow(f2, 2);
+fixed RealMatrix v2 = getcols(f2, 1, 2);
+
+query g2;
+query u2;
+query v2;
+query toReal(v2);
+
+
+fixed RealMatrix test_identity = eye(3);
+query test_identity;
+
+fixed RealMatrix test_identity2 = eye(3, 5);
+query test_identity2;
+
+fixed RealMatrix test_zeros = zeros(3, 4);
+query test_zeros;
+
+fixed RealMatrix test_zeros1 = zeros(3);
+query test_zeros1;
+
+fixed RealMatrix test_ones = ones(5, 2);
+query test_ones;
+
+fixed RealMatrix test_ones1 = 3 * ones(3);
+query test_ones1;

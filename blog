@@ -39,7 +39,15 @@ realpath () {
   fi
 )
 }
-
+get_java_cmd() {
+  if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+    echo "$JAVA_HOME/bin/java"
+  else
+    echo "java"
+  fi
+}
+declare java_cmd=$(get_java_cmd)
+export java_version=$("$java_cmd" -version 2>&1 | awk -F '"' '/version/ {print $2}')
 CUR_SCRIPT="$(realpath "$0")"
 
 BLOG_HOME="$(dirname "$CUR_SCRIPT")"

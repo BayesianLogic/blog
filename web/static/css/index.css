@@ -48,3 +48,93 @@
 .bar .bar-text{
   opacity:0
 }
+h1 {
+    text-align: center;
+}
+
+body {
+  padding-top: 3.5rem;
+}
+#codecontrol{
+  padding-top: 30px;
+  padding-bottom: 30px;
+  text-align: center;
+}
+#slidecontainer{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+}
+table.center {
+  margin-left:auto;
+  margin-right:auto;
+}
+#btngroup{
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+}
+#viewres{
+  margin-top: 3px
+}
+.modal-dialog {
+    /* new custom width */
+    max-width: 630px;
+    width: 630px;
+}
+#chartdiv{
+  width: 600px;
+    height: 400px;
+}
+#charthead{
+  padding-top: 0px;
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.preloader-2 {
+  margin: 120px auto 0;
+}
+
+#computing {
+  color: #000;
+  margin: 5px 0;
+  text-transform: uppercase;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+.preloader-2 .line {
+  width: 3px;
+  height: 12px;
+  background: #778899;
+  margin: 3px 1px 0;
+  display: inline-block;
+  animation: opacity-2 1000ms infinite ease-in-out;
+}
+
+.preloader-2 .line-1 { animation-delay: 800ms; }
+.preloader-2 .line-2 { animation-delay: 600ms; }
+.preloader-2 .line-3 { animation-delay: 400ms; }
+.preloader-2 .line-4 { animation-delay: 200ms; }
+.preloader-2 .line-6 { animation-delay: 200ms; }
+.preloader-2 .line-7 { animation-delay: 400ms; }
+.preloader-2 .line-8 { animation-delay: 600ms; }
+.preloader-2 .line-9 { animation-delay: 800ms; }
+
+@keyframes opacity-2 {
+  0% {
+    opacity: 1;
+    height: 15px;
+  }
+  50% {
+    opacity: 0;
+    height: 12px;
+  }
+  100% {
+    opacity: 1;
+    height: 15px;
+  }
+}
