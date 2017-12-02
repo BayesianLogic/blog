@@ -186,4 +186,14 @@ public class TestBinomial implements TestDistributions {
     // not needed
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    Binomial b = new Binomial();
+    b.setParams(10, 0.5);
+    assertEquals(11, b.getFiniteSupport().length);
+    for (int i = 0; i <= 10; i++) {
+      assertEquals(b.getFiniteSupport()[i], i);
+    }
+  }
+
 }

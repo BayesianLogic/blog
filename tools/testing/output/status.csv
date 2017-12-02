@@ -25,7 +25,7 @@ example/helicopter-static.blog,Pass
 example/hurricane-new.blog,Pass
 example/hurricane.blog,Pass
 example/lda.blog,Pass
-example/linear-algebra.blog,Fail
+example/linear-algebra.blog,Pass
 example/mixture-of-gaussian-2d-infinite.blog,Pass
 example/mixture-of-gaussian-full.blog,Pass
 example/mixture-of-gaussian-infinite.blog,Pass
@@ -40,7 +40,7 @@ example/pcfg/simple-pcfg.blog,Pass
 example/pcfg/tiny-pcfg.blog,Pass
 example/pf-test.blog,Pass
 example/poisson-ball.blog,Pass
-example/resample-move.blog,Fail
+example/resample-move.blog,Pass
 example/simple-aircraft.blog,Pass
 example/sybil-attack-exp1.blog,Pass
 example/sybil-attack-exp2.blog,Pass

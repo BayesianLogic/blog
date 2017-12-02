@@ -1,13 +1,13 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import blog.common.Util;
 import blog.common.numerical.MatrixFactory;
@@ -17,7 +17,6 @@ import blog.distrib.MultivarGaussian;
 /**
  * Unit tests for MultivarGaussian.
  */
-@RunWith(JUnit4.class)
 public class TestMultivarGaussian implements TestDistributions {
   private MatrixLib mean;
   private MatrixLib variance;
@@ -141,7 +140,6 @@ public class TestMultivarGaussian implements TestDistributions {
   @Test
   public void testDoubleSet() {
     // TODO Auto-generated method stub
-
   }
 
   @Test
@@ -160,5 +158,12 @@ public class TestMultivarGaussian implements TestDistributions {
   @Test
   public void testGetProbIntegerArguments() {
     // not needed
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    MultivarGaussian gauss = new MultivarGaussian();
+    gauss.setParams(mean, variance);
+    assertTrue(Arrays.equals(null, gauss.getFiniteSupport()));
   }
 }

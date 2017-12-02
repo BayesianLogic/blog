@@ -1,7 +1,1 @@
 
-example/linear-algebra.blog
-(no location): Value for deterministic distribution has wrong type (expected Real, got RealMatrix) (no location): Value for deterministic distribution has wrong type (expected Real, got RealMatrix) (no location): Value for deterministic distribution has wrong type (expected Real, got RealMatrix) 38: No function named trace is applicable to arguments of types [RealMatrix] Error parsing file: example/linear-algebra.blog Fatal error: null java.lang.NullPointerException at blog.model.FuncAppTerm.getType(FuncAppTerm.java:366) at blog.model.FixedFunction.checkTypesAndScope(FixedFunction.java:274) at blog.model.Model.checkTypesAndScope(Model.java:473) at blog.semant.Semant.transProg(Semant.java:1290) at blog.Main.parseAndTranslate(Main.java:490) at blog.Main.setup(Main.java:436) at blog.Main.main(Main.java:152) Exception in thread "main" java.lang.Error: Fatal error: at blog.common.Util.fatalError(Util.java:524) at blog.common.Util.fatalError(Util.java:497) at blog.common.Util.fatalError(Util.java:481) at blog.Main.setup(Main.java:443) at blog.Main.main(Main.java:152)
-
-example/resample-move.blog
-example/resample-move.blog::44.38: No reference found for symbol <DontCare> (no location): Symbol "DontCare" is neither a variable in the current scope nor a zero-ary function. example/resample-move.blog::0.0: type checking failed
-

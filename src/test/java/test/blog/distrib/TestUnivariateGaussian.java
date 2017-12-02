@@ -1,19 +1,18 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import blog.distrib.UnivarGaussian;
 
 /**
  * Unit tests for Univariate Gaussian
  */
-@RunWith(JUnit4.class)
 public class TestUnivariateGaussian {
   private HashMap<Double, Double> probVals;
   private final double MEAN = 0.5;
@@ -143,6 +142,13 @@ public class TestUnivariateGaussian {
     UnivarGaussian gaussian = new UnivarGaussian();
     gaussian.setParams(params);
     testGaussian(gaussian);
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    UnivarGaussian gaussian = new UnivarGaussian();
+    gaussian.setParams(MEAN, VARIANCE);
+    assertTrue(Arrays.equals(null, gaussian.getFiniteSupport()));
   }
 
 }

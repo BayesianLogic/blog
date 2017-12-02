@@ -5,6 +5,8 @@ package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 import blog.common.numerical.MatrixFactory;
@@ -21,34 +23,105 @@ public class TestMultinomial implements TestDistributions {
 
   /** Multinomial. n = 3, p = [0.5, 0.25, 0.25]. */
   public void testMultinomial1(Multinomial mult) {
-    assertEquals(0.1875,
-        mult.getProb(MatrixFactory.createColumnVector(1, 1, 1)), ERROR);
-    assertEquals(Math.log(0.1875),
-        mult.getLogProb(MatrixFactory.createColumnVector(1, 1, 1)), ERROR);
-    assertEquals(0.1875,
-        mult.getProb(MatrixFactory.createColumnVector(2, 1, 0)), ERROR);
-    assertEquals(Math.log(0.1875),
-        mult.getLogProb(MatrixFactory.createColumnVector(2, 1, 0)), ERROR);
+    assertEquals(0.1875, mult.getProb(new ArrayList<Integer>() {
+      {
+        add(1);
+        add(1);
+        add(1);
+      }
+    }), ERROR);
+    assertEquals(Math.log(0.1875), mult.getLogProb(new ArrayList<Integer>() {
+      {
+        add(1);
+        add(1);
+        add(1);
+      }
+    }), ERROR);
+    assertEquals(0.1875, mult.getProb(new ArrayList<Integer>() {
+      {
+        add(2);
+        add(1);
+        add(0);
+      }
+    }), ERROR);
+    assertEquals(Math.log(0.1875), mult.getLogProb(new ArrayList<Integer>() {
+      {
+        add(2);
+        add(1);
+        add(0);
+      }
+    }), ERROR);
   }
 
   /** Multinomial. n = 4, p = [0.25, 0.25, 0.25, 0.25]. */
   public void testMultinomial2(Multinomial mult) {
-    assertEquals(0.09375,
-        mult.getProb(MatrixFactory.createColumnVector(1, 1, 1, 1)), ERROR);
-    assertEquals(Math.log(0.09375),
-        mult.getLogProb(MatrixFactory.createColumnVector(1, 1, 1, 1)), ERROR);
-    assertEquals(3.90625e-3,
-        mult.getProb(MatrixFactory.createColumnVector(4, 0, 0, 0)), ERROR);
+    assertEquals(0.09375, mult.getProb(new ArrayList<Integer>() {
+      {
+        add(1);
+        add(1);
+        add(1);
+        add(1);
+      }
+    }), ERROR);
+    assertEquals(Math.log(0.09375), mult.getLogProb(new ArrayList<Integer>() {
+      {
+        add(1);
+        add(1);
+        add(1);
+        add(1);
+      }
+    }), ERROR);
+    assertEquals(3.90625e-3, mult.getProb(new ArrayList<Integer>() {
+      {
+        add(4);
+        add(0);
+        add(0);
+        add(0);
+      }
+    }), ERROR);
     assertEquals(Math.log(3.90625e-3),
-        mult.getLogProb(MatrixFactory.createColumnVector(4, 0, 0, 0)), ERROR);
-    assertEquals(0, mult.getProb(MatrixFactory.createColumnVector(2, 1, 1, 1)),
-        ERROR);
+        mult.getLogProb(new ArrayList<Integer>() {
+          {
+            add(4);
+            add(0);
+            add(0);
+            add(0);
+          }
+        }), ERROR);
+    assertEquals(0, mult.getProb(new ArrayList<Integer>() {
+      {
+        add(2);
+        add(1);
+        add(1);
+        add(1);
+      }
+    }), ERROR);
     assertEquals(Double.NEGATIVE_INFINITY,
-        mult.getLogProb(MatrixFactory.createColumnVector(2, 1, 1, 1)), ERROR);
-    assertEquals(0,
-        mult.getProb(MatrixFactory.createColumnVector(2, -1, 1, 2)), ERROR);
+        mult.getLogProb(new ArrayList<Integer>() {
+          {
+            add(2);
+            add(1);
+            add(1);
+            add(1);
+          }
+        }), ERROR);
+    assertEquals(0, mult.getProb(new ArrayList<Integer>() {
+      {
+        add(2);
+        add(-1);
+        add(1);
+        add(1);
+      }
+    }), ERROR);
     assertEquals(Double.NEGATIVE_INFINITY,
-        mult.getLogProb(MatrixFactory.createColumnVector(2, -1, 1, 2)), ERROR);
+        mult.getLogProb(new ArrayList<Integer>() {
+          {
+            add(2);
+            add(-1);
+            add(1);
+            add(1);
+          }
+        }), ERROR);
   }
 
   @Test
@@ -127,5 +200,84 @@ public class TestMultinomial implements TestDistributions {
   @Test
   public void testGetProbIntegerArguments() {
     // not needed
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    Multinomial mult = new Multinomial();
+    mult.setParams(2, MatrixFactory.createColumnVector(0.3, 0, 0.7));
+    Object[] list = mult.getFiniteSupport();
+    assertEquals(3, list.length);
+    ArrayList<Integer> temp = new ArrayList<Integer>();
+    temp.add(0);
+    temp.add(0);
+    temp.add(2);
+    assertEquals(list[0], temp);
+    temp.clear();
+    temp.add(1);
+    temp.add(0);
+    temp.add(1);
+    assertEquals(list[1], temp);
+    temp.clear();
+    temp.add(2);
+    temp.add(0);
+    temp.add(0);
+    assertEquals(list[2], temp);
+
+    mult = new Multinomial();
+    mult.setParams(3, MatrixFactory.createColumnVector(0.3, 0.3, 0.6));
+    list = mult.getFiniteSupport();
+    assertEquals(10, list.length);
+
+    temp.clear();
+    temp.add(0);
+    temp.add(0);
+    temp.add(3);
+    assertEquals(list[0], temp);
+    temp.clear();
+    temp.add(0);
+    temp.add(1);
+    temp.add(2);
+    assertEquals(list[1], temp);
+    temp.clear();
+    temp.add(0);
+    temp.add(2);
+    temp.add(1);
+    assertEquals(list[2], temp);
+    temp.clear();
+    temp.add(0);
+    temp.add(3);
+    temp.add(0);
+    assertEquals(list[3], temp);
+    temp.clear();
+    temp.add(1);
+    temp.add(0);
+    temp.add(2);
+    assertEquals(list[4], temp);
+    temp.clear();
+    temp.add(1);
+    temp.add(1);
+    temp.add(1);
+    assertEquals(list[5], temp);
+    temp.clear();
+    temp.add(1);
+    temp.add(2);
+    temp.add(0);
+    assertEquals(list[6], temp);
+    temp.clear();
+    temp.add(2);
+    temp.add(0);
+    temp.add(1);
+    assertEquals(list[7], temp);
+    temp.clear();
+    temp.add(2);
+    temp.add(1);
+    temp.add(0);
+    assertEquals(list[8], temp);
+    temp.clear();
+    temp.add(3);
+    temp.add(0);
+    temp.add(0);
+    assertEquals(list[9], temp);
   }
 }

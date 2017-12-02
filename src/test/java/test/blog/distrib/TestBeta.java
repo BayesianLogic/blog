@@ -4,6 +4,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -174,6 +177,13 @@ public class TestBeta implements TestDistributions {
     testBeta1_1(beta);
     assertEquals(1.0, beta.getProb(0), ERROR);
     assertEquals(0, beta.getLogProb(0), ERROR);
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    Beta beta = new Beta();
+    beta.setParams(new Object[] { 1, 1 });
+    assertTrue(Arrays.equals(beta.getFiniteSupport(), null));
   }
 
 }

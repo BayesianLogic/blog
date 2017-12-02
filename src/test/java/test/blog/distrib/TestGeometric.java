@@ -6,8 +6,6 @@ package test.blog.distrib;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import blog.distrib.Geometric;
 
@@ -15,7 +13,6 @@ import blog.distrib.Geometric;
  * Unit tests for Geometric Distribution
  * src.blog.distrib.Geometric.java
  */
-@RunWith(JUnit4.class)
 public class TestGeometric implements TestDistributions {
   private final double ERROR = 1e-6;
 
@@ -125,6 +122,13 @@ public class TestGeometric implements TestDistributions {
   @Test
   public void testGetProbIntegerArguments() {
     // not needed
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    Geometric geom = new Geometric();
+    geom.setParams(0.5);
+    assertEquals(66, geom.getFiniteSupport().length);
   }
 
 }

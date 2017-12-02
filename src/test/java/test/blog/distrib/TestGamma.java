@@ -4,6 +4,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -138,6 +141,13 @@ public class TestGamma implements TestDistributions {
         ERROR);
     assertEquals(Double.NEGATIVE_INFINITY, gamma.getLogProb(new Integer(0)),
         ERROR);
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    Gamma gamma = new Gamma();
+    gamma.setParams(2.0, 1.0);
+    assertTrue(Arrays.equals(null, gamma.getFiniteSupport()));
   }
 
 }

@@ -1,0 +1,43 @@
+Using clock time 1512180862112 as random seed.
+............................................
+Constructing inference engine of class blog.engine.SamplingEngine
+Constructing sampler of class blog.sample.LWSampler
+Evidence: [JohnCalls = true, MaryCalls = true]
+Query: [Burglary]
+Running for 20000 samples...
+Query Reporting interval is 10000
+Samples done: 1000.  	Time elapsed: 0.129 s.
+Samples done: 2000.  	Time elapsed: 0.202 s.
+Samples done: 3000.  	Time elapsed: 0.276 s.
+Samples done: 4000.  	Time elapsed: 0.354 s.
+Samples done: 5000.  	Time elapsed: 0.476 s.
+Samples done: 6000.  	Time elapsed: 0.607 s.
+Samples done: 7000.  	Time elapsed: 0.732 s.
+Samples done: 8000.  	Time elapsed: 0.919 s.
+Samples done: 9000.  	Time elapsed: 1.012 s.
+Samples done: 10000.  	Time elapsed: 1.098 s.
+Iteration 10000:
+Distribution of values for Burglary
+	false	0.7421862569045072
+	true	0.2578137430954924
+Samples done: 11000.  	Time elapsed: 1.182 s.
+Samples done: 12000.  	Time elapsed: 1.282 s.
+Samples done: 13000.  	Time elapsed: 1.383 s.
+Samples done: 14000.  	Time elapsed: 1.519 s.
+Samples done: 15000.  	Time elapsed: 1.638 s.
+Samples done: 16000.  	Time elapsed: 1.717 s.
+Samples done: 17000.  	Time elapsed: 1.77 s.
+Samples done: 18000.  	Time elapsed: 1.828 s.
+Samples done: 19000.  	Time elapsed: 1.874 s.
+Samples done: 20000.  	Time elapsed: 1.923 s.
+========  LW Trial Stats =========
+Log of average likelihood weight (this trial): -6.13386947910519
+Average likelihood weight (this trial): 0.0021681749999999996
+Fraction of consistent worlds (this trial): 1.0
+Fraction of consistent worlds (running avg, all trials): 1.0
+======== Query Results =========
+Number of samples: 20000
+Distribution of values for Burglary
+	false	0.7965800731029541
+	true	0.20341992689704508
+======== Done ========

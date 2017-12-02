@@ -4,6 +4,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -160,6 +163,14 @@ public class TestUniformVector implements TestDistributions {
   @Test
   public void testGetProbIntegerArguments() {
     // not needed
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    UniformVector unif = new UniformVector();
+    unif.setParams(new Object[] { MatrixFactory.createRowVector(0, 1),
+        MatrixFactory.createRowVector(0, 1) });
+    assertTrue(Arrays.equals(null, unif.getFiniteSupport()));
   }
 
 }

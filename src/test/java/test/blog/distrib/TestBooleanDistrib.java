@@ -110,4 +110,13 @@ public class TestBooleanDistrib implements TestDistributions {
     // not needed
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    BooleanDistrib b = new BooleanDistrib();
+    b.setParams(0.1);
+    assertEquals(2, b.getFiniteSupport().length);
+    assertEquals(b.getFiniteSupport()[0], true);
+    assertEquals(b.getFiniteSupport()[1], false);
+  }
+
 }

@@ -1,0 +1,3 @@
+// Semantically, x is a fixed symbol, but its type signature indicates it is random
+random Real x = exp(3);
+query x;

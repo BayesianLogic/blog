@@ -4,8 +4,11 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.junit.Test;
 
@@ -113,6 +116,24 @@ public class TestCategorical implements TestDistributions {
   @Test
   public void testGetProbIntegerArguments() {
     // not needed
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    Categorical cat = new Categorical();
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("Bob", 0.2);
+    map.put("Craig", 0.3);
+    map.put("Albert", 0.5);
+    map.put("Andy", 0.0);
+    cat.setParams(new Object[] { map });
+
+    Object[] list = cat.getFiniteSupport();
+    HashSet<Object> values = new HashSet<Object>(Arrays.asList(list));
+    assertEquals(3, values.size());
+    assertTrue(values.contains("Bob"));
+    assertTrue(values.contains("Craig"));
+    assertTrue(values.contains("Albert"));
   }
 
 }

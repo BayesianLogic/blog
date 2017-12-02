@@ -1,0 +1,3 @@
+// Semantically, the symbol x is random, but its type signature indicates it is fixed
+fixed Integer x ~ Binomial(10, 0.5);
+query x;

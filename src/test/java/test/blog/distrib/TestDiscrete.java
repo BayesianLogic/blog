@@ -86,4 +86,17 @@ public class TestDiscrete implements TestDistributions {
     // not needed
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    // TODO Auto-generated method stub
+    Discrete disc = new Discrete();
+    disc.setParams(new Object[] { MatrixFactory.createColumnVector(0.1, 0.1,
+        0.0, 0.8) });
+    Object[] list = disc.getFiniteSupport();
+    assertEquals(3, list.length);
+    assertEquals(list[0], 0);
+    assertEquals(list[1], 1);
+    assertEquals(list[2], 3);
+  }
+
 }

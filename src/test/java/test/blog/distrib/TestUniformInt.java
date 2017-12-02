@@ -113,4 +113,15 @@ public class TestUniformInt implements TestDistributions {
     // not needed
   }
 
+  @Test
+  public void testGetFiniteSupport() {
+    UniformInt unif = new UniformInt();
+    unif.setParams(15, 17);
+    Object[] list = unif.getFiniteSupport();
+    assertEquals(3, list.length);
+    assertEquals(list[0], 15);
+    assertEquals(list[1], 16);
+    assertEquals(list[2], 17);
+  }
+
 }

@@ -25,6 +25,7 @@ example/helicopter-static.blog
 example/hurricane-new.blog
 example/hurricane.blog
 example/lda.blog
+example/linear-algebra.blog
 example/mixture-of-gaussian-2d-infinite.blog
 example/mixture-of-gaussian-full.blog
 example/mixture-of-gaussian-infinite.blog
@@ -39,6 +40,7 @@ example/pcfg/simple-pcfg.blog
 example/pcfg/tiny-pcfg.blog
 example/pf-test.blog
 example/poisson-ball.blog
+example/resample-move.blog
 example/simple-aircraft.blog
 example/sybil-attack-exp1.blog
 example/sybil-attack-exp2.blog

@@ -4,6 +4,9 @@
 package test.blog.distrib;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -14,7 +17,6 @@ import blog.distrib.UniformReal;
  */
 public class TestUniformReal implements TestDistributions {
   private final double ERROR = 1e-10;
-  private final double EPSILON = 1e-2;
 
   /** Uniform Distribution, lower = 1.0, upper = 3.0 . */
   public void testUniform1(UniformReal unif) {
@@ -89,5 +91,12 @@ public class TestUniformReal implements TestDistributions {
     assertEquals(Math.log(0.5), unif.getLogProb(new Integer(1)), ERROR);
     assertEquals(0.5, unif.getProb(new Integer(2)), ERROR);
     assertEquals(Math.log(0.5), unif.getLogProb(new Integer(2)), ERROR);
+  }
+
+  @Test
+  public void testGetFiniteSupport() {
+    UniformReal unif = new UniformReal();
+    unif.setParams(1.0, 2.5);
+    assertTrue(Arrays.equals(null, unif.getFiniteSupport()));
   }
 }

@@ -1,0 +1,2 @@
+// The symbol x is missing the method signature indicating that it is fixed.
+Real x = exp(2);

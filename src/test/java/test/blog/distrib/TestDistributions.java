@@ -57,4 +57,9 @@ public interface TestDistributions {
    * should be a proper cast from the Integer value its Double equivalent
    */
   void testGetProbIntegerArguments();
+
+  /**
+   * Tests that the getFiniteSupport method returns the correct value.
+   */
+  void testGetFiniteSupport();
 }
