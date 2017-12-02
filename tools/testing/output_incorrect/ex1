@@ -1,4 +1,4 @@
-Using clock time 1512180859946 as random seed.
+Using clock time 1512181856747 as random seed.
 ............................................
 Constructing inference engine of class blog.engine.SamplingEngine
 Constructing sampler of class blog.sample.LWSampler
@@ -6,38 +6,20 @@ Evidence: [JohnCalls = true, MaryCalls = true]
 Query: [Burglary]
 Running for 20000 samples...
 Query Reporting interval is 10000
-Samples done: 1000.  	Time elapsed: 0.143 s.
-Samples done: 2000.  	Time elapsed: 0.223 s.
-Samples done: 3000.  	Time elapsed: 0.294 s.
-Samples done: 4000.  	Time elapsed: 0.344 s.
-Samples done: 5000.  	Time elapsed: 0.45 s.
-Samples done: 6000.  	Time elapsed: 0.616 s.
-Samples done: 7000.  	Time elapsed: 0.742 s.
-Samples done: 8000.  	Time elapsed: 0.808 s.
-Samples done: 9000.  	Time elapsed: 0.88 s.
-Samples done: 10000.  	Time elapsed: 0.944 s.
 Iteration 10000:
 Distribution of values for Burglary
-	false	0.665977413710829
-	true	0.33402258628916814
-Samples done: 11000.  	Time elapsed: 1.02 s.
-Samples done: 12000.  	Time elapsed: 1.081 s.
-Samples done: 13000.  	Time elapsed: 1.139 s.
-Samples done: 14000.  	Time elapsed: 1.197 s.
-Samples done: 15000.  	Time elapsed: 1.25 s.
-Samples done: 16000.  	Time elapsed: 1.292 s.
-Samples done: 17000.  	Time elapsed: 1.322 s.
-Samples done: 18000.  	Time elapsed: 1.355 s.
-Samples done: 19000.  	Time elapsed: 1.395 s.
-Samples done: 20000.  	Time elapsed: 1.45 s.
+	false	0.7134817088769507
+	true	0.28651829112304883
+Samples done: 10001.
 ========  LW Trial Stats =========
-Log of average likelihood weight (this trial): -6.050355048380943
-Average likelihood weight (this trial): 0.002357025000000032
+Log of average likelihood weight (this trial): -6.290720000179235
+Average likelihood weight (this trial): 0.0018534249999999873
 Fraction of consistent worlds (this trial): 1.0
 Fraction of consistent worlds (running avg, all trials): 1.0
 ======== Query Results =========
 Number of samples: 20000
 Distribution of values for Burglary
-	false	0.6792460835162888
-	true	0.32075391648369833
+	false	0.7280710036823732
+	true	0.2719289963176302
+Total elapsed time: 1.211s
 ======== Done ========

@@ -89,11 +89,16 @@
 				<key>3</key>
 				<dict>
 					<key>name</key>
+					<string>storage.type.primitive.blog</string>
+				</dict>
+				<key>4</key>
+				<dict>
+					<key>name</key>
 					<string>entity.name.function.blog</string>
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>\b(fixed|random|origin)\b\s+\b(Integer|Real|Boolean|NaturalNum|Timestep|RealMatrix|IntegerMatrix|\w+)\s+(\w+)\b</string>
+			<string>\b(fixed|random|origin)\b\s+\b(Integer|Real|Boolean|NaturalNum|Timestep|RealMatrix|IntegerMatrix|\w+)(\[\])*\s+(\w+)\b</string>
 		</dict>
 		<dict>
 			<key>captures</key>
@@ -143,7 +148,7 @@
 		</dict>
 		<dict>
 			<key>match</key>
-			<string>\b(abs|round|inv|transpose|det|repmat|diag|vstack|hstack|eye|zeros|ones|exp|toReal|toInt|isEmptyString|prev|min|max|sum)\b</string>
+			<string>\b(abs|round|inv|transpose|det|trace|repmat|diag|vstack|hstack|eye|zeros|ones|exp|toReal|toInt|isEmptyString|prev|min|max|sum|getRow|getCol|getRows|getCols|rowsum|colsum|matsum|loadRealMatrix)\b</string>
 			<key>name</key>
 			<string>support.function.blog</string>
 		</dict>

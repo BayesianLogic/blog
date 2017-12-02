@@ -13,7 +13,7 @@ class BlogLexer(RegexLexer):
              'round', 'transpose', 'sin', 'cos', 'tan',
              'atan2', 'sum', 'vstack', 'eye', 'zeros', 
              'ones', 'toInt', 'toReal', 'diag', 'repmat', 
-             'hstack', 'vstack', 'pi']
+             'hstack', 'vstack', 'pi', 'trace']
   deliminators = [',', ';', '\\(', '\\)', '=', '~']
   keywords = ['extern','import','fixed','distinct','random','origin',
         'param','type', 'forall', 'exists', 'obs', 'query', 
