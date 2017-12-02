@@ -4,7 +4,7 @@ import NativePackagerHelper._
 
 name := "blog"
 
-version := "0.9.1"
+version := "0.10"
 
 javacOptions ++= Seq("-source", "1.5", "-target", "1.5")
 
@@ -24,10 +24,10 @@ libraryDependencies += "gov.nist.math" % "jama" % "1.0.3"
 
 libraryDependencies += "com.google.code.gson" % "gson" % "2.2.4"
 
+libraryDependencies += "org.apache.commons" % "commons-math3" % "3.0"
+
 // this one is not required during compilation or running
 libraryDependencies += "de.jflex" % "jflex" % "1.6.0" 
-
-libraryDependencies += "org.apache.commons" % "commons-math3" % "3.0" % "test"
 
 libraryDependencies += "junit" % "junit" % "4.11" % "test"
 
@@ -104,4 +104,10 @@ mappings in Universal += file("bloglint.bat") -> "bin/bloglint.bat"
 
 mappings in Universal += file("src/main/scala/iblog.scala") -> "bin/iblog.scala"
 
+// Include debugging symbols in the compiled classes.
+javacOptions += "-g"
 
+scalacOptions += "-g:vars"
+
+// Include the sources in the assembled jar.
+unmanagedResourceDirectories in Compile += { baseDirectory.value / "src" }
