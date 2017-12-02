@@ -81,8 +81,8 @@ public class CardinalitySpec extends ArgSpec {
     return setSpec.containsRandomSymbol();
   }
 
-  public boolean checkTypesAndScope(Model model, Map scope) {
-    return setSpec.checkTypesAndScope(model, scope);
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
+    return setSpec.checkTypesAndScope(model, scope, null);
   }
 
   /**

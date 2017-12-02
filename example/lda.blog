@@ -1,51 +1,52 @@
 /** Latent Dirichlet Allocation (LDA) represented in blog model.
  * (Blei, Ng and Jordan, 2003)
  * 
- * @author: leili  
- * @author: rbharath
+ * @author: yiwu
+ *   Note: this model has been tested in Swift compiler
  */
 
 type Document;
+distinct Document Doc[5];
+fixed Integer K = 3;
+fixed Integer W = 10;
 
-distinct Document Document[5];
-//#Document ~ Poisson(2);
+fixed RealMatrix a = 1.0 * ones(W, 1);
+fixed RealMatrix b = 1.0 * ones(K, 1);
 
-// Suppose we have five topics. 
-//fixed Integer k = 5;
-fixed Real alpha = 1.0;
-fixed RealMatrix beta =
-    [[0.1, 0.4, 0.4, 0.1],
-     [0.1, 0.3, 0.5, 0.1],
-     [0.4, 0.2, 0.3, 0.1],
-     [0.5, 0.3, 0.1, 0.1],
-     [0.1, 0.7, 0.1, 0.1]];
+random RealMatrix TopicWord(Integer p) ~ Dirichlet(a);
+random RealMatrix DocTopic(Document d) ~ Dirichlet(b);
+random Integer WordTopic(Document d, Integer p) 
+  ~ Discrete(DocTopic(d));
+random Integer DocWord(Document d, Integer p)
+  ~ Discrete(TopicWord(WordTopic(d, p)));
 
-random Integer doclen(Document d) ~ UniformInt(4, 7);
+query DocTopic(Doc[0])[0];
+query DocTopic(Doc[0])[1];
+query DocTopic(Doc[0])[2];
 
-fixed RealMatrix vector = [0.2; 0.2; 0.2; 0.2; 0.2];
-random RealMatrix theta(Document d) ~ Dirichlet(vector);
+///////// data ///////////
+/*
+Doc[0]: cat, kitty, girl, {0, 1, 4}
+Doc[1]: dog, doggy, boy,  {2, 3, 5}
+Doc[2]: girl, kitty, dress  {4, 1, 9}
+Doc[3]: boy, soccer, run  {5, 6, 7}
+Doc[4]: soccer, run, player  {6, 7, 8}
+Dictionary: cat, kitty, dog, doggy, girl, boy, soccer, run, player, dress
+             0   1      2    3      4     5    6        7     8      9
+*/
 
-random Integer topic(Document d, Integer i) ~
-    if (i < doclen(d)) then Discrete(theta(d));
-
-random Integer wordidx(Document d, Integer i) ~ Discrete(transpose(beta[topic(d, i)]));
-
-// define a dictionary mapping from index to word
-fixed String Dictionary(Integer i)
-    = TabularInterp(1,
-  0, "AAA",
-  1, "BBB",
-  2, "CCC",
-  3, "DDD"
-      );
-
-query wordidx(Document[1], 0);
-query wordidx(Document[1], 1);
-query wordidx(Document[1], 2);
-
-random String word(Document d, Integer i) ~ Dictionary( wordidx(d, i) );
-
-query word(Document[1], 0);
-query word(Document[1], 1);
-query word(Document[1], 2);
-query word(Document[1], 3);
+obs DocWord(Doc[0], 0) = 0;
+obs DocWord(Doc[0], 1) = 1;
+obs DocWord(Doc[0], 2) = 4;
+obs DocWord(Doc[1], 0) = 2;
+obs DocWord(Doc[1], 1) = 3;
+obs DocWord(Doc[1], 2) = 5;
+obs DocWord(Doc[2], 0) = 4;
+obs DocWord(Doc[2], 1) = 1;
+obs DocWord(Doc[2], 2) = 9;
+obs DocWord(Doc[3], 0) = 5;
+obs DocWord(Doc[3], 1) = 6;
+obs DocWord(Doc[3], 2) = 7;
+obs DocWord(Doc[4], 0) = 6;
+obs DocWord(Doc[4], 1) = 7;
+obs DocWord(Doc[4], 2) = 8;

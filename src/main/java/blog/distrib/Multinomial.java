@@ -35,8 +35,12 @@
 
 package blog.distrib;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.apache.commons.math3.distribution.BinomialDistribution;
+
 import blog.common.Util;
-import blog.common.numerical.MatrixFactory;
 import blog.common.numerical.MatrixLib;
 
 /**
@@ -70,7 +74,7 @@ public class Multinomial implements CondProbDistrib {
     if (params.length != 2) {
       throw new IllegalArgumentException("expected two parameters");
     }
-    setParams((Integer) params[0], (MatrixLib) params[1]);
+    setParams((Number) params[0], (MatrixLib) params[1]);
   }
 
   /**
@@ -87,13 +91,13 @@ public class Multinomial implements CondProbDistrib {
    *          distribution parameter <code>P</code>, representing the column
    *          vector of unnormalized probabilities.
    */
-  public void setParams(Integer n, MatrixLib p) {
+  public void setParams(Number n, MatrixLib p) {
     if (n != null) {
-      if (n < 0) {
+      if (n.intValue() < 0) {
         throw new IllegalArgumentException(
             "The number of trials 'n' for a Multinomial Distribution must be nonnegative");
       }
-      this.n = n;
+      this.n = n.intValue();
       this.hasN = true;
     }
     if (p != null) {
@@ -104,6 +108,7 @@ public class Multinomial implements CondProbDistrib {
       initializeProbabilityVector(p);
       this.hasP = true;
     }
+    this.finiteSupport = null;
   }
 
   /**
@@ -131,7 +136,7 @@ public class Multinomial implements CondProbDistrib {
     this.p = new double[k];
     this.pCDF = new double[k];
     this.p[0] = p.elementAt(0, 0) / sum;
-    pCDF[0] = this.p[0];
+    this.pCDF[0] = this.p[0];
     for (int i = 1; i < p.numRows(); i++) {
       this.p[i] = p.elementAt(i, 0) / sum;
       this.pCDF[i] = pCDF[i - 1] + this.p[i];
@@ -154,7 +159,7 @@ public class Multinomial implements CondProbDistrib {
    */
   @Override
   public double getProb(Object value) {
-    return getProb((MatrixLib) value);
+    return getProb((ArrayList<Integer>) value);
   }
 
   /**
@@ -163,15 +168,15 @@ public class Multinomial implements CondProbDistrib {
    * 
    * @param value
    */
-  public double getProb(MatrixLib value) {
+  public double getProb(ArrayList<Integer> value) {
     checkHasParams();
     if (!inSupport(value)) {
       return 0.0;
     }
     double prob = Util.factorial(n);
     for (int i = 0; i < k; i++) {
-      prob *= Math.pow(p[i], value.elementAt(i, 0));
-      prob /= Util.factorial((int) Math.round(value.elementAt(i, 0)));
+      prob *= Math.pow(p[i], value.get(i));
+      prob /= Util.factorial((int) Math.round(value.get(i)));
     }
     return prob;
   }
@@ -186,20 +191,18 @@ public class Multinomial implements CondProbDistrib {
    * @throws IllegalArgumentException
    *           if value is not a row vector of the correct dimension (1 by k)
    */
-  private boolean inSupport(MatrixLib value) {
-    if (value.numCols() != 1 || value.numRows() != k) {
+  private boolean inSupport(ArrayList<Integer> value) {
+    if (value.size() != k) {
       throw new IllegalArgumentException(
-          "The matrix provided is of the incorrect dimensions. Expecting a "
-              + this.k
-              + " by 1 column vector but instead got a matrix of dimension "
-              + value.numRows() + " by " + value.numCols());
+          "The value provided is of the incorrect dimensions. Expecting a "
+              + this.k + " Integer array but instead got a " + value.size()
+              + " array ");
     }
-    double sum = 0.0;
+    int sum = 0;
     for (int i = 0; i < k; i++) {
-      double element = value.elementAt(i, 0);
-      if (element < 0 || element % 1 != 0.0) {
-        // Number of successes for a particular category is negative or not an
-        // integer.
+      int element = value.get(i);
+      if (element < 0) {
+        // Number of successes for a particular category is negative
         return false;
       }
       sum += element;
@@ -217,7 +220,7 @@ public class Multinomial implements CondProbDistrib {
    */
   @Override
   public double getLogProb(Object value) {
-    return getLogProb((MatrixLib) value);
+    return getLogProb((ArrayList<Integer>) value);
   }
 
   /**
@@ -226,15 +229,15 @@ public class Multinomial implements CondProbDistrib {
    * 
    * @param value
    */
-  public double getLogProb(MatrixLib value) {
+  public double getLogProb(ArrayList<Integer> value) {
     checkHasParams();
     if (!inSupport(value)) {
       return Double.NEGATIVE_INFINITY;
     }
     double logProb = Util.logFactorial(n);
     for (int i = 0; i < k; i++) {
-      logProb += value.elementAt(i, 0) * Math.log(p[i]);
-      logProb -= Util.logFactorial((int) Math.round(value.elementAt(i, 0)));
+      logProb += value.get(i) * Math.log(p[i]);
+      logProb -= Util.logFactorial((int) Math.round(value.get(i)));
     }
     return logProb;
   }
@@ -246,30 +249,108 @@ public class Multinomial implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
+    // Modified by yiwu on Oct.8.2014.
     return sample_value();
   }
 
   /** Samples a value from the multinomial. */
-  public MatrixLib sample_value() {
+  public ArrayList<Integer> sample_value() {
     checkHasParams();
-    // result actually stores integers, but we declare it as double because we
-    // don't have support for int matrices
-    double[] result = new double[k];
+    if (n > 3 * k) // Currently it is a heuristic.
+      return sample_value_use_binomial();
+    else
+      return sample_value_use_bsearch();
+  }
+
+  /** Samples a value from the multinomial. */
+  private ArrayList<Integer> sample_value_use_bsearch() {
+    ArrayList<Integer> result = new ArrayList<Integer>(k);
     for (int i = 0; i < k; i++) {
-      result[i] = 0;
+      result.add(0);
     }
 
     for (int trial = 0; trial < n; trial++) {
       double val = Util.random();
-      int bucket;
-      for (bucket = 0; bucket < k; bucket++) {
-        if (val <= pCDF[bucket]) {
-          break;
+      int bucket = Arrays.binarySearch(pCDF, val);
+      if (bucket < 0)
+        bucket = -bucket - 1;
+      result.set(bucket, result.get(bucket) + 1);
+    }
+    return result;
+  }
+
+  /** Sample value from Multinomial Distribution using Binomial Distribution */
+  /*
+   * Authored by yiwu on Oct.8.2014
+   * reference:
+   * chapter 2.2 of
+   * http://www.sciencedirect.com/science/article/pii/016794739390115A
+   */
+  private ArrayList<Integer> sample_value_use_binomial() {
+    BinomialDistribution binom = null;
+    int cur = 0;
+    double cdf = 0;
+    ArrayList<Integer> result = new ArrayList<Integer>(k);
+    for (int i = 0; i < k - 1; i++) {
+      if (n == cur) {
+        result.add(0);
+        continue;
+      }
+      binom = new BinomialDistribution(n - cur, p[i] / (1.0 - cdf));
+      int x = binom.sample();
+      cur += x;
+      cdf += p[i];
+      result.add(x);
+    }
+    result.add(n - cur);
+    return result;
+  }
+
+  @Override
+  public Object[] getFiniteSupport() {
+    if (finiteSupport == null) {
+      checkHasParams();
+      int kPos = 0;
+      for (int i = 0; i < p.length; i++) {
+        if (!Util.closeToZero(this.p[i])) {
+          kPos++;
         }
       }
-      result[bucket] += 1;
+      finiteSupport = new Object[Util.multichoose(kPos, n)];
+      ArrayList<Integer> currentList = new ArrayList<Integer>();
+      supportNum = 0;
+      calculateFiniteSupport(currentList, 0, n);
     }
-    return MatrixFactory.createColumnVector(result);
+    return finiteSupport;
+  }
+
+  private void calculateFiniteSupport(ArrayList<Integer> currentList,
+      int depth, int remain) {
+    if (depth == k) {
+      finiteSupport[supportNum] = currentList.clone();
+      supportNum++;
+    } else if (depth == k - 1) {
+      if (remain == 0) {
+        currentList.add(0);
+        calculateFiniteSupport(currentList, depth + 1, 0);
+        currentList.remove(depth);
+      } else if (!Util.closeToZero(p[depth])) {
+        currentList.add(remain);
+        calculateFiniteSupport(currentList, depth + 1, 0);
+        currentList.remove(depth);
+      }
+    } else {
+      currentList.add(0);
+      calculateFiniteSupport(currentList, depth + 1, remain);
+      currentList.remove(depth);
+      if (!Util.closeToZero(p[depth])) {
+        for (int i = 1; i <= remain; i++) {
+          currentList.add(i);
+          calculateFiniteSupport(currentList, depth + 1, remain - i);
+          currentList.remove(depth);
+        }
+      }
+    }
   }
 
   private int n; // the number of trials
@@ -278,4 +359,6 @@ public class Multinomial implements CondProbDistrib {
   private double[] pCDF;
   private boolean hasP;
   private int k; // the number of categories; dimension of p
+  private int supportNum;
+  private Object[] finiteSupport = null;
 }

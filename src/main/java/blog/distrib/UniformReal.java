@@ -119,6 +119,11 @@ public class UniformReal implements CondProbDistrib {
     return getClass().getName();
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    return null;
+  }
+
   private boolean hasLower;
   private boolean hasUpper;
 

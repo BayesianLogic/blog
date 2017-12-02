@@ -171,6 +171,11 @@ public class UnivarGaussian implements CondProbDistrib {
     return "UnivarGaussian(" + mean + ", " + variance + ")";
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    return null;
+  }
+
   /** The Standard Gaussian (mean = 0, variance = 1). */
   public static final UnivarGaussian STANDARD = new UnivarGaussian(0, 1);
 

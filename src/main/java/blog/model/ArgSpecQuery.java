@@ -94,7 +94,7 @@ public class ArgSpecQuery extends AbstractQuery {
       argSpec = termInScope;
       return true;
     }
-    return getArgSpec().checkTypesAndScope(model, Collections.EMPTY_MAP);
+    return getArgSpec().checkTypesAndScope(model, Collections.EMPTY_MAP, null);
   }
 
   /**

@@ -165,6 +165,7 @@ public class Beta implements CondProbDistrib {
   }
 
   public double sample_value() {
+    checkHasParams();
     double y = gammaA.sample_value();
     double z = gammaB.sample_value();
     return y / (y + z);
@@ -182,6 +183,11 @@ public class Beta implements CondProbDistrib {
   @Override
   public String toString() {
     return "Beta(" + a + "," + b + ")";
+  }
+
+  @Override
+  public Object[] getFiniteSupport() {
+    return null;
   }
 
   /** Gamma(a, 1). Used for sampling. */

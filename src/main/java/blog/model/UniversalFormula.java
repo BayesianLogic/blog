@@ -153,10 +153,10 @@ public class UniversalFormula extends Formula {
     return true;
   }
 
-  public boolean checkTypesAndScope(Model model, Map scope) {
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
     Map extendedScope = new HashMapDiff(scope);
     extendedScope.put(var.getName(), var);
-    return cond.checkTypesAndScope(model, extendedScope);
+    return cond.checkTypesAndScope(model, extendedScope, null);
   }
 
   /**

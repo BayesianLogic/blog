@@ -1,4 +1,4 @@
 fixed RealMatrix probs = [10.0; 5.0; 3.0; 1.0];
-random RealMatrix values ~ Multinomial(10000, probs);
+random Integer[] values ~ Multinomial(10000, probs);
 
 query values;

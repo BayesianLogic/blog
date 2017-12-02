@@ -64,7 +64,7 @@ public abstract class Term extends ArgSpec {
    *          a map from String to LogicalVar
    */
   public Term getTermInScope(Model model, Map scope) {
-    return (checkTypesAndScope(model, scope) ? this : null);
+    return (checkTypesAndScope(model, scope, null) ? this : null);
   }
 
   /**

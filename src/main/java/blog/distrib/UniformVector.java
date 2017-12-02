@@ -222,6 +222,11 @@ public class UniformVector implements CondProbDistrib {
     return s.toString();
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    return null;
+  }
+
   private int dim;
   private int numFilled;
   private boolean hasDimension;

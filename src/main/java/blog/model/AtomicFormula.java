@@ -164,7 +164,7 @@ public class AtomicFormula extends Formula {
    * Returns true if the underlying term satisfies the type/scope constraints
    * and has a Boolean type.
    */
-  public boolean checkTypesAndScope(Model model, Map scope) {
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
     Term sentInScope = sent.getTermInScope(model, scope);
     if (sentInScope == null) {
       return false;

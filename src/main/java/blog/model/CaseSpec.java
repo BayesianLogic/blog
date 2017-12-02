@@ -17,7 +17,7 @@ import blog.sample.EvalContext;
  */
 public class CaseSpec extends ArgSpec {
   ArgSpec test;
-  MapSpec clause;
+  MapSpec clause; // map from any value to ArgSpec
   boolean compiled = false;
 
   /*
@@ -25,9 +25,18 @@ public class CaseSpec extends ArgSpec {
    * otherwise, the return value must be DistribSpec
    */
   boolean isInFixedFuncBody = false;
+  /*
+   * if this flag is true, we make sure that the return value
+   * of this CaseSpec will be a DistribSpec
+   */
+  boolean isInRandomFuncBody = true;
 
   public void setInFixedFuncBody(boolean flag) {
     isInFixedFuncBody = flag;
+  }
+
+  public void setInRandomFuncBody(boolean flag) {
+    isInRandomFuncBody = flag;
   }
 
   public CaseSpec(ArgSpec test, MapSpec clause) {
@@ -67,15 +76,10 @@ public class CaseSpec extends ArgSpec {
     return test.containsRandomSymbol() || clause.containsRandomSymbol();
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see blog.model.ArgSpec#checkTypesAndScope(blog.model.Model, java.util.Map)
-   */
   @Override
-  public boolean checkTypesAndScope(Model model, Map scope) {
-    return test.checkTypesAndScope(model, scope)
-        && clause.checkTypesAndScope(model, scope);
+  public boolean checkTypesAndScope(Model model, Map scope, Type childType) {
+    return test.checkTypesAndScope(model, scope, null)
+        && clause.checkTypesAndScope(model, scope, childType);
   }
 
   public int compile(LinkedHashSet callStack) {
@@ -83,13 +87,14 @@ public class CaseSpec extends ArgSpec {
     int errors = test.compile(callStack) + clause.compile(callStack);
     compiled = true;
 
-    if (isInFixedFuncBody) {
-      if (this.containsRandomSymbol()) {
+    if (!isInRandomFuncBody) {
+      if (isInFixedFuncBody && this.containsRandomSymbol()) {
         System.err
             .println("Case Expression in Fixed Function CANNOT contain random elements!");
         errors++;
       }
     } else
+      // in Random Function Body
       // make sure every branch will return a distribution spec
       // namely: for each branch of Term, generate a EqualsCPD distribution spec
       errors += clause.enforceDistribSpec();

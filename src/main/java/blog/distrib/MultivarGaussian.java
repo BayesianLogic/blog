@@ -228,6 +228,11 @@ public class MultivarGaussian implements CondProbDistrib {
 
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    return null;
+  }
+
   private MatrixLib mean;
   private boolean hasMean;
   private MatrixLib covariance;

@@ -98,8 +98,8 @@ random ParseNode NthChild(ParseNode node, Integer n) ~
 ;
 
 random String TextStartingAtNthChild(ParseNode p, Integer n) ~
-    if (NthChild(p, succ(n)) == null) then NodeText(NthChild(p, n))
-    else NodeText(NthChild(p, n)) + TextStartingAtNthChild(p, succ(n))
+    if (NthChild(p, n + 1) == null) then NodeText(NthChild(p, n))
+    else NodeText(NthChild(p, n)) + TextStartingAtNthChild(p, n + 1)
 ;
 
 random String NodeText(ParseNode node) ~

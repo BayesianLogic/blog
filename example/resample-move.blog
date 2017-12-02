@@ -1,0 +1,134 @@
+/*
+Resample-Move Particle Filtering example from Constantin Berzan's MS thesis.
+Based on the grid-world SLAM problem by Murphy & Russell from
+"Rao-Blackwellised Particle Filtering for Dynamic Bayesian Networks".
+*/
+
+fixed Timestep first_timestep = @0;
+fixed Integer start_cell = 0;
+fixed Integer min_cell = 0;
+fixed Integer max_cell = 7;
+
+fixed Real p_move_fail = 0.05;
+fixed Real p_obs_fail = 0.2;
+
+type Control;
+distinct Control Left, Right;
+
+random Integer color(Integer c) ~ Bernoulli(0.5);
+
+random Integer noisyColor(Timestep t) ~
+    Categorical({
+        color(location(t)) -> 1 - p_obs_fail,
+        (1 - color(location(t))) -> p_obs_fail
+    });
+
+fixed Integer left_of(Integer c) =
+    if c == min_cell then min_cell
+    else c - 1;
+
+fixed Integer right_of(Integer c) =
+    if c == max_cell then max_cell
+    else c + 1;
+
+random Integer location(Timestep t) ~
+    if (t == first_timestep) then start_cell
+    else if control(t) == Left then Categorical({
+        left_of(location(t - 1)) -> 1 - p_move_fail,
+        location(t - 1) -> p_move_fail
+    }) else Categorical({
+        right_of(location(t - 1)) -> 1 - p_move_fail,
+        location(t - 1) -> p_move_fail
+    });
+
+random Control control(Timestep t) ~ DontCare();
+
+
+obs control(@1) = Right;
+obs control(@2) = Right;
+obs control(@3) = Right;
+obs control(@4) = Right;
+obs control(@5) = Right;
+obs control(@6) = Right;
+obs control(@7) = Right;
+obs control(@8) = Right;
+obs control(@9) = Left;
+obs control(@10) = Left;
+obs control(@11) = Left;
+obs control(@12) = Left;
+obs control(@13) = Right;
+obs control(@14) = Right;
+obs control(@15) = Right;
+obs control(@16) = Right;
+obs control(@17) = Right;
+obs control(@18) = Left;
+obs control(@19) = Left;
+obs control(@20) = Left;
+obs control(@21) = Left;
+obs control(@22) = Left;
+obs control(@23) = Left;
+obs control(@24) = Left;
+obs control(@25) = Left;
+
+obs noisyColor(@0) = 0;
+obs noisyColor(@1) = 0;
+obs noisyColor(@2) = 0;
+obs noisyColor(@3) = 0;
+obs noisyColor(@4) = 1;
+obs noisyColor(@5) = 0;
+obs noisyColor(@6) = 1;
+obs noisyColor(@7) = 0;
+obs noisyColor(@8) = 1;
+obs noisyColor(@9) = 0;
+obs noisyColor(@10) = 0;
+obs noisyColor(@11) = 1;
+obs noisyColor(@12) = 1;
+obs noisyColor(@13) = 0;
+obs noisyColor(@14) = 1;
+obs noisyColor(@15) = 0;
+obs noisyColor(@16) = 0;
+obs noisyColor(@17) = 1;
+obs noisyColor(@18) = 0;
+obs noisyColor(@19) = 1;
+obs noisyColor(@20) = 0;
+obs noisyColor(@21) = 1;
+obs noisyColor(@22) = 0;
+obs noisyColor(@23) = 1;
+obs noisyColor(@24) = 0;
+obs noisyColor(@25) = 0;
+
+query location(@0);
+query location(@1);
+query location(@2);
+query location(@3);
+query location(@4);
+query location(@5);
+query location(@6);
+query location(@7);
+query location(@8);
+query location(@9);
+query location(@10);
+query location(@11);
+query location(@12);
+query location(@13);
+query location(@14);
+query location(@15);
+query location(@16);
+query location(@17);
+query location(@18);
+query location(@19);
+query location(@20);
+query location(@21);
+query location(@22);
+query location(@23);
+query location(@24);
+query location(@25);
+
+query color(0);
+query color(1);
+query color(2);
+query color(3);
+query color(4);
+query color(5);
+query color(6);
+query color(7);

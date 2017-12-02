@@ -50,9 +50,18 @@ public class Queries extends ArrayList<Query> {
   public int compile() {
     int errors = 0;
     for (Query query : this) {
-      query.compile();
+      errors += query.compile();
     }
     return errors;
+  }
+
+  /**
+   * reset the underlying query results, setting to be empty.
+   */
+  public void reset() {
+    for (Query q : this) {
+      q.getHistogram().clear();
+    }
   }
 
   /**

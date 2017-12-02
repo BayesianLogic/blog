@@ -222,7 +222,6 @@ public class Dirichlet implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
-    checkHasParams();
     return sample_value();
   }
 
@@ -231,6 +230,8 @@ public class Dirichlet implements CondProbDistrib {
    * http://en.wikipedia.org/wiki/Dirichlet_distribution#
    */
   public MatrixLib sample_value() {
+    checkHasParams();
+
     double sum = 0.0;
     int vec_size = alpha.length;
 
@@ -271,6 +272,11 @@ public class Dirichlet implements CondProbDistrib {
   @Override
   public String toString() {
     return getClass().getName();
+  }
+
+  @Override
+  public Object[] getFiniteSupport() {
+    return null;
   }
 
   private double[] alpha;

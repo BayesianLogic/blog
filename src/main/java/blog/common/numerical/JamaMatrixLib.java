@@ -16,7 +16,6 @@ import blog.common.Util;
 public class JamaMatrixLib implements MatrixLib {
 
   private Matrix values;
-  private static double ZERO_THRESHOLD = 1e-20;
 
   public JamaMatrixLib(double[][] contents) {
     values = new Matrix(contents);
@@ -58,6 +57,29 @@ public class JamaMatrixLib implements MatrixLib {
   }
 
   @Override
+  public MatrixLib sliceRows(int i, int j) {
+    return new JamaMatrixLib(values.getMatrix(i, j, 0,
+        values.getColumnDimension() - 1));
+  }
+
+  @Override
+  public MatrixLib sliceCol(int i) {
+    return new JamaMatrixLib(values.getMatrix(0, values.getRowDimension() - 1,
+        i, i));
+  }
+
+  @Override
+  public MatrixLib sliceCols(int i, int j) {
+    return new JamaMatrixLib(values.getMatrix(0, values.getRowDimension() - 1,
+        i, j));
+  }
+
+  @Override
+  public MatrixLib subMat(int x1, int y1, int x2, int y2) {
+    return new JamaMatrixLib(values.getMatrix(x1, x2, y1, y2));
+  }
+
+  @Override
   public MatrixLib plus(MatrixLib otherMat) {
     if (otherMat instanceof JamaMatrixLib) {
       JamaMatrixLib newMat = (JamaMatrixLib) otherMat;
@@ -95,6 +117,11 @@ public class JamaMatrixLib implements MatrixLib {
   @Override
   public double det() {
     return values.det();
+  }
+
+  @Override
+  public double trace() {
+    return values.trace();
   }
 
   @Override
@@ -146,11 +173,35 @@ public class JamaMatrixLib implements MatrixLib {
     double[][] result = new double[1][numCols()];
     for (int i = 0; i < numCols(); i++) {
       result[0][i] = 0;
-      for (int j = 0; j < numRows(); j++) {
+    }
+    for (int j = 0; j < numRows(); j++) {
+      for (int i = 0; i < numCols(); ++i)
         result[0][i] += elementAt(j, i);
+    }
+    return new JamaMatrixLib(result);
+  }
+
+  @Override
+  public MatrixLib rowSum() {
+    double[][] result = new double[numRows()][1];
+    for (int i = 0; i < numRows(); i++) {
+      result[i][0] = 0;
+      for (int j = 0; j < numCols(); j++) {
+        result[i][0] += elementAt(i, j);
       }
     }
     return new JamaMatrixLib(result);
+  }
+
+  @Override
+  public double matSum() {
+    double result = 0;
+    for (int i = 0; i < numRows(); i++) {
+      for (int j = 0; j < numCols(); j++) {
+        result += elementAt(i, j);
+      }
+    }
+    return result;
   }
 
   @Override

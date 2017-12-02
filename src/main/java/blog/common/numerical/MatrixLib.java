@@ -57,6 +57,48 @@ public interface MatrixLib {
   public MatrixLib sliceRow(int i);
 
   /**
+   * Returns rows of the matrix from i to j as specified
+   * 
+   * @param i
+   *          the index of the starting row
+   * @param j
+   *          the index of the ending row
+   */
+  public MatrixLib sliceRows(int i, int j);
+
+  /**
+   * Returns a column of the matrix as specified
+   * 
+   * @param i
+   *          the index of the column
+   */
+  public MatrixLib sliceCol(int i);
+
+  /**
+   * Returns columns of the matrix from i to j as specified
+   * 
+   * @param i
+   *          the index of the starting column
+   * @param j
+   *          the index of the ending column
+   */
+  public MatrixLib sliceCols(int i, int j);
+
+  /**
+   * Returns sub-matrix of the matrix in the range of [x1..x2,y1..y2]
+   * 
+   * @param x1
+   *          the index of the starting row
+   * @param y1
+   *          the index of the starting column
+   * @param x2
+   *          the index of the ending row (inclusive)
+   * @param y2
+   *          the index of the ending column (inclusive)
+   */
+  public MatrixLib subMat(int x1, int y1, int x2, int y2);
+
+  /**
    * Returns the sum of this matrix with the one provided
    */
   public MatrixLib plus(MatrixLib otherMat);
@@ -80,6 +122,11 @@ public interface MatrixLib {
    * Returns the determinant of this matrix
    */
   public double det();
+
+  /**
+   * Returns the trace of this matrix
+   */
+  public double trace();
 
   /**
    * Returns the absolute value for every element of this matrix
@@ -135,6 +182,16 @@ public interface MatrixLib {
    * Returns a row vector representing the column sum of the matrix.
    */
   public MatrixLib columnSum();
+
+  /**
+   * Returns a column vector representing the row sum of the matrix.
+   */
+  public MatrixLib rowSum();
+
+  /**
+   * Returns a double representing the sum of all entries in the matrix.
+   */
+  public double matSum();
 
   /**
    * Return the real parts of the eigenvalues of the matrix.

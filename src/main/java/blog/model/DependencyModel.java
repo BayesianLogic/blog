@@ -183,9 +183,7 @@ public class DependencyModel {
   }
 
   public boolean checkTypesAndScope(Model model, Map scope) {
-    if (clause instanceof DistribSpec)
-      return ((DistribSpec) clause).checkTypesAndScope(model, scope, childType);
-    return clause.checkTypesAndScope(model, scope);
+    return clause.checkTypesAndScope(model, scope, childType);
   }
 
   /**

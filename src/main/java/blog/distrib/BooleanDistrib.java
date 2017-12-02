@@ -149,6 +149,11 @@ public class BooleanDistrib implements CondProbDistrib {
     return "BooleanDistrib(" + p + ")";
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    return finiteSupport;
+  }
+
   private double p;
 
   private double logP; // log p
@@ -157,4 +162,5 @@ public class BooleanDistrib implements CondProbDistrib {
 
   private boolean hasP;
 
+  private static final Object[] finiteSupport = { true, false };
 }

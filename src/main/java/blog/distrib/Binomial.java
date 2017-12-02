@@ -35,6 +35,8 @@
 
 package blog.distrib;
 
+import org.apache.commons.math3.distribution.BinomialDistribution;
+
 import blog.common.Util;
 
 /**
@@ -97,6 +99,8 @@ public class Binomial implements CondProbDistrib {
       this.p = pDouble;
       this.hasP = true;
     }
+    this.finiteSupport = null;
+    binom = null;
   }
 
   private void checkHasParams() {
@@ -105,6 +109,9 @@ public class Binomial implements CondProbDistrib {
     }
     if (!this.hasN) {
       throw new IllegalArgumentException("parameter n not provided");
+    }
+    if (binom == null) {
+      binom = new BinomialDistribution(n, p);
     }
   }
 
@@ -121,13 +128,7 @@ public class Binomial implements CondProbDistrib {
   /** Returns the probability of <code>value</code> successes. */
   public double getProb(int value) {
     checkHasParams();
-    int k = value;
-    if (k >= 0 && k <= n) {
-      return ((Util.factorial(n) / (Util.factorial(k) * Util.factorial(n - k)))
-          * Math.pow(p, k) * Math.pow((1 - p), (n - k)));
-    } else {
-      return 0;
-    }
+    return binom.probability(value); // modified by yiwu on Oct.8.2014
   }
 
   /*
@@ -159,11 +160,11 @@ public class Binomial implements CondProbDistrib {
    */
   @Override
   public Object sampleVal() {
-    checkHasParams();
     return sample_value();
   }
 
   public int sample_value() {
+    checkHasParams();
     return sample_value(n, p);
   }
 
@@ -171,16 +172,8 @@ public class Binomial implements CondProbDistrib {
    * Samples the current binomial distribution.
    */
   public static int sample_value(int n, double p) {
-    double q = -Math.log(1 - p);
-    double sum = 0;
-    int x = 0;
-    double e;
-    while (sum <= q) {
-      e = Exponential.sample_value(1);
-      sum += (e / (n - x));
-      x += 1;
-    }
-    return x - 1;
+    // Modified by yiwu on Oct.8.2014
+    return binom.sample();
   }
 
   @Override
@@ -188,8 +181,22 @@ public class Binomial implements CondProbDistrib {
     return "Binomial(" + n + ", " + p + ")";
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    if (finiteSupport == null) {
+      checkHasParams();
+      finiteSupport = new Object[n + 1];
+      for (int i = 0; i <= n; i++) {
+        finiteSupport[i] = i;
+      }
+    }
+    return finiteSupport;
+  }
+
   private int n;
   private boolean hasN;
   private double p;
   private boolean hasP;
+  private Object[] finiteSupport = null;
+  static private BinomialDistribution binom;
 }

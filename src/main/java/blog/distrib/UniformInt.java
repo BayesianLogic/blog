@@ -38,7 +38,7 @@ package blog.distrib;
 import blog.common.Util;
 
 /**
- * Uniform distribution over a range of integers. This distribution has two
+ * This distribution has two
  * parameters: <code>lower</code>, which indicates the lower end of the range
  * and <code>upper</code>, which indicates upper end of the range. The
  * range is inclusive (it includes the upper and lower ends).
@@ -96,6 +96,7 @@ public class UniformInt implements CondProbDistrib {
       }
       this.prob = 1.0 / (this.upper - this.lower + 1);
       this.logProb = Math.log(this.prob);
+      this.finiteSupport = null;
     }
   }
 
@@ -167,6 +168,18 @@ public class UniformInt implements CondProbDistrib {
     return getClass().getName();
   }
 
+  @Override
+  public Object[] getFiniteSupport() {
+    if (finiteSupport == null) {
+      checkHasParams();
+      finiteSupport = new Object[upper - lower + 1];
+      for (int i = lower; i <= upper; i++) {
+        finiteSupport[i - lower] = i;
+      }
+    }
+    return finiteSupport;
+  }
+
   /** Parameter <code>lower</code>. */
   private int lower;
   /** Flag indicating whether <code>lower</code> has been set. */
@@ -185,4 +198,5 @@ public class UniformInt implements CondProbDistrib {
    * <code>upper</code> inclusive.
    */
   private double logProb;
+  private Object[] finiteSupport = null;
 }
