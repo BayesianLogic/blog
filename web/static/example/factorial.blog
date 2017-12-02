@@ -1,0 +1,9 @@
+fixed Integer f(Integer k) =
+  if k <= 1 then 1 else k * f(k-1);
+random Integer X ~ UniformInt(1,10);
+random Real W ~ UniformReal(0.0,0.5);
+random Integer Y ~ Categorical({f(X) -> 0.5, -1 -> W});
+
+query f(3);
+query f(X);
+query Y;

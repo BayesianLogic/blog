@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Script for running the BLOG inference engine.  Typical usage:
 #
@@ -7,25 +7,58 @@
 # Please refer to BLOG user manual for the full list of options
 #
 
-#!/bin/bash
+realpath () {
+(
+  TARGET_FILE="$1"
+  CHECK_CYGWIN="$2"
 
-BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+  cd $(dirname "$TARGET_FILE")
+  TARGET_FILE=$(basename "$TARGET_FILE")
 
-if [ ! -d "${BLOG_HOME}/src/" ]; then
-  BLOG_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../ && pwd )"	
-fi
+  COUNT=0
+  while [ -L "$TARGET_FILE" -a $COUNT -lt 100 ]
+  do
+      TARGET_FILE=$(readlink "$TARGET_FILE")
+      cd $(dirname "$TARGET_FILE")
+      TARGET_FILE=$(basename "$TARGET_FILE")
+      COUNT=$(($COUNT + 1))
+  done
 
-export BLOG_HOME
-
-echo "Running BLOG"
-if [ -e "${BLOG_HOME}/bin/iblog.scala" ]; then
-  CPATH="${BLOG_HOME}/lib/java-cup-11b.jar:${BLOG_HOME}/lib/*:${CLASSPATH}"
-else
-  if [ ! -d "${BLOG_HOME}/target/universal/stage/" ]; then
-    sbt/sbt stage
+  if [ "$TARGET_FILE" == "." -o "$TARGET_FILE" == ".." ]; then
+    cd "$TARGET_FILE"
+    TARGET_FILEPATH=
+  else
+    TARGET_FILEPATH=/$TARGET_FILE
   fi
-  CPATH="${BLOG_HOME}/target/universal/stage/lib/java-cup-11b.jar:${BLOG_HOME}/target/universal/stage/lib/*:${CLASSPATH}"
+
+  # make sure we grab the actual windows path, instead of cygwin's path.
+  if [[ "x$CHECK_CYGWIN" == "x" ]]; then
+    echo "$(pwd -P)/$TARGET_FILE"
+  else
+    echo $(cygwinpath "$(pwd -P)/$TARGET_FILE")
+  fi
+)
+}
+get_java_cmd() {
+  if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+    echo "$JAVA_HOME/bin/java"
+  else
+    echo "java"
+  fi
+}
+declare java_cmd=$(get_java_cmd)
+export java_version=$("$java_cmd" -version 2>&1 | awk -F '"' '/version/ {print $2}')
+CUR_SCRIPT="$(realpath "$0")"
+
+BLOG_HOME="$(dirname "$CUR_SCRIPT")"
+
+BLOG_SCRIPT="${BLOG_HOME}/target/universal/stage/bin/blog"
+
+if [ ! -e "${BLOG_SCRIPT}" ]; then
+  OLD_DIR="$(pwd)"
+  cd "${BLOG_HOME}"
+  sbt/sbt stage
+  cd ${OLD_DIR}
 fi
 
-java -cp ${CPATH} -Xmx4096M blog.Main $@
-
+"${BLOG_SCRIPT}" $@

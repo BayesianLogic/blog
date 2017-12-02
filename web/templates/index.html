@@ -7,28 +7,191 @@ $def with (example_blog_code)
     <meta charset="utf-8">
     <title>BLOG Language Web Engine</title>
     <link rel="stylesheet" type="text/css" href="static/codemirror.css"/>
-    <link rel="stylesheet" type="text/css" href="static/css/index.css"/>
-    <script type="text/javascript" src="/static/jquery.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <script type="text/javascript" src="/static/codemirror.js"></script>
-    <script type="text/javascript" src="/static/blog/blog.js"></script>
+     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://codemirror.net/theme/railscasts.css"/>
+
+    <link rel="stylesheet" type="text/css" href="static/css/index.css"/>
   </head>
   <body>
-    <p><img src="/static/images/BerkeleyLogo.png" align="middle" alt="BerkelyLogo" />Presented by University of California, Berkeley, Professor Stuart Russell's Research Group. <a href="http://bayesianlogic.cs.berkeley.edu">BLOG main page.</a></p>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <a class="navbar-brand" href="">The BLOG Programming Language Web Engine</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+
+    </nav>
+    <!--p><img src="/static/images/BerkeleyLogo.png" align="middle" alt="BerkelyLogo" />Presented by University of California, Berkeley, Professor Stuart Russell's Research Group. <a href="http://bayesianlogic.cs.berkeley.edu">BLOG main page.</a></p>
     <h1>
       The BLOG Programming Language Web Engine
-    </h1>
-    <form class="form" method="post">
-      <textarea id="textfield" name="code">$(example_blog_code)</textarea>
-      <input class="button" type="submit" value="Submit"/>
-    </form>
-    <p>
+    </h1-->
+    <div id="codecontrol">
+    <select class="custom-select" id="examplefile" onchange="getval(this);">
+      <option>abs.blog</option>
+      <option>aircraft-position.blog</option>
+      <option>aircraft-static.blog</option>
+      <option>ar1.dblog</option>
+      <option>ar2.dblog</option>
+      <option>bayesian-linear-regression.blog</option>
+      <option>birthday.blog</option>
+      <option>burglary-multihouse.blog</option>
+      <option selected>burglary.blog</option>
+      <option>csi.blog</option>
+      <option>exp.blog</option>
+      <option>factorial.blog</option>
+      <option>file-io.blog</option>
+      <option>galaxy.blog</option>
+      <option>general-fixed-fun.blog</option>
+      <option>grades.blog</option>
+      <option>healthiness.blog</option>
+      <option>helicopter-static.blog</option>
+      <option>hmm.dblog</option>
+      <option>hurricane-new.blog</option>
+      <option>hurricane.blog</option>
+      <option>kalman-filter.dblog</option>
+      <option>lda.blog</option>
+      <option>linear-algebra.blog</option>
+      <option>mixture-of-gaussian-2d-infinite.blog</option>
+      <option>mixture-of-gaussian-full.blog</option>
+      <option>mixture-of-gaussian-infinite.blog</option>
+      <option>mixture-of-gaussian.blog</option>
+      <option>multinomial.blog</option>
+      <option>nested-case-expr.blog</option>
+      <option>pf-test.blog</option>
+      <option>poisson-ball.blog</option>
+      <option>resample-move.blog</option>
+      <option>simple-aircraft.blog</option>
+      <option>stochastic-volatility.dblog</option>
+      <option>sybil-attack-exp1.blog</option>
+      <option>sybil-attack-exp2.blog</option>
+      <option>sybil-attack-exp3.blog</option>
+      <option>transpose.blog</option>
+      <option>trig.blog</option>
+      <option>tugwar.blog</option>
+      <option>tugwar1.blog</option>
+      <option>tugwar2.blog</option>
+      <option>uniform-ball.blog</option>
+      <option>weather.dblog</option>
+    </select>
+    <button onclick="showhide()" class="btn btn-dark">Show/Hide</button>
+    </div>
+
+      <div id=usrtext class="container">
+      <textarea id="textfield" name="code" display="block">$(example_blog_code)</textarea></div>
+
+    <!--p>
     BLOG web engine is currently maintain by <a href="http://www.cs.cmu.edu/~leili">Lei Li</a> ([my full name] AT cs.berkeley.edu) <br/>
     It is intended for demonstration purpose. <br/>
     Graph of the submitted BLOG model will be display in the soon future.
-    </p>
-    <h3>
+  </p-->
+    <div id="otherarg">
+      <div id="slidecontainer" >
+        <input type="range" min=1 max=20000 value=10000 class="slider" id="sampno">
+        <p>Sample number: <span id="demo"></span></p>
+      </div>
+      <table class="center">
+  <tr>
+    <td>Sample number base:</td>
+    <td><input type="radio" name="samp_base" value="10000" onclick="handlebase(this);" checked>10000</td>
+    <td><input type="radio" name="samp_base" value="100000"onclick="handlebase(this);">100000</td>
+    <td><input type="radio" name="samp_base" value="1000000"onclick="handlebase(this);">1000000</td>
+  </tr>
+
+<tr>
+<td>Sample Engine:</td>
+<td><input type="radio" name="samp_eng" value="SamplingEngine" checked>SamplingEngine</td>
+<td><input type="radio" name="samp_eng" value="ParticleFilter">ParticleFilter</td>
+<td><input type="radio" name="samp_eng" value="LiuWestFilter">LiuWestFilter</td>
+</tr>
+
+<tr>
+<td>Sampling Algorithm:</td>
+<td><input type="radio" name="samp_alg" value="LWSampler" checked>LWSampler</td>
+<td><input type="radio" name="samp_alg" value="RejectionSampler">RejectionSampler</td>
+<td><input type="radio" name="samp_alg" value="MHSampler">MHSampler</td>
+</tr>
+</table>
+<div id="btngroup">
+<button class="button btn  btn-primary " >Submit</button><br>
+<button class="btn btn-success " id="viewres"data-toggle="modal" data-target="#exampleModalLong">View Result</button>
+<button class="btn btn-success " id="viewlog"data-toggle="modal" data-target="#logmodal">View Log</button>
+<div id="computing"class="preloader-2">
+  <span class="line line-1"></span>
+  <span class="line line-2"></span>
+  <span class="line line-3"></span>
+  <span class="line line-4"></span>
+  <span class="line line-5"></span>
+  <span class="line line-6"></span>
+  <span class="line line-7"></span>
+  <span class="line line-8"></span>
+  <span class="line line-9"></span>
+  <div>computing</div>
+</div>
+</div>
+    </div>
+
+    <!--h3>
       Your submission result (It might takes up to 30 secs):
-    </h3>
+    </h3-->
     <div id="results"></div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Result</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="charthead">
+            <select style="width: 300px;"id="choosedata" onchange="refresh();">
+	</select>
+
+            <button onclick="movie(num);" id="moviebtn"class="btn btn-primary">Movie!</button></div>
+            <div id="chartdiv" class="chartdiv">
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="logmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logmodalTitle">Log</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <textarea id="logtext"rows="20" cols="80">
+
+</textarea>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
   </body>
+  <script type="text/javascript" src="/static/popper.min.js"></script>
+  <script type="text/javascript" src="/static/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/static/blog/blog.js"></script>
 </html>

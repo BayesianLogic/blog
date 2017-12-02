@@ -1,0 +1,51 @@
+/**
+ * Adaptive background mixture models
+ * This BLOG program describe the model for image background 
+ * segmentation. 
+ * See the paper: 
+ *   Image segmentation in video sequences: A probabilistic approach
+ *   Nir Friedman, Stuart Russell, UAI 1997
+ * and the paper:
+ *   Adaptive background mixture models for real-time tracking
+ *   Chris Stauffer, W.E.L Grimson, CVPR 1999
+ * In particular, each pixel is drawn from a mixture of components. 
+ * Each component is modeled as a Gaussian distribution. 
+ *
+ * Note the model is not exactly the same as those described in the 
+ * above papers.
+ * This version assumes a Poisson prior for the number of components.
+ *
+ * author: leili, rbharath:w
+ */
+
+type Component;
+
+#Component ~ UniformInt(2, 15);
+
+random RealMatrix Weight ~ Dirichlet(0.2 * ones(size({c for Component c}), 1));
+
+fixed RealMatrix variance = [10000, 0, 0;
+                             0, 10000, 0;
+                             0, 0, 10000];
+
+// the prior posts uniform distribution over a box of 3D space.
+fixed RealMatrix rangeR = [0.0, 255.0];
+fixed RealMatrix rangeG = [0.0, 255.0];
+fixed RealMatrix rangeB = [0.0, 255.0];
+random RealMatrix Mean(Component c, Timestep t) ~
+    if (t == @1) then UniformVector(rangeR, rangeG, rangeB)
+    else MultivarGaussian(transpose(Mean(c, prev(t))), variance)
+;
+
+random Component AssociatedComponent(Integer x, Integer y, Timestep t)
+    ~ Discrete(Weight);
+
+// the parameters can be set in Mean(Component)
+random RealMatrix Intensity(Integer x, Integer y, Timestep t) 
+    ~ MultivarGaussian(
+        Mean(AssociatedComponent(x, y, t), t),
+        variance);
+
+obs Intensity(1, 1, @1) = [135; 85; 170];
+
+query AssociatedComponent(1, 1, @1);
