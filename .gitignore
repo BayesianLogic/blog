@@ -17,3 +17,6 @@ src/test/java/test/blog/TestLocalExample.java
 *.aux
 *.log
 *.gz
+.metals
+.vscode
+/project/build.properties
