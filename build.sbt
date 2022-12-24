@@ -1,6 +1,6 @@
-import com.typesafe.sbt.SbtNativePackager._
 import NativePackagerKeys._
 import NativePackagerHelper._
+import scala.sys.process._
 
 name := "blog"
 
@@ -52,8 +52,8 @@ lazy val ghpages = taskKey[Unit]("Push updated html docs to github pages")
 
 ghpages := { 
   html.value
-  (packageBin in Universal).value
-  (packageBin in Debian).value
+  (Universal / packageBin).value
+  (Debian / packageBin).value
   """docs/update_ghpages.sh""" ! 
 }
 
