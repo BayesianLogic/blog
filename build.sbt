@@ -1,12 +1,13 @@
-import NativePackagerKeys._
 import NativePackagerHelper._
 import scala.sys.process._
+
+enablePlugins(JavaAppPackaging, UniversalPlugin) 
 
 name := "blog"
 
 version := "0.10.alpha1"
 
-javacOptions ++= Seq("-source", "1.5", "-target", "1.5")
+javacOptions ++= Seq("-source", "11", "-target", "11")
 
 //scalaVersion := "2.10.3"
 
@@ -16,9 +17,9 @@ artifactName := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
   artifact.name + "-" + module.revision + "." + artifact.extension
 }
 
-mainClass in (Compile) := Some("blog.Main")
+Compile / mainClass := Some("blog.Main")
 
-sources in (Compile, doc) ~= (_ filter (_.getName endsWith ".___")) // do not generate java doc, since it creates problem // TODO in the future, remove this line and fix documentation issue 
+Compile / doc / sources ~= (_ filter (_.getName endsWith ".___")) // do not generate java doc, since it creates problem // TODO in the future, remove this line and fix documentation issue 
 
 libraryDependencies += "gov.nist.math" % "jama" % "1.0.3"
 
@@ -31,7 +32,7 @@ libraryDependencies += "de.jflex" % "jflex" % "1.6.0"
 
 libraryDependencies += "junit" % "junit" % "4.11" % "test"
 
-parallelExecution in Test := false // disable parallel test
+Test / parallelExecution := false // disable parallel test
 
 // enable sbt to use junit 
 libraryDependencies += "com.novocode" % "junit-interface" % "0.10" % "test" 
@@ -62,7 +63,7 @@ lazy val parser = taskKey[Unit]("Generating parser files")
 lazy val lexer = taskKey[Unit]("Generating lexer files") 
 
 lexer := {
-  val cpfiles = (fullClasspath in Test).value.files
+  val cpfiles = (Test / fullClasspath).value.files
   println(cpfiles)
   val cpString = cpfiles.map(_.getAbsolutePath).mkString(System.getProperty("path.separator"))
   """java -cp "%s" jflex.Main -d src/main/java/blog/parse src/parser/BLOGLexer.flex""".format(cpString) !                      
@@ -74,37 +75,37 @@ parser := {
 } 
 
 // the following are packaging settings
-packageArchetype.java_application // native package
+// packageArchetype.java_application // native package
 
-packageSummary in Linux := "BLOG Probabilistic Programming Language Inference Engine and Tools"
+Linux / packageSummary := "BLOG Probabilistic Programming Language Inference Engine and Tools"
 
-packageSummary in Windows := "BLOG Probabilistic Programming Language Inference Engine and Tools"
+Windows / packageSummary := "BLOG Probabilistic Programming Language Inference Engine and Tools"
 
 packageDescription := "BLOG Probabilistic Programming Language"
 
-maintainer in Windows := "UC Berkeley RUGS"
+Windows / maintainer := "UC Berkeley RUGS"
 
-maintainer in Debian := "UC Berkeley RUGS"
+Debian / maintainer := "UC Berkeley RUGS"
 
-debianPackageDependencies in Debian ++= Seq("java2-runtime", "bash (>= 2.05a-11)")
+Debian / debianPackageDependencies ++= Seq("java2-runtime", "bash (>= 2.05a-11)")
 
-debianPackageRecommends in Debian += "scala"
+Debian / debianPackageRecommends += "scala"
 
-mappings in Universal ++= directory("example")
+Universal / mappings ++= directory("example")
 
-mappings in Universal ++= directory("target/pelican") map {case (f, s) => (f, s.replaceFirst("pelican", "docs"))}
+Universal / mappings ++= directory("target/pelican") map {case (f, s) => (f, s.replaceFirst("pelican", "docs"))}
 
-mappings in Universal += file("iblog") -> "bin/iblog"
+Universal / mappings += file("iblog") -> "bin/iblog"
 
-mappings in Universal += file("iblog.bat") -> "bin/iblog.bat"
+Universal / mappings += file("iblog.bat") -> "bin/iblog.bat"
 
-mappings in Universal += file("dblog") -> "bin/dblog"
+Universal / mappings += file("dblog") -> "bin/dblog"
 
-mappings in Universal += file("bloglint") -> "bin/bloglint"
+Universal / mappings += file("bloglint") -> "bin/bloglint"
 
-mappings in Universal += file("bloglint.bat") -> "bin/bloglint.bat"
+Universal / mappings += file("bloglint.bat") -> "bin/bloglint.bat"
 
-mappings in Universal += file("src/main/scala/iblog.scala") -> "bin/iblog.scala"
+Universal / mappings += file("src/main/scala/iblog.scala") -> "bin/iblog.scala"
 
 // Include debugging symbols in the compiled classes.
 javacOptions += "-g"
@@ -112,10 +113,10 @@ javacOptions += "-g"
 scalacOptions += "-g:vars"
 
 // Include the sources in the assembled jar.
-unmanagedResourceDirectories in Compile += { baseDirectory.value / "src" }
+Compile / unmanagedResourceDirectories += { baseDirectory.value / "src" }
 
 // Stuff below if for ppaml-slam:
-libraryDependencies += "com.github.tototoshi" %% "scala-csv" % "1.1.1"
+libraryDependencies += "com.github.tototoshi" %% "scala-csv" % "1.3.10"
 
 // This makes Eclipse see the stuff in src/main/resources properly:
 EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource
