@@ -20,3 +20,5 @@ src/test/java/test/blog/TestLocalExample.java
 .metals
 .vscode
 /project/build.properties
+.idea
+/out
